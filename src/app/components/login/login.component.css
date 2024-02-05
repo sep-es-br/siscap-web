@@ -1,0 +1,40 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.login-component {
+  height: 100vh;
+  width: 100 vw;
+  background-color: rgba(215, 215, 215, 0.792156862745098);
+}
+
+.card-body {
+  height: 462px;
+  width: 645px;
+}
+
+.card-content {
+  height: 100%;
+  width: 100%;
+}
+
+/* Quantidade ainda não definida */
+.siscap-logo {
+  margin-top: 15%; 
+}
+
+.login-button button {
+  height: 62px;
+  width: 319px;
+}
+
+.login-button button span {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.legal-footer span {
+  color: #7f7f7f;
+  font-size: 14px;
+}
