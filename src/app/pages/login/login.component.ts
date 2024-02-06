@@ -17,7 +17,8 @@ export class LoginComponent {
   navigateLoginGov() {
     //Chamar authService com endpoint de verificação
     //this.authService.authGovBr() ou this.authService.authAcessoCidadao()
-    this.authService.signIn();
+    // this.authService.signIn();
+    this.authService.mockSignIn();
     // window.location.href = 'https://acessocidadao.es.gov.br/';
   }
 }

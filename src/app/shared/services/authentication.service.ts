@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -6,7 +7,11 @@ import { Injectable } from '@angular/core';
 export class AuthenticationService {
   private api = 'http://localhost:8080/siscap';
 
-  constructor() {}
+  constructor(private router: Router) {}
+
+  public mockSignIn() {
+    this.router.navigateByUrl('/home');
+  }
 
   public signIn() {
     window.location.href = this.getUrlForAuth();
