@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 576px) {
+  .nav-menu {
+    display: none;
+  }
+}
+
+.header-bar {
+  height: 5%;
+}
+
+.main-content {
+  height: 95%;
+}
