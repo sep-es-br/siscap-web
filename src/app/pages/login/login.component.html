@@ -1,18 +1,25 @@
-<div class="login-component">
-  <div class="position-absolute top-50 start-50 translate-middle">
+<div
+  class="container-fluid d-flex justify-content-center align-items-center"
+>
+  <div class="col-12 d-flex justify-content-center">
     <div class="card">
       <div class="card-body shadow">
-        <div class="card-content d-flex flex-column justify-content-between">
-          <div class="siscap-logo d-flex flex-row justify-content-center">
-            <!-- Imagem ainda indisponível -->
+        <div
+          class="d-flex flex-column justify-content-between align-items-center h-100"
+        >
+          <div class="siscap-logo">
             <p>placeholder image</p>
           </div>
-          <div class="login-button d-flex flex-row justify-content-center">
+
+          <div class="login-button">
             <button class="btn btn-primary" (click)="navigateLoginGov()">
               <span>Entrar</span>
             </button>
           </div>
-          <div class="legal-footer d-flex flex-column align-items-center">
+
+          <div
+            class="legal-footer d-flex flex-column align-items-center text-center"
+          >
             <span> &#169; SISCAP 2024</span>
             <span>Secretaria de Economia e Planejamento do Espírito Santo</span>
           </div>
