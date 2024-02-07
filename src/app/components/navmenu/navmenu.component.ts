@@ -12,9 +12,9 @@ export class NavMenuComponent {
 
 
   /**
-  * Método para rotear o usuário para páginas do menu
+  * Método para rotear o usuário para páginas do menu.
   *
-  * @param {string} route - A rota para qual o usuário irá navegar
+  * @param {string} route - A rota para qual o usuário irá navegar.
   * 
   */
   routerNavigation(route: string) {
