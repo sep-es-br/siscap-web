@@ -1,7 +1,6 @@
 * {
   margin: 0;
   padding: 0;
-  width: 100%;
 }
 
 .side-menu {
@@ -47,12 +46,4 @@
 
 .menu-nav-link:active span {
   color: black;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
-.test {
-  border: 1px solid black;
 }

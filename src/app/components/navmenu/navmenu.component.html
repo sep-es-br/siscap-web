@@ -1,14 +1,25 @@
-<div class="side-menu d-flex flex-column justify-content-between h-100">
+<div class="side-menu shadow d-flex flex-column justify-content-between h-100">
   <div class="col-2"><div class="siscap-logo">siscap logo</div></div>
-  <div class="col-8">
-    <div class="menu-items">
+
+  <button class="btn btn-danger" (click)="routerNavigation('home')">
+    HOME
+  </button>
+
+  <div class="col-8 w-100">
+    <div class="menu-items w-100">
       <div class="menu-category">
         <ul>
           <li class="menu-nav-header">BANCO DE PROJETOS</li>
-          <li class="menu-nav-link pointer" (click)="routerNavigation('projects')">
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('projects')"
+          >
             <span>PROJETOS</span>
           </li>
-          <li class="menu-nav-link pointer" (click)="routerNavigation('programs')">
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('programs')"
+          >
             <span>PROGRAMAS</span>
           </li>
         </ul>
@@ -17,16 +28,28 @@
       <div class="menu-category">
         <ul>
           <li class="menu-nav-header">CAPTAÇÃO DE RECURSOS</li>
-          <li class="menu-nav-link pointer" (click)="routerNavigation('prospection')">
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('prospection')"
+          >
             <span>PROSPECÇÃO</span>
           </li>
-          <li class="menu-nav-link pointer" (click)="routerNavigation('opportunity')">
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('opportunity')"
+          >
             <span>OPORTUNIDADE</span>
           </li>
-          <li class="menu-nav-link pointer" (click)="routerNavigation('captation')">
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('captation')"
+          >
             <span>CAPTAÇÃO</span>
           </li>
-          <li class="menu-nav-link pointer" (click)="routerNavigation('contracts')">
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('contracts')"
+          >
             <span>CONTRATOS</span>
           </li>
         </ul>
@@ -35,7 +58,10 @@
       <div class="menu-category">
         <ul>
           <li class="menu-nav-header">ESTATÍSTICO</li>
-          <li class="menu-nav-link pointer" (click)="routerNavigation('reports')">
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('reports')"
+          >
             <span>RELATÓRIOS</span>
           </li>
           <li class="menu-nav-link pointer" (click)="routerNavigation('bi')">
