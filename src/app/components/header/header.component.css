@@ -1,13 +1,26 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
-/* .header-component{
-    height: 100vh;
-    width: 100vw;
-} */
+.header-bar {
+  background-color: rgba(170, 170, 170, 0.8);
+}
 
-.test {
-    border: 1px solid black;
+.dropdown a span {
+  color: white;
+}
+
+/* Entre  os breakpoints Small e Medium*/
+@media (min-width: 577px) and (max-width: 768px) {
+  .header-bar {
+    height: 6vh;
+  }
+}
+
+/* Breakpoint Small */
+@media (max-width: 576px) {
+  .header-bar {
+    height: 6vh;
+  }
 }
