@@ -10,11 +10,14 @@ import { Router } from '@angular/router';
 export class NavMenuComponent {
   constructor(private router: Router) {}
 
-  placeholderNavigate() {
-    console.log('rota ainda não estabelecida');
-  }
 
-  navigateProjectsList() {
-    this.router.navigateByUrl('/projects/list');
+  /**
+  * Método para rotear o usuário para páginas do menu
+  *
+  * @param {string} route - A rota para qual o usuário irá navegar
+  * 
+  */
+  routerNavigation(route: string) {
+    this.router.navigateByUrl(`/${route}`);
   }
 }
