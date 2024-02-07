@@ -3,45 +3,71 @@
   padding: 0;
 }
 
-.login-component {
+.container-fluid {
   height: 100vh;
-  width: 100vw;
   background-color: rgba(215, 215, 215, 0.792156862745098);
 }
 
-.card-body {
-  height: 48vh;
-  width: 33vw;
-}
-
-.card-content {
-  height: 100%;
-  width: 100%;
+.card {
+  height: 40vh;
+  width: 35vw;
 }
 
 /* Quantidade ainda não definida */
-.siscap-logo {
+/* .siscap-logo {
   margin-top: 15%;
-}
+} */
 
-.login-button {
-  height: 13%;
-  width: 100%;
-}
-
-.login-button button{
-  height: 100%;
-  width: 49%;
+.login-button button {
+  padding: 1vh 3vw;
 }
 
 .login-button button span {
-  font-size: calc(2.8 * 0.6vw); 
+  font-size: 1.6vw;
   font-weight: bold;
 }
 
 .legal-footer span {
-  font-size: calc(1.4 * 0.6vw);
+  font-size: 0.8vw;
   color: #7f7f7f;
+}
+
+/* Entre  os breakpoints Small e Medium*/
+@media (min-width: 577px) and (max-width: 768px) {
+  .card {
+    width: 60vw;
+  }
+
+  .login-button button {
+    padding: 1vh 8vw;
+  }
+
+  .login-button button span {
+    font-size: 6vw;
+  }
+
+  .legal-footer span {
+    font-size: 2.5vw;
+  }
+}
+
+/* Breakpoint Small */
+@media (max-width: 576px) {
+  .card {
+    width: 95%;
+  }
+
+  .login-button button {
+    padding: 1vh 10vw;
+  }
+
+  .login-button button span {
+    font-size: 8vw;
+  }
+
+  .legal-footer span {
+    font-size: 3.5vw;
+  }
 }
 
 .test {
