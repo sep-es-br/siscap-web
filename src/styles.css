@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+
+.pointer {
+  cursor: pointer;
+}
+
+/* Resgatar as Media Queries abaixo para os componentes quando necessário */
+
+/* Entre  os breakpoints Small e Medium*/
+@media (min-width: 577px) and (max-width: 768px) {
+}
+
+/* Breakpoint Small */
+@media (max-width: 576px) {
+}
+
+.test {
+  border: 1px solid black;
+}
