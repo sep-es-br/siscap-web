@@ -1,1 +1,15 @@
-<router-outlet></router-outlet>
+<div class="container-fluid vh-100">
+  <div class="row h-100">
+    <div class="nav-menu col-sm-3 col-md-2 h-100">
+      <app-navmenu></app-navmenu>
+    </div>
+    <div class="col-xs-12 col-sm-9 col-md-10 h-100">
+      <div class="header-bar col">
+        <app-header></app-header>
+      </div>
+      <div class="main-content col">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>
