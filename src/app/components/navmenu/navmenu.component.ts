@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrl: './navmenu.component.css',
 })
 export class NavMenuComponent {
-  constructor(private router: Router) {}
+  constructor(private _router: Router) {}
 
 
   /**
@@ -18,6 +18,6 @@ export class NavMenuComponent {
   * 
   */
   routerNavigation(route: string) {
-    this.router.navigateByUrl(`/${route}`);
+    this._router.navigateByUrl(`/${route}`);
   }
 }
