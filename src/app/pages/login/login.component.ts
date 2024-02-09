@@ -10,7 +10,7 @@ import { AuthenticationService } from '../../shared/services/authentication.serv
 })
 export class LoginComponent {
   constructor(
-    private router: Router,
+    private _router: Router,
     private authService: AuthenticationService
   ) {}
 
