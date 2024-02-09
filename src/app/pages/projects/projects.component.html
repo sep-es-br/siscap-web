@@ -1,1 +1,68 @@
-<p>projects works!</p>
+<div class="project-interaction d-flex mx-2">
+  <div class="col-xs-6 col-md-2 new-project-button">
+    <button class="btn btn-primary px-3 py-1" (click)="redirectNewProject()">
+      Novo Projeto
+    </button>
+  </div>
+  <div class="col-xs-6 col-md-2 ms-auto search-input">
+    <div class="input-group">
+      <input type="text" placeholder="Pesquisar..." class="form-control" />
+      <button class="input-group-text px-2" (click)="queryProject()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="feather feather-search"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="project-datatable mt-2">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>A</th>
+        <th>B</th>
+        <th>C</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>value1</td>
+        <td>value2</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>value1</td>
+        <td>value2</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>value1</td>
+        <td>value2</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>value1</td>
+        <td>value2</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>value1</td>
+        <td>value2</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
