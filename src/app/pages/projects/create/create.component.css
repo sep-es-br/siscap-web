@@ -1,0 +1,35 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+select {
+  text-indent: 0.75rem;
+}
+
+.form-floating {
+  padding-bottom: 0.75rem;
+}
+
+textarea.form-control {
+  height: 6.5rem;
+}
+
+/* Entre  os breakpoints Small e Medium*/
+@media (min-width: 577px) and (max-width: 768px) {
+  /* label {
+    font-size: 2vw;
+  } */
+}
+
+/* Breakpoint Small */
+@media (max-width: 576px) {
+  /* label {
+    font-size: 4vw;
+  } */
+
+  /* #sigla,
+  #titulo {
+    padding-bottom: 1vh;
+  } */
+}

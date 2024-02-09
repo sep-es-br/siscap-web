@@ -1,0 +1,137 @@
+<div class="project-create-form px-2 mh-100 overflow-y-auto">
+  <form [formGroup]="projectForm">
+    <div class="row">
+      <div class="col-sm-4 col-md-3 pe-sm-4 form-floating" id="sigla">
+        <input type="text" class="form-control" />
+        <label for="">Sigla do Projeto</label>
+      </div>
+      <div class="col-sm-8 col-md-9 form-floating" id="titulo">
+        <input type="text" class="form-control" />
+        <label for="">Titulo do Projeto</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-floating" id="orgao">
+        <select class="form-select">
+          <option value="1">Opção 1</option>
+          <option value="2">Opção 2</option>
+          <option value="3">Opção 3</option>
+        </select>
+        <label for="">Orgão de Origem</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-floating" id="equipe">
+        <select class="form-select">
+          <option value="1">Opção 1</option>
+          <option value="2">Opção 2</option>
+          <option value="3">Opção 3</option>
+        </select>
+        <label for="">Equipe de Elaboração</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6 col-md-6 pe-sm-4 form-floating" id="plano">
+        <select class="form-select">
+          <option value="1">Opção 1</option>
+          <option value="2">Opção 2</option>
+          <option value="3">Opção 3</option>
+        </select>
+        <label for="">Plano Estratégico</label>
+      </div>
+      <div class="col-sm-6 col-md-6 form-floating" id="eixo">
+        <select class="form-select">
+          <option value="1">Opção 1</option>
+          <option value="2">Opção 2</option>
+          <option value="3">Opção 3</option>
+        </select>
+        <label for="">Eixo Estratégico</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6 col-md-6 pe-sm-4 form-floating" id="area">
+        <select class="form-select">
+          <option value="1">Opção 1</option>
+          <option value="2">Opção 2</option>
+          <option value="3">Opção 3</option>
+        </select>
+        <label for="">Área Estratégica</label>
+      </div>
+      <div class="col-sm-6 col-md-6 form-floating" id="valorest">
+        <input type="text" class="form-control" />
+        <label for="">Valor Estimado</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-floating" id="microreg">
+        <select class="form-select">
+          <option value="1">Opção 1</option>
+          <option value="2">Opção 2</option>
+          <option value="3">Opção 3</option>
+        </select>
+        <label for="">Microrregiões Atendidas</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-floating" id="objetivo">
+        <textarea class="form-control"></textarea>
+        <label for="">Objetivo</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-floating" id="objetivoesp">
+        <textarea class="form-control"></textarea>
+        <label for="">Objetivo Específico</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-floating" id="situacaoprob">
+        <textarea class="form-control"></textarea>
+        <label for="">Situação Problema</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-floating" id="solucoesresult">
+        <textarea class="form-control"></textarea>
+        <label for="">Soluções Propostas/Resultados Esperados</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-floating" id="objetivoesp">
+        <textarea class="form-control"></textarea>
+        <label for="" class="text-wrap"
+          >Impactos do Projeto no Âmbito Ambiental, Social e de Governança
+          (ESG)</label
+        >
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-floating" id="arranjo">
+        <textarea class="form-control"></textarea>
+        <label for="">Arranjo Institucional</label>
+      </div>
+    </div>
+
+    <div class="row mt-2">
+      <div class="col d-flex justify-content-center" id="enviarbtn">
+        <button class="btn btn-primary p-2 px-4">Cadastrar</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- 
+    row * "seções" do form -> col * controles por "seção"
+    col: 12 - 1 (intervalo de padding)
+ -->
