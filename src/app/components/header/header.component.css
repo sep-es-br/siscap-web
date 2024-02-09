@@ -11,6 +11,12 @@
   color: white;
 }
 
+@media (min-width: 577px) {
+  .menu-feather-icon {
+    visibility: hidden;
+  }
+}
+
 /* Entre  os breakpoints Small e Medium*/
 @media (min-width: 577px) and (max-width: 768px) {
   .header-bar {
