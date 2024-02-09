@@ -1,5 +1,11 @@
 <div class="side-menu shadow d-flex flex-column justify-content-between h-100">
-  <div class="col-2"><div class="siscap-logo">siscap logo</div></div>
+  <div class="col-2">
+    <div class="siscap-logo">siscap logo</div>
+  </div>
+
+  <div class="hide-menu d-sm-none position-absolute end-0 mt-2 me-2" (click)="hideMenu()">
+    <i class="fa-solid fa-x fa-xl"></i>
+  </div>
 
   <button class="btn btn-danger" (click)="routerNavigation('home')">
     HOME
