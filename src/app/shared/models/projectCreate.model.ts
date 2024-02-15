@@ -1,30 +1,30 @@
-import { IProjectCreate } from '../interfaces/projectCreate.interface';
+import { IFormFactoryControlObject } from '../interfaces/formFactoryControlObject.interface';
 
-export class projectCreateModel implements IProjectCreate {
-  sigla: string = '';
-  titulo: string = '';
-  idEntidade: number = 0;
-  valorEstimado: number = 0;
-  idMicrorregioes: number[] = [];
-  objetivo: string = '';
-  objetivoEspecifico: string = '';
-  situacaoProblema: string = '';
-  solucoesPropostas: string = '';
-  impactos: string = '';
-  arranjosInstitucionais: string = '';
+export class projectCreateModel {
+  sigla: IFormFactoryControlObject;
+  titulo: IFormFactoryControlObject;
+  idEntidade: IFormFactoryControlObject;
+  valorEstimado: IFormFactoryControlObject;
+  idMicrorregioes: IFormFactoryControlObject;
+  objetivo: IFormFactoryControlObject;
+  objetivoEspecifico: IFormFactoryControlObject;
+  situacaoProblema: IFormFactoryControlObject;
+  solucoesPropostas: IFormFactoryControlObject;
+  impactos: IFormFactoryControlObject;
+  arranjosInstitucionais: IFormFactoryControlObject;
 
   constructor(
-    sigla: string,
-    titulo: string,
-    idEntidade: number,
-    valorEstimado: number,
-    idMicrorregioes: number[],
-    objetivo: string,
-    objetivoEspecifico: string,
-    situacaoProblema: string,
-    solucoesPropostas: string,
-    impactos: string,
-    arranjosInstitucionais: string
+    sigla: IFormFactoryControlObject,
+    titulo: IFormFactoryControlObject,
+    idEntidade: IFormFactoryControlObject,
+    valorEstimado: IFormFactoryControlObject,
+    idMicrorregioes: IFormFactoryControlObject,
+    objetivo: IFormFactoryControlObject,
+    objetivoEspecifico: IFormFactoryControlObject,
+    situacaoProblema: IFormFactoryControlObject,
+    solucoesPropostas: IFormFactoryControlObject,
+    impactos: IFormFactoryControlObject,
+    arranjosInstitucionais: IFormFactoryControlObject
   ) {
     this.sigla = sigla;
     this.titulo = titulo;
