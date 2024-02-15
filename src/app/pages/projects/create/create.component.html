@@ -2,12 +2,41 @@
   <form [formGroup]="projectForm">
     <div class="row">
       <div class="col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating" id="sigla">
-        <input type="text" class="form-control" formControlName="sigla" />
-        <label for="">Sigla do Projeto</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="sigla"
+          [maxlength]="projectCreateObject.sigla.validators?.maxLength!"
+        />
+        <label for="sigla">Sigla do Projeto</label>
+        <div
+          *ngIf="
+            getControl('sigla')?.touched == true &&
+            getControl('sigla')?.dirty == true &&
+            getControl('sigla')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
+
       <div class="col-sm-8 col-md-9 form-floating" id="titulo">
-        <input type="text" class="form-control" formControlName="titulo" />
-        <label for="">Titulo do Projeto</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="titulo"
+          [maxLength]="projectCreateObject.titulo.validators?.maxLength!"
+        />
+        <label for="titulo">Titulo do Projeto</label>
+        <div
+          *ngIf="
+            getControl('titulo')?.touched == true &&
+            getControl('titulo')?.dirty == true &&
+            getControl('titulo')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
@@ -17,11 +46,14 @@
           <option value="0" selected disabled>
             -- Selecione um orgão da lista abaixo --
           </option>
-          <option value="1">Opção 1</option>
-          <option value="2">Opção 2</option>
-          <option value="3">Opção 3</option>
+          <option
+            *ngFor="let entidade of entidadesList"
+            [ngValue]="entidade.id"
+          >
+            {{ entidade.nome }}
+          </option>
         </select>
-        <label for="">Orgão de Origem</label>
+        <label for="idEntidade">Orgão de Origem</label>
       </div>
     </div>
 
@@ -58,32 +90,71 @@
       </div>
       <div class="col-sm-6 col-md-6 form-floating" id="valorest">
         <input
-          type="text"
+          type="number"
           class="form-control"
           formControlName="valorEstimado"
+          [min]="projectCreateObject.valorEstimado.validators?.min!"
         />
-        <label for="">Valor Estimado</label>
+        <label for="valorEstimado">Valor Estimado</label>
+        <div
+          *ngIf="
+            getControl('valorEstimado')?.touched == true &&
+            getControl('valorEstimado')?.dirty == true &&
+            getControl('valorEstimado')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col form-floating" id="microreg">
-        <select class="form-select" formArrayName="idMicrorregioes">
-          <option value="" selected disabled>
-            -- Selecione uma microrregião da lista abaixo --
-          </option>
-          <option value="1">Opção 1</option>
-          <option value="2">Opção 2</option>
-          <option value="3">Opção 3</option>
-        </select>
-        <label for="">Microrregiões Atendidas</label>
+      <div class="col" id="microreg">
+        <label class="ng-select-floating-label" for="idMicrorregioes"
+          >Microrregiões Atendidas</label
+        >
+        <ng-select
+          class="ng-select-custom"
+          [multiple]="true"
+          [hideSelected]="true"
+          placeholder="-- Selecione as microrregioes --"
+          formControlName="idMicrorregioes"
+        >
+          <ng-option
+            *ngFor="let microrregiao of microrregioesList"
+            [value]="microrregiao.id"
+            >{{ microrregiao.nome }}</ng-option
+          >
+        </ng-select>
+        <div
+          *ngIf="
+            getControl('idMicrorregioes')?.touched == true &&
+            getControl('idMicrorregioes')?.dirty == true &&
+            getControl('idMicrorregioes')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
     <div class="row">
       <div class="col form-floating" id="objetivo">
-        <textarea class="form-control" formControlName="objetivo"></textarea>
-        <label for="">Objetivo</label>
+        <textarea
+          class="form-control"
+          formControlName="objetivo"
+          [maxLength]="projectCreateObject.objetivo.validators?.maxLength!"
+        ></textarea>
+        <label for="objetivo">Objetivo</label>
+        <div
+          *ngIf="
+            getControl('objetivo')?.touched == true &&
+            getControl('objetivo')?.dirty == true &&
+            getControl('objetivo')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
@@ -92,8 +163,20 @@
         <textarea
           class="form-control"
           formControlName="objetivoEspecifico"
+          [maxLength]="
+            projectCreateObject.objetivoEspecifico.validators?.maxLength!
+          "
         ></textarea>
-        <label for="">Objetivo Específico</label>
+        <label for="objetivoEspecifico">Objetivo Específico</label>
+        <div
+          *ngIf="
+            getControl('objetivoEspecifico')?.touched == true &&
+            getControl('objetivoEspecifico')?.dirty == true &&
+            getControl('objetivoEspecifico')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
@@ -102,8 +185,20 @@
         <textarea
           class="form-control"
           formControlName="situacaoProblema"
+          [maxLength]="
+            projectCreateObject.situacaoProblema.validators?.maxLength!
+          "
         ></textarea>
-        <label for="">Situação Problema</label>
+        <label for="situacaoProblema">Situação Problema</label>
+        <div
+          *ngIf="
+            getControl('situacaoProblema')?.touched == true &&
+            getControl('situacaoProblema')?.dirty == true &&
+            getControl('situacaoProblema')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
@@ -112,18 +207,45 @@
         <textarea
           class="form-control"
           formControlName="solucoesPropostas"
+          [maxLength]="
+            projectCreateObject.solucoesPropostas.validators?.maxLength!
+          "
         ></textarea>
-        <label for="">Soluções Propostas/Resultados Esperados</label>
+        <label for="solucoesPropostas"
+          >Soluções Propostas/Resultados Esperados</label
+        >
+        <div
+          *ngIf="
+            getControl('solucoesPropostas')?.touched == true &&
+            getControl('solucoesPropostas')?.dirty == true &&
+            getControl('solucoesPropostas')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
     <div class="row">
       <div class="col form-floating overflow-x-hidden" id="impactosESG">
-        <textarea class="form-control" formControlName="impactos"></textarea>
-        <label for="" class=""
+        <textarea
+          class="form-control"
+          formControlName="impactos"
+          [maxLength]="projectCreateObject.impactos.validators?.maxLength!"
+        ></textarea>
+        <label for="impactos"
           >Impactos do Projeto no Âmbito Ambiental, Social e de Governança
           (ESG)</label
         >
+        <div
+          *ngIf="
+            getControl('impactos')?.touched == true &&
+            getControl('impactos')?.dirty == true &&
+            getControl('impactos')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
@@ -132,25 +254,39 @@
         <textarea
           class="form-control"
           formControlName="arranjosInstitucionais"
+          [maxLength]="
+            projectCreateObject.arranjosInstitucionais.validators?.maxLength!
+          "
         ></textarea>
-        <label for="">Arranjo Institucional</label>
+        <label for="arranjosInstitucionais">Arranjo Institucional</label>
+        <div
+          *ngIf="
+            getControl('arranjosInstitucionais')?.touched == true &&
+            getControl('arranjosInstitucionais')?.dirty == true &&
+            getControl('arranjosInstitucionais')?.errors != null
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
     <div class="row mt-2">
       <div class="col d-flex justify-content-center" id="enviarbtn">
         <button
-          class="btn btn-primary p-2 px-4"
-          (click)="submitProjectCreateForm()"
+          class="btn btn-primary p-2 px-4 mx-1"
+          (click)="submitProjectCreateForm(this.projectForm)"
         >
-          Cadastrar
+          Cadastrar</button
+        ><button
+          class="btn btn-primary p-2 px-4 mx-1"
+          [ngClass]="{'btn-secondary': this.projectForm.pristine}"
+          [disabled]="this.projectForm.pristine"
+          (click)="resetForm()"
+        >
+          Limpar
         </button>
       </div>
     </div>
   </form>
 </div>
-
-<!-- 
-    row * "seções" do form -> col * controles por "seção"
-    col: 12 - 1 (intervalo de padding)
- -->
