@@ -18,8 +18,13 @@ export class NavMenuComponent {
    */
   routerNavigation(route: string) {
     this._router.navigateByUrl(`/${route}`);
+    this.hideMenu();
   }
-
+  
+   /**
+   * Método para ocultar o menu quando o usuário estiver em um viewport de dispositivos mobile (max-width < 576px)
+   *
+   */
   hideMenu() {
     const navMenuEl = document.getElementById('nav-menu')!.classList;
     const responsiveContentEl =
