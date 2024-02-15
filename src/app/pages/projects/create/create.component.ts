@@ -192,6 +192,5 @@ export class CreateComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._microrregioes$.unsubscribe();
     this._entidades$.unsubscribe();
-    this._projetos$.unsubscribe();
   }
 }
