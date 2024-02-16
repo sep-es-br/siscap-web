@@ -14,41 +14,9 @@
   </div>
 </div>
 
-<div class="project-datatable mt-2">
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>A</th>
-        <th>B</th>
-        <th>C</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td>value1</td>
-        <td>value2</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>value1</td>
-        <td>value2</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>value1</td>
-        <td>value2</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>value1</td>
-        <td>value2</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>value1</td>
-        <td>value2</td>
-      </tr>
-    </tbody>
-  </table>
+<div class="project-datatable mt-4 mx-auto">
+  <app-data-table
+    [dataTableRows]="projetosList"
+    [source]="'projetos'"
+  ></app-data-table>
 </div>
