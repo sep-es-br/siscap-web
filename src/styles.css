@@ -1,6 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* Imports globais  */
+
+/* ng-select */
 @import "@ng-select/ng-select/themes/default.theme.css";
+
+/* ngx-datatable tema bootstrap, ícones*/
+@import "../node_modules/@swimlane/ngx-datatable/themes/bootstrap.css";
+@import "../node_modules/@swimlane/ngx-datatable/assets/icons.css";
 
 .pointer {
   cursor: pointer;
