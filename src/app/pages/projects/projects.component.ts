@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Subscription, first } from 'rxjs';
@@ -12,7 +12,7 @@ import { ProjetosService } from '../../shared/services/projetos/projetos.service
   styleUrl: './projects.component.css',
 })
 //TODO: Tipar o array de projetos
-export class ProjectsComponent {
+export class ProjectsComponent implements OnDestroy {
   private _projetos$!: Subscription;
 
   public projetosList: any[] = [];
@@ -34,4 +34,8 @@ export class ProjectsComponent {
   }
 
   queryProject() {}
+
+  ngOnDestroy(): void {
+    this._projetos$.unsubscribe();
+  }
 }
