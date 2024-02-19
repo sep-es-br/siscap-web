@@ -6,7 +6,6 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { AlertComponent } from './alert/alert.component';
 import { DataTableComponent } from './data-table/data-table.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-import { LoadingComponent } from './loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +14,6 @@ import { LoadingComponent } from './loading/loading.component';
     BreadcrumbComponent,
     AlertComponent,
     DataTableComponent,
-    LoadingComponent
   ],
   imports: [CommonModule, NgxDatatableModule],
   exports: [
@@ -24,7 +22,6 @@ import { LoadingComponent } from './loading/loading.component';
     BreadcrumbComponent,
     AlertComponent,
     DataTableComponent,
-    LoadingComponent
   ],
 })
 export class ComponentsModule {}

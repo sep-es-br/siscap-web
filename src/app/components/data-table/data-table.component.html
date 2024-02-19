@@ -1,47 +1,7 @@
 <ngx-datatable
   [rows]="dataTableRows"
   [columns]="dataTableColumns"
-  [columnMode]="'standard'"
+  [columnMode]="'force'"
   [rowHeight]="50"
-  [scrollbarH]="true"
   class="bootstrap border border-dark-subtle"
->
-  <ngx-datatable-column
-    *ngFor="let col of dataTableColumns"
-    [name]="col.name"
-    [prop]="col.prop"
-  ></ngx-datatable-column>
-  <ngx-datatable-column name="Ações">
-    <ng-template let-row="row" ngx-datatable-cell-template>
-      <div class="dropdown">
-        <a class="pointer" role="button" data-bs-toggle="dropdown">
-          <i class="ms-1 fa-solid fa-ellipsis"></i>
-        </a>
-
-        <ul class="dropdown-menu">
-          <li>
-            <a
-              class="dropdown-item"
-              (click)="objectACtionEvent('showObjectDetails', row)"
-              >Detalhes</a
-            >
-          </li>
-          <li>
-            <a
-              class="dropdown-item"
-              (click)="objectACtionEvent('editObject', row)"
-              >Editar</a
-            >
-          </li>
-          <li>
-            <a
-              class="dropdown-item"
-              (click)="objectACtionEvent('deleteObject', row)"
-              >Deletar</a
-            >
-          </li>
-        </ul>
-      </div>
-    </ng-template>
-  </ngx-datatable-column>
-</ngx-datatable>
+></ngx-datatable>
