@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 
-import { Subscription, first } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription, first } from 'rxjs';
 
 import { projectCreateModel } from '../../../shared/models/projectCreate.model';
 import { FormFactoryService } from '../../../shared/services/form-factory/form-factory.service';
@@ -10,6 +10,9 @@ import { IMicrorregiao } from '../../../shared/interfaces/microrregiao.interface
 import { EntidadeService } from '../../../shared/services/entidade/entidade.service';
 import { IEntidade } from '../../../shared/interfaces/entidade.interface';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { IFormFactoryControlObject } from '../../../shared/interfaces/formFactoryControlObject.interface';
+import { IProjectCreate } from '../../../shared/interfaces/projectCreate.interface';
 
 @Component({
   selector: 'app-create',
@@ -19,6 +22,12 @@ import { ProjetosService } from '../../../shared/services/projetos/projetos.serv
 })
 export class CreateComponent implements OnInit, OnDestroy {
   public projectForm!: FormGroup;
+
+  public loading: boolean = false;
+
+  public isEdit: boolean = false;
+  public projectEditId!: number;
+  public projectFormInitialValue!: any;
 
   private _microrregioes$!: Subscription;
   private _entidades$!: Subscription;
@@ -111,8 +120,14 @@ export class CreateComponent implements OnInit, OnDestroy {
     private _formFactory: FormFactoryService,
     private _microrregiaoService: MicrorregiaoService,
     private _entidadeService: EntidadeService,
-    private _projetosService: ProjetosService
+    private _projetosService: ProjetosService,
+    private _route: ActivatedRoute
   ) {
+    this._route.queryParams.subscribe((params: Params) => {
+      this.isEdit = params['isEdit'] ? params['isEdit'] : false;
+      this.projectEditId = params['id'] ? params['id'] : null;
+    });
+
     this._microrregioes$ = this._microrregiaoService
       .getMicrorregioes()
       .pipe(first())
@@ -129,7 +144,33 @@ export class CreateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.initForm();
+    if (this.isEdit) {
+      this.loading = true;
+
+      this._projetos$ = this._projetosService
+        .getProjetosById(this.projectEditId)
+        .pipe(first())
+        .subscribe((response) => {
+          for (const key in this.projectCreateObject) {
+            if (
+              Object.prototype.hasOwnProperty.call(
+                this.projectCreateObject,
+                key
+              )
+            ) {
+              const typedKey = key as keyof typeof this.projectCreateObject;
+              this.projectCreateObject[typedKey]['initialValue'] =
+                response[typedKey];
+            }
+          }
+
+          this.initForm();
+          this.projectFormInitialValue = this.projectForm.value;
+          this.loading = false;
+        });
+    } else {
+      this.initForm();
+    }
   }
 
   /**
@@ -138,6 +179,11 @@ export class CreateComponent implements OnInit, OnDestroy {
    */
   initForm() {
     this.projectForm = this._formFactory.generateForm(this.projectCreateObject);
+    // this.projectForm.valueChanges.subscribe((change) => {
+    //   const initValue = this.projectForm.value
+
+    // });
+    // this.projectForm.valueChanges
   }
 
   /**
@@ -187,6 +233,37 @@ export class CreateComponent implements OnInit, OnDestroy {
           window.history.go(-1);
         }
       });
+  }
+
+  submitProjectEditForm(payload: FormGroup) {
+    if (payload.invalid) {
+      alert('Formulário contém erros. Por favor verificar os campos.');
+      return;
+    }
+
+    let payloadEditValues: Partial<IProjectCreate> = {};
+
+    // console.log(this.projectFormInitialValue);
+    // console.log(payload.value);
+
+    Object.keys(payload.value).forEach((key) => {
+      if (this.projectFormInitialValue[key] != payload.value[key]) {
+        console.log(key);
+        console.log(payload.value[key]);
+        Object.defineProperty(payloadEditValues, key, payload.value)
+      }
+    });
+
+    //TODO: Tratamento de erro (caso sigla duplicada)
+    // this._projetos$ = this._projetosService
+    //   .putProjeto(this.projectEditId, payload.value)
+    //   .subscribe((response) => {
+    //     console.log(response);
+    //     if (response.status == 201) {
+    //       alert('Projeto cadastrado com sucesso.');
+    //       window.history.go(-1);
+    //     }
+    //   });
   }
 
   ngOnDestroy(): void {

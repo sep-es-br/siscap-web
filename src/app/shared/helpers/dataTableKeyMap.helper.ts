@@ -50,7 +50,7 @@ abstract class ObjectKeyMap {
       case 'arranjosInstitucionais':
         projectKey = 'Arranjos';
         break;
-      case 'idMicroregioes': //NOTA: retorno do GET/projetos contém ``` idMicro[R]egioes ``` com um 'r' só.
+      case 'idMicrorregioes':
         projectKey = 'Microrreg.';
         break;
       default:
@@ -97,7 +97,7 @@ export abstract class DataTableKeyMap extends ObjectKeyMap {
    * ```
    *
    * @param {Object} object - Objeto fonte do componente pai. Apenas as chaves são utilizadas.
-   * 
+   *
    * @returns {Array}  Um array de objetos do tipo `{name: string, prop: string}`
    */
   static DataTableColumnsArrayKeyMap(
