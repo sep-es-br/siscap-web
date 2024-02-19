@@ -1,4 +1,8 @@
-<div class="project-create-form mh-100 overflow-y-auto">
+<div class="h-100 overflow-hidden" *ngIf="loading">
+  <app-loading></app-loading>
+</div>
+
+<div class="project-create-form mh-100 overflow-y-auto" *ngIf="!loading">
   <form [formGroup]="projectForm">
     <div class="row">
       <div class="col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating" id="sigla">
@@ -275,12 +279,16 @@
       <div class="col d-flex justify-content-center" id="enviarbtn">
         <button
           class="btn btn-primary p-2 px-4 mx-1"
-          (click)="submitProjectCreateForm(this.projectForm)"
+          (click)="
+            isEdit
+              ? submitProjectEditForm(this.projectForm)
+              : submitProjectCreateForm(this.projectForm)
+          "
         >
-          Cadastrar</button
+          {{ isEdit ? "Atualizar" : "Cadastrar" }}</button
         ><button
           class="btn btn-primary p-2 px-4 mx-1"
-          [ngClass]="{'btn-secondary': this.projectForm.pristine}"
+          [ngClass]="{ 'btn-secondary': this.projectForm.pristine }"
           [disabled]="this.projectForm.pristine"
           (click)="resetForm()"
         >
