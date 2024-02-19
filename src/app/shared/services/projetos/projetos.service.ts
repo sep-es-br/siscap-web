@@ -19,7 +19,15 @@ export class ProjetosService {
     return this._http.get(this._url);
   }
 
+  getProjetosById(id: number): Observable<any> {
+    return this._http.get(`${this._url}/${id}`);
+  }
+
   postProjetos(body: any) {
     return this._http.post(this._url, body, { observe: 'response' });
+  }
+
+  putProjeto(id: number, body: any) {
+    return this._http.put(`${this._url}/${id}`, body, { observe: 'response' });
   }
 }
