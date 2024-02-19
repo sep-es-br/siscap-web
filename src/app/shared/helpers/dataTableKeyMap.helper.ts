@@ -50,7 +50,7 @@ abstract class ObjectKeyMap {
       case 'arranjosInstitucionais':
         projectKey = 'Arranjos';
         break;
-      case 'idMicroregioes': //NOTA: retorno do GET/projetos contém ``` idMicro[R]egioes ``` com um 'r' só.
+      case 'idMicrorregioes':
         projectKey = 'Microrreg.';
         break;
       default:
