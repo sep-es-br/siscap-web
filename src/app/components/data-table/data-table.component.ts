@@ -1,4 +1,11 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 
 import { DataTableKeyMap } from '../../shared/helpers/dataTableKeyMap.helper';
 
@@ -12,6 +19,8 @@ export class DataTableComponent implements OnChanges {
   @Input() source!: string;
   @Input() dataTableRows: Array<any> = [];
 
+  @Output() actionEvent = new EventEmitter<{ type: string; content: any }>();
+
   public dataTableColumns: Array<{ name: string; prop: string }> = [];
 
   constructor() {}
@@ -23,5 +32,9 @@ export class DataTableComponent implements OnChanges {
         this.dataTableRows[0]
       );
     }
+  }
+
+  objectActionEvent(type: string, content: any) {
+    this.actionEvent.emit({ type: type, content: content });
   }
 }
