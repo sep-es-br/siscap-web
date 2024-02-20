@@ -3,31 +3,37 @@ import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
+import {
+  IProject,
+  IProjectGet,
+  ProjectCreate,
+  ProjectEdit,
+} from '../../interfaces/project.interface';
 
 @Injectable({
   providedIn: 'root',
 })
-//TODO: tipar os argumentos e retorno dos métodos
+
 //TODO: criar os metodos de edição e deleção(?) de projetos
 export class ProjetosService {
   private _url = `${environment.api}/projetos`;
 
   constructor(private _http: HttpClient) {}
 
-  getProjetos(): Observable<any> {
-    return this._http.get(this._url);
+  getProjetos(): Observable<IProjectGet> {
+    return this._http.get<IProjectGet>(this._url);
   }
 
-  getProjetosById(id: number): Observable<any> {
-    return this._http.get(`${this._url}/${id}`);
+  getProjetosById(id: number): Observable<IProject> {
+    return this._http.get<IProject>(`${this._url}/${id}`);
   }
 
-  postProjetos(body: any) {
-    return this._http.post(this._url, body, { observe: 'response' });
+  postProjetos(body: ProjectCreate): Observable<IProject> {
+    return this._http.post<IProject>(this._url, body);
   }
 
-  putProjeto(id: number, body: any) {
-    return this._http.put(`${this._url}/${id}`, body, { observe: 'response' });
+  putProjeto(id: number, body: ProjectEdit): Observable<IProject> {
+    return this._http.put<IProject>(`${this._url}/${id}`, body);
   }
 }
