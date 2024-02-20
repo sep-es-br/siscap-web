@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription, first } from 'rxjs';
 
 import { ProjetosService } from '../../shared/services/projetos/projetos.service';
+import { IProject } from '../../shared/interfaces/project.interface';
 
 @Component({
   selector: 'app-projects',
@@ -11,11 +12,10 @@ import { ProjetosService } from '../../shared/services/projetos/projetos.service
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
 })
-//TODO: Tipar o array de projetos
 export class ProjectsComponent implements OnDestroy {
   private _projetos$!: Subscription;
 
-  public projetosList: any[] = [];
+  public projetosList: IProject[] = [];
 
   constructor(
     private _router: Router,
@@ -24,8 +24,8 @@ export class ProjectsComponent implements OnDestroy {
     this._projetos$ = this._projetosService
       .getProjetos()
       .pipe(first())
-      .subscribe((data) => {
-        this.projetosList = data.content;
+      .subscribe((response) => {
+        this.projetosList = response.content;
       });
   }
 
