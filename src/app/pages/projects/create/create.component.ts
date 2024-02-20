@@ -10,8 +10,11 @@ import { IMicrorregiao } from '../../../shared/interfaces/microrregiao.interface
 import { EntidadeService } from '../../../shared/services/entidade/entidade.service';
 import { IEntidade } from '../../../shared/interfaces/entidade.interface';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
-import { ActivatedRoute, Params } from '@angular/router';
-import { IProjectCreate } from '../../../shared/interfaces/projectCreate.interface';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import {
+  ProjectCreate,
+  ProjectEdit,
+} from '../../../shared/interfaces/project.interface';
 
 @Component({
   selector: 'app-create',
@@ -26,7 +29,7 @@ export class CreateComponent implements OnInit, OnDestroy {
 
   public isEdit: boolean = false;
   public projectEditId!: number;
-  public projectFormInitialValue!: any;
+  public projectFormInitialValue!: ProjectCreate;
 
   private _microrregioes$!: Subscription;
   private _entidades$!: Subscription;
@@ -120,7 +123,8 @@ export class CreateComponent implements OnInit, OnDestroy {
     private _microrregiaoService: MicrorregiaoService,
     private _entidadeService: EntidadeService,
     private _projetosService: ProjetosService,
-    private _route: ActivatedRoute
+    private _route: ActivatedRoute,
+    private _router: Router
   ) {
     this._route.queryParams.subscribe((params: Params) => {
       this.isEdit = params['isEdit'] ? params['isEdit'] : false;
@@ -130,15 +134,15 @@ export class CreateComponent implements OnInit, OnDestroy {
     this._microrregioes$ = this._microrregiaoService
       .getMicrorregioes()
       .pipe(first())
-      .subscribe((data) => {
-        this.microrregioesList = data;
+      .subscribe((response) => {
+        this.microrregioesList = response;
       });
 
     this._entidades$ = this._entidadeService
       .getEntidades()
       .pipe(first())
-      .subscribe((data) => {
-        this.entidadesList = data;
+      .subscribe((response) => {
+        this.entidadesList = response;
       });
   }
 
@@ -165,6 +169,7 @@ export class CreateComponent implements OnInit, OnDestroy {
 
           this.initForm();
           this.projectFormInitialValue = this.projectForm.value;
+
           this.loading = false;
         });
     } else {
@@ -208,56 +213,77 @@ export class CreateComponent implements OnInit, OnDestroy {
   /**
    * Método para criar um novo projeto no banco de dados.
    *
-   * @param {FormGroup} payload - O `FormGroup` do formulário.
+   * @param {FormGroup} form - O `FormGroup` do formulário.
    *
    */
-  submitProjectCreateForm(payload: FormGroup) {
-    if (payload.invalid) {
+  submitProjectCreateForm(form: FormGroup) {
+    if (form.invalid) {
       alert('Formulário contém erros. Por favor verificar os campos.');
       return;
     }
 
     //TODO: Tratamento de erro (caso sigla duplicada)
+    const payload = form.value as ProjectCreate;
     this._projetos$ = this._projetosService
-      .postProjetos(payload.value)
+      .postProjetos(payload)
       .subscribe((response) => {
         console.log(response);
-        if (response.status == 201) {
+        if (response) {
           alert('Projeto cadastrado com sucesso.');
-          window.history.go(-1);
+          this._router.navigate(['projects']);
         }
+        // if (response.status == 201) {
+        //   alert('Projeto cadastrado com sucesso.');
+        //   window.history.go(-1); //trocar por router.navigate()
+        // }
       });
   }
 
-  submitProjectEditForm(payload: FormGroup) {
-    if (payload.invalid) {
+  /**
+   * Método para editar um projeto já existente no banco de dados.
+   *
+   * @param {FormGroup} form - O `FormGroup` do formulário.
+   *
+   */
+  submitProjectEditForm(form: FormGroup) {
+    if (form.invalid) {
       alert('Formulário contém erros. Por favor verificar os campos.');
       return;
     }
 
-    let payloadEditValues: Partial<IProjectCreate> = {};
-
-    // console.log(this.projectFormInitialValue);
-    // console.log(payload.value);
-
-    Object.keys(payload.value).forEach((key) => {
-      if (this.projectFormInitialValue[key] != payload.value[key]) {
-        console.log(key);
-        console.log(payload.value[key]);
-        Object.defineProperty(payloadEditValues, key, payload.value);
+    /*
+    Laço for in para percorrer as chaves do valor inicial do formulario.
+    Caso algum controle tenha seu valor alterado, o valor do formulario é alterado.
+    Caso não, o controle é removido.
+    */
+    for (const key in this.projectFormInitialValue) {
+      const typedKey = key as keyof ProjectCreate;
+      if (
+        Object.prototype.hasOwnProperty.call(this.projectFormInitialValue, key)
+      ) {
+        if (form.value[typedKey] !== this.projectFormInitialValue[typedKey]) {
+          form.patchValue({ [key]: form.value[key] });
+        } else {
+          form.removeControl(typedKey);
+        }
       }
-    });
+    }
 
-    //TODO: Tratamento de erro (caso sigla duplicada)
-    // this._projetos$ = this._projetosService
-    //   .putProjeto(this.projectEditId, payload.value)
-    //   .subscribe((response) => {
-    //     console.log(response);
-    //     if (response.status == 201) {
-    //       alert('Projeto cadastrado com sucesso.');
-    //       window.history.go(-1);
-    //     }
-    //   });
+    const payload = form.value as ProjectEdit;
+
+    this._projetos$ = this._projetosService
+      .putProjeto(this.projectEditId, payload)
+      .subscribe((response) => {
+        console.log(response);
+        if (response) {
+          alert('Projeto alterado com sucesso.');
+          this._router.navigate(['projects']);
+        }
+        // if (response.status == 200) {
+        //   alert('Projeto atualizado com sucesso.');
+        //   window.history.go(-1);
+        // }
+      });
   }
 
   ngOnDestroy(): void {
