@@ -113,6 +113,8 @@ export abstract class DataTableKeyMap extends ObjectKeyMap {
               keyMapArray.push({
                 name: ObjectKeyMap.projectKeyMap(key),
                 prop: key,
+                // ver algum jeito de passar um pipe
+                //ex: scope = projetos, key = valorEstimado => pipe: currencyPipe.transform('BRL' ou 'pt-BR')
               });
               break;
 
