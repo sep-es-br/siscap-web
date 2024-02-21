@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-navmenu',
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrl: './navmenu.component.css',
 })
 export class NavMenuComponent {
-  constructor(private _router: Router) {}
+  constructor(private _router: Router, private _route: ActivatedRoute) {}
 
   /**
    * Método para rotear o usuário para páginas do menu.
@@ -17,11 +17,11 @@ export class NavMenuComponent {
    *
    */
   routerNavigation(route: string) {
-    this._router.navigateByUrl(`/${route}`);
+    this._router.navigate([`${route}`], { relativeTo: this._route });
     this.hideMenu();
   }
-  
-   /**
+
+  /**
    * Método para ocultar o menu quando o usuário estiver em um viewport de dispositivos mobile (max-width < 576px)
    *
    */
