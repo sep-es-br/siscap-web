@@ -9,8 +9,8 @@ import { IEntidade } from '../../interfaces/entidade.interface';
 @Injectable({
   providedIn: 'root',
 })
-export class EntidadeService {
-  private _url = `${environment.api}/entidade/select`;
+export class EntidadesService {
+  private _url = `${environment.api}/entidades/select`;
 
   constructor(private _http: HttpClient) {}
 
