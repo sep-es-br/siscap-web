@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subscription, first } from 'rxjs';
 
@@ -19,6 +19,7 @@ export class ProjectsComponent implements OnDestroy {
 
   constructor(
     private _router: Router,
+    private _route: ActivatedRoute,
     private _projetosService: ProjetosService
   ) {
     this._projetos$ = this._projetosService
@@ -31,11 +32,12 @@ export class ProjectsComponent implements OnDestroy {
 
   redirectProjectCreateEdit(projectId?: number) {
     if (projectId) {
-      this._router.navigate(['projects', 'create'], {
+      this._router.navigate(['create'], {
+        relativeTo: this._route,
         queryParams: { isEdit: true, id: projectId },
       });
     } else {
-      this._router.navigateByUrl('/projects/create');
+      this._router.navigate(['create'], { relativeTo: this._route });
     }
   }
 
@@ -55,6 +57,23 @@ export class ProjectsComponent implements OnDestroy {
         break;
       case 'deleteObject':
         //deleteObject
+        if (
+          confirm(`
+        Tem certeza que deseja deletar o projeto?
+        Titulo: ${event.content.titulo}
+        `)
+        ) {
+          //Verificar erro do console
+          this._projetos$ = this._projetosService
+            .deleteProjeto(event.content.id)
+            .subscribe((response) => {
+              console.log(response);
+              if (response) {
+                alert('Projeto excluido com sucesso.');
+                this._router.navigate(['projetos']);
+              }
+            });
+        }
         console.log('delete');
         console.log(event.content);
         break;
