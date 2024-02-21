@@ -9,8 +9,8 @@ import { IMicrorregiao } from '../../interfaces/microrregiao.interface';
 @Injectable({
   providedIn: 'root',
 })
-export class MicrorregiaoService {
-  private _url = `${environment.api}/microrregiao/select`;
+export class MicrorregioesService {
+  private _url = `${environment.api}/microrregioes/select`;
 
   constructor(private _http: HttpClient) {}
 
