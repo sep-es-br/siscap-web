@@ -36,4 +36,8 @@ export class ProjetosService {
   putProjeto(id: number, body: ProjectEdit): Observable<IProject> {
     return this._http.put<IProject>(`${this._url}/${id}`, body);
   }
+
+  deleteProjeto(id: number): Observable<any> {
+    return this._http.delete(`${this._url}/${id}`);
+  }
 }
