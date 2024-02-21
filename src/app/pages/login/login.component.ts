@@ -12,9 +12,10 @@ export class LoginComponent {
   constructor(private _authService: AuthenticationService) {}
 
   navigateLoginGov() {
-    // this.authService.mockSignIn();
-    this._authService
-      .acessoCidadaoSignIn()
-      .subscribe((response) => console.log(response));
+    this._authService.mockSignIn();
+
+    // this._authService
+    //   .acessoCidadaoSignIn()
+    //   .subscribe((response) => console.log(response));
   }
 }
