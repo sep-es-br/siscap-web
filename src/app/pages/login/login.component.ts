@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+
 import { AuthenticationService } from '../../shared/services/authentication/authentication.service';
 
 @Component({
@@ -9,16 +9,12 @@ import { AuthenticationService } from '../../shared/services/authentication/auth
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
-  constructor(
-    private _router: Router,
-    private authService: AuthenticationService
-  ) {}
+  constructor(private _authService: AuthenticationService) {}
 
   navigateLoginGov() {
-    //Chamar authService com endpoint de verificação
-    //this.authService.authGovBr() ou this.authService.authAcessoCidadao()
-    // this.authService.signIn();
-    this.authService.mockSignIn();
-    // window.location.href = 'https://acessocidadao.es.gov.br/';
+    // this.authService.mockSignIn();
+    this._authService
+      .acessoCidadaoSignIn()
+      .subscribe((response) => console.log(response));
   }
 }
