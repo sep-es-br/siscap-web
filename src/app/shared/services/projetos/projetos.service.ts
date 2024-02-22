@@ -14,8 +14,6 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-
-//TODO: criar os metodos de edição e deleção(?) de projetos
 export class ProjetosService {
   private _url = `${environment.api}/projetos`;
 
@@ -37,7 +35,7 @@ export class ProjetosService {
     return this._http.put<IProject>(`${this._url}/${id}`, body);
   }
 
-  deleteProjeto(id: number): Observable<any> {
-    return this._http.delete(`${this._url}/${id}`);
+  deleteProjeto(id: number): Observable<string> {
+    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
   }
 }
