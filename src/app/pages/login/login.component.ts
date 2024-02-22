@@ -11,11 +11,7 @@ import { AuthenticationService } from '../../shared/services/authentication/auth
 export class LoginComponent {
   constructor(private _authService: AuthenticationService) {}
 
-  navigateLoginGov() {
-    this._authService.mockSignIn();
-
-    // this._authService
-    //   .acessoCidadaoSignIn()
-    //   .subscribe((response) => console.log(response));
+  logIn() {
+    this._authService.acessoCidadaoSignIn();
   }
 }
