@@ -15,9 +15,8 @@
         <label for="sigla">Sigla do Projeto</label>
         <div
           *ngIf="
-            getControl('sigla')?.touched == true &&
-            getControl('sigla')?.dirty == true &&
-            getControl('sigla')?.errors != null
+            this.projectForm.controls['sigla'].invalid &&
+            this.projectForm.controls['sigla'].touched
           "
         >
           <app-alert></app-alert>
@@ -34,9 +33,8 @@
         <label for="titulo">Titulo do Projeto</label>
         <div
           *ngIf="
-            getControl('titulo')?.touched == true &&
-            getControl('titulo')?.dirty == true &&
-            getControl('titulo')?.errors != null
+            this.projectForm.controls['titulo'].invalid &&
+            this.projectForm.controls['titulo'].touched
           "
         >
           <app-alert></app-alert>
@@ -45,19 +43,30 @@
     </div>
 
     <div class="row">
-      <div class="col form-floating" id="orgao">
-        <select class="form-select" formControlName="idEntidade">
-          <option value="0" selected disabled>
-            -- Selecione um orgão da lista abaixo --
-          </option>
-          <option
+      <!-- <div class="col form-floating" id="orgao"> -->
+      <div class="col" id="orgao">
+        <label class="ng-select-floating-label" for="orgao"
+          >Orgão de Origem</label
+        >
+        <ng-select
+          class="ng-select-custom"
+          placeholder="-- Selecione um orgão da lista abaixo --"
+          formControlName="idEntidade"
+        >
+          <ng-option
             *ngFor="let entidade of entidadesList"
-            [ngValue]="entidade.id"
+            [value]="entidade.id"
+            >{{ entidade.nome }}</ng-option
           >
-            {{ entidade.nome }}
-          </option>
-        </select>
-        <label for="idEntidade">Orgão de Origem</label>
+        </ng-select>
+        <div
+          *ngIf="
+            this.projectForm.controls['idEntidade'].invalid &&
+            this.projectForm.controls['idEntidade'].touched
+          "
+        >
+          <app-alert></app-alert>
+        </div>
       </div>
     </div>
 
@@ -102,9 +111,8 @@
         <label for="valorEstimado">Valor Estimado</label>
         <div
           *ngIf="
-            getControl('valorEstimado')?.touched == true &&
-            getControl('valorEstimado')?.dirty == true &&
-            getControl('valorEstimado')?.errors != null
+            this.projectForm.controls['valorEstimado'].invalid &&
+            this.projectForm.controls['valorEstimado'].touched
           "
         >
           <app-alert></app-alert>
@@ -132,9 +140,8 @@
         </ng-select>
         <div
           *ngIf="
-            getControl('idMicrorregioes')?.touched == true &&
-            getControl('idMicrorregioes')?.dirty == true &&
-            getControl('idMicrorregioes')?.errors != null
+            this.projectForm.controls['idMicrorregioes'].invalid &&
+            this.projectForm.controls['idMicrorregioes'].touched
           "
         >
           <app-alert></app-alert>
@@ -152,9 +159,8 @@
         <label for="objetivo">Objetivo</label>
         <div
           *ngIf="
-            getControl('objetivo')?.touched == true &&
-            getControl('objetivo')?.dirty == true &&
-            getControl('objetivo')?.errors != null
+            this.projectForm.controls['objetivo'].invalid &&
+            this.projectForm.controls['objetivo'].touched
           "
         >
           <app-alert></app-alert>
@@ -174,9 +180,8 @@
         <label for="objetivoEspecifico">Objetivo Específico</label>
         <div
           *ngIf="
-            getControl('objetivoEspecifico')?.touched == true &&
-            getControl('objetivoEspecifico')?.dirty == true &&
-            getControl('objetivoEspecifico')?.errors != null
+            this.projectForm.controls['objetivoEspecifico'].invalid &&
+            this.projectForm.controls['objetivoEspecifico'].touched
           "
         >
           <app-alert></app-alert>
@@ -196,9 +201,8 @@
         <label for="situacaoProblema">Situação Problema</label>
         <div
           *ngIf="
-            getControl('situacaoProblema')?.touched == true &&
-            getControl('situacaoProblema')?.dirty == true &&
-            getControl('situacaoProblema')?.errors != null
+            this.projectForm.controls['situacaoProblema'].invalid &&
+            this.projectForm.controls['situacaoProblema'].touched
           "
         >
           <app-alert></app-alert>
@@ -220,9 +224,8 @@
         >
         <div
           *ngIf="
-            getControl('solucoesPropostas')?.touched == true &&
-            getControl('solucoesPropostas')?.dirty == true &&
-            getControl('solucoesPropostas')?.errors != null
+            this.projectForm.controls['solucoesPropostas'].invalid &&
+            this.projectForm.controls['solucoesPropostas'].touched
           "
         >
           <app-alert></app-alert>
@@ -243,9 +246,8 @@
         >
         <div
           *ngIf="
-            getControl('impactos')?.touched == true &&
-            getControl('impactos')?.dirty == true &&
-            getControl('impactos')?.errors != null
+            this.projectForm.controls['impactos'].invalid &&
+            this.projectForm.controls['impactos'].touched
           "
         >
           <app-alert></app-alert>
@@ -265,9 +267,8 @@
         <label for="arranjosInstitucionais">Arranjo Institucional</label>
         <div
           *ngIf="
-            getControl('arranjosInstitucionais')?.touched == true &&
-            getControl('arranjosInstitucionais')?.dirty == true &&
-            getControl('arranjosInstitucionais')?.errors != null
+            this.projectForm.controls['arranjosInstitucionais'].invalid &&
+            this.projectForm.controls['arranjosInstitucionais'].touched
           "
         >
           <app-alert></app-alert>
@@ -279,6 +280,7 @@
       <div class="col d-flex justify-content-center" id="enviarbtn">
         <button
           class="btn btn-primary p-2 px-4 mx-1"
+          [disabled]="this.projectForm.invalid"
           (click)="
             isEdit
               ? submitProjectEditForm(this.projectForm)
