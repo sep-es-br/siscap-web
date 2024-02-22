@@ -68,8 +68,6 @@ export class FormFactoryService {
           break;
       }
     }
-
-    control.updateValueAndValidity();
   }
 
   /**
