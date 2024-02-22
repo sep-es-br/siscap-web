@@ -52,7 +52,6 @@ export class ProjectsComponent implements OnDestroy {
         break;
       case 'editObject':
         //editObject
-        // console.log(typeof event.content.id);
         this.redirectProjectCreateEdit(event.content.id);
         break;
       case 'deleteObject':
@@ -64,18 +63,20 @@ export class ProjectsComponent implements OnDestroy {
         `)
         ) {
           //Verificar erro do console
+          // console.log(this._route)
           this._projetos$ = this._projetosService
             .deleteProjeto(event.content.id)
             .subscribe((response) => {
               console.log(response);
               if (response) {
                 alert('Projeto excluido com sucesso.');
-                this._router.navigate(['projetos']);
+                //TODO: entender pq a pagina não recarrega
+                // this._router.navigate(['main', 'projects'], {
+                //   onSameUrlNavigation: 'reload',
+                // });
               }
             });
         }
-        console.log('delete');
-        console.log(event.content);
         break;
       default:
         break;
