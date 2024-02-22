@@ -1,17 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
-import { Subscription, first } from 'rxjs';
+import { Subscription, finalize, map, tap } from 'rxjs';
+
+import * as _ from 'lodash';
 
 import { projectCreateModel } from '../../../shared/models/projectCreate.model';
 import { FormFactoryService } from '../../../shared/services/form-factory/form-factory.service';
-import { MicrorregiaoService } from '../../../shared/services/microrregiao/microrregiao.service';
+import { MicrorregioesService } from '../../../shared/services/microrregioes/microrregioes.service';
 import { IMicrorregiao } from '../../../shared/interfaces/microrregiao.interface';
-import { EntidadeService } from '../../../shared/services/entidade/entidade.service';
+import { EntidadesService } from '../../../shared/services/entidades/entidades.service';
 import { IEntidade } from '../../../shared/interfaces/entidade.interface';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
-import { ActivatedRoute, Params, Router } from '@angular/router';
 import {
+  IProject,
   ProjectCreate,
   ProjectEdit,
 } from '../../../shared/interfaces/project.interface';
@@ -33,11 +36,10 @@ export class CreateComponent implements OnInit, OnDestroy {
 
   private _microrregioes$!: Subscription;
   private _entidades$!: Subscription;
+  private _projetos$!: Subscription;
 
   public microrregioesList: IMicrorregiao[] = [];
   public entidadesList: IEntidade[] = [];
-
-  private _projetos$!: Subscription;
 
   public projectCreateObject: projectCreateModel = {
     sigla: {
@@ -55,17 +57,17 @@ export class CreateComponent implements OnInit, OnDestroy {
       },
     },
     idEntidade: {
-      initialValue: 0,
+      initialValue: null,
       validators: {
         required: true,
-        min: 0,
+        min: 1,
       },
     },
     valorEstimado: {
-      initialValue: 0,
+      initialValue: null,
       validators: {
         required: true,
-        min: 0,
+        min: 1,
       },
     },
     idMicrorregioes: {
@@ -120,8 +122,8 @@ export class CreateComponent implements OnInit, OnDestroy {
 
   constructor(
     private _formFactory: FormFactoryService,
-    private _microrregiaoService: MicrorregiaoService,
-    private _entidadeService: EntidadeService,
+    private _microrregioesService: MicrorregioesService,
+    private _entidadesService: EntidadesService,
     private _projetosService: ProjetosService,
     private _route: ActivatedRoute,
     private _router: Router
@@ -131,49 +133,57 @@ export class CreateComponent implements OnInit, OnDestroy {
       this.projectEditId = params['id'] ? params['id'] : null;
     });
 
-    this._microrregioes$ = this._microrregiaoService
+    this._microrregioes$ = this._microrregioesService
       .getMicrorregioes()
-      .pipe(first())
-      .subscribe((response) => {
-        this.microrregioesList = response;
-      });
+      .pipe(
+        tap((value) => {
+          this.microrregioesList = value;
+        })
+      )
+      .subscribe();
 
-    this._entidades$ = this._entidadeService
+    this._entidades$ = this._entidadesService
       .getEntidades()
-      .pipe(first())
-      .subscribe((response) => {
-        this.entidadesList = response;
-      });
+      .pipe(
+        tap((value) => {
+          this.entidadesList = value;
+        })
+      )
+      .subscribe();
   }
 
   ngOnInit(): void {
+    this.initForm();
+
     if (this.isEdit) {
       this.loading = true;
 
       this._projetos$ = this._projetosService
         .getProjetosById(this.projectEditId)
-        .pipe(first())
-        .subscribe((response) => {
-          for (const key in this.projectCreateObject) {
-            if (
-              Object.prototype.hasOwnProperty.call(
-                this.projectCreateObject,
-                key
-              )
-            ) {
-              const typedKey = key as keyof typeof this.projectCreateObject;
-              this.projectCreateObject[typedKey]['initialValue'] =
-                response[typedKey];
-            }
-          }
-
-          this.initForm();
-          this.projectFormInitialValue = this.projectForm.value;
-
-          this.loading = false;
+        .pipe(
+          map<IProject, ProjectCreate>((project) => {
+            return _.pick(
+              project,
+              _.keys(this.projectForm.controls)
+            ) as ProjectCreate;
+          }),
+          tap((project) => {
+            _.forIn(project, (value, key) => {
+              this.projectForm.controls[key]?.setValue(value);
+            });
+          }),
+          finalize(() => {
+            this.loading = false;
+            this.projectFormInitialValue = this.projectForm.value;
+          })
+        )
+        .subscribe((next) => {
+          this.projectForm.valueChanges.subscribe((change) => {
+            this.projectForm.setErrors(
+              _.isEqual(next, change) ? { identical: true } : null
+            );
+          });
         });
-    } else {
-      this.initForm();
     }
   }
 
@@ -200,17 +210,6 @@ export class CreateComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Método para acessar os controles primariamente no template HTML do componente.
-   *
-   * @param {string} control - O nome do controle contido no objeto modelo, registrado através do FormFactoryService.
-   *
-   * @returns - O controle `AbstractControl`
-   */
-  getControl(control: string) {
-    return this.projectForm.get(control);
-  }
-
-  /**
    * Método para criar um novo projeto no banco de dados.
    *
    * @param {FormGroup} form - O `FormGroup` do formulário.
@@ -230,7 +229,7 @@ export class CreateComponent implements OnInit, OnDestroy {
         console.log(response);
         if (response) {
           alert('Projeto cadastrado com sucesso.');
-          this._router.navigate(['projects']);
+          this._router.navigate(['main', 'projects']);
         }
         // if (response.status == 201) {
         //   alert('Projeto cadastrado com sucesso.');
@@ -251,25 +250,14 @@ export class CreateComponent implements OnInit, OnDestroy {
       return;
     }
 
-    /*
-    Laço for in para percorrer as chaves do valor inicial do formulario.
-    Caso algum controle tenha seu valor alterado, o valor do formulario é alterado.
-    Caso não, o controle é removido.
-    */
-    for (const key in this.projectFormInitialValue) {
-      const typedKey = key as keyof ProjectCreate;
-      if (
-        Object.prototype.hasOwnProperty.call(this.projectFormInitialValue, key)
-      ) {
-        if (form.value[typedKey] !== this.projectFormInitialValue[typedKey]) {
-          form.patchValue({ [key]: form.value[key] });
-        } else {
-          form.removeControl(typedKey);
-        }
-      }
-    }
-
-    const payload = form.value as ProjectEdit;
+    const payload = _.pickBy(form.value, (value, key) => {
+      return (
+        value !=
+        this.projectFormInitialValue[
+          key as keyof typeof this.projectFormInitialValue
+        ]
+      );
+    }) as ProjectEdit;
 
     this._projetos$ = this._projetosService
       .putProjeto(this.projectEditId, payload)
@@ -277,7 +265,7 @@ export class CreateComponent implements OnInit, OnDestroy {
         console.log(response);
         if (response) {
           alert('Projeto alterado com sucesso.');
-          this._router.navigate(['projects']);
+          this._router.navigate(['main', 'projects']);
         }
         // if (response.status == 200) {
         //   alert('Projeto atualizado com sucesso.');
