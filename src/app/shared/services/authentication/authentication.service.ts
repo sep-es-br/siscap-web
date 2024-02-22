@@ -1,18 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private _url = `${environment.api}/signin`;
-
-  // private headers = {
-  //   headers: { 'Access-Control-Allow-Origin': 'http://localhost:8080' },
-  // };
+  private _url = `${environment.api}/oauth2/authorization/acessocidadao`;
 
   constructor(private _http: HttpClient, private router: Router) {}
 
@@ -20,9 +16,8 @@ export class AuthenticationService {
     this.router.navigateByUrl('/main/home');
   }
 
-  public acessoCidadaoSignIn(): Observable<any> {
-    // return this._http.get(this._url, this.headers);
-    return this._http.get(this._url);
+  public acessoCidadaoSignIn() {
+    document.location.href = this._url;
   }
 
   // public signIn() {
