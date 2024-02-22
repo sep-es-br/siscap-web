@@ -1,13 +1,8 @@
-* {
-  margin: 0;
-  padding: 0;
-}
-
 .header-bar {
   background-color: rgba(170, 170, 170, 0.8);
 }
 
-.dropdown a span {
+a.dropdown-toggle span {
   color: white;
 }
 
