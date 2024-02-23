@@ -1,16 +1,19 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterOutlet } from '@angular/router';
+
+import { NgSelectModule } from '@ng-select/ng-select';
+
 import { LoginComponent } from '../pages/login/login.component';
 import { HomeComponent } from '../pages/home/home.component';
 import { ComponentsModule } from '../components/components.module';
 import { ProjectsComponent } from './projects/projects.component';
 import { CreateComponent } from './projects/create/create.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { MainComponent } from './main/main.component';
-import { RouterOutlet } from '@angular/router';
 import { PagesRoutingModule } from './pages-routing.module';
+import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +22,7 @@ import { PagesRoutingModule } from './pages-routing.module';
     HomeComponent,
     ProjectsComponent,
     CreateComponent,
+    AuthRedirectComponent,
   ],
   imports: [
     CommonModule,
@@ -28,7 +32,7 @@ import { PagesRoutingModule } from './pages-routing.module';
     HttpClientModule,
     NgSelectModule,
     FormsModule,
-    PagesRoutingModule
+    PagesRoutingModule,
   ],
   exports: [
     LoginComponent,
@@ -36,6 +40,7 @@ import { PagesRoutingModule } from './pages-routing.module';
     HomeComponent,
     ProjectsComponent,
     CreateComponent,
+    AuthRedirectComponent,
   ],
 })
 export class PagesModule {}
