@@ -1,5 +1,5 @@
 <div class="row h-100 p-1 d-flex flex-column">
-  <div class="col">
+  <div class="col my-2">
     <nav>
       <ol class="breadcrumb align-items-center">
         <button class="btn btn-primary mx-1 px-2 py-1" (click)="navigateBreadcrumb('home')">
@@ -16,6 +16,6 @@
         </li>
       </ol>
     </nav>
-    <h3 class="ms-1">{{ this.currentPage | breadcrumbnavlink }}</h3>
+    <h3 class="ms-1 my-2">{{ this.currentPage | breadcrumbnavlink }}</h3>
   </div>
 </div>
