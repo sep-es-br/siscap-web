@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { EventType, NavigationEnd, Router } from '@angular/router';
-import { filter, map, tap } from 'rxjs';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-breadcrumb',
@@ -9,29 +9,27 @@ import { filter, map, tap } from 'rxjs';
   styleUrl: './breadcrumb.component.css',
 })
 export class BreadcrumbComponent {
-  private breadcrumbNav: Array<string> = [];
+  public breadcrumbNav: Array<string> = [];
+  public currentPage: string = '';
 
   constructor(private _router: Router) {
     this._router.events
       .pipe(
-        filter((event) => {
+        // Workaround para tipar Event_2 como NavigationEnd
+        filter((event): event is NavigationEnd => {
           return event.type == EventType.NavigationEnd;
         })
       )
-      .subscribe(() => {
-        const currentNav = this._router
-          .getCurrentNavigation()
-          ?.extractedUrl.root.children['primary'].segments.filter((segment) => {
-            return segment.path != 'main' && segment.path != 'home';
-          });
-        currentNav?.forEach((segment) => !this.breadcrumbNav.includes(segment.path) ? this.breadcrumbNav.push(segment.path)  : null);
-        console.log(this.breadcrumbNav);
-        // console.log(currentNav);
+      .subscribe((next) => {
+        const urlPaths = next['urlAfterRedirects'].split('/').filter((path) => {
+          return path != '' && path != 'main';
+        });
+        this.breadcrumbNav = urlPaths;
+        this.currentPage = this.breadcrumbNav.pop()!;
       });
   }
 
-  navigateHome() {
-    // this._router.navigate([`${route}`], { relativeTo: this._route });
-    this._router.navigateByUrl('/main/home');
+  navigateBreadcrumb(path: string) {
+    this._router.navigate(['main', path]);
   }
 }
