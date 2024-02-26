@@ -6,6 +6,10 @@ a.dropdown-toggle span {
   color: white;
 }
 
+i {
+  color: white;
+}
+
 @media (min-width: 577px) {
   .menu-feather-icon {
     visibility: hidden;
