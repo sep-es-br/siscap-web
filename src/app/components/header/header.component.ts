@@ -20,7 +20,7 @@ export class HeaderComponent {
   }
 
   logOut() {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     this._router.navigate(['login']);
   }
 }
