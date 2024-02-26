@@ -2,7 +2,7 @@
   <app-loading></app-loading>
 </div>
 
-<div class="project-create-form mh-100 overflow-y-auto" *ngIf="!loading">
+<div class="project-create-form px-2" *ngIf="!loading">
   <form [formGroup]="projectForm">
     <div class="row">
       <div class="col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating" id="sigla">
@@ -43,7 +43,6 @@
     </div>
 
     <div class="row">
-      <!-- <div class="col form-floating" id="orgao"> -->
       <div class="col" id="orgao">
         <label class="ng-select-floating-label" for="orgao"
           >Orgão de Origem</label
