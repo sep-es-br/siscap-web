@@ -1,20 +1,22 @@
-* {
-  margin: 0;
-  padding: 0;
+.nav-menu {
+  max-width: 13vw;
+}
+
+@media (max-width: 576px) {
+  .nav-menu {
+    max-width: 100%;
+  }
 }
 
 .header-bar {
-  height: 5%;
+  min-height: 5%;
 }
 
 .main-content {
-  height: 95%;
+  overflow-y: auto;
 }
 
-.breadcrumb-area {
-  height: 8%;
-}
-
-.content {
-  height: 95%;
+.legal-footer span {
+  font-size: 0.9rem;
+  color: #7f7f7f;
 }
