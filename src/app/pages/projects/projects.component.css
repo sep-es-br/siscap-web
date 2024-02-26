@@ -1,8 +1,9 @@
-* {
-  margin: 0;
-  padding: 0;
+.project-datatable {
+  width: 99%;
 }
 
-.project-datatable {
-  width: 97%;
+@media (max-width: 576px) {
+  .input-group {
+    width: 10rem;
+  }
 }
