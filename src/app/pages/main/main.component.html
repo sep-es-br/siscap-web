@@ -1,22 +1,28 @@
 <div class="container-fluid vh-100">
   <div class="row h-100">
     <div
-      class="nav-menu d-none d-sm-block col-sm-3 col-md-2 h-100"
+      class="nav-menu h-100 gx-0 col-xs-12 col-sm-3 col-md-2 d-none d-sm-block"
       id="nav-menu"
     >
       <app-navmenu></app-navmenu>
     </div>
-    <div class="col-xs-12 col-sm-9 col-md-10 h-100" id="responsive-content">
-      <div class="header-bar col">
+    <div class="h-100 gx-0 col d-flex flex-column" id="responsive-content">
+      <div class="header-bar col-12">
         <app-header></app-header>
       </div>
+      <div class="breadcrumb-area col-12">
+        <app-breadcrumb></app-breadcrumb>
+      </div>
       <div class="main-content col">
-        <div class="breadcrumb-area">
-          <app-breadcrumb></app-breadcrumb>
-        </div>
-        <div class="content">
-          <router-outlet></router-outlet>
-        </div>
+        <router-outlet></router-outlet>
+      </div>
+      <div
+        class="col-12 legal-footer d-flex flex-column justify-content-center align-items-center text-center"
+      >
+        <span>
+          &#169; SISCAP 2024 - Secretaria de Economia e Planejamento do Espírito
+          Santo</span
+        >
       </div>
     </div>
   </div>
