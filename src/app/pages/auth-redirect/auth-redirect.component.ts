@@ -13,7 +13,7 @@ export class AuthRedirectComponent {
       this._router.getCurrentNavigation()?.initialUrl.queryParamMap;
 
     if (tokenQueryParamMap?.has('token')) {
-      localStorage.setItem(
+      sessionStorage.setItem(
         'token',
         atob(tokenQueryParamMap.get('token') as string)
       );
