@@ -1,5 +1,5 @@
-<div class="project-interaction d-flex mx-2">
-  <div class="col-xs-6 col-md-2 new-project-button">
+<div class="project-interaction d-flex mx-2 my-3">
+  <div class="col-xs-3 col-md-2 new-project-button">
     <button
       class="btn btn-primary px-3 py-1"
       (click)="redirectProjectCreateEdit()"
@@ -7,7 +7,7 @@
       Novo Projeto
     </button>
   </div>
-  <div class="col-xs-6 col-md-2 ms-auto search-input">
+  <div class="col-xs-3 col-md-2 ms-auto search-input">
     <div class="input-group">
       <input type="text" placeholder="Pesquisar..." class="form-control" />
       <button class="input-group-text px-2" (click)="queryProject()">
@@ -17,7 +17,7 @@
   </div>
 </div>
 
-<div class="project-datatable mt-4 mx-auto">
+<div class="project-datatable mt-3 mx-auto">
   <app-data-table
     [dataTableRows]="projetosList"
     [source]="'projetos'"
