@@ -7,6 +7,7 @@ import { AlertComponent } from './alert/alert.component';
 import { DataTableComponent } from './data-table/data-table.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { LoadingComponent } from './loading/loading.component';
+import { BreadcrumbnavlinkPipe } from '../pipes/breadcrumbnavlink.pipe';
 
 @NgModule({
   declarations: [
@@ -15,16 +16,16 @@ import { LoadingComponent } from './loading/loading.component';
     BreadcrumbComponent,
     AlertComponent,
     DataTableComponent,
-    LoadingComponent
+    LoadingComponent,
   ],
-  imports: [CommonModule, NgxDatatableModule],
+  imports: [CommonModule, NgxDatatableModule, BreadcrumbnavlinkPipe],
   exports: [
     NavMenuComponent,
     HeaderComponent,
     BreadcrumbComponent,
     AlertComponent,
     DataTableComponent,
-    LoadingComponent
+    LoadingComponent,
   ],
 })
 export class ComponentsModule {}
