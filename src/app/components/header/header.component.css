@@ -1,5 +1,5 @@
 .header-bar {
-  background-color: rgba(170, 170, 170, 0.8);
+  background-color: #AAAAAA;
 }
 
 a.dropdown-toggle span {
@@ -9,19 +9,5 @@ a.dropdown-toggle span {
 @media (min-width: 577px) {
   .menu-feather-icon {
     visibility: hidden;
-  }
-}
-
-/* Entre  os breakpoints Small e Medium*/
-@media (min-width: 577px) and (max-width: 768px) {
-  .header-bar {
-    height: 6vh;
-  }
-}
-
-/* Breakpoint Small */
-@media (max-width: 576px) {
-  .header-bar {
-    height: 6vh;
   }
 }
