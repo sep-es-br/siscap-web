@@ -6,7 +6,7 @@ import {
 } from '@angular/router';
 
 export const authGuard: CanActivateChildFn = (route, state) => {
-  const storageToken = localStorage.getItem('token');
+  const storageToken = sessionStorage.getItem('token');
 
   if (!!storageToken) {
     return true;
