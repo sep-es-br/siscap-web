@@ -1,17 +1,18 @@
-<div class="side-menu shadow d-flex flex-column justify-content-between h-100">
-  <div class="col-2">
-    <div class="siscap-logo">siscap logo</div>
+<div class="side-menu shadow d-flex flex-column h-100">
+  <div class="siscap-logo col-12 d-flex justify-content-center">
+    <!-- Imagem placeholder em png -->
+    <!-- Reorganizar quando tiver o svg apropriado -->
+    <img class="me-2" src="../../../assets/icons/siscap_logo_navmenu.png" />
   </div>
 
-  <div class="hide-menu d-sm-none position-absolute end-0 mt-2 me-2" (click)="hideMenu()">
+  <div
+    class="hide-menu d-sm-none position-absolute end-0 mt-2 me-2"
+    (click)="hideMenu()"
+  >
     <i class="fa-solid fa-x fa-xl"></i>
   </div>
 
-  <button class="btn btn-danger" (click)="routerNavigation('home')">
-    HOME
-  </button>
-
-  <div class="col-8 w-100">
+  <div class="col mt-5 w-100">
     <div class="menu-items w-100">
       <div class="menu-category">
         <ul>
@@ -77,5 +78,9 @@
       </div>
     </div>
   </div>
-  <div class="col-2"><div class="government-logo">GovES logo</div></div>
+  <div class="govES-logo col-12 d-flex justify-content-center">
+    <!-- Imagem placeholder em png -->
+    <!-- Reorganizar quando tiver o svg apropriado -->
+    <img src="../../../assets/icons/govES_logo.png" />
+  </div>
 </div>
