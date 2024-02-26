@@ -1,15 +1,21 @@
-<div class="row h-100">
-  <nav class="test d-flex align-items-end" aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item active">
-        <button class="btn btn-primary ms-1 px-2" (click)="navigateHome()">
+<div class="row h-100 p-1 d-flex flex-column">
+  <div class="col">
+    <nav>
+      <ol class="breadcrumb align-items-center">
+        <button class="btn btn-primary mx-1 px-2 py-1" (click)="navigateBreadcrumb('home')">
           <i class="fa-solid fa-house"></i>
         </button>
-      </li>
 
-      <li class="breadcrumb-item active">Test 2</li>
-      <li class="breadcrumb-item active">Test 3</li>
-      <li class="breadcrumb-item active">Test 4</li>
-    </ol>
-  </nav>
+        <li
+          *ngFor="let path of this.breadcrumbNav"
+          class="breadcrumb-item mx-1"
+        >
+          <a class="pointer" (click)="navigateBreadcrumb(path)">{{
+            path | breadcrumbnavlink
+          }}</a>
+        </li>
+      </ol>
+    </nav>
+    <h3 class="ms-1">{{ this.currentPage | breadcrumbnavlink }}</h3>
+  </div>
 </div>
