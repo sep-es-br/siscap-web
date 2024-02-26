@@ -1,3 +1,16 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
 nav {
   --bs-breadcrumb-divider: ">";
+}
+
+.button-title-area {
+  max-width: 10%;
+}
+
+.breadcrumb-nav-area {
+  max-width: 90%;
 }
