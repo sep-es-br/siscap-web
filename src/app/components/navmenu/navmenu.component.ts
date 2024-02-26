@@ -10,12 +10,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class NavMenuComponent {
   constructor(private _router: Router, private _route: ActivatedRoute) {}
 
-  /**
-   * Método para rotear o usuário para páginas do menu.
-   *
-   * @param {string} route - A rota para qual o usuário irá navegar.
-   *
-   */
   routerNavigation(route: string) {
     this._router.navigate([`${route}`], { relativeTo: this._route });
     this.hideMenu();
