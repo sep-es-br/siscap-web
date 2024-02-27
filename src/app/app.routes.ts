@@ -8,10 +8,12 @@ import { authGuard } from './shared/guards/auth.guard';
 
 export const routes: Routes = [
   {
+    title: 'Login',
     path: 'login',
     component: LoginComponent,
   },
   {
+    title: 'Autorizando...',
     path: 'token',
     component: AuthRedirectComponent,
   },

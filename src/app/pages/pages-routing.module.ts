@@ -7,14 +7,17 @@ import { CreateComponent } from './projects/create/create.component';
 
 const routes: Routes = [
   {
+    title: 'Home',
     path: 'home',
     component: HomeComponent,
   },
   {
+    title: 'Projetos',
     path: 'projects',
     component: ProjectsComponent,
   },
   {
+    title: 'Novo Projeto',
     path: 'projects/create',
     component: CreateComponent,
   },
