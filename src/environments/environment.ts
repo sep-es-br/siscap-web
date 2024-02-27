@@ -1,3 +1,4 @@
 export const environment = {
-    api: 'http://localhost:8080/siscap'
-}
+    production: true,
+    apiUrl: 'placeholder'
+};
