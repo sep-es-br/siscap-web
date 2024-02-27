@@ -10,7 +10,7 @@ import { IEntidade } from '../../interfaces/entidade.interface';
   providedIn: 'root',
 })
 export class EntidadesService {
-  private _url = `${environment.api}/entidades/select`;
+  private _url = `${environment.apiUrl}/entidades/select`;
 
   constructor(private _http: HttpClient) {}
 

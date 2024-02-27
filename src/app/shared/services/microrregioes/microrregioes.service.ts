@@ -10,7 +10,7 @@ import { IMicrorregiao } from '../../interfaces/microrregiao.interface';
   providedIn: 'root',
 })
 export class MicrorregioesService {
-  private _url = `${environment.api}/microrregioes/select`;
+  private _url = `${environment.apiUrl}/microrregioes/select`;
 
   constructor(private _http: HttpClient) {}
 

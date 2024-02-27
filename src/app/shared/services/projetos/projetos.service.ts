@@ -15,7 +15,7 @@ import {
   providedIn: 'root',
 })
 export class ProjetosService {
-  private _url = `${environment.api}/projetos`;
+  private _url = `${environment.apiUrl}/projetos`;
 
   constructor(private _http: HttpClient) {}
 
