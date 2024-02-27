@@ -1,26 +1,29 @@
-<div class="project-interaction d-flex mx-2 my-3">
-  <div class="col-xs-3 col-md-2 new-project-button">
-    <button
-      class="btn btn-primary px-3 py-1"
-      (click)="redirectProjectCreateEdit()"
-    >
-      Novo Projeto
-    </button>
-  </div>
-  <div class="col-xs-3 col-md-2 ms-auto search-input">
-    <div class="input-group">
-      <input type="text" placeholder="Pesquisar..." class="form-control" />
-      <button class="input-group-text px-2" (click)="queryProject()">
-        <i class="fa-solid fa-magnifying-glass"></i>
+<div class="project-interaction mx-2">
+  <div class="row g-0 d-flex justify-content-between align-items-center">
+    <div class="col-6 col-sm-4 col-md-2 new-project-button">
+      <button class="btn btn-primary" (click)="redirectProjectCreateEdit()">
+        Novo Projeto
       </button>
     </div>
+    <div class="col-6 col-sm-4 col-md-2 search-input">
+      <div class="input-group">
+        <input type="text" placeholder="Pesquisar..." class="form-control" />
+        <button class="input-group-text px-2" (click)="queryProject()">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="project-datatable mt-3 mx-auto">
-  <app-data-table
-    [dataTableRows]="projetosList"
-    [source]="'projetos'"
-    (actionEvent)="handleEvent($event)"
-  ></app-data-table>
+  <div class="project-datatable">
+    <div class="row g-0 mt-3">
+      <div class="col-12">
+        <app-data-table
+          [dataTableRows]="projetosList"
+          [source]="'projetos'"
+          (actionEvent)="handleEvent($event)"
+        ></app-data-table>
+      </div>
+    </div>
+  </div>
 </div>
