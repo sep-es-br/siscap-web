@@ -1,11 +1,11 @@
-<div class="h-100 overflow-hidden" *ngIf="loading">
+<div class="h-100" *ngIf="loading">
   <app-loading></app-loading>
 </div>
 
-<div class="project-create-form px-2" *ngIf="!loading">
+<div class="project-create-form h-100 mx-2" *ngIf="!loading">
   <form [formGroup]="projectForm">
     <div class="row">
-      <div class="col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating" id="sigla">
+      <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating" id="sigla">
         <input
           type="text"
           class="form-control"
@@ -23,7 +23,7 @@
         </div>
       </div>
 
-      <div class="col-sm-8 col-md-9 form-floating" id="titulo">
+      <div class="col-12 col-sm-8 col-md-9 form-floating" id="titulo">
         <input
           type="text"
           class="form-control"
@@ -43,7 +43,7 @@
     </div>
 
     <div class="row">
-      <div class="col" id="orgao">
+      <div class="col-12" id="orgao">
         <label class="ng-select-floating-label" for="orgao"
           >Orgão de Origem</label
         >
@@ -70,7 +70,7 @@
     </div>
 
     <div class="row">
-      <div class="col form-floating" id="equipe">
+      <div class="col-12 form-floating" id="equipe">
         <select class="form-select" disabled>
           <option value="null">Desabilitado</option>
         </select>
@@ -79,7 +79,7 @@
     </div>
 
     <div class="row">
-      <div class="col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating" id="plano">
+      <div class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating" id="plano">
         <select class="form-select" disabled>
           <option value="null">Desabilitado</option>
         </select>
@@ -94,13 +94,13 @@
     </div>
 
     <div class="row">
-      <div class="col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating" id="area">
+      <div class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating" id="area">
         <select class="form-select" disabled>
           <option value="null">Desabilitado</option>
         </select>
         <label for="">Área Estratégica</label>
       </div>
-      <div class="col-sm-6 col-md-6 form-floating" id="valorest">
+      <div class="col-12 col-sm-6 col-md-6 form-floating" id="valorest">
         <input
           type="number"
           class="form-control"
@@ -120,7 +120,7 @@
     </div>
 
     <div class="row">
-      <div class="col" id="microreg">
+      <div class="col-12" id="microreg">
         <label class="ng-select-floating-label" for="idMicrorregioes"
           >Microrregiões Atendidas</label
         >
@@ -149,7 +149,7 @@
     </div>
 
     <div class="row">
-      <div class="col form-floating" id="objetivo">
+      <div class="col-12 form-floating" id="objetivo">
         <textarea
           class="form-control"
           formControlName="objetivo"
@@ -168,7 +168,7 @@
     </div>
 
     <div class="row">
-      <div class="col form-floating" id="objetivoesp">
+      <div class="col-12 form-floating" id="objetivoesp">
         <textarea
           class="form-control"
           formControlName="objetivoEspecifico"
@@ -189,7 +189,7 @@
     </div>
 
     <div class="row">
-      <div class="col form-floating" id="situacaoprob">
+      <div class="col-12 form-floating" id="situacaoprob">
         <textarea
           class="form-control"
           formControlName="situacaoProblema"
@@ -210,7 +210,7 @@
     </div>
 
     <div class="row">
-      <div class="col form-floating" id="solucoesresult">
+      <div class="col-12 form-floating" id="solucoesresult">
         <textarea
           class="form-control"
           formControlName="solucoesPropostas"
@@ -233,7 +233,7 @@
     </div>
 
     <div class="row">
-      <div class="col form-floating overflow-x-hidden" id="impactosESG">
+      <div class="col-12 form-floating overflow-x-hidden" id="impactosESG">
         <textarea
           class="form-control"
           formControlName="impactos"
@@ -255,7 +255,7 @@
     </div>
 
     <div class="row">
-      <div class="col form-floating" id="arranjo">
+      <div class="col-12 form-floating" id="arranjo">
         <textarea
           class="form-control"
           formControlName="arranjosInstitucionais"
