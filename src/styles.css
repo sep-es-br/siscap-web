@@ -9,6 +9,15 @@
 @import "../node_modules/@swimlane/ngx-datatable/themes/bootstrap.css";
 @import "../node_modules/@swimlane/ngx-datatable/assets/icons.css";
 
+/* Workaround para override da cor dos botões */
+/* .btn-primary {
+  color: #fff;
+  &:hover {
+    color: #fff;
+  }
+} */
+
+/* Estilo link (tag <a>) para elementos */
 .pointer {
   cursor: pointer;
 }
@@ -28,6 +37,7 @@
 @media (max-width: 576px) {
 }
 
+/* Classe de teste */
 .test {
   border: 1px solid black;
 }
