@@ -1,9 +1,17 @@
-.nav-menu {
-  max-width: 13vw;
+#nav-menu {
+  max-width: 13%;
+}
+
+#responsive-content {
+  min-width: 87%;
 }
 
 @media (max-width: 576px) {
-  .nav-menu {
+  #nav-menu {
+    max-width: 100%;
+  }
+
+  #responsive-content {
     max-width: 100%;
   }
 }
