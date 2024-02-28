@@ -1,0 +1,9 @@
+<table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-bordered table-striped"></table>
+
+
+<!-- 
+    * Adicionar propriedade de pipes dependendo do valor (ex: valorEstimado -> CurrencyPipe)
+    |-> interface dataTableObject - adicionar mais uma propriedade
+    |-> dataTablesColumnBuilder - adicionar propriedade columnObject.pipe = algumacoisa
+    |-> new-data-table.ts / dentro de ngOnChanges - passar "pipes" como argumento para o metodo de colunas
+ -->
