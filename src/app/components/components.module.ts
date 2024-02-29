@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { NavMenuComponent } from './navmenu/navmenu.component';
 import { HeaderComponent } from './header/header.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
@@ -36,5 +36,6 @@ import { NewDataTableComponent } from './new-data-table/new-data-table.component
     NewDataTableComponent,
     LoadingComponent,
   ],
+  providers: [CurrencyPipe, DatePipe],
 })
 export class ComponentsModule {}
