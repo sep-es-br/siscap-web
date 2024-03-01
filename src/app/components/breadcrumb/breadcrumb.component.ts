@@ -33,3 +33,11 @@ export class BreadcrumbComponent {
     this._router.navigate(['main', path]);
   }
 }
+
+
+
+/* 
+- Redundancia do Home (ex: Home > Projetos > Novo Projeto)
+- Botão "Novo Projeto" vai pra direita (igual prototipo)
+- Icones de voltar/avançar
+*/
