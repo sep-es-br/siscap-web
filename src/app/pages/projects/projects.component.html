@@ -1,7 +1,7 @@
 <div class="project-interaction mx-2">
   <div class="row g-0 d-flex justify-content-between align-items-center">
     <div class="col-6 col-sm-4 col-md-2 new-project-button">
-      <button class="btn btn-primary" (click)="redirectProjectCreateEdit()">
+      <button class="btn btn-primary" (click)="redirectProjectForm('create')">
         Novo Projeto
       </button>
     </div>
@@ -18,22 +18,11 @@
   <div class="project-datatable">
     <div class="row g-0 mx-4 mt-3">
       <div class="col-12">
-        <app-new-data-table
+        <app-datatable
           [sourceObject]="projetosDataTableObject"
-        ></app-new-data-table>
+          (actionEventEmitter)="handleEvent($event)"
+        ></app-datatable>
       </div>
     </div>
   </div>
-
-  <!-- <div class="project-datatable">
-    <div class="row g-0 mt-3">
-      <div class="col-12">
-        <app-data-table
-          [dataTableRows]="projetosList"
-          [source]="'projetos'"
-          (actionEvent)="handleEvent($event)"
-        ></app-data-table>
-      </div>
-    </div>
-  </div> -->
 </div>
