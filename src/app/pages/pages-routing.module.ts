@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { ProjectsComponent } from './projects/projects.component';
-import { CreateComponent } from './projects/create/create.component';
+import { ProjectFormComponent } from './projects/form/project-form.component';
 
 const routes: Routes = [
   {
@@ -17,9 +17,9 @@ const routes: Routes = [
     component: ProjectsComponent,
   },
   {
-    title: 'Novo Projeto',
-    path: 'projects/create',
-    component: CreateComponent,
+    title: 'Formulário de Projeto',
+    path: 'projects/form/:mode',
+    component: ProjectFormComponent,
   },
   {
     path: '**',
