@@ -1,36 +1,32 @@
-import { projetosColumnTitles } from '../utils/columnTitles.map';
+import {
+  ColumnTitleObject,
+  projetosColumnTitles,
+} from '../utils/columnTitles.map';
 
 export abstract class DataTablesColumnBuilder {
-  /* 
-  Retorno do método é do tipo 'any'
-  Pode causar problemas
-  */
-  static columnTitleMapGetter(value: string): any {
-    // let selectedMap;
+  static columnTitleMapGetter(value: string): ColumnTitleObject {
+    let selectedMap!: ColumnTitleObject;
     switch (value) {
       case 'projetos':
-        // selectedMap = projetosColumnTitles;
-        return projetosColumnTitles;
-      // break;
+        selectedMap = projetosColumnTitles;
+        break;
+
       default:
         break;
     }
-    // return selectedMap
+    return selectedMap;
   }
 
-  static columnBuilder(
-    sourceObject: any,
-    mapName: string,
-    omitVal?: Array<string>
-  ): any[] {
-    const sourceObjMap = this.columnTitleMapGetter(mapName);
+  static columnBuilder(sourceObject: any, mapName: string): any[] {
+    const sourceObjMap = this.columnTitleMapGetter(mapName) ?? {};
     let columnsArray = [];
+
     for (const key in sourceObject) {
       let columnObject: DataTables.ColumnSettings = {};
 
-      if (!omitVal?.includes(key)) {
+      if (key != 'id') {
         columnObject.data = key;
-        columnObject.title = sourceObjMap[key];
+        columnObject.title = sourceObjMap[key] ?? key;
         columnsArray.push(columnObject);
       }
     }
