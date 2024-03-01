@@ -156,6 +156,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     if (this.formMode == 'edit' || this.formMode == 'details') {
       this.loading = true;
 
+      // Preenche os controles com os valores do projeto selecionado
       this._projetosService
         .getProjetosById(this.projectEditId)
         .pipe(
@@ -194,28 +195,30 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Método para limpar o formulário.
+   * Método para cancelar o preenchimento do formulário.
+   * Envia o usuário para a página de listagem de projetos
    *
    */
-  resetForm() {
-    if (
-      confirm(
-        'O formulário será resetado para as configurações iniciais. Prosseguir?'
-      )
-    ) {
-      this.initForm();
-    }
+  cancelForm() {
+    this._router.navigate(['main', 'projects']);
   }
 
+  /**
+   * Método para enviar o formulário. Verifica o formMode e chama o método apropriado
+   * do serviço ProjetosService.
+   * 
+   * @param form - O `FormGroup` do formulário
+   * 
+   */
   submitProjectForm(form: FormGroup) {
     if (form.invalid) {
       alert('Formulário contém erros. Por favor verificar os campos.');
       return;
     }
 
+    //TODO: Tratamento de erro (caso sigla duplicada)
     switch (this.formMode) {
       case 'create':
-        //TODO: Tratamento de erro (caso sigla duplicada)
         const createPayload = form.value as ProjectCreate;
 
         this._projetosService
@@ -226,14 +229,11 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
               alert('Projeto cadastrado com sucesso.');
               this._router.navigate(['main', 'projects']);
             }
-            // if (response.status == 201) {
-            //   alert('Projeto cadastrado com sucesso.');
-            //   window.history.go(-1); //trocar por router.navigate()
-            // }
           });
         break;
 
       case 'edit':
+        // Retorna um objeto que contém somente os valores alterados.
         const editPayload = _.pickBy(form.value, (value, key) => {
           return (
             value !=
@@ -251,10 +251,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
               alert('Projeto alterado com sucesso.');
               this._router.navigate(['main', 'projects']);
             }
-            // if (response.status == 200) {
-            //   alert('Projeto atualizado com sucesso.');
-            //   window.history.go(-1);
-            // }
           });
         break;
 
