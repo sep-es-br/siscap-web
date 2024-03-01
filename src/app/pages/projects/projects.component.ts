@@ -1,10 +1,12 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { Subscription, first } from 'rxjs';
 
 import { ProjetosService } from '../../shared/services/projetos/projetos.service';
-import { IProject } from '../../shared/interfaces/project.interface';
+import { IProjectTable } from '../../shared/interfaces/project.interface';
+import { DataTableObject } from '../../shared/interfaces/dataTableObject.interface';
 
 @Component({
   selector: 'app-projects',
@@ -15,7 +17,9 @@ import { IProject } from '../../shared/interfaces/project.interface';
 export class ProjectsComponent implements OnDestroy {
   private _projetos$!: Subscription;
 
-  public projetosList: IProject[] = [];
+  public projetosList: IProjectTable[] = [];
+
+  public projetosDataTableObject!: DataTableObject<IProjectTable>;
 
   constructor(
     private _router: Router,
@@ -25,62 +29,68 @@ export class ProjectsComponent implements OnDestroy {
     this._projetos$ = this._projetosService
       .getProjetos()
       .pipe(first())
-      .subscribe((response) => {
-        this.projetosList = response.content;
-      });
+      //Substituir por Observer
+      .subscribe(
+        (response) => {
+          this.projetosList = response.content;
+        },
+        (error: HttpErrorResponse) => {
+          if (error.status == 401) {
+            alert('Sua token expirou. Faça o login novamente.');
+            this._router.navigateByUrl('/login');
+          }
+        },
+        () => {
+          this.projetosDataTableObject = {
+            dataArray: this.projetosList,
+            columnTitles: 'projetos',
+            pipes: [{ dataTarget: 'valorEstimado', pipeName: 'currency' }],
+          };
+        }
+      );
   }
 
-  redirectProjectCreateEdit(projectId?: number) {
-    if (projectId) {
-      this._router.navigate(['create'], {
-        relativeTo: this._route,
-        queryParams: { isEdit: true, id: projectId },
-      });
-    } else {
-      this._router.navigate(['create'], { relativeTo: this._route });
-    }
+  redirectProjectForm(mode: string, projectId?: number) {
+    this._router.navigate(['form', mode], {
+      relativeTo: this._route,
+      queryParams: !!projectId ? { id: projectId } : undefined,
+    });
   }
 
   queryProject() {}
 
-  handleEvent(event: any) {
-    switch (event.type) {
-      case 'showObjectDetails':
-        //showDetails
-        console.log('show');
-        console.log(event.content);
-        break;
-      case 'editObject':
-        //editObject
-        this.redirectProjectCreateEdit(event.content.id);
-        break;
-      case 'deleteObject':
-        //deleteObject
-        if (
-          confirm(`
-        Tem certeza que deseja deletar o projeto?
-        Titulo: ${event.content.titulo}
-        `)
-        ) {
-          //Verificar erro do console
-          // console.log(this._route)
-          this._projetos$ = this._projetosService
-            .deleteProjeto(event.content.id)
-            .subscribe((response) => {
+  handleEvent(event: { type: string; content: any }) {
+    if (event.type == 'delete') {
+      if (
+        confirm(`
+              Tem certeza que deseja deletar o projeto?
+              Sigla: ${event.content.sigla}
+              Titulo: ${event.content.titulo}
+              `)
+      ) {
+        this._projetos$ = this._projetosService
+          .deleteProjeto(event.content.id)
+          .subscribe(
+            (response) => {
               console.log(response);
               if (response) {
                 alert('Projeto excluido com sucesso.');
-                //TODO: entender pq a pagina não recarrega
-                // this._router.navigate(['main', 'projects'], {
-                //   onSameUrlNavigation: 'reload',
-                // });
               }
-            });
-        }
-        break;
-      default:
-        break;
+            },
+            (err) => {},
+            () => {
+              this._router
+                .navigateByUrl('/', { skipLocationChange: true })
+                .then(() => this._router.navigate(['main', 'projects']));
+            }
+          );
+        return;
+      } else {
+        return;
+      }
     }
+
+    this.redirectProjectForm(event.type, event.content.id);
   }
 
   ngOnDestroy(): void {

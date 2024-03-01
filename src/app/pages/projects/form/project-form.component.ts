@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subscription, finalize, map, tap } from 'rxjs';
 
@@ -22,21 +22,21 @@ import {
 @Component({
   selector: 'app-create',
   standalone: false,
-  templateUrl: './create.component.html',
-  styleUrl: './create.component.css',
+  templateUrl: './project-form.component.html',
+  styleUrl: './project-form.component.css',
 })
-export class CreateComponent implements OnInit, OnDestroy {
+export class ProjectFormComponent implements OnInit, OnDestroy {
   public projectForm!: FormGroup;
 
   public loading: boolean = false;
 
-  public isEdit: boolean = false;
+  public formMode!: string;
+
   public projectEditId!: number;
   public projectFormInitialValue!: ProjectCreate;
 
   private _microrregioes$!: Subscription;
   private _entidades$!: Subscription;
-  private _projetos$!: Subscription;
 
   public microrregioesList: IMicrorregiao[] = [];
   public entidadesList: IEntidade[] = [];
@@ -128,10 +128,8 @@ export class CreateComponent implements OnInit, OnDestroy {
     private _route: ActivatedRoute,
     private _router: Router
   ) {
-    this._route.queryParams.subscribe((params: Params) => {
-      this.isEdit = params['isEdit'] ? params['isEdit'] : false;
-      this.projectEditId = params['id'] ? params['id'] : null;
-    });
+    this.formMode = this._route.snapshot.params['mode'];
+    this.projectEditId = this._route.snapshot.queryParams['id'] ?? null;
 
     this._microrregioes$ = this._microrregioesService
       .getMicrorregioes()
@@ -155,10 +153,10 @@ export class CreateComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
 
-    if (this.isEdit) {
+    if (this.formMode == 'edit' || this.formMode == 'details') {
       this.loading = true;
 
-      this._projetos$ = this._projetosService
+      this._projetosService
         .getProjetosById(this.projectEditId)
         .pipe(
           map<IProject, ProjectCreate>((project) => {
@@ -209,69 +207,60 @@ export class CreateComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Método para criar um novo projeto no banco de dados.
-   *
-   * @param {FormGroup} form - O `FormGroup` do formulário.
-   *
-   */
-  submitProjectCreateForm(form: FormGroup) {
+  submitProjectForm(form: FormGroup) {
     if (form.invalid) {
       alert('Formulário contém erros. Por favor verificar os campos.');
       return;
     }
 
-    //TODO: Tratamento de erro (caso sigla duplicada)
-    const payload = form.value as ProjectCreate;
-    this._projetos$ = this._projetosService
-      .postProjetos(payload)
-      .subscribe((response) => {
-        console.log(response);
-        if (response) {
-          alert('Projeto cadastrado com sucesso.');
-          this._router.navigate(['main', 'projects']);
-        }
-        // if (response.status == 201) {
-        //   alert('Projeto cadastrado com sucesso.');
-        //   window.history.go(-1); //trocar por router.navigate()
-        // }
-      });
-  }
+    switch (this.formMode) {
+      case 'create':
+        //TODO: Tratamento de erro (caso sigla duplicada)
+        const createPayload = form.value as ProjectCreate;
 
-  /**
-   * Método para editar um projeto já existente no banco de dados.
-   *
-   * @param {FormGroup} form - O `FormGroup` do formulário.
-   *
-   */
-  submitProjectEditForm(form: FormGroup) {
-    if (form.invalid) {
-      alert('Formulário contém erros. Por favor verificar os campos.');
-      return;
+        this._projetosService
+          .postProjetos(createPayload)
+          .subscribe((response) => {
+            console.log(response);
+            if (response) {
+              alert('Projeto cadastrado com sucesso.');
+              this._router.navigate(['main', 'projects']);
+            }
+            // if (response.status == 201) {
+            //   alert('Projeto cadastrado com sucesso.');
+            //   window.history.go(-1); //trocar por router.navigate()
+            // }
+          });
+        break;
+
+      case 'edit':
+        const editPayload = _.pickBy(form.value, (value, key) => {
+          return (
+            value !=
+            this.projectFormInitialValue[
+              key as keyof typeof this.projectFormInitialValue
+            ]
+          );
+        }) as ProjectEdit;
+
+        this._projetosService
+          .putProjeto(this.projectEditId, editPayload)
+          .subscribe((response) => {
+            console.log(response);
+            if (response) {
+              alert('Projeto alterado com sucesso.');
+              this._router.navigate(['main', 'projects']);
+            }
+            // if (response.status == 200) {
+            //   alert('Projeto atualizado com sucesso.');
+            //   window.history.go(-1);
+            // }
+          });
+        break;
+
+      default:
+        break;
     }
-
-    const payload = _.pickBy(form.value, (value, key) => {
-      return (
-        value !=
-        this.projectFormInitialValue[
-          key as keyof typeof this.projectFormInitialValue
-        ]
-      );
-    }) as ProjectEdit;
-
-    this._projetos$ = this._projetosService
-      .putProjeto(this.projectEditId, payload)
-      .subscribe((response) => {
-        console.log(response);
-        if (response) {
-          alert('Projeto alterado com sucesso.');
-          this._router.navigate(['main', 'projects']);
-        }
-        // if (response.status == 200) {
-        //   alert('Projeto atualizado com sucesso.');
-        //   window.history.go(-1);
-        // }
-      });
   }
 
   ngOnDestroy(): void {

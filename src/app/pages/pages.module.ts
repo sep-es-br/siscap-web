@@ -10,7 +10,7 @@ import { LoginComponent } from '../pages/login/login.component';
 import { HomeComponent } from '../pages/home/home.component';
 import { ComponentsModule } from '../components/components.module';
 import { ProjectsComponent } from './projects/projects.component';
-import { CreateComponent } from './projects/create/create.component';
+import { ProjectFormComponent } from './projects/form/project-form.component';
 import { MainComponent } from './main/main.component';
 import { PagesRoutingModule } from './pages-routing.module';
 import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
@@ -21,7 +21,7 @@ import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
     MainComponent,
     HomeComponent,
     ProjectsComponent,
-    CreateComponent,
+    ProjectFormComponent,
     AuthRedirectComponent,
   ],
   imports: [
@@ -39,7 +39,7 @@ import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
     MainComponent,
     HomeComponent,
     ProjectsComponent,
-    CreateComponent,
+    ProjectFormComponent,
     AuthRedirectComponent,
   ],
 })

@@ -5,12 +5,16 @@
 <div class="project-create-form h-100 mx-2" *ngIf="!loading">
   <form [formGroup]="projectForm">
     <div class="row">
-      <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating" id="sigla">
+      <div
+        class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating"
+        id="sigla"
+      >
         <input
           type="text"
           class="form-control"
           formControlName="sigla"
           [maxlength]="projectCreateObject.sigla.validators?.maxLength!"
+          [readOnly]="formMode == 'details'"
         />
         <label for="sigla">Sigla do Projeto</label>
         <div
@@ -29,6 +33,7 @@
           class="form-control"
           formControlName="titulo"
           [maxLength]="projectCreateObject.titulo.validators?.maxLength!"
+          [readOnly]="formMode == 'details'"
         />
         <label for="titulo">Titulo do Projeto</label>
         <div
@@ -49,6 +54,7 @@
         >
         <ng-select
           class="ng-select-custom"
+          [readonly]="formMode == 'details'"
           placeholder="-- Selecione um orgão da lista abaixo --"
           formControlName="idEntidade"
         >
@@ -79,7 +85,10 @@
     </div>
 
     <div class="row">
-      <div class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating" id="plano">
+      <div
+        class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating"
+        id="plano"
+      >
         <select class="form-select" disabled>
           <option value="null">Desabilitado</option>
         </select>
@@ -94,7 +103,10 @@
     </div>
 
     <div class="row">
-      <div class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating" id="area">
+      <div
+        class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating"
+        id="area"
+      >
         <select class="form-select" disabled>
           <option value="null">Desabilitado</option>
         </select>
@@ -106,6 +118,7 @@
           class="form-control"
           formControlName="valorEstimado"
           [min]="projectCreateObject.valorEstimado.validators?.min!"
+          [readOnly]="formMode == 'details'"
         />
         <label for="valorEstimado">Valor Estimado</label>
         <div
@@ -126,6 +139,7 @@
         >
         <ng-select
           class="ng-select-custom"
+          [readonly]="formMode == 'details'"
           [multiple]="true"
           [hideSelected]="true"
           placeholder="-- Selecione as microrregioes --"
@@ -154,6 +168,7 @@
           class="form-control"
           formControlName="objetivo"
           [maxLength]="projectCreateObject.objetivo.validators?.maxLength!"
+          [readOnly]="formMode == 'details'"
         ></textarea>
         <label for="objetivo">Objetivo</label>
         <div
@@ -175,6 +190,7 @@
           [maxLength]="
             projectCreateObject.objetivoEspecifico.validators?.maxLength!
           "
+          [readOnly]="formMode == 'details'"
         ></textarea>
         <label for="objetivoEspecifico">Objetivo Específico</label>
         <div
@@ -196,6 +212,7 @@
           [maxLength]="
             projectCreateObject.situacaoProblema.validators?.maxLength!
           "
+          [readOnly]="formMode == 'details'"
         ></textarea>
         <label for="situacaoProblema">Situação Problema</label>
         <div
@@ -217,6 +234,7 @@
           [maxLength]="
             projectCreateObject.solucoesPropostas.validators?.maxLength!
           "
+          [readOnly]="formMode == 'details'"
         ></textarea>
         <label for="solucoesPropostas"
           >Soluções Propostas/Resultados Esperados</label
@@ -238,6 +256,7 @@
           class="form-control"
           formControlName="impactos"
           [maxLength]="projectCreateObject.impactos.validators?.maxLength!"
+          [readOnly]="formMode == 'details'"
         ></textarea>
         <label for="impactos"
           >Impactos do Projeto no Âmbito Ambiental, Social e de Governança
@@ -262,6 +281,7 @@
           [maxLength]="
             projectCreateObject.arranjosInstitucionais.validators?.maxLength!
           "
+          [readOnly]="formMode == 'details'"
         ></textarea>
         <label for="arranjosInstitucionais">Arranjo Institucional</label>
         <div
@@ -275,20 +295,24 @@
       </div>
     </div>
 
+    <!-- (click)="
+            isEdit
+              ? submitProjectEditForm(this.projectForm)
+              : submitProjectCreateForm(this.projectForm)
+          " -->
+
     <div class="row mt-2">
       <div class="col d-flex justify-content-center" id="enviarbtn">
         <button
           class="btn btn-primary p-2 px-4 mx-1"
+          [hidden]="formMode == 'details'"
           [disabled]="this.projectForm.invalid"
-          (click)="
-            isEdit
-              ? submitProjectEditForm(this.projectForm)
-              : submitProjectCreateForm(this.projectForm)
-          "
+          (click)="submitProjectForm(this.projectForm)"
         >
-          {{ isEdit ? "Atualizar" : "Cadastrar" }}</button
+          {{ formMode == "edit" ? "Atualizar" : "Cadastrar" }}</button
         ><button
           class="btn btn-primary p-2 px-4 mx-1"
+          [hidden]="formMode == 'details'"
           [ngClass]="{ 'btn-secondary': this.projectForm.pristine }"
           [disabled]="this.projectForm.pristine"
           (click)="resetForm()"
