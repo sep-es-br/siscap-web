@@ -2,7 +2,10 @@
   <app-loading></app-loading>
 </div>
 
-<div class="project-form h-100 mx-2 p-2 p-sm-4 overflow-y-auto" *ngIf="!loading">
+<div
+  class="project-form h-100 mx-2 p-2 p-sm-4 overflow-y-auto"
+  *ngIf="!loading"
+>
   <div class="card">
     <div class="card-body">
       <form [formGroup]="projectForm">
@@ -299,22 +302,24 @@
         </div>
 
         <div class="row mt-2">
-          <div class="col d-flex justify-content-center" id="enviarbtn">
+          <div class="col d-flex justify-content-center" id="interactbtns">
             <button
+              type="button"
               class="btn btn-primary p-2 px-4 mx-1"
               [hidden]="formMode == 'details'"
               [disabled]="this.projectForm.invalid"
               (click)="submitProjectForm(this.projectForm)"
             >
-              {{ formMode == "edit" ? "Atualizar" : "Cadastrar" }}</button
-            ><button
-              class="btn btn-primary p-2 px-4 mx-1"
+              {{ formMode == "edit" ? "Atualizar" : "Cadastrar" }}
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-danger p-2 px-4 mx-1"
               [hidden]="formMode == 'details'"
-              [ngClass]="{ 'btn-secondary': this.projectForm.pristine }"
-              [disabled]="this.projectForm.pristine"
-              (click)="resetForm()"
+              (click)="cancelForm()"
             >
-              Limpar
+              Cancelar
             </button>
           </div>
         </div>
