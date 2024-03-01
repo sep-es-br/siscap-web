@@ -2,324 +2,323 @@
   <app-loading></app-loading>
 </div>
 
-<div class="project-create-form h-100 mx-2" *ngIf="!loading">
-  <form [formGroup]="projectForm">
-    <div class="row">
-      <div
-        class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating"
-        id="sigla"
-      >
-        <input
-          type="text"
-          class="form-control"
-          formControlName="sigla"
-          [maxlength]="projectCreateObject.sigla.validators?.maxLength!"
-          [readOnly]="formMode == 'details'"
-        />
-        <label for="sigla">Sigla do Projeto</label>
-        <div
-          *ngIf="
-            this.projectForm.controls['sigla'].invalid &&
-            this.projectForm.controls['sigla'].touched
-          "
-        >
-          <app-alert></app-alert>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-8 col-md-9 form-floating" id="titulo">
-        <input
-          type="text"
-          class="form-control"
-          formControlName="titulo"
-          [maxLength]="projectCreateObject.titulo.validators?.maxLength!"
-          [readOnly]="formMode == 'details'"
-        />
-        <label for="titulo">Titulo do Projeto</label>
-        <div
-          *ngIf="
-            this.projectForm.controls['titulo'].invalid &&
-            this.projectForm.controls['titulo'].touched
-          "
-        >
-          <app-alert></app-alert>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12" id="orgao">
-        <label class="ng-select-floating-label" for="orgao"
-          >Orgão de Origem</label
-        >
-        <ng-select
-          class="ng-select-custom"
-          [readonly]="formMode == 'details'"
-          placeholder="-- Selecione um orgão da lista abaixo --"
-          formControlName="idEntidade"
-        >
-          <ng-option
-            *ngFor="let entidade of entidadesList"
-            [value]="entidade.id"
-            >{{ entidade.nome }}</ng-option
+<div class="project-form h-100 mx-2 p-2 p-sm-4 overflow-y-auto" *ngIf="!loading">
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="projectForm">
+        <div class="row">
+          <div
+            class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating"
+            id="sigla"
           >
-        </ng-select>
-        <div
-          *ngIf="
-            this.projectForm.controls['idEntidade'].invalid &&
-            this.projectForm.controls['idEntidade'].touched
-          "
-        >
-          <app-alert></app-alert>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="sigla"
+              [maxlength]="projectCreateObject.sigla.validators?.maxLength!"
+              [readOnly]="formMode == 'details'"
+            />
+            <label for="sigla">Sigla do Projeto</label>
+            <div
+              *ngIf="
+                this.projectForm.controls['sigla'].invalid &&
+                this.projectForm.controls['sigla'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-8 col-md-9 form-floating" id="titulo">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="titulo"
+              [maxLength]="projectCreateObject.titulo.validators?.maxLength!"
+              [readOnly]="formMode == 'details'"
+            />
+            <label for="titulo">Titulo do Projeto</label>
+            <div
+              *ngIf="
+                this.projectForm.controls['titulo'].invalid &&
+                this.projectForm.controls['titulo'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-12 form-floating" id="equipe">
-        <select class="form-select" disabled>
-          <option value="null">Desabilitado</option>
-        </select>
-        <label for="">Equipe de Elaboração</label>
-      </div>
-    </div>
-
-    <div class="row">
-      <div
-        class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating"
-        id="plano"
-      >
-        <select class="form-select" disabled>
-          <option value="null">Desabilitado</option>
-        </select>
-        <label for="">Plano Estratégico</label>
-      </div>
-      <div class="col-sm-6 col-md-6 form-floating" id="eixo">
-        <select class="form-select" disabled>
-          <option value="null">Desabilitado</option>
-        </select>
-        <label for="">Eixo Estratégico</label>
-      </div>
-    </div>
-
-    <div class="row">
-      <div
-        class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating"
-        id="area"
-      >
-        <select class="form-select" disabled>
-          <option value="null">Desabilitado</option>
-        </select>
-        <label for="">Área Estratégica</label>
-      </div>
-      <div class="col-12 col-sm-6 col-md-6 form-floating" id="valorest">
-        <input
-          type="number"
-          class="form-control"
-          formControlName="valorEstimado"
-          [min]="projectCreateObject.valorEstimado.validators?.min!"
-          [readOnly]="formMode == 'details'"
-        />
-        <label for="valorEstimado">Valor Estimado</label>
-        <div
-          *ngIf="
-            this.projectForm.controls['valorEstimado'].invalid &&
-            this.projectForm.controls['valorEstimado'].touched
-          "
-        >
-          <app-alert></app-alert>
+        <div class="row">
+          <div class="col-12" id="orgao">
+            <label class="ng-select-floating-label" for="orgao"
+              >Orgão de Origem</label
+            >
+            <ng-select
+              class="ng-select-custom"
+              [readonly]="formMode == 'details'"
+              placeholder="-- Selecione um orgão da lista abaixo --"
+              formControlName="idEntidade"
+            >
+              <ng-option
+                *ngFor="let entidade of entidadesList"
+                [value]="entidade.id"
+                >{{ entidade.nome }}</ng-option
+              >
+            </ng-select>
+            <div
+              *ngIf="
+                this.projectForm.controls['idEntidade'].invalid &&
+                this.projectForm.controls['idEntidade'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-12" id="microreg">
-        <label class="ng-select-floating-label" for="idMicrorregioes"
-          >Microrregiões Atendidas</label
-        >
-        <ng-select
-          class="ng-select-custom"
-          [readonly]="formMode == 'details'"
-          [multiple]="true"
-          [hideSelected]="true"
-          placeholder="-- Selecione as microrregioes --"
-          formControlName="idMicrorregioes"
-        >
-          <ng-option
-            *ngFor="let microrregiao of microrregioesList"
-            [value]="microrregiao.id"
-            >{{ microrregiao.nome }}</ng-option
+        <div class="row">
+          <div class="col-12 form-floating" id="equipe">
+            <select class="form-select" disabled>
+              <option value="null">Desabilitado</option>
+            </select>
+            <label for="">Equipe de Elaboração</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div
+            class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating"
+            id="plano"
           >
-        </ng-select>
-        <div
-          *ngIf="
-            this.projectForm.controls['idMicrorregioes'].invalid &&
-            this.projectForm.controls['idMicrorregioes'].touched
-          "
-        >
-          <app-alert></app-alert>
+            <select class="form-select" disabled>
+              <option value="null">Desabilitado</option>
+            </select>
+            <label for="">Plano Estratégico</label>
+          </div>
+          <div class="col-sm-6 col-md-6 form-floating" id="eixo">
+            <select class="form-select" disabled>
+              <option value="null">Desabilitado</option>
+            </select>
+            <label for="">Eixo Estratégico</label>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-12 form-floating" id="objetivo">
-        <textarea
-          class="form-control"
-          formControlName="objetivo"
-          [maxLength]="projectCreateObject.objetivo.validators?.maxLength!"
-          [readOnly]="formMode == 'details'"
-        ></textarea>
-        <label for="objetivo">Objetivo</label>
-        <div
-          *ngIf="
-            this.projectForm.controls['objetivo'].invalid &&
-            this.projectForm.controls['objetivo'].touched
-          "
-        >
-          <app-alert></app-alert>
+        <div class="row">
+          <div
+            class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating"
+            id="area"
+          >
+            <select class="form-select" disabled>
+              <option value="null">Desabilitado</option>
+            </select>
+            <label for="">Área Estratégica</label>
+          </div>
+          <div class="col-12 col-sm-6 col-md-6 form-floating" id="valorest">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="valorEstimado"
+              [min]="projectCreateObject.valorEstimado.validators?.min!"
+              [readOnly]="formMode == 'details'"
+            />
+            <label for="valorEstimado">Valor Estimado</label>
+            <div
+              *ngIf="
+                this.projectForm.controls['valorEstimado'].invalid &&
+                this.projectForm.controls['valorEstimado'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-12 form-floating" id="objetivoesp">
-        <textarea
-          class="form-control"
-          formControlName="objetivoEspecifico"
-          [maxLength]="
-            projectCreateObject.objetivoEspecifico.validators?.maxLength!
-          "
-          [readOnly]="formMode == 'details'"
-        ></textarea>
-        <label for="objetivoEspecifico">Objetivo Específico</label>
-        <div
-          *ngIf="
-            this.projectForm.controls['objetivoEspecifico'].invalid &&
-            this.projectForm.controls['objetivoEspecifico'].touched
-          "
-        >
-          <app-alert></app-alert>
+        <div class="row">
+          <div class="col-12" id="microreg">
+            <label class="ng-select-floating-label" for="idMicrorregioes"
+              >Microrregiões Atendidas</label
+            >
+            <ng-select
+              class="ng-select-custom"
+              [readonly]="formMode == 'details'"
+              [multiple]="true"
+              [hideSelected]="true"
+              placeholder="-- Selecione as microrregioes --"
+              formControlName="idMicrorregioes"
+            >
+              <ng-option
+                *ngFor="let microrregiao of microrregioesList"
+                [value]="microrregiao.id"
+                >{{ microrregiao.nome }}</ng-option
+              >
+            </ng-select>
+            <div
+              *ngIf="
+                this.projectForm.controls['idMicrorregioes'].invalid &&
+                this.projectForm.controls['idMicrorregioes'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-12 form-floating" id="situacaoprob">
-        <textarea
-          class="form-control"
-          formControlName="situacaoProblema"
-          [maxLength]="
-            projectCreateObject.situacaoProblema.validators?.maxLength!
-          "
-          [readOnly]="formMode == 'details'"
-        ></textarea>
-        <label for="situacaoProblema">Situação Problema</label>
-        <div
-          *ngIf="
-            this.projectForm.controls['situacaoProblema'].invalid &&
-            this.projectForm.controls['situacaoProblema'].touched
-          "
-        >
-          <app-alert></app-alert>
+        <div class="row">
+          <div class="col-12 form-floating" id="objetivo">
+            <textarea
+              class="form-control"
+              formControlName="objetivo"
+              [maxLength]="projectCreateObject.objetivo.validators?.maxLength!"
+              [readOnly]="formMode == 'details'"
+            ></textarea>
+            <label for="objetivo">Objetivo</label>
+            <div
+              *ngIf="
+                this.projectForm.controls['objetivo'].invalid &&
+                this.projectForm.controls['objetivo'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-12 form-floating" id="solucoesresult">
-        <textarea
-          class="form-control"
-          formControlName="solucoesPropostas"
-          [maxLength]="
-            projectCreateObject.solucoesPropostas.validators?.maxLength!
-          "
-          [readOnly]="formMode == 'details'"
-        ></textarea>
-        <label for="solucoesPropostas"
-          >Soluções Propostas/Resultados Esperados</label
-        >
-        <div
-          *ngIf="
-            this.projectForm.controls['solucoesPropostas'].invalid &&
-            this.projectForm.controls['solucoesPropostas'].touched
-          "
-        >
-          <app-alert></app-alert>
+        <div class="row">
+          <div class="col-12 form-floating" id="objetivoesp">
+            <textarea
+              class="form-control"
+              formControlName="objetivoEspecifico"
+              [maxLength]="
+                projectCreateObject.objetivoEspecifico.validators?.maxLength!
+              "
+              [readOnly]="formMode == 'details'"
+            ></textarea>
+            <label for="objetivoEspecifico">Objetivo Específico</label>
+            <div
+              *ngIf="
+                this.projectForm.controls['objetivoEspecifico'].invalid &&
+                this.projectForm.controls['objetivoEspecifico'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-12 form-floating overflow-x-hidden" id="impactosESG">
-        <textarea
-          class="form-control"
-          formControlName="impactos"
-          [maxLength]="projectCreateObject.impactos.validators?.maxLength!"
-          [readOnly]="formMode == 'details'"
-        ></textarea>
-        <label for="impactos"
-          >Impactos do Projeto no Âmbito Ambiental, Social e de Governança
-          (ESG)</label
-        >
-        <div
-          *ngIf="
-            this.projectForm.controls['impactos'].invalid &&
-            this.projectForm.controls['impactos'].touched
-          "
-        >
-          <app-alert></app-alert>
+        <div class="row">
+          <div class="col-12 form-floating" id="situacaoprob">
+            <textarea
+              class="form-control"
+              formControlName="situacaoProblema"
+              [maxLength]="
+                projectCreateObject.situacaoProblema.validators?.maxLength!
+              "
+              [readOnly]="formMode == 'details'"
+            ></textarea>
+            <label for="situacaoProblema">Situação Problema</label>
+            <div
+              *ngIf="
+                this.projectForm.controls['situacaoProblema'].invalid &&
+                this.projectForm.controls['situacaoProblema'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-12 form-floating" id="arranjo">
-        <textarea
-          class="form-control"
-          formControlName="arranjosInstitucionais"
-          [maxLength]="
-            projectCreateObject.arranjosInstitucionais.validators?.maxLength!
-          "
-          [readOnly]="formMode == 'details'"
-        ></textarea>
-        <label for="arranjosInstitucionais">Arranjo Institucional</label>
-        <div
-          *ngIf="
-            this.projectForm.controls['arranjosInstitucionais'].invalid &&
-            this.projectForm.controls['arranjosInstitucionais'].touched
-          "
-        >
-          <app-alert></app-alert>
+        <div class="row">
+          <div class="col-12 form-floating" id="solucoesresult">
+            <textarea
+              class="form-control"
+              formControlName="solucoesPropostas"
+              [maxLength]="
+                projectCreateObject.solucoesPropostas.validators?.maxLength!
+              "
+              [readOnly]="formMode == 'details'"
+            ></textarea>
+            <label for="solucoesPropostas"
+              >Soluções Propostas/Resultados Esperados</label
+            >
+            <div
+              *ngIf="
+                this.projectForm.controls['solucoesPropostas'].invalid &&
+                this.projectForm.controls['solucoesPropostas'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- (click)="
-            isEdit
-              ? submitProjectEditForm(this.projectForm)
-              : submitProjectCreateForm(this.projectForm)
-          " -->
+        <div class="row">
+          <div class="col-12 form-floating overflow-x-hidden" id="impactosESG">
+            <textarea
+              class="form-control"
+              formControlName="impactos"
+              [maxLength]="projectCreateObject.impactos.validators?.maxLength!"
+              [readOnly]="formMode == 'details'"
+            ></textarea>
+            <label for="impactos"
+              >Impactos do Projeto no Âmbito Ambiental, Social e de Governança
+              (ESG)</label
+            >
+            <div
+              *ngIf="
+                this.projectForm.controls['impactos'].invalid &&
+                this.projectForm.controls['impactos'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
+        </div>
 
-    <div class="row mt-2">
-      <div class="col d-flex justify-content-center" id="enviarbtn">
-        <button
-          class="btn btn-primary p-2 px-4 mx-1"
-          [hidden]="formMode == 'details'"
-          [disabled]="this.projectForm.invalid"
-          (click)="submitProjectForm(this.projectForm)"
-        >
-          {{ formMode == "edit" ? "Atualizar" : "Cadastrar" }}</button
-        ><button
-          class="btn btn-primary p-2 px-4 mx-1"
-          [hidden]="formMode == 'details'"
-          [ngClass]="{ 'btn-secondary': this.projectForm.pristine }"
-          [disabled]="this.projectForm.pristine"
-          (click)="resetForm()"
-        >
-          Limpar
-        </button>
-      </div>
+        <div class="row">
+          <div class="col-12 form-floating" id="arranjo">
+            <textarea
+              class="form-control"
+              formControlName="arranjosInstitucionais"
+              [maxLength]="
+                projectCreateObject.arranjosInstitucionais.validators
+                  ?.maxLength!
+              "
+              [readOnly]="formMode == 'details'"
+            ></textarea>
+            <label for="arranjosInstitucionais">Arranjo Institucional</label>
+            <div
+              *ngIf="
+                this.projectForm.controls['arranjosInstitucionais'].invalid &&
+                this.projectForm.controls['arranjosInstitucionais'].touched
+              "
+            >
+              <app-alert></app-alert>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col d-flex justify-content-center" id="enviarbtn">
+            <button
+              class="btn btn-primary p-2 px-4 mx-1"
+              [hidden]="formMode == 'details'"
+              [disabled]="this.projectForm.invalid"
+              (click)="submitProjectForm(this.projectForm)"
+            >
+              {{ formMode == "edit" ? "Atualizar" : "Cadastrar" }}</button
+            ><button
+              class="btn btn-primary p-2 px-4 mx-1"
+              [hidden]="formMode == 'details'"
+              [ngClass]="{ 'btn-secondary': this.projectForm.pristine }"
+              [disabled]="this.projectForm.pristine"
+              (click)="resetForm()"
+            >
+              Limpar
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
-  </form>
+  </div>
 </div>
