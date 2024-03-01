@@ -9,7 +9,7 @@ export interface IProjectGet {
   totalElements: number;
   totalPages: number;
   size: number;
-  content: IProject[];
+  content: IProjectTable[];
   number: number;
   sort: GetSort;
   first: boolean;
@@ -40,6 +40,14 @@ export interface IProject {
   solucoesPropostas: string;
   impactos: string;
   arranjosInstitucionais: string;
+}
+
+export interface IProjectTable {
+  id: number;
+  sigla: string;
+  titulo: string;
+  valorEstimado: number;
+  nomesMicrorregioes: string[];
 }
 
 export interface ProjectGetRequestBody {
