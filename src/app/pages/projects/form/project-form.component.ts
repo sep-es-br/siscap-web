@@ -206,9 +206,9 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   /**
    * Método para enviar o formulário. Verifica o formMode e chama o método apropriado
    * do serviço ProjetosService.
-   * 
+   *
    * @param form - O `FormGroup` do formulário
-   * 
+   *
    */
   submitProjectForm(form: FormGroup) {
     if (form.invalid) {
