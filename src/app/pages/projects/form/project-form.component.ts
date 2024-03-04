@@ -183,6 +183,13 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
             );
           });
         });
+
+      if (this.formMode == 'details') {
+        const controls = this.projectForm.controls;
+        for (const key in controls) {
+          controls[key].disable();
+        }
+      }
     }
   }
 
