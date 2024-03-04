@@ -16,7 +16,6 @@
               class="form-control"
               formControlName="sigla"
               [maxlength]="projectCreateObject.sigla.validators?.maxLength!"
-              [readOnly]="formMode == 'details'"
             />
             <label for="sigla">Sigla do Projeto</label>
             <div
@@ -35,7 +34,6 @@
               class="form-control"
               formControlName="titulo"
               [maxLength]="projectCreateObject.titulo.validators?.maxLength!"
-              [readOnly]="formMode == 'details'"
             />
             <label for="titulo">Titulo do Projeto</label>
             <div
@@ -55,8 +53,6 @@
               >Orgão de Origem</label
             >
             <ng-select
-              class="ng-select-custom"
-              [readonly]="formMode == 'details'"
               placeholder="-- Selecione um orgão da lista abaixo --"
               formControlName="idEntidade"
             >
@@ -124,7 +120,6 @@
               class="form-control"
               formControlName="valorEstimado"
               [min]="projectCreateObject.valorEstimado.validators?.min!"
-              [readOnly]="formMode == 'details'"
             />
             <label for="valorEstimado">Valor Estimado</label>
             <div
@@ -144,8 +139,6 @@
               >Microrregiões Atendidas</label
             >
             <ng-select
-              class="ng-select-custom"
-              [readonly]="formMode == 'details'"
               [multiple]="true"
               [hideSelected]="true"
               placeholder="-- Selecione as microrregioes --"
@@ -174,7 +167,6 @@
               class="form-control"
               formControlName="objetivo"
               [maxLength]="projectCreateObject.objetivo.validators?.maxLength!"
-              [readOnly]="formMode == 'details'"
             ></textarea>
             <label for="objetivo">Objetivo</label>
             <div
@@ -196,7 +188,6 @@
               [maxLength]="
                 projectCreateObject.objetivoEspecifico.validators?.maxLength!
               "
-              [readOnly]="formMode == 'details'"
             ></textarea>
             <label for="objetivoEspecifico">Objetivo Específico</label>
             <div
@@ -218,7 +209,6 @@
               [maxLength]="
                 projectCreateObject.situacaoProblema.validators?.maxLength!
               "
-              [readOnly]="formMode == 'details'"
             ></textarea>
             <label for="situacaoProblema">Situação Problema</label>
             <div
@@ -240,7 +230,6 @@
               [maxLength]="
                 projectCreateObject.solucoesPropostas.validators?.maxLength!
               "
-              [readOnly]="formMode == 'details'"
             ></textarea>
             <label for="solucoesPropostas"
               >Soluções Propostas/Resultados Esperados</label
@@ -262,7 +251,6 @@
               class="form-control"
               formControlName="impactos"
               [maxLength]="projectCreateObject.impactos.validators?.maxLength!"
-              [readOnly]="formMode == 'details'"
             ></textarea>
             <label for="impactos"
               >Impactos do Projeto no Âmbito Ambiental, Social e de Governança
@@ -288,7 +276,6 @@
                 projectCreateObject.arranjosInstitucionais.validators
                   ?.maxLength!
               "
-              [readOnly]="formMode == 'details'"
             ></textarea>
             <label for="arranjosInstitucionais">Arranjo Institucional</label>
             <div
