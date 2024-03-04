@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 
 import { NgSelectModule } from '@ng-select/ng-select';
+import { DataTablesModule } from 'angular-datatables';
+import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 
 import { LoginComponent } from '../pages/login/login.component';
 import { HomeComponent } from '../pages/home/home.component';
@@ -14,7 +16,6 @@ import { ProjectFormComponent } from './projects/form/project-form.component';
 import { MainComponent } from './main/main.component';
 import { PagesRoutingModule } from './pages-routing.module';
 import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
-import { DataTablesModule } from 'angular-datatables';
 
 @NgModule({
   declarations: [
@@ -33,10 +34,12 @@ import { DataTablesModule } from 'angular-datatables';
     DataTablesModule,
     HttpClientModule,
     NgSelectModule,
+    NgxMaskDirective,
+    NgxMaskPipe,
     FormsModule,
     PagesRoutingModule,
   ],
-  providers: [CurrencyPipe, DatePipe],
+  providers: [provideNgxMask()],
   exports: [
     LoginComponent,
     MainComponent,
