@@ -7,8 +7,6 @@ import { AlertComponent } from './alert/alert.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { LoadingComponent } from './loading/loading.component';
 import { BreadcrumbnavlinkPipe } from '../pipes/breadcrumbnavlink.pipe';
-import { DataTablesModule } from 'angular-datatables';
-import { DatatableComponent } from './datatable/datatable.component';
 
 @NgModule({
   declarations: [
@@ -16,13 +14,11 @@ import { DatatableComponent } from './datatable/datatable.component';
     HeaderComponent,
     BreadcrumbComponent,
     AlertComponent,
-    DatatableComponent,
     LoadingComponent,
   ],
   imports: [
     CommonModule,
     NgxDatatableModule,
-    DataTablesModule,
     BreadcrumbnavlinkPipe,
   ],
   exports: [
@@ -30,7 +26,6 @@ import { DatatableComponent } from './datatable/datatable.component';
     HeaderComponent,
     BreadcrumbComponent,
     AlertComponent,
-    DatatableComponent,
     LoadingComponent,
   ],
   providers: [CurrencyPipe, DatePipe],
