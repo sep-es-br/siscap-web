@@ -2,10 +2,7 @@
   <app-loading></app-loading>
 </div>
 
-<div
-  class="project-form h-100 mx-3 overflow-y-auto"
-  *ngIf="!loading"
->
+<div class="project-form h-100 mx-3 overflow-y-auto" *ngIf="!loading">
   <div class="card">
     <div class="card-body">
       <form [formGroup]="projectForm">
@@ -119,7 +116,11 @@
           </div>
           <div class="col-12 col-sm-6 col-md-6 form-floating" id="valorest">
             <input
-              type="number"
+              type="text"
+              step="0.1"
+              prefix="R$"
+              mask="separator.2"
+              thousandSeparator="."
               class="form-control"
               formControlName="valorEstimado"
               [min]="projectCreateObject.valorEstimado.validators?.min!"
