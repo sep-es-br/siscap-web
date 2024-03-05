@@ -100,13 +100,12 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     };
   }
 
-  // Mudar de lugar daqui pro componente breadcrumb
-  redirectProjectForm(mode: string, projectId?: number) {
-    this._router.navigate(['form', mode], {
-      relativeTo: this._route,
-      queryParams: !!projectId ? { id: projectId } : undefined,
-    });
-  }
+  // redirectProjectForm(mode: string, projectId?: number) {
+  //   this._router.navigate(['form', mode], {
+  //     relativeTo: this._route,
+  //     queryParams: !!projectId ? { id: projectId } : undefined,
+  //   });
+  // }
 
   queryProject() {}
 
