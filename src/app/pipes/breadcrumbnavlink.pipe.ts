@@ -1,30 +1,42 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+const enum breadCrumbTitles {
+  main = 'Home',
+  projects = 'Projetos',
+  projectscreate = 'Novo Projeto',
+  projectsedit = 'Editar Projeto',
+  projectsdetails = 'Visualizar Projeto',
+}
+
 @Pipe({
   name: 'breadcrumbnavlink',
   standalone: true,
 })
 export class BreadcrumbnavlinkPipe implements PipeTransform {
   transform(value: string, ...args: unknown[]): unknown {
-    if (value.includes('?')) {
-      value = value.slice(0, value.indexOf('?') + 1);
-    }
-    
     let transformedValue = '';
 
     switch (value) {
-      case 'home':
-        transformedValue = 'Home';
+      case 'main':
+        transformedValue = breadCrumbTitles.main;
         break;
+
       case 'projects':
-        transformedValue = 'Projetos';
+        transformedValue = breadCrumbTitles.projects;
         break;
-      case 'create':
-        transformedValue = 'Novo Projeto';
+
+      case 'projectscreate':
+        transformedValue = breadCrumbTitles.projectscreate;
         break;
-      case 'create?':
-        transformedValue = 'Editar Projeto';
+
+      case 'projectsedit':
+        transformedValue = breadCrumbTitles.projectsedit;
         break;
+
+      case 'projectsdetails':
+        transformedValue = breadCrumbTitles.projectsdetails;
+        break;
+        
 
       // Inserir demais casos:
       // case 'programs':
