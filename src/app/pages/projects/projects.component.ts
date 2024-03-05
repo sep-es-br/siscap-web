@@ -110,14 +110,14 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   queryProject() {}
 
   projectDetails(data: any) {
-    this._router.navigate(['form', 'details'], {
+    this._router.navigate(['form', 'detalhes'], {
       relativeTo: this._route,
       queryParams: { id: data.id },
     });
   }
 
   projectEdit(data: any) {
-    this._router.navigate(['form', 'edit'], {
+    this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
       queryParams: { id: data.id },
     });
@@ -142,7 +142,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         () => {
           this._router
             .navigateByUrl('/', { skipLocationChange: true })
-            .then(() => this._router.navigate(['main', 'projects']));
+            .then(() => this._router.navigate(['main', 'projetos']));
         }
       );
     }
@@ -150,13 +150,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   actionEvent(type: string, data: any) {
     switch (type) {
-      case 'details':
+      case 'detalhes':
         this.projectDetails(data);
         break;
-      case 'edit':
+      case 'editar':
         this.projectEdit(data);
         break;
-      case 'delete':
+      case 'deletar':
         this.projectDelete(data);
         break;
 

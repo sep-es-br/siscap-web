@@ -11,7 +11,7 @@ import { filter } from 'rxjs';
 })
 export class BreadcrumbComponent {
   public exclusionList: Array<string> = ['', 'home', 'form']; // Lista de caminhos á serem ignorados (ex.: 'main' e 'form' redirecionam para 'home')
-  public mainChildPaths: Array<string> = ['projects']; // Lista de caminhos "principais" da aplicação (ex.: 'projects', 'programs', etc.)
+  public mainChildPaths: Array<string> = ['projetos']; // Lista de caminhos "principais" da aplicação (ex.: 'projects', 'programs', etc.)
 
   public breadcrumbNav: Array<string> = [];
   public currentPage: string = '';
@@ -99,10 +99,10 @@ export class BreadcrumbComponent {
    * @returns O array de strings contendo os caminhos da URL tratados para alimentar o `breadcrumbnavlinkPipe`.
    */
   private treatUrlPaths(value: string[]): string[] {
-    const pathCandidates = ['create', 'edit', 'details'];
+    const formModes = ['criar', 'editar', 'detalhes'];
     return value.map((path) => {
       const previousPath = value.at(value.indexOf(path) - 1) ?? path;
-      return pathCandidates.includes(path)
+      return formModes.includes(path)
         ? this.mainChildPaths.includes(previousPath)
           ? previousPath.concat(path)
           : path
@@ -129,7 +129,7 @@ export class BreadcrumbComponent {
    * @param path - Caminho da URL
    */
   public navigateBreadcrumbNew(path: string) {
-    this._router.navigate(['main', path, 'form', 'create']);
+    this._router.navigate(['main', path, 'form', 'criar']);
   }
 
   /**

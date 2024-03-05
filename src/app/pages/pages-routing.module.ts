@@ -13,12 +13,12 @@ const routes: Routes = [
   },
   {
     title: 'Projetos',
-    path: 'projects',
+    path: 'projetos',
     component: ProjectsComponent,
   },
   {
     title: 'Formulário de Projeto',
-    path: 'projects/form/:mode',
+    path: 'projetos/form/:mode',
     component: ProjectFormComponent,
   },
   {
