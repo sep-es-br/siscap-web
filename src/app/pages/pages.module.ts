@@ -16,15 +16,19 @@ import { ProjectFormComponent } from './projects/form/project-form.component';
 import { MainComponent } from './main/main.component';
 import { PagesRoutingModule } from './pages-routing.module';
 import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
+import { PersonsComponent } from './persons/persons.component';
+import { PersonFormComponent } from './persons/form/person-form.component';
 
 @NgModule({
   declarations: [
     LoginComponent,
+    AuthRedirectComponent,
     MainComponent,
     HomeComponent,
     ProjectsComponent,
     ProjectFormComponent,
-    AuthRedirectComponent,
+    PersonsComponent,
+    PersonFormComponent,
   ],
   imports: [
     CommonModule,
@@ -42,11 +46,13 @@ import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
   providers: [provideNgxMask()],
   exports: [
     LoginComponent,
+    AuthRedirectComponent,
     MainComponent,
     HomeComponent,
     ProjectsComponent,
     ProjectFormComponent,
-    AuthRedirectComponent,
+    PersonsComponent,
+    PersonFormComponent,
   ],
 })
 export class PagesModule {}
