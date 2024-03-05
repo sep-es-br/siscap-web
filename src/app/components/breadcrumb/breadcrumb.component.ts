@@ -11,7 +11,7 @@ import { filter } from 'rxjs';
 })
 export class BreadcrumbComponent {
   public exclusionList: Array<string> = ['', 'home', 'form']; // Lista de caminhos á serem ignorados (ex.: 'main' e 'form' redirecionam para 'home')
-  public mainChildPaths: Array<string> = ['projetos']; // Lista de caminhos "principais" da aplicação (ex.: 'projects', 'programs', etc.)
+  public mainChildPaths: Array<string> = ['projetos', 'pessoas']; // Lista de caminhos "principais" da aplicação (ex.: 'projects', 'programs', etc.)
 
   public breadcrumbNav: Array<string> = [];
   public currentPage: string = '';
