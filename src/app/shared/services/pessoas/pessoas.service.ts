@@ -14,7 +14,7 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class PersonsService {
+export class PessoasService {
   private _url = `${environment.apiUrl}/pessoas`;
 
   constructor(private _http: HttpClient) {}
@@ -36,6 +36,7 @@ export class PersonsService {
     return this._http.get<IPersonGet>(this._url);
   }
 
+  // Formato de envio não é JSON -> headers: Content-Type: multipart/formdata
   postPessoa(body: IPersonCreate): Observable<IPerson> {
     return this._http.post<IPerson>(this._url, body);
   }
