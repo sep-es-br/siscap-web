@@ -1,7 +1,7 @@
 import { IHttpGetResponseBody } from './http-get.interface';
 
 export interface IProject {
-  id: number;
+  readonly id: number;
   idStatus: number;
   sigla: string;
   titulo: string;
