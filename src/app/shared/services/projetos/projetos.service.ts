@@ -6,9 +6,9 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
   IProject,
+  IProjectCreate,
+  IProjectEdit,
   IProjectGet,
-  ProjectCreate,
-  ProjectEdit,
 } from '../../interfaces/project.interface';
 
 @Injectable({
@@ -23,7 +23,7 @@ export class ProjetosService {
     return this._http.get<IProject>(`${this._url}/${id}`);
   }
 
-  putProjeto(id: number, body: ProjectEdit): Observable<IProject> {
+  putProjeto(id: number, body: IProjectEdit): Observable<IProject> {
     return this._http.put<IProject>(`${this._url}/${id}`, body);
   }
 
@@ -31,11 +31,12 @@ export class ProjetosService {
     return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
   }
 
+  // TODO: Ver como anexar body no get (IHttpGetRequestBody)
   getProjetos(): Observable<IProjectGet> {
     return this._http.get<IProjectGet>(this._url);
   }
 
-  postProjeto(body: ProjectCreate): Observable<IProject> {
+  postProjeto(body: IProjectCreate): Observable<IProject> {
     return this._http.post<IProject>(this._url, body);
   }
 }

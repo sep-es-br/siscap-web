@@ -15,8 +15,8 @@ import { IEntidade } from '../../../shared/interfaces/entidade.interface';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import {
   IProject,
-  ProjectCreate,
-  ProjectEdit,
+  IProjectCreate,
+  IProjectEdit,
 } from '../../../shared/interfaces/project.interface';
 
 @Component({
@@ -33,7 +33,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   public formMode!: string;
 
   public projectEditId!: number;
-  public projectFormInitialValue!: ProjectCreate;
+  public projectFormInitialValue!: IProjectCreate;
 
   private _microrregioes$!: Subscription;
   private _entidades$!: Subscription;
@@ -160,11 +160,11 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       this._projetosService
         .getProjetoById(this.projectEditId)
         .pipe(
-          map<IProject, ProjectCreate>((project) => {
+          map<IProject, IProjectCreate>((project) => {
             return _.pick(
               project,
               _.keys(this.projectForm.controls)
-            ) as ProjectCreate;
+            ) as IProjectCreate;
           }),
           tap((project) => {
             _.forIn(project, (value, key) => {
@@ -226,7 +226,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     //TODO: Tratamento de erro (caso sigla duplicada)
     switch (this.formMode) {
       case 'criar':
-        const createPayload = form.value as ProjectCreate;
+        const createPayload = form.value as IProjectCreate;
 
         this._projetosService
           .postProjeto(createPayload)
@@ -248,7 +248,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
               key as keyof typeof this.projectFormInitialValue
             ]
           );
-        }) as ProjectEdit;
+        }) as IProjectEdit;
 
         this._projetosService
           .putProjeto(this.projectEditId, editPayload)
