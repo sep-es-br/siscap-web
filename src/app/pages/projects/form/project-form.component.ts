@@ -158,7 +158,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
       // Preenche os controles com os valores do projeto selecionado
       this._projetosService
-        .getProjetosById(this.projectEditId)
+        .getProjetoById(this.projectEditId)
         .pipe(
           map<IProject, ProjectCreate>((project) => {
             return _.pick(
@@ -229,7 +229,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         const createPayload = form.value as ProjectCreate;
 
         this._projetosService
-          .postProjetos(createPayload)
+          .postProjeto(createPayload)
           .subscribe((response) => {
             console.log(response);
             if (response) {

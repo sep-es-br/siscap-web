@@ -19,16 +19,8 @@ export class ProjetosService {
 
   constructor(private _http: HttpClient) {}
 
-  getProjetos(): Observable<IProjectGet> {
-    return this._http.get<IProjectGet>(this._url);
-  }
-
-  getProjetosById(id: number): Observable<IProject> {
+  getProjetoById(id: number): Observable<IProject> {
     return this._http.get<IProject>(`${this._url}/${id}`);
-  }
-
-  postProjetos(body: ProjectCreate): Observable<IProject> {
-    return this._http.post<IProject>(this._url, body);
   }
 
   putProjeto(id: number, body: ProjectEdit): Observable<IProject> {
@@ -37,5 +29,13 @@ export class ProjetosService {
 
   deleteProjeto(id: number): Observable<string> {
     return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
+  }
+
+  getProjetos(): Observable<IProjectGet> {
+    return this._http.get<IProjectGet>(this._url);
+  }
+
+  postProjeto(body: ProjectCreate): Observable<IProject> {
+    return this._http.post<IProject>(this._url, body);
   }
 }
