@@ -6,3 +6,13 @@ label {
   color: rgba(var(--bs-body-color-rgb), 0.65);
   font-size: 0.85rem;
 }
+
+.upload-photo-col {
+  max-height: 5rem;
+  max-width: 5rem;
+}
+
+.uploaded-photo {
+  height: 100%;
+  width: 100%;
+}
