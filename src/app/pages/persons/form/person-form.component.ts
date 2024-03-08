@@ -1,8 +1,21 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { IPersonCreate } from '../../../shared/interfaces/person.interface';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  IPersonCreate,
+  IPersonEdit,
+} from '../../../shared/interfaces/person.interface';
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PessoaFormLists } from '../../../shared/helpers/pessoa-form-lists.helper';
 
 @Component({
   selector: 'app-person-form',
@@ -11,6 +24,8 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './person-form.component.css',
 })
 export class PersonFormComponent implements OnInit {
+  @ViewChild('imagemPerfil') imagemPerfilInput!: ElementRef<HTMLInputElement>;
+
   public personForm!: FormGroup;
 
   public loading: boolean = false;
@@ -20,8 +35,8 @@ export class PersonFormComponent implements OnInit {
   public personEditId!: number;
   public personFormInitialValue!: IPersonCreate;
 
+  public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
-  public placeholderImg!: any;
 
   public placeholderList: Array<{ id: number; label: string }> = [
     { id: 1, label: 'Valor 1' },
@@ -30,6 +45,10 @@ export class PersonFormComponent implements OnInit {
     { id: 4, label: 'Valor 4' },
     { id: 5, label: 'Valor 5' },
   ];
+
+  // Por hora, lista de valores hard-coded
+  public nacionalidadesList = PessoaFormLists.nacionalidadesList;
+  public generosList = PessoaFormLists.generosList;
 
   constructor(
     private _fb: FormBuilder,
@@ -43,30 +62,31 @@ export class PersonFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-
-    // this.personForm.get('imagemPerfil')?.valueChanges.subscribe((change) => {
-    //   console.log(change);
-    // });
   }
 
   initForm() {
     const nnfb = this._fb.nonNullable;
     this.personForm = nnfb.group({
-      nome: nnfb.control(''),
-      nomeSocial: nnfb.control(''),
-      nacionalidade: nnfb.control(null),
-      genero: nnfb.control(null),
-      cpf: nnfb.control(''),
-      email: nnfb.control(''),
+      nome: nnfb.control('teste', { validators: Validators.required }),
+      nomeSocial: nnfb.control('teste'),
+      nacionalidade: nnfb.control(1, { validators: Validators.required }),
+      genero: nnfb.control(1, { validators: Validators.required }),
+      cpf: nnfb.control('11111111111', {
+        validators: [Validators.minLength(11), Validators.maxLength(11)],
+      }),
+      email: nnfb.control('a@a.a.a', {
+        validators: [Validators.required, Validators.email],
+      }),
+      telefoneComercial: nnfb.control('teste'),
+      telefonePessoal: nnfb.control('teste'),
       endereco: nnfb.group({
-        rua: nnfb.control(''),
-        numero: nnfb.control(''),
-        bairro: nnfb.control(''),
-        complemento: nnfb.control(''),
-        codigoPostal: nnfb.control(''),
+        rua: nnfb.control('teste'),
+        numero: nnfb.control('teste'),
+        bairro: nnfb.control('teste'),
+        complemento: nnfb.control('teste'),
+        codigoPostal: nnfb.control('teste'),
         idCidade: nnfb.control(null),
       }),
-      imagemPerfil: nnfb.control(''),
       //Ainda não implementados
       acessos: nnfb.group({
         grupos: nnfb.control({ value: null, disabled: true }),
@@ -85,18 +105,80 @@ export class PersonFormComponent implements OnInit {
   }
 
   submitPersonForm(form: FormGroup) {
-    console.log(form.value);
-  }
+    if (form.invalid) {
+      alert('Formulário contém erros. Por favor verificar os campos.');
+      return;
+    }
 
-  attachImg(event: any) {
-    console.log(event);
-    if (event.target.files && event.target.files[0]) {
-      this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
+    switch (this.formMode) {
+      case 'criar':
+        // const createPayload = form.value as IPersonCreate;
+
+        const createPayload = this.appendFormGrouptoFormData(
+          form.value as IPersonCreate
+        );
+
+        if (!!this.uploadedPhotoFile) {
+          createPayload.append('imagemPerfil', this.uploadedPhotoFile);
+        }
+
+        // createPayload.forEach((v, k) => {
+        //   console.log(`${k}: ${v}`);
+        // });
+
+        this._pessoasService.postPessoa(createPayload).subscribe((response) => {
+          console.log(response);
+          if (response) {
+            alert('Perfil cadastrado com sucesso.');
+            this._router.navigate(['main', 'pessoas']);
+          }
+        });
+        break;
+
+      case 'editar':
+        //editar
+        break;
+
+      default:
+        break;
     }
   }
 
-  // Não muda o valor do file type input!
-  removeImg(event: any) {
+  attachImg(event: any) {
+    if (event.target.files && event.target.files[0]) {
+      this.uploadedPhotoFile = event.target.files[0];
+      this.uploadedPhotoSrc = URL.createObjectURL(this.uploadedPhotoFile!);
+    }
+  }
+
+  removeImg() {
+    this.imagemPerfilInput.nativeElement.value = '';
+    this.uploadedPhotoFile = undefined;
     this.uploadedPhotoSrc = '';
+  }
+
+  appendFormGrouptoFormData(formValue: any): FormData {
+    const formData = new FormData();
+
+    for (const key in formValue) {
+      const typedKey = key as keyof typeof formValue;
+
+      if (key == 'endereco') {
+        for (let enderecoKey in formValue[key]) {
+          if (!!formValue[key][enderecoKey]) {
+            formData.append(
+              `endereco[${enderecoKey}]`,
+              formValue[key][enderecoKey]
+            );
+          }
+        }
+      } else {
+        if (!!formValue[typedKey]) {
+          formData.append(key, formValue[typedKey]);
+        }
+      }
+    }
+
+    return formData;
   }
 }
