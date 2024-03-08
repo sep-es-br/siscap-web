@@ -37,7 +37,7 @@ export class PessoasService {
   }
 
   // Formato de envio não é JSON -> headers: Content-Type: multipart/formdata
-  postPessoa(body: IPersonCreate): Observable<IPerson> {
+  postPessoa(body: any): Observable<IPerson> {
     return this._http.post<IPerson>(this._url, body);
   }
 
