@@ -13,13 +13,15 @@ interface IEndereço {
 export interface IPerson {
   readonly id: number;
   nome: string;
-  nomeSocial: string;
+  nomeSocial?: string;
   nacionalidade: string;
   genero: string;
-  cpf: string;
+  cpf?: string;
   email: string;
-  endereco: IEndereço;
-  imagemPerfil: string;
+  telefoneComercial?: string;
+  telefonePessoal?: string;
+  endereco?: IEndereço;
+  imagemPerfil?: File;
 }
 
 export interface IPersonTable extends Pick<IPerson, 'id' | 'nome' | 'email'> {
