@@ -20,6 +20,7 @@
 /* Estilos de card (background dos forms/tables */
 .card {
   border: none;
+  margin-bottom: 1rem;
 }
 
 .card-body {
