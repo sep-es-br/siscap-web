@@ -1,20 +1,12 @@
-* {
-  margin: 0;
-  padding: 0;
-}
-
 nav {
   --bs-breadcrumb-divider: ">";
 }
 
-.button-title-area {
-  max-width: 10%;
+/* Equivalente á aplicar px-2 py-1 em todos os botões do componente */
+button {
+  padding: 0.25rem 0.5rem;
 }
 
-.breadcrumb-nav-area {
-  max-width: 90%;
-}
-
-/* h3 {
+h3 {
   color: rgba(16, 127, 207, 1);
-} */
+}

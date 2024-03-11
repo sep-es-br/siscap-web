@@ -1,21 +1,68 @@
-<div class="row h-100 p-1 d-flex flex-column">
-  <div class="col my-2">
-    <nav>
-      <ol class="breadcrumb align-items-center">
-        <button class="btn btn-primary mx-1 px-2 py-1" (click)="navigateBreadcrumb('home')">
-          <i class="fa-solid fa-house"></i>
-        </button>
-
-        <li
-          *ngFor="let path of this.breadcrumbNav"
-          class="breadcrumb-item mx-1"
-        >
-          <a class="pointer" (click)="navigateBreadcrumb(path)">{{
-            path | breadcrumbnavlink
-          }}</a>
-        </li>
+<div class="row g-0 mx-2 px-2">
+  <div class="breadcrumb-nav">
+    <nav [ngClass]="{ invisible: breadcrumbNav.length <= 1 }">
+      <ol class="breadcrumb m-0 pb-1">
+        <ng-container *ngFor="let path of breadcrumbNav">
+          <ng-container
+            *ngIf="path != currentPage"
+            [ngTemplateOutlet]="navLink"
+            [ngTemplateOutletContext]="{ path: path }"
+          ></ng-container>
+          <ng-container
+            *ngIf="path == currentPage"
+            [ngTemplateOutlet]="disabledLink"
+            [ngTemplateOutletContext]="{ path: path }"
+          ></ng-container>
+        </ng-container>
       </ol>
     </nav>
-    <h3 class="ms-1 my-2">{{ this.currentPage | breadcrumbnavlink }}</h3>
+  </div>
+
+  <div class="home-pagetitle-section col">
+    <div class="d-flex flex-row">
+      <button class="btn btn-primary" (click)="navigateBreadcrumb('home')">
+        <i class="fa-solid fa-house"></i>
+      </button>
+      <h3 class="px-2 m-0">{{ currentPage | breadcrumbnavlink }}</h3>
+    </div>
+  </div>
+
+  <div class="new-navbuttons-section col">
+    <div class="d-flex flex-row-reverse">
+      <button class="btn btn-primary" (click)="goForward()">
+        <i class="fa-solid fa-share"></i>
+      </button>
+
+      <button class="btn btn-primary mx-1" (click)="goBack()">
+        <i class="fa-solid fa-reply"></i>
+      </button>
+
+      <ng-container
+        *ngIf="mainChildPaths.includes(currentPage)"
+        [ngTemplateOutlet]="newButton"
+        [ngTemplateOutletContext]="{ path: currentPage }"
+      ></ng-container>
+    </div>
   </div>
 </div>
+
+<!-- Link do breadcrumb 'navegável' -->
+<ng-template #navLink let-path="path">
+  <li class="breadcrumb-item">
+    <a class="link-primary pointer" (click)="navigateBreadcrumb(path)">
+      {{ path | breadcrumbnavlink }}
+    </a>
+  </li>
+</ng-template>
+
+<!-- Link do breadcrumb 'desabilitado' (quando o usuário estiver na página do link) -->
+<ng-template #disabledLink let-path="path">
+  <li class="breadcrumb-item active">{{ path | breadcrumbnavlink }}</li>
+</ng-template>
+
+<!-- Botão de criar um novo dado (ex.: Projetos -> Novo Projeto) -->
+<ng-template #newButton let-path="path">
+  <button class="btn btn-primary me-2" (click)="navigateBreadcrumbNew(path)">
+    {{ path + "criar" | breadcrumbnavlink }}
+  </button>
+</ng-template>

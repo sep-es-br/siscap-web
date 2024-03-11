@@ -153,7 +153,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
 
-    if (this.formMode == 'edit' || this.formMode == 'details') {
+    if (this.formMode == 'editar' || this.formMode == 'detalhes') {
       this.loading = true;
 
       // Preenche os controles com os valores do projeto selecionado
@@ -184,7 +184,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
           });
         });
 
-      if (this.formMode == 'details') {
+      if (this.formMode == 'detalhes') {
         const controls = this.projectForm.controls;
         for (const key in controls) {
           controls[key].disable();
@@ -207,7 +207,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
    *
    */
   cancelForm() {
-    this._router.navigate(['main', 'projects']);
+    this._router.navigate(['main', 'projetos']);
   }
 
   /**
@@ -225,7 +225,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
     //TODO: Tratamento de erro (caso sigla duplicada)
     switch (this.formMode) {
-      case 'create':
+      case 'criar':
         const createPayload = form.value as ProjectCreate;
 
         this._projetosService
@@ -234,12 +234,12 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
             console.log(response);
             if (response) {
               alert('Projeto cadastrado com sucesso.');
-              this._router.navigate(['main', 'projects']);
+              this._router.navigate(['main', 'projetos']);
             }
           });
         break;
 
-      case 'edit':
+      case 'editar':
         // Retorna um objeto que contém somente os valores alterados.
         const editPayload = _.pickBy(form.value, (value, key) => {
           return (
@@ -256,7 +256,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
             console.log(response);
             if (response) {
               alert('Projeto alterado com sucesso.');
-              this._router.navigate(['main', 'projects']);
+              this._router.navigate(['main', 'projetos']);
             }
           });
         break;
