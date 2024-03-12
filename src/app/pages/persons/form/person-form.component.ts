@@ -10,12 +10,14 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
+  IPerson,
   IPersonCreate,
   IPersonEdit,
 } from '../../../shared/interfaces/person.interface';
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PessoaFormLists } from '../../../shared/helpers/pessoa-form-lists.helper';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-person-form',
@@ -61,31 +63,62 @@ export class PersonFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initForm();
+    if (this.formMode == 'criar') {
+      this.initForm();
+      return;
+    }
+
+    this.loading = true;
+
+    this._pessoasService
+      .getPessoaById(this.personEditId)
+      .pipe(
+        finalize(() => {
+          this.personFormInitialValue = this.personForm.value;
+          this.loading = false;
+        })
+      )
+      .subscribe((response) => {
+        console.log(response);
+        this.initForm(response);
+        this.uploadedPhotoFile =
+          this.convertByteArraytoImgFile(
+            response.imagemPerfil as ArrayBuffer
+          ) ?? undefined;
+        this.uploadedPhotoSrc =
+          this.convertByteArraytoImgSrc(response.imagemPerfil as ArrayBuffer) ??
+          '';
+      });
   }
 
-  initForm() {
+  initForm(person?: IPerson) {
     const nnfb = this._fb.nonNullable;
     this.personForm = nnfb.group({
-      nome: nnfb.control('teste', { validators: Validators.required }),
-      nomeSocial: nnfb.control('teste'),
-      nacionalidade: nnfb.control(1, { validators: Validators.required }),
-      genero: nnfb.control(1, { validators: Validators.required }),
-      cpf: nnfb.control('11111111111', {
+      nome: nnfb.control(person?.nome ?? '', {
+        validators: Validators.required,
+      }),
+      nomeSocial: nnfb.control(person?.nomeSocial ?? ''),
+      nacionalidade: nnfb.control(person?.nacionalidade ?? null, {
+        validators: Validators.required,
+      }),
+      genero: nnfb.control(person?.genero ?? null, {
+        validators: Validators.required,
+      }),
+      cpf: nnfb.control(person?.cpf ?? '', {
         validators: [Validators.minLength(11), Validators.maxLength(11)],
       }),
-      email: nnfb.control('a@a.a.a', {
+      email: nnfb.control(person?.email ?? '', {
         validators: [Validators.required, Validators.email],
       }),
-      telefoneComercial: nnfb.control('teste'),
-      telefonePessoal: nnfb.control('teste'),
+      telefoneComercial: nnfb.control(person?.telefoneComercial ?? ''),
+      telefonePessoal: nnfb.control(person?.telefonePessoal ?? ''),
       endereco: nnfb.group({
-        rua: nnfb.control('teste'),
-        numero: nnfb.control('teste'),
-        bairro: nnfb.control('teste'),
-        complemento: nnfb.control('teste'),
-        codigoPostal: nnfb.control('teste'),
-        idCidade: nnfb.control(null),
+        rua: nnfb.control(person?.endereco?.rua ?? ''),
+        numero: nnfb.control(person?.endereco?.numero ?? ''),
+        bairro: nnfb.control(person?.endereco?.bairro ?? ''),
+        complemento: nnfb.control(person?.endereco?.complemento ?? ''),
+        codigoPostal: nnfb.control(person?.endereco?.codigoPostal ?? ''),
+        idCidade: nnfb.control(person?.endereco?.idCidade ?? null),
       }),
       //Ainda não implementados
       acessos: nnfb.group({
@@ -104,9 +137,35 @@ export class PersonFormComponent implements OnInit {
     this._router.navigate(['main', 'pessoas']);
   }
 
+  //ArrayBuffer já está em base64
+  convertByteArraytoImgFile(data: ArrayBuffer): File {
+    const test = new File([data], 'test');
+    console.log(test);
+    return test;
+    // return new File([data], 'test');
+
+    // const reader = new FileReader();
+
+    // reader.onload = (e) => {
+    //   console.log(e);
+    // };
+
+    // reader.read()
+
+    // const test = new Blob([new Uint]);
+  }
+
+  convertByteArraytoImgSrc(data: ArrayBuffer): string {
+    return 'data:image/jpeg;base64,' + data;
+  }
+
   submitPersonForm(form: FormGroup) {
+    for (const key in form.controls) {
+      form.controls[key].markAsTouched();
+    }
+
     if (form.invalid) {
-      alert('Formulário contém erros. Por favor verificar os campos.');
+      // alert('Formulário contém erros. Por favor verificar os campos.');
       return;
     }
 
@@ -147,7 +206,7 @@ export class PersonFormComponent implements OnInit {
   attachImg(event: any) {
     if (event.target.files && event.target.files[0]) {
       this.uploadedPhotoFile = event.target.files[0];
-      this.uploadedPhotoSrc = URL.createObjectURL(this.uploadedPhotoFile!);
+      this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
     }
   }
 
@@ -167,7 +226,7 @@ export class PersonFormComponent implements OnInit {
         for (let enderecoKey in formValue[key]) {
           if (!!formValue[key][enderecoKey]) {
             formData.append(
-              `endereco[${enderecoKey}]`,
+              `endereco.${enderecoKey}`,
               formValue[key][enderecoKey]
             );
           }
@@ -182,3 +241,10 @@ export class PersonFormComponent implements OnInit {
     return formData;
   }
 }
+
+
+/* 
+Foto de perfil:
+- Alinhar campo de imagem para esquerda
+- SUbstituir interrogação por avatar de usuario
+*/
