@@ -1,6 +1,6 @@
 import { IHttpGetResponseBody } from './http-get.interface';
 
-interface IEndereço {
+interface IAddress {
   readonly id: number;
   rua: string;
   numero: number;
@@ -20,16 +20,18 @@ export interface IPerson {
   email: string;
   telefoneComercial?: string;
   telefonePessoal?: string;
-  endereco?: IEndereço;
-  imagemPerfil?: File;
+  endereco?: IAddress;
+  imagemPerfil?: ArrayBuffer | File; //ver isso aqui melhor
 }
 
 export interface IPersonTable extends Pick<IPerson, 'id' | 'nome' | 'email'> {
-  nomeImagem: string;
+  imagemPerfil: ArrayBuffer;
 }
 
 export interface IPersonGet extends IHttpGetResponseBody<IPersonTable> {}
 
-export interface IPersonCreate extends Omit<IPerson, 'id' | 'endereço.id'> {}
+export interface IPersonCreate extends Omit<IPerson, 'id' | 'endereço.id'> {
+  imagemPerfil?: File;
+}
 
 export interface IPersonEdit extends Partial<IPerson> {}
