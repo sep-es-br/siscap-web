@@ -21,9 +21,10 @@
 
               <div class="row">
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="nome-completo" class="form-label"
-                    >Nome Completo</label
-                  >
+                  <label for="nome-completo" class="form-label col-12"
+                    >Nome Completo
+                    <app-alert [control]="personForm.get('nome')!"></app-alert>
+                  </label>
                   <input
                     type="text"
                     class="form-control"
@@ -32,9 +33,12 @@
                   />
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="nome-social" class="form-label"
-                    >Nome Social</label
-                  >
+                  <label for="nome-social" class="form-label col-12"
+                    >Nome Social
+                    <app-alert
+                      [control]="personForm.get('nomeSocial')!"
+                    ></app-alert>
+                  </label>
                   <input
                     type="text"
                     class="form-control"
@@ -46,32 +50,38 @@
 
               <div class="row">
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="nacionalidade" class="form-label"
-                    >Nacionalidade</label
-                  >
+                  <label for="nacionalidade" class="form-label col-12"
+                    >Nacionalidade
+                    <app-alert
+                      [control]="personForm.get('nacionalidade')!"
+                    ></app-alert
+                  ></label>
                   <ng-select
                     id="nacionalidade"
                     placeholder="-- Nacionalidade --"
                     formControlName="nacionalidade"
                   >
                     <ng-option
-                      *ngFor="let placeholder of placeholderList"
-                      [value]="placeholder.id"
-                      >{{ placeholder.label }}</ng-option
+                      *ngFor="let nacionalidade of nacionalidadesList"
+                      [value]="nacionalidade.id"
+                      >{{ nacionalidade.label }}</ng-option
                     >
                   </ng-select>
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="genero" class="form-label">Gênero</label>
+                  <label for="genero" class="form-label col-12"
+                    >Gênero
+                    <app-alert [control]="personForm.get('genero')!"></app-alert
+                  ></label>
                   <ng-select
                     id="genero"
                     placeholder="-- Gênero --"
                     formControlName="genero"
                   >
                     <ng-option
-                      *ngFor="let placeholder of placeholderList"
-                      [value]="placeholder.id"
-                      >{{ placeholder.label }}</ng-option
+                      *ngFor="let genero of generosList"
+                      [value]="genero.id"
+                      >{{ genero.label }}</ng-option
                     >
                   </ng-select>
                 </div>
@@ -79,7 +89,10 @@
 
               <div class="row">
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="cpf" class="form-label">CPF</label>
+                  <label for="cpf" class="form-label col-12"
+                    >CPF
+                    <app-alert [control]="personForm.get('cpf')!"></app-alert
+                  ></label>
                   <input
                     mask="000.000.000-00"
                     type="text"
@@ -89,7 +102,10 @@
                   />
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="email" class="form-label">E-mail</label>
+                  <label for="email" class="form-label col-12"
+                    >E-mail
+                    <app-alert [control]="personForm.get('email')!"></app-alert
+                  ></label>
                   <input
                     type="text"
                     class="form-control"
@@ -101,9 +117,12 @@
 
               <div class="row">
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="telpessoal" class="form-label"
-                    >Telefone Pessoal</label
-                  >
+                  <label for="telpessoal" class="form-label col-12"
+                    >Telefone Pessoal
+                    <app-alert
+                      [control]="personForm.get('telefonePessoal')!"
+                    ></app-alert
+                  ></label>
 
                   <input
                     type="text"
@@ -252,32 +271,37 @@
                   </div>
                 </div>
 
-                <div class="row">
+                <div class="row gx-2">
+                  <!--gx-2: fix comportamento padding dessa row em especifico -->
                   <div
-                    class="col-12 col-md-4 mx-auto mb-2 mb-md-0 p-0 text-center photo-upload-area"
+                    class="d-flex flex-column flex-md-row justify-content-md-around align-items-center"
                   >
-                    <ng-container
-                      *ngIf="!!uploadedPhotoSrc; else placeholderImg"
+                    <div
+                      class="col-12 col-md-4 mb-3 mb-md-0 text-center photo-upload"
                     >
-                      <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
-                      <span class="link-primary pointer" (click)="removeImg()"
-                        >Remover</span
+                      <ng-container
+                        *ngIf="!!uploadedPhotoSrc; else placeholderImg"
                       >
-                    </ng-container>
-                  </div>
+                        <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
+                        <span class="link-primary pointer" (click)="removeImg()"
+                          >Remover</span
+                        >
+                      </ng-container>
+                    </div>
 
-                  <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
-                    <input
-                      #imagemPerfil
-                      id="imagemPerfil"
-                      type="file"
-                      accept=".jpeg, .gif, .png"
-                      class="form-control"
-                      (change)="attachImg($event)"
-                    />
-                    <small class="text-primary"
-                      >JPG, GIF ou PNG. Tamanho máximo de 800k</small
-                    >
+                    <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
+                      <input
+                        #imagemPerfil
+                        id="imagemPerfil"
+                        type="file"
+                        accept=".jpeg, .gif, .png"
+                        class="form-control"
+                        (change)="attachImg($event)"
+                      />
+                      <small class="text-primary"
+                        >JPG, GIF ou PNG. Tamanho máximo de 800k</small
+                      >
+                    </div>
                   </div>
                 </div>
               </div>
@@ -415,6 +439,7 @@
           <button
             type="button"
             class="btn btn-primary p-2 px-4 mx-1"
+            [disabled]="personForm.invalid"
             (click)="submitPersonForm(this.personForm)"
           >
             Cadastrar
@@ -435,7 +460,7 @@
 
 <ng-template #placeholderImg>
   <i
-    class="fa-solid fa-question fa-4x p-1 h-100 w-100 border border-1 rounded"
+    class="fa-solid fa-user fa-3x pt-3 h-100 w-100 border border-1 rounded"
   ></i>
 </ng-template>
 
