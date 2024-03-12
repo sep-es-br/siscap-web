@@ -11,7 +11,8 @@ enum breadCrumbTitles {
 
   pessoas = 'Pessoas',
 
-  pessoascriar = 'Perfil',
+  // pessoascriar = 'Perfil',
+  pessoascriar = 'Novo Usuário',
   pessoaseditar = 'Editar Pessoa',
   pessoasdetalhes = 'Visualizar Pessoa',
 }
