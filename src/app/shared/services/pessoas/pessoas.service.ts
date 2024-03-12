@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
@@ -16,6 +16,7 @@ import {
 })
 export class PessoasService {
   private _url = `${environment.apiUrl}/pessoas`;
+  // private _url = `${environment.apiUrl}/pessoasaa`;
 
   constructor(private _http: HttpClient) {}
 
@@ -37,11 +38,30 @@ export class PessoasService {
   }
 
   // Formato de envio não é JSON -> headers: Content-Type: multipart/formdata
-  postPessoa(body: any): Observable<IPerson> {
+  postPessoa(body: FormData): Observable<IPerson> {
     return this._http.post<IPerson>(this._url, body);
   }
 
-  getPessoaImagemPerfil(id: number): Observable<any> {
-    return this._http.get<any>(`${this._url}/${id}/imagem-perfil`);
-  }
+  // getPessoaImagemPerfil(id: number): Observable<Blob> {
+  //   const headers = new HttpHeaders({
+  //     Accept: 'image/*',
+  //   });
+  //   return this._http.get(`${this._url}/${id}/imagem-perfil`, {
+  //     headers: headers,
+  //     responseType: 'blob',
+  //   });
+  // }
 }
+
+/*
+
+Ideia select pais/estado/cidade
+
+getCidades(filtro: string, id:numnber){
+  //codigo
+}
+
+this.getCidades('PAIS', 5) -> retorna cidades de acordo com o pais
+this.getCidades('ESTADO', 9) -> retorna cidades de acord com o estado
+
+*/
