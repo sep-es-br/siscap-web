@@ -1,1 +1,100 @@
-<p>persons works!</p>
+<div class="person-interaction mx-3">
+  <div class="search-input col-6 col-sm-4 col-md-2 ms-auto">
+    <div class="input-group ms-auto ms-sm-0">
+      <input type="text" placeholder="Pesquisar..." class="form-control" />
+      <button class="input-group-text px-2" (click)="queryPerson()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="person-datatable">
+    <div class="row g-0 mt-3">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <p-table
+              [value]="pessoasList"
+              [scrollable]="true"
+              scrollHeight="600px"
+              tableStyleClass="table table-striped"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="width: 5%"></th>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th style="width: 5%;">Ações</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-pessoa>
+                <tr>
+                  <td>
+                    <ng-container
+                      *ngIf="
+                        pessoa.imagemPerfil;
+                        else standardProfileImageTemplate
+                      "
+                    >
+                      <ng-container
+                        *ngTemplateOutlet="
+                          profileImageTemplate;
+                          context: { imgSrc: pessoa.imagemPerfil }
+                        "
+                      ></ng-container>
+                    </ng-container>
+                  </td>
+                  <td>{{ pessoa.nome }}</td>
+                  <td>{{ pessoa.email }}</td>
+                  <td>
+                    <ng-container
+                      *ngTemplateOutlet="
+                        actionsTemplate;
+                        context: { rowData: pessoa }
+                      "
+                    ></ng-container>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+
+            <ng-template #profileImageTemplate let-imgSrc="imgSrc">
+              <img
+                [src]="convertByteArraytoImg(imgSrc)"
+                alt=""
+                class="profile-pic rounded-circle"
+              />
+            </ng-template>
+
+            <ng-template #standardProfileImageTemplate>
+              <i class="fa-solid fa-user profile-pic rounded-circle"></i>
+            </ng-template>
+
+            <ng-template #actionsTemplate let-rowData="rowData">
+              <div class="d-flex flex-column flex-md-row">
+                <button
+                  class="btn btn-primary py-1 px-2"
+                  (click)="actionEvent('detalhes', rowData)"
+                >
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+                <button
+                  class="btn btn-primary py-1 px-1 px-md-2 mx-0 mx-md-2 my-2 my-md-0"
+                  (click)="actionEvent('editar', rowData)"
+                >
+                  <i class="fa-solid fa-pencil"></i>
+                </button>
+                <button
+                  class="btn btn-primary py-1 px-2"
+                  (click)="actionEvent('deletar', rowData)"
+                >
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
