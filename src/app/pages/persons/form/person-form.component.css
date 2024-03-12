@@ -7,13 +7,13 @@ label {
   font-size: 0.85rem;
 }
 
-i.fa-question {
+i.fa-user {
   color: #c2c2c2;
 }
 
-.photo-upload-area {
-  max-height: 5rem;
-  max-width: 5rem;
+.photo-upload {
+  height: 80px;
+  width: 80px;
 }
 
 .uploaded-photo {
