@@ -2,12 +2,14 @@ import { IHttpGetResponseBody } from './http-get.interface';
 
 interface IAddress {
   readonly id: number;
-  rua: string;
-  numero: number;
-  bairro: string;
-  complemento: string;
-  codigoPostal: string;
-  idCidade: number;
+  rua?: string;
+  numero?: number;
+  bairro?: string;
+  complemento?: string;
+  codigoPostal?: string;
+  idCidade?: number;
+  idEstado?: number;
+  idPais?: number;
 }
 
 export interface IPerson {
