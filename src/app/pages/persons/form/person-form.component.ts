@@ -1,23 +1,20 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { Observable, finalize, first, tap } from 'rxjs';
+
+import * as _ from 'lodash';
+
 import {
   IPerson,
   IPersonCreate,
   IPersonEdit,
 } from '../../../shared/interfaces/person.interface';
+import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { PessoaFormLists } from '../../../shared/helpers/pessoa-form-lists.helper';
-import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-person-form',
@@ -34,6 +31,7 @@ export class PersonFormComponent implements OnInit {
 
   public formMode!: string;
 
+  private _prepareForm$!: Observable<IPerson>;
   public personEditId!: number;
   public personFormInitialValue!: IPersonCreate;
 
@@ -48,6 +46,13 @@ export class PersonFormComponent implements OnInit {
     { id: 5, label: 'Valor 5' },
   ];
 
+  public paisesList: ISelectList[] = [];
+  public estadosList: ISelectList[] = [];
+  public cidadesList: ISelectList[] = [];
+
+  public paisSelected: number | undefined;
+  public estadoSelected: number | undefined;
+
   // Por hora, lista de valores hard-coded
   public nacionalidadesList = PessoaFormLists.nacionalidadesList;
   public generosList = PessoaFormLists.generosList;
@@ -55,11 +60,36 @@ export class PersonFormComponent implements OnInit {
   constructor(
     private _fb: FormBuilder,
     private _pessoasService: PessoasService,
+    private _selectListService: SelectListService,
     private _route: ActivatedRoute,
     private _router: Router
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.personEditId = this._route.snapshot.queryParams['id'] ?? null;
+
+    this._prepareForm$ = this._pessoasService
+      .getPessoaById(this.personEditId)
+      .pipe(
+        first(),
+        tap((response) => {
+          this.initForm(response);
+          this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
+            response.imagemPerfil as ArrayBuffer
+          );
+        }),
+        finalize(() => {
+          this.personFormInitialValue = this.personForm.value;
+          this.loading = false;
+        })
+      );
+
+    this._selectListService
+      .getPaises()
+      .pipe(
+        first(),
+        tap((response) => (this.paisesList = response))
+      )
+      .subscribe();
   }
 
   ngOnInit(): void {
@@ -70,25 +100,13 @@ export class PersonFormComponent implements OnInit {
 
     this.loading = true;
 
-    this._pessoasService
-      .getPessoaById(this.personEditId)
-      .pipe(
-        finalize(() => {
-          this.personFormInitialValue = this.personForm.value;
-          this.loading = false;
-        })
-      )
-      .subscribe((response) => {
-        console.log(response);
-        this.initForm(response);
-        this.uploadedPhotoFile =
-          this.convertByteArraytoImgFile(
-            response.imagemPerfil as ArrayBuffer
-          ) ?? undefined;
-        this.uploadedPhotoSrc =
-          this.convertByteArraytoImgSrc(response.imagemPerfil as ArrayBuffer) ??
-          '';
-      });
+    this._prepareForm$.subscribe((pessoa) => {
+      this.paisSelected = pessoa.endereco?.idPais ?? undefined;
+      this.paisChanged(this.paisSelected);
+
+      this.estadoSelected = pessoa.endereco?.idEstado ?? undefined;
+      this.estadoChanged(this.estadoSelected);
+    });
   }
 
   initForm(person?: IPerson) {
@@ -133,30 +151,42 @@ export class PersonFormComponent implements OnInit {
     });
   }
 
+  paisChanged(value: number | undefined) {
+    if (!value) {
+      this.estadosList = [];
+      return;
+    }
+
+    this._selectListService
+      .getEstados(value)
+      .pipe(
+        first(),
+        tap((response) => (this.estadosList = response))
+      )
+      .subscribe();
+  }
+
+  estadoChanged(value: number | undefined) {
+    if (!value) {
+      this.cidadesList = [];
+      return;
+    }
+
+    this._selectListService
+      .getCidades('ESTADO', value)
+      .pipe(
+        first(),
+        tap((response) => (this.cidadesList = response))
+      )
+      .subscribe();
+  }
+
   cancelForm() {
     this._router.navigate(['main', 'pessoas']);
   }
 
-  //ArrayBuffer já está em base64
-  convertByteArraytoImgFile(data: ArrayBuffer): File {
-    const test = new File([data], 'test');
-    console.log(test);
-    return test;
-    // return new File([data], 'test');
-
-    // const reader = new FileReader();
-
-    // reader.onload = (e) => {
-    //   console.log(e);
-    // };
-
-    // reader.read()
-
-    // const test = new Blob([new Uint]);
-  }
-
   convertByteArraytoImgSrc(data: ArrayBuffer): string {
-    return 'data:image/jpeg;base64,' + data;
+    return !!data ? 'data:image/jpeg;base64,' + data : '';
   }
 
   submitPersonForm(form: FormGroup) {
@@ -171,8 +201,6 @@ export class PersonFormComponent implements OnInit {
 
     switch (this.formMode) {
       case 'criar':
-        // const createPayload = form.value as IPersonCreate;
-
         const createPayload = this.appendFormGrouptoFormData(
           form.value as IPersonCreate
         );
@@ -180,11 +208,6 @@ export class PersonFormComponent implements OnInit {
         if (!!this.uploadedPhotoFile) {
           createPayload.append('imagemPerfil', this.uploadedPhotoFile);
         }
-
-        // createPayload.forEach((v, k) => {
-        //   console.log(`${k}: ${v}`);
-        // });
-
         this._pessoasService.postPessoa(createPayload).subscribe((response) => {
           console.log(response);
           if (response) {
@@ -195,7 +218,38 @@ export class PersonFormComponent implements OnInit {
         break;
 
       case 'editar':
-        //editar
+        let personEditForm = this.prepareEditForm(
+          form.value,
+          this.personFormInitialValue
+        );
+
+        const addressEditForm = this.prepareEditForm(
+          form.value['endereco'],
+          this.personFormInitialValue['endereco']
+        );
+
+        _.isEmpty(addressEditForm)
+          ? (personEditForm = _.omit(personEditForm, 'endereco'))
+          : (personEditForm['endereco'] = addressEditForm);
+
+        const editPayload = this.appendFormGrouptoFormData(
+          personEditForm as IPersonEdit
+        );
+
+        if (!!this.uploadedPhotoFile) {
+          editPayload.append('imagemPerfil', this.uploadedPhotoFile);
+        }
+
+        this._pessoasService
+          .putPessoa(this.personEditId, editPayload)
+          .subscribe((response) => {
+            console.log(response);
+            if (response) {
+              alert('Perfil cadastrado com sucesso.');
+              this._router.navigate(['main', 'pessoas']);
+            }
+          });
+
         break;
 
       default:
@@ -204,6 +258,7 @@ export class PersonFormComponent implements OnInit {
   }
 
   attachImg(event: any) {
+    console.log(this.imagemPerfilInput.nativeElement.value);
     if (event.target.files && event.target.files[0]) {
       this.uploadedPhotoFile = event.target.files[0];
       this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
@@ -240,8 +295,13 @@ export class PersonFormComponent implements OnInit {
 
     return formData;
   }
-}
 
+  prepareEditForm(formCurrentValue: any, formInitialValue: any) {
+    return _.pickBy(formCurrentValue, (value, key) => {
+      return value != formInitialValue[key];
+    });
+  }
+}
 
 /* 
 Foto de perfil:
