@@ -14,6 +14,8 @@ export interface IProject {
   solucoesPropostas: string;
   impactos: string;
   arranjosInstitucionais: string;
+  idPessoasEquipeElab: number[];
+  idPlano: number;
 }
 
 export interface IProjectTable
