@@ -2,316 +2,361 @@
   <app-loading></app-loading>
 </div>
 
-<div class="project-form h-100 mx-3 overflow-y-auto" *ngIf="!loading">
-  <div class="card">
-    <div class="card-body">
-      <form [formGroup]="projectForm">
-        <div class="row">
-          <div
-            class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0 form-floating"
-            id="sigla"
-          >
-            <input
-              type="text"
-              class="form-control"
-              formControlName="sigla"
-              [maxlength]="projectCreateObject.sigla.validators?.maxLength!"
-            />
-            <label for="sigla">Sigla do Projeto</label>
-            <div
-              *ngIf="
-                this.projectForm.controls['sigla'].invalid &&
-                this.projectForm.controls['sigla'].touched
-              "
-            >
-              <app-alert></app-alert>
+<div class="project-form h-100 overflow-y-auto" *ngIf="!loading">
+  <form [formGroup]="projectForm">
+    <div class="row mx-1">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-12 col-md-3 mb-2 mb-md-0">
+              <label for="sigla" class="form-label col-12">
+                Sigla do Projeto
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'sigla' }
+                  "
+                ></ng-container>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="sigla"
+                formControlName="sigla"
+                maxlength="12"
+              />
+            </div>
+
+            <div class="col-12 col-md-9">
+              <label for="titulo" class="form-label col-12">
+                Titulo do Projeto
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'titulo' }
+                  "
+                ></ng-container>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="titulo"
+                formControlName="titulo"
+                maxLength="150"
+              />
             </div>
           </div>
 
-          <div class="col-12 col-sm-8 col-md-9 form-floating" id="titulo">
-            <input
-              type="text"
-              class="form-control"
-              formControlName="titulo"
-              [maxLength]="projectCreateObject.titulo.validators?.maxLength!"
-            />
-            <label for="titulo">Titulo do Projeto</label>
-            <div
-              *ngIf="
-                this.projectForm.controls['titulo'].invalid &&
-                this.projectForm.controls['titulo'].touched
-              "
-            >
-              <app-alert></app-alert>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12" id="orgao">
-            <label class="ng-select-floating-label" for="orgao"
-              >Orgão de Origem</label
-            >
-            <ng-select
-              placeholder="-- Selecione um orgão da lista abaixo --"
-              formControlName="idEntidade"
-            >
-              <ng-option
-                *ngFor="let entidade of entidadesList"
-                [value]="entidade.id"
-                >{{ entidade.nome }}</ng-option
+          <div class="row">
+            <div class="col-12" id="orgao">
+              <label for="idEntidade" class="form-label col-12">
+                Orgão de Origem
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'idEntidade' }
+                  "
+                ></ng-container>
+              </label>
+              <ng-select
+                id="idEntidade"
+                placeholder="-- Selecione um orgão da lista abaixo --"
+                formControlName="idEntidade"
               >
-            </ng-select>
-            <div
-              *ngIf="
-                this.projectForm.controls['idEntidade'].invalid &&
-                this.projectForm.controls['idEntidade'].touched
-              "
-            >
-              <app-alert></app-alert>
+                <ng-option
+                  *ngFor="let entidade of entidadesList"
+                  [value]="entidade.id"
+                  >{{ entidade.nome }}</ng-option
+                >
+              </ng-select>
             </div>
           </div>
-        </div>
 
-        <div class="row">
-          <div class="col-12 form-floating" id="equipe">
-            <select class="form-select" disabled>
-              <option value="null">Desabilitado</option>
-            </select>
-            <label for="">Equipe de Elaboração</label>
-          </div>
-        </div>
-
-        <div class="row">
-          <div
-            class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating"
-            id="plano"
-          >
-            <select class="form-select" disabled>
-              <option value="null">Desabilitado</option>
-            </select>
-            <label for="">Plano Estratégico</label>
-          </div>
-          <div class="col-sm-6 col-md-6 form-floating" id="eixo">
-            <select class="form-select" disabled>
-              <option value="null">Desabilitado</option>
-            </select>
-            <label for="">Eixo Estratégico</label>
-          </div>
-        </div>
-
-        <div class="row">
-          <div
-            class="col-12 col-sm-6 col-md-6 mb-2 mb-sm-0 form-floating"
-            id="area"
-          >
-            <select class="form-select" disabled>
-              <option value="null">Desabilitado</option>
-            </select>
-            <label for="">Área Estratégica</label>
-          </div>
-          <div class="col-12 col-sm-6 col-md-6 form-floating" id="valorest">
-            <input
-              type="text"
-              step="0.1"
-              prefix="R$"
-              mask="separator.2"
-              thousandSeparator="."
-              class="form-control"
-              formControlName="valorEstimado"
-              [min]="projectCreateObject.valorEstimado.validators?.min!"
-            />
-            <label for="valorEstimado">Valor Estimado</label>
-            <div
-              *ngIf="
-                this.projectForm.controls['valorEstimado'].invalid &&
-                this.projectForm.controls['valorEstimado'].touched
-              "
-            >
-              <app-alert></app-alert>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12" id="microreg">
-            <label class="ng-select-floating-label" for="idMicrorregioes"
-              >Microrregiões Atendidas</label
-            >
-            <ng-select
-              [multiple]="true"
-              [hideSelected]="true"
-              placeholder="-- Selecione as microrregioes --"
-              formControlName="idMicrorregioes"
-            >
-              <ng-option
-                *ngFor="let microrregiao of microrregioesList"
-                [value]="microrregiao.id"
-                >{{ microrregiao.nome }}</ng-option
+          <div class="row">
+            <div class="col-12">
+              <label for="idPessoasEquipeElab" class="form-label col-12">
+                Equipe de Elaboração
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'idPessoasEquipeElab' }
+                  "
+                ></ng-container>
+              </label>
+              <ng-select
+                [multiple]="true"
+                [hideSelected]="true"
+                id="idPessoasEquipeElab"
+                placeholder="-- Selecione os membros da equipe de elaboração --"
+                formControlName="idPessoasEquipeElab"
               >
-            </ng-select>
-            <div
-              *ngIf="
-                this.projectForm.controls['idMicrorregioes'].invalid &&
-                this.projectForm.controls['idMicrorregioes'].touched
-              "
-            >
-              <app-alert></app-alert>
+                <ng-option
+                  *ngFor="let pessoa of pessoasList"
+                  [value]="pessoa.id"
+                  >{{ pessoa.nome }}</ng-option
+                >
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 col-md-6 mb-2 mb-md-0">
+              <label for="idPlano" class="form-label col-12">
+                Plano Estratégico
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'idPlano' }
+                  "
+                ></ng-container>
+              </label>
+              <ng-select
+                id="idPlano"
+                placeholder="-- Selecione um plano --"
+                formControlName="idPlano"
+              >
+                <ng-option
+                  *ngFor="let plano of planosList"
+                  [value]="plano.id"
+                  >{{ plano.nome }}</ng-option
+                >
+              </ng-select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label for="eixo" class="form-label">Eixo Estratégico</label>
+              <ng-select
+                id="eixo"
+                placeholder="Desabilitado"
+                formControlName="eixo"
+              >
+                <!-- <ng-option
+                  *ngFor="let placeholder of placeholderList"
+                  [value]="placeholder.id"
+                  >{{ placeholder.label }}</ng-option
+                > -->
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 col-md-6 mb-2 mb-md-0">
+              <label for="area" class="form-label">Área Estratégica</label>
+              <ng-select
+                id="area"
+                placeholder="Desabilitado"
+                formControlName="area"
+              >
+                <!-- <ng-option
+                  *ngFor="let placeholder of placeholderList"
+                  [value]="placeholder.id"
+                  >{{ placeholder.label }}</ng-option
+                > -->
+              </ng-select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label for="valorEstimado" class="form-label col-12">
+                Valor Estimado
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'valorEstimado' }
+                  "
+                ></ng-container>
+              </label>
+              <input
+                type="text"
+                step="0.1"
+                prefix="R$"
+                mask="separator.2"
+                thousandSeparator="."
+                decimalMarker=","
+                class="form-control"
+                id="valorEstimado"
+                formControlName="valorEstimado"
+                min="1"
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <label for="idMicrorregioes" class="form-label col-12">
+                Microrregiões Atendidas
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'idMicrorregioes' }
+                  "
+                ></ng-container>
+              </label>
+              <ng-select
+                [multiple]="true"
+                [hideSelected]="true"
+                placeholder="-- Selecione as microrregioes --"
+                id="idMicrorregioes"
+                formControlName="idMicrorregioes"
+              >
+                <ng-option
+                  *ngFor="let microrregiao of microrregioesList"
+                  [value]="microrregiao.id"
+                  >{{ microrregiao.nome }}</ng-option
+                >
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <label for="objetivo" class="form-label col-12">
+                Objetivo
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'objetivo' }
+                  "
+                ></ng-container>
+              </label>
+              <textarea
+                class="form-control"
+                id="objetivo"
+                formControlName="objetivo"
+                maxLength="2000"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <label for="objetivoEspecifico" class="form-label col-12">
+                Objetivo Específico
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'objetivoEspecifico' }
+                  "
+                ></ng-container>
+              </label>
+              <textarea
+                class="form-control"
+                id="objetivoEspecifico"
+                formControlName="objetivoEspecifico"
+                maxLength="2000"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <label for="situacaoProblema" class="form-label col-12">
+                Situação Problema
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'situacaoProblema' }
+                  "
+                ></ng-container>
+              </label>
+
+              <textarea
+                class="form-control"
+                id="situacaoProblema"
+                formControlName="situacaoProblema"
+                maxLength="2000"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <label for="solucoesPropostas" class="form-label col-12">
+                Soluções Propostas/Resultados Esperados
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'solucoesPropostas' }
+                  "
+                ></ng-container>
+              </label>
+              <textarea
+                class="form-control"
+                id="solucoesPropostas"
+                formControlName="solucoesPropostas"
+                maxLength="2000"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <label for="impactos">
+                Impactos do Projeto no Âmbito Ambiental, Social e de Governança
+                (ESG)
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'impactos' }
+                  "
+                ></ng-container>
+              </label>
+              <textarea
+                class="form-control"
+                id="impactos"
+                formControlName="impactos"
+                maxLength="2000"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <label for="arranjosInstitucionais" class="form-label col-12">
+                Arranjo Institucional
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'arranjosInstitucionais' }
+                  "
+                ></ng-container>
+              </label>
+              <textarea
+                class="form-control"
+                id="arranjosInstitucionais"
+                formControlName="arranjosInstitucionais"
+                maxLength="2000"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col d-flex flex-row-reverse" id="interactbtns">
+              <button
+                type="button"
+                class="btn btn-primary p-2 px-4 mx-1"
+                [hidden]="formMode == 'detalhes'"
+                [disabled]="this.projectForm.invalid"
+                (click)="submitProjectForm(this.projectForm)"
+              >
+                {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-danger p-2 px-4 mx-1"
+                [hidden]="formMode == 'detalhes'"
+                (click)="cancelForm()"
+              >
+                Cancelar
+              </button>
             </div>
           </div>
         </div>
-
-        <div class="row">
-          <div class="col-12 form-floating" id="objetivo">
-            <textarea
-              class="form-control"
-              formControlName="objetivo"
-              [maxLength]="projectCreateObject.objetivo.validators?.maxLength!"
-            ></textarea>
-            <label for="objetivo">Objetivo</label>
-            <div
-              *ngIf="
-                this.projectForm.controls['objetivo'].invalid &&
-                this.projectForm.controls['objetivo'].touched
-              "
-            >
-              <app-alert></app-alert>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12 form-floating" id="objetivoesp">
-            <textarea
-              class="form-control"
-              formControlName="objetivoEspecifico"
-              [maxLength]="
-                projectCreateObject.objetivoEspecifico.validators?.maxLength!
-              "
-            ></textarea>
-            <label for="objetivoEspecifico">Objetivo Específico</label>
-            <div
-              *ngIf="
-                this.projectForm.controls['objetivoEspecifico'].invalid &&
-                this.projectForm.controls['objetivoEspecifico'].touched
-              "
-            >
-              <app-alert></app-alert>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12 form-floating" id="situacaoprob">
-            <textarea
-              class="form-control"
-              formControlName="situacaoProblema"
-              [maxLength]="
-                projectCreateObject.situacaoProblema.validators?.maxLength!
-              "
-            ></textarea>
-            <label for="situacaoProblema">Situação Problema</label>
-            <div
-              *ngIf="
-                this.projectForm.controls['situacaoProblema'].invalid &&
-                this.projectForm.controls['situacaoProblema'].touched
-              "
-            >
-              <app-alert></app-alert>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12 form-floating" id="solucoesresult">
-            <textarea
-              class="form-control"
-              formControlName="solucoesPropostas"
-              [maxLength]="
-                projectCreateObject.solucoesPropostas.validators?.maxLength!
-              "
-            ></textarea>
-            <label for="solucoesPropostas"
-              >Soluções Propostas/Resultados Esperados</label
-            >
-            <div
-              *ngIf="
-                this.projectForm.controls['solucoesPropostas'].invalid &&
-                this.projectForm.controls['solucoesPropostas'].touched
-              "
-            >
-              <app-alert></app-alert>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12 form-floating overflow-x-hidden" id="impactosESG">
-            <textarea
-              class="form-control"
-              formControlName="impactos"
-              [maxLength]="projectCreateObject.impactos.validators?.maxLength!"
-            ></textarea>
-            <label for="impactos"
-              >Impactos do Projeto no Âmbito Ambiental, Social e de Governança
-              (ESG)</label
-            >
-            <div
-              *ngIf="
-                this.projectForm.controls['impactos'].invalid &&
-                this.projectForm.controls['impactos'].touched
-              "
-            >
-              <app-alert></app-alert>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12 form-floating" id="arranjo">
-            <textarea
-              class="form-control"
-              formControlName="arranjosInstitucionais"
-              [maxLength]="
-                projectCreateObject.arranjosInstitucionais.validators
-                  ?.maxLength!
-              "
-            ></textarea>
-            <label for="arranjosInstitucionais">Arranjo Institucional</label>
-            <div
-              *ngIf="
-                this.projectForm.controls['arranjosInstitucionais'].invalid &&
-                this.projectForm.controls['arranjosInstitucionais'].touched
-              "
-            >
-              <app-alert></app-alert>
-            </div>
-          </div>
-        </div>
-
-        <div class="row mt-2">
-          <div class="col d-flex flex-row-reverse" id="interactbtns">
-            <button
-              type="button"
-              class="btn btn-primary p-2 px-4 mx-1"
-              [hidden]="formMode == 'detalhes'"
-              [disabled]="this.projectForm.invalid"
-              (click)="submitProjectForm(this.projectForm)"
-            >
-              {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
-            </button>
-
-            <button
-              type="button"
-              class="btn btn-danger p-2 px-4 mx-1"
-              [hidden]="formMode == 'detalhes'"
-              (click)="cancelForm()"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      </form>
+      </div>
     </div>
-  </div>
+  </form>
 </div>
+
+<ng-template #appAlert let-controlName="controlName">
+  <app-alert [control]="projectForm.get(controlName) ?? undefined"></app-alert>
+</ng-template>
