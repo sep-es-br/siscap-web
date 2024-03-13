@@ -34,7 +34,7 @@
                   <th pSortableColumn="valorEstimado">
                     Valor <p-sortIcon field="valorEstimado"></p-sortIcon>
                   </th>
-                  <th style="width: 5%;">Ações</th>
+                  <th style="width: 5%">Ações</th>
                 </tr>
               </ng-template>
 
@@ -48,7 +48,11 @@
                       projeto.valorEstimado
                         | mask
                           : "separator.2"
-                          : { thousandSeparator: ".", prefix: "R$" }
+                          : {
+                              thousandSeparator: ".",
+                              decimalMarker: ",",
+                              prefix: "R$"
+                            }
                     }}
                   </td>
                   <td>
