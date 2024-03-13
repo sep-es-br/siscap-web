@@ -1,6 +1,5 @@
-<!-- TODO: Dinamizar o componente baseado nos erros dos controles -->
-<!-- Atualmente só trata o caso {required: true} -->
-
-<span *ngIf="control.errors && control.touched" class="error-message float-end"
-  >{{formControlErrorMap(control)}}</span
->
+<span
+  *ngIf="control?.errors && control?.touched"
+  class="error-message float-end"
+  >{{ formControlErrorMap(control) }}
+</span>
