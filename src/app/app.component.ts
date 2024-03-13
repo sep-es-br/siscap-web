@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ComponentsModule } from './components/components.module';
 import { PagesModule } from './pages/pages.module';
+import { NgSelectConfig } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-root',
@@ -12,4 +13,8 @@ import { PagesModule } from './pages/pages.module';
 })
 export class AppComponent {
   title = 'siscap-web';
+
+  constructor(private config: NgSelectConfig) {
+    config.notFoundText = 'Nenhum item encontrado.'
+  }
 }
