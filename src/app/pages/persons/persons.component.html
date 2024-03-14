@@ -1,71 +1,76 @@
-<div class="project-interaction mx-3">
+<div class="person-interaction mx-3">
   <div class="search-input col-6 col-sm-4 col-md-2 ms-auto">
     <div class="input-group ms-auto ms-sm-0">
       <input type="text" placeholder="Pesquisar..." class="form-control" />
-      <button class="input-group-text px-2" (click)="queryProject()">
+      <button class="input-group-text px-2" (click)="queryPerson()">
         <i class="fa-solid fa-magnifying-glass"></i>
       </button>
     </div>
   </div>
 
-  <div class="project-datatable">
+  <div class="person-datatable">
     <div class="row g-0 mt-3">
       <div class="col-12">
         <div class="card">
           <div class="card-body">
             <p-table
-              [value]="projetosList"
+              [value]="pessoasList"
               [scrollable]="true"
               scrollHeight="600px"
               tableStyleClass="table table-striped"
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th pSortableColumn="sigla">
-                    Sigla <p-sortIcon field="sigla"></p-sortIcon>
-                  </th>
-                  <th pSortableColumn="titulo">
-                    Nome do Projeto <p-sortIcon field="titulo"></p-sortIcon>
-                  </th>
-                  <th pSortableColumn="nomesMicrorregioes">
-                    Microrregiões
-                    <p-sortIcon field="nomesMicrorregioes"></p-sortIcon>
-                  </th>
-                  <th pSortableColumn="valorEstimado">
-                    Valor <p-sortIcon field="valorEstimado"></p-sortIcon>
-                  </th>
+                  <th style="width: 5%"></th>
+                  <th>Nome</th>
+                  <th>Email</th>
                   <th style="width: 5%">Ações</th>
                 </tr>
               </ng-template>
-
-              <ng-template pTemplate="body" let-projeto>
+              <ng-template pTemplate="body" let-pessoa>
                 <tr>
-                  <td>{{ projeto.sigla }}</td>
-                  <td>{{ projeto.titulo }}</td>
-                  <td>{{ projeto.nomesMicrorregioes }}</td>
                   <td>
-                    {{
-                      projeto.valorEstimado
-                        | mask
-                          : "separator.2"
-                          : {
-                              thousandSeparator: ".",
-                              decimalMarker: ",",
-                              prefix: "R$"
-                            }
-                    }}
+                    <ng-container
+                      *ngIf="
+                        pessoa.imagemPerfil;
+                        else standardProfileImageTemplate
+                      "
+                    >
+                      <ng-container
+                        *ngTemplateOutlet="
+                          profileImageTemplate;
+                          context: { imgSrc: pessoa.imagemPerfil }
+                        "
+                      ></ng-container>
+                    </ng-container>
                   </td>
+                  <td>{{ pessoa.nome }}</td>
+                  <td>{{ pessoa.email }}</td>
                   <td>
                     <ng-container
                       *ngTemplateOutlet="
                         actionsTemplate;
-                        context: { rowData: projeto }
+                        context: { rowData: pessoa }
                       "
                     ></ng-container>
                   </td>
                 </tr>
               </ng-template>
             </p-table>
+
+            <ng-template #profileImageTemplate let-imgSrc="imgSrc">
+              <img
+                [src]="convertByteArraytoImg(imgSrc)"
+                alt=""
+                class="profile-pic rounded-circle"
+              />
+            </ng-template>
+
+            <ng-template #standardProfileImageTemplate>
+              <div class="profile-pic border rounded-circle d-flex justify-content-center align-items-center">
+                <i class="fa-solid fa-user"></i>
+              </div>
+            </ng-template>
 
             <ng-template #actionsTemplate let-rowData="rowData">
               <div class="d-flex flex-column flex-md-row">

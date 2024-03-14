@@ -5,21 +5,45 @@
 /* ng-select */
 @import "@ng-select/ng-select/themes/default.theme.css";
 
-/* ngx-datatable tema bootstrap, ícones*/
-@import "../node_modules/@swimlane/ngx-datatable/themes/bootstrap.css";
-@import "../node_modules/@swimlane/ngx-datatable/assets/icons.css";
+/* Estilos de formulários */
 
-/* Workaround para override da cor dos botões */
-/* .btn-primary {
-  color: #fff;
-  &:hover {
-    color: #fff;
-  }
-} */
+label {
+  color: rgba(var(--bs-body-color-rgb), 0.65);
+  font-size: 0.85rem;
+}
 
-/* Estilos de card (background dos forms/tables */
+/* Estilos de validação de formulários (controle inválido)*/
+
+/* Texto de erro */
+
+span.error-message {
+  color: var(--bs-form-invalid-border-color);
+}
+
+/* Elementos comuns */
+
+.ng-invalid.ng-touched:not(:focus) {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+/* ng-select */
+
+.ng-select.ng-touched.ng-invalid:not(.ng-select-focused) .ng-select-container {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+/* Estilos de visualização de formulários (controle desabilitado) */
+
+/* ng-select */
+
+.ng-select.ng-select-disabled .ng-select-container {
+  background-color: #e9ecef;
+}
+
+/* Estilos de card (background dos forms/tables) */
 .card {
   border: none;
+  margin-bottom: 1rem;
 }
 
 .card-body {
@@ -28,14 +52,19 @@
   border-radius: 3px;
 }
 
+/* Classes de estilo do PrimeNG */
+/*Table*/
+.p-datatable-thead th {
+  font-weight: normal;
+}
+
+.p-datatable-tbody td {
+  vertical-align: middle;
+}
+
 /* Estilo link (tag <a>) para elementos */
 .pointer {
   cursor: pointer;
-}
-
-/* Fix do comportamento do dropdown de ações do ngx-datatable */
-.datatable-body-cell {
-  overflow: visible !important;
 }
 
 /* Resgatar as Media Queries abaixo para os componentes quando necessário */

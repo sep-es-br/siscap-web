@@ -6,13 +6,13 @@
   </div>
 
   <div
-    class="hide-menu d-sm-none position-absolute end-0 mt-2 me-2"
+    class="hide-menu d-md-none position-absolute end-0 mt-2 me-2"
     (click)="hideMenu()"
   >
     <i class="fa-solid fa-x fa-xl"></i>
   </div>
 
-  <div class="col mt-5 w-100">
+  <div class="col-12 mt-5 w-100t">
     <div class="menu-items w-100">
       <div class="menu-category">
         <ul>
@@ -76,9 +76,33 @@
           </li>
         </ul>
       </div>
+
+      <div class="menu-category">
+        <ul>
+          <li class="menu-nav-header">CONFIGURAÇÕES</li>
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('pessoas')"
+          >
+            <span>PESSOAS</span>
+          </li>
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('entidades')"
+          >
+            <span>ENTIDADES</span>
+          </li>
+          <li
+            class="menu-nav-link pointer"
+            (click)="routerNavigation('usuarios')"
+          >
+            <span>GRUPOS DE USUÁRIOS</span>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
-  <div class="govES-logo col-12 d-flex justify-content-center">
+  <div class="govES-logo col-12 mt-auto d-flex justify-content-center">
     <!-- Imagem placeholder em png -->
     <!-- Reorganizar quando tiver o svg apropriado -->
     <img src="../../../assets/icons/govES_logo.png" />

@@ -2,21 +2,6 @@
   margin-bottom: 0.6rem;
 }
 
-label {
-  margin-left: 0.5rem;
-}
-
 textarea.form-control {
-  height: 6.5rem;
-}
-
-/* Fix background ng-select quando disabled para ficar igual ao do bootstrap (bg-secondary) */
-.ng-select.ng-select-disabled ::ng-deep .ng-select-container {
-  background-color: #e9ecef;
-}
-
-/* Estilo da label do ng-select (emular o form-floating do Bootstrap) */
-.ng-select-floating-label {
-  color: rgba(var(--bs-body-color-rgb), 0.65);
-  transform: scale(0.85) translateX(-1rem);
+  min-height: 6.5rem;
 }

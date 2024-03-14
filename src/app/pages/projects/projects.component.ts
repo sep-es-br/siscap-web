@@ -13,7 +13,10 @@ import { Subject, Subscription, first } from 'rxjs';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
 
 import { ProjetosService } from '../../shared/services/projetos/projetos.service';
-import { IProjectGet } from '../../shared/interfaces/project.interface';
+import {
+  IProjectGet,
+  IProjectTable,
+} from '../../shared/interfaces/project.interface';
 
 @Component({
   selector: 'app-projects',
@@ -21,91 +24,21 @@ import { IProjectGet } from '../../shared/interfaces/project.interface';
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
 })
-export class ProjectsComponent implements OnInit, OnDestroy {
-  // @ViewChild(DataTableDirective) dtElement!: DataTableDirective;
-
-  @ViewChild('actionsTemplateRef')
-  actionsTemplateRef!: TemplateRef<any>;
-
-  public dtOptions: ADTSettings = {};
-  public dtTrigger: Subject<ADTSettings> = new Subject<ADTSettings>();
-
-  private _projetos$!: Subscription;
+export class ProjectsComponent {
+  public projetosList: Array<IProjectTable> = [];
 
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
-    private _projetosService: ProjetosService,
-    private _currencyPipeInstance: CurrencyPipe,
-    private _datePipeInstance: DatePipe
+    private _projetosService: ProjetosService
   ) {
-    this._projetos$ = this._projetosService
+    this._projetosService
       .getProjetos()
       .pipe(first())
-      //Substituir por Observer
-      .subscribe(
-        (response: IProjectGet) => {
-          this.dtOptions.data = response.content;
-        },
-        (error: HttpErrorResponse) => {
-          if (error.status == 401) {
-            alert('Sua token expirou. Faça o login novamente.');
-            this._router.navigateByUrl('/login');
-          }
-        },
-        () => {
-          this.dtOptions.columns?.push({
-            title: 'Ações',
-            data: null,
-            defaultContent: '',
-            width: '150',
-            ngTemplateRef: {
-              ref: this.actionsTemplateRef,
-              context: {
-                captureEvents: this.actionEvent,
-              },
-            },
-          });
-
-          this.dtTrigger.next(this.dtOptions);
-        }
-      );
+      .subscribe((response) => {
+        this.projetosList = response.content;
+      });
   }
-
-  ngOnInit(): void {
-    this.dtOptions = {
-      searching: false,
-      lengthChange: false,
-      info: false,
-      ordering: false, //Workaround para bug de sort com pipe aplicado
-      language: {
-        paginate: {
-          first: 'Primeiro',
-          last: 'Último',
-          next: 'Próximo',
-          previous: 'Anterior',
-        },
-      },
-      columns: [
-        { title: 'Sigla', data: 'sigla' },
-        { title: 'Nome do Projeto', data: 'titulo' },
-        { title: 'Microrregiões', data: 'nomesMicrorregioes' },
-        {
-          title: 'Valor',
-          data: 'valorEstimado',
-          ngPipeInstance: this._currencyPipeInstance,
-          ngPipeArgs: ['BRL', 'symbol'],
-        },
-      ],
-    };
-  }
-
-  // redirectProjectForm(mode: string, projectId?: number) {
-  //   this._router.navigate(['form', mode], {
-  //     relativeTo: this._route,
-  //     queryParams: !!projectId ? { id: projectId } : undefined,
-  //   });
-  // }
 
   queryProject() {}
 
@@ -131,7 +64,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
             Titulo: ${data.titulo}
             `)
     ) {
-      this._projetos$ = this._projetosService.deleteProjeto(data.id).subscribe(
+      this._projetosService.deleteProjeto(data.id).subscribe(
         (response) => {
           console.log(response);
           if (response) {
@@ -163,10 +96,5 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-  }
-
-  ngOnDestroy(): void {
-    this._projetos$.unsubscribe();
-    this.dtTrigger.unsubscribe();
   }
 }

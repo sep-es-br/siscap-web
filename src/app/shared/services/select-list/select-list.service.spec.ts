@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { EntidadeService } from './entidades.service';
+import { SelectListService } from './select-list.service';
 
-describe('EntidadeService', () => {
-  let service: EntidadeService;
+describe('SelectListService', () => {
+  let service: SelectListService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(EntidadeService);
+    service = TestBed.inject(SelectListService);
   });
 
   it('should be created', () => {

@@ -4,10 +4,17 @@ enum breadCrumbTitles {
   main = 'Home',
 
   projetos = 'Projetos',
-  
+
   projetoscriar = 'Novo Projeto',
   projetoseditar = 'Editar Projeto',
   projetosdetalhes = 'Visualizar Projeto',
+
+  pessoas = 'Pessoas',
+
+  // pessoascriar = 'Perfil',
+  pessoascriar = 'Novo Usuário',
+  pessoaseditar = 'Editar Pessoa',
+  pessoasdetalhes = 'Visualizar Pessoa',
 }
 
 @Pipe({

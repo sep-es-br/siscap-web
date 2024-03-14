@@ -4,6 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { ProjectFormComponent } from './projects/form/project-form.component';
+import { PersonsComponent } from './persons/persons.component';
+import { PersonFormComponent } from './persons/form/person-form.component';
 
 const routes: Routes = [
   {
@@ -20,6 +22,16 @@ const routes: Routes = [
     title: 'Formulário de Projeto',
     path: 'projetos/form/:mode',
     component: ProjectFormComponent,
+  },
+  {
+    title: 'Pessoas',
+    path: 'pessoas',
+    component: PersonsComponent,
+  },
+  {
+    title: 'Formulário de Pessoa',
+    path: 'pessoas/form/:mode',
+    component: PersonFormComponent,
   },
   {
     path: '**',

@@ -10,7 +10,7 @@ i {
   color: white;
 }
 
-@media (min-width: 577px) {
+@media (min-width: 768px) {
   .menu-feather-icon {
     visibility: hidden;
   }

@@ -1,0 +1,489 @@
+<div class="h-100" *ngIf="loading">
+  <app-loading></app-loading>
+</div>
+
+<div class="person-form h-100 overflow-y-auto" *ngIf="!loading">
+  <form [formGroup]="personForm">
+    <div class="row mx-1">
+      <div
+        class="left-part col-12 col-md-8 d-md-flex flex-md-column justify-content-md-between"
+      >
+        <div class="card">
+          <div class="card-body">
+            <div class="personal-info row">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card-title border-bottom border-1">
+                    <span class="fw-medium">Informações Pessoais</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="nome-completo" class="form-label col-12"
+                    >Nome Completo
+                    <app-alert [control]="personForm.get('nome')!"></app-alert>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nome-completo"
+                    formControlName="nome"
+                  />
+                </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="nome-social" class="form-label col-12"
+                    >Nome Social
+                    <app-alert
+                      [control]="personForm.get('nomeSocial')!"
+                    ></app-alert>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nome-social"
+                    formControlName="nomeSocial"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="nacionalidade" class="form-label col-12"
+                    >Nacionalidade
+                    <app-alert
+                      [control]="personForm.get('nacionalidade')!"
+                    ></app-alert
+                  ></label>
+                  <ng-select
+                    id="nacionalidade"
+                    placeholder="-- Nacionalidade --"
+                    formControlName="nacionalidade"
+                  >
+                    <ng-option
+                      *ngFor="let nacionalidade of nacionalidadesList"
+                      [value]="nacionalidade"
+                      >{{ nacionalidade }}</ng-option
+                    >
+                  </ng-select>
+                </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="genero" class="form-label col-12"
+                    >Gênero
+                    <app-alert [control]="personForm.get('genero')!"></app-alert
+                  ></label>
+                  <ng-select
+                    id="genero"
+                    placeholder="-- Gênero --"
+                    formControlName="genero"
+                  >
+                    <ng-option
+                      *ngFor="let genero of generosList"
+                      [value]="genero"
+                      >{{ genero }}</ng-option
+                    >
+                  </ng-select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="cpf" class="form-label col-12"
+                    >CPF
+                    <app-alert [control]="personForm.get('cpf')!"></app-alert
+                  ></label>
+                  <input
+                    mask="000.000.000-00"
+                    type="text"
+                    class="form-control"
+                    id="cpf"
+                    formControlName="cpf"
+                  />
+                </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="email" class="form-label col-12"
+                    >E-mail
+                    <app-alert [control]="personForm.get('email')!"></app-alert
+                  ></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="email"
+                    formControlName="email"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="telpessoal" class="form-label col-12"
+                    >Telefone Pessoal
+                    <app-alert
+                      [control]="personForm.get('telefonePessoal')!"
+                    ></app-alert
+                  ></label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="telpessoal"
+                    formControlName="telefonePessoal"
+                  />
+                </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="telcomercial" class="form-label"
+                    >Telefone Comercial</label
+                  >
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="telcomercial"
+                    formControlName="telefoneComercial"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="address-info row">
+              <div formGroupName="endereco">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="card-title border-bottom border-1">
+                      <span class="fw-medium">Informações de Endereço</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12 col-md-8 mb-2 mb-md-0">
+                    <label for="rua" class="form-label">Logradouro</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="rua"
+                      formControlName="rua"
+                    />
+                  </div>
+                  <div class="col-12 col-md-2 mb-2 mb-md-0">
+                    <label for="numeroendereco" class="form-label"
+                      >Número</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="numeroendereco"
+                      formControlName="numero"
+                    />
+                  </div>
+                  <div class="col-12 col-md-2 mb-2 mb-md-0">
+                    <label for="cep" class="form-label">Código Postal</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="cep"
+                      formControlName="codigoPostal"
+                    />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12 col-md-8 mb-2 mb-md-0">
+                    <label for="complemento" class="form-label"
+                      >Complemento</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="complemento"
+                      formControlName="complemento"
+                    />
+                  </div>
+
+                  <div class="col-12 col-md-4 mb-2 mb-md-0">
+                    <label for="bairro" class="form-label">Bairro</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="bairro"
+                      formControlName="bairro"
+                    />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12 col-md-4 mb-2 mb-md-0">
+                    <label for="pais" class="form-label">País</label>
+                    <ng-select
+                      id="pais"
+                      placeholder="-- Pais --"
+                      [(ngModel)]="paisSelected"
+                      [ngModelOptions]="{ standalone: true }"
+                      (change)="paisChanged($event)"
+                    >
+                      <ng-option
+                        *ngFor="let pais of paisesList"
+                        [value]="pais.id"
+                        >{{ pais.nome }}</ng-option
+                      >
+                    </ng-select>
+                  </div>
+                  <div class="col-12 col-md-4 mb-2 mb-md-0">
+                    <label for="estado" class="form-label">Estado</label>
+                    <ng-select
+                      id="estado"
+                      placeholder="-- Estado --"
+                      [(ngModel)]="estadoSelected"
+                      [ngModelOptions]="{ standalone: true }"
+                      (change)="estadoChanged($event)"
+                    >
+                      <ng-option
+                        *ngFor="let estado of estadosList"
+                        [value]="estado.id"
+                        >{{ estado.nome }}</ng-option
+                      >
+                    </ng-select>
+                  </div>
+                  <div class="col-12 col-md-4 mb-2 mb-md-0">
+                    <label for="cidade" class="form-label">Cidade</label>
+                    <ng-select
+                      id="cidade"
+                      placeholder="-- Cidade --"
+                      formControlName="idCidade"
+                    >
+                      <ng-option
+                        *ngFor="let cidade of cidadesList"
+                        [value]="cidade.id"
+                        >{{ cidade.nome }}</ng-option
+                      >
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="right-part col-12 col-md-4 d-md-flex flex-md-column justify-content-md-between"
+      >
+        <div class="col-12 mb-4 mb-md-0">
+          <div class="card">
+            <div class="card-body">
+              <div class="profile-pic row">
+                <div class="row">
+                  <div class="card-title border-bottom border-1">
+                    <span class="fw-medium">Foto de Perfil</span>
+                  </div>
+                </div>
+
+                <div class="row gx-2">
+                  <!--gx-2: fix comportamento padding dessa row em especifico -->
+                  <div
+                    class="d-flex flex-column flex-md-row justify-content-md-around align-items-center"
+                  >
+                    <div
+                      class="col-12 col-md-4 mb-3 mb-md-0 text-center photo-upload"
+                    >
+                      <ng-container
+                        *ngIf="!!uploadedPhotoSrc; else placeholderImg"
+                      >
+                        <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
+                        <span class="link-primary pointer" (click)="removeImg()"
+                          >Remover</span
+                        >
+                      </ng-container>
+                    </div>
+
+                    <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
+                      <input
+                        #imagemPerfil
+                        id="imagemPerfil"
+                        type="file"
+                        accept=".jpg, .gif, .png"
+                        class="form-control"
+                        (change)="attachImg($event)"
+                      />
+                      <small class="text-primary"
+                        >JPG, GIF ou PNG. Tamanho máximo de 800k</small
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 mb-4 mb-md-0">
+          <div class="card">
+            <div class="card-body">
+              <div class="access-level row">
+                <div formGroupName="acessos">
+                  <div class="row">
+                    <div class="card-title border-bottom border-1">
+                      <span class="fw-medium">Acessos</span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12">
+                      <label for="grupousuarios" class="form-label"
+                        >Grupo de Usuários</label
+                      >
+                      <ng-select
+                        id="grupos"
+                        placeholder="Desabilitado"
+                        formControlName="grupos"
+                      >
+                        <ng-option
+                          *ngFor="let placeholder of placeholderList"
+                          [value]="placeholder.id"
+                          >{{ placeholder.label }}</ng-option
+                        >
+                      </ng-select>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12">
+                      <label for="status" class="form-label">Status</label>
+                      <ng-select
+                        id="status"
+                        placeholder="Desabilitado"
+                        formControlName="status"
+                      >
+                        <ng-option
+                          *ngFor="let placeholder of placeholderList"
+                          [value]="placeholder.id"
+                          >{{ placeholder.label }}</ng-option
+                        >
+                      </ng-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="professional-info row">
+                <div formGroupName="prof">
+                  <div class="row">
+                    <div class="card-title border-bottom border-1">
+                      <span class="fw-medium">Informações Profissionais</span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="col-12">
+                        <label for="entidade" class="form-label"
+                          >Entidade</label
+                        >
+                        <ng-select
+                          id="entidade"
+                          placeholder="Desabilitado"
+                          formControlName="entidade"
+                        >
+                          <ng-option
+                            *ngFor="let placeholder of placeholderList"
+                            [value]="placeholder.id"
+                            >{{ placeholder.label }}</ng-option
+                          >
+                        </ng-select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="col-12">
+                        <label for="dptosetor" class="form-label"
+                          >Departamento / Setor</label
+                        >
+                        <ng-select
+                          id="dpto"
+                          placeholder="Desabilitado"
+                          read
+                          formControlName="dpto"
+                        >
+                          <ng-option
+                            *ngFor="let placeholder of placeholderList"
+                            [value]="placeholder.id"
+                            >{{ placeholder.label }}</ng-option
+                          >
+                        </ng-select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12">
+                      <label for="cargo" class="form-label">Cargo</label>
+                      <input
+                        id="cargo"
+                        type="text"
+                        placeholder="Desabilitado"
+                        class="form-control"
+                        formControlName="cargo"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-2" id="interactbtns">
+        <div class="col d-flex flex-row-reverse">
+          <button
+            type="button"
+            class="btn btn-primary p-2 px-4 mx-1"
+            [disabled]="personForm.invalid"
+            (click)="submitPersonForm(this.personForm)"
+          >
+            Cadastrar
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-danger p-2 px-4 mx-1"
+            (click)="cancelForm()"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<ng-template #placeholderImg>
+  <i
+    class="fa-solid fa-user fa-3x pt-3 h-100 w-100 border border-1 rounded"
+  ></i>
+</ng-template>
+
+<!-- <ng-select
+  id="placeholder"
+  placeholder="placeholder"
+  formControlName="placeholder"
+>
+  <ng-option
+    *ngFor="let placeholder of placeholderList"
+    [value]="placeholder.id"
+    >{{ placeholder.label }}
+  </ng-option>
+</ng-select> -->
