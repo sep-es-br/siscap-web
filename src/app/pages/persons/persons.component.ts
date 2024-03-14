@@ -51,6 +51,7 @@ export class PersonsComponent {
       confirm(`
             Tem certeza que deseja deletar o usuário?
             Nome: ${data.nome}
+            E-mail: ${data.email}
             `)
     ) {
       this._pessoasService.deletePessoa(data.id).subscribe(
