@@ -540,15 +540,17 @@
           <button
             type="button"
             class="btn btn-primary p-2 px-4 mx-1"
+            [hidden]="formMode == 'detalhes'"
             [disabled]="personForm.invalid"
             (click)="submitPersonForm(this.personForm)"
           >
-            Cadastrar
+            {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
           </button>
 
           <button
             type="button"
             class="btn btn-danger p-2 px-4 mx-1"
+            [hidden]="formMode == 'detalhes'"
             (click)="cancelForm()"
           >
             Cancelar
