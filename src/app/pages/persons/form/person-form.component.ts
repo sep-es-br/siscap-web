@@ -211,7 +211,7 @@ export class PersonFormComponent implements OnInit {
         this._pessoasService.postPessoa(createPayload).subscribe((response) => {
           console.log(response);
           if (response) {
-            alert('Perfil cadastrado com sucesso.');
+            alert('Usuário cadastrado com sucesso.');
             this._router.navigate(['main', 'pessoas']);
           }
         });
@@ -245,7 +245,7 @@ export class PersonFormComponent implements OnInit {
           .subscribe((response) => {
             console.log(response);
             if (response) {
-              alert('Perfil cadastrado com sucesso.');
+              alert('Usuário atualizado com sucesso.');
               this._router.navigate(['main', 'pessoas']);
             }
           });
@@ -302,9 +302,3 @@ export class PersonFormComponent implements OnInit {
     });
   }
 }
-
-/* 
-Foto de perfil:
-- Alinhar campo de imagem para esquerda
-- SUbstituir interrogação por avatar de usuario
-*/
