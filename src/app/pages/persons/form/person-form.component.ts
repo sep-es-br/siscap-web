@@ -79,6 +79,14 @@ export class PersonFormComponent implements OnInit {
         }),
         finalize(() => {
           this.personFormInitialValue = this.personForm.value;
+
+          if (this.formMode == 'detalhes') {
+            const controls = this.personForm.controls;
+            for (const key in controls) {
+              controls[key].disable();
+            }
+          }
+
           this.loading = false;
         })
       );
