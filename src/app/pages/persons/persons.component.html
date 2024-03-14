@@ -24,7 +24,7 @@
                   <th style="width: 5%"></th>
                   <th>Nome</th>
                   <th>Email</th>
-                  <th style="width: 5%;">Ações</th>
+                  <th style="width: 5%">Ações</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-pessoa>
@@ -67,7 +67,9 @@
             </ng-template>
 
             <ng-template #standardProfileImageTemplate>
-              <i class="fa-solid fa-user profile-pic rounded-circle"></i>
+              <div class="profile-pic border rounded-circle d-flex justify-content-center align-items-center">
+                <i class="fa-solid fa-user"></i>
+              </div>
             </ng-template>
 
             <ng-template #actionsTemplate let-rowData="rowData">
