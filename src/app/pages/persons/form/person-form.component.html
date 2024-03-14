@@ -21,28 +21,36 @@
 
               <div class="row">
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="nome-completo" class="form-label col-12"
+                  <label for="nome" class="form-label col-12"
                     >Nome Completo
-                    <app-alert [control]="personForm.get('nome')!"></app-alert>
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'nome' }
+                      "
+                    ></ng-container>
                   </label>
                   <input
                     type="text"
                     class="form-control"
-                    id="nome-completo"
+                    id="nome"
                     formControlName="nome"
                   />
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="nome-social" class="form-label col-12"
+                  <label for="nomeSocial" class="form-label col-12"
                     >Nome Social
-                    <app-alert
-                      [control]="personForm.get('nomeSocial')!"
-                    ></app-alert>
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'nomeSocial' }
+                      "
+                    ></ng-container>
                   </label>
                   <input
                     type="text"
                     class="form-control"
-                    id="nome-social"
+                    id="nomeSocial"
                     formControlName="nomeSocial"
                   />
                 </div>
@@ -52,10 +60,13 @@
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="nacionalidade" class="form-label col-12"
                     >Nacionalidade
-                    <app-alert
-                      [control]="personForm.get('nacionalidade')!"
-                    ></app-alert
-                  ></label>
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'nacionalidade' }
+                      "
+                    ></ng-container>
+                  </label>
                   <ng-select
                     id="nacionalidade"
                     placeholder="-- Nacionalidade --"
@@ -71,7 +82,12 @@
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="genero" class="form-label col-12"
                     >Gênero
-                    <app-alert [control]="personForm.get('genero')!"></app-alert
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'genero' }
+                      "
+                    ></ng-container
                   ></label>
                   <ng-select
                     id="genero"
@@ -91,7 +107,12 @@
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="cpf" class="form-label col-12"
                     >CPF
-                    <app-alert [control]="personForm.get('cpf')!"></app-alert
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'cpf' }
+                      "
+                    ></ng-container
                   ></label>
                   <input
                     mask="000.000.000-00"
@@ -104,7 +125,12 @@
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="email" class="form-label col-12"
                     >E-mail
-                    <app-alert [control]="personForm.get('email')!"></app-alert
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'email' }
+                      "
+                    ></ng-container
                   ></label>
                   <input
                     type="text"
@@ -117,29 +143,38 @@
 
               <div class="row">
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="telpessoal" class="form-label col-12"
+                  <label for="telefonePessoal" class="form-label col-12"
                     >Telefone Pessoal
-                    <app-alert
-                      [control]="personForm.get('telefonePessoal')!"
-                    ></app-alert
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'telefonePessoal' }
+                      "
+                    ></ng-container
                   ></label>
 
                   <input
                     type="text"
                     class="form-control"
-                    id="telpessoal"
+                    id="telefonePessoal"
                     formControlName="telefonePessoal"
                   />
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="telcomercial" class="form-label"
-                    >Telefone Comercial</label
-                  >
+                  <label for="telefoneComercial" class="form-label col-12"
+                    >Telefone Comercial
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'telefoneComercial' }
+                      "
+                    ></ng-container>
+                  </label>
 
                   <input
                     type="text"
                     class="form-control"
-                    id="telcomercial"
+                    id="telefoneComercial"
                     formControlName="telefoneComercial"
                   />
                 </div>
@@ -162,31 +197,56 @@
 
                 <div class="row">
                   <div class="col-12 col-md-8 mb-2 mb-md-0">
-                    <label for="rua" class="form-label">Logradouro</label>
+                    <label for="endereco.rua" class="form-label col-12"
+                      >Logradouro
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'endereco.rua' }
+                        "
+                      ></ng-container>
+                    </label>
                     <input
                       type="text"
                       class="form-control"
-                      id="rua"
+                      id="endereco.rua"
                       formControlName="rua"
                     />
                   </div>
                   <div class="col-12 col-md-2 mb-2 mb-md-0">
-                    <label for="numeroendereco" class="form-label"
-                      >Número</label
-                    >
+                    <label for="endereco.numero" class="form-label col-12"
+                      >Número
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'endereco.numero' }
+                        "
+                      ></ng-container>
+                    </label>
                     <input
                       type="text"
                       class="form-control"
-                      id="numeroendereco"
+                      id="endereco.numero"
                       formControlName="numero"
                     />
                   </div>
                   <div class="col-12 col-md-2 mb-2 mb-md-0">
-                    <label for="cep" class="form-label">Código Postal</label>
+                    <label
+                      for="endereco.codigoPostal"
+                      class="form-label col-12"
+                    >
+                      Código Postal
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'endereco.codigoPostal' }
+                        "
+                      ></ng-container>
+                    </label>
                     <input
                       type="text"
                       class="form-control"
-                      id="cep"
+                      id="endereco.codigoPostal"
                       formControlName="codigoPostal"
                     />
                   </div>
@@ -194,36 +254,52 @@
 
                 <div class="row">
                   <div class="col-12 col-md-8 mb-2 mb-md-0">
-                    <label for="complemento" class="form-label"
-                      >Complemento</label
-                    >
+                    <label for="endereco.complemento" class="form-label col-12">
+                      Complemento
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'endereco.complemento' }
+                        "
+                      ></ng-container>
+                    </label>
                     <input
                       type="text"
                       class="form-control"
-                      id="complemento"
+                      id="endereco.complemento"
                       formControlName="complemento"
                     />
                   </div>
 
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
-                    <label for="bairro" class="form-label">Bairro</label>
+                    <label for="endereco.bairro" class="form-label col-12">
+                      Bairro
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'endereco.bairro' }
+                        "
+                      ></ng-container>
+                    </label>
                     <input
                       type="text"
                       class="form-control"
-                      id="bairro"
+                      id="endereco.bairro"
                       formControlName="bairro"
                     />
                   </div>
                 </div>
 
+                <!-- Não é possível dar disable no ng-select sem um controle no formulário -->
                 <div class="row">
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
                     <label for="pais" class="form-label">País</label>
                     <ng-select
+                      [disabled]="formMode == 'detalhes'"
                       id="pais"
                       placeholder="-- Pais --"
                       [(ngModel)]="paisSelected"
-                      [ngModelOptions]="{ standalone: true }"
+                      [ngModelOptions]="{ standalone: true, }"
                       (change)="paisChanged($event)"
                     >
                       <ng-option
@@ -236,6 +312,7 @@
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
                     <label for="estado" class="form-label">Estado</label>
                     <ng-select
+                      [disabled]="formMode == 'detalhes'"
                       id="estado"
                       placeholder="-- Estado --"
                       [(ngModel)]="estadoSelected"
@@ -250,9 +327,17 @@
                     </ng-select>
                   </div>
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
-                    <label for="cidade" class="form-label">Cidade</label>
+                    <label for="endereco.idCidade" class="form-label col-12">
+                      Cidade
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'endereco.idCidade' }
+                        "
+                      ></ng-container>
+                    </label>
                     <ng-select
-                      id="cidade"
+                      id="endereco.idCidade"
                       placeholder="-- Cidade --"
                       formControlName="idCidade"
                     >
@@ -295,7 +380,10 @@
                         *ngIf="!!uploadedPhotoSrc; else placeholderImg"
                       >
                         <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
-                        <span class="link-primary pointer" (click)="removeImg()"
+                        <span
+                          class="link-primary pointer"
+                          [ngClass]="{ invisible: formMode == 'detalhes' }"
+                          (click)="removeImg()"
                           >Remover</span
                         >
                       </ng-container>
@@ -304,6 +392,7 @@
                     <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
                       <input
                         #imagemPerfil
+                        [disabled]="formMode == 'detalhes'"
                         id="imagemPerfil"
                         type="file"
                         accept=".jpg, .gif, .png"
@@ -451,15 +540,17 @@
           <button
             type="button"
             class="btn btn-primary p-2 px-4 mx-1"
+            [hidden]="formMode == 'detalhes'"
             [disabled]="personForm.invalid"
             (click)="submitPersonForm(this.personForm)"
           >
-            Cadastrar
+            {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
           </button>
 
           <button
             type="button"
             class="btn btn-danger p-2 px-4 mx-1"
+            [hidden]="formMode == 'detalhes'"
             (click)="cancelForm()"
           >
             Cancelar
@@ -474,6 +565,10 @@
   <i
     class="fa-solid fa-user fa-3x pt-3 h-100 w-100 border border-1 rounded"
   ></i>
+</ng-template>
+
+<ng-template #appAlert let-controlName="controlName">
+  <app-alert [control]="personForm.get(controlName) ?? undefined"></app-alert>
 </ng-template>
 
 <!-- <ng-select
