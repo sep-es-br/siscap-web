@@ -5,8 +5,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 
 import { NgSelectModule } from '@ng-select/ng-select';
-// import { DataTablesModule } from 'angular-datatables';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { TableModule } from 'primeng/table';
 
 import { LoginComponent } from '../pages/login/login.component';
 import { HomeComponent } from '../pages/home/home.component';
@@ -18,7 +18,6 @@ import { PagesRoutingModule } from './pages-routing.module';
 import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
 import { PersonsComponent } from './persons/persons.component';
 import { PersonFormComponent } from './persons/form/person-form.component';
-import { TableModule } from 'primeng/table';
 
 @NgModule({
   declarations: [
@@ -37,7 +36,6 @@ import { TableModule } from 'primeng/table';
     ComponentsModule,
     ReactiveFormsModule,
     TableModule,
-    // DataTablesModule,
     HttpClientModule,
     NgSelectModule,
     NgxMaskDirective,
