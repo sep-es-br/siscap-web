@@ -18,6 +18,8 @@ import { PagesRoutingModule } from './pages-routing.module';
 import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
 import { PersonsComponent } from './persons/persons.component';
 import { PersonFormComponent } from './persons/form/person-form.component';
+import { EntitiesComponent } from './entities/entities.component';
+import { EntityFormComponent } from './entities/form/entity-form.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,8 @@ import { PersonFormComponent } from './persons/form/person-form.component';
     ProjectFormComponent,
     PersonsComponent,
     PersonFormComponent,
+    EntitiesComponent,
+    EntityFormComponent,
   ],
   imports: [
     CommonModule,
@@ -53,6 +57,8 @@ import { PersonFormComponent } from './persons/form/person-form.component';
     ProjectFormComponent,
     PersonsComponent,
     PersonFormComponent,
+    EntitiesComponent,
+    EntityFormComponent,
   ],
 })
 export class PagesModule {}
