@@ -12,7 +12,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists.helper';
+import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 
 @Component({
