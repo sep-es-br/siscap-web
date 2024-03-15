@@ -23,17 +23,13 @@ export interface IPerson {
   telefoneComercial?: string;
   telefonePessoal?: string;
   endereco?: IAddress;
-  imagemPerfil?: ArrayBuffer | File; //ver isso aqui melhor
+  imagemPerfil?: File | ArrayBuffer;
 }
 
-export interface IPersonTable extends Pick<IPerson, 'id' | 'nome' | 'email'> {
-  imagemPerfil: ArrayBuffer;
-}
+export interface IPersonTable extends Pick<IPerson, 'id' | 'nome' | 'email'> {}
 
 export interface IPersonGet extends IHttpGetResponseBody<IPersonTable> {}
 
-export interface IPersonCreate extends Omit<IPerson, 'id' | 'endereço.id'> {
-  imagemPerfil?: File;
-}
+export interface IPersonCreate extends Omit<IPerson, 'id' | 'endereço.id'> {}
 
-export interface IPersonEdit extends Partial<IPerson> {}
+export interface IPersonEdit extends Partial<IPersonCreate> {}
