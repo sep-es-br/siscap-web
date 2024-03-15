@@ -1,0 +1,76 @@
+<p>entities works!</p>
+
+<!-- <div class="entity-interaction mx-3">
+  <div class="search-input col-6 col-sm-4 col-md-2 ms-auto">
+    <div class="input-group ms-auto ms-sm-0">
+      <input type="text" placeholder="Pesquisar..." class="form-control" />
+      <button class="input-group-text px-2" (click)="queryEntity()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="entity-datatable">
+    <div class="row g-0 mt-3">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <p-table
+              [value]="entidadesList"
+              [scrollable]="true"
+              scrollHeight="600px"
+              tableStyleClass="table table-striped"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Valor 1</th>
+                  <th>Valor 2</th>
+                  <th>Valor 3</th>
+                  <th style="width: 5%">Ações</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-entidade>
+                <tr>
+                  <td>A</td>
+                  <td>B</td>
+                  <td>C</td>
+                  <td>
+                    <ng-container
+                      *ngTemplateOutlet="
+                        actionsTemplate;
+                        context: { rowData: entidade }
+                      "
+                    ></ng-container>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #actionsTemplate let-rowData="rowData">
+  <div class="d-flex flex-column flex-md-row">
+    <button
+      class="btn btn-primary py-1 px-2"
+      (click)="actionEvent('detalhes', rowData)"
+    >
+      <i class="fa-regular fa-eye"></i>
+    </button>
+    <button
+      class="btn btn-primary py-1 px-1 px-md-2 mx-0 mx-md-2 my-2 my-md-0"
+      (click)="actionEvent('editar', rowData)"
+    >
+      <i class="fa-solid fa-pencil"></i>
+    </button>
+    <button
+      class="btn btn-primary py-1 px-2"
+      (click)="actionEvent('deletar', rowData)"
+    >
+      <i class="fa-regular fa-trash-can"></i>
+    </button>
+  </div>
+</ng-template> -->
