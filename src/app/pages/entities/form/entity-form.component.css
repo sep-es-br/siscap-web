@@ -1,0 +1,13 @@
+i.fa-user {
+  color: #c2c2c2;
+}
+
+.photo-upload {
+  height: 80px;
+  width: 80px;
+}
+
+.uploaded-photo {
+  height: 100%;
+  width: 100%;
+}
