@@ -1,16 +1,7 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CurrencyPipe, DatePipe } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 
-import { Subject, Subscription, first } from 'rxjs';
-import { ADTSettings } from 'angular-datatables/src/models/settings';
+import { first } from 'rxjs';
 
 import { ProjetosService } from '../../shared/services/projetos/projetos.service';
 import {
@@ -35,7 +26,7 @@ export class ProjectsComponent {
     this._projetosService
       .getProjetos()
       .pipe(first())
-      .subscribe((response) => {
+      .subscribe((response: IProjectGet) => {
         this.projetosList = response.content;
       });
   }
