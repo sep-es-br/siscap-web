@@ -36,6 +36,10 @@ export class SelectListService {
     return this.getSelectList('entidades');
   }
 
+  public getTiposEntidades() {
+    return this.getSelectList('tipos-entidades');
+  }
+
   public getMicrorregioes() {
     return this.getSelectList('microrregioes');
   }
