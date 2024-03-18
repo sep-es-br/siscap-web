@@ -122,7 +122,9 @@ export class EntityFormComponent implements OnInit {
 
     this.loading = true;
 
-    this._prepareForm$.subscribe();
+    this._prepareForm$.subscribe((entidade) => {
+      this.paisSelected(entidade.idPais);
+    });
   }
 
   initForm(entity?: IEntity) {
