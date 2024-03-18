@@ -38,7 +38,7 @@ export class ProjectFormComponent implements OnInit {
   public pessoasList: ISelectList[] = [];
 
   constructor(
-    private _fb: FormBuilder,
+    private _formBuilder: FormBuilder,
     private _projetosService: ProjetosService,
     private _selectListService: SelectListService,
     private _route: ActivatedRoute,
@@ -125,7 +125,7 @@ export class ProjectFormComponent implements OnInit {
    *
    */
   initForm(project?: IProject) {
-    const nnfb = this._fb.nonNullable;
+    const nnfb = this._formBuilder.nonNullable;
     this.projectForm = nnfb.group({
       sigla: nnfb.control(project?.sigla ?? '', {
         validators: [Validators.required, Validators.maxLength(12)],
