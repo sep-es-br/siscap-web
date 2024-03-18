@@ -40,6 +40,33 @@ span.error-message {
   background-color: #e9ecef;
 }
 
+/* Estilos de imagem dos componentes de formulário */
+
+/* Icone de usuário do font-awesome*/
+
+i.fa-user {
+  color: #c2c2c2;
+}
+
+/* Coluna de preview de imagem */
+
+.photo-upload {
+  height: 80px;
+  width: 80px;
+}
+
+.uploaded-photo {
+  height: 100%;
+  width: 100%;
+}
+
+/* Coluna de exibição da imagem das tabelas */
+
+.profile-pic {
+  height: 30px;
+  width: 30px;
+}
+
 /* Estilos de card (background dos forms/tables) */
 .card {
   border: none;

@@ -10,12 +10,10 @@
       >
         <div class="card">
           <div class="card-body">
-            <div class="personal-info row">
-              <div class="row">
-                <div class="col-12">
-                  <div class="card-title border-bottom border-1">
-                    <span class="fw-medium">Informações Pessoais</span>
-                  </div>
+            <div class="personal-info">
+              <div class="col-12">
+                <div class="card-title border-bottom border-1">
+                  <span class="fw-medium">Informações Pessoais</span>
                 </div>
               </div>
 
@@ -185,13 +183,11 @@
 
         <div class="card">
           <div class="card-body">
-            <div class="address-info row">
+            <div class="address-info">
               <div formGroupName="endereco">
-                <div class="row">
-                  <div class="col-12">
-                    <div class="card-title border-bottom border-1">
-                      <span class="fw-medium">Informações de Endereço</span>
-                    </div>
+                <div class="col-12">
+                  <div class="card-title border-bottom border-1">
+                    <span class="fw-medium">Informações de Endereço</span>
                   </div>
                 </div>
 
@@ -290,7 +286,6 @@
                   </div>
                 </div>
 
-                <!-- Não é possível dar disable no ng-select sem um controle no formulário -->
                 <div class="row">
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
                     <label for="pais" class="form-label">País</label>
@@ -358,51 +353,48 @@
       <div
         class="right-part col-12 col-md-4 d-md-flex flex-md-column justify-content-md-between"
       >
-        <div class="col-12 mb-4 mb-md-0">
-          <div class="card">
-            <div class="card-body">
-              <div class="profile-pic row">
-                <div class="row">
-                  <div class="card-title border-bottom border-1">
-                    <span class="fw-medium">Foto de Perfil</span>
-                  </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="profile-img">
+              <div class="col-12">
+                <div class="card-title border-bottom border-1">
+                  <span class="fw-medium">Foto de Perfil</span>
                 </div>
+              </div>
 
-                <div class="row gx-2">
-                  <!--gx-2: fix comportamento padding dessa row em especifico -->
+              <div class="row">
+                <div
+                  class="d-flex flex-column flex-md-row justify-content-md-around align-items-center"
+                >
                   <div
-                    class="d-flex flex-column flex-md-row justify-content-md-around align-items-center"
+                    class="col-12 col-md-4 mb-3 mb-md-0 text-center photo-upload"
                   >
-                    <div
-                      class="col-12 col-md-4 mb-3 mb-md-0 text-center photo-upload"
+                    <ng-container
+                      *ngIf="!!uploadedPhotoSrc; else placeholderImg"
                     >
-                      <ng-container
-                        *ngIf="!!uploadedPhotoSrc; else placeholderImg"
+                      <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
+                      <span
+                        class="link-primary pointer"
+                        [ngClass]="{ invisible: formMode == 'detalhes' }"
+                        (click)="removeImg()"
+                        >Remover</span
                       >
-                        <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
-                        <span
-                          class="link-primary pointer"
-                          [ngClass]="{ invisible: formMode == 'detalhes' }"
-                          (click)="removeImg()"
-                          >Remover</span
-                        >
-                      </ng-container>
-                    </div>
+                    </ng-container>
+                  </div>
 
-                    <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
-                      <input
-                        #imagemPerfil
-                        [disabled]="formMode == 'detalhes'"
-                        id="imagemPerfil"
-                        type="file"
-                        accept=".jpg, .gif, .png"
-                        class="form-control"
-                        (change)="attachImg($event)"
-                      />
-                      <small class="text-primary"
-                        >JPG, GIF ou PNG. Tamanho máximo de 800k</small
-                      >
-                    </div>
+                  <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
+                    <input
+                      #imagemPerfil
+                      [disabled]="formMode == 'detalhes'"
+                      id="imagemPerfil"
+                      type="file"
+                      accept=".jpg, .gif, .png"
+                      class="form-control"
+                      (change)="attachImg($event)"
+                    />
+                    <small class="text-primary"
+                      >JPG, GIF ou PNG. Tamanho máximo de 800k</small
+                    >
                   </div>
                 </div>
               </div>
@@ -410,26 +402,74 @@
           </div>
         </div>
 
-        <div class="col-12 mb-4 mb-md-0">
-          <div class="card">
-            <div class="card-body">
-              <div class="access-level row">
-                <div formGroupName="acessos">
-                  <div class="row">
-                    <div class="card-title border-bottom border-1">
-                      <span class="fw-medium">Acessos</span>
-                    </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="access-level">
+              <div formGroupName="acessos">
+                <div class="col-12">
+                  <div class="card-title border-bottom border-1">
+                    <span class="fw-medium">Acessos</span>
                   </div>
+                </div>
 
-                  <div class="row">
-                    <div class="col-12">
-                      <label for="grupousuarios" class="form-label"
-                        >Grupo de Usuários</label
+                <div class="row">
+                  <div class="col-12">
+                    <label for="grupousuarios" class="form-label"
+                      >Grupo de Usuários</label
+                    >
+                    <ng-select
+                      id="grupos"
+                      placeholder="Desabilitado"
+                      formControlName="grupos"
+                    >
+                      <ng-option
+                        *ngFor="let placeholder of placeholderList"
+                        [value]="placeholder.id"
+                        >{{ placeholder.label }}</ng-option
                       >
+                    </ng-select>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12">
+                    <label for="status" class="form-label">Status</label>
+                    <ng-select
+                      id="status"
+                      placeholder="Desabilitado"
+                      formControlName="status"
+                    >
+                      <ng-option
+                        *ngFor="let placeholder of placeholderList"
+                        [value]="placeholder.id"
+                        >{{ placeholder.label }}</ng-option
+                      >
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="professional-info">
+              <div formGroupName="prof">
+                <div class="col-12">
+                  <div class="card-title border-bottom border-1">
+                    <span class="fw-medium">Informações Profissionais</span>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12">
+                    <div class="col-12">
+                      <label for="entidade" class="form-label">Entidade</label>
                       <ng-select
-                        id="grupos"
+                        id="entidade"
                         placeholder="Desabilitado"
-                        formControlName="grupos"
+                        formControlName="entidade"
                       >
                         <ng-option
                           *ngFor="let placeholder of placeholderList"
@@ -439,14 +479,19 @@
                       </ng-select>
                     </div>
                   </div>
+                </div>
 
-                  <div class="row">
+                <div class="row">
+                  <div class="col-12">
                     <div class="col-12">
-                      <label for="status" class="form-label">Status</label>
+                      <label for="dptosetor" class="form-label"
+                        >Departamento / Setor</label
+                      >
                       <ng-select
-                        id="status"
+                        id="dpto"
                         placeholder="Desabilitado"
-                        formControlName="status"
+                        read
+                        formControlName="dpto"
                       >
                         <ng-option
                           *ngFor="let placeholder of placeholderList"
@@ -457,76 +502,17 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <div class="col-12">
-          <div class="card">
-            <div class="card-body">
-              <div class="professional-info row">
-                <div formGroupName="prof">
-                  <div class="row">
-                    <div class="card-title border-bottom border-1">
-                      <span class="fw-medium">Informações Profissionais</span>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-12">
-                      <div class="col-12">
-                        <label for="entidade" class="form-label"
-                          >Entidade</label
-                        >
-                        <ng-select
-                          id="entidade"
-                          placeholder="Desabilitado"
-                          formControlName="entidade"
-                        >
-                          <ng-option
-                            *ngFor="let placeholder of placeholderList"
-                            [value]="placeholder.id"
-                            >{{ placeholder.label }}</ng-option
-                          >
-                        </ng-select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-12">
-                      <div class="col-12">
-                        <label for="dptosetor" class="form-label"
-                          >Departamento / Setor</label
-                        >
-                        <ng-select
-                          id="dpto"
-                          placeholder="Desabilitado"
-                          read
-                          formControlName="dpto"
-                        >
-                          <ng-option
-                            *ngFor="let placeholder of placeholderList"
-                            [value]="placeholder.id"
-                            >{{ placeholder.label }}</ng-option
-                          >
-                        </ng-select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-12">
-                      <label for="cargo" class="form-label">Cargo</label>
-                      <input
-                        id="cargo"
-                        type="text"
-                        placeholder="Desabilitado"
-                        class="form-control"
-                        formControlName="cargo"
-                      />
-                    </div>
+                <div class="row">
+                  <div class="col-12">
+                    <label for="cargo" class="form-label">Cargo</label>
+                    <input
+                      id="cargo"
+                      type="text"
+                      placeholder="Desabilitado"
+                      class="form-control"
+                      formControlName="cargo"
+                    />
                   </div>
                 </div>
               </div>

@@ -4,8 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, finalize, first, tap } from 'rxjs';
 
-import * as _ from 'lodash';
-
 import {
   IPerson,
   IPersonCreate,
@@ -14,7 +12,8 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { PessoaFormLists } from '../../../shared/helpers/pessoa-form-lists.helper';
+import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
+import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 
 @Component({
   selector: 'app-person-form',
@@ -58,7 +57,7 @@ export class PersonFormComponent implements OnInit {
   public generosList = PessoaFormLists.generosList;
 
   constructor(
-    private _fb: FormBuilder,
+    private _formBuilder: FormBuilder,
     private _pessoasService: PessoasService,
     private _selectListService: SelectListService,
     private _route: ActivatedRoute,
@@ -118,7 +117,7 @@ export class PersonFormComponent implements OnInit {
   }
 
   initForm(person?: IPerson) {
-    const nnfb = this._fb.nonNullable;
+    const nnfb = this._formBuilder.nonNullable;
     this.personForm = nnfb.group({
       nome: nnfb.control(person?.nome ?? '', {
         validators: Validators.required,
@@ -189,12 +188,25 @@ export class PersonFormComponent implements OnInit {
       .subscribe();
   }
 
-  cancelForm() {
-    this._router.navigate(['main', 'pessoas']);
-  }
-
   convertByteArraytoImgSrc(data: ArrayBuffer): string {
     return !!data ? 'data:image/jpeg;base64,' + data : '';
+  }
+
+  attachImg(event: any) {
+    if (event.target.files && event.target.files[0]) {
+      this.uploadedPhotoFile = event.target.files[0];
+      this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
+    }
+  }
+
+  removeImg() {
+    this.imagemPerfilInput.nativeElement.value = '';
+    this.uploadedPhotoFile = undefined;
+    this.uploadedPhotoSrc = '';
+  }
+
+  cancelForm() {
+    this._router.navigate(['main', 'pessoas']);
   }
 
   submitPersonForm(form: FormGroup) {
@@ -203,20 +215,21 @@ export class PersonFormComponent implements OnInit {
     }
 
     if (form.invalid) {
-      // alert('Formulário contém erros. Por favor verificar os campos.');
       return;
+    }
+
+    const payload = FormDataHelper.appendFormGrouptoFormData(
+      form.value,
+      'endereco'
+    );
+
+    if (!!this.uploadedPhotoFile) {
+      payload.append('imagemPerfil', this.uploadedPhotoFile);
     }
 
     switch (this.formMode) {
       case 'criar':
-        const createPayload = this.appendFormGrouptoFormData(
-          form.value as IPersonCreate
-        );
-
-        if (!!this.uploadedPhotoFile) {
-          createPayload.append('imagemPerfil', this.uploadedPhotoFile);
-        }
-        this._pessoasService.postPessoa(createPayload).subscribe((response) => {
+        this._pessoasService.postPessoa(payload).subscribe((response) => {
           console.log(response);
           if (response) {
             alert('Usuário cadastrado com sucesso.');
@@ -226,30 +239,8 @@ export class PersonFormComponent implements OnInit {
         break;
 
       case 'editar':
-        let personEditForm = this.prepareEditForm(
-          form.value,
-          this.personFormInitialValue
-        );
-
-        const addressEditForm = this.prepareEditForm(
-          form.value['endereco'],
-          this.personFormInitialValue['endereco']
-        );
-
-        _.isEmpty(addressEditForm)
-          ? (personEditForm = _.omit(personEditForm, 'endereco'))
-          : (personEditForm['endereco'] = addressEditForm);
-
-        const editPayload = this.appendFormGrouptoFormData(
-          personEditForm as IPersonEdit
-        );
-
-        if (!!this.uploadedPhotoFile) {
-          editPayload.append('imagemPerfil', this.uploadedPhotoFile);
-        }
-
         this._pessoasService
-          .putPessoa(this.personEditId, editPayload)
+          .putPessoa(this.personEditId, payload)
           .subscribe((response) => {
             console.log(response);
             if (response) {
@@ -263,50 +254,5 @@ export class PersonFormComponent implements OnInit {
       default:
         break;
     }
-  }
-
-  attachImg(event: any) {
-    console.log(this.imagemPerfilInput.nativeElement.value);
-    if (event.target.files && event.target.files[0]) {
-      this.uploadedPhotoFile = event.target.files[0];
-      this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
-    }
-  }
-
-  removeImg() {
-    this.imagemPerfilInput.nativeElement.value = '';
-    this.uploadedPhotoFile = undefined;
-    this.uploadedPhotoSrc = '';
-  }
-
-  appendFormGrouptoFormData(formValue: any): FormData {
-    const formData = new FormData();
-
-    for (const key in formValue) {
-      const typedKey = key as keyof typeof formValue;
-
-      if (key == 'endereco') {
-        for (let enderecoKey in formValue[key]) {
-          if (!!formValue[key][enderecoKey]) {
-            formData.append(
-              `endereco.${enderecoKey}`,
-              formValue[key][enderecoKey]
-            );
-          }
-        }
-      } else {
-        if (!!formValue[typedKey]) {
-          formData.append(key, formValue[typedKey]);
-        }
-      }
-    }
-
-    return formData;
-  }
-
-  prepareEditForm(formCurrentValue: any, formInitialValue: any) {
-    return _.pickBy(formCurrentValue, (value, key) => {
-      return value != formInitialValue[key];
-    });
   }
 }

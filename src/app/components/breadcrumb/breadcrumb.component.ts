@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { EventType, NavigationEnd, Router } from '@angular/router';
 
 import { filter } from 'rxjs';
+import { BreadcrumbLists } from '../../shared/utils/breadcrumb-lists';
 
 @Component({
   selector: 'app-breadcrumb',
@@ -10,8 +11,8 @@ import { filter } from 'rxjs';
   styleUrl: './breadcrumb.component.css',
 })
 export class BreadcrumbComponent {
-  public exclusionList: Array<string> = ['', 'home', 'form']; // Lista de caminhos á serem ignorados (ex.: 'main' e 'form' redirecionam para 'home')
-  public mainChildPaths: Array<string> = ['projetos', 'pessoas']; // Lista de caminhos "principais" da aplicação (ex.: 'projects', 'programs', etc.)
+  public exclusionList: Array<string> = BreadcrumbLists.exclusionList; // Lista de caminhos á serem ignorados (ex.: 'main' e 'form' redirecionam para 'home')
+  public mainChildPaths: Array<string> = BreadcrumbLists.mainChildPaths; // Lista de caminhos "principais" da aplicação (ex.: 'projects', 'programs', etc.)
 
   public breadcrumbNav: Array<string> = [];
   public currentPage: string = '';

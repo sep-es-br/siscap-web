@@ -21,9 +21,9 @@ export class AlertComponent {
               return 'Campo obrigatório';
             case 'email':
               return 'Email inválido';
-            case 'maxLength':
+            case 'maxlength':
               return 'Tamanho acima do limite';
-            case 'minLength':
+            case 'minlength':
               return 'Tamanho abaixo do limite';
             case 'max':
               return 'Valor superior ao limite';

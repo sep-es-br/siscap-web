@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 enum breadCrumbTitles {
-  main = 'Home',
+  main = 'Página Principal',
 
   projetos = 'Projetos',
 
@@ -11,10 +11,15 @@ enum breadCrumbTitles {
 
   pessoas = 'Pessoas',
 
-  // pessoascriar = 'Perfil',
   pessoascriar = 'Novo Usuário',
   pessoaseditar = 'Editar Pessoa',
   pessoasdetalhes = 'Visualizar Pessoa',
+
+  entidades = 'Entidades',
+
+  entidadescriar = 'Nova Entidade',
+  entidadeseditar = 'Editar Entidade',
+  entidadesdetalhes = 'Visualizar Entidade',
 }
 
 @Pipe({
