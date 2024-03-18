@@ -5,29 +5,59 @@
     </div>
 
     <div class="user-account-info">
-      <div class="d-flex justify-content-between me-3 px-2 w-100">
-        <div class="user-feather-icon">
-          <i class="fa-regular fa-circle-user fa-lg"></i>
-        </div>
-        <div class="username-dropdown-menu">
-          <div class="dropdown">
-            <a
-              class="dropdown-toggle pointer text-decoration-none"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <span>Username</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" (click)="logOut()">
-                  <span>Sair</span>
-                </a>
-              </li>
-            </ul>
-          </div>
+      <div
+        class="d-flex justify-content-between align-items-center me-3 px-2 w-100"
+      >
+        <ng-container
+          *ngIf="
+            userProfile.imagemPerfil != null;
+            else standardProfileImageTemplate
+          "
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              profileImageTemplate;
+              context: { imgSrc: userProfile.imagemPerfil }
+            "
+          ></ng-container>
+        </ng-container>
+
+        <div class="dropdown">
+          <a
+            class="dropdown-toggle pointer text-decoration-none"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <span class="user-name me-2">{{ userProfile.nome }}</span>
+          </a>
+          <ul class="dropdown-menu">
+            <div class="badge rounded-pill mx-2">
+              <span class="user-email">{{ userProfile.email }}</span>
+            </div>
+            <li>
+              <a class="dropdown-item pointer" (click)="logOut()">
+                <span>Sair</span>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<ng-template #profileImageTemplate let-imgSrc="imgSrc">
+  <img
+    [src]="convertByteArraytoImg(imgSrc)"
+    alt=""
+    class="profile-pic rounded-circle"
+  />
+</ng-template>
+
+<ng-template #standardProfileImageTemplate>
+  <div
+    class="profile-pic border rounded-circle d-flex justify-content-center align-items-center"
+  >
+    <i class="fa-solid fa-user"></i>
+  </div>
+</ng-template>
