@@ -57,7 +57,7 @@ export class PersonFormComponent implements OnInit {
   public generosList = PessoaFormLists.generosList;
 
   constructor(
-    private _fb: FormBuilder,
+    private _formBuilder: FormBuilder,
     private _pessoasService: PessoasService,
     private _selectListService: SelectListService,
     private _route: ActivatedRoute,
@@ -117,7 +117,7 @@ export class PersonFormComponent implements OnInit {
   }
 
   initForm(person?: IPerson) {
-    const nnfb = this._fb.nonNullable;
+    const nnfb = this._formBuilder.nonNullable;
     this.personForm = nnfb.group({
       nome: nnfb.control(person?.nome ?? '', {
         validators: Validators.required,

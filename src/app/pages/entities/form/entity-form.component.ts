@@ -42,7 +42,7 @@ export class EntityFormComponent implements OnInit {
   public pessoasList: Array<ISelectList> = [];
 
   constructor(
-    private _fb: FormBuilder,
+    private _formBuilder: FormBuilder,
     private _entidadesService: EntidadesService,
     private _selectListService: SelectListService,
     private _route: ActivatedRoute,
@@ -128,7 +128,7 @@ export class EntityFormComponent implements OnInit {
   }
 
   initForm(entity?: IEntity) {
-    const nnfb = this._fb.nonNullable;
+    const nnfb = this._formBuilder.nonNullable;
     this.entityForm = nnfb.group({
       nome: nnfb.control(entity?.nome ?? '', {
         validators: Validators.required,
