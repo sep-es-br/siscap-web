@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { ProfileService } from '../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'app-auth-redirect',
@@ -8,7 +9,10 @@ import { Router } from '@angular/router';
   styleUrl: './auth-redirect.component.css',
 })
 export class AuthRedirectComponent {
-  constructor(private _router: Router) {
+  constructor(
+    private _router: Router,
+    private _profileService: ProfileService) {
+    
     const tokenQueryParamMap =
       this._router.getCurrentNavigation()?.initialUrl.queryParamMap;
 
@@ -18,6 +22,10 @@ export class AuthRedirectComponent {
         atob(tokenQueryParamMap.get('token') as string)
       );
     }
+
+    this._profileService.getUserInfo().subscribe(profile => {
+      sessionStorage.setItem('scp-profile', JSON.stringify(profile));
+    });
 
     this._router.navigate(['main'])
   }
