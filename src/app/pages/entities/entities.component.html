@@ -1,6 +1,4 @@
-<p>entities works!</p>
-
-<!-- <div class="entity-interaction mx-3">
+<div class="entity-interaction mx-3">
   <div class="search-input col-6 col-sm-4 col-md-2 ms-auto">
     <div class="input-group ms-auto ms-sm-0">
       <input type="text" placeholder="Pesquisar..." class="form-control" />
@@ -23,17 +21,38 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Valor 1</th>
-                  <th>Valor 2</th>
-                  <th>Valor 3</th>
+                  <th style="width: 5%"></th>
+                  <th>Sigla</th>
+                  <th>Entidade</th>
+                  <th>Tipo</th>
+                  <th>Telefone</th>
+                  <th>Site</th>
+                  <!-- <th>Status</th> -->
                   <th style="width: 5%">Ações</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-entidade>
                 <tr>
-                  <td>A</td>
-                  <td>B</td>
-                  <td>C</td>
+                  <td>
+                    <ng-container
+                      *ngIf="
+                        entidade.imagemPerfil;
+                        else standardProfileImageTemplate
+                      "
+                    >
+                      <ng-container
+                        *ngTemplateOutlet="
+                          profileImageTemplate;
+                          context: { imgSrc: entidade.imagemPerfil }
+                        "
+                      ></ng-container>
+                    </ng-container>
+                  </td>
+                  <td>{{ entidade.abreviatura }}</td>
+                  <td>{{ entidade.nome }}</td>
+                  <td>{{ entidade.nomeTipoEntidade }}</td>
+                  <td>{{ entidade.telefone }}</td>
+                  <td>{{ entidade.site }}</td>
                   <td>
                     <ng-container
                       *ngTemplateOutlet="
@@ -51,6 +70,22 @@
     </div>
   </div>
 </div>
+
+<ng-template #profileImageTemplate let-imgSrc="imgSrc">
+  <img
+    [src]="convertByteArraytoImg(imgSrc)"
+    alt=""
+    class="profile-pic rounded-circle"
+  />
+</ng-template>
+
+<ng-template #standardProfileImageTemplate>
+  <div
+    class="profile-pic border rounded-circle d-flex justify-content-center align-items-center"
+  >
+    <i class="fa-solid fa-user"></i>
+  </div>
+</ng-template>
 
 <ng-template #actionsTemplate let-rowData="rowData">
   <div class="d-flex flex-column flex-md-row">
@@ -73,4 +108,4 @@
       <i class="fa-regular fa-trash-can"></i>
     </button>
   </div>
-</ng-template> -->
+</ng-template>
