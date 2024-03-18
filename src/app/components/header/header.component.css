@@ -1,13 +1,19 @@
 .header-bar {
-  background-color: #AAAAAA;
+  background-color: #aaaaaa;
 }
 
-a.dropdown-toggle span {
+.user-email {
+  font-size: 0.75rem;
+}
+
+.user-name,
+i.fa-user,
+a.dropdown-toggle {
   color: white;
 }
 
-i {
-  color: white;
+.badge.rounded-pill {
+  background-color: rgba(16, 127, 207, 1);
 }
 
 @media (min-width: 768px) {
