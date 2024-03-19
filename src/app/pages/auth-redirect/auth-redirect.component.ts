@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProfileService } from '../../shared/services/profile/profile.service';
+import { finalize, first, tap } from 'rxjs';
 
 @Component({
   selector: 'app-auth-redirect',
@@ -11,8 +12,8 @@ import { ProfileService } from '../../shared/services/profile/profile.service';
 export class AuthRedirectComponent {
   constructor(
     private _router: Router,
-    private _profileService: ProfileService) {
-    
+    private _profileService: ProfileService
+  ) {
     const tokenQueryParamMap =
       this._router.getCurrentNavigation()?.initialUrl.queryParamMap;
 
@@ -23,10 +24,17 @@ export class AuthRedirectComponent {
       );
     }
 
-    this._profileService.getUserInfo().subscribe(profile => {
-      sessionStorage.setItem('scp-profile', JSON.stringify(profile));
-    });
-
-    this._router.navigate(['main'])
+    this._profileService
+      .getUserInfo()
+      .pipe(
+        first(),
+        tap((response) => {
+          sessionStorage.setItem('scp-profile', JSON.stringify(response));
+        }),
+        finalize(() => {
+          this._router.navigate(['main']);
+        })
+      )
+      .subscribe();
   }
 }

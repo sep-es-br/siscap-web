@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { IProfile } from '../../shared/interfaces/profile.interface';
 
 @Component({
   selector: 'app-header',
@@ -8,7 +9,17 @@ import { Router } from '@angular/router';
   styleUrl: './header.component.css',
 })
 export class HeaderComponent {
-  constructor(private _router: Router) {}
+  public userProfile!: IProfile;
+
+  constructor(private _router: Router) {
+    if (!!sessionStorage.getItem('scp-profile')) {
+      this.userProfile = JSON.parse(sessionStorage.getItem('scp-profile')!);
+    }
+  }
+
+  convertByteArraytoImg(data: ArrayBuffer): string {
+    return 'data:image/jpeg;base64,' + data;
+  }
 
   showMenu() {
     const navMenuEl = document.getElementById('nav-menu')!.classList;
@@ -21,6 +32,7 @@ export class HeaderComponent {
 
   logOut() {
     sessionStorage.removeItem('token');
+    sessionStorage.removeItem('scp-profile');
     this._router.navigate(['login']);
   }
 }

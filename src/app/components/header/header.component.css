@@ -1,13 +1,13 @@
 .header-bar {
-  background-color: #AAAAAA;
+  background-color: #aaaaaa;
 }
 
-a.dropdown-toggle span {
-  color: white;
+.user-email {
+  font-size: 0.75rem;
 }
 
-i {
-  color: white;
+.badge.rounded-pill {
+  background-color: rgba(16, 127, 207, 1);
 }
 
 @media (min-width: 768px) {

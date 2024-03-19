@@ -47,3 +47,9 @@
 .menu-nav-link:active span {
   color: black;
 }
+
+.siscap-logo {
+  width: 85%;
+  padding-top: 1rem;
+  margin: 0 auto;
+}
