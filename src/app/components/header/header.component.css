@@ -6,12 +6,6 @@
   font-size: 0.75rem;
 }
 
-.user-name,
-i.fa-user,
-a.dropdown-toggle {
-  color: white;
-}
-
 .badge.rounded-pill {
   background-color: rgba(16, 127, 207, 1);
 }
