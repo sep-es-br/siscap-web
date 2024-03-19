@@ -2,6 +2,8 @@
   <app-loading></app-loading>
 </div>
 
+<!-- <span class="error-message">*</span> -->
+
 <div class="project-form h-100 overflow-y-auto" *ngIf="!loading">
   <form [formGroup]="projectForm">
     <div class="row mx-1">
@@ -10,7 +12,7 @@
           <div class="row">
             <div class="col-12 col-md-3 mb-2 mb-md-0">
               <label for="sigla" class="form-label col-12">
-                Sigla do Projeto
+                Sigla do Projeto<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -29,7 +31,7 @@
 
             <div class="col-12 col-md-9">
               <label for="titulo" class="form-label col-12">
-                Titulo do Projeto
+                Titulo do Projeto<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -50,7 +52,7 @@
           <div class="row">
             <div class="col-12" id="orgao">
               <label for="idEntidade" class="form-label col-12">
-                Orgão de Origem
+                Orgão de Origem<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -75,7 +77,7 @@
           <div class="row">
             <div class="col-12">
               <label for="idPessoasEquipeElab" class="form-label col-12">
-                Equipe de Elaboração
+                Equipe de Elaboração<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -157,7 +159,7 @@
 
             <div class="col-12 col-md-6">
               <label for="valorEstimado" class="form-label col-12">
-                Valor Estimado
+                Valor Estimado<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -183,7 +185,7 @@
           <div class="row">
             <div class="col-12">
               <label for="idMicrorregioes" class="form-label col-12">
-                Microrregiões Atendidas
+                Microrregiões Atendidas<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -210,7 +212,7 @@
           <div class="row">
             <div class="col-12">
               <label for="objetivo" class="form-label col-12">
-                Objetivo
+                Objetivo<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -230,7 +232,7 @@
           <div class="row">
             <div class="col-12">
               <label for="objetivoEspecifico" class="form-label col-12">
-                Objetivo Específico
+                Objetivo Específico<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -250,7 +252,7 @@
           <div class="row">
             <div class="col-12">
               <label for="situacaoProblema" class="form-label col-12">
-                Situação Problema
+                Situação Problema<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -271,7 +273,7 @@
           <div class="row">
             <div class="col-12">
               <label for="solucoesPropostas" class="form-label col-12">
-                Soluções Propostas/Resultados Esperados
+                Soluções Propostas/Resultados Esperados<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -292,7 +294,7 @@
             <div class="col-12">
               <label for="impactos">
                 Impactos do Projeto no Âmbito Ambiental, Social e de Governança
-                (ESG)
+                (ESG)<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
@@ -312,7 +314,7 @@
           <div class="row">
             <div class="col-12">
               <label for="arranjosInstitucionais" class="form-label col-12">
-                Arranjo Institucional
+                Arranjo Institucional<span class="error-message">*</span>
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
