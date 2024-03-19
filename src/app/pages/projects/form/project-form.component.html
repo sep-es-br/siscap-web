@@ -101,25 +101,17 @@
 
           <div class="row">
             <div class="col-12 col-md-6 mb-2 mb-md-0">
-              <label for="idPlano" class="form-label col-12">
-                Plano Estratégico
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'idPlano' }
-                  "
-                ></ng-container>
-              </label>
+              <label for="plano" class="form-label"> Plano Estratégico </label>
               <ng-select
-                id="idPlano"
-                placeholder="-- Selecione um plano --"
-                formControlName="idPlano"
+                id="plano"
+                placeholder="Desabilitado"
+                formControlName="plano"
               >
-                <ng-option
+                <!-- <ng-option
                   *ngFor="let plano of planosList"
                   [value]="plano.id"
                   >{{ plano.nome }}</ng-option
-                >
+                > -->
               </ng-select>
             </div>
 

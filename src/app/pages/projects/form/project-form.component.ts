@@ -166,10 +166,8 @@ export class ProjectFormComponent implements OnInit {
       idPessoasEquipeElab: nnfb.control(project?.idPessoasEquipeElab ?? [], {
         validators: Validators.required,
       }),
-      idPlano: nnfb.control(project?.idPlano ?? [], {
-        validators: Validators.required,
-      }),
       //AInda não implementados
+      plano: nnfb.control({ value: null, disabled: true }),
       eixo: nnfb.control({ value: null, disabled: true }),
       area: nnfb.control({ value: null, disabled: true }),
     });
