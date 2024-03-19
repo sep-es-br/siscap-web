@@ -1,5 +1,6 @@
+<span *ngIf="isRequired" class="error-message"> *</span>
 <span
   *ngIf="control?.errors && control?.touched"
   class="error-message float-end"
-  >{{ formControlErrorMap(control) }}
-</span>
+  >{{ formControlErrorMap(control) }}</span
+>

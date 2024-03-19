@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-alert',
@@ -10,7 +10,15 @@ import { AbstractControl } from '@angular/forms';
 export class AlertComponent {
   @Input('control') control: AbstractControl<any, any> | undefined;
 
-  constructor() {}
+  public isRequired: boolean = false;
+
+  constructor() {
+    //Workaround para inicialização do componente
+    setTimeout(() => {
+      this.isRequired =
+        this.control?.hasValidator(Validators.required) ?? false;
+    }, 1);
+  }
 
   formControlErrorMap(control?: AbstractControl): string {
     if (control?.errors) {
