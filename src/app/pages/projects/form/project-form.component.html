@@ -159,11 +159,12 @@
               </label>
               <input
                 type="text"
-                step="0.1"
                 prefix="R$"
                 mask="separator.2"
                 thousandSeparator="."
                 decimalMarker=","
+                [leadZero]="true"
+                [outputTransformFn]="outputTransform"
                 class="form-control"
                 id="valorEstimado"
                 formControlName="valorEstimado"
