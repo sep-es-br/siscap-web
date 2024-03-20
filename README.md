@@ -1,27 +1,73 @@
-# SiscapWeb
+# SISCAP - Sistema de Captação de Recursos
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.1.2.
+## 1. Visão Geral
+Projeto criado para gerenciar e manter projetos, programas e captação de recursos, entre outras obras do governo do Espírito Santo, além de gerar
+relatórios e métricas de acompanhamento do(a)s mesmo(a)s.
 
-## Development server
+## 1.1 Aplicação Front-End (siscap-web)
+Portal para interação dos usuários com as diversas obras do governo. 
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## 2. Especificações Técnicas
 
-## Code scaffolding
+### Principal
+| Bibliotecas | Versão |
+------------------------
+| Angular     | 17.1.2 |
+| Node        | 20.11.0|
+| npm         | 10.2.4 |
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Externas
+| Bibliotecas                                         | Versão  |
+-----------------------------------------------------------------
+| [ng-select](https://github.com/ng-select/ng-select) | ^12.0.7 |
+| [ngx-mask](https://github.com/JsDaddy/ngx-mask)     | ^17.0.4 |
+| [Bootstrap](https://getbootstrap.com/)              | 5.3     |
 
-## Build
+## 2.1 Estrutura de Pastas
+```bash
+    src
+    ├───app
+    │   ├───components
+    │   ├───pages
+    │   ├───pipes
+    │   └───shared
+    │       ├───guards
+    │       ├───helpers
+    │       ├───interceptors
+    │       ├───interfaces
+    │       ├───services
+    │       └───utils
+    ├───assets
+    │   ├───icons
+    │   └───svg
+    └───environments
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## 2.2 Instalação do Projeto
+Para instalar o projeto, navegue até a pasta raiz do projeto e digite no terminal:
+```bash
+npm i
+```
+ou
+```bash
+npm install
+```
 
-## Running unit tests
+## 2.3 Inicialização do Projeto
+Para iniciar o sistema em modo de desenvolvimento, navegue até a pasta raiz do projeto e digite no terminal:
+```bash
+ng s
+```
+ou
+```bash
+ng serve
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+[!NOTE]
+Para iniciar o sistema em modo de **produção**, utilize o seguinte comando no terminal:
+```bash
+ng build
+```
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## 3. Licensa
+A utilização e manutenção do código do SISCAP é _open source_ de acordo com a legislação da licensa [GPL-3.0](https://github.com/sep-es-br/siscap-web?tab=GPL-3.0-1-ov-file).
