@@ -63,8 +63,9 @@ ou
 ng serve
 ```
 
-[!NOTE]
-Para iniciar o sistema em modo de **produção**, utilize o seguinte comando no terminal:
+> [!NOTE]
+> Para iniciar o sistema em modo de **produção**, utilize o seguinte comando no terminal:
+
 ```bash
 ng build
 ```
