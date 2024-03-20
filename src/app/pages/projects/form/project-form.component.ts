@@ -14,7 +14,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { InputTransformFn, OutputTransformFn } from 'ngx-mask';
+import { NgxMaskRtlCurrencyInputHelper } from '../../../shared/helpers/ngx-mask-rtl-currency-input.helper';
 
 @Component({
   selector: 'app-create',
@@ -110,36 +110,8 @@ export class ProjectFormComponent implements OnInit {
       .subscribe();
   }
 
-  // inputTransform: InputTransformFn = (value) => {
-  //   console.log(value);
-  //   console.log(typeof value);
-  //   return value as string;
-  // };
-
-  outputTransform: OutputTransformFn = (value) => {
-    const strValue = value as string;
-    let returnValue = ''
-
-    let [integers, decimals] = strValue.split('.');
-    // console.log(integers);
-
-    const preSeparatorPortion = integers.slice(0, -2)
-    const postSeparatorPortion = integers.slice(-2)
-
-    console.log(preSeparatorPortion)
-    console.log(postSeparatorPortion)
-
-    returnValue = (!!preSeparatorPortion ? preSeparatorPortion : '0') + '.' + postSeparatorPortion
-
-    // console.log(!!preSeparatorPortion) -> IMPORTANTE
-
-    console.log(returnValue)
-
-    // console.log(integers);
-    // console.log(decimals);
-
-    return returnValue;
-  };
+  RtlCurrencyInputTransformFn =
+    NgxMaskRtlCurrencyInputHelper.RtlCurrencyInputTransformFn;
 
   ngOnInit(): void {
     if (this.formMode == 'criar') {
