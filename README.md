@@ -11,14 +11,14 @@ Portal para interação dos usuários com as diversas obras do governo.
 
 ### Principal
 | Bibliotecas | Versão |
-------------------------
+| ------------|------- |
 | Angular     | 17.1.2 |
 | Node        | 20.11.0|
 | npm         | 10.2.4 |
 
 ### Externas
-| Bibliotecas                                         | Versão  |
------------------------------------------------------------------
+| Bibliotecas | Versão  |
+| --- | --- |
 | [ng-select](https://github.com/ng-select/ng-select) | ^12.0.7 |
 | [ngx-mask](https://github.com/JsDaddy/ngx-mask)     | ^17.0.4 |
 | [Bootstrap](https://getbootstrap.com/)              | 5.3     |
