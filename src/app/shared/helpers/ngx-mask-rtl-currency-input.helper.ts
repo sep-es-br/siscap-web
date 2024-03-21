@@ -19,15 +19,10 @@ export abstract class NgxMaskRtlCurrencyInputHelper {
    * @returns O valor formatado, do tipo `string` ou `number`
    */
   static RtlCurrencyInputTransformFn: InputTransformFn = (value) => {
-    let untreatedValue;
-
     //`value` é do tipo unknown, convertemos aqui para utilizar métodos da API de String
-    if (typeof value === 'number') {
-      //Trata caso de valor pré-existente com menos de 3 dígitos inteiros e sem decimais
-      untreatedValue = Number(value).toFixed(2);
-    } else {
-      untreatedValue = String(value);
-    }
+    //Trata caso de valor pré-existente com menos de 3 dígitos inteiros e sem decimais; Se não, fluxo normal
+    let untreatedValue =
+      typeof value === 'number' ? Number(value).toFixed(2) : String(value);
 
     //Remove o prefixo 'R$' do input quando houver
     let valueAsString = untreatedValue.includes('R$')
