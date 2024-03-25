@@ -14,6 +14,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
+import { NgxMaskRtlCurrencyInputHelper } from '../../../shared/helpers/ngx-mask-rtl-currency-input.helper';
 
 @Component({
   selector: 'app-create',
@@ -108,6 +109,9 @@ export class ProjectFormComponent implements OnInit {
       )
       .subscribe();
   }
+
+  RtlCurrencyInputTransformFn =
+    NgxMaskRtlCurrencyInputHelper.RtlCurrencyInputTransformFn;
 
   ngOnInit(): void {
     if (this.formMode == 'criar') {
