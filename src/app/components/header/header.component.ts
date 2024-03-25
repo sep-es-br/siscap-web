@@ -21,15 +21,6 @@ export class HeaderComponent {
     return 'data:image/jpeg;base64,' + data;
   }
 
-  showMenu() {
-    const navMenuEl = document.getElementById('nav-menu')!.classList;
-    const responsiveContentEl =
-      document.getElementById('responsive-content')!.classList;
-
-    navMenuEl.remove('d-none');
-    responsiveContentEl.add('d-none');
-  }
-
   logOut() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('scp-profile');
