@@ -20,7 +20,7 @@ import { NgxMaskRtlCurrencyInputHelper } from '../../../shared/helpers/ngx-mask-
   selector: 'app-create',
   standalone: false,
   templateUrl: './project-form.component.html',
-  styleUrl: './project-form.component.css',
+  styleUrl: './project-form.component.scss',
 })
 export class ProjectFormComponent implements OnInit {
   public projectForm!: FormGroup;

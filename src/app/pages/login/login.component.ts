@@ -6,7 +6,7 @@ import { AuthenticationService } from '../../shared/services/authentication/auth
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   constructor(private _authService: AuthenticationService) {}

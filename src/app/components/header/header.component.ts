@@ -6,7 +6,7 @@ import { IProfile } from '../../shared/interfaces/profile.interface';
   selector: 'app-header',
   standalone: false,
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css',
+  styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   public userProfile!: IProfile;

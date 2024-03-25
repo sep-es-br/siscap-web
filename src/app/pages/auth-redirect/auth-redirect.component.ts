@@ -7,7 +7,7 @@ import { finalize, first, tap } from 'rxjs';
   selector: 'app-auth-redirect',
   standalone: false,
   templateUrl: './auth-redirect.component.html',
-  styleUrl: './auth-redirect.component.css',
+  styleUrl: './auth-redirect.component.scss',
 })
 export class AuthRedirectComponent {
   constructor(

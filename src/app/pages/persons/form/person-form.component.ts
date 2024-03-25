@@ -19,7 +19,7 @@ import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
   selector: 'app-person-form',
   standalone: false,
   templateUrl: './person-form.component.html',
-  styleUrl: './person-form.component.css',
+  styleUrl: './person-form.component.scss',
 })
 export class PersonFormComponent implements OnInit {
   @ViewChild('imagemPerfil') imagemPerfilInput!: ElementRef<HTMLInputElement>;

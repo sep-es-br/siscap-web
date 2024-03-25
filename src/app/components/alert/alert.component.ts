@@ -5,7 +5,7 @@ import { AbstractControl, Validators } from '@angular/forms';
   selector: 'app-alert',
   standalone: false,
   templateUrl: './alert.component.html',
-  styleUrl: './alert.component.css',
+  styleUrl: './alert.component.scss',
 })
 export class AlertComponent {
   @Input('control') control: AbstractControl<any, any> | undefined;

@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   selector: 'app-persons',
   standalone: false,
   templateUrl: './persons.component.html',
-  styleUrl: './persons.component.css',
+  styleUrl: './persons.component.scss',
 })
 export class PersonsComponent {
   public pessoasList: Array<IPersonTable> = [];
