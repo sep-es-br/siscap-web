@@ -10,7 +10,7 @@ import { IEntityTable } from '../../shared/interfaces/entity.interface';
   selector: 'app-entities',
   standalone: false,
   templateUrl: './entities.component.html',
-  styleUrl: './entities.component.css',
+  styleUrl: './entities.component.scss',
 })
 export class EntitiesComponent {
   public entidadesList: Array<IEntityTable> = [];

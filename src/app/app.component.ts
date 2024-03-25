@@ -9,7 +9,7 @@ import { NgSelectConfig } from '@ng-select/ng-select';
   standalone: true,
   imports: [RouterOutlet, PagesModule, ComponentsModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'siscap-web';

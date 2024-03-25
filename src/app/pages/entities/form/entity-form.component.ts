@@ -17,7 +17,7 @@ import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
   selector: 'app-entity-form',
   standalone: false,
   templateUrl: './entity-form.component.html',
-  styleUrl: './entity-form.component.css',
+  styleUrl: './entity-form.component.scss',
 })
 export class EntityFormComponent implements OnInit {
   @ViewChild('imagemPerfil') imagemPerfilInput!: ElementRef<HTMLInputElement>;

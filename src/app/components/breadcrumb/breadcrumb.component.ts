@@ -8,7 +8,7 @@ import { BreadcrumbLists } from '../../shared/utils/breadcrumb-lists';
   selector: 'app-breadcrumb',
   standalone: false,
   templateUrl: './breadcrumb.component.html',
-  styleUrl: './breadcrumb.component.css',
+  styleUrl: './breadcrumb.component.scss',
 })
 export class BreadcrumbComponent {
   public exclusionList: Array<string> = BreadcrumbLists.exclusionList; // Lista de caminhos á serem ignorados (ex.: 'main' e 'form' redirecionam para 'home')
