@@ -46,6 +46,39 @@
   }
 }
 
+/* Estilos do siscap-breadcrumb */
+
+.home-button {
+  margin-right: 5px;
+
+  button {
+    padding: 0.5rem;
+  }
+}
+
+.breadcrumb-title-area {
+  h4 {
+    font-size: $large-2-font-size;
+    color: $primary;
+    margin: 0;
+  }
+
+  ul {
+    margin: 0;
+
+    li a {
+      font-size: $small-3-font-size;
+    }
+  }
+}
+
+.nav-icons {
+  button {
+    color: white;
+    font-size: $small-3-font-size;
+  }
+}
+
 /* Estilos de formulários */
 
 label {
