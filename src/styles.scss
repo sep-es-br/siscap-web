@@ -2,6 +2,10 @@
 
 /* Imports globais  */
 
+/* Overrride Bootstrap */
+@import "./assets/styles/variables";
+@import "../node_modules/bootstrap/scss/bootstrap.scss"; // É necessário importar novamente para que as mudanças tenham impacto
+
 /* ng-select */
 @import "@ng-select/ng-select/themes/default.theme.css";
 
