@@ -7,6 +7,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { AlertComponent } from './alert/alert.component';
 import { LoadingComponent } from './loading/loading.component';
 import { BreadcrumbnavlinkPipe } from '../pipes/breadcrumbnavlink.pipe';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -16,10 +17,7 @@ import { BreadcrumbnavlinkPipe } from '../pipes/breadcrumbnavlink.pipe';
     AlertComponent,
     LoadingComponent,
   ],
-  imports: [
-    CommonModule,
-    BreadcrumbnavlinkPipe,
-  ],
+  imports: [CommonModule, RouterModule, BreadcrumbnavlinkPipe],
   exports: [
     NavMenuComponent,
     HeaderComponent,
