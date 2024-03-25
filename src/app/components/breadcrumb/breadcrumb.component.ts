@@ -14,8 +14,8 @@ export class BreadcrumbComponent {
   public exclusionList: Array<string> = BreadcrumbLists.exclusionList; // Lista de caminhos á serem ignorados (ex.: 'main' e 'form' redirecionam para 'home')
   public mainChildPaths: Array<string> = BreadcrumbLists.mainChildPaths; // Lista de caminhos "principais" da aplicação (ex.: 'projects', 'programs', etc.)
 
-  public breadcrumbNav: Array<string> = [];
-  public currentPage: string = '';
+  public breadcrumbNav: Array<string> = []; // Rotas do breadcrumb atual
+  public currentPage: string = ''; // Página atual (última rota do breadcrumbNav)
 
   constructor(private _router: Router) {
     this._router.events
@@ -109,28 +109,6 @@ export class BreadcrumbComponent {
           : path
         : path;
     });
-  }
-
-  /**
-   * Navega para o caminho pelo link do breadcrumb.
-   *
-   * @param path - Caminho da URL.
-   */
-  public navigateBreadcrumb(path: string) {
-    this._router.navigate(['main', path]);
-  }
-
-  /**
-   * Navega para o formulário de criação do tipo de dado sendo listado.
-   *
-   * O botão só aparece (portanto só navega) em componentes de listagem de dados.
-   *
-   * ex.: Projetos - `path = 'projects'`
-   *
-   * @param path - Caminho da URL
-   */
-  public navigateBreadcrumbNew(path: string) {
-    this._router.navigate(['main', path, 'form', 'criar']);
   }
 
   /**
