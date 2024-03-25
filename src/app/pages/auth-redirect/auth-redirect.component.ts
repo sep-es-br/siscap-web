@@ -4,7 +4,7 @@ import { ProfileService } from '../../shared/services/profile/profile.service';
 import { finalize, first, tap } from 'rxjs';
 
 @Component({
-  selector: 'app-auth-redirect',
+  selector: 'siscap-auth-redirect',
   standalone: false,
   templateUrl: './auth-redirect.component.html',
   styleUrl: './auth-redirect.component.scss',

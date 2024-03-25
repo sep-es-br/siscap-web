@@ -14,7 +14,7 @@ import { SelectListService } from '../../../shared/services/select-list/select-l
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 
 @Component({
-  selector: 'app-entity-form',
+  selector: 'siscap-entity-form',
   standalone: false,
   templateUrl: './entity-form.component.html',
   styleUrl: './entity-form.component.scss',

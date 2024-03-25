@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { IProfile } from '../../shared/interfaces/profile.interface';
 
 @Component({
-  selector: 'app-header',
+  selector: 'siscap-header',
   standalone: false,
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
@@ -19,15 +19,6 @@ export class HeaderComponent {
 
   convertByteArraytoImg(data: ArrayBuffer): string {
     return 'data:image/jpeg;base64,' + data;
-  }
-
-  showMenu() {
-    const navMenuEl = document.getElementById('nav-menu')!.classList;
-    const responsiveContentEl =
-      document.getElementById('responsive-content')!.classList;
-
-    navMenuEl.remove('d-none');
-    responsiveContentEl.add('d-none');
   }
 
   logOut() {

@@ -1,26 +1,17 @@
-#nav-menu {
-  max-width: 13%;
+.nav-menu {
+  min-width: 251px;
 }
 
-#responsive-content {
-  min-width: 87%;
+.header {
+  height: 3rem;
+}
+
+.content {
+  padding-left: 251px;
 }
 
 @media (max-width: 767px) {
-  #nav-menu {
-    max-width: 100%;
+  .content {
+    padding-left: 0;
   }
-
-  #responsive-content {
-    min-width: 100%;
-  }
-}
-
-.header-bar {
-  min-height: 5%;
-}
-
-.legal-footer span {
-  font-size: 0.9rem;
-  color: #7f7f7f;
 }

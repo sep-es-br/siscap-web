@@ -17,7 +17,7 @@ import { SelectListService } from '../../../shared/services/select-list/select-l
 import { NgxMaskRtlCurrencyInputHelper } from '../../../shared/helpers/ngx-mask-rtl-currency-input.helper';
 
 @Component({
-  selector: 'app-create',
+  selector: 'siscap-create',
   standalone: false,
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss',

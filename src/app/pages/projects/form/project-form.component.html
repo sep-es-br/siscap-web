@@ -1,5 +1,5 @@
 <div class="h-100" *ngIf="loading">
-  <app-loading></app-loading>
+  <siscap-loading></siscap-loading>
 </div>
 
 <div class="project-form h-100 overflow-y-auto" *ngIf="!loading">
@@ -350,5 +350,5 @@
 </div>
 
 <ng-template #appAlert let-controlName="controlName">
-  <app-alert [control]="projectForm.get(controlName) ?? undefined"></app-alert>
+  <siscap-alert [control]="projectForm.get(controlName) ?? undefined"></siscap-alert>
 </ng-template>

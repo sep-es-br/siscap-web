@@ -1,5 +1,5 @@
 <div class="h-100" *ngIf="loading">
-  <app-loading></app-loading>
+  <siscap-loading></siscap-loading>
 </div>
 
 <div class="person-form h-100 overflow-y-auto" *ngIf="!loading">
@@ -554,7 +554,7 @@
 </ng-template>
 
 <ng-template #appAlert let-controlName="controlName">
-  <app-alert [control]="personForm.get(controlName) ?? undefined"></app-alert>
+  <siscap-alert [control]="personForm.get(controlName) ?? undefined"></siscap-alert>
 </ng-template>
 
 <!-- <ng-select

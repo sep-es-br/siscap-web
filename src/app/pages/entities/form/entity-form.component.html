@@ -1,5 +1,5 @@
 <div class="h-100" *ngIf="loading">
-  <app-loading></app-loading>
+  <siscap-loading></siscap-loading>
 </div>
 
 <!-- d-md-flex flex-md-column jusity-content-md-between -->
@@ -359,5 +359,5 @@
 </ng-template>
 
 <ng-template #appAlert let-controlName="controlName">
-  <app-alert [control]="entityForm.get(controlName) ?? undefined"></app-alert>
+  <siscap-alert [control]="entityForm.get(controlName) ?? undefined"></siscap-alert>
 </ng-template>
