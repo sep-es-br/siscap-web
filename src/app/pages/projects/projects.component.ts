@@ -10,7 +10,7 @@ import {
 } from '../../shared/interfaces/project.interface';
 
 @Component({
-  selector: 'app-projects',
+  selector: 'siscap-projects',
   standalone: false,
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.scss',

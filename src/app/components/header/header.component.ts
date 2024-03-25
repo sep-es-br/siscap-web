@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { IProfile } from '../../shared/interfaces/profile.interface';
 
 @Component({
-  selector: 'app-header',
+  selector: 'siscap-header',
   standalone: false,
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',

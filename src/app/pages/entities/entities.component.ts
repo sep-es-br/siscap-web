@@ -7,7 +7,7 @@ import { EntidadesService } from '../../shared/services/entidades/entidades.serv
 import { IEntityTable } from '../../shared/interfaces/entity.interface';
 
 @Component({
-  selector: 'app-entities',
+  selector: 'siscap-entities',
   standalone: false,
   templateUrl: './entities.component.html',
   styleUrl: './entities.component.scss',

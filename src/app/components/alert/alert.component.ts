@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { AbstractControl, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-alert',
+  selector: 'siscap-alert',
   standalone: false,
   templateUrl: './alert.component.html',
   styleUrl: './alert.component.scss',

@@ -5,7 +5,7 @@ import { filter } from 'rxjs';
 import { BreadcrumbLists } from '../../shared/utils/breadcrumb-lists';
 
 @Component({
-  selector: 'app-breadcrumb',
+  selector: 'siscap-breadcrumb',
   standalone: false,
   templateUrl: './breadcrumb.component.html',
   styleUrl: './breadcrumb.component.scss',

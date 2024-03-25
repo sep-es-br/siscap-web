@@ -16,7 +16,7 @@ import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 
 @Component({
-  selector: 'app-person-form',
+  selector: 'siscap-person-form',
   standalone: false,
   templateUrl: './person-form.component.html',
   styleUrl: './person-form.component.scss',

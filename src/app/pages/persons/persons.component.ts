@@ -5,7 +5,7 @@ import { IPersonTable } from '../../shared/interfaces/person.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-persons',
+  selector: 'siscap-persons',
   standalone: false,
   templateUrl: './persons.component.html',
   styleUrl: './persons.component.scss',
