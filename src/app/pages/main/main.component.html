@@ -6,17 +6,11 @@
       >
         <siscap-navmenu></siscap-navmenu>
       </div>
-
-      <div class="offcanvas offcanvas-start" id="nav-offcanvas">
-        <div class="offcanvas-body p-0">
-          <siscap-navmenu></siscap-navmenu>
-        </div>
-      </div>
     </div>
     <div class="col-12 gx-0">
       <div class="content">
         <div class="header shadow">
-          <siscap-header></siscap-header>
+          <siscap-header [offcanvasRef]="navmenuOffcanvas"></siscap-header>
         </div>
         <div class="breadcrumb d-flex flex-column p-3">
           <siscap-breadcrumb></siscap-breadcrumb>
@@ -34,3 +28,11 @@
     </div>
   </div>
 </div>
+
+<siscap-toast></siscap-toast>
+
+<ng-template #navmenuOffcanvas let-offcanvas>
+  <div class="offcanvas-body p-0">
+    <siscap-navmenu [offcanvasRef]="navmenuOffcanvas"></siscap-navmenu>
+  </div>
+</ng-template>
