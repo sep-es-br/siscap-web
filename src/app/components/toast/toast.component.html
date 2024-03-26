@@ -1,10 +1,10 @@
-<div class="toast-container" id="testToast">
-    <div class="toast">
-        <div class="toast-header">
-            <span>Titulo</span>
-        </div>
-        <div class="toast-body">
-            <span>Corpo do toast</span>
-        </div>
-    </div>
-</div>
+<ng-container *ngIf="displayToast">
+  <ngb-toast
+    [header]="toastHeader"
+    [delay]="6000"
+    (hidden)="resetToast()"
+    class="bg-danger-subtle position-absolute top-0 end-0 m-4"
+  >
+    <span>{{ toastBody }}</span>
+  </ngb-toast>
+</ng-container>
