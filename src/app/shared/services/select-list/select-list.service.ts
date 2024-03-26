@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { ISelectList } from '../../interfaces/select-list.interface';
+import { ErrorHandlerService } from '../error-handler/error-handler.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,16 +13,25 @@ import { ISelectList } from '../../interfaces/select-list.interface';
 export class SelectListService {
   private _url = `${environment.apiUrl}/destination/select`;
 
-  constructor(private _http: HttpClient) {}
+  constructor(
+    private _http: HttpClient,
+    private _errorHandlerService: ErrorHandlerService
+  ) {}
 
   private getSelectList(
     destination: string,
     params?: any
   ): Observable<ISelectList[]> {
-    return this._http.get<ISelectList[]>(
-      this._url.replace('destination', destination),
-      { params: params }
-    );
+    return this._http
+      .get<ISelectList[]>(this._url.replace('destination', destination), {
+        params: params,
+      })
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          this._errorHandlerService.handleError(err);
+          throw new Error('Ocorreu um erro ao processar a requisição.');
+        })
+      );
   }
 
   public getPessoas() {
