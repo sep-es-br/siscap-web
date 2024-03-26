@@ -8,6 +8,7 @@ import { AlertComponent } from './alert/alert.component';
 import { LoadingComponent } from './loading/loading.component';
 import { BreadcrumbnavlinkPipe } from '../pipes/breadcrumbnavlink.pipe';
 import { RouterModule } from '@angular/router';
+import { ToastComponent } from './toast/toast.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { RouterModule } from '@angular/router';
     BreadcrumbComponent,
     AlertComponent,
     LoadingComponent,
+    ToastComponent
   ],
   imports: [CommonModule, RouterModule, BreadcrumbnavlinkPipe],
   exports: [
@@ -24,6 +26,7 @@ import { RouterModule } from '@angular/router';
     BreadcrumbComponent,
     AlertComponent,
     LoadingComponent,
+    ToastComponent
   ],
   providers: [CurrencyPipe, DatePipe],
 })
