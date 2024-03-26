@@ -24,6 +24,8 @@ export class AuthRedirectComponent {
       );
     }
 
+    const previousUrl = localStorage.getItem('currentUrl') ?? 'main';
+
     this._profileService
       .getUserInfo()
       .pipe(
@@ -32,7 +34,8 @@ export class AuthRedirectComponent {
           sessionStorage.setItem('scp-profile', JSON.stringify(response));
         }),
         finalize(() => {
-          this._router.navigate(['main']);
+          this._router.navigate([previousUrl]);
+          localStorage.removeItem('currentUrl');
         })
       )
       .subscribe();
