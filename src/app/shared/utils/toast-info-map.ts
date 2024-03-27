@@ -1,6 +1,7 @@
 interface IToastComponentInfo {
   header: string;
   body: string;
+  delay?: number;
 }
 
 type ToastErrorInfo = {
@@ -8,7 +9,9 @@ type ToastErrorInfo = {
 };
 
 type ToastSuccessInfo = {
-  [source: string]: { [method: string]: Pick<IToastComponentInfo, 'body'> };
+  [source: string]: {
+    [method: string]: Pick<IToastComponentInfo, 'body' | 'delay'>;
+  };
 };
 
 export const ToastErrorInfoMap: ToastErrorInfo = {
