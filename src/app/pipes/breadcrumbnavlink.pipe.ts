@@ -15,11 +15,11 @@ enum breadCrumbTitles {
   pessoaseditar = 'Editar Pessoa',
   pessoasdetalhes = 'Visualizar Pessoa',
 
-  entidades = 'Entidades',
+  entidades = 'Organizações',
 
-  entidadescriar = 'Nova Entidade',
-  entidadeseditar = 'Editar Entidade',
-  entidadesdetalhes = 'Visualizar Entidade',
+  entidadescriar = 'Nova Organização',
+  entidadeseditar = 'Editar Organização',
+  entidadesdetalhes = 'Visualizar Organização',
 }
 
 @Pipe({
