@@ -17,6 +17,7 @@ export class ToastComponent {
   public displaySuccessToast: boolean = false;
   public toastHeader: string = '';
   public toastBody: string = '';
+  public toastDelay: number = 6000;
 
   constructor(private _toastNotifierService: ToastNotifierService) {
     this._toastNotifierService.toastNotifier$.subscribe((notice) => {
@@ -24,14 +25,16 @@ export class ToastComponent {
         const toastErrorInfo = ToastErrorInfoMap[notice.code!];
         this.toastHeader = toastErrorInfo.header;
         this.toastBody = toastErrorInfo.body;
+        this.toastDelay = toastErrorInfo.delay ?? 6000
         this.displayErrorToast = true;
       }
-
+      
       if (notice.type === 'success') {
         const toastSuccessInfo =
-          ToastSuccessInfoMap[notice.source!][notice.method!];
+        ToastSuccessInfoMap[notice.source!][notice.method!];
         this.toastHeader = 'Sucesso';
         this.toastBody = toastSuccessInfo.body;
+        this.toastDelay = toastSuccessInfo.delay ?? 6000
         this.displaySuccessToast = true;
       }
     });
