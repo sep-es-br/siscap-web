@@ -18,7 +18,7 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { NgxMaskRtlCurrencyInputHelper } from '../../../shared/helpers/ngx-mask-rtl-currency-input.helper';
 
 @Component({
-  selector: 'siscap-create',
+  selector: 'siscap-project-form',
   standalone: false,
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss',
