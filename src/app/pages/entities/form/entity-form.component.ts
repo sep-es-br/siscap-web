@@ -217,7 +217,7 @@ export class EntityFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifySuccess('Organização', 'POST');
+                this._toastNotifierService.notifyToast('success', undefined, 'Organização', 'POST');
               }
             }),
             finalize(() => {
@@ -236,7 +236,7 @@ export class EntityFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifySuccess('Organização', 'PUT');
+                this._toastNotifierService.notifyToast('success', undefined, 'Organização', 'PUT');
               }
             }),
             finalize(() => {

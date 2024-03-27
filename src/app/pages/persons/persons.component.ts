@@ -67,7 +67,7 @@ export class PersonsComponent {
         .pipe(
           tap((response) => {
             if (response) {
-              this._toastNotifierService.notifySuccess('Pessoa', 'DELETE');
+              this._toastNotifierService.notifyToast('success', undefined, 'Pessoa', 'DELETE');
             }
           }),
           finalize(() => {

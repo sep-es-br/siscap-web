@@ -63,7 +63,7 @@ export class ProjectsComponent {
         .pipe(
           tap((response) => {
             if (response) {
-              this._toastNotifierService.notifySuccess('Projeto', 'DELETE');
+              this._toastNotifierService.notifyToast('success', undefined, 'Projeto', 'DELETE');
             }
           }),
           finalize(() => {

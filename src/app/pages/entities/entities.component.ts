@@ -67,7 +67,7 @@ export class EntitiesComponent {
         .pipe(
           tap((response) => {
             if (response) {
-              this._toastNotifierService.notifySuccess('Organização', 'DELETE');
+              this._toastNotifierService.notifyToast('success', undefined, 'Organização', 'DELETE');
             }
           }),
           finalize(() => {

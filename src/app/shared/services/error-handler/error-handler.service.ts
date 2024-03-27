@@ -55,7 +55,7 @@ export class ErrorHandlerService {
    * @param {HttpErrorResponse} errorArg - Argumento local de erro, substituido pelo erro original da chamada `Function.apply()` de `handleError()`.
    */
   private handleUnauthorized(errorArg: HttpErrorResponse): void {
-    this._toastNotifierService.notifyError(errorArg.status);
+    this._toastNotifierService.notifyToast('error', errorArg.status);
 
     sessionStorage.setItem('currentUrl', this._router.url);
 
@@ -71,7 +71,7 @@ export class ErrorHandlerService {
    * @param {HttpErrorResponse} errorArg - Argumento local de erro, substituido pelo erro original da chamada `Function.apply()` de `handleError()`.
    */
   private handleInternalServerError(errorArg: HttpErrorResponse): void {
-    this._toastNotifierService.notifyError(errorArg.status);
+    this._toastNotifierService.notifyToast('error', errorArg.status);
 
     this._toastNotifierService.redirectOnToastClose(this._router, 'main');
   }
@@ -85,7 +85,7 @@ export class ErrorHandlerService {
    * @param {HttpErrorResponse} errorArg - Argumento local de erro, substituido pelo erro original da chamada `Function.apply()` de `handleError()`.
    */
   private handleBadRequest(errorArg: HttpErrorResponse): void {
-    this._toastNotifierService.notifyError(errorArg.status);
+    this._toastNotifierService.notifyToast('error', errorArg.status);
 
     this._toastNotifierService.redirectOnToastClose(this._router, 'main');
   }

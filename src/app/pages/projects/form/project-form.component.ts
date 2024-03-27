@@ -214,7 +214,7 @@ export class ProjectFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifySuccess('Projeto', 'POST');
+                this._toastNotifierService.notifyToast('success', undefined, 'Projeto', 'POST');
               }
             }),
             finalize(() => {
@@ -235,7 +235,7 @@ export class ProjectFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifySuccess('Projeto', 'PUT');
+                this._toastNotifierService.notifyToast('success', undefined, 'Projeto', 'PUT');
               }
             }),
             finalize(() => {

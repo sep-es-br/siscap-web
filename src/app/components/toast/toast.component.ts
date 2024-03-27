@@ -42,6 +42,6 @@ export class ToastComponent {
     this.displaySuccessToast = false;
     this.toastHeader = '';
     this.toastBody = '';
-    this._toastNotifierService.clearNotice();
+    this._toastNotifierService.notifyToast('');
   }
 }

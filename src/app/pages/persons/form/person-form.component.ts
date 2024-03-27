@@ -237,7 +237,7 @@ export class PersonFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifySuccess('Pessoa', 'POST');
+                this._toastNotifierService.notifyToast('success', undefined, 'Pessoa', 'POST');
               }
             }),
             finalize(() => {
@@ -257,7 +257,7 @@ export class PersonFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifySuccess('Pessoa', 'PUT');
+                this._toastNotifierService.notifyToast('success', undefined, 'Pessoa', 'PUT');
               }
             }),
             finalize(() => {
