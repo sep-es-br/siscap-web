@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 
-import { Subject } from 'rxjs';
+import { ToastNotifierService } from '../toast-notifier/toast-notifier.service';
 
 type ErrorHandleFn = {
   [statusCode: string]: Function;
@@ -19,11 +19,10 @@ export class ErrorHandlerService {
     InternalServerError: this.handleInternalServerError,
   };
 
-  public errorEmitter$: Subject<number | undefined> = new Subject<
-    number | undefined
-  >();
-
-  constructor(private _router: Router) {}
+  constructor(
+    private _toastNotifierService: ToastNotifierService,
+    private _router: Router
+  ) {}
 
   public handleError(error: HttpErrorResponse) {
     const errorHandleFunction =
@@ -34,22 +33,17 @@ export class ErrorHandlerService {
   }
 
   private handleUnauthorized(errorArg: HttpErrorResponse) {
-    this.errorEmitter$.next(errorArg.status);
+    this._toastNotifierService.notifyError(errorArg.status);
+
     localStorage.setItem('currentUrl', this._router.url);
-    this.errorEmitter$.subscribe((value) => {
-      if (!value) {
-        this._router.navigateByUrl('login');
-      }
-    });
+
+    this._toastNotifierService.redirectOnToastClose(this._router, 'login');
   }
 
   private handleInternalServerError(errorArg: HttpErrorResponse) {
-    this.errorEmitter$.next(errorArg.status);
-    this.errorEmitter$.subscribe((value) => {
-      if (!value) {
-        this._router.navigateByUrl('main');
-      }
-    });
+    this._toastNotifierService.notifyError(errorArg.status);
+
+    this._toastNotifierService.redirectOnToastClose(this._router, 'main');
   }
 
   private fallbackFuncion(errorArg: HttpErrorResponse) {
@@ -58,5 +52,6 @@ export class ErrorHandlerService {
         this._errorCodesList[errorArg.status]
       } inexistente.`
     );
+    console.log(errorArg);
   }
 }
