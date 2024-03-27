@@ -21,6 +21,7 @@ export class ErrorHandlerService {
   private _errorHandleFnMap: ErrorHandleFn = {
     Unauthorized: this.handleUnauthorized,
     InternalServerError: this.handleInternalServerError,
+    BadRequest: this.handleBadRequest,
   };
 
   constructor(
@@ -70,6 +71,20 @@ export class ErrorHandlerService {
    * @param {HttpErrorResponse} errorArg - Argumento local de erro, substituido pelo erro original da chamada `Function.apply()` de `handleError()`.
    */
   private handleInternalServerError(errorArg: HttpErrorResponse): void {
+    this._toastNotifierService.notifyError(errorArg.status);
+
+    this._toastNotifierService.redirectOnToastClose(this._router, 'main');
+  }
+
+  /**
+   * @private
+   * Método que lida com o erro 400 - `Bad Request`.
+   *
+   * Apenas notifica o usuário do erro através de um toast e o redireciona para a página principal.
+   *
+   * @param {HttpErrorResponse} errorArg - Argumento local de erro, substituido pelo erro original da chamada `Function.apply()` de `handleError()`.
+   */
+  private handleBadRequest(errorArg: HttpErrorResponse): void {
     this._toastNotifierService.notifyError(errorArg.status);
 
     this._toastNotifierService.redirectOnToastClose(this._router, 'main');
