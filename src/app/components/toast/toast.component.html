@@ -1,7 +1,7 @@
 <ng-container *ngIf="displayErrorToast">
   <ngb-toast
     [header]="toastHeader"
-    [delay]="6000"
+    [delay]="toastDelay"
     (hidden)="resetToast()"
     class="bg-danger-subtle position-fixed top-0 end-0 m-4"
   >
@@ -12,7 +12,7 @@
 <ng-container *ngIf="displaySuccessToast">
   <ngb-toast
     [header]="toastHeader"
-    [delay]="6000"
+    [delay]="toastDelay"
     (hidden)="resetToast()"
     class="bg-success-subtle position-fixed bottom-0 end-0 m-4"
   >
