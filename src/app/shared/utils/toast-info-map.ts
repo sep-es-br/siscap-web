@@ -12,6 +12,10 @@ type ToastSuccessInfo = {
 };
 
 export const ToastErrorInfoMap: ToastErrorInfo = {
+  400: {
+    header: 'Erro 400 - Requisição Inválida',
+    body: 'O corpo da requisição possui erros. Por favor, contate a equipe técnica da aplicação',
+  },
   401: {
     header: 'Erro 401 - Não Autorizado',
     body: 'A token de autenticação não é válida. O sistema será redirecionado para a página de login para tentar a autenticação novamente. Ao completar o processo, você retornará para a página que estava anteriormente.',
