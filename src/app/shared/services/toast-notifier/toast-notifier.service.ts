@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+
+import { Subject, finalize, takeWhile } from 'rxjs';
 
 interface IToastNotification {
   type: string;
@@ -25,35 +26,27 @@ export class ToastNotifierService {
 
   /**
    * @public
-   * Método que emite notificação de sucesso.
+   * Método que notifica o toast sobre informações relativas á erros, sucessos, etc.
    *
-   * @param {string} source - Local de origem da chamada. Utilizado para extrair informação de toast de `ToastSuccessInfoMap`.
-   * @param {string} method - Método da chamada. Utilizado para extrair informação de toast de `ToastSuccessInfoMap`.
+   * @param {string} type - O tipo de notificação. (ex: 'success', 'error', etc.)
+   * @param {number} code - O código de erro quando notificação for de erro; `undefined` caso notificação seja de outro tipo.
+   * @param {string} source - O local de onde a notificação está sendo emitida quando a notificação for de sucesso; `undefined` caso notificação seja de outro tipo.
+   * @param {string} method - O tipo de método da qual a notificação está sendo emitida quando a notificação for de sucesso; `undefined` caso notificação seja de outro tipo.
    */
-  public notifySuccess(source: string, method: string): void {
-    this.toastNotifier$.next({
-      type: 'success',
-      source: source,
-      method: method,
-    });
-  }
+  public notifyToast(
+    type: string,
+    code?: number,
+    source?: string,
+    method?: string
+  ): void {
+    const toastNotificationObject: IToastNotification = {
+      type: type,
+      code: code ?? undefined,
+      source: source ?? undefined,
+      method: method ?? undefined,
+    };
 
-  /**
-   * @public
-   * Método que emite notificação de erro.
-   *
-   * @param {number} code - Código de status do erro. Utilizado para extrair informação de toast de `ToastErrorInfoMap`.
-   */
-  public notifyError(code: number): void {
-    this.toastNotifier$.next({ type: 'error', code: code });
-  }
-
-  /**
-   * @public
-   * Método que emite valor falsário com o propósito de limpar o toast.
-   */
-  public clearNotice(): void {
-    this.toastNotifier$.next({ type: '' });
+    this.toastNotifier$.next(toastNotificationObject);
   }
 
   /**
@@ -71,14 +64,17 @@ export class ToastNotifierService {
     url: string,
     samePage?: boolean
   ): void {
-    this.toastNotifier$.subscribe((notice) => {
-      if (!notice.type) {
-        !!samePage
-          ? routerInstance
-              .navigateByUrl('/', { skipLocationChange: true })
-              .then(() => routerInstance.navigateByUrl(url))
-          : routerInstance.navigateByUrl(url);
-      }
-    });
+    this.toastNotifier$
+      .pipe(
+        takeWhile((notice) => notice.type !== ''),
+        finalize(() => {
+          !!samePage
+            ? routerInstance
+                .navigateByUrl('/', { skipLocationChange: true })
+                .then(() => routerInstance.navigateByUrl(url))
+            : routerInstance.navigateByUrl(url);
+        })
+      )
+      .subscribe();
   }
 }
