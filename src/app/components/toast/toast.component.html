@@ -1,4 +1,4 @@
-<ng-container *ngIf="displayErrorToast">
+<ng-container *ngIf="displayToast.error">
   <ngb-toast
     [header]="toastHeader"
     [delay]="toastDelay"
@@ -9,12 +9,23 @@
   </ngb-toast>
 </ng-container>
 
-<ng-container *ngIf="displaySuccessToast">
+<ng-container *ngIf="displayToast.success">
   <ngb-toast
     [header]="toastHeader"
     [delay]="toastDelay"
     (hidden)="resetToast()"
     class="bg-success-subtle position-fixed bottom-0 end-0 m-4"
+  >
+    <span>{{ toastBody }}</span>
+  </ngb-toast>
+</ng-container>
+
+<ng-container *ngIf="displayToast.warning">
+  <ngb-toast
+    [header]="toastHeader"
+    [delay]="toastDelay"
+    (hidden)="resetToast()"
+    class="bg-warning-subtle position-fixed top-0 start-50 m-4"
   >
     <span>{{ toastBody }}</span>
   </ngb-toast>
