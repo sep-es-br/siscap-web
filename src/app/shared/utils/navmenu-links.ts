@@ -43,7 +43,7 @@ export abstract class NavMenuLinks {
       hidden: false,
       routes: [
         { title: 'Pessoas', path: 'pessoas', hidden: false },
-        { title: 'Entidades', path: 'entidades', hidden: false },
+        { title: 'Organizações', path: 'entidades', hidden: false },
         { title: 'Grupos de Usuários', path: 'usuarios', hidden: true },
       ],
     },
