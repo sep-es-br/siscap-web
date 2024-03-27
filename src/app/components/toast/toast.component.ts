@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 
-import { ErrorHandlerService } from '../../shared/services/error-handler/error-handler.service';
-import { ToastErrorInfoMap } from '../../shared/utils/toast-error-info-map';
+import { ToastNotifierService } from '../../shared/services/toast-notifier/toast-notifier.service';
+import {
+  ToastErrorInfoMap,
+  ToastSuccessInfoMap,
+} from '../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-toast',
@@ -10,25 +13,35 @@ import { ToastErrorInfoMap } from '../../shared/utils/toast-error-info-map';
   styleUrl: './toast.component.scss',
 })
 export class ToastComponent {
-  public displayToast: boolean = false;
+  public displayErrorToast: boolean = false;
+  public displaySuccessToast: boolean = false;
   public toastHeader: string = '';
   public toastBody: string = '';
 
-  constructor(private _errorHandlerService: ErrorHandlerService) {
-    this._errorHandlerService.errorEmitter$.subscribe((value) => {
-      if (value) {
-        const toastErrorInfo = ToastErrorInfoMap[value];
+  constructor(private _toastNotifierService: ToastNotifierService) {
+    this._toastNotifierService.toastNotifier$.subscribe((notice) => {
+      if (notice.type === 'error') {
+        const toastErrorInfo = ToastErrorInfoMap[notice.code!];
         this.toastHeader = toastErrorInfo.header;
         this.toastBody = toastErrorInfo.body;
-        this.displayToast = true;
+        this.displayErrorToast = true;
+      }
+
+      if (notice.type === 'success') {
+        const toastSuccessInfo =
+          ToastSuccessInfoMap[notice.source!][notice.method!];
+        this.toastHeader = 'Sucesso';
+        this.toastBody = toastSuccessInfo.body;
+        this.displaySuccessToast = true;
       }
     });
   }
 
   public resetToast() {
-    this.displayToast = false;
+    this.displayErrorToast = false;
+    this.displaySuccessToast = false;
     this.toastHeader = '';
     this.toastBody = '';
-    this._errorHandlerService.errorEmitter$.next(undefined);
+    this._toastNotifierService.clearNotice();
   }
 }
