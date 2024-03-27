@@ -6,6 +6,13 @@ import {
   ToastSuccessInfoMap,
 } from '../../shared/utils/toast-info-map';
 
+interface IDisplayToast {
+  error: boolean;
+  success: boolean;
+  warning: boolean;
+  info: boolean;
+}
+
 @Component({
   selector: 'siscap-toast',
   standalone: false,
@@ -13,36 +20,48 @@ import {
   styleUrl: './toast.component.scss',
 })
 export class ToastComponent {
-  public displayErrorToast: boolean = false;
-  public displaySuccessToast: boolean = false;
+  public displayToast: IDisplayToast = {
+    error: false,
+    success: false,
+    warning: false,
+    info: false,
+  };
+
   public toastHeader: string = '';
   public toastBody: string = '';
   public toastDelay: number = 6000;
 
   constructor(private _toastNotifierService: ToastNotifierService) {
     this._toastNotifierService.toastNotifier$.subscribe((notice) => {
-      if (notice.type === 'error') {
-        const toastErrorInfo = ToastErrorInfoMap[notice.code!];
-        this.toastHeader = toastErrorInfo.header;
-        this.toastBody = toastErrorInfo.body;
-        this.toastDelay = toastErrorInfo.delay ?? 6000
-        this.displayErrorToast = true;
-      }
-      
-      if (notice.type === 'success') {
-        const toastSuccessInfo =
-        ToastSuccessInfoMap[notice.source!][notice.method!];
-        this.toastHeader = 'Sucesso';
-        this.toastBody = toastSuccessInfo.body;
-        this.toastDelay = toastSuccessInfo.delay ?? 6000
-        this.displaySuccessToast = true;
+      switch (notice.type) {
+        case 'error':
+          const toastErrorInfo = ToastErrorInfoMap[notice.code!];
+          this.toastHeader = toastErrorInfo.header;
+          this.toastBody = toastErrorInfo.body;
+          this.toastDelay = toastErrorInfo.delay ?? 6000;
+          this.displayToast.error = true;
+          break;
+
+        case 'success':
+          const toastSuccessInfo =
+            ToastSuccessInfoMap[notice.source!][notice.method!];
+          this.toastHeader = 'Sucesso';
+          this.toastBody = toastSuccessInfo.body;
+          this.toastDelay = toastSuccessInfo.delay ?? 6000;
+          this.displayToast.success = true;
+          break;
+
+        default:
+          break;
       }
     });
   }
 
   public resetToast() {
-    this.displayErrorToast = false;
-    this.displaySuccessToast = false;
+    for (const key in this.displayToast) {
+      this.displayToast[key as keyof typeof this.displayToast] = false;
+    }
+
     this.toastHeader = '';
     this.toastBody = '';
     this._toastNotifierService.notifyToast('');
