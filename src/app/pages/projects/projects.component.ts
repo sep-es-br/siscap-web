@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { first } from 'rxjs';
+import { finalize, first, tap } from 'rxjs';
 
 import { ProjetosService } from '../../shared/services/projetos/projetos.service';
+import { ToastNotifierService } from '../../shared/services/toast-notifier/toast-notifier.service';
+
 import {
   IProjectGet,
   IProjectTable,
@@ -21,7 +23,8 @@ export class ProjectsComponent {
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
-    private _projetosService: ProjetosService
+    private _projetosService: ProjetosService,
+    private _toastNotifierService: ToastNotifierService
   ) {
     this._projetosService
       .getProjetos()
@@ -55,20 +58,23 @@ export class ProjectsComponent {
             Titulo: ${data.titulo}
             `)
     ) {
-      this._projetosService.deleteProjeto(data.id).subscribe(
-        (response) => {
-          console.log(response);
-          if (response) {
-            alert('Projeto excluido com sucesso.');
-          }
-        },
-        (err) => {},
-        () => {
-          this._router
-            .navigateByUrl('/', { skipLocationChange: true })
-            .then(() => this._router.navigate(['main', 'projetos']));
-        }
-      );
+      this._projetosService
+        .deleteProjeto(data.id)
+        .pipe(
+          tap((response) => {
+            if (response) {
+              this._toastNotifierService.notifySuccess('Projeto', 'DELETE');
+            }
+          }),
+          finalize(() => {
+            this._toastNotifierService.redirectOnToastClose(
+              this._router,
+              'main/projetos',
+              true
+            );
+          })
+        )
+        .subscribe();
     }
   }
 
