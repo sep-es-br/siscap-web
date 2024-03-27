@@ -24,7 +24,7 @@ export class AuthRedirectComponent {
       );
     }
 
-    const previousUrl = localStorage.getItem('currentUrl') ?? 'main';
+    const previousUrl = sessionStorage.getItem('currentUrl') ?? 'main';
 
     this._profileService
       .getUserInfo()
@@ -35,7 +35,7 @@ export class AuthRedirectComponent {
         }),
         finalize(() => {
           this._router.navigate([previousUrl]);
-          localStorage.removeItem('currentUrl');
+          sessionStorage.removeItem('currentUrl');
         })
       )
       .subscribe();

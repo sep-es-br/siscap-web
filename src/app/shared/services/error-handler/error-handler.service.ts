@@ -57,7 +57,7 @@ export class ErrorHandlerService {
   private handleUnauthorized(errorArg: HttpErrorResponse): void {
     this._toastNotifierService.notifyError(errorArg.status);
 
-    localStorage.setItem('currentUrl', this._router.url);
+    sessionStorage.setItem('currentUrl', this._router.url);
 
     this._toastNotifierService.redirectOnToastClose(this._router, 'login');
   }
