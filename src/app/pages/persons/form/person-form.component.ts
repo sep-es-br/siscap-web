@@ -11,7 +11,6 @@ import { ToastNotifierService } from '../../../shared/services/toast-notifier/to
 import {
   IPerson,
   IPersonCreate,
-  IPersonEdit,
 } from '../../../shared/interfaces/person.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
