@@ -1,0 +1,11 @@
+<ng-container *ngFor="let toast of toastService.toastList">
+  <ngb-toast
+    [header]="toast.header"
+    [delay]="toast.delay || 6000"
+    class="position-fixed m-4"
+    [ngClass]="bgStyleMap[toast.type]"
+    (hidden)="toastService.removeToast(toast)"
+  >
+    {{ toast.body }}
+  </ngb-toast>
+</ng-container>

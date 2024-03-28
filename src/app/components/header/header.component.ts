@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Input, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
+
+import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+
 import { IProfile } from '../../shared/interfaces/profile.interface';
 
 @Component({
@@ -9,12 +12,20 @@ import { IProfile } from '../../shared/interfaces/profile.interface';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
+  @Input('offcanvasRef') navmenuOffcanvas!: TemplateRef<any>;
   public userProfile!: IProfile;
 
-  constructor(private _router: Router) {
+  constructor(
+    private _router: Router,
+    private _offcanvasService: NgbOffcanvas
+  ) {
     if (!!sessionStorage.getItem('scp-profile')) {
       this.userProfile = JSON.parse(sessionStorage.getItem('scp-profile')!);
     }
+  }
+
+  showOffcanvas() {
+    this._offcanvasService.open(this.navmenuOffcanvas);
   }
 
   convertByteArraytoImg(data: ArrayBuffer): string {
@@ -24,6 +35,7 @@ export class HeaderComponent {
   logOut() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('scp-profile');
+    localStorage.removeItem('currentUrl');
     this._router.navigate(['login']);
   }
 }

@@ -1,10 +1,16 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { first } from 'rxjs';
+import { finalize, first, tap } from 'rxjs';
 
 import { EntidadesService } from '../../shared/services/entidades/entidades.service';
-import { IEntityTable } from '../../shared/interfaces/entity.interface';
+import { ToastService } from '../../shared/services/toast/toast.service';
+
+import {
+  IEntityGet,
+  IEntityTable,
+} from '../../shared/interfaces/entity.interface';
+import { ToastSuccessInfoMap } from '../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-entities',
@@ -18,12 +24,13 @@ export class EntitiesComponent {
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
-    private _entidadesService: EntidadesService
+    private _entidadesService: EntidadesService,
+    private _toastService: ToastService
   ) {
     this._entidadesService
       .getEntidades()
       .pipe(first())
-      .subscribe((response) => {
+      .subscribe((response: IEntityGet) => {
         this.entidadesList = response.content;
       });
   }
@@ -56,20 +63,23 @@ export class EntitiesComponent {
             Sigla: ${data.abreviatura}
             `)
     ) {
-      this._entidadesService.deleteEntidade(data.id).subscribe(
-        (response) => {
-          console.log(response);
-          if (response) {
-            alert('Entidade excluída com sucesso.');
-          }
-        },
-        (err) => {},
-        () => {
-          this._router
-            .navigateByUrl('/', { skipLocationChange: true })
-            .then(() => this._router.navigate(['main', 'entidades']));
-        }
-      );
+      this._entidadesService
+        .deleteEntidade(data.id)
+        .pipe(
+          tap((response) => {
+            if (response) {
+              this._toastService.showToast(
+                ToastSuccessInfoMap['Organização']['DELETE']
+              );
+            }
+          }),
+          finalize(() => {
+            this._router
+              .navigateByUrl('/', { skipLocationChange: true })
+              .then(() => this._router.navigateByUrl('main/entidades'));
+          })
+        )
+        .subscribe();
     }
   }
 
