@@ -56,18 +56,22 @@
                     }}
                   </td>
                   <td>
-                    <ng-container
+                    <!-- <ng-container
                       *ngTemplateOutlet="
                         actionsTemplate;
                         context: { rowData: projeto }
                       "
-                    ></ng-container>
+                    ></ng-container> -->
+                    <siscap-table-action-buttons
+                      [rowData]="projeto"
+                      (deleteId)="deleteProjeto($event)"
+                    ></siscap-table-action-buttons>
                   </td>
                 </tr>
               </ng-template>
             </p-table>
 
-            <ng-template #actionsTemplate let-rowData="rowData">
+            <!-- <ng-template #actionsTemplate let-rowData="rowData">
               <div class="d-flex flex-column flex-md-row">
                 <button
                   class="btn btn-primary py-1 px-2"
@@ -88,7 +92,7 @@
                   <i class="fa-regular fa-trash-can"></i>
                 </button>
               </div>
-            </ng-template>
+            </ng-template> -->
           </div>
         </div>
       </div>

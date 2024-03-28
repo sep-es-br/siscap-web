@@ -2,8 +2,7 @@ import { Component, Input, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
-
-import { IProfile } from '../../shared/interfaces/profile.interface';
+import { IProfile } from '../../../shared/interfaces/profile.interface';
 
 @Component({
   selector: 'siscap-header',

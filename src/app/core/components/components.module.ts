@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 import { NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { PipesModule } from '../pipes/pipes.module';
 import { NavMenuComponent } from './navmenu/navmenu.component';
 import { HeaderComponent } from './header/header.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { AlertComponent } from './alert/alert.component';
 import { LoadingComponent } from './loading/loading.component';
-import { BreadcrumbnavlinkPipe } from '../pipes/breadcrumbnavlink.pipe';
 import { ToastComponent } from './toast/toast.component';
 
 @NgModule({
@@ -19,17 +19,16 @@ import { ToastComponent } from './toast/toast.component';
     BreadcrumbComponent,
     AlertComponent,
     LoadingComponent,
-    ToastComponent
+    ToastComponent,
   ],
-  imports: [CommonModule, RouterModule, BreadcrumbnavlinkPipe, NgbToastModule],
+  imports: [CommonModule, RouterModule, PipesModule, NgbToastModule],
   exports: [
     NavMenuComponent,
     HeaderComponent,
     BreadcrumbComponent,
     AlertComponent,
     LoadingComponent,
-    ToastComponent
+    ToastComponent,
   ],
-  providers: [CurrencyPipe, DatePipe],
 })
 export class ComponentsModule {}

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 
-import { ToastNotifierService } from '../../shared/services/toast-notifier/toast-notifier.service';
+import { ToastNotifierService } from '../../../shared/services/toast-notifier/toast-notifier.service';
+
 import {
   ToastErrorInfoMap,
   ToastSuccessInfoMap,
-} from '../../shared/utils/toast-info-map';
+} from '../../../shared/utils/toast-info-map';
 
 interface IDisplayToast {
   error: boolean;

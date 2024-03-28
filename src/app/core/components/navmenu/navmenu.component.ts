@@ -1,6 +1,6 @@
 import { Component, Input, TemplateRef } from '@angular/core';
 
-import { NavMenuLinks } from '../../shared/utils/navmenu-links';
+import { NavMenuLinks } from '../../../shared/utils/navmenu-links';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
