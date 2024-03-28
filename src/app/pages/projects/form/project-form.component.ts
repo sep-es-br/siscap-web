@@ -6,7 +6,7 @@ import { Observable, finalize, first, tap } from 'rxjs';
 
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { ToastNotifierService } from '../../../shared/services/toast-notifier/toast-notifier.service';
+import { ToastService } from '../../../shared/services/toast/toast.service';
 
 import {
   IProject,
@@ -16,6 +16,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { NgxMaskRtlCurrencyInputHelper } from '../../../shared/helpers/ngx-mask-rtl-currency-input.helper';
+import { ToastSuccessInfoMap } from '../../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-project-form',
@@ -45,7 +46,7 @@ export class ProjectFormComponent implements OnInit {
     private _route: ActivatedRoute,
     private _projetosService: ProjetosService,
     private _selectListService: SelectListService,
-    private _toastNotifierService: ToastNotifierService,
+    private _toastService: ToastService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.projectEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -214,14 +215,13 @@ export class ProjectFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifyToast('success', undefined, 'Projeto', 'POST');
+                this._toastService.showToast(
+                  ToastSuccessInfoMap['Projeto']['POST']
+                );
               }
             }),
             finalize(() => {
-              this._toastNotifierService.redirectOnToastClose(
-                this._router,
-                'main/projetos'
-              );
+              this._router.navigateByUrl('main/projetos');
             })
           )
           .subscribe();
@@ -235,14 +235,13 @@ export class ProjectFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifyToast('success', undefined, 'Projeto', 'PUT');
+                this._toastService.showToast(
+                  ToastSuccessInfoMap['Projeto']['PUT']
+                );
               }
             }),
             finalize(() => {
-              this._toastNotifierService.redirectOnToastClose(
-                this._router,
-                'main/projetos'
-              );
+              this._router.navigateByUrl('main/projetos');
             })
           )
           .subscribe();

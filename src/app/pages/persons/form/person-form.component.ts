@@ -6,7 +6,7 @@ import { Observable, finalize, first, tap } from 'rxjs';
 
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { ToastNotifierService } from '../../../shared/services/toast-notifier/toast-notifier.service';
+import { ToastService } from '../../../shared/services/toast/toast.service';
 
 import {
   IPerson,
@@ -16,6 +16,7 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
+import { ToastSuccessInfoMap } from '../../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-person-form',
@@ -64,7 +65,7 @@ export class PersonFormComponent implements OnInit {
     private _route: ActivatedRoute,
     private _pessoasService: PessoasService,
     private _selectListService: SelectListService,
-    private _toastNotifierService: ToastNotifierService
+    private _toastService: ToastService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.personEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -237,14 +238,13 @@ export class PersonFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifyToast('success', undefined, 'Pessoa', 'POST');
+                this._toastService.showToast(
+                  ToastSuccessInfoMap['Pessoa']['POST']
+                );
               }
             }),
             finalize(() => {
-              this._toastNotifierService.redirectOnToastClose(
-                this._router,
-                'main/pessoas'
-              );
+              this._router.navigateByUrl('main/pessoas');
             })
           )
           .subscribe();
@@ -257,14 +257,13 @@ export class PersonFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifyToast('success', undefined, 'Pessoa', 'PUT');
+                this._toastService.showToast(
+                  ToastSuccessInfoMap['Pessoa']['PUT']
+                );
               }
             }),
             finalize(() => {
-              this._toastNotifierService.redirectOnToastClose(
-                this._router,
-                'main/pessoas'
-              );
+              this._router.navigateByUrl('main/pessoas');
             })
           )
           .subscribe();

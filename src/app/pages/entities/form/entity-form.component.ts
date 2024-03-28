@@ -6,7 +6,7 @@ import { Observable, finalize, first, tap } from 'rxjs';
 
 import { EntidadesService } from '../../../shared/services/entidades/entidades.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { ToastNotifierService } from '../../../shared/services/toast-notifier/toast-notifier.service';
+import { ToastService } from '../../../shared/services/toast/toast.service';
 
 import {
   IEntity,
@@ -15,6 +15,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
+import { ToastSuccessInfoMap } from '../../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-entity-form',
@@ -50,7 +51,7 @@ export class EntityFormComponent implements OnInit {
     private _route: ActivatedRoute,
     private _entidadesService: EntidadesService,
     private _selectListService: SelectListService,
-    private _toastNotifierService: ToastNotifierService
+    private _toastService: ToastService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.entityEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -217,14 +218,13 @@ export class EntityFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifyToast('success', undefined, 'Organização', 'POST');
+                this._toastService.showToast(
+                  ToastSuccessInfoMap['Organização']['POST']
+                );
               }
             }),
             finalize(() => {
-              this._toastNotifierService.redirectOnToastClose(
-                this._router,
-                'main/entidades'
-              );
+              this._router.navigateByUrl('main/entidades');
             })
           )
           .subscribe();
@@ -236,14 +236,13 @@ export class EntityFormComponent implements OnInit {
           .pipe(
             tap((response) => {
               if (response) {
-                this._toastNotifierService.notifyToast('success', undefined, 'Organização', 'PUT');
+                this._toastService.showToast(
+                  ToastSuccessInfoMap['Organização']['PUT']
+                );
               }
             }),
             finalize(() => {
-              this._toastNotifierService.redirectOnToastClose(
-                this._router,
-                'main/entidades'
-              );
+              this._router.navigateByUrl('main/entidades');
             })
           )
           .subscribe();

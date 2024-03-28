@@ -4,12 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, first, tap } from 'rxjs';
 
 import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
-import { ToastNotifierService } from '../../shared/services/toast-notifier/toast-notifier.service';
+import { ToastService } from '../../shared/services/toast/toast.service';
 
 import {
   IPersonGet,
   IPersonTable,
 } from '../../shared/interfaces/person.interface';
+import { ToastSuccessInfoMap } from '../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-persons',
@@ -24,7 +25,7 @@ export class PersonsComponent {
     private _router: Router,
     private _route: ActivatedRoute,
     private _pessoasService: PessoasService,
-    private _toastNotifierService: ToastNotifierService
+    private _toastService: ToastService
   ) {
     this._pessoasService
       .getPessoas()
@@ -67,15 +68,15 @@ export class PersonsComponent {
         .pipe(
           tap((response) => {
             if (response) {
-              this._toastNotifierService.notifyToast('success', undefined, 'Pessoa', 'DELETE');
+              this._toastService.showToast(
+                ToastSuccessInfoMap['Pessoa']['DELETE']
+              );
             }
           }),
           finalize(() => {
-            this._toastNotifierService.redirectOnToastClose(
-              this._router,
-              'main/pessoas',
-              true
-            );
+            this._router
+              .navigateByUrl('/', { skipLocationChange: true })
+              .then(() => this._router.navigateByUrl('main/pessoas'));
           })
         )
         .subscribe();
