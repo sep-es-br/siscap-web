@@ -62,10 +62,10 @@
                         context: { rowData: projeto }
                       "
                     ></ng-container> -->
-                    <siscap-table-action-buttons
-                      [rowData]="projeto"
+                    <table-action-buttons-template
+                      [rowData]="projetoDataInput(projeto)"
                       (deleteId)="deleteProjeto($event)"
-                    ></siscap-table-action-buttons>
+                    ></table-action-buttons-template>
                   </td>
                 </tr>
               </ng-template>

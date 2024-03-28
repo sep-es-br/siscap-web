@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmModalComponent } from '../confirm-modal/confirm-modal.component';
 
 @Component({
-  selector: 'siscap-table-action-buttons',
+  selector: 'table-action-buttons-template',
   standalone: false,
   templateUrl: './table-action-buttons.component.html',
   styleUrl: './table-action-buttons.component.scss',
@@ -41,9 +41,18 @@ export class TableActionButtonsComponent {
 
   public tableDelete(data: any) {
     const confirmModalRef = this._modalService.open(this.confirmModal);
-    confirmModalRef.componentInstance.modalBodyDataInput = data;
 
-    // this.deleteId.emit(data.id);
+    confirmModalRef.componentInstance.type = 'deletar';
+    confirmModalRef.componentInstance.modalData = data;
+
+    confirmModalRef.result.then(
+      (result) => {
+        if (result) {
+          this.deleteId.emit(data.id);
+        }
+      },
+      () => {}
+    );
   }
 
   // public actionEvent(type: string, data: any) {

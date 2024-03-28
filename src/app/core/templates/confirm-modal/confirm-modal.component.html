@@ -1,16 +1,13 @@
-<div class="modal-header bg-danger">
+<div class="modal-header bg-danger-subtle">
   <h5 class="modal-title">Titulo do modal</h5>
   <button class="btn-close" (click)="confirmModalInstance.dismiss()"></button>
 </div>
-<div class="modal-body bg-danger-subtle">
+<div class="modal-body">
   <p>O seguinte dado será excluído. Tem certeza que quer proceder?</p>
-  <!-- <ng-container *ngFor="let item of modalBodyData | keyvalue">
-    <p>{{ item.key }}: {{ item.value }}</p>
-  </ng-container> -->
 
-  <!-- <p>{{ modalBodyData }}</p> -->
-  <!-- RECEBER DADOS DO COMPONENTE CHAMANDO A AÇÃO DE DELETAR -->
-  <!-- PREENCHER CORPO COM DIALOGO DE DELEÇÃO -->
+  <ng-container *ngFor="let item of modalData.info | keyvalue">
+    <p>{{ item.key }}: {{ item.value }}</p>
+  </ng-container>
 </div>
 <div class="modal-footer">
   <button
@@ -19,7 +16,7 @@
   >
     Cancelar
   </button>
-  <button class="btn btn-danger" (click)="confirmModalInstance.close($event)">
+  <button class="btn btn-danger" (click)="confirmModalInstance.close(true)">
     Deletar
   </button>
 </div>

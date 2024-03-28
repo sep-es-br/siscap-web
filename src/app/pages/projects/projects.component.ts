@@ -66,8 +66,48 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this._subscription.add(this._getProjetos$.subscribe());
   }
 
+  projetoDataInput(project: IProjectTable): any {
+    const projetoDataInput = {
+      id: project.id,
+      info: {
+        Sigla: project.sigla,
+        'Nome do Projeto': project.titulo,
+      },
+    };
+
+    return projetoDataInput;
+  }
+
   deleteProjeto(id: number) {
-    this._deleteProjetoId = id;
+    // this._deleteProjetoId = id;
+
+    // console.log(this._deleteProjetoId);
+
+    // SUBSCRIPTION NÃO FUNCIONA!
+    // this._deleteProjetoId não atualiza (continua undefined lá em cima)
+
+    this._projetosService
+      .deleteProjeto(id)
+      .pipe(
+        tap((response) => {
+          if (response) {
+            this._toastNotifierService.notifyToast(
+              'success',
+              undefined,
+              'Projeto',
+              'DELETE'
+            );
+          }
+        })
+        // finalize(() => {
+        //   this._toastNotifierService.redirectOnToastClose(
+        //     this._router,
+        //     'main/projetos',
+        //     true
+        //   );
+        // })
+      )
+      .subscribe();
 
     // this._subscription.add(this._deleteProjetos$.subscribe());
   }
