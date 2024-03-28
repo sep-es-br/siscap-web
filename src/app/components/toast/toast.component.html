@@ -1,32 +1,11 @@
-<ng-container *ngIf="displayToast.error">
+<ng-container *ngFor="let toast of toastService.toastList">
   <ngb-toast
-    [header]="toastHeader"
-    [delay]="toastDelay"
-    (hidden)="resetToast()"
-    class="bg-danger-subtle position-fixed top-0 end-0 m-4"
+    [header]="toast.header"
+    [delay]="toast.delay || 6000"
+    class="position-fixed m-4"
+    [ngClass]="bgStyleMap[toast.type]"
+    (hidden)="toastService.removeToast(toast)"
   >
-    <span>{{ toastBody }}</span>
-  </ngb-toast>
-</ng-container>
-
-<ng-container *ngIf="displayToast.success">
-  <ngb-toast
-    [header]="toastHeader"
-    [delay]="toastDelay"
-    (hidden)="resetToast()"
-    class="bg-success-subtle position-fixed bottom-0 end-0 m-4"
-  >
-    <span>{{ toastBody }}</span>
-  </ngb-toast>
-</ng-container>
-
-<ng-container *ngIf="displayToast.warning">
-  <ngb-toast
-    [header]="toastHeader"
-    [delay]="toastDelay"
-    (hidden)="resetToast()"
-    class="bg-warning-subtle position-fixed top-0 start-50 m-4"
-  >
-    <span>{{ toastBody }}</span>
+    {{ toast.body }}
   </ngb-toast>
 </ng-container>
