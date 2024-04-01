@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { ToastService } from '../toast/toast.service';
-import { ToastErrorInfoMap } from '../../utils/toast-info-map';
 
-interface IHandleErrorOptions {
-  [status: string]: Function;
-}
+import { IHttpError } from '../../interfaces/http-error.interface';
 
 /**
  * @service
@@ -17,14 +14,6 @@ interface IHandleErrorOptions {
   providedIn: 'root',
 })
 export class ErrorHandlerService {
-  private _errorCodesList: typeof HttpStatusCode = HttpStatusCode;
-
-  private _handleErrorOptions: IHandleErrorOptions = {
-    BadRequest: this.handleBadRequestOptions,
-    Unauthorized: this.handleUnauthorizedOptions,
-    InternalServerError: this.handleInternalServerErrorOptions,
-  };
-
   constructor(private _toastService: ToastService, private _router: Router) {}
   /**
    * @public
@@ -39,52 +28,24 @@ export class ErrorHandlerService {
    * @param {HttpErrorResponse} error - O erro fornecido pelo seletor do operador RxJS `catchError`.
    */
   public handleError(error: HttpErrorResponse): void {
-    const toastErrorInfo = ToastErrorInfoMap[error.status] ?? undefined;
+    const backEndError: IHttpError = error.error;
 
-    if (toastErrorInfo) {
-      this._toastService.showToast(toastErrorInfo);
-
-      const handleErrorOptionsFunction =
-        this._handleErrorOptions[this._errorCodesList[error.status]];
-
-      this._toastService.toastNotifier$.subscribe((value) => {
-        if (value) {
-          handleErrorOptionsFunction.apply(this);
-        }
-      });
-    } else {
-      console.log(
-        `Tratamento de erro para ${error.status}: ${
-          this._errorCodesList[error.status]
-        } inexistente.`
+    if (backEndError) {
+      this._toastService.showToast(
+        'error',
+        backEndError.mensagem,
+        backEndError.erros
       );
-      console.log(error);
+    } else {
+      this._toastService.showToast('error', 'Ocorreu um erro.', [
+        'Houve um erro ao processar sua requisição.',
+      ]);
     }
-  }
 
-  /**
-   * @private
-   * Navega o usuário para a página principal.
-   */
-  private handleBadRequestOptions(): void {
-    this._router.navigateByUrl('main');
-  }
-
-  /**
-   * @private
-   * Armazena a url atual em `sessionStorage` e navega o usuário para a página de login.
-   * Lógica de redirecionamento é aplicada no componente `AuthRedirectComponent`.
-   */
-  private handleUnauthorizedOptions(): void {
-    sessionStorage.setItem('currentUrl', this._router.url);
-    this._router.navigateByUrl('login');
-  }
-
-  /**
-   * @private
-   * Navega o usuário para a página principal.
-   */
-  private handleInternalServerErrorOptions(): void {
-    this._router.navigateByUrl('main');
+    this._toastService.toastNotifier$.subscribe((value) => {
+      if (value) {
+        this._router.navigateByUrl(!!backEndError ? 'main' : 'login');
+      }
+    });
   }
 }
