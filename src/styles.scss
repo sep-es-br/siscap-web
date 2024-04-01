@@ -86,8 +86,7 @@
 }
 
 label {
-  color: rgba(var(--bs-body-color-rgb), 0.65);
-  font-size: 0.85rem;
+  font-size: $small-4-font-size;
 }
 
 /* Estilos de validação de formulários (controle inválido)*/
@@ -95,19 +94,19 @@ label {
 /* Texto de erro */
 
 span.error-message {
-  color: var(--bs-form-invalid-border-color);
+  color: $invalid;
 }
 
 /* Elementos comuns */
 
 .ng-invalid.ng-touched:not(:focus) {
-  border-color: var(--bs-form-invalid-border-color);
+  border-color: $invalid;
 }
 
 /* ng-select */
 
 .ng-select.ng-touched.ng-invalid:not(.ng-select-focused) .ng-select-container {
-  border-color: var(--bs-form-invalid-border-color);
+  border-color: $invalid;
 }
 
 /* Estilos de visualização de formulários (controle desabilitado) */
@@ -115,7 +114,7 @@ span.error-message {
 /* ng-select */
 
 .ng-select.ng-select-disabled .ng-select-container {
-  background-color: #e9ecef;
+  background-color: $disabled;
 }
 
 /* Estilos de imagem dos componentes de formulário */
