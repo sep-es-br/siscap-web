@@ -3,8 +3,8 @@ import { Subject } from 'rxjs';
 
 export interface IToastInfo {
   type: string;
-  header: string;
-  body: string;
+  title: string;
+  content?: Array<string>;
   delay?: number;
 }
 
@@ -18,11 +18,30 @@ export class ToastService {
 
   constructor() {}
 
-  showToast(toastInfo: IToastInfo) {
+  public showToast(
+    type: string,
+    title: string,
+    content?: Array<string>,
+    delay?: number
+  ) {
+    const toastInfo: IToastInfo = {
+      type: type,
+      title: title,
+    };
+
+    if (content) {
+      toastInfo.content = content;
+    }
+
+    if (delay) {
+      toastInfo.delay = delay;
+    }
+
     this.toastList.push(toastInfo);
+    this.toastNotifier$.next(false);
   }
 
-  removeToast(targetToast: IToastInfo) {
+  public removeToast(targetToast: IToastInfo) {
     this.toastList = this.toastList.filter((toast) => {
       return toast != targetToast;
     });
