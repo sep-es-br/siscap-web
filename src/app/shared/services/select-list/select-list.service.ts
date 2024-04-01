@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { ISelectList } from '../../interfaces/select-list.interface';
@@ -29,7 +29,7 @@ export class SelectListService {
       .pipe(
         catchError((err: HttpErrorResponse) => {
           this._errorHandlerService.handleError(err);
-          throw new Error('Ocorreu um erro ao processar a requisição.');
+          return throwError(() => err);
         })
       );
   }

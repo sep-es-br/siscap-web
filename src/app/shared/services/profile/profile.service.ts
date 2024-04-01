@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { IProfile } from '../../interfaces/profile.interface';
@@ -22,7 +22,7 @@ export class ProfileService {
     return this._http.get<IProfile>(`${this._url}`).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
-        throw new Error('Ocorreu um erro ao processar a requisição.');
+        return throwError(() => err);
       })
     );
   }

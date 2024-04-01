@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import {
@@ -27,7 +27,7 @@ export class PessoasService {
     return this._http.get<IPerson>(`${this._url}/${id}`).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
-        throw new Error('Ocorreu um erro ao processar a requisição.');
+        return throwError(() => err);
       })
     );
   }
@@ -36,7 +36,7 @@ export class PessoasService {
     return this._http.put<IPerson>(`${this._url}/${id}`, body).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
-        throw new Error('Ocorreu um erro ao processar a requisição.');
+        return throwError(() => err);
       })
     );
   }
@@ -47,7 +47,7 @@ export class PessoasService {
       .pipe(
         catchError((err: HttpErrorResponse) => {
           this._errorHandlerService.handleError(err);
-          throw new Error('Ocorreu um erro ao processar a requisição.');
+          return throwError(() => err);
         })
       );
   }
@@ -57,7 +57,7 @@ export class PessoasService {
     return this._http.get<IPersonGet>(this._url).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
-        throw new Error('Ocorreu um erro ao processar a requisição.');
+        return throwError(() => err);
       })
     );
   }
@@ -66,7 +66,7 @@ export class PessoasService {
     return this._http.post<IPerson>(this._url, body).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
-        throw new Error('Ocorreu um erro ao processar a requisição.');
+        return throwError(() => err);
       })
     );
   }
