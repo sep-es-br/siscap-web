@@ -1,4 +1,4 @@
-import { BreadcrumbnavlinkPipe } from './breadcrumbnavlink.pipe';
+import { BreadcrumbnavlinkPipe } from './breadcrumb-nav-link.pipe';
 
 describe('BreadcrumbnavlinkPipe', () => {
   it('create an instance', () => {
