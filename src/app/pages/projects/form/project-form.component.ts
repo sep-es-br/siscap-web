@@ -4,7 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, finalize, first, tap } from 'rxjs';
 
-import * as _ from 'lodash';
+import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
+import { SelectListService } from '../../../shared/services/select-list/select-list.service';
+import { ToastService } from '../../../shared/services/toast/toast.service';
 
 import {
   IProject,
@@ -12,12 +14,11 @@ import {
   IProjectEdit,
 } from '../../../shared/interfaces/project.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
-import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
-import { SelectListService } from '../../../shared/services/select-list/select-list.service';
+
 import { NgxMaskRtlCurrencyInputHelper } from '../../../shared/helpers/ngx-mask-rtl-currency-input.helper';
 
 @Component({
-  selector: 'siscap-create',
+  selector: 'siscap-project-form',
   standalone: false,
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss',
@@ -40,10 +41,11 @@ export class ProjectFormComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
+    private _router: Router,
+    private _route: ActivatedRoute,
     private _projetosService: ProjetosService,
     private _selectListService: SelectListService,
-    private _route: ActivatedRoute,
-    private _router: Router
+    private _toastService: ToastService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.projectEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -199,7 +201,6 @@ export class ProjectFormComponent implements OnInit {
     }
 
     if (form.invalid) {
-      // alert('Formulário contém erros. Por favor verificar os campos.');
       return;
     }
 
@@ -210,40 +211,42 @@ export class ProjectFormComponent implements OnInit {
 
         this._projetosService
           .postProjeto(createPayload)
-          .subscribe((response) => {
-            console.log(response);
-            if (response) {
-              alert('Projeto cadastrado com sucesso.');
-              this._router.navigate(['main', 'projetos']);
-            }
-          });
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Projeto cadastrado com sucesso.'
+                );
+                this._router.navigateByUrl('main/projetos');
+              }
+            })
+          )
+          .subscribe();
         break;
 
       case 'editar':
-        const editPayload = this.prepareEditForm(
-          form.value,
-          this.projectFormInitialValue
-        ) as IProjectEdit;
+        const editPayload = form.value as IProjectEdit;
 
         this._projetosService
           .putProjeto(this.projectEditId, editPayload)
-          .subscribe((response) => {
-            console.log(response);
-            if (response) {
-              alert('Projeto alterado com sucesso.');
-              this._router.navigate(['main', 'projetos']);
-            }
-          });
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Projeto alterado com sucesso.'
+                );
+                this._router.navigateByUrl('main/projetos');
+              }
+            })
+          )
+          .subscribe();
+
         break;
 
       default:
         break;
     }
-  }
-
-  prepareEditForm(formCurrentValue: any, formInitialValue: any) {
-    return _.pickBy(formCurrentValue, (value, key) => {
-      return value != formInitialValue[key];
-    });
   }
 }

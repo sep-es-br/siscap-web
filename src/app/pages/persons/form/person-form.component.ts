@@ -4,14 +4,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, finalize, first, tap } from 'rxjs';
 
+import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
+import { SelectListService } from '../../../shared/services/select-list/select-list.service';
+import { ToastService } from '../../../shared/services/toast/toast.service';
+
 import {
   IPerson,
   IPersonCreate,
-  IPersonEdit,
 } from '../../../shared/interfaces/person.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
-import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
-import { SelectListService } from '../../../shared/services/select-list/select-list.service';
+
 import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 
@@ -58,10 +60,11 @@ export class PersonFormComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
+    private _router: Router,
+    private _route: ActivatedRoute,
     private _pessoasService: PessoasService,
     private _selectListService: SelectListService,
-    private _route: ActivatedRoute,
-    private _router: Router
+    private _toastService: ToastService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.personEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -229,25 +232,38 @@ export class PersonFormComponent implements OnInit {
 
     switch (this.formMode) {
       case 'criar':
-        this._pessoasService.postPessoa(payload).subscribe((response) => {
-          console.log(response);
-          if (response) {
-            alert('Usuário cadastrado com sucesso.');
-            this._router.navigate(['main', 'pessoas']);
-          }
-        });
+        this._pessoasService
+          .postPessoa(payload)
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Pessoa cadastrada com sucesso.'
+                );
+                this._router.navigateByUrl('main/pessoas');
+              }
+            })
+          )
+          .subscribe();
+
         break;
 
       case 'editar':
         this._pessoasService
           .putPessoa(this.personEditId, payload)
-          .subscribe((response) => {
-            console.log(response);
-            if (response) {
-              alert('Usuário atualizado com sucesso.');
-              this._router.navigate(['main', 'pessoas']);
-            }
-          });
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Pessoa alterada com sucesso.'
+                );
+                this._router.navigateByUrl('main/pessoas');
+              }
+            })
+          )
+          .subscribe();
 
         break;
 

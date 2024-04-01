@@ -1,8 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
-import { first } from 'rxjs';
-import { IPersonTable } from '../../shared/interfaces/person.interface';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+
+import { first, tap } from 'rxjs';
+
+import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
+import { ToastService } from '../../shared/services/toast/toast.service';
+
+import {
+  IPersonGet,
+  IPersonTable,
+} from '../../shared/interfaces/person.interface';
 
 @Component({
   selector: 'siscap-persons',
@@ -16,12 +23,13 @@ export class PersonsComponent {
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
-    private _pessoasService: PessoasService
+    private _pessoasService: PessoasService,
+    private _toastService: ToastService
   ) {
     this._pessoasService
       .getPessoas()
       .pipe(first())
-      .subscribe((response) => {
+      .subscribe((response: IPersonGet) => {
         this.pessoasList = response.content;
       });
   }
@@ -54,20 +62,22 @@ export class PersonsComponent {
             E-mail: ${data.email}
             `)
     ) {
-      this._pessoasService.deletePessoa(data.id).subscribe(
-        (response) => {
-          console.log(response);
-          if (response) {
-            alert('Usuário excluido com sucesso.');
-          }
-        },
-        (err) => {},
-        () => {
-          this._router
-            .navigateByUrl('/', { skipLocationChange: true })
-            .then(() => this._router.navigate(['main', 'pessoas']));
-        }
-      );
+      this._pessoasService
+        .deletePessoa(data.id)
+        .pipe(
+          tap((response) => {
+            if (response) {
+              this._toastService.showToast(
+                'success',
+                'Pessoa excluída com sucesso.'
+              );
+              this._router
+                .navigateByUrl('/', { skipLocationChange: true })
+                .then(() => this._router.navigateByUrl('main/pessoas'));
+            }
+          })
+        )
+        .subscribe();
     }
   }
 

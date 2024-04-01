@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Input, TemplateRef } from '@angular/core';
 
 import { NavMenuLinks } from '../../shared/utils/navmenu-links';
+import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'siscap-navmenu',
@@ -9,7 +10,13 @@ import { NavMenuLinks } from '../../shared/utils/navmenu-links';
   styleUrl: './navmenu.component.scss',
 })
 export class NavMenuComponent {
+  @Input('offcanvasRef') navmenuOffcanvas!: TemplateRef<any>;
+
   public menuLinks = NavMenuLinks.menuLinks;
 
-  constructor() {}
+  constructor(private _offcanvasService: NgbOffcanvas) {}
+
+  dismissOffcanvas() {
+    this._offcanvasService.dismiss(this.navmenuOffcanvas);
+  }
 }

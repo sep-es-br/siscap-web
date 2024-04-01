@@ -4,13 +4,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, finalize, first, tap } from 'rxjs';
 
+import { EntidadesService } from '../../../shared/services/entidades/entidades.service';
+import { SelectListService } from '../../../shared/services/select-list/select-list.service';
+import { ToastService } from '../../../shared/services/toast/toast.service';
+
 import {
   IEntity,
   IEntityCreate,
 } from '../../../shared/interfaces/entity.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
-import { EntidadesService } from '../../../shared/services/entidades/entidades.service';
-import { SelectListService } from '../../../shared/services/select-list/select-list.service';
+
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 
 @Component({
@@ -43,10 +46,11 @@ export class EntityFormComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
+    private _router: Router,
+    private _route: ActivatedRoute,
     private _entidadesService: EntidadesService,
     private _selectListService: SelectListService,
-    private _route: ActivatedRoute,
-    private _router: Router
+    private _toastService: ToastService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.entityEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -208,25 +212,37 @@ export class EntityFormComponent implements OnInit {
 
     switch (this.formMode) {
       case 'criar':
-        this._entidadesService.postEntidade(payload).subscribe((response) => {
-          console.log(response);
-          if (response) {
-            alert('Órgão cadastrado com sucesso.');
-            this._router.navigate(['main', 'entidades']);
-          }
-        });
+        this._entidadesService
+          .postEntidade(payload)
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Organização cadastrada com sucesso.'
+                );
+                this._router.navigateByUrl('main/entidades');
+              }
+            })
+          )
+          .subscribe();
         break;
 
       case 'editar':
         this._entidadesService
           .putEntidade(this.entityEditId, payload)
-          .subscribe((response) => {
-            console.log(response);
-            if (response) {
-              alert('Órgão atualizado com sucesso.');
-              this._router.navigate(['main', 'entidades']);
-            }
-          });
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Organização alterada com sucesso.'
+                );
+                this._router.navigateByUrl('main/entidades');
+              }
+            })
+          )
+          .subscribe();
 
         break;
 
