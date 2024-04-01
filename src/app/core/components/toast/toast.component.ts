@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { ToastService } from '../../shared/services/toast/toast.service';
+import { ToastService } from '../../../shared/services/toast/toast.service';
 
 interface IToastStyleClass {
   [type: string]: string;

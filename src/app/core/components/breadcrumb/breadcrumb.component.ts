@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { EventType, NavigationEnd, Router } from '@angular/router';
 
 import { filter } from 'rxjs';
-import { BreadcrumbLists } from '../../shared/utils/breadcrumb-lists';
+import { BreadcrumbLists } from '../../../shared/utils/breadcrumb-lists';
 
 @Component({
   selector: 'siscap-breadcrumb',

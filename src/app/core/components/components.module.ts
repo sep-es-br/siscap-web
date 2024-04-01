@@ -9,8 +9,8 @@ import { HeaderComponent } from './header/header.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { AlertComponent } from './alert/alert.component';
 import { LoadingComponent } from './loading/loading.component';
-import { BreadcrumbnavlinkPipe } from '../pipes/breadcrumbnavlink.pipe';
 import { ToastComponent } from './toast/toast.component';
+import { PipesModule } from '../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -21,7 +21,7 @@ import { ToastComponent } from './toast/toast.component';
     LoadingComponent,
     ToastComponent
   ],
-  imports: [CommonModule, RouterModule, BreadcrumbnavlinkPipe, NgbToastModule],
+  imports: [CommonModule, RouterModule, PipesModule, NgbToastModule],
   exports: [
     NavMenuComponent,
     HeaderComponent,
