@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { finalize, first, tap } from 'rxjs';
+import { first, tap } from 'rxjs';
 
 import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
 import { ToastService } from '../../shared/services/toast/toast.service';
@@ -10,7 +10,6 @@ import {
   IPersonGet,
   IPersonTable,
 } from '../../shared/interfaces/person.interface';
-import { ToastSuccessInfoMap } from '../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-persons',
@@ -69,14 +68,13 @@ export class PersonsComponent {
           tap((response) => {
             if (response) {
               this._toastService.showToast(
-                ToastSuccessInfoMap['Pessoa']['DELETE']
+                'success',
+                'Pessoa excluída com sucesso.'
               );
+              this._router
+                .navigateByUrl('/', { skipLocationChange: true })
+                .then(() => this._router.navigateByUrl('main/pessoas'));
             }
-          }),
-          finalize(() => {
-            this._router
-              .navigateByUrl('/', { skipLocationChange: true })
-              .then(() => this._router.navigateByUrl('main/pessoas'));
           })
         )
         .subscribe();

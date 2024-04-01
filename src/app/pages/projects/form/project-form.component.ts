@@ -16,7 +16,6 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { NgxMaskRtlCurrencyInputHelper } from '../../../shared/helpers/ngx-mask-rtl-currency-input.helper';
-import { ToastSuccessInfoMap } from '../../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-project-form',
@@ -216,12 +215,11 @@ export class ProjectFormComponent implements OnInit {
             tap((response) => {
               if (response) {
                 this._toastService.showToast(
-                  ToastSuccessInfoMap['Projeto']['POST']
+                  'success',
+                  'Projeto cadastrado com sucesso.'
                 );
+                this._router.navigateByUrl('main/projetos');
               }
-            }),
-            finalize(() => {
-              this._router.navigateByUrl('main/projetos');
             })
           )
           .subscribe();
@@ -236,12 +234,11 @@ export class ProjectFormComponent implements OnInit {
             tap((response) => {
               if (response) {
                 this._toastService.showToast(
-                  ToastSuccessInfoMap['Projeto']['PUT']
+                  'success',
+                  'Projeto alterado com sucesso.'
                 );
+                this._router.navigateByUrl('main/projetos');
               }
-            }),
-            finalize(() => {
-              this._router.navigateByUrl('main/projetos');
             })
           )
           .subscribe();

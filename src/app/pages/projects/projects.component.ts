@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { finalize, first, tap } from 'rxjs';
+import { first, tap } from 'rxjs';
 
 import { ProjetosService } from '../../shared/services/projetos/projetos.service';
 import { ToastService } from '../../shared/services/toast/toast.service';
@@ -10,7 +10,6 @@ import {
   IProjectGet,
   IProjectTable,
 } from '../../shared/interfaces/project.interface';
-import { ToastSuccessInfoMap } from '../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-projects',
@@ -65,14 +64,13 @@ export class ProjectsComponent {
           tap((response) => {
             if (response) {
               this._toastService.showToast(
-                ToastSuccessInfoMap['Projeto']['DELETE']
+                'success',
+                'Projeto excluído com sucesso.'
               );
+              this._router
+                .navigateByUrl('/', { skipLocationChange: true })
+                .then(() => this._router.navigateByUrl('main/projetos'));
             }
-          }),
-          finalize(() => {
-            this._router
-              .navigateByUrl('/', { skipLocationChange: true })
-              .then(() => this._router.navigateByUrl('main/projetos'));
           })
         )
         .subscribe();

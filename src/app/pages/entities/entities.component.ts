@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { finalize, first, tap } from 'rxjs';
+import { first, tap } from 'rxjs';
 
 import { EntidadesService } from '../../shared/services/entidades/entidades.service';
 import { ToastService } from '../../shared/services/toast/toast.service';
@@ -10,7 +10,6 @@ import {
   IEntityGet,
   IEntityTable,
 } from '../../shared/interfaces/entity.interface';
-import { ToastSuccessInfoMap } from '../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-entities',
@@ -69,14 +68,13 @@ export class EntitiesComponent {
           tap((response) => {
             if (response) {
               this._toastService.showToast(
-                ToastSuccessInfoMap['Organização']['DELETE']
+                'success',
+                'Organização excluída com sucesso.'
               );
+              this._router
+                .navigateByUrl('/', { skipLocationChange: true })
+                .then(() => this._router.navigateByUrl('main/entidades'));
             }
-          }),
-          finalize(() => {
-            this._router
-              .navigateByUrl('/', { skipLocationChange: true })
-              .then(() => this._router.navigateByUrl('main/entidades'));
           })
         )
         .subscribe();

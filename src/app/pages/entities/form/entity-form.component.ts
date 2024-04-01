@@ -15,7 +15,6 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
-import { ToastSuccessInfoMap } from '../../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-entity-form',
@@ -219,12 +218,11 @@ export class EntityFormComponent implements OnInit {
             tap((response) => {
               if (response) {
                 this._toastService.showToast(
-                  ToastSuccessInfoMap['Organização']['POST']
+                  'success',
+                  'Organização cadastrada com sucesso.'
                 );
+                this._router.navigateByUrl('main/entidades');
               }
-            }),
-            finalize(() => {
-              this._router.navigateByUrl('main/entidades');
             })
           )
           .subscribe();
@@ -237,12 +235,11 @@ export class EntityFormComponent implements OnInit {
             tap((response) => {
               if (response) {
                 this._toastService.showToast(
-                  ToastSuccessInfoMap['Organização']['PUT']
+                  'success',
+                  'Organização alterada com sucesso.'
                 );
+                this._router.navigateByUrl('main/entidades');
               }
-            }),
-            finalize(() => {
-              this._router.navigateByUrl('main/entidades');
             })
           )
           .subscribe();

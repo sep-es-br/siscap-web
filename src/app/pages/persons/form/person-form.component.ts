@@ -16,7 +16,6 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
-import { ToastSuccessInfoMap } from '../../../shared/utils/toast-info-map';
 
 @Component({
   selector: 'siscap-person-form',
@@ -239,12 +238,11 @@ export class PersonFormComponent implements OnInit {
             tap((response) => {
               if (response) {
                 this._toastService.showToast(
-                  ToastSuccessInfoMap['Pessoa']['POST']
+                  'success',
+                  'Pessoa cadastrada com sucesso.'
                 );
+                this._router.navigateByUrl('main/pessoas');
               }
-            }),
-            finalize(() => {
-              this._router.navigateByUrl('main/pessoas');
             })
           )
           .subscribe();
@@ -258,12 +256,11 @@ export class PersonFormComponent implements OnInit {
             tap((response) => {
               if (response) {
                 this._toastService.showToast(
-                  ToastSuccessInfoMap['Pessoa']['PUT']
+                  'success',
+                  'Pessoa alterada com sucesso.'
                 );
+                this._router.navigateByUrl('main/pessoas');
               }
-            }),
-            finalize(() => {
-              this._router.navigateByUrl('main/pessoas');
             })
           )
           .subscribe();
