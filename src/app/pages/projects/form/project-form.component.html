@@ -189,7 +189,11 @@
                 placeholder="-- Selecione as microrregioes --"
                 id="idMicrorregioes"
                 formControlName="idMicrorregioes"
+                (add)="
+                  ngSelectAddAll($event, 'idMicrorregioes', microrregioesList)
+                "
               >
+                <ng-option>Todas</ng-option>
                 <ng-option
                   *ngFor="let microrregiao of microrregioesList"
                   [value]="microrregiao.id"
@@ -350,5 +354,7 @@
 </div>
 
 <ng-template #appAlert let-controlName="controlName">
-  <siscap-alert [control]="projectForm.get(controlName) ?? undefined"></siscap-alert>
+  <siscap-alert
+    [control]="projectForm.get(controlName) ?? undefined"
+  ></siscap-alert>
 </ng-template>
