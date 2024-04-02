@@ -38,7 +38,6 @@ export class ToastService {
     }
 
     this.toastList.push(toastInfo);
-    this.toastNotifier$.next(false);
   }
 
   public removeToast(targetToast: IToastInfo) {
@@ -46,6 +45,8 @@ export class ToastService {
       return toast != targetToast;
     });
 
-    this.toastNotifier$.next(true);
+    if (targetToast.type == 'error') {
+      this.toastNotifier$.next(true);
+    }
   }
 }

@@ -8,9 +8,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { TableModule } from 'primeng/table';
 
+import { CoreModule } from '../core/core.module';
 import { LoginComponent } from '../pages/login/login.component';
 import { HomeComponent } from '../pages/home/home.component';
-import { ComponentsModule } from '../components/components.module';
 import { ProjectsComponent } from './projects/projects.component';
 import { ProjectFormComponent } from './projects/form/project-form.component';
 import { MainComponent } from './main/main.component';
@@ -37,7 +37,7 @@ import { EntityFormComponent } from './entities/form/entity-form.component';
   imports: [
     CommonModule,
     RouterOutlet,
-    ComponentsModule,
+    CoreModule,
     ReactiveFormsModule,
     TableModule,
     HttpClientModule,

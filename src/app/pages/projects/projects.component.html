@@ -15,8 +15,6 @@
           <div class="card-body">
             <p-table
               [value]="projetosList"
-              [scrollable]="true"
-              scrollHeight="600px"
               tableStyleClass="table table-striped"
             >
               <ng-template pTemplate="header">
@@ -56,39 +54,14 @@
                     }}
                   </td>
                   <td>
-                    <ng-container
-                      *ngTemplateOutlet="
-                        actionsTemplate;
-                        context: { rowData: projeto }
-                      "
-                    ></ng-container>
+                    <table-action-buttons-template
+                      [rowData]="projetoDataInput(projeto)"
+                      (deleteId)="deleteProjeto($event)"
+                    ></table-action-buttons-template>
                   </td>
                 </tr>
               </ng-template>
             </p-table>
-
-            <ng-template #actionsTemplate let-rowData="rowData">
-              <div class="d-flex flex-column flex-md-row">
-                <button
-                  class="btn btn-primary py-1 px-2"
-                  (click)="actionEvent('detalhes', rowData)"
-                >
-                  <i class="fa-regular fa-eye"></i>
-                </button>
-                <button
-                  class="btn btn-primary py-1 px-1 px-md-2 mx-0 mx-md-2 my-2 my-md-0"
-                  (click)="actionEvent('editar', rowData)"
-                >
-                  <i class="fa-solid fa-pencil"></i>
-                </button>
-                <button
-                  class="btn btn-primary py-1 px-2"
-                  (click)="actionEvent('deletar', rowData)"
-                >
-                  <i class="fa-regular fa-trash-can"></i>
-                </button>
-              </div>
-            </ng-template>
           </div>
         </div>
       </div>

@@ -19,6 +19,9 @@
                 ></ng-container>
               </label>
               <input
+                mask="S*"
+                [inputTransformFn]="toUppercaseInputTransformFn"
+                [outputTransformFn]="toUppercaseOutputTransformFn"
                 type="text"
                 class="form-control"
                 id="sigla"
@@ -163,7 +166,7 @@
                 prefix="R$"
                 thousandSeparator="."
                 decimalMarker=","
-                [inputTransformFn]="RtlCurrencyInputTransformFn"
+                [inputTransformFn]="rtlCurrencyInputTransformFn"
                 class="form-control"
                 id="valorEstimado"
                 formControlName="valorEstimado"
@@ -350,5 +353,7 @@
 </div>
 
 <ng-template #appAlert let-controlName="controlName">
-  <siscap-alert [control]="projectForm.get(controlName) ?? undefined"></siscap-alert>
+  <siscap-alert
+    [control]="projectForm.get(controlName) ?? undefined"
+  ></siscap-alert>
 </ng-template>
