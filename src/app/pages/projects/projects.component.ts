@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
-import { first, tap } from 'rxjs';
+import { Observable, Subscription, first, tap } from 'rxjs';
 
 import { ProjetosService } from '../../shared/services/projetos/projetos.service';
 import { ToastService } from '../../shared/services/toast/toast.service';
@@ -10,6 +10,7 @@ import {
   IProjectGet,
   IProjectTable,
 } from '../../shared/interfaces/project.interface';
+import { ITableActionsDataInput } from '../../shared/interfaces/table-actions-data-input.interface';
 
 @Component({
   selector: 'siscap-projects',
@@ -17,80 +18,66 @@ import {
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.scss',
 })
-export class ProjectsComponent {
+export class ProjectsComponent implements OnInit, OnDestroy {
+  private _getProjetos$: Observable<IProjectGet>;
+  private _deleteProjeto$!: Observable<string>;
+
+  private _subscription: Subscription = new Subscription();
+
   public projetosList: Array<IProjectTable> = [];
 
   constructor(
     private _router: Router,
-    private _route: ActivatedRoute,
     private _projetosService: ProjetosService,
     private _toastService: ToastService
   ) {
-    this._projetosService
-      .getProjetos()
-      .pipe(first())
-      .subscribe((response: IProjectGet) => {
+    this._getProjetos$ = this._projetosService.getProjetos().pipe(
+      first(),
+      tap((response: IProjectGet) => {
         this.projetosList = response.content;
-      });
+      })
+    );
+  }
+
+  ngOnInit(): void {
+    this._subscription.add(this._getProjetos$.subscribe());
+  }
+
+  public projetoDataInput(project: IProjectTable): ITableActionsDataInput {
+    const projetoDataInput: ITableActionsDataInput = {
+      id: project.id,
+      infoTitle:
+        'O seguinte projeto será excluído. Tem certeza que quer executar a ação?',
+      infoBody: {
+        Sigla: project.sigla,
+        'Nome do Projeto': project.titulo,
+      },
+    };
+
+    return projetoDataInput;
+  }
+
+  public deleteProjeto(id: number) {
+    this._deleteProjeto$ = this._projetosService.deleteProjeto(id).pipe(
+      tap((response) => {
+        if (response) {
+          this._toastService.showToast(
+            'success',
+            'Projeto excluído com sucesso.'
+          );
+          this._router
+            .navigateByUrl('/', { skipLocationChange: true })
+            .then(() => this._router.navigateByUrl('main/projetos'));
+        }
+      })
+    );
+
+    this._subscription.add(this._deleteProjeto$.subscribe());
   }
 
   queryProject() {}
 
-  projectDetails(data: any) {
-    this._router.navigate(['form', 'detalhes'], {
-      relativeTo: this._route,
-      queryParams: { id: data.id },
-    });
-  }
-
-  projectEdit(data: any) {
-    this._router.navigate(['form', 'editar'], {
-      relativeTo: this._route,
-      queryParams: { id: data.id },
-    });
-  }
-
-  projectDelete(data: any) {
-    if (
-      confirm(`
-            Tem certeza que deseja deletar o projeto?
-            Sigla: ${data.sigla}
-            Titulo: ${data.titulo}
-            `)
-    ) {
-      this._projetosService
-        .deleteProjeto(data.id)
-        .pipe(
-          tap((response) => {
-            if (response) {
-              this._toastService.showToast(
-                'success',
-                'Projeto excluído com sucesso.'
-              );
-              this._router
-                .navigateByUrl('/', { skipLocationChange: true })
-                .then(() => this._router.navigateByUrl('main/projetos'));
-            }
-          })
-        )
-        .subscribe();
-    }
-  }
-
-  actionEvent(type: string, data: any) {
-    switch (type) {
-      case 'detalhes':
-        this.projectDetails(data);
-        break;
-      case 'editar':
-        this.projectEdit(data);
-        break;
-      case 'deletar':
-        this.projectDelete(data);
-        break;
-
-      default:
-        break;
-    }
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
   }
 }

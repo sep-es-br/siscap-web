@@ -4,6 +4,9 @@
 $primary: #107fcf;
 $secondary: #aaaaaa;
 
+$invalid: #dc3545;
+$disabled: #e9ecef;
+
 //Taxa de Contraste (necessário para permitir o conteúdo branco com a cor $blue acima, por exemplo)
 //Valores possíveis somente 3, 4.5 e 7
 $min-contrast-ratio: 3;
