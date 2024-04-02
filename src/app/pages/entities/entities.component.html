@@ -15,8 +15,6 @@
           <div class="card-body">
             <p-table
               [value]="entidadesList"
-              [scrollable]="true"
-              scrollHeight="600px"
               tableStyleClass="table table-striped"
             >
               <ng-template pTemplate="header">
@@ -58,12 +56,10 @@
                     </a>
                   </td>
                   <td>
-                    <ng-container
-                      *ngTemplateOutlet="
-                        actionsTemplate;
-                        context: { rowData: entidade }
-                      "
-                    ></ng-container>
+                    <table-action-buttons-template
+                      [rowData]="entidadeDataInput(entidade)"
+                      (deleteId)="deleteEntidade($event)"
+                    ></table-action-buttons-template>
                   </td>
                 </tr>
               </ng-template>
@@ -88,28 +84,5 @@
     class="profile-pic border rounded-circle d-flex justify-content-center align-items-center"
   >
     <i class="fa-solid fa-user"></i>
-  </div>
-</ng-template>
-
-<ng-template #actionsTemplate let-rowData="rowData">
-  <div class="d-flex flex-column flex-md-row">
-    <button
-      class="btn btn-primary py-1 px-2"
-      (click)="actionEvent('detalhes', rowData)"
-    >
-      <i class="fa-regular fa-eye"></i>
-    </button>
-    <button
-      class="btn btn-primary py-1 px-1 px-md-2 mx-0 mx-md-2 my-2 my-md-0"
-      (click)="actionEvent('editar', rowData)"
-    >
-      <i class="fa-solid fa-pencil"></i>
-    </button>
-    <button
-      class="btn btn-primary py-1 px-2"
-      (click)="actionEvent('deletar', rowData)"
-    >
-      <i class="fa-regular fa-trash-can"></i>
-    </button>
   </div>
 </ng-template>

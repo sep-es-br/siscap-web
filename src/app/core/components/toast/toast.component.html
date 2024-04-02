@@ -1,7 +1,7 @@
 <ng-container *ngFor="let toast of toastService.toastList">
   <ngb-toast
     [delay]="toast.delay || 6000"
-    class="position-fixed m-4"
+    class="position-fixed z-2 m-4"
     [ngClass]="bgStyleMap[toast.type]"
     (hidden)="toastService.removeToast(toast)"
   >
