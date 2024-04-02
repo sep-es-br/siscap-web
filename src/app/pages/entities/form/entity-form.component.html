@@ -256,11 +256,7 @@
                       "
                     ></ng-container>
                   </label>
-                  <!-- Ver máscara de site melhor -->
                   <input
-                    mask="A*.L*.L*"
-                    prefix="http://"
-                    [dropSpecialCharacters]="false"
                     type="text"
                     id="site"
                     class="form-control"
@@ -359,5 +355,7 @@
 </ng-template>
 
 <ng-template #appAlert let-controlName="controlName">
-  <siscap-alert [control]="entityForm.get(controlName) ?? undefined"></siscap-alert>
+  <siscap-alert
+    [control]="entityForm.get(controlName) ?? undefined"
+  ></siscap-alert>
 </ng-template>

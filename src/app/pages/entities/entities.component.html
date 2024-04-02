@@ -52,7 +52,11 @@
                   <td>{{ entidade.nome }}</td>
                   <td>{{ entidade.nomeTipoEntidade }}</td>
                   <td>{{ entidade.telefone }}</td>
-                  <td>{{ entidade.site }}</td>
+                  <td>
+                    <a [href]="entidade.site" target="_blank"
+                      >{{ entidade.site }}
+                    </a>
+                  </td>
                   <td>
                     <ng-container
                       *ngTemplateOutlet="
