@@ -37,6 +37,8 @@ export class AlertComponent {
               return 'Valor superior ao limite';
             case 'min':
               return 'Valor inferior ao limite';
+            case 'cpf':
+              return 'CPF inválido'
             default:
               return '';
           }

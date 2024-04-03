@@ -1,13 +1,11 @@
-import { InputTransformFn } from 'ngx-mask';
+import { InputTransformFn, OutputTransformFn } from 'ngx-mask';
 
 /**
  * @abstract
- * Classe abstrata que contém um método para alimentar a propriedade `inputTransformFn` da diretiva `NgxMaskDirective`.
- *
- * Foco em espécifico em um input do tipo `text` que recebe a referência de máscara `'separator.2'` do `NgxMask`.
+ * Classe abstrata que contém métodos para alimentar as propriedades `inputTransformFn` e/ou `outputTransformFn` da diretiva `NgxMaskDirective`.
  *
  */
-export abstract class NgxMaskRtlCurrencyInputHelper {
+export abstract class NgxMaskTransformFunctionHelper {
   /**
    * @static
    * Método estático que recebe um input e o retorna de acordo com a lógica de formatação dentro do método.
@@ -16,9 +14,9 @@ export abstract class NgxMaskRtlCurrencyInputHelper {
    * os centavos, em seguida os inteiros.
    *
    * @param {unknown} value - Valor do input do campo.
-   * @returns O valor formatado, do tipo `string` ou `number`
+   * @returns O valor formatado do tipo `string`.
    */
-  static RtlCurrencyInputTransformFn: InputTransformFn = (value) => {
+  static rtlCurrencyInputTransformFn: InputTransformFn = (value) => {
     //`value` é do tipo unknown, convertemos aqui para utilizar métodos da API de String
     //Trata caso de valor pré-existente com menos de 3 dígitos inteiros e sem decimais; Se não, fluxo normal
     let untreatedValue =
@@ -97,5 +95,28 @@ export abstract class NgxMaskRtlCurrencyInputHelper {
 
     //Retorna o valor adicionando o prefixo 'R$' á frente
     return `R$${inputValue}`;
+  };
+
+  /**
+   * @static
+   * Método estático que transforma todo o input em letras maiúsculas (uppercase)
+   *
+   * @param {unknown} value - O valor de input do campo.
+   * @returns O valor formatado do tipo `string`.
+   */
+  static toUppercaseInputTransformFn: InputTransformFn = (value): string => {
+    return typeof value === 'string' ? value.toUpperCase() : String(value);
+  };
+
+  /**
+   * @static
+   * Método estático para alimentar o valor do `FormControl` pertinente com o valor recebido de uma `inputTransformFn`.
+   * Nesse caso em específico, a função estática `toUppercaseInputTransformFn`.
+   * 
+   * @param {string} value - O valor recebido da função `inputTransformFn` do mesmo campo.
+   * @returns O valor formatado do tipo `string`.
+   */
+  static toUppercaseOutputTransformFn: OutputTransformFn = (value): string => {
+    return value ? String(value).toUpperCase() : '';
   };
 }

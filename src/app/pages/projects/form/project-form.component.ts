@@ -15,7 +15,7 @@ import {
 } from '../../../shared/interfaces/project.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
-import { NgxMaskRtlCurrencyInputHelper } from '../../../shared/helpers/ngx-mask-rtl-currency-input.helper';
+import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
 
 @Component({
   selector: 'siscap-project-form',
@@ -112,8 +112,14 @@ export class ProjectFormComponent implements OnInit {
       .subscribe();
   }
 
-  RtlCurrencyInputTransformFn =
-    NgxMaskRtlCurrencyInputHelper.RtlCurrencyInputTransformFn;
+  rtlCurrencyInputTransformFn =
+    NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
+
+  toUppercaseInputTransformFn =
+    NgxMaskTransformFunctionHelper.toUppercaseInputTransformFn;
+
+  toUppercaseOutputTransformFn =
+    NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
 
   ngSelectAddAll(event: any, controlName: string, list: Array<ISelectList>) {
     if (event['$ngOptionLabel'] == 'Todas') {
