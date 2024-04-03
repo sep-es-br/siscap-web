@@ -175,6 +175,8 @@ export class OrganizationFormComponent implements OnInit {
 
   paisChanged(value: number | undefined) {
     if (!value) {
+      this.organizationForm.get('idEstado')?.patchValue(null);
+      this.organizationForm.get('idCidade')?.patchValue(null);
       this.estadosList = [];
       return;
     }
@@ -190,6 +192,7 @@ export class OrganizationFormComponent implements OnInit {
 
   estadoChanged(value: number | undefined) {
     if (!value) {
+      this.organizationForm.get('idCidade')?.patchValue(null);
       this.cidadesList = [];
       return;
     }
