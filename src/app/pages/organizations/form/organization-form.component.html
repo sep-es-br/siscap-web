@@ -4,40 +4,23 @@
 
 <!-- d-md-flex flex-md-column jusity-content-md-between -->
 
-<div class="entity-form h-100 overflow-y-auto" *ngIf="!loading">
-  <form [formGroup]="entityForm">
+<div class="organization-form" *ngIf="!loading">
+  <form [formGroup]="organizationForm">
     <div class="row mx-1">
       <div class="left-part col-12 col-md-8">
         <div class="card h-100">
           <div class="card-body">
-            <div class="entity-info">
+            <div class="organization-info">
               <div class="col-12">
                 <div class="card-title border-bottom border-1">
-                  <span class="fw-medium">Informações da Entidade</span>
+                  <span>Informações da Organizacao</span>
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="nome" class="form-label col-12">
-                    Nome da Entidade
-                    <ng-container
-                      *ngTemplateOutlet="
-                        appAlert;
-                        context: { controlName: 'nome' }
-                      "
-                    ></ng-container>
-                  </label>
-                  <input
-                    type="text"
-                    id="nome"
-                    class="form-control"
-                    formControlName="nome"
-                  />
-                </div>
-                <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="abreviatura" class="form-label col-12">
-                    Sigla/Abreviatura
+                    Sigla / Nome Fantasia
                     <ng-container
                       *ngTemplateOutlet="
                         appAlert;
@@ -52,31 +35,74 @@
                     formControlName="abreviatura"
                   />
                 </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="nome" class="form-label col-12">
+                    Nome / Razão Social
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'nome' }
+                      "
+                    ></ng-container>
+                  </label>
+                  <input
+                    type="text"
+                    id="nome"
+                    class="form-control"
+                    formControlName="nome"
+                  />
+                </div>
               </div>
 
               <div class="row">
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="idTipoEntidade" class="form-label col-12">
-                    Tipo de Entidade
+                  <label for="idTipoOrganizacao" class="form-label col-12">
+                    Tipo
                     <ng-container
                       *ngTemplateOutlet="
                         appAlert;
-                        context: { controlName: 'idTipoEntidade' }
+                        context: { controlName: 'idTipoOrganizacao' }
                       "
                     ></ng-container>
                   </label>
                   <ng-select
-                    id="idTipoEntidade"
-                    placeholder="-- Tipo de Entidade --"
-                    formControlName="idTipoEntidade"
+                    id="idTipoOrganizacao"
+                    placeholder="-- Tipo de Organizacao --"
+                    formControlName="idTipoOrganizacao"
                   >
                     <ng-option
-                      *ngFor="let tipoEntidade of tiposEntidadesList"
-                      [value]="tipoEntidade.id"
-                      >{{ tipoEntidade.nome }}
+                      *ngFor="let tipoOrganizacao of tiposOrganizacoesList"
+                      [value]="tipoOrganizacao.id"
+                      >{{ tipoOrganizacao.nome }}
                     </ng-option>
                   </ng-select>
                 </div>
+
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="idOrganizacaoPai" class="form-label col-12">
+                    Matriz/Sede
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'idOrganizacaoPai' }
+                      "
+                    ></ng-container>
+                  </label>
+                  <ng-select
+                    id="idOrganizacaoPai"
+                    placeholder="-- Matriz/Sede --"
+                    formControlName="idOrganizacaoPai"
+                  >
+                    <ng-option
+                      *ngFor="let organizacao of organizacoesList"
+                      [value]="organizacao.id"
+                      >{{ organizacao.nome }}
+                    </ng-option>
+                  </ng-select>
+                </div>
+              </div>
+
+              <div class="row">
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="idPais" class="form-label col-12">
                     País de Origem
@@ -91,10 +117,38 @@
                     id="idPais"
                     placeholder="-- País --"
                     formControlName="idPais"
-                    (change)="paisSelected($event)"
+                    (change)="paisChanged($event)"
                   >
                     <ng-option *ngFor="let pais of paisesList" [value]="pais.id"
                       >{{ pais.nome }}
+                    </ng-option>
+                  </ng-select>
+                </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <!-- ESTADO -->
+                  <!-- <label for="estado" class="form-label">Estado</label>
+
+                  <input type="text" class="form-control" /> -->
+
+                  <label for="idEstado" class="form-label col-12">
+                    Estado
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'idEstado' }
+                      "
+                    ></ng-container>
+                  </label>
+                  <ng-select
+                    id="idEstado"
+                    placeholder="-- Estado --"
+                    formControlName="idEstado"
+                    (change)="estadoChanged($event)"
+                  >
+                    <ng-option
+                      *ngFor="let estado of estadosList"
+                      [value]="estado.id"
+                      >{{ estado.nome }}
                     </ng-option>
                   </ng-select>
                 </div>
@@ -125,31 +179,6 @@
                   </ng-select>
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="idEntidadePai" class="form-label col-12">
-                    Matriz/Sede
-                    <ng-container
-                      *ngTemplateOutlet="
-                        appAlert;
-                        context: { controlName: 'idEntidadePai' }
-                      "
-                    ></ng-container>
-                  </label>
-                  <ng-select
-                    id="idEntidadePai"
-                    placeholder="-- Matriz/Sede --"
-                    formControlName="idEntidadePai"
-                  >
-                    <ng-option
-                      *ngFor="let entidade of entidadesList"
-                      [value]="entidade.id"
-                      >{{ entidade.nome }}
-                    </ng-option>
-                  </ng-select>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="cnpj" class="form-label col-12">
                     CNPJ
                     <ng-container
@@ -167,6 +196,80 @@
                     formControlName="cnpj"
                   />
                 </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="telefone" class="form-label col-12">
+                    Telefone
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'telefone' }
+                      "
+                    ></ng-container>
+                  </label>
+                  <input
+                    type="text"
+                    id="telefone"
+                    class="form-control"
+                    formControlName="telefone"
+                  />
+                </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="email" class="form-label col-12">
+                    E-mail
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'email' }
+                      "
+                    ></ng-container>
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    class="form-control"
+                    formControlName="email"
+                  />
+
+                  <!-- <label for="fax" class="form-label col-12">
+                    Fax
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'fax' }
+                      "
+                    ></ng-container>
+                  </label>
+                  <input
+                    type="text"
+                    id="fax"
+                    class="form-control"
+                    formControlName="fax"
+                  /> -->
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="site" class="form-label col-12">
+                    Site
+                    <ng-container
+                      *ngTemplateOutlet="
+                        appAlert;
+                        context: { controlName: 'site' }
+                      "
+                    ></ng-container>
+                  </label>
+                  <input
+                    type="text"
+                    id="site"
+                    class="form-control"
+                    formControlName="site"
+                  />
+                </div>
+
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="idPessoaResponsavel" class="form-label col-12">
                     Responsável
@@ -190,80 +293,6 @@
                   </ng-select>
                 </div>
               </div>
-
-              <div class="row">
-                <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="telefone" class="form-label col-12">
-                    Telefone
-                    <ng-container
-                      *ngTemplateOutlet="
-                        appAlert;
-                        context: { controlName: 'telefone' }
-                      "
-                    ></ng-container>
-                  </label>
-                  <input
-                    type="text"
-                    id="telefone"
-                    class="form-control"
-                    formControlName="telefone"
-                  />
-                </div>
-                <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="fax" class="form-label col-12">
-                    Fax
-                    <ng-container
-                      *ngTemplateOutlet="
-                        appAlert;
-                        context: { controlName: 'fax' }
-                      "
-                    ></ng-container>
-                  </label>
-                  <input
-                    type="text"
-                    id="fax"
-                    class="form-control"
-                    formControlName="fax"
-                  />
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="email" class="form-label col-12">
-                    E-mail
-                    <ng-container
-                      *ngTemplateOutlet="
-                        appAlert;
-                        context: { controlName: 'email' }
-                      "
-                    ></ng-container>
-                  </label>
-                  <input
-                    type="text"
-                    id="email"
-                    class="form-control"
-                    formControlName="email"
-                  />
-                </div>
-                <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="site" class="form-label col-12">
-                    Site
-                    <ng-container
-                      *ngTemplateOutlet="
-                        appAlert;
-                        context: { controlName: 'site' }
-                      "
-                    ></ng-container>
-                  </label>
-                  <input
-                    type="text"
-                    id="site"
-                    class="form-control"
-                    formControlName="site"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -272,10 +301,10 @@
       <div class="right-part col-12 col-md-4">
         <div class="card h-100">
           <div class="card-body">
-            <div class="entity-img">
+            <div class="organization-img">
               <div class="col-12">
                 <div class="card-title border-bottom border-1">
-                  <span class="fw-medium">Marca da Entidade</span>
+                  <span>Marca da Organizacao</span>
                 </div>
               </div>
 
@@ -328,8 +357,8 @@
             type="button"
             class="btn btn-primary p-2 px-4 mx-1"
             [hidden]="formMode == 'detalhes'"
-            [disabled]="entityForm.invalid"
-            (click)="submitEntityForm(this.entityForm)"
+            [disabled]="organizationForm.invalid"
+            (click)="submitOrganizationForm(this.organizationForm)"
           >
             {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
           </button>
@@ -356,6 +385,6 @@
 
 <ng-template #appAlert let-controlName="controlName">
   <siscap-alert
-    [control]="entityForm.get(controlName) ?? undefined"
+    [control]="organizationForm.get(controlName) ?? undefined"
   ></siscap-alert>
 </ng-template>

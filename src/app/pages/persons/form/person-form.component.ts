@@ -154,7 +154,7 @@ export class PersonFormComponent implements OnInit {
         status: nnfb.control({ value: null, disabled: true }),
       }),
       prof: nnfb.group({
-        entidade: nnfb.control({ value: null, disabled: true }),
+        organizacao: nnfb.control({ value: null, disabled: true }),
         dpto: nnfb.control({ value: null, disabled: true }),
         cargo: nnfb.control({ value: null, disabled: true }),
       }),

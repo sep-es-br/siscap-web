@@ -6,8 +6,8 @@ import { ProjectsComponent } from './projects/projects.component';
 import { ProjectFormComponent } from './projects/form/project-form.component';
 import { PersonsComponent } from './persons/persons.component';
 import { PersonFormComponent } from './persons/form/person-form.component';
-import { EntitiesComponent } from './entities/entities.component';
-import { EntityFormComponent } from './entities/form/entity-form.component';
+import { OrganizationsComponent } from './organizations/organizations.component';
+import { OrganizationFormComponent } from './organizations/form/organization-form.component';
 
 const routes: Routes = [
   {
@@ -36,14 +36,14 @@ const routes: Routes = [
     component: PersonFormComponent,
   },
   {
-    title: 'Entidades',
-    path: 'entidades',
-    component: EntitiesComponent,
+    title: 'Organizacoes',
+    path: 'organizacoes',
+    component: OrganizationsComponent,
   },
   {
-    title: 'Formulário de Entidade',
-    path: 'entidades/form/:mode',
-    component: EntityFormComponent,
+    title: 'Formulário de Organizacao',
+    path: 'organizacoes/form/:mode',
+    component: OrganizationFormComponent,
   },
   {
     path: '**',

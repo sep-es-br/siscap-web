@@ -42,12 +42,12 @@ export class SelectListService {
     return this.getSelectList('planos');
   }
 
-  public getEntidades() {
-    return this.getSelectList('entidades');
+  public getOrganizacoes() {
+    return this.getSelectList('organizacoes');
   }
 
-  public getTiposEntidades() {
-    return this.getSelectList('tipos-entidades');
+  public getTiposOrganizacoes() {
+    return this.getSelectList('tipos-organizacoes');
   }
 
   public getMicrorregioes() {

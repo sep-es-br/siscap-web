@@ -35,7 +35,7 @@ export class ProjectFormComponent implements OnInit {
   public projectFormInitialValue!: IProjectCreate;
 
   public microrregioesList: ISelectList[] = [];
-  public entidadesList: ISelectList[] = [];
+  public organizacoesList: ISelectList[] = [];
   public planosList: ISelectList[] = [];
   public pessoasList: ISelectList[] = [];
 
@@ -82,11 +82,11 @@ export class ProjectFormComponent implements OnInit {
       .subscribe();
 
     this._selectListService
-      .getEntidades()
+      .getOrganizacoes()
       .pipe(
         first(),
         tap((response) => {
-          this.entidadesList = response;
+          this.organizacoesList = response;
         })
       )
       .subscribe();

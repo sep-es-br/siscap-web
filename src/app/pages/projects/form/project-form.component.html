@@ -67,9 +67,9 @@
                 formControlName="idEntidade"
               >
                 <ng-option
-                  *ngFor="let entidade of entidadesList"
-                  [value]="entidade.id"
-                  >{{ entidade.nome }}</ng-option
+                  *ngFor="let organizacao of organizacoesList"
+                  [value]="organizacao.id"
+                  >{{ organizacao.nome }}</ng-option
                 >
               </ng-select>
             </div>
