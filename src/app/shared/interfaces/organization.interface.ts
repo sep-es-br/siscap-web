@@ -10,13 +10,13 @@ export interface IOrganization {
   email: string;
   site: string;
   imagemPerfil: File | ArrayBuffer;
-  idEntidadePai: number;
+  idOrganizacaoPai: number;
   idStatus: number;
   idPessoaResponsavel: number;
   idCidade: number;
   idEstado: number;
   idPais: number;
-  idTipoEntidade: number;
+  idTipoOrganizacao: number;
 }
 
 export interface IOrganizationTable
@@ -24,7 +24,7 @@ export interface IOrganizationTable
     IOrganization,
     'id' | 'nome' | 'abreviatura' | 'telefone' | 'site' | 'imagemPerfil'
   > {
-  nomeTipoEntidade: string;
+  nomeTipoOrganizacao: string;
 }
 
 export interface IOrganizationGet extends IHttpGetResponseBody<IOrganizationTable> {}
