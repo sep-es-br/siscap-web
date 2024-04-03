@@ -27,6 +27,10 @@ export function CPFValidator(
     return null;
   }
 
+  if (cpf.split('').every((d) => d == cpf[0])) {
+    return { cpf: true };
+  }
+
   const digits = cpf.slice(0, 9);
   const firstVerifDigit = cpf.charAt(9);
   const secondVerifDigit = cpf.charAt(10);
