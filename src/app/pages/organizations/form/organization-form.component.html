@@ -2,8 +2,6 @@
   <siscap-loading></siscap-loading>
 </div>
 
-<!-- d-md-flex flex-md-column jusity-content-md-between -->
-
 <div class="organization-form" *ngIf="!loading">
   <form [formGroup]="organizationForm">
     <div class="row mx-1">
@@ -125,11 +123,6 @@
                   </ng-select>
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <!-- ESTADO -->
-                  <!-- <label for="estado" class="form-label">Estado</label>
-
-                  <input type="text" class="form-control" /> -->
-
                   <label for="idEstado" class="form-label col-12">
                     Estado
                     <ng-container
@@ -232,22 +225,6 @@
                     class="form-control"
                     formControlName="email"
                   />
-
-                  <!-- <label for="fax" class="form-label col-12">
-                    Fax
-                    <ng-container
-                      *ngTemplateOutlet="
-                        appAlert;
-                        context: { controlName: 'fax' }
-                      "
-                    ></ng-container>
-                  </label>
-                  <input
-                    type="text"
-                    id="fax"
-                    class="form-control"
-                    formControlName="fax"
-                  /> -->
                 </div>
               </div>
 
