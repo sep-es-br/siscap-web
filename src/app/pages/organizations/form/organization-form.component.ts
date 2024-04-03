@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, Subscription, finalize, first, tap } from 'rxjs';
+import { Observable, finalize, first, tap } from 'rxjs';
 
 import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -25,14 +25,7 @@ import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 export class OrganizationFormComponent implements OnInit {
   @ViewChild('imagemPerfil') imagemPerfilInput!: ElementRef<HTMLInputElement>;
 
-  // private _subscription: Subscription = new Subscription();
-
   private _prepareForm$!: Observable<IOrganization>;
-  // private _getOrganizacoes$: Observable<ISelectList[]>;
-  // private _getPessoas$: Observable<ISelectList[]>;
-  // private _getPaises$: Observable<ISelectList[]>;
-  // private _getT$: Observable<ISelectList[]>;
-  // private _getTiposOrganizacoes$: Observable<ISelectList[]>;
 
   public loading: boolean = false;
 
@@ -47,10 +40,10 @@ export class OrganizationFormComponent implements OnInit {
   public uploadedPhotoSrc: string = '';
 
   public tiposOrganizacoesList: Array<ISelectList> = [];
+  public organizacoesList: Array<ISelectList> = [];
   public paisesList: Array<ISelectList> = [];
   public estadosList: Array<ISelectList> = [];
   public cidadesList: Array<ISelectList> = [];
-  public organizacoesList: Array<ISelectList> = [];
   public pessoasList: Array<ISelectList> = [];
 
   constructor(
@@ -97,21 +90,21 @@ export class OrganizationFormComponent implements OnInit {
       .subscribe();
 
     this._selectListService
-      .getPaises()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.paisesList = response;
-        })
-      )
-      .subscribe();
-
-    this._selectListService
       .getOrganizacoes()
       .pipe(
         first(),
         tap((response) => {
           this.organizacoesList = response;
+        })
+      )
+      .subscribe();
+
+    this._selectListService
+      .getPaises()
+      .pipe(
+        first(),
+        tap((response) => {
+          this.paisesList = response;
         })
       )
       .subscribe();
@@ -137,6 +130,7 @@ export class OrganizationFormComponent implements OnInit {
 
     this._prepareForm$.subscribe((organizacao) => {
       this.paisChanged(organizacao.idPais);
+      this.estadoChanged(organizacao.idEstado);
     });
   }
 
