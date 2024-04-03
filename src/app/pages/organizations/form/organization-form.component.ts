@@ -158,7 +158,7 @@ export class OrganizationFormComponent implements OnInit {
         validators: Validators.email,
       }),
       site: nnfb.control(organization?.site ?? ''),
-      idEntidadePai: nnfb.control(organization?.idEntidadePai ?? null),
+      idOrganizacaoPai: nnfb.control(organization?.idOrganizacaoPai ?? null),
       idPessoaResponsavel: nnfb.control(
         organization?.idPessoaResponsavel ?? null
       ),
@@ -167,7 +167,7 @@ export class OrganizationFormComponent implements OnInit {
       idPais: nnfb.control(organization?.idPais ?? null, {
         validators: Validators.required,
       }),
-      idTipoEntidade: nnfb.control(organization?.idTipoEntidade ?? null, {
+      idTipoOrganizacao: nnfb.control(organization?.idTipoOrganizacao ?? null, {
         validators: Validators.required,
       }),
     });
