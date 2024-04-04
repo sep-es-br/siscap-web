@@ -4,59 +4,61 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, finalize, first, tap } from 'rxjs';
 
-import { EntidadesService } from '../../../shared/services/entidades/entidades.service';
+import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
 
 import {
-  IEntity,
-  IEntityCreate,
-} from '../../../shared/interfaces/entity.interface';
+  IOrganization,
+  IOrganizationCreate,
+} from '../../../shared/interfaces/organization.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 
 @Component({
-  selector: 'siscap-entity-form',
+  selector: 'siscap-organization-form',
   standalone: false,
-  templateUrl: './entity-form.component.html',
-  styleUrl: './entity-form.component.scss',
+  templateUrl: './organization-form.component.html',
+  styleUrl: './organization-form.component.scss',
 })
-export class EntityFormComponent implements OnInit {
+export class OrganizationFormComponent implements OnInit {
   @ViewChild('imagemPerfil') imagemPerfilInput!: ElementRef<HTMLInputElement>;
 
-  public entityForm!: FormGroup;
+  private _prepareForm$!: Observable<IOrganization>;
 
   public loading: boolean = false;
 
-  public formMode!: string;
+  public organizationForm!: FormGroup;
 
-  private _prepareForm$!: Observable<IEntity>;
-  public entityEditId!: number;
-  public entityFormInitialValue!: IEntityCreate;
+  public formMode: string;
+
+  public organizationEditId!: number;
+  public organizationFormInitialValue!: IOrganizationCreate;
 
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
 
-  public tiposEntidadesList: Array<ISelectList> = [];
+  public tiposOrganizacoesList: Array<ISelectList> = [];
+  public organizacoesList: Array<ISelectList> = [];
   public paisesList: Array<ISelectList> = [];
+  public estadosList: Array<ISelectList> = [];
   public cidadesList: Array<ISelectList> = [];
-  public entidadesList: Array<ISelectList> = [];
   public pessoasList: Array<ISelectList> = [];
 
   constructor(
     private _formBuilder: FormBuilder,
     private _router: Router,
     private _route: ActivatedRoute,
-    private _entidadesService: EntidadesService,
+    private _organizacoesService: OrganizacoesService,
     private _selectListService: SelectListService,
     private _toastService: ToastService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
-    this.entityEditId = this._route.snapshot.queryParams['id'] ?? null;
+    this.organizationEditId = this._route.snapshot.queryParams['id'] ?? null;
 
-    this._prepareForm$ = this._entidadesService
-      .getEntidadeById(this.entityEditId)
+    this._prepareForm$ = this._organizacoesService
+      .getOrganizacaoById(this.organizationEditId)
       .pipe(
         first(),
         tap((response) => {
@@ -66,10 +68,10 @@ export class EntityFormComponent implements OnInit {
           );
         }),
         finalize(() => {
-          this.entityFormInitialValue = this.entityForm.value;
+          this.organizationFormInitialValue = this.organizationForm.value;
 
           if (this.formMode == 'detalhes') {
-            const controls = this.entityForm.controls;
+            const controls = this.organizationForm.controls;
             for (const key in controls) {
               controls[key].disable();
             }
@@ -80,10 +82,20 @@ export class EntityFormComponent implements OnInit {
       );
 
     this._selectListService
-      .getTiposEntidades()
+      .getTiposOrganizacoes()
       .pipe(
         first(),
-        tap((response) => (this.tiposEntidadesList = response))
+        tap((response) => (this.tiposOrganizacoesList = response))
+      )
+      .subscribe();
+
+    this._selectListService
+      .getOrganizacoes()
+      .pipe(
+        first(),
+        tap((response) => {
+          this.organizacoesList = response;
+        })
       )
       .subscribe();
 
@@ -93,16 +105,6 @@ export class EntityFormComponent implements OnInit {
         first(),
         tap((response) => {
           this.paisesList = response;
-        })
-      )
-      .subscribe();
-
-    this._selectListService
-      .getEntidades()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.entidadesList = response;
         })
       )
       .subscribe();
@@ -126,47 +128,71 @@ export class EntityFormComponent implements OnInit {
 
     this.loading = true;
 
-    this._prepareForm$.subscribe((entidade) => {
-      this.paisSelected(entidade.idPais);
+    this._prepareForm$.subscribe((organizacao) => {
+      this.paisChanged(organizacao.idPais);
+      this.estadoChanged(organizacao.idEstado);
     });
   }
 
-  initForm(entity?: IEntity) {
+  initForm(organization?: IOrganization) {
     const nnfb = this._formBuilder.nonNullable;
-    this.entityForm = nnfb.group({
-      nome: nnfb.control(entity?.nome ?? '', {
+    this.organizationForm = nnfb.group({
+      nome: nnfb.control(organization?.nome ?? '', {
         validators: Validators.required,
       }),
-      abreviatura: nnfb.control(entity?.abreviatura ?? ''),
-      telefone: nnfb.control(entity?.telefone ?? ''),
-      cnpj: nnfb.control(entity?.cnpj ?? '', {
+      abreviatura: nnfb.control(organization?.abreviatura ?? '', {
+        validators: Validators.required,
+      }),
+      telefone: nnfb.control(organization?.telefone ?? ''),
+      cnpj: nnfb.control(organization?.cnpj ?? '', {
         validators: [Validators.minLength(14), Validators.maxLength(14)],
       }),
-      fax: nnfb.control(entity?.fax ?? ''),
-      email: nnfb.control(entity?.email ?? '', {
+      fax: nnfb.control(organization?.fax ?? ''),
+      email: nnfb.control(organization?.email ?? '', {
         validators: Validators.email,
       }),
-      site: nnfb.control(entity?.site ?? ''),
-      idEntidadePai: nnfb.control(entity?.idEntidadePai ?? null),
-      idPessoaResponsavel: nnfb.control(entity?.idPessoaResponsavel ?? null),
-      idCidade: nnfb.control(entity?.idCidade ?? null),
-      idPais: nnfb.control(entity?.idPais ?? null, {
+      site: nnfb.control(organization?.site ?? ''),
+      idOrganizacaoPai: nnfb.control(organization?.idOrganizacaoPai ?? null),
+      idPessoaResponsavel: nnfb.control(
+        organization?.idPessoaResponsavel ?? null
+      ),
+      idCidade: nnfb.control(organization?.idCidade ?? null),
+      idEstado: nnfb.control(organization?.idEstado ?? null),
+      idPais: nnfb.control(organization?.idPais ?? null, {
         validators: Validators.required,
       }),
-      idTipoEntidade: nnfb.control(entity?.idTipoEntidade ?? null, {
+      idTipoOrganizacao: nnfb.control(organization?.idTipoOrganizacao ?? null, {
         validators: Validators.required,
       }),
     });
   }
 
-  paisSelected(value: number | undefined) {
+  paisChanged(value: number | undefined) {
     if (!value) {
+      this.organizationForm.get('idEstado')?.patchValue(null);
+      this.organizationForm.get('idCidade')?.patchValue(null);
+      this.estadosList = [];
+      return;
+    }
+
+    this._selectListService
+      .getEstados(value)
+      .pipe(
+        first(),
+        tap((response) => (this.estadosList = response))
+      )
+      .subscribe();
+  }
+
+  estadoChanged(value: number | undefined) {
+    if (!value) {
+      this.organizationForm.get('idCidade')?.patchValue(null);
       this.cidadesList = [];
       return;
     }
 
     this._selectListService
-      .getCidades('PAIS', value)
+      .getCidades('ESTADO', value)
       .pipe(
         first(),
         tap((response) => (this.cidadesList = response))
@@ -192,10 +218,10 @@ export class EntityFormComponent implements OnInit {
   }
 
   cancelForm() {
-    this._router.navigate(['main', 'entidades']);
+    this._router.navigate(['main', 'organizacoes']);
   }
 
-  submitEntityForm(form: FormGroup) {
+  submitOrganizationForm(form: FormGroup) {
     for (const key in form.controls) {
       form.controls[key].markAsTouched();
     }
@@ -212,8 +238,8 @@ export class EntityFormComponent implements OnInit {
 
     switch (this.formMode) {
       case 'criar':
-        this._entidadesService
-          .postEntidade(payload)
+        this._organizacoesService
+          .postOrganizacao(payload)
           .pipe(
             tap((response) => {
               if (response) {
@@ -221,7 +247,7 @@ export class EntityFormComponent implements OnInit {
                   'success',
                   'Organização cadastrada com sucesso.'
                 );
-                this._router.navigateByUrl('main/entidades');
+                this._router.navigateByUrl('main/organizacoes');
               }
             })
           )
@@ -229,8 +255,8 @@ export class EntityFormComponent implements OnInit {
         break;
 
       case 'editar':
-        this._entidadesService
-          .putEntidade(this.entityEditId, payload)
+        this._organizacoesService
+          .putOrganizacao(this.organizationEditId, payload)
           .pipe(
             tap((response) => {
               if (response) {
@@ -238,7 +264,7 @@ export class EntityFormComponent implements OnInit {
                   'success',
                   'Organização alterada com sucesso.'
                 );
-                this._router.navigateByUrl('main/entidades');
+                this._router.navigateByUrl('main/organizacoes');
               }
             })
           )

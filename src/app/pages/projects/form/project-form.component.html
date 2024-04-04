@@ -2,7 +2,7 @@
   <siscap-loading></siscap-loading>
 </div>
 
-<div class="project-form h-100 overflow-y-auto" *ngIf="!loading">
+<div class="project-form" *ngIf="!loading">
   <form [formGroup]="projectForm">
     <div class="row mx-1">
       <div class="card">
@@ -67,9 +67,9 @@
                 formControlName="idEntidade"
               >
                 <ng-option
-                  *ngFor="let entidade of entidadesList"
-                  [value]="entidade.id"
-                  >{{ entidade.nome }}</ng-option
+                  *ngFor="let organizacao of organizacoesList"
+                  [value]="organizacao.id"
+                  >{{ organizacao.nome }}</ng-option
                 >
               </ng-select>
             </div>

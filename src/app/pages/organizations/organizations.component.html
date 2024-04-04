@@ -1,27 +1,27 @@
-<div class="entity-interaction mx-3">
+<div class="organization-interaction mx-3">
   <div class="search-input col-6 col-sm-4 col-md-2 ms-auto">
     <div class="input-group ms-auto ms-sm-0">
       <input type="text" placeholder="Pesquisar..." class="form-control" />
-      <button class="input-group-text px-2" (click)="queryEntity()">
+      <button class="input-group-text px-2" (click)="queryOrganization()">
         <i class="fa-solid fa-magnifying-glass"></i>
       </button>
     </div>
   </div>
 
-  <div class="entity-datatable">
+  <div class="organization-datatable">
     <div class="row g-0 mt-3">
       <div class="col-12">
         <div class="card">
           <div class="card-body">
             <p-table
-              [value]="entidadesList"
+              [value]="organizacoesList"
               tableStyleClass="table table-striped"
             >
               <ng-template pTemplate="header">
                 <tr>
                   <th style="width: 5%"></th>
                   <th>Sigla</th>
-                  <th>Entidade</th>
+                  <th>Organizacao</th>
                   <th>Tipo</th>
                   <th>Telefone</th>
                   <th>Site</th>
@@ -29,36 +29,36 @@
                   <th style="width: 5%">Ações</th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-entidade>
+              <ng-template pTemplate="body" let-organizacao>
                 <tr>
                   <td>
                     <ng-container
                       *ngIf="
-                        entidade.imagemPerfil;
+                        organizacao.imagemPerfil;
                         else standardProfileImageTemplate
                       "
                     >
                       <ng-container
                         *ngTemplateOutlet="
                           profileImageTemplate;
-                          context: { imgSrc: entidade.imagemPerfil }
+                          context: { imgSrc: organizacao.imagemPerfil }
                         "
                       ></ng-container>
                     </ng-container>
                   </td>
-                  <td>{{ entidade.abreviatura }}</td>
-                  <td>{{ entidade.nome }}</td>
-                  <td>{{ entidade.nomeTipoEntidade }}</td>
-                  <td>{{ entidade.telefone }}</td>
+                  <td>{{ organizacao.abreviatura }}</td>
+                  <td>{{ organizacao.nome }}</td>
+                  <td>{{ organizacao.nomeTipoOrganizacao }}</td>
+                  <td>{{ organizacao.telefone }}</td>
                   <td>
-                    <a [href]="entidade.site" target="_blank"
-                      >{{ entidade.site }}
+                    <a [href]="organizacao.site" target="_blank"
+                      >{{ organizacao.site }}
                     </a>
                   </td>
                   <td>
                     <table-action-buttons-template
-                      [rowData]="entidadeDataInput(entidade)"
-                      (deleteId)="deleteEntidade($event)"
+                      [rowData]="organizacaoDataInput(organizacao)"
+                      (deleteId)="deleteOrganizacao($event)"
                     ></table-action-buttons-template>
                   </td>
                 </tr>

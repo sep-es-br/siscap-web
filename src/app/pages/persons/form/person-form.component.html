@@ -2,7 +2,7 @@
   <siscap-loading></siscap-loading>
 </div>
 
-<div class="person-form h-100 overflow-y-auto" *ngIf="!loading">
+<div class="person-form" *ngIf="!loading">
   <form [formGroup]="personForm">
     <div class="row mx-1">
       <div
@@ -13,7 +13,7 @@
             <div class="personal-info">
               <div class="col-12">
                 <div class="card-title border-bottom border-1">
-                  <span class="fw-medium">Informações Pessoais</span>
+                  <span>Informações Pessoais</span>
                 </div>
               </div>
 
@@ -187,7 +187,7 @@
               <div formGroupName="endereco">
                 <div class="col-12">
                   <div class="card-title border-bottom border-1">
-                    <span class="fw-medium">Informações de Endereço</span>
+                    <span>Informações de Endereço</span>
                   </div>
                 </div>
 
@@ -358,7 +358,7 @@
             <div class="profile-img">
               <div class="col-12">
                 <div class="card-title border-bottom border-1">
-                  <span class="fw-medium">Foto de Perfil</span>
+                  <span>Foto de Perfil</span>
                 </div>
               </div>
 
@@ -458,18 +458,18 @@
               <div formGroupName="prof">
                 <div class="col-12">
                   <div class="card-title border-bottom border-1">
-                    <span class="fw-medium">Informações Profissionais</span>
+                    <span>Informações Profissionais</span>
                   </div>
                 </div>
 
                 <div class="row">
                   <div class="col-12">
                     <div class="col-12">
-                      <label for="entidade" class="form-label">Entidade</label>
+                      <label for="organizacao" class="form-label">Organizacao</label>
                       <ng-select
-                        id="entidade"
+                        id="organizacao"
                         placeholder="Desabilitado"
-                        formControlName="entidade"
+                        formControlName="organizacao"
                       >
                         <ng-option
                           *ngFor="let placeholder of placeholderList"
