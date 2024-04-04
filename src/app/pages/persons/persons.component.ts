@@ -6,11 +6,15 @@ import { Observable, Subscription, first, tap } from 'rxjs';
 import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
 import { ToastService } from '../../shared/services/toast/toast.service';
 
+import { SortColumn } from '../../core/directives/sortable/sortable.directive';
+
 import {
   IPersonGet,
   IPersonTable,
 } from '../../shared/interfaces/person.interface';
 import { ITableActionsDataInput } from '../../shared/interfaces/table-actions-data-input.interface';
+
+import { sortFunction } from '../../shared/utils/sort-function';
 
 @Component({
   selector: 'siscap-persons',
@@ -41,6 +45,15 @@ export class PersonsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._subscription.add(this._getPessoas$.subscribe());
+  }
+
+  public sortBy(event: SortColumn) {
+    const column = event.column as keyof IPersonTable;
+    const direction = event.direction;
+
+    this.pessoasList.sort((a, b) =>
+      sortFunction(a[column], b[column], direction)
+    );
   }
 
   convertByteArraytoImg(data: ArrayBuffer): string {

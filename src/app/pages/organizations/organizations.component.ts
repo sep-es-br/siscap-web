@@ -6,11 +6,15 @@ import { Observable, Subscription, first, tap } from 'rxjs';
 import { OrganizacoesService } from '../../shared/services/organizacoes/organizacoes.service';
 import { ToastService } from '../../shared/services/toast/toast.service';
 
+import { SortColumn } from '../../core/directives/sortable/sortable.directive';
+
 import {
   IOrganizationGet,
   IOrganizationTable,
 } from '../../shared/interfaces/organization.interface';
 import { ITableActionsDataInput } from '../../shared/interfaces/table-actions-data-input.interface';
+
+import { sortFunction } from '../../shared/utils/sort-function';
 
 @Component({
   selector: 'siscap-organizations',
@@ -41,6 +45,15 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._subscription.add(this._getOrganizacoes$.subscribe());
+  }
+
+  public sortBy(event: SortColumn) {
+    const column = event.column as keyof IOrganizationTable;
+    const direction = event.direction;
+
+    this.organizacoesList.sort((a, b) =>
+      sortFunction(a[column], b[column], direction)
+    );
   }
 
   convertByteArraytoImg(data: ArrayBuffer): string {

@@ -13,24 +13,22 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <p-table
-              [value]="organizacoesList"
-              tableStyleClass="table table-striped"
-            >
-              <ng-template pTemplate="header">
+            <table class="table table-striped table-hover">
+              <thead>
                 <tr>
-                  <th style="width: 5%"></th>
-                  <th>Sigla</th>
-                  <th>Organizacao</th>
-                  <th>Tipo</th>
-                  <th>Telefone</th>
-                  <th>Site</th>
-                  <!-- <th>Status</th> -->
-                  <th style="width: 5%">Ações</th>
+                  <th class="profile-image"></th>
+                  <th sortable="abreviatura" (sort)="sortBy($event)">Sigla</th>
+                  <th sortable="nome" (sort)="sortBy($event)">Organizacao</th>
+                  <th sortable="nomeTipoOrganizacao" (sort)="sortBy($event)">
+                    Tipo
+                  </th>
+                  <th sortable="telefone" (sort)="sortBy($event)">Telefone</th>
+                  <th sortable="site" (sort)="sortBy($event)">Site</th>
+                  <th class="action-buttons">Ações</th>
                 </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-organizacao>
-                <tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let organizacao of organizacoesList; index as i">
                   <td>
                     <ng-container
                       *ngIf="
@@ -46,6 +44,7 @@
                       ></ng-container>
                     </ng-container>
                   </td>
+
                   <td>{{ organizacao.abreviatura }}</td>
                   <td>{{ organizacao.nome }}</td>
                   <td>{{ organizacao.nomeTipoOrganizacao }}</td>
@@ -55,6 +54,7 @@
                       >{{ organizacao.site }}
                     </a>
                   </td>
+
                   <td>
                     <table-action-buttons-template
                       [rowData]="organizacaoDataInput(organizacao)"
@@ -62,8 +62,8 @@
                     ></table-action-buttons-template>
                   </td>
                 </tr>
-              </ng-template>
-            </p-table>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

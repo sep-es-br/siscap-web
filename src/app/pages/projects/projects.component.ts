@@ -6,11 +6,15 @@ import { Observable, Subscription, first, tap } from 'rxjs';
 import { ProjetosService } from '../../shared/services/projetos/projetos.service';
 import { ToastService } from '../../shared/services/toast/toast.service';
 
+import { SortColumn } from '../../core/directives/sortable/sortable.directive';
+
 import {
   IProjectGet,
   IProjectTable,
 } from '../../shared/interfaces/project.interface';
 import { ITableActionsDataInput } from '../../shared/interfaces/table-actions-data-input.interface';
+
+import { sortFunction } from '../../shared/utils/sort-function';
 
 @Component({
   selector: 'siscap-projects',
@@ -43,9 +47,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this._subscription.add(this._getProjetos$.subscribe());
   }
 
-  public sortBy(column: keyof IProjectTable) {
-    console.log(column)
-    this.projetosList.sort( (a, b) => a[column] < b[column] ? -1 : a[column] > b[column] ? 1 : 0)
+  public sortBy(event: SortColumn) {
+    const column = event.column as keyof IProjectTable;
+    const direction = event.direction;
+
+    this.projetosList.sort((a, b) =>
+      sortFunction(a[column], b[column], direction)
+    );
   }
 
   public projetoDataInput(project: IProjectTable): ITableActionsDataInput {
