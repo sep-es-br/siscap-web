@@ -121,6 +121,14 @@ export class ProjectFormComponent implements OnInit {
   toUppercaseOutputTransformFn =
     NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
 
+  ngSelectAddAll(event: any, controlName: string, list: Array<ISelectList>) {
+    if (event['$ngOptionLabel'] == 'Todas') {
+      const control = this.projectForm.get(controlName);
+      const allValues = list.map((item) => item.id);
+      control?.patchValue(allValues);
+    }
+  }
+
   ngOnInit(): void {
     if (this.formMode == 'criar') {
       this.initForm();
