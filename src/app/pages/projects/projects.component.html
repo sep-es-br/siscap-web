@@ -13,31 +13,18 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <p-table
-              [value]="projetosList"
-              tableStyleClass="table table-striped"
-            >
-              <ng-template pTemplate="header">
+            <table class="table table-striped table-hover">
+              <thead>
                 <tr>
-                  <th pSortableColumn="sigla">
-                    Sigla <p-sortIcon field="sigla"></p-sortIcon>
-                  </th>
-                  <th pSortableColumn="titulo">
-                    Nome do Projeto <p-sortIcon field="titulo"></p-sortIcon>
-                  </th>
-                  <th pSortableColumn="nomesMicrorregioes">
-                    Microrregiões
-                    <p-sortIcon field="nomesMicrorregioes"></p-sortIcon>
-                  </th>
-                  <th pSortableColumn="valorEstimado">
-                    Valor <p-sortIcon field="valorEstimado"></p-sortIcon>
-                  </th>
-                  <th style="width: 5%">Ações</th>
+                  <th sortable="sigla" (sort)="sortBy($event)">Sigla</th>
+                  <th>Nome do Projeto</th>
+                  <th>Microrregiões</th>
+                  <th>Valor</th>
+                  <th>Ações</th>
                 </tr>
-              </ng-template>
-
-              <ng-template pTemplate="body" let-projeto>
-                <tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let projeto of projetosList; index as i">
                   <td>{{ projeto.sigla }}</td>
                   <td>{{ projeto.titulo }}</td>
                   <td>{{ projeto.nomesMicrorregioes }}</td>
@@ -60,11 +47,58 @@
                     ></table-action-buttons-template>
                   </td>
                 </tr>
-              </ng-template>
-            </p-table>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- <p-table [value]="projetosList" tableStyleClass="table table-striped">
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="sigla">
+        Sigla <p-sortIcon field="sigla"></p-sortIcon>
+      </th>
+      <th pSortableColumn="titulo">
+        Nome do Projeto <p-sortIcon field="titulo"></p-sortIcon>
+      </th>
+      <th pSortableColumn="nomesMicrorregioes">
+        Microrregiões
+        <p-sortIcon field="nomesMicrorregioes"></p-sortIcon>
+      </th>
+      <th pSortableColumn="valorEstimado">
+        Valor <p-sortIcon field="valorEstimado"></p-sortIcon>
+      </th>
+      <th style="width: 5%">Ações</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-projeto>
+    <tr>
+      <td>{{ projeto.sigla }}</td>
+      <td>{{ projeto.titulo }}</td>
+      <td>{{ projeto.nomesMicrorregioes }}</td>
+      <td>
+        {{
+          projeto.valorEstimado
+            | mask
+              : "separator.2"
+              : {
+                  thousandSeparator: ".",
+                  decimalMarker: ",",
+                  prefix: "R$"
+                }
+        }}
+      </td>
+      <td>
+        <table-action-buttons-template
+          [rowData]="projetoDataInput(projeto)"
+          (deleteId)="deleteProjeto($event)"
+        ></table-action-buttons-template>
+      </td>
+    </tr>
+  </ng-template>
+</p-table> -->

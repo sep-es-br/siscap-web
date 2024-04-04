@@ -43,6 +43,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this._subscription.add(this._getProjetos$.subscribe());
   }
 
+  public sortBy(column: keyof IProjectTable) {
+    console.log(column)
+    this.projetosList.sort( (a, b) => a[column] < b[column] ? -1 : a[column] > b[column] ? 1 : 0)
+  }
+
   public projetoDataInput(project: IProjectTable): ITableActionsDataInput {
     const projetoDataInput: ITableActionsDataInput = {
       id: project.id,
