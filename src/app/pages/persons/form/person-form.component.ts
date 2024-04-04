@@ -16,6 +16,7 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
+import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
 
 @Component({
   selector: 'siscap-person-form',
@@ -133,7 +134,11 @@ export class PersonFormComponent implements OnInit {
         validators: Validators.required,
       }),
       cpf: nnfb.control(person?.cpf ?? '', {
-        validators: [Validators.minLength(11), Validators.maxLength(11)],
+        validators: [
+          Validators.minLength(11),
+          Validators.maxLength(11),
+          CPFValidator,
+        ],
       }),
       email: nnfb.control(person?.email ?? '', {
         validators: [Validators.required, Validators.email],
