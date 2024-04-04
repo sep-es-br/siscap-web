@@ -5,7 +5,18 @@ import {
   HostListener,
   Input,
   Output,
+  Renderer2,
 } from '@angular/core';
+
+enum DirectionShift {
+  asc = 'desc',
+  desc = 'asc',
+}
+
+export interface SortColumn {
+  column: string;
+  direction: string;
+}
 
 @Directive({
   selector: 'th[sortable]',
@@ -13,15 +24,45 @@ import {
 })
 export class SortableDirective {
   @Input() sortable: string = '';
-  @Output() sort = new EventEmitter<any>();
+  @Output() sort = new EventEmitter<SortColumn>();
 
-  constructor(private el : ElementRef) {}
+  private _targetColumn!: HTMLTableCellElement;
+  private _targetColumnSiblings!: HTMLTableCellElement[];
 
-  @HostListener('click')
-  sortColumn() {
-    console.log(this.el)
-    this.sort.emit(this.sortable);
+  private _sortDirection: string = '';
+
+  constructor(
+    private _el: ElementRef<HTMLTableCellElement>,
+    private _r2: Renderer2
+  ) {
+    this._targetColumn = this._el.nativeElement;
+
+    this._targetColumnSiblings = this._r2.parentNode(
+      this._targetColumn
+    ).children;
   }
 
-  // @HostListener('')
+  @HostListener('click')
+  emitSort() {
+    for (const el of this._targetColumnSiblings) {
+      if (el != this._targetColumn && el.hasAttributeNS(null, 'sortable')) {
+        this._r2.removeClass(el, 'asc');
+        this._r2.removeClass(el, 'desc');
+      }
+    }
+
+    this._sortDirection = this._targetColumn.className;
+
+    const newDirection =
+      DirectionShift[this._sortDirection as keyof typeof DirectionShift] ??
+      'asc';
+
+    if (this._sortDirection !== '') {
+      this._r2.removeClass(this._targetColumn, this._sortDirection);
+    }
+
+    this._r2.addClass(this._targetColumn, newDirection);
+
+    this.sort.emit({ column: this.sortable, direction: newDirection });
+  }
 }
