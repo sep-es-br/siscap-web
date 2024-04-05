@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, finalize, first, tap } from 'rxjs';
+import { Observable, Subscription, concat, finalize, first, tap } from 'rxjs';
 
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -23,14 +23,23 @@ import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss',
 })
-export class ProjectFormComponent implements OnInit {
-  public projectForm!: FormGroup;
+export class ProjectFormComponent implements OnInit, OnDestroy {
+  private _getOrganizacoes$!: Observable<ISelectList[]>;
+  private _getPessoas$!: Observable<ISelectList[]>;
+  private _getPlanos$!: Observable<ISelectList[]>;
+  private _getMicrorregioes$!: Observable<ISelectList[]>;
+  private _getAllSelectLists$!: Observable<ISelectList[]>;
 
-  public loading: boolean = false;
+  private _getProjetoById$!: Observable<IProject>;
+
+  private _subscription: Subscription = new Subscription();
+
+  public loading: boolean = true;
 
   public formMode!: string;
 
-  private _prepareForm$!: Observable<IProject>;
+  public projectForm!: FormGroup;
+
   public projectEditId!: number;
   public projectFormInitialValue!: IProjectCreate;
 
@@ -50,94 +59,66 @@ export class ProjectFormComponent implements OnInit {
     this.formMode = this._route.snapshot.params['mode'];
     this.projectEditId = this._route.snapshot.queryParams['id'] ?? null;
 
-    this._prepareForm$ = this._projetosService
+    this._getProjetoById$ = this._projetosService
       .getProjetoById(this.projectEditId)
       .pipe(
-        first(),
         tap((response) => {
           this.initForm(response);
         }),
         finalize(() => {
           this.projectFormInitialValue = this.projectForm.value;
 
-          if (this.formMode == 'detalhes') {
-            const controls = this.projectForm.controls;
-            for (const key in controls) {
-              controls[key].disable();
-            }
+          const controls = this.projectForm.controls;
+          for (const key in controls) {
+            controls[key].disable();
           }
 
           this.loading = false;
         })
       );
 
-    this._selectListService
-      .getMicrorregioes()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.microrregioesList = response;
-        })
-      )
-      .subscribe();
+    this._getOrganizacoes$ = this._selectListService.getOrganizacoes().pipe(
+      tap((response) => {
+        this.organizacoesList = response;
+      })
+    );
 
-    this._selectListService
-      .getOrganizacoes()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.organizacoesList = response;
-        })
-      )
-      .subscribe();
+    this._getPessoas$ = this._selectListService.getPessoas().pipe(
+      tap((response) => {
+        this.pessoasList = response;
+      })
+    );
 
-    this._selectListService
-      .getPlanos()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.planosList = response;
-        })
-      )
-      .subscribe();
+    this._getPlanos$ = this._selectListService.getPlanos().pipe(
+      tap((response) => {
+        this.planosList = response;
+      })
+    );
 
-    this._selectListService
-      .getPessoas()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.pessoasList = response;
-        })
-      )
-      .subscribe();
-  }
+    this._getMicrorregioes$ = this._selectListService.getMicrorregioes().pipe(
+      tap((response) => {
+        this.microrregioesList = response;
+      })
+    );
 
-  rtlCurrencyInputTransformFn =
-    NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
-
-  toUppercaseInputTransformFn =
-    NgxMaskTransformFunctionHelper.toUppercaseInputTransformFn;
-
-  toUppercaseOutputTransformFn =
-    NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
-
-  ngSelectAddAll(event: any, controlName: string, list: Array<ISelectList>) {
-    if (event['$ngOptionLabel'] == 'Todas') {
-      const control = this.projectForm.get(controlName);
-      const allValues = list.map((item) => item.id);
-      control?.patchValue(allValues);
-    }
+    this._getAllSelectLists$ = concat(
+      this._getOrganizacoes$,
+      this._getPessoas$,
+      this._getPlanos$,
+      this._getMicrorregioes$
+    );
   }
 
   ngOnInit(): void {
+    this._subscription.add(this._getAllSelectLists$.subscribe());
+
     if (this.formMode == 'criar') {
       this.initForm();
+      this.loading = false;
       return;
     }
 
-    this.loading = true;
-
-    this._prepareForm$.subscribe();
+    this._subscription.add(this._getProjetoById$.subscribe());
   }
 
   /**
@@ -191,6 +172,23 @@ export class ProjectFormComponent implements OnInit {
       eixo: nnfb.control({ value: null, disabled: true }),
       area: nnfb.control({ value: null, disabled: true }),
     });
+  }
+
+  rtlCurrencyInputTransformFn =
+    NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
+
+  toUppercaseInputTransformFn =
+    NgxMaskTransformFunctionHelper.toUppercaseInputTransformFn;
+
+  toUppercaseOutputTransformFn =
+    NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
+
+  ngSelectAddAll(event: any, controlName: string, list: Array<ISelectList>) {
+    if (event['$ngOptionLabel'] == 'Todas') {
+      const control = this.projectForm.get(controlName);
+      const allValues = list.map((item) => item.id);
+      control?.patchValue(allValues);
+    }
   }
 
   /**
@@ -262,5 +260,9 @@ export class ProjectFormComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
   }
 }
