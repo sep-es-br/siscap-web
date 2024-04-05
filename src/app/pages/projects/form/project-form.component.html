@@ -2,6 +2,15 @@
   <siscap-loading></siscap-loading>
 </div>
 
+<!-- (click)="deleteProjeto(projectEditId)" -->
+
+<div class="row mx-1" *ngIf="formMode != 'criar'">
+  <div class="d-flex justify-content-between">
+    <button class="btn btn-danger">Deletar</button>
+    <button class="btn btn-outline-primary">Editar</button>
+  </div>
+</div>
+
 <div class="project-form" *ngIf="!loading">
   <form [formGroup]="projectForm">
     <div class="row mx-1">
@@ -334,7 +343,6 @@
                 type="button"
                 class="btn btn-primary p-2 px-4 mx-1"
                 [hidden]="formMode == 'detalhes'"
-                [disabled]="this.projectForm.invalid"
                 (click)="submitProjectForm(this.projectForm)"
               >
                 {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
@@ -342,8 +350,7 @@
 
               <button
                 type="button"
-                class="btn btn-danger p-2 px-4 mx-1"
-                [hidden]="formMode == 'detalhes'"
+                class="btn btn-outline-danger p-2 px-4 mx-1"
                 (click)="cancelForm()"
               >
                 Cancelar
