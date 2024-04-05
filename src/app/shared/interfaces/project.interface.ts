@@ -5,7 +5,7 @@ export interface IProject {
   idStatus: number;
   sigla: string;
   titulo: string;
-  idEntidade: number;
+  idOrganizacao: number;
   valorEstimado: number;
   idMicrorregioes: number[];
   objetivo: string;
