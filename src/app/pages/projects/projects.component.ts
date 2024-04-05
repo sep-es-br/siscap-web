@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, Subscription, first, tap } from 'rxjs';
 
@@ -32,6 +32,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   constructor(
     private _router: Router,
+    private _route: ActivatedRoute,
     private _projetosService: ProjetosService,
     private _toastService: ToastService
   ) {
@@ -56,37 +57,44 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     );
   }
 
-  public projetoDataInput(project: IProjectTable): ITableActionsDataInput {
-    const projetoDataInput: ITableActionsDataInput = {
-      id: project.id,
-      infoTitle:
-        'O seguinte projeto será excluído. Tem certeza que quer executar a ação?',
-      infoBody: {
-        Sigla: project.sigla,
-        'Nome do Projeto': project.titulo,
-      },
-    };
-
-    return projetoDataInput;
+  public redirectProjectForm(project: IProjectTable) {
+    this._router.navigate(['form', 'editar'], {
+      relativeTo: this._route,
+      queryParams: { id: project.id },
+    });
   }
 
-  public deleteProjeto(id: number) {
-    this._deleteProjeto$ = this._projetosService.deleteProjeto(id).pipe(
-      tap((response) => {
-        if (response) {
-          this._toastService.showToast(
-            'success',
-            'Projeto excluído com sucesso.'
-          );
-          this._router
-            .navigateByUrl('/', { skipLocationChange: true })
-            .then(() => this._router.navigateByUrl('main/projetos'));
-        }
-      })
-    );
+  // public projetoDataInput(project: IProjectTable): ITableActionsDataInput {
+  //   const projetoDataInput: ITableActionsDataInput = {
+  //     id: project.id,
+  //     infoTitle:
+  //       'O seguinte projeto será excluído. Tem certeza que quer executar a ação?',
+  //     infoBody: {
+  //       Sigla: project.sigla,
+  //       'Nome do Projeto': project.titulo,
+  //     },
+  //   };
 
-    this._subscription.add(this._deleteProjeto$.subscribe());
-  }
+  //   return projetoDataInput;
+  // }
+
+  // public deleteProjeto(id: number) {
+  //   this._deleteProjeto$ = this._projetosService.deleteProjeto(id).pipe(
+  //     tap((response) => {
+  //       if (response) {
+  //         this._toastService.showToast(
+  //           'success',
+  //           'Projeto excluído com sucesso.'
+  //         );
+  //         this._router
+  //           .navigateByUrl('/', { skipLocationChange: true })
+  //           .then(() => this._router.navigateByUrl('main/projetos'));
+  //       }
+  //     })
+  //   );
+
+  //   this._subscription.add(this._deleteProjeto$.subscribe());
+  // }
 
   queryProject() {}
 
