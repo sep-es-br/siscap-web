@@ -52,19 +52,19 @@
 
           <div class="row">
             <div class="col-12" id="orgao">
-              <label for="idEntidade" class="form-label col-12">
+              <label for="idOrganizacao" class="form-label col-12">
                 Orgão de Origem
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
-                    context: { controlName: 'idEntidade' }
+                    context: { controlName: 'idOrganizacao' }
                   "
                 ></ng-container>
               </label>
               <ng-select
-                id="idEntidade"
+                id="idOrganizacao"
                 placeholder="-- Selecione um orgão da lista abaixo --"
-                formControlName="idEntidade"
+                formControlName="idOrganizacao"
               >
                 <ng-option
                   *ngFor="let organizacao of organizacoesList"

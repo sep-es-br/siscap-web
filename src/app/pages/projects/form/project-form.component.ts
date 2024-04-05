@@ -153,7 +153,7 @@ export class ProjectFormComponent implements OnInit {
       titulo: nnfb.control(project?.titulo ?? '', {
         validators: [Validators.required, Validators.maxLength(150)],
       }),
-      idEntidade: nnfb.control(project?.idEntidade ?? null, {
+      idOrganizacao: nnfb.control(project?.idOrganizacao ?? null, {
         validators: Validators.required,
       }),
       valorEstimado: nnfb.control(project?.valorEstimado ?? null, {
