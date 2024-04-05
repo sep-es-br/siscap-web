@@ -9,6 +9,12 @@
 /* ng-select */
 @import "@ng-select/ng-select/themes/default.theme.css";
 
+/* Estilo do Footer */
+
+.footer span {
+  font-size: $small-4-font-size;
+}
+
 /* Estilos do siscap-navmenu*/
 
 .menu-items {
@@ -80,6 +86,10 @@
 }
 
 /* Estilos de Tabela */
+
+tbody tr:hover {
+  cursor: pointer;
+}
 
 th,
 td {
