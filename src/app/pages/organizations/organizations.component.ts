@@ -14,7 +14,7 @@ import {
 } from '../../shared/interfaces/organization.interface';
 import { ITableActionsDataInput } from '../../shared/interfaces/table-actions-data-input.interface';
 
-import { sortFunction } from '../../shared/utils/sort-function';
+import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
 
 @Component({
   selector: 'siscap-organizations',
@@ -47,12 +47,12 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     this._subscription.add(this._getOrganizacoes$.subscribe());
   }
 
-  public sortBy(event: SortColumn) {
+  public sortTable(event: SortColumn) {
     const column = event.column as keyof IOrganizationTable;
     const direction = event.direction;
 
     this.organizacoesList.sort((a, b) =>
-      sortFunction(a[column], b[column], direction)
+      sortTableColumnsFunction(a[column], b[column], direction)
     );
   }
 
@@ -60,7 +60,9 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     return 'data:image/jpeg;base64,' + data;
   }
 
-  public organizacaoDataInput(organization: IOrganizationTable): ITableActionsDataInput {
+  public organizacaoDataInput(
+    organization: IOrganizationTable
+  ): ITableActionsDataInput {
     const organizacaoDataInput: ITableActionsDataInput = {
       id: organization.id,
       infoTitle:
@@ -75,19 +77,21 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   }
 
   public deleteOrganizacao(id: number) {
-    this._deleteOrganizacao$ = this._organizacoesService.deleteOrganizacao(id).pipe(
-      tap((response) => {
-        if (response) {
-          this._toastService.showToast(
-            'success',
-            'Organização excluída com sucesso.'
-          );
-          this._router
-            .navigateByUrl('/', { skipLocationChange: true })
-            .then(() => this._router.navigateByUrl('main/organizacoes'));
-        }
-      })
-    );
+    this._deleteOrganizacao$ = this._organizacoesService
+      .deleteOrganizacao(id)
+      .pipe(
+        tap((response) => {
+          if (response) {
+            this._toastService.showToast(
+              'success',
+              'Organização excluída com sucesso.'
+            );
+            this._router
+              .navigateByUrl('/', { skipLocationChange: true })
+              .then(() => this._router.navigateByUrl('main/organizacoes'));
+          }
+        })
+      );
 
     this._subscription.add(this._deleteOrganizacao$.subscribe());
   }
