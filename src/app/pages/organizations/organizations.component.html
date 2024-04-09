@@ -17,13 +17,13 @@
               <thead>
                 <tr>
                   <th class="profile-image"></th>
-                  <th sortable="abreviatura" (sort)="sortBy($event)">Sigla</th>
-                  <th sortable="nome" (sort)="sortBy($event)">Organizacao</th>
-                  <th sortable="nomeTipoOrganizacao" (sort)="sortBy($event)">
+                  <th sortable="abreviatura" (sort)="sortTable($event)">Sigla</th>
+                  <th sortable="nome" (sort)="sortTable($event)">Organizacao</th>
+                  <th sortable="nomeTipoOrganizacao" (sort)="sortTable($event)">
                     Tipo
                   </th>
-                  <th sortable="telefone" (sort)="sortBy($event)">Telefone</th>
-                  <th sortable="site" (sort)="sortBy($event)">Site</th>
+                  <th sortable="telefone" (sort)="sortTable($event)">Telefone</th>
+                  <th sortable="site" (sort)="sortTable($event)">Site</th>
                   <th class="action-buttons">Ações</th>
                 </tr>
               </thead>

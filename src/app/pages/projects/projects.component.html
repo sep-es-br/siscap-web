@@ -17,14 +17,14 @@
               <table class="table table-striped table-hover">
                 <thead>
                   <tr>
-                    <th sortable="sigla" (sort)="sortBy($event)">Sigla</th>
-                    <th sortable="titulo" (sort)="sortBy($event)">
+                    <th sortable="sigla" (sort)="sortTable($event)">Sigla</th>
+                    <th sortable="titulo" (sort)="sortTable($event)">
                       Nome do Projeto
                     </th>
-                    <th sortable="nomesMicrorregioes" (sort)="sortBy($event)">
+                    <th sortable="nomesMicrorregioes" (sort)="sortTable($event)">
                       Microrregiões
                     </th>
-                    <th sortable="valorEstimado" (sort)="sortBy($event)">
+                    <th sortable="valorEstimado" (sort)="sortTable($event)">
                       Valor
                     </th>
                     <!-- <th class="action-buttons">Ações</th> -->
