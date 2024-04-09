@@ -81,14 +81,20 @@
 
 /* Estilos de Tabela */
 
-tbody tr:hover {
-  cursor: pointer;
+tbody tr {
+  &:hover {
+    cursor: pointer;
+  }
+
+  td:first-child {
+    color: $primary;
+    text-decoration: underline;
+  }
 }
 
 th,
 td {
-  border-bottom: 1px solid black;
-  width: 1rem;
+  border-bottom: 1px solid $table-row-border;
 }
 
 th {
@@ -134,6 +140,13 @@ label {
   font-size: $small-3-font-size;
 }
 
+.edit-btn,
+.delete-btn {
+  &:disabled {
+    border: 0;
+  }
+}
+
 /* Estilos de validação de formulários (controle inválido)*/
 
 /* Texto de erro */
@@ -167,7 +180,7 @@ span.error-message {
 /* Icone de usuário do font-awesome*/
 
 i.fa-user {
-  color: #c2c2c2;
+  color: $icon-secondary;
 }
 
 /* Coluna de preview de imagem */
@@ -196,9 +209,8 @@ i.fa-user {
 }
 
 .card-body {
-  background-color: #f2f2f266;
-  border: 1px solid #f2f2f2;
-  border-radius: 3px;
+  background-color: $card-bg;
+  border: 1px solid $card-border;
 }
 
 .card-title span {
@@ -207,9 +219,9 @@ i.fa-user {
 }
 
 /* Estilo link (tag <a>) para elementos */
-// .pointer {
-//   cursor: pointer;
-// }
+.pointer {
+  cursor: pointer;
+}
 
 /* Resgatar as Media Queries abaixo para os componentes quando necessário */
 
