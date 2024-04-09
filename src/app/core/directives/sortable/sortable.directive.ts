@@ -51,15 +51,18 @@ export class SortableDirective {
       }
     }
 
-    this._sortDirection = this._targetColumn.className;
-
-    const newDirection =
-      DirectionShift[this._sortDirection as keyof typeof DirectionShift] ??
-      'asc';
+    this._sortDirection =
+      this._targetColumn.className
+        .split(' ')
+        .find((klass) => klass == 'asc' || klass == 'desc') ?? '';
 
     if (this._sortDirection !== '') {
       this._r2.removeClass(this._targetColumn, this._sortDirection);
     }
+
+    const newDirection =
+      DirectionShift[this._sortDirection as keyof typeof DirectionShift] ??
+      'asc';
 
     this._r2.addClass(this._targetColumn, newDirection);
 
