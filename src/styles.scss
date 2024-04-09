@@ -9,6 +9,17 @@
 /* ng-select */
 @import "@ng-select/ng-select/themes/default.theme.css";
 
+/* Estilo de botões */
+
+button.btn:not(.login-button button) {
+  padding: 0.25rem;
+  font-size: $small-3-font-size;
+
+  i + span {
+    margin-left: 0.25rem;
+  }
+}
+
 /* Estilo do Footer */
 
 .footer span {
@@ -72,24 +83,10 @@
   }
 }
 
-.nav-icons {
-  button {
-    color: white;
-    font-size: $small-3-font-size;
-  }
-}
-
 /* Estilos de Tabela */
 
-tbody tr {
-  &:hover {
-    cursor: pointer;
-  }
-
-  td:first-child {
-    color: $primary;
-    text-decoration: underline;
-  }
+tbody tr:hover {
+  cursor: pointer;
 }
 
 th,
@@ -128,6 +125,11 @@ th {
 td {
   font-size: $small-3-font-size;
   vertical-align: middle;
+
+  &.target-col {
+    color: $primary;
+    text-decoration: underline;
+  }
 }
 
 /* Estilos de formulários */
