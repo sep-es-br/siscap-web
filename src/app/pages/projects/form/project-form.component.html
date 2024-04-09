@@ -3,21 +3,26 @@
 </div>
 
 <div class="row mx-1" *ngIf="!loading && formMode != 'criar'">
-  <div class="d-flex justify-content-between">
+  <div class="d-flex justify-content-end">
     <button
       type="button"
-      class="btn btn-danger"
-      (click)="deletarProjeto(projectEditId)"
-    >
-      Deletar
-    </button>
-    <button
-      type="button"
-      class="btn btn-outline-primary"
+      class="btn edit-btn"
+      placement="top"
+      ngbTooltip="Editar"
       (click)="switchMode(true, ['plano', 'eixo', 'area'])"
       [disabled]="isEdit"
     >
-      Editar
+      <i class="fa-solid fa-pencil"></i>
+    </button>
+
+    <button
+      type="button"
+      class="btn delete-btn"
+      placement="top"
+      ngbTooltip="Excluir"
+      (click)="deletarProjeto(projectEditId)"
+    >
+      <i class="fa-solid fa-trash-can"></i>
     </button>
   </div>
 </div>
