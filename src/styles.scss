@@ -55,6 +55,8 @@
 /* Estilos do siscap-breadcrumb */
 
 .breadcrumb-title-area {
+  max-width: 50vw;
+
   h4 {
     font-size: $large-2-font-size;
     color: $primary;
@@ -111,11 +113,8 @@ th {
     margin-left: 5px;
   }
 
-  &.profile-image {
-    width: 5%;
-  }
-
-  &.action-buttons {
+  &.profile-image-col,
+  &.action-buttons-col {
     width: 5%;
   }
 }
