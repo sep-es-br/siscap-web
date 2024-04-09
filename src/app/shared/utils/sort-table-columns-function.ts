@@ -1,4 +1,4 @@
-export function sortFunction(a: any, b: any, order: string): number {
+export function sortTableColumnsFunction(a: any, b: any, order: string): number {
   if (a < b) {
     return order === 'asc' ? -1 : 1;
   }
