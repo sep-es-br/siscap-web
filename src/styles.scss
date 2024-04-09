@@ -54,14 +54,6 @@
 
 /* Estilos do siscap-breadcrumb */
 
-.home-button {
-  margin-right: 5px;
-
-  button {
-    padding: 0.5rem;
-  }
-}
-
 .breadcrumb-title-area {
   h4 {
     font-size: $large-2-font-size;
@@ -216,9 +208,9 @@ i.fa-user {
 }
 
 /* Estilo link (tag <a>) para elementos */
-.pointer {
-  cursor: pointer;
-}
+// .pointer {
+//   cursor: pointer;
+// }
 
 /* Resgatar as Media Queries abaixo para os componentes quando necessário */
 
