@@ -1,11 +1,24 @@
 /* Override das variáveis do Bootstrap */
 
-//Cores
+// --- Cores ---
+
+//Aplicação
 $primary: #107fcf;
 $secondary: #aaaaaa;
 
+//Tabelas
+$table-row-border: #7f7f7f8c;
+
+//Formulários
 $invalid: #dc3545;
 $disabled: #e9ecef;
+
+//Ícones
+$icon-secondary: #c2c2c2;
+
+//Card
+$card-bg: #f2f2f266;
+$card-border: #f2f2f2;
 
 //Taxa de Contraste (necessário para permitir o conteúdo branco com a cor $blue acima, por exemplo)
 //Valores possíveis somente 3, 4.5 e 7
@@ -13,10 +26,13 @@ $min-contrast-ratio: 3;
 // $min-contrast-ratio: 4.5; //padrão
 // $min-contrast-ratio: 7;
 
+// --- Cores ---
+
 //Bordas (primariamente para botões)
 $border-radius: 0.1875rem; //3px
 
-//Fontes
+// --- Fontes ---
+
 $font-family-sans-serif: "Arial";
 
 //Tamanho de fontes menores (< 1rem)
@@ -31,3 +47,5 @@ $large-1-font-size: 1.125rem; //18px
 $large-2-font-size: 1.25rem; //20px
 $large-3-font-size: 1.375rem; //22px
 $large-4-font-size: 1.5rem; //24px
+
+// --- Fontes ---
