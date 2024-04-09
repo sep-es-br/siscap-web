@@ -13,55 +13,57 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <table class="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th sortable="sigla" (sort)="sortBy($event)">Sigla</th>
-                  <th sortable="titulo" (sort)="sortBy($event)">
-                    Nome do Projeto
-                  </th>
-                  <th sortable="nomesMicrorregioes" (sort)="sortBy($event)">
-                    Microrregiões
-                  </th>
-                  <th sortable="valorEstimado" (sort)="sortBy($event)">
-                    Valor
-                  </th>
-                  <!-- <th class="action-buttons">Ações</th> -->
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let projeto of projetosList; index as i"
-                  ngbTooltip="Clique para executar ações"
-                  container="body"
-                  placement="bottom"
-                  [positionTarget]="tooltipTarget"
-                  (click)="redirectProjectForm(projeto)"
-                >
-                  <td #tooltipTarget>{{ projeto.sigla }}</td>
-                  <td>{{ projeto.titulo }}</td>
-                  <td>{{ projeto.nomesMicrorregioes }}</td>
-                  <td>
-                    {{
-                      projeto.valorEstimado
-                        | mask
-                          : "separator.2"
-                          : {
-                              thousandSeparator: ".",
-                              decimalMarker: ",",
-                              prefix: "R$"
-                            }
-                    }}
-                  </td>
-                  <!-- <td>
-                    <table-action-buttons-template
-                      [rowData]="projetoDataInput(projeto)"
-                      (deleteId)="deleteProjeto($event)"
-                    ></table-action-buttons-template>
-                  </td> -->
-                </tr>
-              </tbody>
-            </table>
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th sortable="sigla" (sort)="sortBy($event)">Sigla</th>
+                    <th sortable="titulo" (sort)="sortBy($event)">
+                      Nome do Projeto
+                    </th>
+                    <th sortable="nomesMicrorregioes" (sort)="sortBy($event)">
+                      Microrregiões
+                    </th>
+                    <th sortable="valorEstimado" (sort)="sortBy($event)">
+                      Valor
+                    </th>
+                    <!-- <th class="action-buttons">Ações</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let projeto of projetosList; index as i"
+                    ngbTooltip="Clique para executar ações"
+                    container="body"
+                    placement="bottom"
+                    [positionTarget]="tooltipTarget"
+                    (click)="redirectProjectForm(projeto)"
+                  >
+                    <td #tooltipTarget>{{ projeto.sigla }}</td>
+                    <td>{{ projeto.titulo }}</td>
+                    <td>{{ projeto.nomesMicrorregioes }}</td>
+                    <td>
+                      {{
+                        projeto.valorEstimado
+                          | mask
+                            : "separator.2"
+                            : {
+                                thousandSeparator: ".",
+                                decimalMarker: ",",
+                                prefix: "R$"
+                              }
+                      }}
+                    </td>
+                    <!-- <td>
+                      <table-action-buttons-template
+                        [rowData]="projetoDataInput(projeto)"
+                        (deleteId)="deleteProjeto($event)"
+                      ></table-action-buttons-template>
+                    </td> -->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
