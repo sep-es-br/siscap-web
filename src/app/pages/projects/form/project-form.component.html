@@ -357,19 +357,23 @@
             <div class="col d-flex flex-row-reverse" id="interactbtns">
               <button
                 type="button"
-                class="btn btn-primary p-2 px-4 mx-1"
+                class="btn btn-primary mx-1"
                 [hidden]="!isEdit && formMode != 'criar'"
                 (click)="submitProjectForm(this.projectForm)"
               >
-                {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
+                <i class="fa-solid fa-plus"></i>
+                <span>
+                  {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}</span
+                >
               </button>
 
               <button
                 type="button"
-                class="btn btn-outline-danger p-2 px-4 mx-1"
+                class="btn btn-outline-danger mx-1"
                 (click)="cancelForm()"
               >
-                Cancelar
+                <i class="fa-solid fa-x"></i>
+                <span>Cancelar</span>
               </button>
             </div>
           </div>
