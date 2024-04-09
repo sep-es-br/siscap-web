@@ -2,7 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, Subscription, concat, finalize, first, tap } from 'rxjs';
+import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { ModalComponent } from '../../../core/components/modal/modal.component';
 
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -37,6 +40,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   public loading: boolean = true;
 
   public formMode!: string;
+  public isEdit!: boolean;
 
   public projectForm!: FormGroup;
 
@@ -54,7 +58,8 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     private _route: ActivatedRoute,
     private _projetosService: ProjetosService,
     private _selectListService: SelectListService,
-    private _toastService: ToastService
+    private _toastService: ToastService,
+    private _modalService: NgbModal
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.projectEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -68,10 +73,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.projectFormInitialValue = this.projectForm.value;
 
-          const controls = this.projectForm.controls;
-          for (const key in controls) {
-            controls[key].disable();
-          }
+          this.switchMode(false);
 
           this.loading = false;
         })
@@ -109,23 +111,14 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnInit(): void {
-    this._subscription.add(this._getAllSelectLists$.subscribe());
-
-    if (this.formMode == 'criar') {
-      this.initForm();
-      this.loading = false;
-      return;
-    }
-
-    this._subscription.add(this._getProjetoById$.subscribe());
-  }
-
   /**
-   * Método para inicialização do formulário.
+   * @private
+   * Método para inicialização do formulário. Popula valor inicial dos controles com valor original do projeto, caso houver.
+   * Se não, inicial com controles vazios.
    *
+   * @param {IProject} project - Valor inicial do projeto.
    */
-  initForm(project?: IProject) {
+  private initForm(project?: IProject) {
     const nnfb = this._formBuilder.nonNullable;
     this.projectForm = nnfb.group({
       sigla: nnfb.control(project?.sigla ?? '', {
@@ -174,16 +167,65 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  rtlCurrencyInputTransformFn =
+  /**
+   * @private
+   * Verifica se o valor atual do formulário é idênctico ao inicial. Previne a edição do projeto caso não haja mudanças.
+   *
+   * @param valueA - Valor atual do formulário. Tipado como `any` devido á `Object.prototype.values`
+   * @param valueB - Valor inicial do formulário. Tipado como `any` devido á `Object.prototype.values`
+   * @returns `false` caso o valor de algum campo tenha sido alterado; se não, `true`
+   */
+  private isIdentical(valueA: any, valueB: any): boolean {
+    let isIdentical: Array<boolean> = [];
+    const arrayA = Object.values(valueA);
+    const arrayB = Object.values(valueB);
+
+    for (let i = 0; i < arrayA.length; i++) {
+      if (arrayA[i] != arrayB[i]) {
+        isIdentical.push(false);
+      }
+
+      isIdentical.push(true);
+    }
+
+    return isIdentical.every((item) => !!item);
+  }
+
+  ngOnInit(): void {
+    this._subscription.add(this._getAllSelectLists$.subscribe());
+
+    if (this.formMode == 'criar') {
+      this.initForm();
+      this.loading = false;
+      return;
+    }
+
+    this._subscription.add(this._getProjetoById$.subscribe());
+  }
+
+  public rtlCurrencyInputTransformFn =
     NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
 
-  toUppercaseInputTransformFn =
+  public toUppercaseInputTransformFn =
     NgxMaskTransformFunctionHelper.toUppercaseInputTransformFn;
 
-  toUppercaseOutputTransformFn =
+  public toUppercaseOutputTransformFn =
     NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
 
-  ngSelectAddAll(event: any, controlName: string, list: Array<ISelectList>) {
+  /**
+   * @public
+   * Adiciona todos os valores de um componente `ng-select` ao controle associado.
+   *
+   *
+   * @param event - O evento de output do componente. Utilizado para capturar a label da opção.
+   * @param {string} controlName - Nome do controle associado
+   * @param {Array<ISelectList>} list - O array de valores do controle
+   */
+  public ngSelectAddAll(
+    event: any,
+    controlName: string,
+    list: Array<ISelectList>
+  ) {
     if (event['$ngOptionLabel'] == 'Todas') {
       const control = this.projectForm.get(controlName);
       const allValues = list.map((item) => item.id);
@@ -191,32 +233,47 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     }
   }
 
+  public switchMode(isEnabled: boolean, excluded?: Array<string>) {
+    this.isEdit = isEnabled;
+
+    const controls = this.projectForm.controls;
+    for (const key in controls) {
+      !excluded?.includes(key) && isEnabled
+        ? controls[key].enable()
+        : controls[key].disable();
+    }
+  }
+
   /**
+   * @public
    * Método para cancelar o preenchimento do formulário.
    * Envia o usuário para a página de listagem de projetos
    *
    */
-  cancelForm() {
+  public cancelForm() {
     this._router.navigate(['main', 'projetos']);
   }
 
   /**
-   * Método para enviar o formulário. Verifica o formMode e chama o método apropriado
-   * do serviço ProjetosService.
+   * @public
+   * Método para enviar o formulário. Verifica o `formMode` e chama o método apropriado
+   * do serviço `ProjetosService`.
    *
    * @param form - O `FormGroup` do formulário
    *
    */
-  submitProjectForm(form: FormGroup) {
+  public submitProjectForm(form: FormGroup) {
     for (const key in form.controls) {
       form.controls[key].markAsTouched();
     }
 
     if (form.invalid) {
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
+        'Por favor, verifique os campos.',
+      ]);
       return;
     }
 
-    //TODO: Tratamento de erro (caso sigla duplicada)
     switch (this.formMode) {
       case 'criar':
         const createPayload = form.value as IProjectCreate;
@@ -238,6 +295,14 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         break;
 
       case 'editar':
+        if (this.isIdentical(form.value, this.projectFormInitialValue)) {
+          this._toastService.showToast('warning', 'O formulário é idêntico.', [
+            'Não houve mudanças no valor inicial.',
+          ]);
+
+          return;
+        }
+
         const editPayload = form.value as IProjectEdit;
 
         this._projetosService
@@ -260,6 +325,41 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       default:
         break;
     }
+  }
+
+  /**
+   * @public
+   * Método para deletar o projeto. Chama um modal e ao confirmar, chama requisição para deletar.
+   *
+   * @param {number} id - O id do projeto á ser deletado.
+   */
+  public deletarProjeto(id: number) {
+    const modalRef = this._modalService.open(ModalComponent);
+    modalRef.componentInstance.title = 'Atenção!';
+    modalRef.componentInstance.content =
+      'O projeto será excluído. Tem certeza que deseja prosseguir?';
+
+    modalRef.result.then(
+      (resolve) => {
+        this._projetosService
+          .deleteProjeto(id)
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Projeto excluído com sucesso.'
+                );
+                this._router
+                  .navigateByUrl('/', { skipLocationChange: true })
+                  .then(() => this._router.navigateByUrl('main/projetos'));
+              }
+            })
+          )
+          .subscribe();
+      },
+      (reject) => {}
+    );
   }
 
   ngOnDestroy(): void {
