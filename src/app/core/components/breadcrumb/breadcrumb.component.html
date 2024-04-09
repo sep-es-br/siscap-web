@@ -57,10 +57,11 @@
 <!-- Botão de criar um novo dado (ex.: Projetos -> Novo Projeto) -->
 <ng-template #newButton let-path="path">
   <button
-    class="btn btn-primary p-1 me-md-2 me-0 text-nowrap"
+    class="btn btn-primary me-md-2 me-0 text-nowrap"
     [routerLink]="[path, 'form', 'criar']"
     [hidden]="!mainChildPaths.includes(path)"
   >
-    {{ path + "criar" | breadcrumbnavlink }}
+    <i class="fa-solid fa-plus"></i>
+    <span> {{ path + "criar" | breadcrumbnavlink }}</span>
   </button>
 </ng-template>
