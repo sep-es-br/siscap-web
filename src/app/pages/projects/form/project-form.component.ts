@@ -167,30 +167,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * @private
-   * Verifica se o valor atual do formulário é idênctico ao inicial. Previne a edição do projeto caso não haja mudanças.
-   *
-   * @param valueA - Valor atual do formulário. Tipado como `any` devido á `Object.prototype.values`
-   * @param valueB - Valor inicial do formulário. Tipado como `any` devido á `Object.prototype.values`
-   * @returns `false` caso o valor de algum campo tenha sido alterado; se não, `true`
-   */
-  private isIdentical(valueA: any, valueB: any): boolean {
-    let isIdentical: Array<boolean> = [];
-    const arrayA = Object.values(valueA);
-    const arrayB = Object.values(valueB);
-
-    for (let i = 0; i < arrayA.length; i++) {
-      if (arrayA[i] != arrayB[i]) {
-        isIdentical.push(false);
-      }
-
-      isIdentical.push(true);
-    }
-
-    return isIdentical.every((item) => !!item);
-  }
-
   ngOnInit(): void {
     this._subscription.add(this._getAllSelectLists$.subscribe());
 
@@ -295,14 +271,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         break;
 
       case 'editar':
-        if (this.isIdentical(form.value, this.projectFormInitialValue)) {
-          this._toastService.showToast('warning', 'O formulário é idêntico.', [
-            'Não houve mudanças no valor inicial.',
-          ]);
-
-          return;
-        }
-
         const editPayload = form.value as IProjectEdit;
 
         this._projetosService
