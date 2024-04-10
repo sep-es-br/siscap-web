@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, Subscription, first, tap } from 'rxjs';
 
@@ -32,6 +32,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
 
   constructor(
     private _router: Router,
+    private _route: ActivatedRoute,
     private _pessoasService: PessoasService,
     private _toastService: ToastService
   ) {
@@ -56,41 +57,48 @@ export class PersonsComponent implements OnInit, OnDestroy {
     );
   }
 
-  convertByteArraytoImg(data: ArrayBuffer): string {
+  public convertByteArraytoImg(data: ArrayBuffer): string {
     return 'data:image/jpeg;base64,' + data;
   }
 
-  public pessoaDataInput(person: IPersonTable): ITableActionsDataInput {
-    const pessoaDataInput: ITableActionsDataInput = {
-      id: person.id,
-      infoTitle:
-        'A seguinte pessoa será excluída. Tem certeza que quer executar a ação?',
-      infoBody: {
-        Nome: person.nome,
-        Email: person.email,
-      },
-    };
-
-    return pessoaDataInput;
+  public redirectPersonForm(person: IPersonTable) {
+    this._router.navigate(['form', 'editar'], {
+      relativeTo: this._route,
+      queryParams: { id: person.id },
+    });
   }
 
-  public deletePessoa(id: number) {
-    this._deletePessoa$ = this._pessoasService.deletePessoa(id).pipe(
-      tap((response) => {
-        if (response) {
-          this._toastService.showToast(
-            'success',
-            'Pessoa excluída com sucesso.'
-          );
-          this._router
-            .navigateByUrl('/', { skipLocationChange: true })
-            .then(() => this._router.navigateByUrl('main/pessoas'));
-        }
-      })
-    );
+  // public pessoaDataInput(person: IPersonTable): ITableActionsDataInput {
+  //   const pessoaDataInput: ITableActionsDataInput = {
+  //     id: person.id,
+  //     infoTitle:
+  //       'A seguinte pessoa será excluída. Tem certeza que quer executar a ação?',
+  //     infoBody: {
+  //       Nome: person.nome,
+  //       Email: person.email,
+  //     },
+  //   };
 
-    this._subscription.add(this._deletePessoa$.subscribe());
-  }
+  //   return pessoaDataInput;
+  // }
+
+  // public deletePessoa(id: number) {
+  //   this._deletePessoa$ = this._pessoasService.deletePessoa(id).pipe(
+  //     tap((response) => {
+  //       if (response) {
+  //         this._toastService.showToast(
+  //           'success',
+  //           'Pessoa excluída com sucesso.'
+  //         );
+  //         this._router
+  //           .navigateByUrl('/', { skipLocationChange: true })
+  //           .then(() => this._router.navigateByUrl('main/pessoas'));
+  //       }
+  //     })
+  //   );
+
+  //   this._subscription.add(this._deletePessoa$.subscribe());
+  // }
 
   queryPerson() {}
 
