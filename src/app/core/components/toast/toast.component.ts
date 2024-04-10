@@ -14,10 +14,10 @@ interface IToastStyleClass {
 })
 export class ToastComponent {
   public bgStyleMap: IToastStyleClass = {
-    success: 'bg-success-subtle bottom-0 end-0',
-    error: 'bg-danger-subtle top-0 end-0',
-    warning: 'bg-warning-subtle top-0 start-50',
-    info: 'bg-info-subtle top-0 start-0',
+    success: 'bg-success-subtle',
+    error: 'bg-danger-subtle',
+    warning: 'bg-warning-subtle',
+    info: 'bg-info-subtle',
   };
 
   constructor(public toastService: ToastService) {}
