@@ -13,49 +13,64 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <table class="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th class="imagemPerfil-col"></th>
-                  <th class="nome-col" sortable="nome" (sort)="sortTable($event)">Nome</th>
-                  <th class="email-col" sortable="email" (sort)="sortTable($event)">Email</th>
-                  <!-- <th class="action-buttons-col">Ações</th> -->
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let pessoa of pessoasList; index as i"
-                  ngbTooltip="Clique para executar ações"
-                  container="body"
-                  placement="bottom"
-                  [positionTarget]="tooltipTarget"
-                  (click)="redirectPersonForm(pessoa)"
-                >
-                  <td #tooltipTarget>
-                    <ng-container
-                      *ngIf="
-                        pessoa.imagemPerfil;
-                        else standardProfileImageTemplate
-                      "
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th class="imagemPerfil-col"></th>
+                    <th
+                      class="nome-col"
+                      sortable="nome"
+                      (sort)="sortTable($event)"
                     >
+                      Nome
+                    </th>
+                    <th
+                      class="email-col"
+                      sortable="email"
+                      (sort)="sortTable($event)"
+                    >
+                      Email
+                    </th>
+                    <!-- <th class="action-buttons-col">Ações</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let pessoa of pessoasList; index as i"
+                    ngbTooltip="Clique para executar ações"
+                    container="body"
+                    placement="bottom"
+                    [positionTarget]="tooltipTarget"
+                    (click)="redirectPersonForm(pessoa)"
+                  >
+                    <td #tooltipTarget>
                       <ng-container
-                        *ngTemplateOutlet="
-                          profileImageTemplate;
-                          context: { imgSrc: pessoa.imagemPerfil }
+                        *ngIf="
+                          pessoa.imagemPerfil;
+                          else standardProfileImageTemplate
                         "
-                      ></ng-container>
-                    </ng-container>
-                  </td>
-                  <td class="target-col">{{ pessoa.nome }}</td>
-                  <td>{{ pessoa.email }}</td>
-                  <!-- <td>
-                    <table-action-buttons-template
-                      [rowData]="pessoaDataInput(pessoa)"
-                      (deleteId)="deletePessoa($event)"
-                    ></table-action-buttons-template>
-                  </td> -->
-                </tr>
-              </tbody>
-            </table>
+                      >
+                        <ng-container
+                          *ngTemplateOutlet="
+                            profileImageTemplate;
+                            context: { imgSrc: pessoa.imagemPerfil }
+                          "
+                        ></ng-container>
+                      </ng-container>
+                    </td>
+                    <td class="target-col">{{ pessoa.nome }}</td>
+                    <td>{{ pessoa.email }}</td>
+                    <!-- <td>
+                      <table-action-buttons-template
+                        [rowData]="pessoaDataInput(pessoa)"
+                        (deleteId)="deletePessoa($event)"
+                      ></table-action-buttons-template>
+                    </td> -->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
