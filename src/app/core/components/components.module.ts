@@ -12,7 +12,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { AlertComponent } from './alert/alert.component';
 import { LoadingComponent } from './loading/loading.component';
 import { ToastComponent } from './toast/toast.component';
-import { ModalComponent } from './modal/modal.component';
+import { DeleteModalComponent } from './modal/delete-modal/delete-modal.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +22,7 @@ import { ModalComponent } from './modal/modal.component';
     AlertComponent,
     LoadingComponent,
     ToastComponent,
-    ModalComponent,
+    DeleteModalComponent,
   ],
   imports: [CommonModule, RouterModule, PipesModule, NgbToastModule],
   exports: [
@@ -32,7 +32,7 @@ import { ModalComponent } from './modal/modal.component';
     AlertComponent,
     LoadingComponent,
     ToastComponent,
-    ModalComponent,
+    DeleteModalComponent,
   ],
 })
 export class ComponentsModule {}
