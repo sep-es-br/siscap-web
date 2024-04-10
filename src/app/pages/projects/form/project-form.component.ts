@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ModalComponent } from '../../../core/components/modal/modal.component';
+import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
 
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -302,12 +302,12 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
    * @param {number} id - O id do projeto á ser deletado.
    */
   public deletarProjeto(id: number) {
-    const modalRef = this._modalService.open(ModalComponent);
-    modalRef.componentInstance.title = 'Atenção!';
-    modalRef.componentInstance.content =
+    const deleteModalRef = this._modalService.open(DeleteModalComponent);
+    deleteModalRef.componentInstance.title = 'Atenção!';
+    deleteModalRef.componentInstance.content =
       'O projeto será excluído. Tem certeza que deseja prosseguir?';
 
-    modalRef.result.then(
+    deleteModalRef.result.then(
       (resolve) => {
         this._projetosService
           .deleteProjeto(id)

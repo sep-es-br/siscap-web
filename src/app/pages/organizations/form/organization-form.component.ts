@@ -8,7 +8,10 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, Subscription, concat, finalize, first, tap } from 'rxjs';
+import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
 
 import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -21,8 +24,6 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ModalComponent } from '../../../core/components/modal/modal.component';
 
 @Component({
   selector: 'siscap-organization-form',
@@ -301,12 +302,12 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
   }
 
   public deletarOrganizacao(id: number) {
-    const modalRef = this._modalService.open(ModalComponent);
-    modalRef.componentInstance.title = 'Atenção!';
-    modalRef.componentInstance.content =
+    const deleteModalRef = this._modalService.open(DeleteModalComponent);
+    deleteModalRef.componentInstance.title = 'Atenção!';
+    deleteModalRef.componentInstance.content =
       'A organizacao será excluída. Tem certeza que deseja prosseguir?';
 
-    modalRef.result.then(
+    deleteModalRef.result.then(
       (resolve) => {
         this._organizacoesService
           .deleteOrganizacao(id)

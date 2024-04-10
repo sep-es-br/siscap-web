@@ -9,6 +9,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, Subscription, finalize, tap } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
 
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -23,8 +26,6 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ModalComponent } from '../../../core/components/modal/modal.component';
 
 @Component({
   selector: 'siscap-person-form',
@@ -180,14 +181,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // this._prepareForm$.subscribe((pessoa) => {
-    //   this.paisSelected = pessoa.endereco?.idPais ?? undefined;
-    //   this.paisChanged(this.paisSelected);
-
-    //   this.estadoSelected = pessoa.endereco?.idEstado ?? undefined;
-    //   this.estadoChanged(this.estadoSelected);
-    // });
-
     this._subscription.add(this._getPessoaById$.subscribe());
   }
 
@@ -313,12 +306,12 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   }
 
   public deletarPessoa(id: number) {
-    const modalRef = this._modalService.open(ModalComponent);
-    modalRef.componentInstance.title = 'Atenção!';
-    modalRef.componentInstance.content =
+    const deleteModalRef = this._modalService.open(DeleteModalComponent);
+    deleteModalRef.componentInstance.title = 'Atenção!';
+    deleteModalRef.componentInstance.content =
       'A pessoa será excluída. Tem certeza que deseja prosseguir?';
 
-    modalRef.result.then(
+    deleteModalRef.result.then(
       (resolve) => {
         this._pessoasService
           .deletePessoa(id)
