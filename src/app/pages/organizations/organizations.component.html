@@ -13,57 +13,94 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <table class="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th class="profile-image-col"></th>
-                  <th sortable="abreviatura" (sort)="sortTable($event)">Sigla</th>
-                  <th sortable="nome" (sort)="sortTable($event)">Organizacao</th>
-                  <th sortable="nomeTipoOrganizacao" (sort)="sortTable($event)">
-                    Tipo
-                  </th>
-                  <th sortable="telefone" (sort)="sortTable($event)">Telefone</th>
-                  <th sortable="site" (sort)="sortTable($event)">Site</th>
-                  <th class="action-buttons-col">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let organizacao of organizacoesList; index as i">
-                  <td>
-                    <ng-container
-                      *ngIf="
-                        organizacao.imagemPerfil;
-                        else standardProfileImageTemplate
-                      "
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th class="imagemPerfil-col"></th>
+                    <th
+                      class="abreviatura-col"
+                      sortable="abreviatura"
+                      (sort)="sortTable($event)"
                     >
+                      Sigla
+                    </th>
+                    <th
+                      class="nome-col"
+                      sortable="nome"
+                      (sort)="sortTable($event)"
+                    >
+                      Organizacao
+                    </th>
+                    <th
+                      class="nomeTipoOrganizacao-col"
+                      sortable="nomeTipoOrganizacao"
+                      (sort)="sortTable($event)"
+                    >
+                      Tipo
+                    </th>
+                    <th
+                      class="telefone-col"
+                      sortable="telefone"
+                      (sort)="sortTable($event)"
+                    >
+                      Telefone
+                    </th>
+                    <th
+                      class="site-col"
+                      sortable="site"
+                      (sort)="sortTable($event)"
+                    >
+                      Site
+                    </th>
+                    <!-- <th class="action-buttons-col">Ações</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let organizacao of organizacoesList; index as i"
+                    ngbTooltip="Clique para executar ações"
+                    container="body"
+                    placement="bottom"
+                    [positionTarget]="tooltipTarget"
+                    (click)="redirectOrganizationForm(organizacao)"
+                  >
+                    <td #tooltipTarget>
                       <ng-container
-                        *ngTemplateOutlet="
-                          profileImageTemplate;
-                          context: { imgSrc: organizacao.imagemPerfil }
+                        *ngIf="
+                          organizacao.imagemPerfil;
+                          else standardProfileImageTemplate
                         "
-                      ></ng-container>
-                    </ng-container>
-                  </td>
+                      >
+                        <ng-container
+                          *ngTemplateOutlet="
+                            profileImageTemplate;
+                            context: { imgSrc: organizacao.imagemPerfil }
+                          "
+                        ></ng-container>
+                      </ng-container>
+                    </td>
 
-                  <td>{{ organizacao.abreviatura }}</td>
-                  <td>{{ organizacao.nome }}</td>
-                  <td>{{ organizacao.nomeTipoOrganizacao }}</td>
-                  <td>{{ organizacao.telefone }}</td>
-                  <td>
-                    <a [href]="organizacao.site" target="_blank"
-                      >{{ organizacao.site }}
-                    </a>
-                  </td>
+                    <td class="target-col">{{ organizacao.abreviatura }}</td>
+                    <td>{{ organizacao.nome }}</td>
+                    <td>{{ organizacao.nomeTipoOrganizacao }}</td>
+                    <td>{{ organizacao.telefone }}</td>
+                    <td>
+                      <a [href]="organizacao.site" target="_blank"
+                        >{{ organizacao.site }}
+                      </a>
+                    </td>
 
-                  <td>
-                    <table-action-buttons-template
-                      [rowData]="organizacaoDataInput(organizacao)"
-                      (deleteId)="deleteOrganizacao($event)"
-                    ></table-action-buttons-template>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                    <!-- <td>
+                      <table-action-buttons-template
+                        [rowData]="organizacaoDataInput(organizacao)"
+                        (deleteId)="deleteOrganizacao($event)"
+                      ></table-action-buttons-template>
+                    </td> -->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

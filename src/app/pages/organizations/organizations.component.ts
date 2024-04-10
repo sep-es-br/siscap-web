@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, Subscription, first, tap } from 'rxjs';
+import { Observable, Subscription, tap } from 'rxjs';
 
 import { OrganizacoesService } from '../../shared/services/organizacoes/organizacoes.service';
 import { ToastService } from '../../shared/services/toast/toast.service';
@@ -32,11 +32,11 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
   constructor(
     private _router: Router,
+    private _route: ActivatedRoute,
     private _organizacoesService: OrganizacoesService,
     private _toastService: ToastService
   ) {
     this._getOrganizacoes$ = this._organizacoesService.getOrganizacoes().pipe(
-      first(),
       tap((response: IOrganizationGet) => {
         this.organizacoesList = response.content;
       })
@@ -56,45 +56,52 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     );
   }
 
-  convertByteArraytoImg(data: ArrayBuffer): string {
+  public convertByteArraytoImg(data: ArrayBuffer): string {
     return 'data:image/jpeg;base64,' + data;
   }
 
-  public organizacaoDataInput(
-    organization: IOrganizationTable
-  ): ITableActionsDataInput {
-    const organizacaoDataInput: ITableActionsDataInput = {
-      id: organization.id,
-      infoTitle:
-        'A seguinte organização será excluída. Tem certeza que quer executar a ação?',
-      infoBody: {
-        Nome: organization.nome,
-        Sigla: organization.abreviatura,
-      },
-    };
-
-    return organizacaoDataInput;
+  public redirectOrganizationForm(org: IOrganizationTable) {
+    this._router.navigate(['form', 'editar'], {
+      relativeTo: this._route,
+      queryParams: { id: org.id },
+    });
   }
 
-  public deleteOrganizacao(id: number) {
-    this._deleteOrganizacao$ = this._organizacoesService
-      .deleteOrganizacao(id)
-      .pipe(
-        tap((response) => {
-          if (response) {
-            this._toastService.showToast(
-              'success',
-              'Organização excluída com sucesso.'
-            );
-            this._router
-              .navigateByUrl('/', { skipLocationChange: true })
-              .then(() => this._router.navigateByUrl('main/organizacoes'));
-          }
-        })
-      );
+  // public organizacaoDataInput(
+  //   organization: IOrganizationTable
+  // ): ITableActionsDataInput {
+  //   const organizacaoDataInput: ITableActionsDataInput = {
+  //     id: organization.id,
+  //     infoTitle:
+  //       'A seguinte organização será excluída. Tem certeza que quer executar a ação?',
+  //     infoBody: {
+  //       Nome: organization.nome,
+  //       Sigla: organization.abreviatura,
+  //     },
+  //   };
 
-    this._subscription.add(this._deleteOrganizacao$.subscribe());
-  }
+  //   return organizacaoDataInput;
+  // }
+
+  // public deleteOrganizacao(id: number) {
+  //   this._deleteOrganizacao$ = this._organizacoesService
+  //     .deleteOrganizacao(id)
+  //     .pipe(
+  //       tap((response) => {
+  //         if (response) {
+  //           this._toastService.showToast(
+  //             'success',
+  //             'Organização excluída com sucesso.'
+  //           );
+  //           this._router
+  //             .navigateByUrl('/', { skipLocationChange: true })
+  //             .then(() => this._router.navigateByUrl('main/organizacoes'));
+  //         }
+  //       })
+  //     );
+
+  //   this._subscription.add(this._deleteOrganizacao$.subscribe());
+  // }
 
   queryOrganization() {}
 
