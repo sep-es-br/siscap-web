@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, Subscription, first, tap } from 'rxjs';
+import { Observable, Subscription, tap } from 'rxjs';
 
 import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
 import { ToastService } from '../../shared/services/toast/toast.service';
@@ -37,7 +37,6 @@ export class PersonsComponent implements OnInit, OnDestroy {
     private _toastService: ToastService
   ) {
     this._getPessoas$ = this._pessoasService.getPessoas().pipe(
-      first(),
       tap((response: IPersonGet) => {
         this.pessoasList = response.content;
       })
