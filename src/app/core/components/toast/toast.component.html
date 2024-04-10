@@ -12,12 +12,10 @@
           (click)="toastService.removeToast(toast)"
         ></button>
       </div>
-  
-      <ng-container *ngFor="let errorMessage of toast.content">
-        <p>{{ errorMessage }}</p>
+
+      <ng-container *ngFor="let message of toast.content">
+        <p>{{ message }}</p>
       </ng-container>
     </ngb-toast>
   </ng-container>
 </div>
-
-
