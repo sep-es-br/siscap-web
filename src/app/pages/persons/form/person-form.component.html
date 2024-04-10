@@ -6,9 +6,7 @@
   <div class="d-flex justify-content-end">
     <button
       type="button"
-      class="btn edit-btn"
-      placement="top"
-      ngbTooltip="Editar"
+      class="btn mx-2 edit-btn"
       (click)="switchMode(true, ['acessos', 'prof'])"
       [disabled]="isEdit"
     >
@@ -18,8 +16,6 @@
     <button
       type="button"
       class="btn delete-btn"
-      placement="top"
-      ngbTooltip="Excluir"
       (click)="deletarPessoa(personEditId)"
     >
       <i class="fa-solid fa-trash-can"></i>
