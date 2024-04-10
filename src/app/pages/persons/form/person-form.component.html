@@ -400,7 +400,7 @@
                       <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
                       <span
                         class="link-primary pointer"
-                        [ngClass]="{ invisible: formMode == 'detalhes' }"
+                        [ngClass]="{ invisible: !isEdit }"
                         (click)="removeImg()"
                         >Remover</span
                       >
@@ -410,7 +410,7 @@
                   <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
                     <input
                       #imagemPerfil
-                      [disabled]="formMode == 'detalhes'"
+                      [disabled]="!isEdit"
                       id="imagemPerfil"
                       type="file"
                       accept=".jpg, .gif, .png"
@@ -433,7 +433,7 @@
               <div formGroupName="acessos">
                 <div class="col-12">
                   <div class="card-title border-bottom border-1">
-                    <span class="fw-medium">Acessos</span>
+                    <span>Acessos</span>
                   </div>
                 </div>
 
