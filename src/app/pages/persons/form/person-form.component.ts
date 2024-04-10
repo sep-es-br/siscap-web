@@ -1,8 +1,14 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, finalize, first, tap } from 'rxjs';
+import { Observable, Subscription, finalize, tap } from 'rxjs';
 
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -17,6 +23,8 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalComponent } from '../../../core/components/modal/modal.component';
 
 @Component({
   selector: 'siscap-person-form',
@@ -24,16 +32,24 @@ import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
   templateUrl: './person-form.component.html',
   styleUrl: './person-form.component.scss',
 })
-export class PersonFormComponent implements OnInit {
+export class PersonFormComponent implements OnInit, OnDestroy {
   @ViewChild('imagemPerfil') imagemPerfilInput!: ElementRef<HTMLInputElement>;
+
+  private _getPaises$!: Observable<ISelectList[]>;
+  private _getEstados$!: Observable<ISelectList[]>;
+  private _getCidades$!: Observable<ISelectList[]>;
+
+  private _getPessoaById$!: Observable<IPerson>;
+
+  private _subscription: Subscription = new Subscription();
 
   public personForm!: FormGroup;
 
-  public loading: boolean = false;
+  public loading: boolean = true;
 
   public formMode!: string;
+  public isEdit!: boolean;
 
-  private _prepareForm$!: Observable<IPerson>;
   public personEditId!: number;
   public personFormInitialValue!: IPersonCreate;
 
@@ -65,62 +81,51 @@ export class PersonFormComponent implements OnInit {
     private _route: ActivatedRoute,
     private _pessoasService: PessoasService,
     private _selectListService: SelectListService,
-    private _toastService: ToastService
+    private _toastService: ToastService,
+    private _modalService: NgbModal
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.personEditId = this._route.snapshot.queryParams['id'] ?? null;
 
-    this._prepareForm$ = this._pessoasService
+    this._getPessoaById$ = this._pessoasService
       .getPessoaById(this.personEditId)
       .pipe(
-        first(),
         tap((response) => {
           this.initForm(response);
+
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
         }),
+        tap((response) => {
+          this.paisSelected = response.endereco?.idPais ?? undefined;
+          this.estadoSelected = response.endereco?.idEstado ?? undefined;
+        }),
         finalize(() => {
           this.personFormInitialValue = this.personForm.value;
 
-          if (this.formMode == 'detalhes') {
-            const controls = this.personForm.controls;
-            for (const key in controls) {
-              controls[key].disable();
-            }
-          }
+          this.paisChanged(this.paisSelected);
+          this.estadoChanged(this.estadoSelected);
+
+          this.switchMode(false);
 
           this.loading = false;
         })
       );
 
-    this._selectListService
+    this._getPaises$ = this._selectListService
       .getPaises()
-      .pipe(
-        first(),
-        tap((response) => (this.paisesList = response))
-      )
-      .subscribe();
+      .pipe(tap((response) => (this.paisesList = response)));
   }
 
-  ngOnInit(): void {
-    if (this.formMode == 'criar') {
-      this.initForm();
-      return;
-    }
-
-    this.loading = true;
-
-    this._prepareForm$.subscribe((pessoa) => {
-      this.paisSelected = pessoa.endereco?.idPais ?? undefined;
-      this.paisChanged(this.paisSelected);
-
-      this.estadoSelected = pessoa.endereco?.idEstado ?? undefined;
-      this.estadoChanged(this.estadoSelected);
-    });
-  }
-
-  initForm(person?: IPerson) {
+  /**
+   * @private
+   * Método para inicialização do formulário. Popula valor inicial dos controles com valor original do usuário, caso houver.
+   * Se não, inicial com controles vazios.
+   *
+   * @param {IPerson} person - Valor inicial do usuário.
+   */
+  private initForm(person?: IPerson) {
     const nnfb = this._formBuilder.nonNullable;
     this.personForm = nnfb.group({
       nome: nnfb.control(person?.nome ?? '', {
@@ -166,63 +171,93 @@ export class PersonFormComponent implements OnInit {
     });
   }
 
-  paisChanged(value: number | undefined) {
+  ngOnInit(): void {
+    this._subscription.add(this._getPaises$.subscribe());
+
+    if (this.formMode == 'criar') {
+      this.initForm();
+      this.loading = false;
+      return;
+    }
+
+    // this._prepareForm$.subscribe((pessoa) => {
+    //   this.paisSelected = pessoa.endereco?.idPais ?? undefined;
+    //   this.paisChanged(this.paisSelected);
+
+    //   this.estadoSelected = pessoa.endereco?.idEstado ?? undefined;
+    //   this.estadoChanged(this.estadoSelected);
+    // });
+
+    this._subscription.add(this._getPessoaById$.subscribe());
+  }
+
+  public paisChanged(value: number | undefined) {
     if (!value) {
       this.estadosList = [];
       return;
     }
 
-    this._selectListService
+    this._getEstados$ = this._selectListService
       .getEstados(value)
-      .pipe(
-        first(),
-        tap((response) => (this.estadosList = response))
-      )
-      .subscribe();
+      .pipe(tap((response) => (this.estadosList = response)));
+
+    this._subscription.add(this._getEstados$.subscribe());
   }
 
-  estadoChanged(value: number | undefined) {
+  public estadoChanged(value: number | undefined) {
     if (!value) {
       this.cidadesList = [];
       return;
     }
 
-    this._selectListService
+    this._getCidades$ = this._selectListService
       .getCidades('ESTADO', value)
-      .pipe(
-        first(),
-        tap((response) => (this.cidadesList = response))
-      )
-      .subscribe();
+      .pipe(tap((response) => (this.cidadesList = response)));
+
+    this._subscription.add(this._getCidades$.subscribe());
   }
 
-  convertByteArraytoImgSrc(data: ArrayBuffer): string {
+  public convertByteArraytoImgSrc(data: ArrayBuffer): string {
     return !!data ? 'data:image/jpeg;base64,' + data : '';
   }
 
-  attachImg(event: any) {
+  public attachImg(event: any) {
     if (event.target.files && event.target.files[0]) {
       this.uploadedPhotoFile = event.target.files[0];
       this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
     }
   }
 
-  removeImg() {
+  public removeImg() {
     this.imagemPerfilInput.nativeElement.value = '';
     this.uploadedPhotoFile = undefined;
     this.uploadedPhotoSrc = '';
   }
 
-  cancelForm() {
+  public switchMode(isEnabled: boolean, excluded?: Array<string>) {
+    this.isEdit = isEnabled;
+
+    const controls = this.personForm.controls;
+    for (const key in controls) {
+      !excluded?.includes(key) && isEnabled
+        ? controls[key].enable()
+        : controls[key].disable();
+    }
+  }
+
+  public cancelForm() {
     this._router.navigate(['main', 'pessoas']);
   }
 
-  submitPersonForm(form: FormGroup) {
+  public submitPersonForm(form: FormGroup) {
     for (const key in form.controls) {
       form.controls[key].markAsTouched();
     }
 
     if (form.invalid) {
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
+        'Por favor, verifique os campos.',
+      ]);
       return;
     }
 
@@ -275,5 +310,38 @@ export class PersonFormComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  public deletarPessoa(id: number) {
+    const modalRef = this._modalService.open(ModalComponent);
+    modalRef.componentInstance.title = 'Atenção!';
+    modalRef.componentInstance.content =
+      'A pessoa será excluída. Tem certeza que deseja prosseguir?';
+
+    modalRef.result.then(
+      (resolve) => {
+        this._pessoasService
+          .deletePessoa(id)
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Pessoa excluída com sucesso.'
+                );
+                this._router
+                  .navigateByUrl('/', { skipLocationChange: true })
+                  .then(() => this._router.navigateByUrl('main/pessoas'));
+              }
+            })
+          )
+          .subscribe();
+      },
+      (reject) => {}
+    );
+  }
+
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
   }
 }
