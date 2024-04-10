@@ -1,8 +1,14 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, finalize, first, tap } from 'rxjs';
+import { Observable, Subscription, concat, finalize, first, tap } from 'rxjs';
 
 import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -15,6 +21,8 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalComponent } from '../../../core/components/modal/modal.component';
 
 @Component({
   selector: 'siscap-organization-form',
@@ -22,16 +30,27 @@ import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
   templateUrl: './organization-form.component.html',
   styleUrl: './organization-form.component.scss',
 })
-export class OrganizationFormComponent implements OnInit {
+export class OrganizationFormComponent implements OnInit, OnDestroy {
   @ViewChild('imagemPerfil') imagemPerfilInput!: ElementRef<HTMLInputElement>;
 
-  private _prepareForm$!: Observable<IOrganization>;
+  private _getTiposOrganizacoes$: Observable<ISelectList[]>;
+  private _getOrganizacoes$: Observable<ISelectList[]>;
+  private _getPaises$: Observable<ISelectList[]>;
+  private _getEstados$!: Observable<ISelectList[]>;
+  private _getCidades$!: Observable<ISelectList[]>;
+  private _getPessoas$: Observable<ISelectList[]>;
+  private _getAllSelectLists$: Observable<ISelectList[]>;
 
-  public loading: boolean = false;
+  private _getOrganizacaoById$!: Observable<IOrganization>;
+
+  private _subscription: Subscription = new Subscription();
 
   public organizationForm!: FormGroup;
 
+  public loading: boolean = true;
+
   public formMode: string;
+  public isEdit!: boolean;
 
   public organizationEditId!: number;
   public organizationFormInitialValue!: IOrganizationCreate;
@@ -52,89 +71,66 @@ export class OrganizationFormComponent implements OnInit {
     private _route: ActivatedRoute,
     private _organizacoesService: OrganizacoesService,
     private _selectListService: SelectListService,
-    private _toastService: ToastService
+    private _toastService: ToastService,
+    private _modalService: NgbModal
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.organizationEditId = this._route.snapshot.queryParams['id'] ?? null;
 
-    this._prepareForm$ = this._organizacoesService
+    this._getOrganizacaoById$ = this._organizacoesService
       .getOrganizacaoById(this.organizationEditId)
       .pipe(
-        first(),
         tap((response) => {
           this.initForm(response);
+
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
         }),
+        tap((response) => {
+          this.paisChanged(response.idPais);
+          this.estadoChanged(response.idEstado);
+        }),
         finalize(() => {
           this.organizationFormInitialValue = this.organizationForm.value;
 
-          if (this.formMode == 'detalhes') {
-            const controls = this.organizationForm.controls;
-            for (const key in controls) {
-              controls[key].disable();
-            }
-          }
+          this.switchMode(false);
 
           this.loading = false;
         })
       );
 
-    this._selectListService
+    this._getTiposOrganizacoes$ = this._selectListService
       .getTiposOrganizacoes()
-      .pipe(
-        first(),
-        tap((response) => (this.tiposOrganizacoesList = response))
-      )
-      .subscribe();
+      .pipe(tap((response) => (this.tiposOrganizacoesList = response)));
 
-    this._selectListService
-      .getOrganizacoes()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.organizacoesList = response;
-        })
-      )
-      .subscribe();
+    this._getOrganizacoes$ = this._selectListService.getOrganizacoes().pipe(
+      tap((response) => {
+        this.organizacoesList = response;
+      })
+    );
 
-    this._selectListService
-      .getPaises()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.paisesList = response;
-        })
-      )
-      .subscribe();
+    this._getPaises$ = this._selectListService.getPaises().pipe(
+      tap((response) => {
+        this.paisesList = response;
+      })
+    );
 
-    this._selectListService
-      .getPessoas()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.pessoasList = response;
-        })
-      )
-      .subscribe();
+    this._getPessoas$ = this._selectListService.getPessoas().pipe(
+      tap((response) => {
+        this.pessoasList = response;
+      })
+    );
+
+    this._getAllSelectLists$ = concat(
+      this._getTiposOrganizacoes$,
+      this._getOrganizacoes$,
+      this._getPaises$,
+      this._getPessoas$
+    );
   }
 
-  ngOnInit(): void {
-    if (this.formMode == 'criar') {
-      this.initForm();
-      return;
-    }
-
-    this.loading = true;
-
-    this._prepareForm$.subscribe((organizacao) => {
-      this.paisChanged(organizacao.idPais);
-      this.estadoChanged(organizacao.idEstado);
-    });
-  }
-
-  initForm(organization?: IOrganization) {
+  private initForm(organization?: IOrganization) {
     const nnfb = this._formBuilder.nonNullable;
     this.organizationForm = nnfb.group({
       nome: nnfb.control(organization?.nome ?? '', {
@@ -167,7 +163,24 @@ export class OrganizationFormComponent implements OnInit {
     });
   }
 
-  paisChanged(value: number | undefined) {
+  ngOnInit(): void {
+    this._subscription.add(this._getAllSelectLists$.subscribe());
+
+    if (this.formMode == 'criar') {
+      this.initForm();
+      this.loading = false;
+      return;
+    }
+
+    // this._prepareForm$.subscribe((organizacao) => {
+    //   this.paisChanged(organizacao.idPais);
+    //   this.estadoChanged(organizacao.idEstado);
+    // });
+
+    this._subscription.add(this._getOrganizacaoById$.subscribe());
+  }
+
+  public paisChanged(value: number | undefined) {
     if (!value) {
       this.organizationForm.get('idEstado')?.patchValue(null);
       this.organizationForm.get('idCidade')?.patchValue(null);
@@ -175,58 +188,68 @@ export class OrganizationFormComponent implements OnInit {
       return;
     }
 
-    this._selectListService
+    this._getEstados$ = this._selectListService
       .getEstados(value)
-      .pipe(
-        first(),
-        tap((response) => (this.estadosList = response))
-      )
-      .subscribe();
+      .pipe(tap((response) => (this.estadosList = response)));
+
+    this._subscription.add(this._getEstados$.subscribe());
   }
 
-  estadoChanged(value: number | undefined) {
+  public estadoChanged(value: number | undefined) {
     if (!value) {
       this.organizationForm.get('idCidade')?.patchValue(null);
       this.cidadesList = [];
       return;
     }
 
-    this._selectListService
+    this._getCidades$ = this._selectListService
       .getCidades('ESTADO', value)
-      .pipe(
-        first(),
-        tap((response) => (this.cidadesList = response))
-      )
-      .subscribe();
+      .pipe(tap((response) => (this.cidadesList = response)));
+
+    this._subscription.add(this._getCidades$.subscribe());
   }
 
-  convertByteArraytoImgSrc(data: ArrayBuffer): string {
+  public convertByteArraytoImgSrc(data: ArrayBuffer): string {
     return !!data ? 'data:image/jpeg;base64,' + data : '';
   }
 
-  attachImg(event: any) {
+  public attachImg(event: any) {
     if (event.target.files && event.target.files[0]) {
       this.uploadedPhotoFile = event.target.files[0];
       this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
     }
   }
 
-  removeImg() {
+  public removeImg() {
     this.imagemPerfilInput.nativeElement.value = '';
     this.uploadedPhotoFile = undefined;
     this.uploadedPhotoSrc = '';
   }
 
-  cancelForm() {
+  public switchMode(isEnabled: boolean, excluded?: Array<string>) {
+    this.isEdit = isEnabled;
+
+    const controls = this.organizationForm.controls;
+    for (const key in controls) {
+      !excluded?.includes(key) && isEnabled
+        ? controls[key].enable()
+        : controls[key].disable();
+    }
+  }
+
+  public cancelForm() {
     this._router.navigate(['main', 'organizacoes']);
   }
 
-  submitOrganizationForm(form: FormGroup) {
+  public submitOrganizationForm(form: FormGroup) {
     for (const key in form.controls) {
       form.controls[key].markAsTouched();
     }
 
     if (form.invalid) {
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
+        'Por favor, verifique os campos.',
+      ]);
       return;
     }
 
@@ -275,5 +298,38 @@ export class OrganizationFormComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  public deletarOrganizacao(id: number) {
+    const modalRef = this._modalService.open(ModalComponent);
+    modalRef.componentInstance.title = 'Atenção!';
+    modalRef.componentInstance.content =
+      'A organizacao será excluída. Tem certeza que deseja prosseguir?';
+
+    modalRef.result.then(
+      (resolve) => {
+        this._organizacoesService
+          .deleteOrganizacao(id)
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Organizacao excluída com sucesso.'
+                );
+                this._router
+                  .navigateByUrl('/', { skipLocationChange: true })
+                  .then(() => this._router.navigateByUrl('main/organizacoes'));
+              }
+            })
+          )
+          .subscribe();
+      },
+      (reject) => {}
+    );
+  }
+
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
   }
 }
