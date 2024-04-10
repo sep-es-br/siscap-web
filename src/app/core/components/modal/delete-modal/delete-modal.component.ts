@@ -2,12 +2,12 @@ import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'siscap-modal',
+  selector: 'siscap-delete-modal',
   standalone: false,
-  templateUrl: './modal.component.html',
-  styleUrl: './modal.component.scss',
+  templateUrl: './delete-modal.component.html',
+  styleUrl: './delete-modal.component.scss',
 })
-export class ModalComponent {
+export class DeleteModalComponent {
   @Input() title!: string;
   @Input() content!: string;
 
