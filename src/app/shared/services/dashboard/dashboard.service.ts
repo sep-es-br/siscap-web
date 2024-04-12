@@ -31,7 +31,11 @@ import { environment } from '../../../../environments/environment';
 })
 export class DashboardService {
   private _url = `${environment.supersetUrl}/api/v1/security`;
-  private _supersetEmbedId = '101ec9f0-b2ce-470c-9ebb-1a26fb1b3686';
+
+  private readonly _supersetEmbedId = {
+    desktop: '101ec9f0-b2ce-470c-9ebb-1a26fb1b3686', // Dashboard - SISCAP HOM
+    mobile: '2f450f7f-6d18-42bb-99e4-926eae9ba551', // SEP BI - PROJETOS ESTRATÉGICOS
+  };
 
   constructor(
     private _http: HttpClient,
@@ -58,12 +62,15 @@ export class DashboardService {
   }
 
   private supersetGuestToken(
-    accessToken: string
+    accessToken: string,
+    isMobile: boolean
   ): Observable<ISupersetGuestTokenResponseBody> {
     const reqBody: ISupersetGuestTokenRequestBody = {
       resources: [
         {
-          id: this._supersetEmbedId,
+          id: isMobile
+            ? this._supersetEmbedId.mobile
+            : this._supersetEmbedId.desktop,
           type: 'dashboard',
         },
       ],
@@ -97,11 +104,11 @@ export class DashboardService {
       );
   }
 
-  private fetchSupersetGuestToken(): Promise<string> {
+  private fetchSupersetGuestToken(isMobile: boolean): Promise<string> {
     return lastValueFrom(
       this.supersetLogIn().pipe(
         switchMap((logInResponse: ISupersetLoginResponseBody) =>
-          this.supersetGuestToken(logInResponse.access_token)
+          this.supersetGuestToken(logInResponse.access_token, isMobile)
         ),
         map<ISupersetGuestTokenResponseBody, string>(
           (guestTokenResponse: ISupersetGuestTokenResponseBody) =>
@@ -113,13 +120,16 @@ export class DashboardService {
 
   public getEmbedDashboardParams(
     dashboardEl: HTMLElement,
+    isMobile: boolean,
     uiConfig?: UiConfigType
   ): EmbedDashboardParams {
     const dashboardParams = {
-      id: this._supersetEmbedId,
+      id: isMobile
+        ? this._supersetEmbedId.mobile
+        : this._supersetEmbedId.desktop,
       supersetDomain: environment.supersetUrl,
       mountPoint: dashboardEl,
-      fetchGuestToken: () => this.fetchSupersetGuestToken(),
+      fetchGuestToken: () => this.fetchSupersetGuestToken(isMobile),
       dashboardUiConfig: uiConfig ?? {},
     };
 
