@@ -19,9 +19,3 @@ export interface ISupersetGuestTokenRequestBody {
 export interface ISupersetGuestTokenResponseBody {
   token: string;
 }
-
-
-/* 
-- Posicionar titulo na parte inferior
-- Alinhar conteúdo no meio do card
-*/
