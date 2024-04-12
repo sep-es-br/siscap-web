@@ -1,13 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-// import { TableModule } from 'primeng/table';
 
 import { CoreModule } from '../core/core.module';
 import { PagesRoutingModule } from './pages-routing.module';
@@ -49,8 +47,6 @@ import { OrganizationFormComponent } from './organizations/form/organization-for
     NgbTooltipModule,
     CoreModule,
     PagesRoutingModule,
-    // TableModule,
-    // HttpClientModule,
   ],
   providers: [provideNgxMask()],
   exports: [
