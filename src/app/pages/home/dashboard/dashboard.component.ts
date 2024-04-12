@@ -39,7 +39,7 @@ export class DashboardComponent implements AfterViewInit {
         this.dashboardContainer.nativeElement.querySelector('iframe')!;
 
       iframeEl.style.width = '100%';
-      iframeEl.style.height = '78vh';
+      iframeEl.style.height = '79.3vh';
     });
   }
 }
