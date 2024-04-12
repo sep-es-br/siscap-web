@@ -49,7 +49,7 @@ export class DashboardComponent implements AfterViewInit {
     embedDashboard(embedDashboardParams).then((dashboard) => {
       const iframeEl = dashboardContainer.querySelector('iframe')!;
       iframeEl.style.width = '100%';
-      iframeEl.style.height = '79.3vh';
+      iframeEl.style.height = isMobile ? '74vh' : '79.3vh';
     });
   }
 }
