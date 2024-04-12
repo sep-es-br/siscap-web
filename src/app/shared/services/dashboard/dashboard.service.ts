@@ -12,7 +12,6 @@ import {
   lastValueFrom,
   map,
   switchMap,
-  tap,
   throwError,
 } from 'rxjs';
 import { EmbedDashboardParams, UiConfigType } from '@superset-ui/embedded-sdk';
@@ -40,7 +39,7 @@ export class DashboardService {
     private _errorHandlerService: ErrorHandlerService
   ) {}
 
-  public supersetLogIn(): Observable<ISupersetLoginResponseBody> {
+  private supersetLogIn(): Observable<ISupersetLoginResponseBody> {
     const reqBody: ISupersetLoginRequestBody = {
       username: 'embed',
       password: 'Sup3Rs&t3mBeD@SEP',
