@@ -11,8 +11,10 @@ import { DashboardService } from '../../../shared/services/dashboard/dashboard.s
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements AfterViewInit {
-  @ViewChild('dashboardContainer')
-  dashboardContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('dashboardContainerDesktop')
+  dashboardContainerDesktop!: ElementRef<HTMLDivElement>;
+  @ViewChild('dashboardContainerMobile')
+  dashboardContainerMobile!: ElementRef<HTMLDivElement>;
 
   private _dashboardUiConfig: UiConfigType;
 
@@ -29,15 +31,23 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.embedDashboardToContainer(false); // Inicializa dashboard para o viewport Desktop (width > 768px)
+    this.embedDashboardToContainer(true); // Inicializa dashboard para o viewport Mobile (width < 767px)
+  }
+
+  private embedDashboardToContainer(isMobile: boolean): void {
+    const dashboardContainer = isMobile
+      ? this.dashboardContainerMobile.nativeElement
+      : this.dashboardContainerDesktop.nativeElement;
+
     const embedDashboardParams = this._dashboardService.getEmbedDashboardParams(
-      this.dashboardContainer.nativeElement,
+      dashboardContainer,
+      isMobile,
       this._dashboardUiConfig
     );
 
     embedDashboard(embedDashboardParams).then((dashboard) => {
-      const iframeEl =
-        this.dashboardContainer.nativeElement.querySelector('iframe')!;
-
+      const iframeEl = dashboardContainer.querySelector('iframe')!;
       iframeEl.style.width = '100%';
       iframeEl.style.height = '79.3vh';
     });
