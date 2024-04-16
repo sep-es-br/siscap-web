@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, tap } from 'rxjs';
 
 import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
-import { ToastService } from '../../shared/services/toast/toast.service';
 
 import { SortColumn } from '../../core/directives/sortable/sortable.directive';
 
@@ -12,7 +11,6 @@ import {
   IPersonGet,
   IPersonTable,
 } from '../../shared/interfaces/person.interface';
-import { ITableActionsDataInput } from '../../shared/interfaces/table-actions-data-input.interface';
 
 import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
 
@@ -24,7 +22,6 @@ import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-
 })
 export class PersonsComponent implements OnInit, OnDestroy {
   private _getPessoas$: Observable<IPersonGet>;
-  private _deletePessoa$!: Observable<string>;
 
   private _subscription: Subscription = new Subscription();
 
@@ -34,7 +31,6 @@ export class PersonsComponent implements OnInit, OnDestroy {
     private _router: Router,
     private _route: ActivatedRoute,
     private _pessoasService: PessoasService,
-    private _toastService: ToastService
   ) {
     this._getPessoas$ = this._pessoasService.getPessoas().pipe(
       tap((response: IPersonGet) => {
@@ -66,38 +62,6 @@ export class PersonsComponent implements OnInit, OnDestroy {
       queryParams: { id: person.id },
     });
   }
-
-  // public pessoaDataInput(person: IPersonTable): ITableActionsDataInput {
-  //   const pessoaDataInput: ITableActionsDataInput = {
-  //     id: person.id,
-  //     infoTitle:
-  //       'A seguinte pessoa será excluída. Tem certeza que quer executar a ação?',
-  //     infoBody: {
-  //       Nome: person.nome,
-  //       Email: person.email,
-  //     },
-  //   };
-
-  //   return pessoaDataInput;
-  // }
-
-  // public deletePessoa(id: number) {
-  //   this._deletePessoa$ = this._pessoasService.deletePessoa(id).pipe(
-  //     tap((response) => {
-  //       if (response) {
-  //         this._toastService.showToast(
-  //           'success',
-  //           'Pessoa excluída com sucesso.'
-  //         );
-  //         this._router
-  //           .navigateByUrl('/', { skipLocationChange: true })
-  //           .then(() => this._router.navigateByUrl('main/pessoas'));
-  //       }
-  //     })
-  //   );
-
-  //   this._subscription.add(this._deletePessoa$.subscribe());
-  // }
 
   queryPerson() {}
 
