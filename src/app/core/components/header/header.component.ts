@@ -19,8 +19,8 @@ export class HeaderComponent {
     private _router: Router,
     private _offcanvasService: NgbOffcanvas
   ) {
-    if (!!sessionStorage.getItem('scp-profile')) {
-      this.userProfile = JSON.parse(sessionStorage.getItem('scp-profile')!);
+    if (!!sessionStorage.getItem('user-profile')) {
+      this.userProfile = JSON.parse(sessionStorage.getItem('user-profile')!);
     }
   }
 
@@ -34,7 +34,7 @@ export class HeaderComponent {
 
   logOut() {
     sessionStorage.removeItem('token');
-    sessionStorage.removeItem('scp-profile');
+    sessionStorage.removeItem('user-profile');
     localStorage.removeItem('currentUrl');
     this._router.navigate(['login']);
   }
