@@ -1,4 +1,4 @@
 export interface ISelectList {
-  id: number;
+  id: string;
   nome: string;
 }
