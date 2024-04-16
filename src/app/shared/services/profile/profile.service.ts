@@ -7,6 +7,17 @@ import { environment } from '../../../../environments/environment';
 import { IProfile } from '../../interfaces/profile.interface';
 import { ErrorHandlerService } from '../error-handler/error-handler.service';
 
+enum PermissionsMap {
+  projetoscriar = 'PROJETO_CADASTRAR',
+  projetoseditar = 'PROJETO_ATUALIZAR',
+
+  pessoascriar = 'PESSOA_CADASTRAR',
+  pessoaseditar = 'PESSOA_ATUALIZAR',
+
+  organizacoescriar = 'ORGANIZACAO_CADASTRAR',
+  organizacoeseditar = 'ORGANIZACAO_ATUALIZAR',
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -18,12 +29,26 @@ export class ProfileService {
     private _errorHandlerService: ErrorHandlerService
   ) {}
 
-  getUserInfo(): Observable<IProfile> {
+  public getUserInfo(): Observable<IProfile> {
     return this._http.get<IProfile>(`${this._url}`).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
         return throwError(() => err);
       })
+    );
+  }
+
+  public isAllowed(value: string): boolean {
+    const userPermissions = JSON.parse(
+      sessionStorage.getItem('user-profile')!
+    ).permissoes;
+
+    if (userPermissions.includes('ADMIN_AUTH')) {
+      return true;
+    }
+
+    return userPermissions.includes(
+      PermissionsMap[value as keyof typeof PermissionsMap]
     );
   }
 }
