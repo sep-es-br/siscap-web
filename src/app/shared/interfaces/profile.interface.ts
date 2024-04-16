@@ -1,5 +1,8 @@
 export interface IProfile {
-    nome: string,
-    email: string,
+    token: string;
+    nome: string;
+    email: string;
+    subNovo: string;
     imagemPerfil?: ArrayBuffer;
+    permissoes: Array<string>;
 }
