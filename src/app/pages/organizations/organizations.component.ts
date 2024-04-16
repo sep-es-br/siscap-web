@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, tap } from 'rxjs';
 
 import { OrganizacoesService } from '../../shared/services/organizacoes/organizacoes.service';
-import { ToastService } from '../../shared/services/toast/toast.service';
 
 import { SortColumn } from '../../core/directives/sortable/sortable.directive';
 
@@ -12,7 +11,6 @@ import {
   IOrganizationGet,
   IOrganizationTable,
 } from '../../shared/interfaces/organization.interface';
-import { ITableActionsDataInput } from '../../shared/interfaces/table-actions-data-input.interface';
 
 import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
 
@@ -24,7 +22,6 @@ import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-
 })
 export class OrganizationsComponent implements OnInit, OnDestroy {
   private _getOrganizacoes$: Observable<IOrganizationGet>;
-  private _deleteOrganizacao$!: Observable<string>;
 
   private _subscription: Subscription = new Subscription();
 
@@ -33,8 +30,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
-    private _organizacoesService: OrganizacoesService,
-    private _toastService: ToastService
+    private _organizacoesService: OrganizacoesService
   ) {
     this._getOrganizacoes$ = this._organizacoesService.getOrganizacoes().pipe(
       tap((response: IOrganizationGet) => {
@@ -66,42 +62,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       queryParams: { id: org.id },
     });
   }
-
-  // public organizacaoDataInput(
-  //   organization: IOrganizationTable
-  // ): ITableActionsDataInput {
-  //   const organizacaoDataInput: ITableActionsDataInput = {
-  //     id: organization.id,
-  //     infoTitle:
-  //       'A seguinte organização será excluída. Tem certeza que quer executar a ação?',
-  //     infoBody: {
-  //       Nome: organization.nome,
-  //       Sigla: organization.abreviatura,
-  //     },
-  //   };
-
-  //   return organizacaoDataInput;
-  // }
-
-  // public deleteOrganizacao(id: number) {
-  //   this._deleteOrganizacao$ = this._organizacoesService
-  //     .deleteOrganizacao(id)
-  //     .pipe(
-  //       tap((response) => {
-  //         if (response) {
-  //           this._toastService.showToast(
-  //             'success',
-  //             'Organização excluída com sucesso.'
-  //           );
-  //           this._router
-  //             .navigateByUrl('/', { skipLocationChange: true })
-  //             .then(() => this._router.navigateByUrl('main/organizacoes'));
-  //         }
-  //       })
-  //     );
-
-  //   this._subscription.add(this._deleteOrganizacao$.subscribe());
-  // }
 
   queryOrganization() {}
 
