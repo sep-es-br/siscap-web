@@ -55,6 +55,8 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public personEditId!: number;
   public personFormInitialValue!: IPersonCreate;
 
+  public isUserProfile!: boolean;
+
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
 
@@ -87,8 +89,11 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private _toastService: ToastService,
     private _modalService: NgbModal
   ) {
-    this.formMode = this._route.snapshot.params['mode'];
-    this.personEditId = this._route.snapshot.queryParams['id'] ?? null;
+    this.formMode = this._route.snapshot.paramMap.get('mode') ?? '';
+    this.personEditId =
+      Number(this._route.snapshot.queryParamMap.get('id')) ?? null;
+    this.isUserProfile =
+      Boolean(this._route.snapshot.queryParamMap.get('isUserProfile')) ?? false;
 
     this._getPessoaById$ = this._pessoasService
       .getPessoaById(this.personEditId)
@@ -110,7 +115,17 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           this.paisChanged(this.paisSelected);
           this.estadoChanged(this.estadoSelected);
 
-          this.switchMode(false);
+          if (this.isUserProfile) {
+            this.switchMode(true, ['nome', 'email', 'acessos', 'prof']);
+            this._toastService.showToast(
+              'info',
+              'Complete seu perfil',
+              ['Adicione informações aos campos abaixo'],
+              15000
+            );
+          } else {
+            this.switchMode(false);
+          }
 
           this.loading = false;
         })
