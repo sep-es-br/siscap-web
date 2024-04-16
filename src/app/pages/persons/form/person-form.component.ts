@@ -26,6 +26,7 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'siscap-person-form',
@@ -80,6 +81,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private _formBuilder: FormBuilder,
     private _router: Router,
     private _route: ActivatedRoute,
+    private _profileService: ProfileService,
     private _pessoasService: PessoasService,
     private _selectListService: SelectListService,
     private _toastService: ToastService,
@@ -225,6 +227,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     this.imagemPerfilInput.nativeElement.value = '';
     this.uploadedPhotoFile = undefined;
     this.uploadedPhotoSrc = '';
+  }
+
+  public isAllowed(path: string): boolean {
+    return this._profileService.isAllowed(path);
   }
 
   public switchMode(isEnabled: boolean, excluded?: Array<string>) {

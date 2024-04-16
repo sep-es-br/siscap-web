@@ -5,6 +5,7 @@
 <div class="row mx-1" *ngIf="!loading && formMode != 'criar'">
   <div class="d-flex justify-content-end">
     <button
+      *ngIf="isAllowed('projetoseditar')"
       type="button"
       class="btn mx-2 edit-btn"
       (click)="switchMode(true, ['plano', 'eixo', 'area'])"
@@ -14,6 +15,7 @@
     </button>
 
     <button
+      *ngIf="isAllowed('projetosdeletar')"
       type="button"
       class="btn delete-btn"
       (click)="deletarProjeto(projectEditId)"

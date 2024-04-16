@@ -24,6 +24,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'siscap-organization-form',
@@ -70,6 +71,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     private _formBuilder: FormBuilder,
     private _router: Router,
     private _route: ActivatedRoute,
+    private _profileService: ProfileService,
     private _organizacoesService: OrganizacoesService,
     private _selectListService: SelectListService,
     private _toastService: ToastService,
@@ -173,11 +175,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // this._prepareForm$.subscribe((organizacao) => {
-    //   this.paisChanged(organizacao.idPais);
-    //   this.estadoChanged(organizacao.idEstado);
-    // });
-
     this._subscription.add(this._getOrganizacaoById$.subscribe());
   }
 
@@ -225,6 +222,10 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     this.imagemPerfilInput.nativeElement.value = '';
     this.uploadedPhotoFile = undefined;
     this.uploadedPhotoSrc = '';
+  }
+
+  public isAllowed(path: string): boolean {
+    return this._profileService.isAllowed(path);
   }
 
   public switchMode(isEnabled: boolean, excluded?: Array<string>) {

@@ -3,6 +3,7 @@ import { EventType, NavigationEnd, Router } from '@angular/router';
 
 import { filter } from 'rxjs';
 import { BreadcrumbLists } from '../../../shared/utils/breadcrumb-lists';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'siscap-breadcrumb',
@@ -17,7 +18,10 @@ export class BreadcrumbComponent {
   public breadcrumbNav: Array<string> = []; // Rotas do breadcrumb atual
   public currentPage: string = ''; // Página atual (última rota do breadcrumbNav)
 
-  constructor(private _router: Router) {
+  constructor(
+    private _profileService: ProfileService,
+    private _router: Router
+  ) {
     this._router.events
       .pipe(
         // Workaround para tipar Event_2 como NavigationEnd
@@ -109,6 +113,10 @@ export class BreadcrumbComponent {
           : path
         : path;
     });
+  }
+
+  public isAllowed(path: string): boolean {
+    return this._profileService.isAllowed(path + 'criar');
   }
 
   /**

@@ -5,6 +5,7 @@
 <div class="row mx-1" *ngIf="!loading && formMode != 'criar'">
   <div class="d-flex justify-content-end">
     <button
+      *ngIf="isAllowed('pessoaseditar')"
       type="button"
       class="btn mx-2 edit-btn"
       (click)="switchMode(true, ['acessos', 'prof'])"
@@ -14,6 +15,7 @@
     </button>
 
     <button
+      *ngIf="isAllowed('pessoasdeletar')"
       type="button"
       class="btn delete-btn"
       (click)="deletarPessoa(personEditId)"

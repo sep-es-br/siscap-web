@@ -57,6 +57,7 @@
 <!-- Botão de criar um novo dado (ex.: Projetos -> Novo Projeto) -->
 <ng-template #newButton let-path="path">
   <button
+    *ngIf="isAllowed(path)"
     class="btn btn-primary me-md-2 me-0 text-nowrap"
     [routerLink]="[path, 'form', 'criar']"
     [hidden]="!mainChildPaths.includes(path)"

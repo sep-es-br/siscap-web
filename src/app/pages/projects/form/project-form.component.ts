@@ -19,6 +19,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'siscap-project-form',
@@ -56,6 +57,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     private _formBuilder: FormBuilder,
     private _router: Router,
     private _route: ActivatedRoute,
+    private _profileService: ProfileService,
     private _projetosService: ProjetosService,
     private _selectListService: SelectListService,
     private _toastService: ToastService,
@@ -207,6 +209,10 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       const allValues = list.map((item) => item.id);
       control?.patchValue(allValues);
     }
+  }
+
+  public isAllowed(path: string): boolean {
+    return this._profileService.isAllowed(path);
   }
 
   public switchMode(isEnabled: boolean, excluded?: Array<string>) {
