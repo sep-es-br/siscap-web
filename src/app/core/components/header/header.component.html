@@ -1,5 +1,7 @@
 <div class="header-bar bg-secondary h-100">
-  <div class="d-flex justify-content-between align-items-center h-100">
+  <div
+    class="d-flex flex-row justify-content-between justify-content-md-end align-items-center py-2 h-100"
+  >
     <button
       class="btn d-block d-md-none"
       type="button"
@@ -8,10 +10,8 @@
       <i class="fa-solid fa-bars fa-lg"></i>
     </button>
 
-    <div class="user-account-info ms-0 ms-md-auto">
-      <div
-        class="d-flex justify-content-between align-items-center me-3 px-2 w-100"
-      >
+    <div ngbDropdown class="user-dropdown">
+      <div class="d-inline-flex">
         <ng-container
           *ngIf="
             userProfile.imagemPerfil != null;
@@ -26,24 +26,18 @@
           ></ng-container>
         </ng-container>
 
-        <div class="dropdown">
-          <a
-            class="dropdown-toggle pointer text-decoration-none text-white"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <span class="me-2 text-white">{{ userProfile.nome }}</span>
-          </a>
-          <ul class="dropdown-menu">
-            <div class="badge rounded-pill mx-2">
-              <span class="user-email">{{ userProfile.email }}</span>
-            </div>
-            <li>
-              <a class="dropdown-item pointer" (click)="logOut()">
-                <span>Sair</span>
-              </a>
-            </li>
-          </ul>
+        <button class="btn p-1 mx-1 text-white" ngbDropdownToggle>
+          {{ userProfile.nome }}
+        </button>
+
+        <div ngbDropdownMenu>
+          <span class="badge rounded-pill bg-primary mx-2 my-1">
+            {{ userProfile.email }}
+          </span>
+          <button ngbDropdownItem (click)="redirectUserProfile()">
+            Meu Perfil
+          </button>
+          <button ngbDropdownItem (click)="logOut()">Sair</button>
         </div>
       </div>
     </div>
@@ -60,7 +54,7 @@
 
 <ng-template #standardProfileImageTemplate>
   <div
-    class="profile-pic border rounded-circle d-flex justify-content-center align-items-center text-white"
+    class="profile-pic border rounded-circle d-flex justify-content-center align-items-center"
   >
     <i class="fa-solid fa-user text-white"></i>
   </div>
