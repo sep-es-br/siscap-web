@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+
+import { finalize, tap } from 'rxjs';
+
 import { ProfileService } from '../../shared/services/profile/profile.service';
-import { finalize, first, tap } from 'rxjs';
+
+import { IProfile } from '../../shared/interfaces/profile.interface';
 
 @Component({
   selector: 'siscap-auth-redirect',
@@ -29,9 +33,20 @@ export class AuthRedirectComponent {
     this._profileService
       .getUserInfo()
       .pipe(
-        first(),
-        tap((response) => {
-          sessionStorage.setItem('scp-profile', JSON.stringify(response));
+        tap((response: IProfile) => {
+          const siscapToken = response.token;
+
+          sessionStorage.setItem('token', siscapToken);
+        }),
+        tap((response: IProfile) => {
+          const userProfile = {
+            nome: response.nome,
+            email: response.email,
+            imagemPerfil: response.imagemPerfil,
+            permissoes: response.permissoes,
+          };
+
+          sessionStorage.setItem('user-profile', JSON.stringify(userProfile));
         }),
         finalize(() => {
           this._router.navigate([previousUrl]);
