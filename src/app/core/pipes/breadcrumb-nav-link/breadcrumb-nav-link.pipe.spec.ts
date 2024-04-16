@@ -1,8 +1,8 @@
-import { BreadcrumbnavlinkPipe } from './breadcrumb-nav-link.pipe';
+import { BreadcrumbNavLinkPipe } from './breadcrumb-nav-link.pipe';
 
 describe('BreadcrumbnavlinkPipe', () => {
   it('create an instance', () => {
-    const pipe = new BreadcrumbnavlinkPipe();
+    const pipe = new BreadcrumbNavLinkPipe();
     expect(pipe).toBeTruthy();
   });
 });

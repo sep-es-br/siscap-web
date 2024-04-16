@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, finalize, first, tap } from 'rxjs';
+import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
 
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -16,6 +19,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'siscap-project-form',
@@ -23,14 +27,24 @@ import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss',
 })
-export class ProjectFormComponent implements OnInit {
-  public projectForm!: FormGroup;
+export class ProjectFormComponent implements OnInit, OnDestroy {
+  private _getOrganizacoes$!: Observable<ISelectList[]>;
+  private _getPessoas$!: Observable<ISelectList[]>;
+  private _getPlanos$!: Observable<ISelectList[]>;
+  private _getMicrorregioes$!: Observable<ISelectList[]>;
+  private _getAllSelectLists$!: Observable<ISelectList[]>;
 
-  public loading: boolean = false;
+  private _getProjetoById$!: Observable<IProject>;
+
+  private _subscription: Subscription = new Subscription();
+
+  public loading: boolean = true;
 
   public formMode!: string;
+  public isEdit!: boolean;
 
-  private _prepareForm$!: Observable<IProject>;
+  public projectForm!: FormGroup;
+
   public projectEditId!: number;
   public projectFormInitialValue!: IProjectCreate;
 
@@ -43,108 +57,70 @@ export class ProjectFormComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private _router: Router,
     private _route: ActivatedRoute,
+    private _profileService: ProfileService,
     private _projetosService: ProjetosService,
     private _selectListService: SelectListService,
-    private _toastService: ToastService
+    private _toastService: ToastService,
+    private _modalService: NgbModal
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.projectEditId = this._route.snapshot.queryParams['id'] ?? null;
 
-    this._prepareForm$ = this._projetosService
+    this._getProjetoById$ = this._projetosService
       .getProjetoById(this.projectEditId)
       .pipe(
-        first(),
         tap((response) => {
           this.initForm(response);
         }),
         finalize(() => {
           this.projectFormInitialValue = this.projectForm.value;
 
-          if (this.formMode == 'detalhes') {
-            const controls = this.projectForm.controls;
-            for (const key in controls) {
-              controls[key].disable();
-            }
-          }
+          this.switchMode(false);
 
           this.loading = false;
         })
       );
 
-    this._selectListService
-      .getMicrorregioes()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.microrregioesList = response;
-        })
-      )
-      .subscribe();
+    this._getOrganizacoes$ = this._selectListService.getOrganizacoes().pipe(
+      tap((response) => {
+        this.organizacoesList = response;
+      })
+    );
 
-    this._selectListService
-      .getOrganizacoes()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.organizacoesList = response;
-        })
-      )
-      .subscribe();
+    this._getPessoas$ = this._selectListService.getPessoas().pipe(
+      tap((response) => {
+        this.pessoasList = response;
+      })
+    );
 
-    this._selectListService
-      .getPlanos()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.planosList = response;
-        })
-      )
-      .subscribe();
+    this._getPlanos$ = this._selectListService.getPlanos().pipe(
+      tap((response) => {
+        this.planosList = response;
+      })
+    );
 
-    this._selectListService
-      .getPessoas()
-      .pipe(
-        first(),
-        tap((response) => {
-          this.pessoasList = response;
-        })
-      )
-      .subscribe();
-  }
+    this._getMicrorregioes$ = this._selectListService.getMicrorregioes().pipe(
+      tap((response) => {
+        this.microrregioesList = response;
+      })
+    );
 
-  rtlCurrencyInputTransformFn =
-    NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
-
-  toUppercaseInputTransformFn =
-    NgxMaskTransformFunctionHelper.toUppercaseInputTransformFn;
-
-  toUppercaseOutputTransformFn =
-    NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
-
-  ngSelectAddAll(event: any, controlName: string, list: Array<ISelectList>) {
-    if (event['$ngOptionLabel'] == 'Todas') {
-      const control = this.projectForm.get(controlName);
-      const allValues = list.map((item) => item.id);
-      control?.patchValue(allValues);
-    }
-  }
-
-  ngOnInit(): void {
-    if (this.formMode == 'criar') {
-      this.initForm();
-      return;
-    }
-
-    this.loading = true;
-
-    this._prepareForm$.subscribe();
+    this._getAllSelectLists$ = concat(
+      this._getOrganizacoes$,
+      this._getPessoas$,
+      this._getPlanos$,
+      this._getMicrorregioes$
+    );
   }
 
   /**
-   * Método para inicialização do formulário.
+   * @private
+   * Método para inicialização do formulário. Popula valor inicial dos controles com valor original do projeto, caso houver.
+   * Se não, inicial com controles vazios.
    *
+   * @param {IProject} project - Valor inicial do projeto.
    */
-  initForm(project?: IProject) {
+  private initForm(project?: IProject) {
     const nnfb = this._formBuilder.nonNullable;
     this.projectForm = nnfb.group({
       sigla: nnfb.control(project?.sigla ?? '', {
@@ -153,7 +129,7 @@ export class ProjectFormComponent implements OnInit {
       titulo: nnfb.control(project?.titulo ?? '', {
         validators: [Validators.required, Validators.maxLength(150)],
       }),
-      idEntidade: nnfb.control(project?.idEntidade ?? null, {
+      idOrganizacao: nnfb.control(project?.idOrganizacao ?? null, {
         validators: Validators.required,
       }),
       valorEstimado: nnfb.control(project?.valorEstimado ?? null, {
@@ -193,32 +169,93 @@ export class ProjectFormComponent implements OnInit {
     });
   }
 
+  ngOnInit(): void {
+    this._subscription.add(this._getAllSelectLists$.subscribe());
+
+    if (this.formMode == 'criar') {
+      this.initForm();
+      this.loading = false;
+      return;
+    }
+
+    this._subscription.add(this._getProjetoById$.subscribe());
+  }
+
+  public rtlCurrencyInputTransformFn =
+    NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
+
+  public toUppercaseInputTransformFn =
+    NgxMaskTransformFunctionHelper.toUppercaseInputTransformFn;
+
+  public toUppercaseOutputTransformFn =
+    NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
+
   /**
+   * @public
+   * Adiciona todos os valores de um componente `ng-select` ao controle associado.
+   *
+   *
+   * @param event - O evento de output do componente. Utilizado para capturar a label da opção.
+   * @param {string} controlName - Nome do controle associado
+   * @param {Array<ISelectList>} list - O array de valores do controle
+   */
+  public ngSelectAddAll(
+    event: any,
+    controlName: string,
+    list: Array<ISelectList>
+  ) {
+    if (event['$ngOptionLabel'] == 'Todas') {
+      const control = this.projectForm.get(controlName);
+      const allValues = list.map((item) => item.id);
+      control?.patchValue(allValues);
+    }
+  }
+
+  public isAllowed(path: string): boolean {
+    return this._profileService.isAllowed(path);
+  }
+
+  public switchMode(isEnabled: boolean, excluded?: Array<string>) {
+    this.isEdit = isEnabled;
+
+    const controls = this.projectForm.controls;
+    for (const key in controls) {
+      !excluded?.includes(key) && isEnabled
+        ? controls[key].enable()
+        : controls[key].disable();
+    }
+  }
+
+  /**
+   * @public
    * Método para cancelar o preenchimento do formulário.
    * Envia o usuário para a página de listagem de projetos
    *
    */
-  cancelForm() {
+  public cancelForm() {
     this._router.navigate(['main', 'projetos']);
   }
 
   /**
-   * Método para enviar o formulário. Verifica o formMode e chama o método apropriado
-   * do serviço ProjetosService.
+   * @public
+   * Método para enviar o formulário. Verifica o `formMode` e chama o método apropriado
+   * do serviço `ProjetosService`.
    *
    * @param form - O `FormGroup` do formulário
    *
    */
-  submitProjectForm(form: FormGroup) {
+  public submitProjectForm(form: FormGroup) {
     for (const key in form.controls) {
       form.controls[key].markAsTouched();
     }
 
     if (form.invalid) {
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
+        'Por favor, verifique os campos.',
+      ]);
       return;
     }
 
-    //TODO: Tratamento de erro (caso sigla duplicada)
     switch (this.formMode) {
       case 'criar':
         const createPayload = form.value as IProjectCreate;
@@ -262,5 +299,44 @@ export class ProjectFormComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  /**
+   * @public
+   * Método para deletar o projeto. Chama um modal e ao confirmar, chama requisição para deletar.
+   *
+   * @param {number} id - O id do projeto á ser deletado.
+   */
+  public deletarProjeto(id: number) {
+    const deleteModalRef = this._modalService.open(DeleteModalComponent);
+    deleteModalRef.componentInstance.title = 'Atenção!';
+    deleteModalRef.componentInstance.content =
+      'O projeto será excluído. Tem certeza que deseja prosseguir?';
+
+    deleteModalRef.result.then(
+      (resolve) => {
+        this._projetosService
+          .deleteProjeto(id)
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Projeto excluído com sucesso.'
+                );
+                this._router
+                  .navigateByUrl('/', { skipLocationChange: true })
+                  .then(() => this._router.navigateByUrl('main/projetos'));
+              }
+            })
+          )
+          .subscribe();
+      },
+      (reject) => {}
+    );
+  }
+
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
   }
 }

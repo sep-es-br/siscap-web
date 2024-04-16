@@ -1,20 +1,21 @@
-<ng-container *ngFor="let toast of toastService.toastList">
-  <ngb-toast
-    [delay]="toast.delay || 6000"
-    class="position-fixed z-2 m-4"
-    [ngClass]="bgStyleMap[toast.type]"
-    (hidden)="toastService.removeToast(toast)"
-  >
-    <div class="d-flex flex-row">
-      <p class="fw-bold">{{ toast.title }}</p>
-      <button
-        class="btn-close ms-auto"
-        (click)="toastService.removeToast(toast)"
-      ></button>
-    </div>
+<div class="toast-container">
+  <ng-container *ngFor="let toast of toastService.toastList">
+    <ngb-toast
+      [delay]="toast.delay || 6000"
+      [ngClass]="bgStyleMap[toast.type]"
+      (hidden)="toastService.removeToast(toast)"
+    >
+      <div class="d-flex flex-row">
+        <p class="fw-bold">{{ toast.title }}</p>
+        <button
+          class="btn-close ms-auto"
+          (click)="toastService.removeToast(toast)"
+        ></button>
+      </div>
 
-    <ng-container *ngFor="let errorMessage of toast.content">
-      <p>{{ errorMessage }}</p>
-    </ng-container>
-  </ngb-toast>
-</ng-container>
+      <ng-container *ngFor="let message of toast.content">
+        <p>{{ message }}</p>
+      </ng-container>
+    </ngb-toast>
+  </ng-container>
+</div>

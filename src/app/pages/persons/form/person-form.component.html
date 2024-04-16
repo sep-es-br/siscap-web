@@ -2,6 +2,29 @@
   <siscap-loading></siscap-loading>
 </div>
 
+<div class="row mx-1" *ngIf="!loading && formMode != 'criar'">
+  <div class="d-flex justify-content-end">
+    <button
+      *ngIf="isAllowed('pessoaseditar')"
+      type="button"
+      class="btn mx-2 edit-btn"
+      (click)="switchMode(true, ['acessos', 'prof'])"
+      [disabled]="isEdit"
+    >
+      <i class="fa-solid fa-pencil"></i>
+    </button>
+
+    <button
+      *ngIf="isAllowed('pessoasdeletar')"
+      type="button"
+      class="btn delete-btn"
+      (click)="deletarPessoa(personEditId)"
+    >
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+  </div>
+</div>
+
 <div class="person-form" *ngIf="!loading">
   <form [formGroup]="personForm">
     <div class="row mx-1">
@@ -290,9 +313,9 @@
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
                     <label for="pais" class="form-label">País</label>
                     <ng-select
-                      [disabled]="formMode == 'detalhes'"
                       id="pais"
                       placeholder="-- Pais --"
+                      [disabled]="!isEdit"
                       [(ngModel)]="paisSelected"
                       [ngModelOptions]="{ standalone: true, }"
                       (change)="paisChanged($event)"
@@ -307,9 +330,9 @@
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
                     <label for="estado" class="form-label">Estado</label>
                     <ng-select
-                      [disabled]="formMode == 'detalhes'"
                       id="estado"
                       placeholder="-- Estado --"
+                      [disabled]="!isEdit"
                       [(ngModel)]="estadoSelected"
                       [ngModelOptions]="{ standalone: true }"
                       (change)="estadoChanged($event)"
@@ -375,7 +398,7 @@
                       <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
                       <span
                         class="link-primary pointer"
-                        [ngClass]="{ invisible: formMode == 'detalhes' }"
+                        [ngClass]="{ invisible: !isEdit }"
                         (click)="removeImg()"
                         >Remover</span
                       >
@@ -385,7 +408,7 @@
                   <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
                     <input
                       #imagemPerfil
-                      [disabled]="formMode == 'detalhes'"
+                      [disabled]="!isEdit"
                       id="imagemPerfil"
                       type="file"
                       accept=".jpg, .gif, .png"
@@ -408,7 +431,7 @@
               <div formGroupName="acessos">
                 <div class="col-12">
                   <div class="card-title border-bottom border-1">
-                    <span class="fw-medium">Acessos</span>
+                    <span>Acessos</span>
                   </div>
                 </div>
 
@@ -465,7 +488,9 @@
                 <div class="row">
                   <div class="col-12">
                     <div class="col-12">
-                      <label for="organizacao" class="form-label">Organizacao</label>
+                      <label for="organizacao" class="form-label"
+                        >Organizacao</label
+                      >
                       <ng-select
                         id="organizacao"
                         placeholder="Desabilitado"
@@ -525,21 +550,21 @@
         <div class="col d-flex flex-row-reverse">
           <button
             type="button"
-            class="btn btn-primary p-2 px-4 mx-1"
-            [hidden]="formMode == 'detalhes'"
-            [disabled]="personForm.invalid"
+            class="btn btn-primary mx-1"
+            [hidden]="!isEdit && formMode != 'criar'"
             (click)="submitPersonForm(this.personForm)"
           >
-            {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
+            <i class="fa-solid fa-plus"></i>
+            <span>{{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}</span>
           </button>
 
           <button
             type="button"
-            class="btn btn-danger p-2 px-4 mx-1"
-            [hidden]="formMode == 'detalhes'"
+            class="btn btn-outline-danger mx-1"
             (click)="cancelForm()"
           >
-            Cancelar
+            <i class="fa-solid fa-x"></i>
+            <span>Cancelar</span>
           </button>
         </div>
       </div>
@@ -554,7 +579,9 @@
 </ng-template>
 
 <ng-template #appAlert let-controlName="controlName">
-  <siscap-alert [control]="personForm.get(controlName) ?? undefined"></siscap-alert>
+  <siscap-alert
+    [control]="personForm.get(controlName) ?? undefined"
+  ></siscap-alert>
 </ng-template>
 
 <!-- <ng-select

@@ -9,6 +9,23 @@
 /* ng-select */
 @import "@ng-select/ng-select/themes/default.theme.css";
 
+/* Estilo de botões */
+
+button.btn:not(.login-button button) {
+  padding: 0.25rem;
+  font-size: $small-3-font-size;
+
+  i + span {
+    margin-left: 0.25rem;
+  }
+}
+
+/* Estilo do Footer */
+
+.footer span {
+  font-size: $small-4-font-size;
+}
+
 /* Estilos do siscap-navmenu*/
 
 .menu-items {
@@ -48,15 +65,9 @@
 
 /* Estilos do siscap-breadcrumb */
 
-.home-button {
-  margin-right: 5px;
-
-  button {
-    padding: 0.5rem;
-  }
-}
-
 .breadcrumb-title-area {
+  max-width: 50vw;
+
   h4 {
     font-size: $large-2-font-size;
     color: $primary;
@@ -72,10 +83,47 @@
   }
 }
 
-.nav-icons {
-  button {
-    color: white;
-    font-size: $small-3-font-size;
+/* Estilos de Tabela */
+
+tbody tr:hover {
+  cursor: pointer;
+}
+
+th,
+td {
+  border-bottom: 1px solid $table-row-border;
+}
+
+th {
+  font-size: $small-4-font-size;
+  font-weight: normal;
+
+  &.asc::after {
+    content: url(./assets/icons/caret-up-solid.svg);
+    display: inline-block;
+    vertical-align: text-top;
+    height: 10px;
+    width: 10px;
+    margin-left: 5px;
+  }
+
+  &.desc::after {
+    content: url(./assets/icons/caret-down-solid.svg);
+    display: inline-block;
+    vertical-align: text-top;
+    height: 10px;
+    width: 10px;
+    margin-left: 5px;
+  }
+}
+
+td {
+  font-size: $small-3-font-size;
+  vertical-align: middle;
+
+  &.target-col {
+    color: $primary;
+    text-decoration: underline;
   }
 }
 
@@ -87,6 +135,13 @@
 
 label {
   font-size: $small-3-font-size;
+}
+
+.edit-btn,
+.delete-btn {
+  &:disabled {
+    border: 0;
+  }
 }
 
 /* Estilos de validação de formulários (controle inválido)*/
@@ -122,7 +177,7 @@ span.error-message {
 /* Icone de usuário do font-awesome*/
 
 i.fa-user {
-  color: #c2c2c2;
+  color: $icon-secondary;
 }
 
 /* Coluna de preview de imagem */
@@ -151,24 +206,13 @@ i.fa-user {
 }
 
 .card-body {
-  background-color: #f2f2f266;
-  border: 1px solid #f2f2f2;
-  border-radius: 3px;
+  background-color: $card-bg;
+  border: 1px solid $card-border;
 }
 
 .card-title span {
   font-size: $small-4-font-size;
   font-weight: bold;
-}
-
-/* Classes de estilo do PrimeNG */
-/*Table*/
-.p-datatable-thead th {
-  font-weight: normal;
-}
-
-.p-datatable-tbody td {
-  vertical-align: middle;
 }
 
 /* Estilo link (tag <a>) para elementos */

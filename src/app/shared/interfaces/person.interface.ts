@@ -26,7 +26,7 @@ export interface IPerson {
   imagemPerfil?: File | ArrayBuffer;
 }
 
-export interface IPersonTable extends Pick<IPerson, 'id' | 'nome' | 'email'> {}
+export interface IPersonTable extends Pick<IPerson, 'id' | 'nome' | 'email' | 'imagemPerfil'> {}
 
 export interface IPersonGet extends IHttpGetResponseBody<IPersonTable> {}
 

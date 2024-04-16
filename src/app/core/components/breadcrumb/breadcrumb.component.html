@@ -1,6 +1,6 @@
-<div class="d-flex flex-row align-items-end">
+<div class="d-flex flex-row align-items-center">
   <div class="home-button">
-    <button class="btn btn-primary" [routerLink]="'home'">
+    <button class="btn btn-primary p-2 me-1" [routerLink]="'home'">
       <i class="fa-solid fa-house fa-lg"></i>
     </button>
   </div>
@@ -10,7 +10,7 @@
     <h4>{{ currentPage | breadcrumbnavlink }}</h4>
   </div>
 
-  <div class="nav-icons ms-auto">
+  <div class="nav-icons ms-auto d-md-inline-block d-none">
     <ng-container
       *ngTemplateOutlet="newButton; context: { path: currentPage }"
     ></ng-container>
@@ -20,6 +20,21 @@
     <button class="btn p-0" (click)="goForward()">
       <i class="fa-solid fa-share fa-lg ps-1 text-primary"></i>
     </button>
+  </div>
+
+  <div class="nav-icons ms-auto d-inline-flex flex-column d-md-none">
+    <ng-container
+      *ngTemplateOutlet="newButton; context: { path: currentPage }"
+    ></ng-container>
+
+    <div class="flex-row align-self-center">
+      <button class="btn p-0" (click)="goBack()">
+        <i class="fa-solid fa-reply fa-lg pe-1 text-primary"></i>
+      </button>
+      <button class="btn p-0" (click)="goForward()">
+        <i class="fa-solid fa-share fa-lg ps-1 text-primary"></i>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -42,10 +57,12 @@
 <!-- Botão de criar um novo dado (ex.: Projetos -> Novo Projeto) -->
 <ng-template #newButton let-path="path">
   <button
-    class="btn btn-primary p-1 me-2"
+    *ngIf="isAllowed(path)"
+    class="btn btn-primary me-md-2 me-0 text-nowrap"
     [routerLink]="[path, 'form', 'criar']"
     [hidden]="!mainChildPaths.includes(path)"
   >
-    {{ path + "criar" | breadcrumbnavlink }}
+    <i class="fa-solid fa-plus"></i>
+    <span> {{ path + "criar" | breadcrumbnavlink }}</span>
   </button>
 </ng-template>

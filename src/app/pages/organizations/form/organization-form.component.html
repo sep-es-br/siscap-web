@@ -2,6 +2,29 @@
   <siscap-loading></siscap-loading>
 </div>
 
+<div class="row mx-1" *ngIf="!loading && formMode != 'criar'">
+  <div class="d-flex justify-content-end">
+    <button
+      *ngIf="isAllowed('organizacoeseditar')"
+      type="button"
+      class="btn mx-2 edit-btn"
+      (click)="switchMode(true)"
+      [disabled]="isEdit"
+    >
+      <i class="fa-solid fa-pencil"></i>
+    </button>
+
+    <button
+      *ngIf="isAllowed('organizacoesdeletar')"
+      type="button"
+      class="btn delete-btn"
+      (click)="deletarOrganizacao(organizationEditId)"
+    >
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+  </div>
+</div>
+
 <div class="organization-form" *ngIf="!loading">
   <form [formGroup]="organizationForm">
     <div class="row mx-1">
@@ -299,7 +322,7 @@
                         <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
                         <span
                           class="link-primary pointer"
-                          [ngClass]="{ invisible: formMode == 'detalhes' }"
+                          [ngClass]="{ invisible: !isEdit }"
                           (click)="removeImg()"
                           >Remover</span
                         >
@@ -309,7 +332,7 @@
                     <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
                       <input
                         #imagemPerfil
-                        [disabled]="formMode == 'detalhes'"
+                        [disabled]="!isEdit"
                         id="imagemPerfil"
                         type="file"
                         accept=".jpg, .gif, .png"
@@ -332,21 +355,23 @@
         <div class="col d-flex flex-row-reverse">
           <button
             type="button"
-            class="btn btn-primary p-2 px-4 mx-1"
-            [hidden]="formMode == 'detalhes'"
-            [disabled]="organizationForm.invalid"
+            class="btn btn-primary mx-1"
+            [hidden]="!isEdit && formMode != 'criar'"
             (click)="submitOrganizationForm(this.organizationForm)"
           >
-            {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
+            <i class="fa-solid fa-plus"></i>
+            <span>
+              {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}
+            </span>
           </button>
 
           <button
             type="button"
-            class="btn btn-danger p-2 px-4 mx-1"
-            [hidden]="formMode == 'detalhes'"
+            class="btn btn-outline-danger mx-1"
             (click)="cancelForm()"
           >
-            Cancelar
+            <i class="fa-solid fa-x"></i>
+            <span> Cancelar </span>
           </button>
         </div>
       </div>
