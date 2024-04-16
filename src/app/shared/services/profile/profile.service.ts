@@ -39,9 +39,8 @@ export class ProfileService {
   }
 
   public isAllowed(value: string): boolean {
-    const userPermissions = JSON.parse(
-      sessionStorage.getItem('user-profile')!
-    ).permissoes;
+    const userPermissions: Array<string> =
+      JSON.parse(sessionStorage.getItem('user-profile')!).permissoes ?? [];
 
     if (userPermissions.includes('ADMIN_AUTH')) {
       return true;
