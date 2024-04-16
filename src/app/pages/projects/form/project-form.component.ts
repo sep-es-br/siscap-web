@@ -7,6 +7,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
 
+import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
@@ -19,7 +20,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
-import { ProfileService } from '../../../shared/services/profile/profile.service';
+import { FormControlValueStringConverter } from '../../../shared/utils/form-control-value-string-converter';
 
 @Component({
   selector: 'siscap-project-form',
@@ -129,13 +130,13 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       titulo: nnfb.control(project?.titulo ?? '', {
         validators: [Validators.required, Validators.maxLength(150)],
       }),
-      idOrganizacao: nnfb.control(project?.idOrganizacao ?? null, {
+      idOrganizacao: nnfb.control( FormControlValueStringConverter(project?.idOrganizacao!) ?? null, {
         validators: Validators.required,
       }),
       valorEstimado: nnfb.control(project?.valorEstimado ?? null, {
         validators: [Validators.required, Validators.min(1)],
       }),
-      idMicrorregioes: nnfb.control(project?.idMicrorregioes ?? [], {
+      idMicrorregioes: nnfb.control(FormControlValueStringConverter(project?.idMicrorregioes!) ?? [], {
         validators: Validators.required,
       }),
       objetivo: nnfb.control(project?.objetivo ?? '', {
@@ -159,7 +160,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
           validators: [Validators.required, Validators.maxLength(2000)],
         }
       ),
-      idPessoasEquipeElab: nnfb.control(project?.idPessoasEquipeElab ?? [], {
+      idPessoasEquipeElab: nnfb.control(FormControlValueStringConverter(project?.idPessoasEquipeElab!) ?? [], {
         validators: Validators.required,
       }),
       //AInda não implementados
