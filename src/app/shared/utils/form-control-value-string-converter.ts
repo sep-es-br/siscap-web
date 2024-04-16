@@ -2,8 +2,8 @@ export function FormControlValueStringConverter(
   value: number | Array<number>
 ): string | Array<string> {
   if (typeof value === 'number') {
-    return String(value);
+    return value.toString();
   }
 
-  return value.map((item) => String(item));
+  return value.map((item) => item.toString());
 }
