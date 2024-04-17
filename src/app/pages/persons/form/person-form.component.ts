@@ -40,6 +40,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   private _getPaises$!: Observable<ISelectList[]>;
   private _getEstados$!: Observable<ISelectList[]>;
   private _getCidades$!: Observable<ISelectList[]>;
+  private _getAreasAtuacao$!: Observable<ISelectList[]>;
 
   private _getPessoaById$!: Observable<IPerson>;
 
@@ -69,6 +70,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public paisesList: ISelectList[] = [];
   public estadosList: ISelectList[] = [];
   public cidadesList: ISelectList[] = [];
+  public areasAtuacaoList: ISelectList[] = [];
 
   public paisSelected: string | undefined;
   public estadoSelected: string | undefined;
@@ -121,6 +123,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     this._getPaises$ = this._selectListService
       .getPaises()
       .pipe(tap((response) => (this.paisesList = response)));
+
+    this._getAreasAtuacao$ = this._selectListService
+      .getAreasAtuacao()
+      .pipe(tap((response) => (this.areasAtuacaoList = response)));
   }
 
   /**
@@ -163,21 +169,23 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         codigoPostal: nnfb.control(person?.endereco?.codigoPostal ?? ''),
         idCidade: nnfb.control(person?.endereco?.idCidade?.toString() ?? null),
       }),
+      idAreasAtuacao: nnfb.control(person?.idAreasAtuacao ?? []),
       //Ainda não implementados
-      acessos: nnfb.group({
-        grupos: nnfb.control({ value: null, disabled: true }),
-        status: nnfb.control({ value: null, disabled: true }),
-      }),
-      prof: nnfb.group({
-        organizacao: nnfb.control({ value: null, disabled: true }),
-        dpto: nnfb.control({ value: null, disabled: true }),
-        cargo: nnfb.control({ value: null, disabled: true }),
-      }),
+      // acessos: nnfb.group({
+      //   grupos: nnfb.control({ value: null, disabled: true }),
+      //   status: nnfb.control({ value: null, disabled: true }),
+      // }),
+      // prof: nnfb.group({
+      //   organizacao: nnfb.control({ value: null, disabled: true }),
+      //   dpto: nnfb.control({ value: null, disabled: true }),
+      //   cargo: nnfb.control({ value: null, disabled: true }),
+      // }),
     });
   }
 
   ngOnInit(): void {
     this._subscription.add(this._getPaises$.subscribe());
+    this._subscription.add(this._getAreasAtuacao$.subscribe());
 
     if (this.formMode == 'criar') {
       this.initForm();
