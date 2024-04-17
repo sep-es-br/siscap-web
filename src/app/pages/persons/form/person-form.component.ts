@@ -59,13 +59,13 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
 
-  public placeholderList: Array<{ id: number; label: string }> = [
-    { id: 1, label: 'Valor 1' },
-    { id: 2, label: 'Valor 2' },
-    { id: 3, label: 'Valor 3' },
-    { id: 4, label: 'Valor 4' },
-    { id: 5, label: 'Valor 5' },
-  ];
+  // public placeholderList: Array<{ id: number; label: string }> = [
+  //   { id: 1, label: 'Valor 1' },
+  //   { id: 2, label: 'Valor 2' },
+  //   { id: 3, label: 'Valor 3' },
+  //   { id: 4, label: 'Valor 4' },
+  //   { id: 5, label: 'Valor 5' },
+  // ];
 
   public paisesList: ISelectList[] = [];
   public estadosList: ISelectList[] = [];
@@ -198,7 +198,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
   public paisChanged(value: string | undefined) {
     if (!value) {
+      this.estadoSelected = undefined;
+      this.personForm.get('endereco.idCidade')?.patchValue(null);
       this.estadosList = [];
+      this.cidadesList = [];
       return;
     }
 
@@ -213,6 +216,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
   public estadoChanged(value: string | undefined) {
     if (!value) {
+      this.personForm.get('endereco.idCidade')?.patchValue(null);
       this.cidadesList = [];
       return;
     }

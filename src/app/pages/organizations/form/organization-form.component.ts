@@ -188,6 +188,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       this.organizationForm.get('idEstado')?.patchValue(null);
       this.organizationForm.get('idCidade')?.patchValue(null);
       this.estadosList = [];
+      this.cidadesList = [];
       return;
     }
 
