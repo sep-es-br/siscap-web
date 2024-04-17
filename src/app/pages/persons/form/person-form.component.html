@@ -408,7 +408,7 @@
                   <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
                     <input
                       #imagemPerfil
-                      [disabled]="!isEdit"
+                      [disabled]="!isEdit && formMode != 'criar'"
                       id="imagemPerfil"
                       type="file"
                       accept=".jpg, .gif, .png"
