@@ -59,14 +59,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
 
-  // public placeholderList: Array<{ id: number; label: string }> = [
-  //   { id: 1, label: 'Valor 1' },
-  //   { id: 2, label: 'Valor 2' },
-  //   { id: 3, label: 'Valor 3' },
-  //   { id: 4, label: 'Valor 4' },
-  //   { id: 5, label: 'Valor 5' },
-  // ];
-
   public paisesList: ISelectList[] = [];
   public estadosList: ISelectList[] = [];
   public cidadesList: ISelectList[] = [];
@@ -170,16 +162,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         idCidade: nnfb.control(person?.endereco?.idCidade?.toString() ?? null),
       }),
       idAreasAtuacao: nnfb.control(person?.idAreasAtuacao ?? []),
-      //Ainda não implementados
-      // acessos: nnfb.group({
-      //   grupos: nnfb.control({ value: null, disabled: true }),
-      //   status: nnfb.control({ value: null, disabled: true }),
-      // }),
-      // prof: nnfb.group({
-      //   organizacao: nnfb.control({ value: null, disabled: true }),
-      //   dpto: nnfb.control({ value: null, disabled: true }),
-      //   cargo: nnfb.control({ value: null, disabled: true }),
-      // }),
     });
   }
 
