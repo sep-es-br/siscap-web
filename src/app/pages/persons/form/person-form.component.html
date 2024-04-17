@@ -425,7 +425,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <!-- <div class="card">
           <div class="card-body">
             <div class="access-level">
               <div formGroupName="acessos">
@@ -473,19 +473,19 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <div class="card">
           <div class="card-body">
             <div class="professional-info">
-              <div formGroupName="prof">
-                <div class="col-12">
-                  <div class="card-title border-bottom border-1">
-                    <span>Informações Profissionais</span>
-                  </div>
+              <!-- <div formGroupName="prof"> -->
+              <div class="col-12">
+                <div class="card-title border-bottom border-1">
+                  <span>Informações Profissionais</span>
                 </div>
+              </div>
 
-                <div class="row">
+              <!-- <div class="row">
                   <div class="col-12">
                     <div class="col-12">
                       <label for="organizacao" class="form-label"
@@ -504,31 +504,38 @@
                       </ng-select>
                     </div>
                   </div>
-                </div>
+                </div> -->
 
-                <div class="row">
+              <div class="row">
+                <div class="col-12">
                   <div class="col-12">
-                    <div class="col-12">
-                      <label for="dptosetor" class="form-label"
-                        >Departamento / Setor</label
+                    <label for="idAreasAtuacao" class="form-label col-12">
+                      Áreas de Atuação
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'idAreasAtuacao' }
+                        "
+                      ></ng-container>
+                    </label>
+                    <ng-select
+                      [multiple]="true"
+                      [hideSelected]="true"
+                      id="idAreasAtuacao"
+                      placeholder="-- Áreas de Atuação --"
+                      formControlName="idAreasAtuacao"
+                    >
+                      <ng-option
+                        *ngFor="let area of areasAtuacaoList"
+                        [value]="area.id"
+                        >{{ area.nome }}</ng-option
                       >
-                      <ng-select
-                        id="dpto"
-                        placeholder="Desabilitado"
-                        read
-                        formControlName="dpto"
-                      >
-                        <ng-option
-                          *ngFor="let placeholder of placeholderList"
-                          [value]="placeholder.id"
-                          >{{ placeholder.label }}</ng-option
-                        >
-                      </ng-select>
-                    </div>
+                    </ng-select>
                   </div>
                 </div>
+              </div>
 
-                <div class="row">
+              <!-- <div class="row">
                   <div class="col-12">
                     <label for="cargo" class="form-label">Cargo</label>
                     <input
@@ -539,8 +546,8 @@
                       formControlName="cargo"
                     />
                   </div>
-                </div>
-              </div>
+                </div> -->
+              <!-- </div> -->
             </div>
           </div>
         </div>
