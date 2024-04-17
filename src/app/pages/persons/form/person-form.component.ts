@@ -43,6 +43,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   private _getAreasAtuacao$!: Observable<ISelectList[]>;
 
   private _getPessoaById$!: Observable<IPerson>;
+  private _getPessoaByEmail$!: Observable<IPerson>;
 
   private _subscription: Subscription = new Subscription();
 
@@ -54,6 +55,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public isEdit!: boolean;
 
   public personEditId!: number;
+  public personEditEmail!: string;
   public personFormInitialValue!: IPersonCreate;
 
   public uploadedPhotoFile: File | undefined;
@@ -84,9 +86,39 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     this.formMode = this._route.snapshot.paramMap.get('mode') ?? '';
     this.personEditId =
       Number(this._route.snapshot.queryParamMap.get('id')) ?? null;
+    this.personEditEmail =
+      this._route.snapshot.queryParamMap.get('email') ?? '';
 
     this._getPessoaById$ = this._pessoasService
       .getPessoaById(this.personEditId)
+      .pipe(
+        tap((response) => {
+          this.initForm(response);
+
+          this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
+            response.imagemPerfil as ArrayBuffer
+          );
+        }),
+        tap((response) => {
+          this.paisSelected =
+            response.endereco?.idPais?.toString() ?? undefined;
+          this.estadoSelected =
+            response.endereco?.idEstado?.toString() ?? undefined;
+        }),
+        finalize(() => {
+          this.personFormInitialValue = this.personForm.value;
+
+          this.paisChanged(this.paisSelected);
+          this.estadoChanged(this.estadoSelected);
+
+          this.switchMode(false);
+
+          this.loading = false;
+        })
+      );
+
+    this._getPessoaByEmail$ = this._pessoasService
+      .getPessoaByEmail(this.personEditEmail)
       .pipe(
         tap((response) => {
           this.initForm(response);
@@ -176,7 +208,15 @@ export class PersonFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this._subscription.add(this._getPessoaById$.subscribe());
+    if (!!this.personEditId) {
+      this._subscription.add(this._getPessoaById$.subscribe());
+      return;
+    }
+
+    if (!!this.personEditEmail) {
+      this._subscription.add(this._getPessoaByEmail$.subscribe());
+      return;
+    }
   }
 
   public paisChanged(value: string | undefined) {
