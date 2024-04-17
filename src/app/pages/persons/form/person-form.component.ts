@@ -107,18 +107,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           this.paisChanged(this.paisSelected);
           this.estadoChanged(this.estadoSelected);
 
-          // if (this.isUserProfile) {
-          //   this.switchMode(true, ['nome', 'email', 'acessos', 'prof']);
-          //   this._toastService.showToast(
-          //     'info',
-          //     'Complete seu perfil',
-          //     ['Adicione informações aos campos abaixo'],
-          //     15000
-          //   );
-          // } else {
-          //   this.switchMode(false);
-          // }
-
           this.switchMode(false);
 
           this.loading = false;
