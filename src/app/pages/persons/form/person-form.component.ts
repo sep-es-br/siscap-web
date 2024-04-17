@@ -70,8 +70,8 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public estadosList: ISelectList[] = [];
   public cidadesList: ISelectList[] = [];
 
-  public paisSelected: number | undefined;
-  public estadoSelected: number | undefined;
+  public paisSelected: string | undefined;
+  public estadoSelected: string | undefined;
 
   // Por hora, lista de valores hard-coded
   public nacionalidadesList = PessoaFormLists.nacionalidadesList;
@@ -101,8 +101,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           );
         }),
         tap((response) => {
-          this.paisSelected = response.endereco?.idPais ?? undefined;
-          this.estadoSelected = response.endereco?.idEstado ?? undefined;
+          this.paisSelected =
+            response.endereco?.idPais?.toString() ?? undefined;
+          this.estadoSelected =
+            response.endereco?.idEstado?.toString() ?? undefined;
         }),
         finalize(() => {
           this.personFormInitialValue = this.personForm.value;
@@ -159,7 +161,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         bairro: nnfb.control(person?.endereco?.bairro ?? ''),
         complemento: nnfb.control(person?.endereco?.complemento ?? ''),
         codigoPostal: nnfb.control(person?.endereco?.codigoPostal ?? ''),
-        idCidade: nnfb.control(person?.endereco?.idCidade ?? null),
+        idCidade: nnfb.control(person?.endereco?.idCidade?.toString() ?? null),
       }),
       //Ainda não implementados
       acessos: nnfb.group({
@@ -186,27 +188,31 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     this._subscription.add(this._getPessoaById$.subscribe());
   }
 
-  public paisChanged(value: number | undefined) {
+  public paisChanged(value: string | undefined) {
     if (!value) {
       this.estadosList = [];
       return;
     }
 
+    const valueAsNumber = parseInt(value);
+
     this._getEstados$ = this._selectListService
-      .getEstados(value)
+      .getEstados(valueAsNumber)
       .pipe(tap((response) => (this.estadosList = response)));
 
     this._subscription.add(this._getEstados$.subscribe());
   }
 
-  public estadoChanged(value: number | undefined) {
+  public estadoChanged(value: string | undefined) {
     if (!value) {
       this.cidadesList = [];
       return;
     }
 
+    const valueAsNumber = parseInt(value);
+
     this._getCidades$ = this._selectListService
-      .getCidades('ESTADO', value)
+      .getCidades('ESTADO', valueAsNumber)
       .pipe(tap((response) => (this.cidadesList = response)));
 
     this._subscription.add(this._getCidades$.subscribe());
