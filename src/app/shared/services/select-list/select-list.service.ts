@@ -72,4 +72,8 @@ export class SelectListService {
     };
     return this.getSelectList('cidades', params);
   }
+
+  public getAreasAtuacao() {
+    return this.getSelectList('areas-atuacao');
+  }
 }
