@@ -130,14 +130,14 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       titulo: nnfb.control(project?.titulo ?? '', {
         validators: [Validators.required, Validators.maxLength(150)],
       }),
-      idOrganizacao: nnfb.control(project?.idOrganizacao!.toString() ?? null, {
+      idOrganizacao: nnfb.control(project?.idOrganizacao?.toString() ?? null, {
         validators: Validators.required,
       }),
       valorEstimado: nnfb.control(project?.valorEstimado ?? null, {
         validators: [Validators.required, Validators.min(1)],
       }),
       idMicrorregioes: nnfb.control(
-        ArrayItemNumberToStringMapper(project?.idMicrorregioes!) ?? [],
+        ArrayItemNumberToStringMapper(project?.idMicrorregioes) ?? [],
         {
           validators: Validators.required,
         }
@@ -164,7 +164,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         }
       ),
       idPessoasEquipeElab: nnfb.control(
-        ArrayItemNumberToStringMapper(project?.idPessoasEquipeElab!) ?? [],
+        ArrayItemNumberToStringMapper(project?.idPessoasEquipeElab) ?? [],
         {
           validators: Validators.required,
         }
