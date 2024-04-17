@@ -20,7 +20,7 @@ import {
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
-import { FormControlValueStringConverter } from '../../../shared/utils/form-control-value-string-converter';
+import { ArrayItemNumberToStringMapper } from '../../../shared/utils/array-item-mapper';
 
 @Component({
   selector: 'siscap-project-form',
@@ -130,15 +130,18 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       titulo: nnfb.control(project?.titulo ?? '', {
         validators: [Validators.required, Validators.maxLength(150)],
       }),
-      idOrganizacao: nnfb.control( FormControlValueStringConverter(project?.idOrganizacao!) ?? null, {
+      idOrganizacao: nnfb.control(project?.idOrganizacao!.toString() ?? null, {
         validators: Validators.required,
       }),
       valorEstimado: nnfb.control(project?.valorEstimado ?? null, {
         validators: [Validators.required, Validators.min(1)],
       }),
-      idMicrorregioes: nnfb.control(FormControlValueStringConverter(project?.idMicrorregioes!) ?? [], {
-        validators: Validators.required,
-      }),
+      idMicrorregioes: nnfb.control(
+        ArrayItemNumberToStringMapper(project?.idMicrorregioes!) ?? [],
+        {
+          validators: Validators.required,
+        }
+      ),
       objetivo: nnfb.control(project?.objetivo ?? '', {
         validators: [Validators.required, Validators.maxLength(2000)],
       }),
@@ -160,9 +163,12 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
           validators: [Validators.required, Validators.maxLength(2000)],
         }
       ),
-      idPessoasEquipeElab: nnfb.control(FormControlValueStringConverter(project?.idPessoasEquipeElab!) ?? [], {
-        validators: Validators.required,
-      }),
+      idPessoasEquipeElab: nnfb.control(
+        ArrayItemNumberToStringMapper(project?.idPessoasEquipeElab!) ?? [],
+        {
+          validators: Validators.required,
+        }
+      ),
       //AInda não implementados
       plano: nnfb.control({ value: null, disabled: true }),
       eixo: nnfb.control({ value: null, disabled: true }),
