@@ -21,6 +21,7 @@
     "@ng-bootstrap/ng-bootstrap": "^16.0.0",
     "@ng-select/ng-select": "^12.0.7",
     "@popperjs/core": "^2.11.8",
+    "@superset-ui/embedded-sdk": "^0.1.0-alpha.11",
     "angular-datatables": "^17.0.0",
     "bootstrap": "5.3",
     "ngx-mask": "^17.0.4",
