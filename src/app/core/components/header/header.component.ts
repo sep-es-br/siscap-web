@@ -52,7 +52,7 @@ export class HeaderComponent {
 
   redirectUserProfile() {
     this._router.navigate(['main', 'pessoas', 'form', 'editar'], {
-      queryParams: { id: this.userId, isUserProfile: true },
+      queryParams: { id: this.userId },
     });
   }
 
