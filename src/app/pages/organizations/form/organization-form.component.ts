@@ -151,18 +151,23 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         validators: Validators.email,
       }),
       site: nnfb.control(organization?.site ?? ''),
-      idOrganizacaoPai: nnfb.control(organization?.idOrganizacaoPai ?? null),
-      idPessoaResponsavel: nnfb.control(
-        organization?.idPessoaResponsavel ?? null
+      idOrganizacaoPai: nnfb.control(
+        organization?.idOrganizacaoPai.toString() ?? null
       ),
-      idCidade: nnfb.control(organization?.idCidade ?? null),
-      idEstado: nnfb.control(organization?.idEstado ?? null),
-      idPais: nnfb.control(organization?.idPais ?? null, {
+      idPessoaResponsavel: nnfb.control(
+        organization?.idPessoaResponsavel.toString() ?? null
+      ),
+      idCidade: nnfb.control(organization?.idCidade.toString() ?? null),
+      idEstado: nnfb.control(organization?.idEstado.toString() ?? null),
+      idPais: nnfb.control(organization?.idPais.toString() ?? null, {
         validators: Validators.required,
       }),
-      idTipoOrganizacao: nnfb.control(organization?.idTipoOrganizacao ?? null, {
-        validators: Validators.required,
-      }),
+      idTipoOrganizacao: nnfb.control(
+        organization?.idTipoOrganizacao.toString() ?? null,
+        {
+          validators: Validators.required,
+        }
+      ),
     });
   }
 
