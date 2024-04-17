@@ -81,8 +81,9 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private _toastService: ToastService,
     private _modalService: NgbModal
   ) {
-    this.formMode = this._route.snapshot.params['mode'];
-    this.personEditId = this._route.snapshot.queryParams['id'] ?? null;
+    this.formMode = this._route.snapshot.paramMap.get('mode') ?? '';
+    this.personEditId =
+      Number(this._route.snapshot.queryParamMap.get('id')) ?? null;
 
     this._getPessoaById$ = this._pessoasService
       .getPessoaById(this.personEditId)

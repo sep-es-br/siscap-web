@@ -70,4 +70,19 @@ export class PessoasService {
       })
     );
   }
+
+  getPessoaByEmail(email: string): Observable<IPerson> {
+    const params = {
+      email: email,
+    };
+
+    return this._http
+      .get<IPerson>(`${this._url}/email`, { params: params })
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          this._errorHandlerService.handleError(err);
+          return throwError(() => err);
+        })
+      );
+  }
 }

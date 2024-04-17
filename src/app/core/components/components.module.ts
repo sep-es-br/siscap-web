@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { PipesModule } from '../pipes/pipes.module';
 
@@ -24,7 +24,7 @@ import { DeleteModalComponent } from './modal/delete-modal/delete-modal.componen
     ToastComponent,
     DeleteModalComponent,
   ],
-  imports: [CommonModule, RouterModule, PipesModule, NgbToastModule],
+  imports: [CommonModule, RouterModule, PipesModule, NgbToastModule, NgbDropdownModule],
   exports: [
     NavMenuComponent,
     HeaderComponent,
