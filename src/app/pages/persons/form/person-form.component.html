@@ -425,86 +425,14 @@
           </div>
         </div>
 
-        <!-- <div class="card">
-          <div class="card-body">
-            <div class="access-level">
-              <div formGroupName="acessos">
-                <div class="col-12">
-                  <div class="card-title border-bottom border-1">
-                    <span>Acessos</span>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-12">
-                    <label for="grupousuarios" class="form-label"
-                      >Grupo de Usuários</label
-                    >
-                    <ng-select
-                      id="grupos"
-                      placeholder="Desabilitado"
-                      formControlName="grupos"
-                    >
-                      <ng-option
-                        *ngFor="let placeholder of placeholderList"
-                        [value]="placeholder.id"
-                        >{{ placeholder.label }}</ng-option
-                      >
-                    </ng-select>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-12">
-                    <label for="status" class="form-label">Status</label>
-                    <ng-select
-                      id="status"
-                      placeholder="Desabilitado"
-                      formControlName="status"
-                    >
-                      <ng-option
-                        *ngFor="let placeholder of placeholderList"
-                        [value]="placeholder.id"
-                        >{{ placeholder.label }}</ng-option
-                      >
-                    </ng-select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> -->
-
         <div class="card h-100">
           <div class="card-body">
             <div class="professional-info">
-              <!-- <div formGroupName="prof"> -->
               <div class="col-12">
                 <div class="card-title border-bottom border-1">
                   <span>Informações Profissionais</span>
                 </div>
               </div>
-
-              <!-- <div class="row">
-                  <div class="col-12">
-                    <div class="col-12">
-                      <label for="organizacao" class="form-label"
-                        >Organizacao</label
-                      >
-                      <ng-select
-                        id="organizacao"
-                        placeholder="Desabilitado"
-                        formControlName="organizacao"
-                      >
-                        <ng-option
-                          *ngFor="let placeholder of placeholderList"
-                          [value]="placeholder.id"
-                          >{{ placeholder.label }}</ng-option
-                        >
-                      </ng-select>
-                    </div>
-                  </div>
-                </div> -->
 
               <div class="row">
                 <div class="col-12">
@@ -534,20 +462,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- <div class="row">
-                  <div class="col-12">
-                    <label for="cargo" class="form-label">Cargo</label>
-                    <input
-                      id="cargo"
-                      type="text"
-                      placeholder="Desabilitado"
-                      class="form-control"
-                      formControlName="cargo"
-                    />
-                  </div>
-                </div> -->
-              <!-- </div> -->
             </div>
           </div>
         </div>
@@ -590,15 +504,3 @@
     [control]="personForm.get(controlName) ?? undefined"
   ></siscap-alert>
 </ng-template>
-
-<!-- <ng-select
-  id="placeholder"
-  placeholder="placeholder"
-  formControlName="placeholder"
->
-  <ng-option
-    *ngFor="let placeholder of placeholderList"
-    [value]="placeholder.id"
-    >{{ placeholder.label }}
-  </ng-option>
-</ng-select> -->
