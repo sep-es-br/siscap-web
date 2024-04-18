@@ -58,7 +58,6 @@ export class HeaderComponent {
   }
 
   activedCategory() {
-    console.log(" Current URL | ",this.currentUrl);
     this.menuLinks.forEach((category) => {
       category.routes.forEach((route) => {
         if (route.path === this.currentUrl) {
