@@ -1,38 +1,29 @@
-<div class="container-fluid">
+<siscap-header [offcanvasRef]="navmenuOffcanvas"></siscap-header>
+<div class="container-fluid mt-header bg-light body">
   <div class="row">
-    <div class="col-12">
-      <div
-        class="nav-menu h-100 position-fixed top-0 start-0 d-none d-md-block"
-      >
-        <siscap-navmenu></siscap-navmenu>
-      </div>
-    </div>
     <div class="col-12 gx-0">
-      <div class="content">
-        <div class="header sticky-top z-1 shadow">
-          <siscap-header [offcanvasRef]="navmenuOffcanvas"></siscap-header>
-        </div>
+      <div class="container">
         <div class="breadcrumb d-flex flex-column p-3">
           <siscap-breadcrumb></siscap-breadcrumb>
         </div>
         <div class="main">
           <router-outlet></router-outlet>
         </div>
-        <div class="footer d-flex justify-content-center text-center mt-3">
-          <span class="text-secondary">
-            &#169; SISCAP 2024 - Secretaria de Economia e Planejamento do
-            Espírito Santo</span
-          >
-        </div>
       </div>
     </div>
   </div>
 </div>
 
+<div class="footer d-flex justify-content-center bg-light text-center mt-3">
+  <span class="text-secondary">
+    &#169; SISCAP 2024 - Secretaria de Economia e Planejamento do
+    Espírito Santo</span
+    >
+</div>
 <siscap-toast></siscap-toast>
-
+<!-- 
 <ng-template #navmenuOffcanvas let-offcanvas>
   <div class="offcanvas-body p-0">
     <siscap-navmenu [offcanvasRef]="navmenuOffcanvas"></siscap-navmenu>
   </div>
-</ng-template>
+</ng-template> -->

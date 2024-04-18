@@ -15,3 +15,16 @@
     padding-left: 0;
   }
 }
+
+.mt-header{
+  margin-top: 6.5rem;
+}
+
+.body{
+  min-height: calc(100vh - 8.8rem);
+}
+
+.footer{
+  position: relative;
+  bottom: 0;
+}

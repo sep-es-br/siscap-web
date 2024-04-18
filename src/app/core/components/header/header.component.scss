@@ -5,3 +5,76 @@
 .badge.rounded-pill {
   background-color: rgba(16, 127, 207, 1);
 }
+// .img-logo{
+//   margin: auto;
+//   max-height: 5rem;
+//   height: 5rem;
+// }
+
+header{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  ul{
+    border: none;
+  }
+}
+
+.menu{
+  background-color: rgb(27, 132, 255);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  font-size: 0.8rem;
+  height: 4.5rem;
+}
+
+.sub-menu{
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.25);
+  width: 100%;
+  margin-top: -1.29rem;
+}
+
+.nav-item {
+  padding: 0;
+}
+
+.nav-menu .nav-link{
+  border-radius: 10px  10px 0 0;
+  padding: 0.75rem;
+  margin-top: .75rem;
+}
+
+.nav-link.active {
+  color: #fff;
+  background-color: #85BEFF;
+  border-radius: 5px;
+}
+
+.nav-menu .nav-link.active{
+  background-color: #fff;
+  color: black !important;
+  opacity: 1 !important;
+}
+
+.nav-link:hover{
+  background-color: #85BEFF;
+  color: #fff;
+  border-radius: 5px;
+
+}
+
+.btn-user-toggle{
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+}
+.btn-user-toggle:hover,
+.btn-user-toggle:active{
+  background-color: #85BEFF;
+}
+
+.btn-user-toggle::after{
+  display: none;
+}

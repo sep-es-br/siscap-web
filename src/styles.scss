@@ -9,6 +9,9 @@
 /* ng-select */
 @import "@ng-select/ng-select/themes/default.theme.css";
 
+@import "./assets/styles/custom_styles";
+@import "./assets/styles/fonts";
+
 /* Estilo de botões */
 
 button.btn:not(.login-button button) {
@@ -233,4 +236,9 @@ i.fa-user {
 /* Classe de teste */
 .test {
   border: 1px solid black;
+}
+
+
+.fs-tiny{
+  font-size: 0.8rem;
 }
