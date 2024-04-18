@@ -42,7 +42,6 @@ export class HeaderComponent {
   logOut() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user-profile');
-    localStorage.removeItem('currentUrl');
     this._router.navigate(['login']);
   }
 }
