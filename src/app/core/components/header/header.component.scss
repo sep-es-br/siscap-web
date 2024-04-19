@@ -5,11 +5,6 @@
 .badge.rounded-pill {
   background-color: rgba(16, 127, 207, 1);
 }
-// .img-logo{
-//   margin: auto;
-//   max-height: 5rem;
-//   height: 5rem;
-// }
 
 header{
   position: fixed;
@@ -77,4 +72,24 @@ header{
 
 .btn-user-toggle::after{
   display: none;
+}
+
+.profile-card{
+  background-color: #fff;
+  box-shadow: 0 6px 20px 10px  rgba(0, 0, 0, 0.25) !important;
+  border-radius: 10px;
+  border: none;
+  padding: 1rem;
+  width: 20rem;
+  position: absolute;
+  right: 0;
+  top: 4.5rem;
+  z-index: 1000;
+  .title-card{
+    font-size: 1.1rem;
+
+  }
+  .subtitle-card{
+    font-size: 0.8rem;
+  }
 }

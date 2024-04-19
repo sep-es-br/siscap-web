@@ -2,8 +2,6 @@
   <div class="menu">
     <div class="container">
       <div class="row">
-        <!-- <div class="col-2 align-self-start">
-        </div> -->
         <div class="col-md-8 d-flex ">
           <div class="img-logo align-self-end me-2">
             <img class="img-fluid" src="../../../../assets/images/siscap-logo.png" />
@@ -39,10 +37,23 @@
                   <img src="{{imageUser}}" alt="imageUser" />
                 </div>
             </div>
-            <div class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
-              <a class="dropdown-item" href="#">Action 1</a>
-              <a class="dropdown-item" href="#">Action 2</a>
-              <a class="dropdown-item" href="#">Action 3</a>
+            <div class="dropdown-menu profile-card shadow dropdown-menu-end" ngbDropdownMenu>
+              <div class="d-flex">
+                  <div class="symbol symbol-60px symbol-md-70px">
+                    <img src="{{imageUser}}" alt="imageUser" />
+                  </div>
+                  <div class="d-none d-md-flex p-0 flex-column justify-content-center align-items-start ms-2 ms-md-4">
+                    <span class="text-dark title-card oswald-bold lh-1 mb-1">{{UserName}}</span>
+                    <span class="text-dark subtitle-card opacity-75 fs-tiny fw-bold lh-1">{{UserEmail}}</span>
+                  </div>
+                </div>
+                <div class="separator my-2 mx-0 p-0"></div>
+                
+                <div class="separator my-2 mx-0 p-0"></div>
+                <a class="dropdown-item text-danger pointer" (click)="logOut()">
+                  <i class="fa-solid fa-power-off me-2"></i>
+                  <span>Sair</span>
+                </a>
             </div>
           </div>
         </div>
@@ -55,71 +66,3 @@
     </div>
   </div>
 </header>
-
-<!-- <div class="header-bar bg-secondary h-100">
-  <div class="d-flex justify-content-between align-items-center h-100">
-    <button
-      class="btn d-block d-md-none"
-      type="button"
-      (click)="showOffcanvas()"
-    >
-      <i class="fa-solid fa-bars fa-lg"></i>
-    </button>
-
-    <div class="user-account-info ms-0 ms-md-auto">
-      <div
-        class="d-flex justify-content-between align-items-center me-3 px-2 w-100"
-      >
-        <ng-container
-          *ngIf="
-            userProfile.imagemPerfil != null;
-            else standardProfileImageTemplate
-          "
-        >
-          <ng-container
-            *ngTemplateOutlet="
-              profileImageTemplate;
-              context: { imgSrc: userProfile.imagemPerfil }
-            "
-          ></ng-container>
-        </ng-container>
-
-        <div class="dropdown">
-          <a
-            class="dropdown-toggle pointer text-decoration-none text-white"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <span class="me-2 text-white">{{ userProfile.nome }}</span>
-          </a>
-          <ul class="dropdown-menu">
-            <div class="badge rounded-pill mx-2">
-              <span class="user-email">{{ userProfile.email }}</span>
-            </div>
-            <li>
-              <a class="dropdown-item pointer" (click)="logOut()">
-                <span>Sair</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<ng-template #profileImageTemplate let-imgSrc="imgSrc">
-  <img
-    [src]="convertByteArraytoImg(imgSrc)"
-    alt=""
-    class="profile-pic rounded-circle"
-  />
-</ng-template>
-
-<ng-template #standardProfileImageTemplate>
-  <div
-    class="profile-pic border rounded-circle d-flex justify-content-center align-items-center text-white"
-  >
-    <i class="fa-solid fa-user text-white"></i>
-  </div>
-</ng-template> -->

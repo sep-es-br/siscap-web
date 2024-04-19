@@ -1,5 +1,7 @@
 /* Override das variáveis do Bootstrap */
 
+$breadcrumb-divider: quote("•");
+
 // --- Cores ---
 
 //Aplicação
@@ -25,6 +27,17 @@ $card-border: #f2f2f2;
 $min-contrast-ratio: 3;
 // $min-contrast-ratio: 4.5; //padrão
 // $min-contrast-ratio: 7;
+
+:root {
+  --primary: #107fcf;
+  --secondary: #aaaaaa;
+  --table-row-border: #7f7f7f8c;
+  --invalid: #dc3545;
+  --disabled: #e9ecef;
+  --icon-secondary: #c2c2c2;
+  --card-bg: #f2f2f266;
+  --card-border: #f2f2f2;
+}
 
 // --- Cores ---
 

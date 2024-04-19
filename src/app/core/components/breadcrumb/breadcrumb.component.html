@@ -1,38 +1,22 @@
-<div class="d-flex flex-row align-items-center">
-  <div class="home-button">
-    <button class="btn btn-primary p-2 me-1" [routerLink]="'home'">
-      <i class="fa-solid fa-house fa-lg"></i>
-    </button>
+<div class="row">
+  <div class="col">
+    <h1 class="oswald-semi-bold mb-0 font-Breadcrumb" >{{ currentPage | breadcrumbnavlink }}</h1>
+    <ul class="breadcrumb fw-semibold text-gray-600 fs-7">
+      <ng-container *ngFor="let path of breadcrumbNav">
+        <li class="breadcrumb-item text-gray-600">
+          <a [routerLink]="path"  [ngClass]="{ 'd-none': currentPage === 'main','link-atual': currentPage === path }"  class="text-gray-600 breadcrumb-link text-hover-primary">{{ path | breadcrumbnavlink }}</a>
+        </li>
+      </ng-container>
+    </ul>
   </div>
-
-  <div class="breadcrumb-title-area">
-    <ng-container *ngTemplateOutlet="breadcrumb"></ng-container>
-    <h4>{{ currentPage | breadcrumbnavlink }}</h4>
-  </div>
-
-  <div class="nav-icons ms-auto d-md-inline-block d-none">
-    <ng-container
-      *ngTemplateOutlet="newButton; context: { path: currentPage }"
-    ></ng-container>
-    <button class="btn p-0" (click)="goBack()">
-      <i class="fa-solid fa-reply fa-lg pe-1 text-primary"></i>
-    </button>
-    <button class="btn p-0" (click)="goForward()">
-      <i class="fa-solid fa-share fa-lg ps-1 text-primary"></i>
-    </button>
-  </div>
-
-  <div class="nav-icons ms-auto d-inline-flex flex-column d-md-none">
-    <ng-container
-      *ngTemplateOutlet="newButton; context: { path: currentPage }"
-    ></ng-container>
-
-    <div class="flex-row align-self-center">
-      <button class="btn p-0" (click)="goBack()">
-        <i class="fa-solid fa-reply fa-lg pe-1 text-primary"></i>
+  <div class="col-md-4 m-auto">
+    <div class="d-flex justify-content-end">
+      <ng-container *ngTemplateOutlet="newButton; context: { path: currentPage }"></ng-container>
+      <button class="btn btn-primary" (click)="goBack()">
+        <i class="fa-solid fa-reply"></i>
       </button>
-      <button class="btn p-0" (click)="goForward()">
-        <i class="fa-solid fa-share fa-lg ps-1 text-primary"></i>
+      <button class="btn btn-primary" (click)="goForward()">
+        <i class="fa-solid fa-share"></i>
       </button>
     </div>
   </div>
