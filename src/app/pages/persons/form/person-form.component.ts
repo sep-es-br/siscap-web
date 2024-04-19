@@ -40,8 +40,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   private _getPaises$!: Observable<ISelectList[]>;
   private _getEstados$!: Observable<ISelectList[]>;
   private _getCidades$!: Observable<ISelectList[]>;
+  private _getAreasAtuacao$!: Observable<ISelectList[]>;
 
   private _getPessoaById$!: Observable<IPerson>;
+  private _getPessoaByEmail$!: Observable<IPerson>;
 
   private _subscription: Subscription = new Subscription();
 
@@ -53,25 +55,19 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public isEdit!: boolean;
 
   public personEditId!: number;
+  public personEditEmail!: string;
   public personFormInitialValue!: IPersonCreate;
 
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
 
-  public placeholderList: Array<{ id: number; label: string }> = [
-    { id: 1, label: 'Valor 1' },
-    { id: 2, label: 'Valor 2' },
-    { id: 3, label: 'Valor 3' },
-    { id: 4, label: 'Valor 4' },
-    { id: 5, label: 'Valor 5' },
-  ];
-
   public paisesList: ISelectList[] = [];
   public estadosList: ISelectList[] = [];
   public cidadesList: ISelectList[] = [];
+  public areasAtuacaoList: ISelectList[] = [];
 
-  public paisSelected: number | undefined;
-  public estadoSelected: number | undefined;
+  public paisSelected: string | undefined;
+  public estadoSelected: string | undefined;
 
   // Por hora, lista de valores hard-coded
   public nacionalidadesList = PessoaFormLists.nacionalidadesList;
@@ -87,8 +83,11 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private _toastService: ToastService,
     private _modalService: NgbModal
   ) {
-    this.formMode = this._route.snapshot.params['mode'];
-    this.personEditId = this._route.snapshot.queryParams['id'] ?? null;
+    this.formMode = this._route.snapshot.paramMap.get('mode') ?? '';
+    this.personEditId =
+      Number(this._route.snapshot.queryParamMap.get('id')) ?? null;
+    this.personEditEmail =
+      this._route.snapshot.queryParamMap.get('email') ?? '';
 
     this._getPessoaById$ = this._pessoasService
       .getPessoaById(this.personEditId)
@@ -101,8 +100,38 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           );
         }),
         tap((response) => {
-          this.paisSelected = response.endereco?.idPais ?? undefined;
-          this.estadoSelected = response.endereco?.idEstado ?? undefined;
+          this.paisSelected =
+            response.endereco?.idPais?.toString() ?? undefined;
+          this.estadoSelected =
+            response.endereco?.idEstado?.toString() ?? undefined;
+        }),
+        finalize(() => {
+          this.personFormInitialValue = this.personForm.value;
+
+          this.paisChanged(this.paisSelected);
+          this.estadoChanged(this.estadoSelected);
+
+          this.switchMode(false);
+
+          this.loading = false;
+        })
+      );
+
+    this._getPessoaByEmail$ = this._pessoasService
+      .getPessoaByEmail(this.personEditEmail)
+      .pipe(
+        tap((response) => {
+          this.initForm(response);
+
+          this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
+            response.imagemPerfil as ArrayBuffer
+          );
+        }),
+        tap((response) => {
+          this.paisSelected =
+            response.endereco?.idPais?.toString() ?? undefined;
+          this.estadoSelected =
+            response.endereco?.idEstado?.toString() ?? undefined;
         }),
         finalize(() => {
           this.personFormInitialValue = this.personForm.value;
@@ -119,6 +148,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     this._getPaises$ = this._selectListService
       .getPaises()
       .pipe(tap((response) => (this.paisesList = response)));
+
+    this._getAreasAtuacao$ = this._selectListService
+      .getAreasAtuacao()
+      .pipe(tap((response) => (this.areasAtuacaoList = response)));
   }
 
   /**
@@ -159,23 +192,15 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         bairro: nnfb.control(person?.endereco?.bairro ?? ''),
         complemento: nnfb.control(person?.endereco?.complemento ?? ''),
         codigoPostal: nnfb.control(person?.endereco?.codigoPostal ?? ''),
-        idCidade: nnfb.control(person?.endereco?.idCidade ?? null),
+        idCidade: nnfb.control(person?.endereco?.idCidade?.toString() ?? null),
       }),
-      //Ainda não implementados
-      acessos: nnfb.group({
-        grupos: nnfb.control({ value: null, disabled: true }),
-        status: nnfb.control({ value: null, disabled: true }),
-      }),
-      prof: nnfb.group({
-        organizacao: nnfb.control({ value: null, disabled: true }),
-        dpto: nnfb.control({ value: null, disabled: true }),
-        cargo: nnfb.control({ value: null, disabled: true }),
-      }),
+      idAreasAtuacao: nnfb.control(person?.idAreasAtuacao ?? []),
     });
   }
 
   ngOnInit(): void {
     this._subscription.add(this._getPaises$.subscribe());
+    this._subscription.add(this._getAreasAtuacao$.subscribe());
 
     if (this.formMode == 'criar') {
       this.initForm();
@@ -183,30 +208,46 @@ export class PersonFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this._subscription.add(this._getPessoaById$.subscribe());
-  }
-
-  public paisChanged(value: number | undefined) {
-    if (!value) {
-      this.estadosList = [];
+    if (!!this.personEditId) {
+      this._subscription.add(this._getPessoaById$.subscribe());
       return;
     }
 
+    if (!!this.personEditEmail) {
+      this._subscription.add(this._getPessoaByEmail$.subscribe());
+      return;
+    }
+  }
+
+  public paisChanged(value: string | undefined) {
+    if (!value) {
+      this.estadoSelected = undefined;
+      this.personForm.get('endereco.idCidade')?.patchValue(null);
+      this.estadosList = [];
+      this.cidadesList = [];
+      return;
+    }
+
+    const valueAsNumber = parseInt(value);
+
     this._getEstados$ = this._selectListService
-      .getEstados(value)
+      .getEstados(valueAsNumber)
       .pipe(tap((response) => (this.estadosList = response)));
 
     this._subscription.add(this._getEstados$.subscribe());
   }
 
-  public estadoChanged(value: number | undefined) {
+  public estadoChanged(value: string | undefined) {
     if (!value) {
+      this.personForm.get('endereco.idCidade')?.patchValue(null);
       this.cidadesList = [];
       return;
     }
 
+    const valueAsNumber = parseInt(value);
+
     this._getCidades$ = this._selectListService
-      .getCidades('ESTADO', value)
+      .getCidades('ESTADO', valueAsNumber)
       .pipe(tap((response) => (this.cidadesList = response)));
 
     this._subscription.add(this._getCidades$.subscribe());

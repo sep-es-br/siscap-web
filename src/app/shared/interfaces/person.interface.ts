@@ -23,6 +23,7 @@ export interface IPerson {
   telefoneComercial?: string;
   telefonePessoal?: string;
   endereco?: IAddress;
+  idAreasAtuacao: Array<string>;
   imagemPerfil?: File | ArrayBuffer;
 }
 

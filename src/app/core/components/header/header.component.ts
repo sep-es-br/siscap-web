@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class HeaderComponent {
   @Input('offcanvasRef') navmenuOffcanvas!: TemplateRef<any>;
+
   public userProfile!: IProfile;
   public imageUser: string = 'https://gravatar.com/avatar/00000000000000000000000000000000';
   public UserName!: string;
@@ -67,10 +68,15 @@ export class HeaderComponent {
     });
   }
 
+  redirectUserProfile() {
+    this._router.navigate(['main', 'pessoas', 'form', 'editar'], {
+      queryParams: { email: this.userProfile.email },
+    });
+  }
+
   logOut() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user-profile');
-    localStorage.removeItem('currentUrl');
     this._router.navigate(['login']);
   }
 }

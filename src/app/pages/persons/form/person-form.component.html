@@ -8,7 +8,7 @@
       *ngIf="isAllowed('pessoaseditar')"
       type="button"
       class="btn mx-2 edit-btn"
-      (click)="switchMode(true, ['acessos', 'prof'])"
+      (click)="switchMode(true)"
       [disabled]="isEdit"
     >
       <i class="fa-solid fa-pencil"></i>
@@ -315,7 +315,7 @@
                     <ng-select
                       id="pais"
                       placeholder="-- Pais --"
-                      [disabled]="!isEdit"
+                      [disabled]="!isEdit && formMode != 'criar'"
                       [(ngModel)]="paisSelected"
                       [ngModelOptions]="{ standalone: true, }"
                       (change)="paisChanged($event)"
@@ -332,7 +332,7 @@
                     <ng-select
                       id="estado"
                       placeholder="-- Estado --"
-                      [disabled]="!isEdit"
+                      [disabled]="!isEdit && formMode != 'criar'"
                       [(ngModel)]="estadoSelected"
                       [ngModelOptions]="{ standalone: true }"
                       (change)="estadoChanged($event)"
@@ -374,7 +374,7 @@
       </div>
 
       <div
-        class="right-part col-12 col-md-4 d-md-flex flex-md-column justify-content-md-between"
+        class="right-part col-12 col-md-4 d-md-flex flex-md-column justify-content-md-start"
       >
         <div class="card">
           <div class="card-body">
@@ -408,7 +408,7 @@
                   <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
                     <input
                       #imagemPerfil
-                      [disabled]="!isEdit"
+                      [disabled]="!isEdit && formMode != 'criar'"
                       id="imagemPerfil"
                       type="file"
                       accept=".jpg, .gif, .png"
@@ -425,119 +425,40 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-body">
-            <div class="access-level">
-              <div formGroupName="acessos">
-                <div class="col-12">
-                  <div class="card-title border-bottom border-1">
-                    <span>Acessos</span>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-12">
-                    <label for="grupousuarios" class="form-label"
-                      >Grupo de Usuários</label
-                    >
-                    <ng-select
-                      id="grupos"
-                      placeholder="Desabilitado"
-                      formControlName="grupos"
-                    >
-                      <ng-option
-                        *ngFor="let placeholder of placeholderList"
-                        [value]="placeholder.id"
-                        >{{ placeholder.label }}</ng-option
-                      >
-                    </ng-select>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-12">
-                    <label for="status" class="form-label">Status</label>
-                    <ng-select
-                      id="status"
-                      placeholder="Desabilitado"
-                      formControlName="status"
-                    >
-                      <ng-option
-                        *ngFor="let placeholder of placeholderList"
-                        [value]="placeholder.id"
-                        >{{ placeholder.label }}</ng-option
-                      >
-                    </ng-select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body">
             <div class="professional-info">
-              <div formGroupName="prof">
+              <div class="col-12">
+                <div class="card-title border-bottom border-1">
+                  <span>Informações Profissionais</span>
+                </div>
+              </div>
+
+              <div class="row">
                 <div class="col-12">
-                  <div class="card-title border-bottom border-1">
-                    <span>Informações Profissionais</span>
-                  </div>
-                </div>
-
-                <div class="row">
                   <div class="col-12">
-                    <div class="col-12">
-                      <label for="organizacao" class="form-label"
-                        >Organizacao</label
+                    <label for="idAreasAtuacao" class="form-label col-12">
+                      Áreas de Atuação
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'idAreasAtuacao' }
+                        "
+                      ></ng-container>
+                    </label>
+                    <ng-select
+                      [multiple]="true"
+                      [hideSelected]="true"
+                      id="idAreasAtuacao"
+                      placeholder="-- Áreas de Atuação --"
+                      formControlName="idAreasAtuacao"
+                    >
+                      <ng-option
+                        *ngFor="let area of areasAtuacaoList"
+                        [value]="area.id"
+                        >{{ area.nome }}</ng-option
                       >
-                      <ng-select
-                        id="organizacao"
-                        placeholder="Desabilitado"
-                        formControlName="organizacao"
-                      >
-                        <ng-option
-                          *ngFor="let placeholder of placeholderList"
-                          [value]="placeholder.id"
-                          >{{ placeholder.label }}</ng-option
-                        >
-                      </ng-select>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-12">
-                    <div class="col-12">
-                      <label for="dptosetor" class="form-label"
-                        >Departamento / Setor</label
-                      >
-                      <ng-select
-                        id="dpto"
-                        placeholder="Desabilitado"
-                        read
-                        formControlName="dpto"
-                      >
-                        <ng-option
-                          *ngFor="let placeholder of placeholderList"
-                          [value]="placeholder.id"
-                          >{{ placeholder.label }}</ng-option
-                        >
-                      </ng-select>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-12">
-                    <label for="cargo" class="form-label">Cargo</label>
-                    <input
-                      id="cargo"
-                      type="text"
-                      placeholder="Desabilitado"
-                      class="form-control"
-                      formControlName="cargo"
-                    />
+                    </ng-select>
                   </div>
                 </div>
               </div>
@@ -583,15 +504,3 @@
     [control]="personForm.get(controlName) ?? undefined"
   ></siscap-alert>
 </ng-template>
-
-<!-- <ng-select
-  id="placeholder"
-  placeholder="placeholder"
-  formControlName="placeholder"
->
-  <ng-option
-    *ngFor="let placeholder of placeholderList"
-    [value]="placeholder.id"
-    >{{ placeholder.label }}
-  </ng-option>
-</ng-select> -->

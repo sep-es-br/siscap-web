@@ -28,8 +28,6 @@ export class AuthRedirectComponent {
       );
     }
 
-    const previousUrl = sessionStorage.getItem('currentUrl') ?? 'main';
-
     this._profileService
       .getUserInfo()
       .pipe(
@@ -49,8 +47,7 @@ export class AuthRedirectComponent {
           sessionStorage.setItem('user-profile', JSON.stringify(userProfile));
         }),
         finalize(() => {
-          this._router.navigate([previousUrl]);
-          sessionStorage.removeItem('currentUrl');
+          this._router.navigate(['main']);
         })
       )
       .subscribe();

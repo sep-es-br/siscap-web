@@ -44,7 +44,18 @@ export class ErrorHandlerService {
 
     this._toastService.toastNotifier$.subscribe((value) => {
       if (value) {
-        this._router.navigateByUrl(!!backEndError ? 'main' : 'login');
+        const errorCode = backEndError.codigo;
+
+        switch (errorCode) {
+          case 401:
+            this._router.navigateByUrl('login');
+            break;
+          case 403:
+            this._router.navigateByUrl('main');
+            break;
+          default:
+            break;
+        }
       }
     });
   }
