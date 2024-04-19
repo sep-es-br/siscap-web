@@ -16,7 +16,7 @@ export class HeaderComponent {
   @Input('offcanvasRef') navmenuOffcanvas!: TemplateRef<any>;
 
   public userProfile!: IProfile;
-  public imageUser: string = 'https://gravatar.com/avatar/00000000000000000000000000000000';
+  public imageUser: string = '/assets/images/user.png';
   public UserName!: string;
   public UserEmail!: string;
   public currentUrl!: string | undefined;
