@@ -13,6 +13,7 @@ import {
 } from '../../shared/interfaces/person.interface';
 
 import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
+import { Config } from 'datatables.net';
 
 @Component({
   selector: 'siscap-persons',
@@ -26,6 +27,8 @@ export class PersonsComponent implements OnInit, OnDestroy {
   private _subscription: Subscription = new Subscription();
 
   public pessoasList: Array<IPersonTable> = [];
+
+  public datatableConfig: Config = {};
 
   constructor(
     private _router: Router,
@@ -41,6 +44,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._subscription.add(this._getPessoas$.subscribe());
+    this.treatDatatableConfig();
   }
 
   public sortTable(event: SortColumn) {
@@ -61,6 +65,54 @@ export class PersonsComponent implements OnInit, OnDestroy {
       relativeTo: this._route,
       queryParams: { id: person.id },
     });
+  }
+
+  treatDatatableConfig(){
+    this.datatableConfig = {
+
+      ajax: (dataTablesParameters: any, callback) => {
+        this._getPessoas$.subscribe(resp => {
+          callback({
+            recordsTotal: resp.totalElements,
+            recordsFiltered: resp.pageable,
+            data: resp.content
+          });
+        });
+      },
+      searching: true,
+
+      // ajax(data, callback, settings) {
+      //   callback({
+      //     data: this.pessoasList,
+      //     recordsTotal: this.pessoasList.length,
+      //     recordsFiltered: this.pessoasList.length,
+      //   });
+      // },
+
+      columns: [
+        { data: 'id', title: 'ID' },
+        { data: 'nome', title: 'Nome' },
+        { data: 'email', title: 'E-mail' },
+      ],
+      columnDefs: [
+        {
+          targets: 0,
+          visible: false,
+        },
+        {
+          targets: 3,
+          orderable: false,
+          render: (data: any, type: any, row: any, meta: any) => {
+            return `
+              <button class="btn btn-primary" (click)="redirectPersonForm(row)">
+                <i class="fa fa-edit"></i>
+
+              </button>`;
+            }
+        }],
+      order: [[1, 'asc']],
+    };
+
   }
 
   queryPerson() {}

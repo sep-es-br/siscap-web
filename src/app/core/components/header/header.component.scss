@@ -6,6 +6,10 @@
   background-color: rgba(16, 127, 207, 1);
 }
 
+.nav-menu ul.nav-tabs{
+  padding-top: 0.5rem;
+}
+
 header{
   position: fixed;
   top: 0;
@@ -20,7 +24,7 @@ header{
   background-color: rgb(27, 132, 255);
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   font-size: 0.8rem;
-  height: 4.5rem;
+  height: 5rem;
 }
 
 .sub-menu{

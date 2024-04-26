@@ -15,3 +15,13 @@
     cursor: default;
     pointer-events: none;
 }
+
+.section-breadcrumb{
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    z-index: 10;
+    width: 100%;
+    top: 7rem;
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important
+}

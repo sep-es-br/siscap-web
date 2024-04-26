@@ -19,8 +19,8 @@ $disabled: #e9ecef;
 $icon-secondary: #c2c2c2;
 
 //Card
-$card-bg: #f2f2f266;
-$card-border: #f2f2f2;
+// $card-bg: #f2f2f266;
+// $card-border: #f2f2f2;
 
 //Taxa de Contraste (necessário para permitir o conteúdo branco com a cor $blue acima, por exemplo)
 //Valores possíveis somente 3, 4.5 e 7
@@ -35,8 +35,8 @@ $min-contrast-ratio: 3;
   --invalid: #dc3545;
   --disabled: #e9ecef;
   --icon-secondary: #c2c2c2;
-  --card-bg: #f2f2f266;
-  --card-border: #f2f2f2;
+  // --card-bg: #f2f2f266;
+  // --card-border: #f2f2f2;
 }
 
 // --- Cores ---
