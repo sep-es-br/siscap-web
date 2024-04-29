@@ -339,11 +339,16 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
           )
           .subscribe();
       },
-      (reject) => {}
+      (reject) => { }
     );
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
   }
+
+  downloadDic(id: number): void {
+    this._projetosService.downloadDIC(id);
+  }
+
 }
