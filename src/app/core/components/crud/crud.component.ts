@@ -7,6 +7,8 @@ import { fromEvent } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { SweetAlertOptions } from 'sweetalert2';
 import { Api, Config } from 'datatables.net';
+// import language from 'datatables.net-plugins/i18n/pt-BR.mjs';
+
 
 @Component({
   selector: 'app-crud',
@@ -64,6 +66,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       paging: true,
       language: {
+        url: '//cdn.datatables.net/plug-ins/2.0.5/i18n/pt-BR.json',
         processing: '<span class="spinner-border spinner-border-sm align-middle"></span> Loading...'
       }, ...this.datatableConfig,
       searching: true,
@@ -83,7 +86,8 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   renderActionColumn(): void {
     const actionColumn = {
       sortable: false,
-      title: 'Actions',
+      title: 'Gerenciar',
+
       render: (data: any, type: any, full: any) => {
         const editButton = `
           <button class="btn btn-icon btn-active-light-primary w-30px h-30px me-3" data-action="edit" data-id="${full.id}">
@@ -103,7 +107,8 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.editEvent.observed) {
           buttons.push(editButton);
         }
-
+        
+        buttons.push(editButton);
         if (this.deleteEvent.observed) {
           buttons.push(deleteButton);
         }

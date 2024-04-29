@@ -30,6 +30,8 @@ export class PersonsComponent implements OnInit, OnDestroy {
 
   public datatableConfig: Config = {};
 
+  public dataTableList!:any;
+
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
@@ -45,6 +47,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._subscription.add(this._getPessoas$.subscribe());
     this.treatDatatableConfig();
+    console.log(this._getPessoas$);
   }
 
   public sortTable(event: SortColumn) {
@@ -68,12 +71,37 @@ export class PersonsComponent implements OnInit, OnDestroy {
   }
 
   treatDatatableConfig(){
+//     this._getPessoas$.subscribe(resp => {
+//       console.log("RESP",resp);
+//       this.dataTableList = resp;
+// //       pages: number;
+// // currentPage: number;
+// // content: any[];
+// // totalItems: number;
+// // itemsPerPage: number;
+// // itemsPerPageOptions: number[];
+      
+//         // totalItems: resp.totalElements,
+//         // recordsFiltered: resp.pageable,
+//         // content: resp.content
+      
+    // });
+
+
+
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
         this._getPessoas$.subscribe(resp => {
+          console.log("RESP",resp);
+    //       pages: number;
+    // currentPage: number;
+    // content: any[];
+    // totalItems: number;
+    // itemsPerPage: number;
+    // itemsPerPageOptions: number[];
           callback({
-            recordsTotal: resp.totalElements,
+            totalItems: resp.totalElements,
             recordsFiltered: resp.pageable,
             data: resp.content
           });
@@ -93,6 +121,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
         { data: 'id', title: 'ID' },
         { data: 'nome', title: 'Nome' },
         { data: 'email', title: 'E-mail' },
+        { data: 'acoes', title: 'Ações' },
       ],
       columnDefs: [
         {
