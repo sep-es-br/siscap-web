@@ -23,12 +23,12 @@
     "@popperjs/core": "^2.11.8",
     "@sweetalert2/ngx-sweetalert2": "^12.3.0",
     "angular-datatables": "^17.1.0",
+    "@superset-ui/embedded-sdk": "^0.1.0-alpha.11",
     "bootstrap": "5.3",
     "datatables.net": "^2.0.3",
     "datatables.net-bs5": "^2.0.3",
     "jquery": "^3.6.0",
     "ngx-mask": "^17.0.4",
-    "primeng": "^17.10.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
