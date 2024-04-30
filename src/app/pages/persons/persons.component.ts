@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, Subscription, tap } from 'rxjs';
@@ -6,6 +6,9 @@ import { Observable, Subscription, tap } from 'rxjs';
 import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
 
 import { SortColumn } from '../../core/directives/sortable/sortable.directive';
+
+import  Swal  from 'sweetalert2';
+
 
 import {
   IPersonGet,
@@ -43,7 +46,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
-    private _pessoasService: PessoasService,
+    private _pessoasService: PessoasService
   ) {
     this._getPessoas$ = this._pessoasService.getPessoaPaginated(this.page, this.pageSize, this.sort, this.search);
   }
@@ -78,15 +81,14 @@ export class PersonsComponent implements OnInit, OnDestroy {
     return 'data:image/jpeg;base64,' + data;
   }
 
-  public redirectPersonForm(person: IPersonTable) {
+  public redirectPersonForm(idPerson: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: person.id },
+      queryParams: { id: idPerson },
     });
   }
 
   treatDatatableConfig(){
-    alert("TreatDatatableConfig");
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
@@ -98,7 +100,6 @@ export class PersonsComponent implements OnInit, OnDestroy {
             recordsFiltered: resp.numberOfElements,
             data: resp.content,
           });
-        this.test();
         });
       },
       processing: true,
@@ -112,11 +113,28 @@ export class PersonsComponent implements OnInit, OnDestroy {
       
       order: [[1, 'asc']],
     };
+  }
 
+  public deletarPessoa(id: number) {
+
+    this._pessoasService
+      .deletePessoa(id)
+      .pipe(
+        tap((response) => {
+          if (response) {
+            Swal.fire('Sucesso!', 'Pessoa deletada com sucesso!', 'success').then(() => {
+              this._router
+                .navigateByUrl('/', { skipLocationChange: true })
+                .then(() => this._router.navigateByUrl('main/pessoas'));
+            });
+          }
+        })
+      )
+      .subscribe();
+     
+   
   }
-  test(){
-    console.log(" EStá aqui???? <----<");
-  }
+  
 
   queryPerson() {}
 

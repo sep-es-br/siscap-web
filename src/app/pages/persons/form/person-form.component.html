@@ -2,29 +2,6 @@
   <siscap-loading></siscap-loading>
 </div>
 
-<div class="row mx-1" *ngIf="!loading && formMode != 'criar'">
-  <div class="d-flex justify-content-end">
-    <button
-      *ngIf="isAllowed('pessoaseditar')"
-      type="button"
-      class="btn mx-2 edit-btn"
-      (click)="switchMode(true)"
-      [disabled]="isEdit"
-    >
-      <i class="fa-solid fa-pencil"></i>
-    </button>
-
-    <button
-      *ngIf="isAllowed('pessoasdeletar')"
-      type="button"
-      class="btn delete-btn"
-      (click)="deletarPessoa(personEditId)"
-    >
-      <i class="fa-solid fa-trash-can"></i>
-    </button>
-  </div>
-</div>
-
 <div class="person-form" *ngIf="!loading">
   <form [formGroup]="personForm">
     <div class="row ">

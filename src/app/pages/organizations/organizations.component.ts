@@ -14,6 +14,7 @@ import {
 
 import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
 import { Config } from 'datatables.net';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'siscap-organizations',
@@ -93,10 +94,10 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     return 'data:image/jpeg;base64,' + data;
   }
 
-  public redirectOrganizationForm(org: IOrganizationTable) {
+  public redirectOrganizationForm(OrganizationId: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: org.id },
+      queryParams: { id: OrganizationId },
     });
   }
 
@@ -109,15 +110,11 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         .pipe(
           tap((response) => {
             if (response) {
-
-
-              // this._toastService.showToast(
-              //   'success',
-              //   'Organizacao excluída com sucesso.'
-              // );
-              // this._router
-              //   .navigateByUrl('/', { skipLocationChange: true })
-              //   .then(() => this._router.navigateByUrl('main/organizacoes'));
+              Swal.fire('Organização deletada com sucesso!', '', 'success').then(() => {
+                this._router
+                  .navigateByUrl('/', { skipLocationChange: true })
+                  .then(() => this._router.navigateByUrl('main/organizacoes'));
+              });
             }
           })
         )

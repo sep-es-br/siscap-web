@@ -118,8 +118,12 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (this.editEvent.observed) {
           editButton = `
-          <button class="btn btn-icon btn-active-light-primary w-30px h-30px me-3" data-action="edit" data-id="${full.id}">
-            <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span class="path2"></span></i>
+          <button class="btn dropdown-item" data-action="edit" data-id="${full.id}">
+            <i class="ki-duotone ki-pencil">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            Editar
           </button>`;
         }
         

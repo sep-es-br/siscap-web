@@ -100,8 +100,7 @@
   </div>
 </div> -->
 <div class="card shadow border-light p-3">
-  <!-- <app-crud [datatableConfig]="datatableConfig" route="/apps/users"></app-crud> -->
-  <app-crud [datatableConfig]="datatableConfig"  (deleteEvent)="deletarOrganizacao($event)" ></app-crud>
+  <app-crud [datatableConfig]="datatableConfig" (editEvent)="redirectOrganizationForm($event)"   (deleteEvent)="deletarOrganizacao($event)" ></app-crud>
 </div>
 
 <ng-template #profileImageTemplate let-imgSrc="imgSrc">
