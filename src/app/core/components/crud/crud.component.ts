@@ -7,6 +7,7 @@ import { fromEvent } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { SweetAlertOptions } from 'sweetalert2';
 import { Api, Config } from 'datatables.net';
+import { Location } from '@angular/common';
 // import language from 'datatables.net-plugins/i18n/pt-BR.mjs';
 
 
@@ -43,6 +44,8 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private idInAction!: number;
 
+  public textDelete: string = 'Esta ação não poderá ser desfeita. Deseja continuar?';
+
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
@@ -52,25 +55,33 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   private modalRef!: NgbModalRef;
 
   private clickListener!: () => void;
+  public nomeInAction!: string;
 
-  constructor(private renderer: Renderer2, private router: Router, private modalService: NgbModal) { }
+  constructor(private renderer: Renderer2, private router: Router, private modalService: NgbModal,private location: Location) { }
 
   ngOnInit(): void {
+    let lastPage=0;
+    let lastSearchText="";
     this.dtOptions = {
       dom: "<'row'<'col-sm-12'tr>>" +
         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       processing: true,
+      displayStart:lastPage,
+      search:{search:lastSearchText},
       layout: {
         topStart: 'search',
         topEnd: undefined,
       },
       paging: true,
       language: {
-        url: '//cdn.datatables.net/plug-ins/2.0.5/i18n/pt-BR.json',
-        processing: '<span class="spinner-border spinner-border-sm align-middle"></span> Loading...'
-      }, ...this.datatableConfig,
-      searching: true,
+        url:  `${this.router.parseUrl('/assets/plugins/datatable/translations/pt-BR.json')}`,
+        processing: '<span class="spinner-border spinner-border-sm align-middle"></span> Carregando...'
+      }, 
+      ...this.datatableConfig,
+      serverSide: true,
+      searching: true, 
     };
+    console.log("datatableConfig |||",this.datatableConfig);
     this.renderActionColumn();
 
     this.setupSweetAlert();
@@ -84,34 +95,48 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   renderActionColumn(): void {
+
+    
     const actionColumn = {
       sortable: false,
       title: 'Gerenciar',
 
       render: (data: any, type: any, full: any) => {
-        const editButton = `
-          <button class="btn btn-icon btn-active-light-primary w-30px h-30px me-3" data-action="edit" data-id="${full.id}">
-            <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span class="path2"></span></i>
-          </button>`;
+        let editButton = '';
+        let deleteButton = '';
 
-        const deleteButton = `
-          <button class="btn btn-icon btn-active-light-primary w-30px h-30px" data-action="delete" data-id="${full.id}">
-            <i class="ki-duotone ki-trash fs-3">
+        if (this.deleteEvent.observed) {
+          deleteButton = `
+          <button class="btn dropdown-item" data-action="delete" data-name="${full.nome}" data-id="${full.id}">
+            <i class="ki-duotone ki-trash ">
               <span class="path1"></span><span class="path2"></span>
               <span class="path3"></span><span class="path4"></span><span class="path5"></span>
             </i>
+            Excluir
           </button>`;
-
-        const buttons = [];
+        }
 
         if (this.editEvent.observed) {
-          buttons.push(editButton);
+          editButton = `
+          <button class="btn btn-icon btn-active-light-primary w-30px h-30px me-3" data-action="edit" data-id="${full.id}">
+            <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span class="path2"></span></i>
+          </button>`;
         }
         
-        buttons.push(editButton);
-        if (this.deleteEvent.observed) {
-          buttons.push(deleteButton);
-        }
+
+        const actionsDropdown = `
+          <div class="btn-group">
+            <button type="button" class="btn border-0 btn-icon btn-light-primary" data-bs-toggle="dropdown">
+              <i class="fa-solid fa-ellipsis"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+               ${editButton}
+               ${deleteButton}
+            </div>
+          </div>`;
+
+        const buttons = [];
+        buttons.push(actionsDropdown);
 
         return buttons.join('');
       },
@@ -126,8 +151,16 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
     this.clickListener = this.renderer.listen(document, 'click', (event) => {
       const closestBtn = event.target.closest('.btn');
       if (closestBtn) {
-        const { action, id } = closestBtn.dataset;
+        console.log("Closest ",closestBtn.dataset);
+        const { action, id, name } = closestBtn.dataset;
         this.idInAction = id;
+        this.nomeInAction = name;
+        // console.log("Nome",nonameme);
+        this.textDelete = `Você está deletando o registro "<b>${name}</b>".<br>Esta ação não poderá ser desfeita. Deseja continuar?`;
+
+        
+           
+       
 
         switch (action) {
           case 'view':
@@ -145,11 +178,14 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
             break;
 
           case 'delete':
-            this.deleteSwal.fire().then((clicked) => {
-              if (clicked.isConfirmed) {
-                this.successSwal.fire();
-              }
-            });
+            setTimeout(() => {
+              console.log("Text",this.textDelete);
+              this.deleteSwal.fire().then((clicked) => {
+               if (clicked.isConfirmed) {
+                 console.log('Sucesso');
+               }
+             });
+            }, 0);
             break;
         }
       }
@@ -159,12 +195,18 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.reload.unsubscribe();
+    if (this.reload) {
+      this.reload.unsubscribe();
+    }
     if (this.clickListener) {
       this.clickListener();
     }
     this.modalService.dismissAll();
   }
+
+  // adjustTextDelete(): void {
+    
+  // }
 
   triggerDelete() {
     this.deleteEvent.emit(this.idInAction);
@@ -192,6 +234,8 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   setupSweetAlert() {
     this.swalOptions = {
       buttonsStyling: false,
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Não, manter',
     };
   }
 }

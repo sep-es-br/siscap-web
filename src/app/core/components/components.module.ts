@@ -13,7 +13,6 @@ import { AlertComponent } from './alert/alert.component';
 import { LoadingComponent } from './loading/loading.component';
 import { ToastComponent } from './toast/toast.component';
 import { DeleteModalComponent } from './modal/delete-modal/delete-modal.component';
-import { TableListComponent } from './table-list/table-list.component';
 import { CrudModule } from './crud/crud.module';
 
 @NgModule({
@@ -24,8 +23,7 @@ import { CrudModule } from './crud/crud.module';
     AlertComponent,
     LoadingComponent,
     ToastComponent,
-    DeleteModalComponent,
-    TableListComponent
+    DeleteModalComponent
   ],
   imports: [CommonModule, RouterModule, PipesModule, NgbToastModule, NgbDropdownModule, NgbModule, CrudModule],
   exports: [
@@ -36,7 +34,6 @@ import { CrudModule } from './crud/crud.module';
     LoadingComponent,
     ToastComponent,
     DeleteModalComponent,
-    TableListComponent,
     CrudModule
   ],
 })

@@ -51,7 +51,7 @@ export abstract class NavMenuLinks {
       ],
     },
     {
-      category: 'Configurações',
+      category: 'Partes Interessadas',
       hidden: false,
       slug: 'configuracoes',
       routes: [

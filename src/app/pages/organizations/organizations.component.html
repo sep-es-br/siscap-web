@@ -1,4 +1,4 @@
-<div class="organization-interaction mx-3">
+<!-- <div class="organization-interaction mx-3">
   <div class="search-input col-6 col-sm-4 col-md-2 ms-auto">
     <div class="input-group ms-auto ms-sm-0">
       <input type="text" placeholder="Pesquisar..." class="form-control" />
@@ -98,6 +98,10 @@
       </div>
     </div>
   </div>
+</div> -->
+<div class="card shadow border-light p-3">
+  <!-- <app-crud [datatableConfig]="datatableConfig" route="/apps/users"></app-crud> -->
+  <app-crud [datatableConfig]="datatableConfig"  (deleteEvent)="deletarOrganizacao($event)" ></app-crud>
 </div>
 
 <ng-template #profileImageTemplate let-imgSrc="imgSrc">

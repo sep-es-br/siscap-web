@@ -74,7 +74,7 @@
 <!-- <app-table-list [dataList]="dataTableList" ></app-table-list> -->
 
 <div class="card shadow border-light p-3">
-  <app-crud [datatableConfig]="datatableConfig" route="/apps/users"></app-crud>
+  <app-crud [datatableConfig]="datatableConfig"  route="/main/pessoas" (page.dt)="test()" (pageEvent)="test()" (deleteEvent)="test()" ></app-crud>
 </div>
 
 <ng-template #profileImageTemplate let-imgSrc="imgSrc">

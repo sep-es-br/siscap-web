@@ -32,6 +32,29 @@ export class PessoasService {
     );
   }
 
+  getPessoaPaginated(page?: number, pageSize?: number, sort?: string, search?: string): Observable<IPersonGet> {
+    const params = {
+      pageSize: pageSize?.toString() ?? "15",
+      page: page !== undefined ? page.toString() : "0",
+      sort: sort !== undefined ? sort?.toString() : '',
+      search: search !== undefined ? search.toString() : '', // Ensure search is always a string
+    };
+
+    return this._http.get<IPersonGet>(`${this._url}?${new URLSearchParams(params).toString()}` ).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this._errorHandlerService.handleError(err);
+        return throwError(() => err);
+      })
+    );
+
+    return this._http.get<IPersonGet>(this._url, { params: params }).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this._errorHandlerService.handleError(err);
+        return throwError(() => err);
+      })
+    );
+  }
+
   putPessoa(id: number, body: FormData): Observable<IPerson> {
     return this._http.put<IPerson>(`${this._url}/${id}`, body).pipe(
       catchError((err: HttpErrorResponse) => {

@@ -251,7 +251,7 @@ body::-webkit-scrollbar {
 }
 
 body::-webkit-scrollbar-thumb {
-  background-color: #1b84ff;    /* color of the scroll thumb */
+  background-color: #85beff;    /* color of the scroll thumb */
   border: 1px solid #1a74ff;  /* creates padding around scroll thumb */
 }
 
@@ -296,4 +296,8 @@ body::-webkit-scrollbar-track-piece {
 	line-height: 1;
     font-size: 1rem;
 	color: var(--#{$prefix}text-muted);
+}
+
+.no_underline {
+  text-decoration: none;
 }

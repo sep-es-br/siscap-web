@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, Subscription, tap } from 'rxjs';
@@ -32,22 +32,37 @@ export class PersonsComponent implements OnInit, OnDestroy {
 
   public dataTableList!:any;
 
+  public page = 0;
+  public pageSize = 50;
+  public sort = '';
+  public search = '';
+
+  reloadEvent: EventEmitter<boolean> = new EventEmitter();
+
+
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
     private _pessoasService: PessoasService,
   ) {
-    this._getPessoas$ = this._pessoasService.getPessoas().pipe(
-      tap((response: IPersonGet) => {
-        this.pessoasList = response.content;
-      })
-    );
+    this._getPessoas$ = this._pessoasService.getPessoaPaginated(this.page, this.pageSize, this.sort, this.search);
   }
 
   ngOnInit(): void {
-    this._subscription.add(this._getPessoas$.subscribe());
+    this.getInitialData();
+    this._subscription.add(this.treatDatatableConfig());
+    // this._subscription.add(this._getPessoas$.subscribe());
     this.treatDatatableConfig();
-    console.log(this._getPessoas$);
+    // console.log(this._getPessoas$);
+    // this.dataTableList.on('pageChange', (event: { page: number; }) => {
+    //   this.page = event.page;
+    //   this._getPessoas$ = this._pessoasService.getPessoaPaginated(this.page, this.pageSize, this.sort, this.search);
+    //   this._getPessoas$.subscribe();
+    // });
+  }
+
+  getInitialData(){
+    
   }
 
   public sortTable(event: SortColumn) {
@@ -71,77 +86,36 @@ export class PersonsComponent implements OnInit, OnDestroy {
   }
 
   treatDatatableConfig(){
-//     this._getPessoas$.subscribe(resp => {
-//       console.log("RESP",resp);
-//       this.dataTableList = resp;
-// //       pages: number;
-// // currentPage: number;
-// // content: any[];
-// // totalItems: number;
-// // itemsPerPage: number;
-// // itemsPerPageOptions: number[];
-      
-//         // totalItems: resp.totalElements,
-//         // recordsFiltered: resp.pageable,
-//         // content: resp.content
-      
-    // });
-
-
-
+    alert("TreatDatatableConfig");
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
+
         this._getPessoas$.subscribe(resp => {
           console.log("RESP",resp);
-    //       pages: number;
-    // currentPage: number;
-    // content: any[];
-    // totalItems: number;
-    // itemsPerPage: number;
-    // itemsPerPageOptions: number[];
           callback({
-            totalItems: resp.totalElements,
-            recordsFiltered: resp.pageable,
-            data: resp.content
+            recordsTotal: resp.totalElements,
+            recordsFiltered: resp.numberOfElements,
+            data: resp.content,
           });
+        this.test();
         });
       },
+      processing: true,
+      serverSide: true,
       searching: true,
-
-      // ajax(data, callback, settings) {
-      //   callback({
-      //     data: this.pessoasList,
-      //     recordsTotal: this.pessoasList.length,
-      //     recordsFiltered: this.pessoasList.length,
-      //   });
-      // },
-
       columns: [
         { data: 'id', title: 'ID' },
         { data: 'nome', title: 'Nome' },
-        { data: 'email', title: 'E-mail' },
-        { data: 'acoes', title: 'Ações' },
+        { data: 'email', title: 'E-mail' }
       ],
-      columnDefs: [
-        {
-          targets: 0,
-          visible: false,
-        },
-        {
-          targets: 3,
-          orderable: false,
-          render: (data: any, type: any, row: any, meta: any) => {
-            return `
-              <button class="btn btn-primary" (click)="redirectPersonForm(row)">
-                <i class="fa fa-edit"></i>
-
-              </button>`;
-            }
-        }],
+      
       order: [[1, 'asc']],
     };
 
+  }
+  test(){
+    console.log(" EStá aqui???? <----<");
   }
 
   queryPerson() {}

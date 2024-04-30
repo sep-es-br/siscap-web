@@ -1,4 +1,4 @@
-<table datatable [dtOptions]="dtOptions" class="table table-striped align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+<table datatable [dtOptions]="dtOptions" class="table  table-striped align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
   <thead>
     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
       <ng-container *ngFor="let column of dtOptions.columns">
@@ -10,9 +10,9 @@
   </tbody>
 </table>
 
-<swal #deleteSwal [swalOptions]="swalOptions" title="Are you sure to delete?" text="This cannot be undone" icon="warning" [showCancelButton]="true"
+<swal #deleteSwal [swalOptions]="swalOptions" title="Tem certeza que deseja excluir?" [html]="textDelete"  icon="warning" [showCancelButton]="true"
   [focusCancel]="true" (confirm)="triggerDelete()"
-  [customClass]="{confirmButton: 'btn btn-danger', cancelButton: 'btn btn-active-light'}">
+  [customClass]="{ cancelButton: 'btn btn-outline-primary mx-1', confirmButton: 'btn btn-danger  mx-1',}">
 </swal>
 
 <swal #successSwal [swalOptions]="swalOptions" title="Delete successfully!" text="" icon="success"
