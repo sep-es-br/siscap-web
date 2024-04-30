@@ -157,8 +157,8 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       idPessoaResponsavel: nnfb.control(
         organization?.idPessoaResponsavel?.toString() ?? null
       ),
-      idCidade: nnfb.control(organization?.idCidade.toString() ?? null),
-      idEstado: nnfb.control(organization?.idEstado.toString() ?? null),
+      idCidade: nnfb.control(organization?.idCidade?.toString() ?? null),
+      idEstado: nnfb.control(organization?.idEstado?.toString() ?? null),
       idPais: nnfb.control(organization?.idPais.toString() ?? null, {
         validators: Validators.required,
       }),
