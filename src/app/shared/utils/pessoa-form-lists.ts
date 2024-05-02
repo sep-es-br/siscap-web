@@ -7,9 +7,6 @@ export abstract class PessoaFormLists {
   static generosList: Array<string> = [
     'Masculino',
     'Feminino',
-    'Trans Masculino',
-    'Trans Feminino',
-    'Não Binário',
     'Outro',
   ];
 }
