@@ -22,6 +22,8 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
 import { ArrayItemNumberToStringMapper } from '../../../shared/utils/array-item-mapper';
 
+import { BreadcrumpService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+
 @Component({
   selector: 'siscap-project-form',
   standalone: false,
@@ -62,10 +64,16 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     private _projetosService: ProjetosService,
     private _selectListService: SelectListService,
     private _toastService: ToastService,
-    private _modalService: NgbModal
+    private _modalService: NgbModal,
+    private _breadcrumbService: BreadcrumpService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.projectEditId = this._route.snapshot.queryParams['id'] ?? null;
+
+    this._breadcrumbService.breadcrumpAction.subscribe((actionType: string) => {
+      this.handleActionBreadcrumb(actionType);
+    });
+
 
     this._getProjetoById$ = this._projetosService
       .getProjetoById(this.projectEditId)
@@ -342,6 +350,33 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       (reject) => { }
     );
   }
+
+
+
+  public handleActionBreadcrumb(actionType: string) {
+    switch (actionType) {
+      case 'edit':
+        if(this.isAllowed('projetoseditar')){
+          this.switchMode(true, ['idProjetos']);
+        }
+        break;
+
+      case 'delete':
+        if(this.isAllowed('projetosedeletar')){
+          this.deletarProjeto(this.projectEditId );
+        }
+        break;
+
+      case 'cancel':
+        this.cancelForm();
+        break;
+
+      case 'save':
+        this.submitProjectForm(this.projectForm);
+        break;
+    }
+  }
+  
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();

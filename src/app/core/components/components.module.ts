@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { NgbDropdownModule, NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbToastModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { PipesModule } from '../pipes/pipes.module';
 
@@ -13,6 +13,7 @@ import { AlertComponent } from './alert/alert.component';
 import { LoadingComponent } from './loading/loading.component';
 import { ToastComponent } from './toast/toast.component';
 import { DeleteModalComponent } from './modal/delete-modal/delete-modal.component';
+import { CrudModule } from './crud/crud.module';
 
 @NgModule({
   declarations: [
@@ -22,9 +23,9 @@ import { DeleteModalComponent } from './modal/delete-modal/delete-modal.componen
     AlertComponent,
     LoadingComponent,
     ToastComponent,
-    DeleteModalComponent,
+    DeleteModalComponent
   ],
-  imports: [CommonModule, RouterModule, PipesModule, NgbToastModule, NgbDropdownModule],
+  imports: [CommonModule, RouterModule, PipesModule, NgbToastModule, NgbDropdownModule, NgbModule, CrudModule],
   exports: [
     NavMenuComponent,
     HeaderComponent,
@@ -33,6 +34,7 @@ import { DeleteModalComponent } from './modal/delete-modal/delete-modal.componen
     LoadingComponent,
     ToastComponent,
     DeleteModalComponent,
+    CrudModule
   ],
 })
 export class ComponentsModule {}

@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@100..700&display=swap');
+
+@mixin font-oswald($weight: 400, $style: normal) {
+    font-family: 'Oswald', sans-serif;
+    font-optical-sizing: auto;
+    font-weight: $weight;
+    font-style: $style;
+}
+
+.oswald-normal {
+    @include font-oswald(400, normal);
+}
+
+.oswald-italic {
+    @include font-oswald(400, italic);
+}
+
+.oswald-oblique {
+    @include font-oswald(400, oblique);
+}
+
+.oswald-oblique-20 {
+    @include font-oswald(400, oblique 20deg);
+}
+
+.oswald-bold {
+    @include font-oswald(700, normal);
+}   
+
+.oswald-bold-italic {
+    @include font-oswald(700, italic);
+}
+
+.oswald-bold-oblique {
+    @include font-oswald(700, oblique);
+}   
+
+.oswald-bold-oblique-20 {
+    @include font-oswald(700, oblique 20deg);
+}
+
+.oswald-extra-bold {
+    @include font-oswald(800, normal);
+}
+
+.oswald-extra-bold-italic {
+    @include font-oswald(800, italic);
+}
+
+.oswald-extra-bold-oblique {
+    @include font-oswald(800, oblique);
+}
+
+.oswald-extra-bold-oblique-20 {
+    @include font-oswald(800, oblique 20deg);
+}
+
+.oswald-black {
+    @include font-oswald(900, normal);
+}
+
+.oswald-black-italic {
+    @include font-oswald(900, italic);
+}
+
+.oswald-black-oblique {
+    @include font-oswald(900, oblique);
+}
+
+.oswald-black-oblique-20 {
+    @include font-oswald(900, oblique 20deg);
+}
+
+.oswald-light {
+    @include font-oswald(200, normal);
+}   
+
+.oswald-light-italic {
+    @include font-oswald(200, italic);
+}   
+
+.oswald-light-oblique {
+    @include font-oswald(200, oblique);
+}   
+
+.oswald-light-oblique-20 {
+    @include font-oswald(200, oblique 20deg);
+}   
+
+.oswald-extra-light {
+    @include font-oswald(300, normal);
+}
+
+.oswald-extra-light-italic {
+    @include font-oswald(300, italic);
+}
+
+.oswald-extra-light-oblique {
+    @include font-oswald(300, oblique);
+}
+
+.oswald-extra-light-oblique-20 {
+    @include font-oswald(300, oblique 20deg);
+}
+
+.oswald-medium {
+    @include font-oswald(500, normal);
+}
+
+.oswald-medium-italic {
+    @include font-oswald(500, italic);
+}
+
+.oswald-medium-oblique {
+    @include font-oswald(500, oblique);
+}
+
+.oswald-medium-oblique-20 {
+    @include font-oswald(500, oblique 20deg);
+}
+
+.oswald-semi-bold {
+    @include font-oswald(600, normal);
+}
+
+.oswald-semi-bold-italic {
+    @include font-oswald(600, italic);
+}
+
+.oswald-semi-bold-oblique {
+    @include font-oswald(600, oblique);
+}
+
+.oswald-semi-bold-oblique-20 {
+    @include font-oswald(600, oblique 20deg);
+}
+
+.oswald-thin {
+    @include font-oswald(100, normal);
+}
+
+.oswald-thin-italic {
+    @include font-oswald(100, italic);
+}
+
+.oswald-thin-oblique {
+    @include font-oswald(100, oblique);
+}
+
+.oswald-thin-oblique-20 {
+    @include font-oswald(100, oblique 20deg);
+}

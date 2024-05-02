@@ -1,68 +1,53 @@
-<div class="d-flex flex-row align-items-center">
-  <div class="home-button">
-    <button class="btn btn-primary p-2 me-1" [routerLink]="'home'">
-      <i class="fa-solid fa-house fa-lg"></i>
-    </button>
-  </div>
-
-  <div class="breadcrumb-title-area">
-    <ng-container *ngTemplateOutlet="breadcrumb"></ng-container>
-    <h4>{{ currentPage | breadcrumbnavlink }}</h4>
-  </div>
-
-  <div class="nav-icons ms-auto d-md-inline-block d-none">
-    <ng-container
-      *ngTemplateOutlet="newButton; context: { path: currentPage }"
-    ></ng-container>
-    <button class="btn p-0" (click)="goBack()">
-      <i class="fa-solid fa-reply fa-lg pe-1 text-primary"></i>
-    </button>
-    <button class="btn p-0" (click)="goForward()">
-      <i class="fa-solid fa-share fa-lg ps-1 text-primary"></i>
-    </button>
-  </div>
-
-  <div class="nav-icons ms-auto d-inline-flex flex-column d-md-none">
-    <ng-container
-      *ngTemplateOutlet="newButton; context: { path: currentPage }"
-    ></ng-container>
-
-    <div class="flex-row align-self-center">
-      <button class="btn p-0" (click)="goBack()">
-        <i class="fa-solid fa-reply fa-lg pe-1 text-primary"></i>
-      </button>
-      <button class="btn p-0" (click)="goForward()">
-        <i class="fa-solid fa-share fa-lg ps-1 text-primary"></i>
-      </button>
+<div class="section-breadcrumb">
+  <div class="container pt-3">
+    <div class="row">
+      <div class="col">
+        <h1 class="oswald-semi-bold mb-0 font-Breadcrumb" >{{ currentPage | breadcrumbnavlink }}</h1>
+        <ul class="breadcrumb fw-semibold text-gray-600 fs-7">
+          <ng-container *ngFor="let path of breadcrumbNav">
+            <li class="breadcrumb-item text-gray-600">
+              <a [routerLink]="path"  [ngClass]="{ 'd-none': currentPage === 'main','link-atual': currentPage === path }"  class="text-gray-600 breadcrumb-link text-hover-primary">{{ path | breadcrumbnavlink }}</a>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+      <div class="col-md-4 m-auto">
+        <div class="d-flex justify-content-end">
+          <ng-container *ngTemplateOutlet="newButton; context: { path: currentPage }"></ng-container>
+          <ng-container *ngTemplateOutlet="actionButtons; context: { path: currentPage }"></ng-container>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<ng-template #breadcrumb>
-  <ul class="list-unstyled list-inline">
-    <li class="list-inline-item" *ngFor="let path of breadcrumbNav">
-      <a
-        class="text-decoration-none"
-        [routerLink]="path"
-        [ngClass]="{
-          'pe-none text-secondary text-decoration-none': path == currentPage
-        }"
-        >{{ path | breadcrumbnavlink }}</a
-      >
-      <span *ngIf="path != currentPage"> > </span>
-    </li>
-  </ul>
+<!-- Botão de criar um novo dado (ex.: Projetos -> Novo Projeto) -->
+
+<ng-template #newButton let-path="path">
+    <a
+      *ngIf="isAllowed(path)"
+      class="btn btn-outline-primary me-md-2 me-0 text-nowrap"
+      [routerLink]="[path, 'form', 'criar']"
+      [hidden]="!mainChildPaths.includes(path)"
+    >
+    <i class="fa-solid icon-btn fa-plus me-2 "></i>
+    <span>{{ path + "criar" | breadcrumbnavlink }}</span>
+    </a>
+  
 </ng-template>
 
-<!-- Botão de criar um novo dado (ex.: Projetos -> Novo Projeto) -->
-<ng-template #newButton let-path="path">
-  <button
-    *ngIf="isAllowed(path)"
-    class="btn btn-primary me-md-2 me-0 text-nowrap"
-    [routerLink]="[path, 'form', 'criar']"
-    [hidden]="!mainChildPaths.includes(path)"
-  >
-    <i class="fa-solid fa-plus"></i>
-    <span> {{ path + "criar" | breadcrumbnavlink }}</span>
+<!-- Botões de ação (ex.: Projetos -> Editar, Deletar) -->
+<ng-template #actionButtons let-path="path">
+  <button class="btn btn-primary mx-1" (click)="breadcrumpAtcion('edit')"  [hidden]="!showEditButton" >
+    <i class="fa-solid fa-edit mx-1"></i>
+    <label>Editar</label>
+  </button>
+  <button class="btn btn-outline-danger mx-1" (click)="breadcrumpAtcion('cancel')"  [hidden]="!showCancelButton" >
+    <i class="fa-solid fa-close mx-1"></i>
+    <label>Cancelar</label>
+  </button>
+  <button class="btn btn-success mx-1" (click)="breadcrumpAtcion('save')"  [hidden]="!showSaveButton" >
+    <i class="fa-solid fa-save mx-1"></i>
+    <label>Salvar</label>
   </button>
 </ng-template>

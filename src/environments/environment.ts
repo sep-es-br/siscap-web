@@ -1,4 +1,5 @@
 export const environment = {
-    production: true,
-    apiUrl: 'placeholder'
+  production: true,
+  apiUrl: 'placeholder',
+  supersetUrl: 'placeholder',
 };
