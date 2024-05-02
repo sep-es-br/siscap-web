@@ -79,7 +79,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       columns: [
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },
-        { data: 'nomesMicrorregioes', title: 'Micro Regiões' },
+        { data: 'nomesMicrorregioes', title: 'Microrregiões' },
         { data: 'valorEstimado', title: 'Valor Estimado' },
       ],
       order: [[1, 'asc']],
