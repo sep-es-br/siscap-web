@@ -54,14 +54,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getInitialData();
     this._subscription.add(this.treatDatatableConfig());
-    // this._subscription.add(this._getPessoas$.subscribe());
     this.treatDatatableConfig();
-    // console.log(this._getPessoas$);
-    // this.dataTableList.on('pageChange', (event: { page: number; }) => {
-    //   this.page = event.page;
-    //   this._getPessoas$ = this._pessoasService.getPessoaPaginated(this.page, this.pageSize, this.sort, this.search);
-    //   this._getPessoas$.subscribe();
-    // });
   }
 
   getInitialData(){

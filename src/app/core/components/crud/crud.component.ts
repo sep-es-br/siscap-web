@@ -8,7 +8,6 @@ import { debounceTime, map } from 'rxjs/operators';
 import { SweetAlertOptions } from 'sweetalert2';
 import { Api, Config } from 'datatables.net';
 import { Location } from '@angular/common';
-// import language from 'datatables.net-plugins/i18n/pt-BR.mjs';
 
 
 @Component({

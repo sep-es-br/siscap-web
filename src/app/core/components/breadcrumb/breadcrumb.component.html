@@ -24,7 +24,6 @@
 <!-- Botão de criar um novo dado (ex.: Projetos -> Novo Projeto) -->
 
 <ng-template #newButton let-path="path">
-  <!-- <div class="card m-2 bg-white shadow p-2" > -->
     <a
       *ngIf="isAllowed(path)"
       class="btn btn-outline-primary me-md-2 me-0 text-nowrap"
@@ -34,7 +33,6 @@
     <i class="fa-solid icon-btn fa-plus me-2 "></i>
     <span>{{ path + "criar" | breadcrumbnavlink }}</span>
     </a>
-  <!-- </div> -->
   
 </ng-template>
 
@@ -53,15 +51,3 @@
     <label>Salvar</label>
   </button>
 </ng-template>
-
-<!-- <ng-template #newButton let-path="path">
-  <button
-    *ngIf="isAllowed(path)"
-    class="btn btn-primary me-md-2 me-0 text-nowrap"
-    [routerLink]="[path, 'form', 'criar']"
-    [hidden]="!mainChildPaths.includes(path)"
-  >
-    <i class="fa-solid fa-plus"></i>
-    <span> {{ path + "criar" | breadcrumbnavlink }}</span>
-  </button>
-</ng-template> -->
