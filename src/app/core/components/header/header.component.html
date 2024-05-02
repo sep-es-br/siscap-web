@@ -9,7 +9,7 @@
           <div class="nav-menu">
             <ul ngbNav #nav="ngbNav" [activeId]="currentCategory.slug" class="nav-tabs nav justify-content-start">
               <li *ngFor="let item of menuLinks; let i = index;" [ngClass]="{ 'd-none': item.hidden }" [ngbNavItem]="item.slug" class="nav-item">
-                <a class="nav-link text-white opacity-75 fs-8 oswald-bold lh-1"  ngbNavLink >{{item.category}}</a>
+                <a class="nav-link text-white fs-8 oswald-bold lh-1"  ngbNavLink >{{item.category}}</a>
                 <ng-template ngbNavContent>
                   <div class="row d-inline-flex">
                     <ng-container *ngFor="let route of item.routes">
