@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter } from '@angular/core';
 import { EventType, NavigationEnd, Router } from '@angular/router';
 
 import { filter } from 'rxjs';
 import { BreadcrumbLists } from '../../../shared/utils/breadcrumb-lists';
+import { BreadcrumpService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 import { ProfileService } from '../../../shared/services/profile/profile.service';
 
 @Component({
@@ -17,10 +18,16 @@ export class BreadcrumbComponent {
 
   public breadcrumbNav: Array<string> = []; // Rotas do breadcrumb atual
   public currentPage: string = ''; // Página atual (última rota do breadcrumbNav)
+  protected untratedUrls: Array<string> = []; // URL atual
+  public isEditing: boolean = false;
+  public showEditButton: boolean = false;
+  public showCancelButton: boolean = false;
+  public showSaveButton: boolean = false;
 
   constructor(
     private _profileService: ProfileService,
-    private _router: Router
+    private _router: Router,
+    private breadcrumpService: BreadcrumpService
   ) {
     this._router.events
       .pipe(
@@ -30,6 +37,8 @@ export class BreadcrumbComponent {
         })
       )
       .subscribe((next) => {
+        this.untratedUrls = this.getUntratedUrls(next['urlAfterRedirects']);
+        this.checkActionButtons();
         const urlPaths = this.getUrlPaths(next['urlAfterRedirects']);
         const treatedUrlPaths = this.treatUrlPaths(urlPaths);
 
@@ -132,4 +141,74 @@ export class BreadcrumbComponent {
   public goForward() {
     history.forward();
   }
+
+  /**
+   * Emite a ação do breadcrumb.
+   *
+   * @param action - A ação do breadcrumb.
+   */
+  
+  breadcrumpAtcion(action: string){
+    console.log("Actin | ", action);
+    
+    switch (action) {
+      case 'edit':
+        this.showCancelButton = true;
+        this.showSaveButton = true;
+        this.showEditButton = false;
+        break;
+      default:
+        break;  
+    }
+    console.log("Edit Button | ", this.showEditButton);
+    
+    this.breadcrumpService.breadcrumpAction.emit(action);
+  }
+
+  isActionAllowed(action:string) {
+    const actionOnPage = this.untratedUrls[this.untratedUrls.length - 1];
+    this.showEditButton = this.showSaveButton = this.showCancelButton = false;
+  
+    
+    
+    
+    // return true;
+  }
+
+  getUntratedUrls(url: string): string[] {
+    return url
+      .split('/')
+      .map((path) => {
+        return path.includes('?') ? path.substring(0, path.indexOf('?')) : path;
+      })
+      .filter((path) => !this.exclusionList.includes(path));
+  }
+
+  checkActionButtons(){
+    const actionOnPage = this.untratedUrls[this.untratedUrls.length - 1];
+    console.log("Action on Page | ", actionOnPage);
+    
+    switch (actionOnPage) {
+      case 'editar':
+          this.showEditButton = true;
+          this.showSaveButton = false;
+          this.showCancelButton = false;
+        break;
+      case 'criar':
+          this.showEditButton = false;
+          this.showSaveButton = true;
+          this.showCancelButton = true;
+        break;
+      default:
+        this.showEditButton = this.showSaveButton = this.showCancelButton = false;
+        break;
+    }
+  }
+
+
+
+
+  ngOnDestroy() {
+  }
+
 }

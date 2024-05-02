@@ -1,10 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -16,11 +10,9 @@ import { DeleteModalComponent } from '../../../core/components/modal/delete-moda
 import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
+import { BreadcrumpService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
-import {
-  IOrganization,
-  IOrganizationCreate,
-} from '../../../shared/interfaces/organization.interface';
+import { IOrganization, IOrganizationCreate } from '../../../shared/interfaces/organization.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
@@ -75,7 +67,8 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     private _organizacoesService: OrganizacoesService,
     private _selectListService: SelectListService,
     private _toastService: ToastService,
-    private _modalService: NgbModal
+    private _modalService: NgbModal,
+    private _breadcrumbService: BreadcrumpService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.organizationEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -131,6 +124,10 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       this._getPaises$,
       this._getPessoas$
     );
+
+    this._breadcrumbService.breadcrumpAction.subscribe((actionType: string) => {
+      this.handleActionBreadcrumb(actionType);
+    });
   }
 
   private initForm(organization?: IOrganization) {
@@ -335,6 +332,30 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       },
       (reject) => {}
     );
+  }
+
+  public handleActionBreadcrumb(actionType: string) {
+    switch (actionType) {
+      case 'edit':
+        if(this.isAllowed('organizacoeseditar')){
+          this.switchMode(true, ['idOrganizacaoPai']);
+        }
+        break;
+
+      case 'delete':
+        if(this.isAllowed('organizacoesdeletar')){
+          this.deletarOrganizacao(this.organizationEditId);
+        }
+        break;
+
+      case 'cancel':
+        this.cancelForm();
+        break;
+
+      case 'save':
+        this.submitOrganizationForm(this.organizationForm);
+        break;
+    }
   }
 
   ngOnDestroy(): void {

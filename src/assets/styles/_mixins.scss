@@ -1,0 +1,10 @@
+@mixin width-classes {
+    @for $i from 0 through 1000 {
+        $width: $i * 25px;
+        .w-#{$width} {
+            width: $width;
+        }
+    }
+}
+
+@include width-classes;

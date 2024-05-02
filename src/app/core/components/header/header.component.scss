@@ -2,6 +2,104 @@
   font-size: 0.75rem;
 }
 
+.siscap-logo{
+  max-width: 150px;
+  width: auto;
+}
+
 .badge.rounded-pill {
   background-color: rgba(16, 127, 207, 1);
+}
+
+.nav-menu ul.nav-tabs{
+  padding-top: 0.5rem;
+}
+
+header{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  ul{
+    border: none;
+  }
+}
+
+.menu{
+  background-color: rgb(30, 34, 39);
+  // background-color: rgb(27, 132, 255);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  font-size: 0.8rem;
+  height: 5rem;
+}
+
+.sub-menu{
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.25);
+  width: 100%;
+  margin-top: -1.29rem;
+}
+
+.nav-item {
+  padding: 0;
+}
+
+.nav-menu .nav-link{
+  border-radius: 10px  10px 0 0;
+  padding: 0.75rem;
+  margin-top: .75rem;
+}
+
+.nav-link.active {
+  color: #fff;
+  background-color: #85BEFF;
+  border-radius: 5px;
+}
+
+.nav-menu .nav-link.active{
+  background-color: #fff;
+  color: black !important;
+  opacity: 1 !important;
+}
+
+.nav-link:hover{
+  background-color: #85BEFF;
+  color: #fff;
+  border-radius: 5px;
+
+}
+
+.btn-user-toggle{
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+}
+.btn-user-toggle:hover,
+.btn-user-toggle:active{
+  background-color: #85BEFF;
+}
+
+.btn-user-toggle::after{
+  display: none;
+}
+
+.profile-card{
+  background-color: #fff;
+  box-shadow: 0 6px 20px 10px  rgba(0, 0, 0, 0.25) !important;
+  border-radius: 10px;
+  border: none;
+  padding: 1rem;
+  width: 20rem;
+  position: absolute;
+  right: 0;
+  top: 4.5rem;
+  z-index: 1000;
+  .title-card{
+    font-size: 1.1rem;
+
+  }
+  .subtitle-card{
+    font-size: 0.8rem;
+  }
 }

@@ -1,61 +1,73 @@
-<div class="header-bar bg-secondary h-100">
-  <div
-    class="d-flex flex-row justify-content-between justify-content-md-end align-items-center py-2 h-100"
-  >
-    <button
-      class="btn d-block d-md-none"
-      type="button"
-      (click)="showOffcanvas()"
-    >
-      <i class="fa-solid fa-bars fa-lg"></i>
-    </button>
+<header class="container-fluid p-0">
+  <div class="menu">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 d-flex ">
+          <div class="img-logo align-self-center me-4">
+            <img class="siscap-logo" src="../../../../assets/images/siscap.png" />
+          </div>
+          <div class="nav-menu">
+            <ul ngbNav #nav="ngbNav" [activeId]="currentCategory.slug" class="nav-tabs nav justify-content-start">
+              <li *ngFor="let item of menuLinks; let i = index;" [ngClass]="{ 'd-none': item.hidden }" [ngbNavItem]="item.slug" class="nav-item">
+                <a class="nav-link text-white opacity-75 fs-8 oswald-bold lh-1"  ngbNavLink >{{item.category}}</a>
+                <ng-template ngbNavContent>
+                  <div class="row d-inline-flex">
+                    <ng-container *ngFor="let route of item.routes">
+                      <a class="col nav-link text-nowrap p-2 mx-2 oswald-medium " 
+                         [ngClass]="{
+                           'active': currentUrl === route.path,
+                           'd-none': route.hidden
+                         }" 
+                         [routerLink]="route.path">{{ route.title }}</a>
+                    </ng-container>
+                  </div>
+                </ng-template>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col align-self-end justify-content-end d-flex">
+          <div class="" ngbDropdown>
+            <div class="btn d-flex btn-user-toggle show" ngbDropdownToggle>
+                <div class="d-none d-md-flex p-0 flex-column justify-content-center align-items-end me-2 me-md-4">
+                  <span class="text-white opacity-75 fs-tiny oswald-bold lh-1 mb-1">{{UserName}}</span>
+                  <span class="text-white fs-tiny fw-bold lh-1">{{UserEmail}}</span>
+                </div>
+                <div class="symbol symbol-30px symbol-md-40px">
+                  <img src="{{imageUser}}" alt="imageUser" />
+                </div>
+            </div>
+            <div class="dropdown-menu profile-card shadow dropdown-menu-end" ngbDropdownMenu>
+              <div class="d-flex">
+                  <div class="symbol symbol-60px symbol-md-70px">
+                    <img src="{{imageUser}}" alt="imageUser" />
+                  </div>
+                  <div class="d-none d-md-flex p-0 flex-column justify-content-center align-items-start ms-2 ms-md-4">
+                    <span class="text-dark title-card oswald-bold lh-1 mb-1">{{UserName}}</span>
+                    <span class="text-dark subtitle-card opacity-75 fs-tiny fw-bold lh-1">{{UserEmail}}</span>
+                  </div>
+                </div>
+                <div class="separator my-2 mx-0 p-0"></div>
 
-    <div ngbDropdown class="user-dropdown">
-      <div class="d-inline-flex">
-        <ng-container
-          *ngIf="
-            userProfile.imagemPerfil != null;
-            else standardProfileImageTemplate
-          "
-        >
-          <ng-container
-            *ngTemplateOutlet="
-              profileImageTemplate;
-              context: { imgSrc: userProfile.imagemPerfil }
-            "
-          ></ng-container>
-        </ng-container>
+                <a class="dropdown-item pointer" (click)="redirectUserProfile()">
+                  <i class="fa-solid icon-default fa-user me-2"></i>
+                  <span>Meu Perfil</span>
+                </a>
 
-        <button class="btn p-1 mx-1 text-white" ngbDropdownToggle>
-          {{ userProfile.nome }}
-        </button>
-
-        <div ngbDropdownMenu>
-          <span class="badge rounded-pill bg-primary mx-2 my-1">
-            {{ userProfile.email }}
-          </span>
-          <button ngbDropdownItem (click)="redirectUserProfile()">
-            Meu Perfil
-          </button>
-          <button ngbDropdownItem (click)="logOut()">Sair</button>
+                <div class="separator my-2 mx-0 p-0"></div>
+                <a class="dropdown-item text-danger pointer" (click)="logOut()">
+                  <i class="fa-solid fa-power-off me-2"></i>
+                  <span>Sair</span>
+                </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
-<ng-template #profileImageTemplate let-imgSrc="imgSrc">
-  <img
-    [src]="convertByteArraytoImg(imgSrc)"
-    alt=""
-    class="profile-pic rounded-circle"
-  />
-</ng-template>
-
-<ng-template #standardProfileImageTemplate>
-  <div
-    class="profile-pic border rounded-circle d-flex justify-content-center align-items-center"
-  >
-    <i class="fa-solid fa-user text-white"></i>
+  <div class="sub-menu  pt-2">
+    <div class="container">
+      <div [ngbNavOutlet]="nav" class="justify-content-center" ></div>
+    </div>
   </div>
-</ng-template>
+</header>

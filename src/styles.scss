@@ -9,16 +9,18 @@
 /* ng-select */
 @import "@ng-select/ng-select/themes/default.theme.css";
 
+@import "./assets/styles/custom_styles";
+@import "./assets/styles/fonts";
+@import "./assets/styles/mixins";
+
+
+@import "./assets/plugins/keenicons/duotone/style.css";
+@import "./assets/plugins/keenicons/outline/style.css";
+@import "./assets/plugins/keenicons/solid/style.css";
+
 /* Estilo de botões */
 
-button.btn:not(.login-button button) {
-  padding: 0.25rem;
-  font-size: $small-3-font-size;
 
-  i + span {
-    margin-left: 0.25rem;
-  }
-}
 
 /* Estilo do Footer */
 
@@ -199,21 +201,6 @@ i.fa-user {
   width: 30px;
 }
 
-/* Estilos de card (background dos forms/tables) */
-.card {
-  border: none;
-  margin-bottom: 1rem;
-}
-
-.card-body {
-  background-color: $card-bg;
-  border: 1px solid $card-border;
-}
-
-.card-title span {
-  font-size: $small-4-font-size;
-  font-weight: bold;
-}
 
 /* Estilo link (tag <a>) para elementos */
 .pointer {
@@ -233,4 +220,62 @@ i.fa-user {
 /* Classe de teste */
 .test {
   border: 1px solid black;
+}
+
+/* Scrollbar */
+
+body::-webkit-scrollbar {
+  width: 12px;               /* width of the entire scrollbar */
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #85beff;    /* color of the scroll thumb */
+  border: 1px solid #1a74ff;  /* creates padding around scroll thumb */
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: #1a74ff;    /* color on hover */
+}
+
+body::-webkit-scrollbar-track-piece {
+  background: #f1f1f1;        /* color of the track */
+}
+
+
+.fs-tiny{
+  font-size: 0.8rem;
+}
+
+.fs-r-2{
+  font-size: 1.5rem !important;
+}
+
+.separator {
+  display: block;
+  height: 0;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.my-2 {
+  margin-top: .5rem !important;
+  margin-bottom: .5rem !important;
+}
+
+.icon-default{
+  color: var(--bs-primary) !important;
+}
+
+.icon-btn{
+  font-size: 1.5rem !important;
+}
+
+.ki-duotone,
+.ki-outline,
+.ki-solid {
+	line-height: 1;
+    font-size: 1rem;
+	color: var(--#{$prefix}text-muted);
+}
+
+.no_underline {
+  text-decoration: none;
 }
