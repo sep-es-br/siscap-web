@@ -41,6 +41,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   private _getPaises$!: Observable<ISelectList[]>;
   private _getEstados$!: Observable<ISelectList[]>;
   private _getCidades$!: Observable<ISelectList[]>;
+  private _getOrganizacoes$!: Observable<ISelectList[]>;
   private _getAreasAtuacao$!: Observable<ISelectList[]>;
 
   private _getPessoaById$!: Observable<IPerson>;
@@ -65,6 +66,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public paisesList: ISelectList[] = [];
   public estadosList: ISelectList[] = [];
   public cidadesList: ISelectList[] = [];
+  public organizacoesList: ISelectList[] = [];
   public areasAtuacaoList: ISelectList[] = [];
 
   public paisSelected: string | undefined;
@@ -144,7 +146,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           this.loading = false;
         })
       );
-    
+
     this._breadcrumbService.breadcrumpAction.subscribe((actionType: string) => {
       this.handleActionBreadcrumb(actionType);
     });
@@ -156,6 +158,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     this._getAreasAtuacao$ = this._selectListService
       .getAreasAtuacao()
       .pipe(tap((response) => (this.areasAtuacaoList = response)));
+
+    this._getOrganizacoes$ = this._selectListService
+      .getOrganizacoes()
+      .pipe(tap((response) => (this.organizacoesList = response)));
   }
 
   /**
@@ -198,6 +204,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         codigoPostal: nnfb.control(person?.endereco?.codigoPostal ?? ''),
         idCidade: nnfb.control(person?.endereco?.idCidade?.toString() ?? null),
       }),
+      idOrganizacao: nnfb.control(person?.idOrganizacao?.toString() ?? null),
       idAreasAtuacao: nnfb.control(person?.idAreasAtuacao ?? []),
     });
   }
@@ -205,6 +212,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._subscription.add(this._getPaises$.subscribe());
     this._subscription.add(this._getAreasAtuacao$.subscribe());
+    this._subscription.add(this._getOrganizacoes$.subscribe());
 
     if (this.formMode == 'criar') {
       this.initForm();
@@ -381,7 +389,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           )
           .subscribe();
       },
-      (reject) => {}
+      (reject) => { }
     );
   }
 

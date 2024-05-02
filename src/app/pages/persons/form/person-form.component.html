@@ -233,12 +233,12 @@
               <div class="row">
                 <div class="col-12">
                   <div class="col-12">
-                    <label for="idAreasAtuacao" class="form-label col-12">
-                      Áreas de Atuação
-                      <ng-container *ngTemplateOutlet=" appAlert; context: { controlName: 'idAreasAtuacao' } " ></ng-container>
+                    <label for="idOrganizacao" class="form-label col-12">
+                      Organização
+                      <ng-container *ngTemplateOutlet=" appAlert; context: { controlName: 'idOrganizacao' } " ></ng-container>
                     </label>
-                    <ng-select [multiple]="true" [hideSelected]="true" id="idAreasAtuacao" placeholder="-- Áreas de Atuação --" formControlName="idAreasAtuacao" >
-                      <ng-option *ngFor="let area of areasAtuacaoList" [value]="area.id" >{{ area.nome }}</ng-option >
+                    <ng-select id="idOrganizacao" placeholder="-- Organização --" formControlName="idOrganizacao" >
+                      <ng-option *ngFor="let organizacao of organizacoesList" [value]="organizacao.id" >{{ organizacao.nome }}</ng-option >
                     </ng-select>
                   </div>
 

@@ -101,7 +101,8 @@ export class PersonsComponent implements OnInit, OnDestroy {
       columns: [
         { data: 'id', title: 'ID' },
         { data: 'nome', title: 'Nome' },
-        { data: 'email', title: 'E-mail' }
+        { data: 'email', title: 'E-mail' },
+        { data: 'nomeOrganizacao', title: 'Organização' }
       ],
       
       order: [[1, 'asc']],
