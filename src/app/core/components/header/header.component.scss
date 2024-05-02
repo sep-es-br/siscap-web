@@ -65,8 +65,6 @@ header{
 .menu .nav-link:hover{
   background-color: #ffffffdf !important;
   color: #0096E1 !important;
-  border-radius: 5px;
-
 }
 
 .sub-menu .nav-link:hover{
@@ -113,3 +111,31 @@ header{
     font-size: 0.8rem;
   }
 }
+
+.navbar-nav li{
+  background-color: #0096e1;
+  padding: 0.5rem;
+  border-radius: 10px;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.navbar-nav div.link-nav a{
+  color: #0096e1;
+  margin: 0 2rem;
+  margin-top: 0.2rem;
+  background-color: #fff ;
+}
+
+  @media screen and (max-width: 992) {
+    .nav-menu{
+      display: none !important;
+    }
+    .mt-header{
+      margin-top: 5rem;
+    }
+    .section-breadcrumb{
+      top: 5rem !important;
+    }
+    
+  }

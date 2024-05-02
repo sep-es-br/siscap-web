@@ -32,6 +32,22 @@ export class ProjetosService {
     );
   }
 
+  getProjetosPaginated(page?: number, pageSize?: number, sort?: string, search?: string): Observable<IProjectGet> {
+    const params = {
+      size: pageSize?.toString() ?? "15",
+      page: page !== undefined ? page.toString() : "0",
+      sort: sort !== undefined ? sort?.toString() : '',
+      search: search !== undefined ? search.toString() : '', // Ensure search is always a string
+    };
+
+    return this._http.get<IProjectGet>(`${this._url}?${new URLSearchParams(params).toString()}` ).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this._errorHandlerService.handleError(err);
+        return throwError(() => err);
+      })
+    );
+  }
+
   putProjeto(id: number, body: IProjectEdit): Observable<IProject> {
     return this._http.put<IProject>(`${this._url}/${id}`, body).pipe(
       catchError((err: HttpErrorResponse) => {
