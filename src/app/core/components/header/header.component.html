@@ -2,14 +2,19 @@
   <div class="menu">
     <div class="container">
       <div class="row">
-        <div class="col-md-8 d-flex ">
+        <div class="col-12 col-sm-12 col-lg-8 d-flex ">
           <div class="img-logo align-self-center me-4">
-            <img class="siscap-logo" src="../../../../assets/images/siscap.png" />
+            <img class="siscap-logo mt-3 mt-md-auto" src="../../../../assets/images/siscap.png" />
           </div>
-          <div class="nav-menu">
+          <div class="d-block d-lg-none mt-3 col align-self-end justify-content-end d-flex">
+            <a class="btn btn-light" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </a>
+          </div>
+          <div class="d-none d-lg-block nav-menu">
             <ul ngbNav #nav="ngbNav" [activeId]="currentCategory.slug" class="nav-tabs nav justify-content-start">
               <li *ngFor="let item of menuLinks; let i = index;" [ngClass]="{ 'd-none': item.hidden }" [ngbNavItem]="item.slug" class="nav-item">
-                <a class="nav-link text-white opacity-75 fs-8 oswald-bold lh-1"  ngbNavLink >{{item.category}}</a>
+                <a class="nav-link text-white fs-8 oswald-bold lh-1"  ngbNavLink >{{item.category}}</a>
                 <ng-template ngbNavContent>
                   <div class="row d-inline-flex">
                     <ng-container *ngFor="let route of item.routes">
@@ -26,7 +31,7 @@
             </ul>
           </div>
         </div>
-        <div class="col align-self-end justify-content-end d-flex">
+        <div class="d-none d-lg-flex col align-self-end justify-content-end d-flex">
           <div class="" ngbDropdown>
             <div class="btn d-flex btn-user-toggle show" ngbDropdownToggle>
                 <div class="d-none d-md-flex p-0 flex-column justify-content-center align-items-end me-2 me-md-4">
@@ -65,9 +70,38 @@
       </div>
     </div>
   </div>
-  <div class="sub-menu  pt-2">
+  <div class="d-none d-lg-block sub-menu  pt-2">
     <div class="container">
       <div [ngbNavOutlet]="nav" class="justify-content-center" ></div>
     </div>
   </div>
 </header>
+<div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasExampleLabel"><img class="siscap-logo mt-3 mt-md-auto" src="../../../../assets/images/siscap.png" /></h5>
+    <button type="button" class="btn-close btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div>
+      <!-- <ul ngbNav #nav="ngbNav" [activeId]="currentCategory.slug" class=" navbar justify-content-start"> -->
+      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+        <ng-container *ngFor="let item of menuLinks; let i = index;">
+          <li  [ngClass]="{ 'd-none': item.hidden }" class="nav-item">
+            <a class="nav-link text-white fs-8 oswald-bold lh-1" >{{item.category}}</a>
+          </li>
+          <div class="link-nav row d-inline-flex">
+            <div *ngFor="let route of item.routes">
+              <a class="col nav-link text-nowrap p-2 mx-2 oswald-medium " 
+                [ngClass]="{
+                  'active': currentUrl === route.path,
+                  'd-none': route.hidden
+                }" 
+                [routerLink]="route.path">{{ route.title }}
+              </a>
+            </div>
+          </div>
+        </ng-container>
+      </ul>
+    </div>
+  </div>
+</div>

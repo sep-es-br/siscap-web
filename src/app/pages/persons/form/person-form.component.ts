@@ -1,10 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -17,10 +11,7 @@ import { PessoasService } from '../../../shared/services/pessoas/pessoas.service
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
 
-import {
-  IPerson,
-  IPersonCreate,
-} from '../../../shared/interfaces/person.interface';
+import { IPerson, IPersonCreate } from '../../../shared/interfaces/person.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
 import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
@@ -61,6 +52,8 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
+  public defaultPhotoUser: string = '/assets/images/user.png';
+  public photoUSer: string = this.defaultPhotoUser;
 
   public paisesList: ISelectList[] = [];
   public estadosList: ISelectList[] = [];
@@ -98,6 +91,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
+          this.photoUSer = this.uploadedPhotoSrc;
         }),
         tap((response) => {
           this.paisSelected =
@@ -123,9 +117,12 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         tap((response) => {
           this.initForm(response);
 
+          this.personEditId = response.id;
+
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
+          this.photoUSer = this.uploadedPhotoSrc;
         }),
         tap((response) => {
           this.paisSelected =
@@ -144,7 +141,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           this.loading = false;
         })
       );
-    
+
     this._breadcrumbService.breadcrumpAction.subscribe((actionType: string) => {
       this.handleActionBreadcrumb(actionType);
     });
@@ -215,9 +212,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     if (!!this.personEditId) {
       this._subscription.add(this._getPessoaById$.subscribe());
       return;
-    }
-
-    if (!!this.personEditEmail) {
+    } else if (!!this.personEditEmail) {
       this._subscription.add(this._getPessoaByEmail$.subscribe());
       return;
     }
@@ -265,6 +260,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     if (event.target.files && event.target.files[0]) {
       this.uploadedPhotoFile = event.target.files[0];
       this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
+      this.photoUSer = this.uploadedPhotoSrc;
     }
   }
 
@@ -272,6 +268,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     this.imagemPerfilInput.nativeElement.value = '';
     this.uploadedPhotoFile = undefined;
     this.uploadedPhotoSrc = '';
+    this.photoUSer = this.defaultPhotoUser;
   }
 
   public isAllowed(path: string): boolean {
@@ -306,7 +303,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     }
 
     const payload = FormDataHelper.appendFormGrouptoFormData(
-      form.value,
+      form.getRawValue(),
       'endereco'
     );
 
@@ -392,7 +389,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         break;
       case 'cancel':
         this.cancelForm();
-        break
+        break;
       case 'save':
         this.submitPersonForm(this.personForm);
         break;

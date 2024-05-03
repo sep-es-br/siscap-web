@@ -34,20 +34,13 @@ export class PessoasService {
 
   getPessoaPaginated(page?: number, pageSize?: number, sort?: string, search?: string): Observable<IPersonGet> {
     const params = {
-      pageSize: pageSize?.toString() ?? "15",
+      size: pageSize?.toString() ?? "15",
       page: page !== undefined ? page.toString() : "0",
       sort: sort !== undefined ? sort?.toString() : '',
       search: search !== undefined ? search.toString() : '', // Ensure search is always a string
     };
 
     return this._http.get<IPersonGet>(`${this._url}?${new URLSearchParams(params).toString()}` ).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
-
-    return this._http.get<IPersonGet>(this._url, { params: params }).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
         return throwError(() => err);
@@ -77,6 +70,7 @@ export class PessoasService {
 
   // TODO: Ver como anexar body no get (IHttpGetRequestBody)
   getPessoas(): Observable<IPersonGet> {
+    console.log("Get pessoas");
     return this._http.get<IPersonGet>(this._url).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);

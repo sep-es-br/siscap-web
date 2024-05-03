@@ -149,7 +149,6 @@ export class BreadcrumbComponent {
    */
   
   breadcrumpAtcion(action: string){
-    console.log("Actin | ", action);
     
     switch (action) {
       case 'edit':
@@ -160,7 +159,6 @@ export class BreadcrumbComponent {
       default:
         break;  
     }
-    console.log("Edit Button | ", this.showEditButton);
     
     this.breadcrumpService.breadcrumpAction.emit(action);
   }
@@ -186,7 +184,6 @@ export class BreadcrumbComponent {
 
   checkActionButtons(){
     const actionOnPage = this.untratedUrls[this.untratedUrls.length - 1];
-    console.log("Action on Page | ", actionOnPage);
     
     switch (actionOnPage) {
       case 'editar':

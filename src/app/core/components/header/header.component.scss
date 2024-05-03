@@ -62,9 +62,14 @@ header{
   opacity: 1 !important;
 }
 
-.nav-link:hover{
-  background-color: #85BEFF;
-  color: #fff;
+.menu .nav-link:hover{
+  background-color: #ffffffdf !important;
+  color: #0096E1 !important;
+}
+
+.sub-menu .nav-link:hover{
+  background-color: #85BEFF !important;
+  color: white !important;
   border-radius: 5px;
 
 }
@@ -77,7 +82,10 @@ header{
 }
 .btn-user-toggle:hover,
 .btn-user-toggle:active{
-  background-color: #85BEFF;
+  background-color: #ffffffdf;
+  .text-white{
+    color: #0096E1 !important;
+  }
 }
 
 .btn-user-toggle::after{
@@ -103,3 +111,31 @@ header{
     font-size: 0.8rem;
   }
 }
+
+.navbar-nav li{
+  background-color: #0096e1;
+  padding: 0.5rem;
+  border-radius: 10px;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.navbar-nav div.link-nav a{
+  color: #0096e1;
+  margin: 0 2rem;
+  margin-top: 0.2rem;
+  background-color: #fff ;
+}
+
+  @media screen and (max-width: 992) {
+    .nav-menu{
+      display: none !important;
+    }
+    .mt-header{
+      margin-top: 5rem;
+    }
+    .section-breadcrumb{
+      top: 5rem !important;
+    }
+    
+  }
