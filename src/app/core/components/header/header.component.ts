@@ -21,6 +21,7 @@ export class HeaderComponent {
   public UserEmail!: string;
   public currentUrl!: string | undefined;
   protected menuLinks = NavMenuLinks.menuLinks;
+  showMenu = false;
   public currentCategory: IMenuLink = {
     category: '',
     hidden: false,
@@ -58,6 +59,12 @@ export class HeaderComponent {
     return 'data:image/jpeg;base64,' + data;
   }
 
+ 
+
+    toggleMenu() {
+        this.showMenu = !this.showMenu;
+    }
+
   activedCategory() {
     this.menuLinks.forEach((category) => {
       category.routes.forEach((route) => {
@@ -70,6 +77,7 @@ export class HeaderComponent {
 
   redirectUserProfile() {
     this._router.navigate(['main', 'pessoas', 'form', 'editar'], {
+      skipLocationChange: true,
       queryParams: { email: this.userProfile.email },
     });
   }

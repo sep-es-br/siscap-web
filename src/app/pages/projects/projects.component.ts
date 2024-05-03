@@ -20,7 +20,6 @@ import Swal from 'sweetalert2';
   styleUrl: './projects.component.scss',
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
-  private _getProjetos$: Observable<IProjectGet>;
 
   private _subscription: Subscription = new Subscription();
 
@@ -28,22 +27,24 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   public datatableConfig: Config = {};
 
+  public page = 0;
+  public pageSize = 10;
+  public sort = '';
+  public search = '';
+
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
     private _projetosService: ProjetosService,
   ) {
-    this._getProjetos$ = this._projetosService.getProjetos().pipe(
-      first(),
-      tap((response: IProjectGet) => {
-        this.projetosList = response.content;
-      })
-    );
   }
 
   ngOnInit(): void {
-    this._subscription.add(this._getProjetos$.subscribe());
     this.treatDatatableConfig();
+  }
+
+  getData(){
+    return this._projetosService.getProjetosPaginated(this.page, this.pageSize, this.sort, this.search);
   }
 
   public sortTable(event: SortColumn) {
@@ -56,7 +57,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   treatDatatableConfig(){
-    // const contentdata = 
     let lastPage=0;  
     let lastSearchText="";
     this.datatableConfig = {
@@ -64,18 +64,19 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       ajax: (dataTablesParameters: any, callback) => {
         lastPage=dataTablesParameters.start;
         lastSearchText=dataTablesParameters.search.value;
-        this._getProjetos$.subscribe(resp => {
+        this.getData().subscribe(resp => {
           callback({
-            totalPages: resp.totalPages,
-            totalItems: resp.totalElements,
-            recordsFiltered: resp.pageable,
-            data: resp.content
+            recordsTotal: resp.totalElements,
+            recordsFiltered: resp.totalElements,
+            data:  resp.content
           });
         });
       },
       searching: true,
       serverSide: true,
       lengthMenu:['5','10','20'],
+      lengthChange: true,
+      pageLength: this.pageSize,
       columns: [
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },

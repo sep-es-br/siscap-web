@@ -32,6 +32,23 @@ export class OrganizacoesService {
     );
   }
 
+  getOrganizacaoPaginated(page?: number, pageSize?: number, sort?: string, search?: string): Observable<IOrganizationGet> {
+    const params = {
+      size: pageSize?.toString() ?? "15",
+      page: page !== undefined ? page.toString() : "0",
+      sort: sort !== undefined ? sort?.toString() : '',
+      search: search !== undefined ? search.toString() : '',
+    };
+
+    return this._http.get<IOrganizationGet>(`${this._url}?${new URLSearchParams(params).toString()}` ).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this._errorHandlerService.handleError(err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+
   putOrganizacao(id: number, body: FormData): Observable<IOrganization> {
     return this._http.put<IOrganization>(`${this._url}/${id}`, body).pipe(
       catchError((err: HttpErrorResponse) => {

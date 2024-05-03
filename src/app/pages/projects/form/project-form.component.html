@@ -9,7 +9,7 @@
       <div class="mx-1 my-auto">Baixar PDF</div>
     </button>
 
-    <button *ngIf="isAllowed('projetoseditar')" type="button" class="btn mx-2 edit-btn"
+    <!-- <button *ngIf="isAllowed('projetoseditar')" type="button" class="btn mx-2 edit-btn"
       (click)="switchMode(true, ['plano', 'eixo', 'area'])" [disabled]="isEdit">
       <i class="fa-solid fa-pencil"></i>
     </button>
@@ -17,7 +17,7 @@
     <button *ngIf="isAllowed('projetosdeletar')" type="button" class="btn delete-btn"
       (click)="deletarProjeto(projectEditId)">
       <i class="fa-solid fa-trash-can"></i>
-    </button>
+    </button> -->
   </div>
 </div>
 
@@ -239,21 +239,7 @@
             </div>
           </div>
 
-          <div class="row mt-2">
-            <div class="col d-flex flex-row-reverse" id="interactbtns">
-              <button type="button" class="btn btn-primary mx-1" [hidden]="!isEdit && formMode != 'criar'"
-                (click)="submitProjectForm(this.projectForm)">
-                <i class="fa-solid fa-plus"></i>
-                <span>
-                  {{ formMode == "editar" ? "Atualizar" : "Cadastrar" }}</span>
-              </button>
-
-              <button type="button" class="btn btn-outline-danger mx-1" (click)="cancelForm()">
-                <i class="fa-solid fa-x"></i>
-                <span>Cancelar</span>
-              </button>
-            </div>
-          </div>
+      
         </div>
       </div>
     </div>

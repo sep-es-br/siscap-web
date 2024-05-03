@@ -25,7 +25,6 @@ import { Config } from 'datatables.net';
   styleUrl: './persons.component.scss',
 })
 export class PersonsComponent implements OnInit, OnDestroy {
-  private _getPessoas$: Observable<IPersonGet>;
 
   private _subscription: Subscription = new Subscription();
 
@@ -36,11 +35,12 @@ export class PersonsComponent implements OnInit, OnDestroy {
   public dataTableList!:any;
 
   public page = 0;
-  public pageSize = 50;
+  public pageSize = 10;
   public sort = '';
   public search = '';
 
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
+  imgUserDefault: string = 'assets/images/blank.png';
 
 
   constructor(
@@ -48,29 +48,17 @@ export class PersonsComponent implements OnInit, OnDestroy {
     private _route: ActivatedRoute,
     private _pessoasService: PessoasService
   ) {
-    this._getPessoas$ = this._pessoasService.getPessoaPaginated(this.page, this.pageSize, this.sort, this.search);
   }
 
   ngOnInit(): void {
-    this.getInitialData();
-    this._subscription.add(this.treatDatatableConfig());
     this.treatDatatableConfig();
   }
 
-  getInitialData(){
-    
-  }
-
-  public sortTable(event: SortColumn) {
-    const column = event.column as keyof IPersonTable;
-    const direction = event.direction;
-
-    this.pessoasList.sort((a, b) =>
-      sortTableColumnsFunction(a[column], b[column], direction)
-    );
-  }
 
   public convertByteArraytoImg(data: ArrayBuffer): string {
+    if(!data){
+     return this.imgUserDefault;
+    }
     return 'data:image/jpeg;base64,' + data;
   }
 
@@ -81,30 +69,34 @@ export class PersonsComponent implements OnInit, OnDestroy {
     });
   }
 
+  getDataPaginated(){
+   return this._pessoasService.getPessoaPaginated(this.page, this.pageSize, this.sort, this.search);
+  }
+
   treatDatatableConfig(){
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
-
-        this._getPessoas$.subscribe(resp => {
-          console.log("RESP",resp);
+        console.log("dataTablesParameters",dataTablesParameters);
+        this.page = dataTablesParameters.start / dataTablesParameters.length;
+        this.getDataPaginated().subscribe(resp => {
           callback({
             recordsTotal: resp.totalElements,
-            recordsFiltered: resp.numberOfElements,
-            data: resp.content,
+            recordsFiltered: resp.totalElements,
+            data:  resp.content
           });
         });
       },
       processing: true,
       serverSide: true,
       searching: true,
+      pageLength: this.pageSize,
       columns: [
-        { data: 'id', title: 'ID' },
+        { data: 'imagemPerfil', title: '', orderable :false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="50" height="50">` } },
         { data: 'nome', title: 'Nome' },
         { data: 'email', title: 'E-mail' },
         { data: 'nomeOrganizacao', title: 'Organização' }
       ],
-      
       order: [[1, 'asc']],
     };
   }
