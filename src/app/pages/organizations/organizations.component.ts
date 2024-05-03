@@ -26,7 +26,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   private _subscription: Subscription = new Subscription();
 
   public organizacoesList: Array<IOrganizationTable> = [];
-  
+
   public datatableConfig: Config = {};
   public page = 0;
   public pageSize = 10;
@@ -45,35 +45,46 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     this.treatDatatableConfig();
   }
 
-  getData(){
-   return this._organizacoesService.getOrganizacaoPaginated(this.page, this.pageSize, this.sort, this.search);
+  getData() {
+    return this._organizacoesService.getOrganizacaoPaginated(this.page, this.pageSize, this.sort, this.search);
   }
 
-  treatDatatableConfig(){
+  treatDatatableConfig() {
     // const contentdata = 
-    let lastPage=0;  
-    let lastSearchText="";
+    let lastPage = 0;
+    let lastSearchText = "";
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
-        lastPage=dataTablesParameters.start;
-        lastSearchText=dataTablesParameters.search.value;
+        lastPage = dataTablesParameters.start;
+        lastSearchText = dataTablesParameters.search.value;
         this.getData().subscribe(resp => {
-          console.log("RESP",resp);
+          console.log("RESP", resp);
           callback({
             recordsTotal: resp.totalElements,
             recordsFiltered: resp.totalElements,
-            data:  resp.content
+            data: resp.content
           });
         });
       },
       searching: true,
-      lengthMenu:['5','10','20'],
+      lengthMenu: ['5', '10', '20'],
       columns: [
-        { data: 'imagemPerfil', title: '', orderable :false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="50" height="50">` } },
+        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="50" height="50">` } },
         { data: 'abreviatura', title: 'Sigla' },
         { data: 'nome', title: 'Nome' },
         { data: 'nomeTipoOrganizacao', title: 'Tipo' },
+        { data: 'telefone', title: 'Telefone' },
+        {
+          data: 'site', title: 'Site', render: function (data: string) {
+            if (data) {
+              let link = data.startsWith(`http`) ? data : '//' + data;
+              return `<p class="btn-link" onclick="window.open('${link}', '_blank')">${data}</p>`;
+            }
+            else
+              return '';
+          }
+        },
       ],
       order: [[1, 'asc']],
     };
@@ -91,8 +102,8 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   }
 
   public convertByteArraytoImg(data: ArrayBuffer): string {
-    if(!data){
-     return this.imgUserDefault;
+    if (!data) {
+      return this.imgUserDefault;
     }
     return 'data:image/jpeg;base64,' + data;
   }
@@ -106,26 +117,26 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
   public deletarOrganizacao(id: number) {
 
-    console.log("ID",id);
-    
-      this._organizacoesService
-        .deleteOrganizacao(id)
-        .pipe(
-          tap((response) => {
-            if (response) {
-              Swal.fire('Organização deletada com sucesso!', '', 'success').then(() => {
-                this._router
-                  .navigateByUrl('/', { skipLocationChange: true })
-                  .then(() => this._router.navigateByUrl('main/organizacoes'));
-              });
-            }
-          })
-        )
-        .subscribe();
-      
+    console.log("ID", id);
+
+    this._organizacoesService
+      .deleteOrganizacao(id)
+      .pipe(
+        tap((response) => {
+          if (response) {
+            Swal.fire('Organização deletada com sucesso!', '', 'success').then(() => {
+              this._router
+                .navigateByUrl('/', { skipLocationChange: true })
+                .then(() => this._router.navigateByUrl('main/organizacoes'));
+            });
+          }
+        })
+      )
+      .subscribe();
+
   }
 
-  queryOrganization() {}
+  queryOrganization() { }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
