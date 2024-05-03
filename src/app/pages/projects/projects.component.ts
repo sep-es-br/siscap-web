@@ -12,6 +12,7 @@ import { IProjectGet, IProjectTable } from '../../shared/interfaces/project.inte
 import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
 import { Config } from 'datatables.net';
 import Swal from 'sweetalert2';
+import DataTable from 'datatables.net-bs5';
 
 @Component({
   selector: 'siscap-projects',
@@ -81,7 +82,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },
         { data: 'nomesMicrorregioes', title: 'Microrregiões' },
-        { data: 'valorEstimado', title: 'Valor Estimado' },
+        { data: 'valorEstimado', title: 'Valor Estimado', render: DataTable.render.number('.', ',', 2, 'R$ '), className: 'text-end' },
       ],
       order: [[1, 'asc']],
     };
