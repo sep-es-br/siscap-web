@@ -3,7 +3,7 @@ import { EventType, NavigationEnd, Router } from '@angular/router';
 
 import { filter } from 'rxjs';
 import { BreadcrumbLists } from '../../../shared/utils/breadcrumb-lists';
-import { BreadcrumpService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 import { ProfileService } from '../../../shared/services/profile/profile.service';
 
 @Component({
@@ -27,7 +27,7 @@ export class BreadcrumbComponent {
   constructor(
     private _profileService: ProfileService,
     private _router: Router,
-    private breadcrumpService: BreadcrumpService
+    private breadcrumbService: BreadcrumbService
   ) {
     this._router.events
       .pipe(
@@ -160,7 +160,7 @@ export class BreadcrumbComponent {
         break;  
     }
     
-    this.breadcrumpService.breadcrumpAction.emit(action);
+    this.breadcrumbService.breadcrumbAction.emit(action);
   }
 
   isActionAllowed(action:string) {

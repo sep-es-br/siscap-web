@@ -18,7 +18,7 @@ import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
 import { ProfileService } from '../../../shared/services/profile/profile.service';
-import { BreadcrumpService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 @Component({
   selector: 'siscap-person-form',
@@ -78,7 +78,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private _selectListService: SelectListService,
     private _toastService: ToastService,
     private _modalService: NgbModal,
-    private _breadcrumbService: BreadcrumpService
+    private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.paramMap.get('mode') ?? '';
     this.personEditId = Number(this._route.snapshot.queryParamMap.get('id')) ?? null;
@@ -144,9 +144,9 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         })
       );
 
-    this._breadcrumbService.breadcrumpAction.subscribe((actionType: string) => {
+    this._subscription.add(this._breadcrumbService.breadcrumbAction.subscribe((actionType: string) => {
       this.handleActionBreadcrumb(actionType);
-    });
+    }));
 
     this._getPaises$ = this._selectListService
       .getPaises()
@@ -391,6 +391,8 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   }
 
   handleActionBreadcrumb(actionType: string) {
+    console.log(actionType);
+    console.log('PESSOA');
     switch (actionType) {
       case 'edit':
         this.switchMode(true, ['email']);

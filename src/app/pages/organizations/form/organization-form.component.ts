@@ -10,7 +10,7 @@ import { DeleteModalComponent } from '../../../core/components/modal/delete-moda
 import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
-import { BreadcrumpService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 import { IOrganization, IOrganizationCreate } from '../../../shared/interfaces/organization.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
@@ -68,7 +68,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     private _selectListService: SelectListService,
     private _toastService: ToastService,
     private _modalService: NgbModal,
-    private _breadcrumbService: BreadcrumpService
+    private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.organizationEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -125,9 +125,9 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       this._getPessoas$
     );
 
-    this._breadcrumbService.breadcrumpAction.subscribe((actionType: string) => {
+    this._subscription.add(this._breadcrumbService.breadcrumbAction.subscribe((actionType: string) => {
       this.handleActionBreadcrumb(actionType);
-    });
+    }));
   }
 
   private initForm(organization?: IOrganization) {
@@ -335,6 +335,8 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
   }
 
   public handleActionBreadcrumb(actionType: string) {
+    console.log(actionType);
+    console.log('ORGANIZACAO');
     switch (actionType) {
       case 'edit':
         if(this.isAllowed('organizacoeseditar')){
