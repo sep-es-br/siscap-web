@@ -25,3 +25,9 @@
     top: 7rem;
     background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important
 }
+
+@media (max-width: 992px) {
+    .section-breadcrumb {
+        top: 5rem !important;
+    }
+}

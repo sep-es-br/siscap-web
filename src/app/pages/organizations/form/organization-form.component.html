@@ -3,7 +3,7 @@
 </div>
 
 
-<form [formGroup]="organizationForm">
+<form [formGroup]="organizationForm" *ngIf="organizationForm" >
   <div class="row">
     <div class="col-12 col-md-4">
       <div class="card shadow border-light mb-3">
@@ -11,16 +11,14 @@
           <h5 class="card-title">Marca da Organização</h5>        
         </div>
         <div class="row">
-          <div class="col-12">
+          <div class="col-12 mb-3">
             <div class="d-flex flex-column flex-md-row justify-content-md-around align-items-center">
               <div class="col-12 col-md-4 mb-3 mb-md-0 text-center photo-upload">
-                <ng-container *ngIf="!!uploadedPhotoSrc; else placeholderImg">
-                  <img [src]="uploadedPhotoSrc" class="uploaded-photo" />
+                  <img [src]="photoOrganization" class="uploaded-photo" />
                   <span class="link-primary pointer" [ngClass]="{ invisible: !isEdit }" (click)="removeImg()">Remover</span>
-                </ng-container>
               </div>
               <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
-                <input #imagemPerfil [disabled]="!isEdit && formMode != 'criar'"  id="imagemPerfil" type="file"  accept=".jpg, .gif, .png" class="form-control" (change)="attachImg($event)" />
+                <input #imagemPerfil [disabled]="!isEdit && formMode != 'criar'" formControlName="imagemPerfil"  id="imagemPerfil" type="file"  accept=".jpg, .gif, .png" class="form-control" (change)="attachImg($event)" />
                 <small class="text-primary">JPG, GIF ou PNG. Tamanho máximo de 800k</small >
               </div>
             </div>
@@ -138,14 +136,6 @@
   </div>
 </form>
 
-<ng-template #placeholderImg>
-  <i
-    class="fa-solid fa-user fa-3x pt-3 h-100 w-100 border border-1 rounded"
-  ></i>
-</ng-template>
-
 <ng-template #appAlert let-controlName="controlName">
-  <siscap-alert
-    [control]="organizationForm.get(controlName) ?? undefined"
-  ></siscap-alert>
+  <siscap-alert [control]="organizationForm.get(controlName) ?? undefined"></siscap-alert>
 </ng-template>

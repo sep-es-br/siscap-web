@@ -7,8 +7,8 @@
             <img class="siscap-logo mt-3 mt-md-auto" src="../../../../assets/images/siscap.png" />
           </div>
           <div class="d-block d-lg-none mt-3 col align-self-end justify-content-end d-flex">
-            <a class="btn btn-light" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
-              <i class="fa-solid fa-ellipsis-vertical"></i>
+            <a class="btn " data-bs-toggle="offcanvas" href="#menuOffcanvas" role="button" aria-controls="menuOffcanvas">
+              <i class="fa-solid fa-ellipsis-vertical text-white fs-6"></i>
             </a>
           </div>
           <div class="d-none d-lg-block nav-menu">
@@ -76,32 +76,60 @@
     </div>
   </div>
 </header>
-<div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+<div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="menuOffcanvas" aria-labelledby="offcanvasExampleLabel">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasExampleLabel"><img class="siscap-logo mt-3 mt-md-auto" src="../../../../assets/images/siscap.png" /></h5>
+    <h5 class="offcanvas-title" id="offcanvasExampleLabel">
+      <img class="siscap-logo mt-3 mt-md-auto" src="../../../../assets/images/siscap.png" />
+    </h5>
     <button type="button" class="btn-close btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
-  <div class="offcanvas-body">
+  <div class="offcanvas-body"> 
     <div>
-      <!-- <ul ngbNav #nav="ngbNav" [activeId]="currentCategory.slug" class=" navbar justify-content-start"> -->
-      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-        <ng-container *ngFor="let item of menuLinks; let i = index;">
-          <li  [ngClass]="{ 'd-none': item.hidden }" class="nav-item">
-            <a class="nav-link text-white fs-8 oswald-bold lh-1" >{{item.category}}</a>
-          </li>
-          <div class="link-nav row d-inline-flex">
-            <div *ngFor="let route of item.routes">
-              <a class="col nav-link text-nowrap p-2 mx-2 oswald-medium " 
-                [ngClass]="{
-                  'active': currentUrl === route.path,
-                  'd-none': route.hidden
-                }" 
-                [routerLink]="route.path">{{ route.title }}
-              </a>
+      <div ngbAccordion [closeOthers]="true">
+        <div ngbAccordionItem *ngFor="let item of menuLinks; let i = index;" class="mt-3" [ngClass]="{ 'd-none': item.hidden}" [collapsed]="currentCategory.slug !== item.slug">
+          <h2 ngbAccordionHeader ngbAccordionToggle class="header-sidebar">
+            <button type="button" class="btn btn-link align-content-center" >{{item.category}}</button>
+          </h2>
+          <div ngbAccordionCollapse>
+            <div ngbAccordionBody>
+              <ng-template>
+                <div class="border-0">
+                  <div *ngFor="let route of item.routes" class="link-sidebar"  [ngClass]="{
+                    'active': currentUrl === route.path,
+                    'd-none': route.hidden
+                  }" >
+                    <a  data-bs-dismiss="offcanvas" class="col text-sidebar text-light text-nowrap p-2 mx-2 oswald-medium " 
+                      [routerLink]="route.path">{{ route.title }}
+                    </a>
+                  </div>
+                </div>
+              </ng-template>
             </div>
           </div>
-        </ng-container>
-      </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-menu">
+      <hr class="my-3 border-light"/>
+      <div class="row btn-user">
+        <div class="col-10">
+          <div class="d-flex align-content-center justify-content-start">
+            <div class="symbol symbol-50px symbol-md-50px">
+              <img src="{{imageUser}}" alt="imageUser" />
+            </div>
+            <div class="d-md-flex p-0 flex-column justify-content-start align-items-start ms-2">
+              <div class="text-white oswald-bold">{{UserName}}</div>
+              <div class="text-white oswald-bold opacity-75">{{UserEmail}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-2 align-content-center justify-content-center">
+          <a class="text-link"  (click)="logOut()">
+            <i class="fa-solid fa-power-off me-2 text-danger"></i>
+          </a>
+        </div>
+      </div>
+   
     </div>
   </div>
 </div>
