@@ -5,8 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
-
 import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -315,54 +313,11 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * @public
-   * Método para deletar o projeto. Chama um modal e ao confirmar, chama requisição para deletar.
-   *
-   * @param {number} id - O id do projeto á ser deletado.
-   */
-  public deletarProjeto(id: number) {
-    const deleteModalRef = this._modalService.open(DeleteModalComponent);
-    deleteModalRef.componentInstance.title = 'Atenção!';
-    deleteModalRef.componentInstance.content =
-      'O projeto será excluído. Tem certeza que deseja prosseguir?';
-
-    deleteModalRef.result.then(
-      (resolve) => {
-        this._projetosService
-          .deleteProjeto(id)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Projeto excluído com sucesso.'
-                );
-                this._router
-                  .navigateByUrl('/', { skipLocationChange: true })
-                  .then(() => this._router.navigateByUrl('main/projetos'));
-              }
-            })
-          )
-          .subscribe();
-      },
-      (reject) => { }
-    );
-  }
-
-
-
   public handleActionBreadcrumb(actionType: string) {
     switch (actionType) {
       case 'edit':
         if (this.isAllowed('projetoseditar')) {
           this.switchMode(true, ['idProjetos']);
-        }
-        break;
-
-      case 'delete':
-        if (this.isAllowed('projetosedeletar')) {
-          this.deletarProjeto(this.projectEditId);
         }
         break;
 

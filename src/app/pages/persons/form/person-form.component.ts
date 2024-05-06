@@ -5,8 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, finalize, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
-
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
@@ -369,35 +367,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-  }
-
-  public deletarPessoa(id: number) {
-    const deleteModalRef = this._modalService.open(DeleteModalComponent);
-    deleteModalRef.componentInstance.title = 'Atenção!';
-    deleteModalRef.componentInstance.content =
-      'A pessoa será excluída. Tem certeza que deseja prosseguir?';
-
-    deleteModalRef.result.then(
-      (resolve) => {
-        this._pessoasService
-          .deletePessoa(id)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Pessoa excluída com sucesso.'
-                );
-                this._router
-                  .navigateByUrl('/', { skipLocationChange: true })
-                  .then(() => this._router.navigateByUrl('main/pessoas'));
-              }
-            })
-          )
-          .subscribe();
-      },
-      (reject) => { }
-    );
   }
 
   handleActionBreadcrumb(actionType: string) {
