@@ -19,6 +19,7 @@ import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
 import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { HeaderComponent } from '../../../core/components/header/header.component';
 
 @Component({
   selector: 'siscap-person-form',
@@ -53,7 +54,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
-  public defaultPhotoUser: string = '/assets/images/user.png';
+  public defaultPhotoUser: string = '/assets/images/blank.png';
   public photoUSer: string = this.defaultPhotoUser;
 
   public paisesList: ISelectList[] = [];
@@ -348,6 +349,12 @@ export class PersonFormComponent implements OnInit, OnDestroy {
                   'success',
                   'Pessoa alterada com sucesso.'
                 );
+                var perfil = JSON.parse(sessionStorage.getItem('user-profile') || '{}');
+                if (perfil?.email == response.email) {
+                  console.log('HJEHE')
+                  perfil.imagemPerfil = response.imagemPerfil;
+                  this._profileService.atualizarPerfil(perfil);
+                }
                 this._router.navigateByUrl('main/pessoas');
               }
             })

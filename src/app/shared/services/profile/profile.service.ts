@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable, catchError, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { IProfile } from '../../interfaces/profile.interface';
@@ -23,11 +23,13 @@ enum PermissionsMap {
 })
 export class ProfileService {
   private _url = `${environment.apiUrl}/signin/user-info`;
+  private _sessionProfileSubject = new BehaviorSubject<IProfile>({token:"", nome:"", email:"", subNovo:"", permissoes:[]});
+  public sessionProfile$ = this._sessionProfileSubject.asObservable();
 
   constructor(
     private _http: HttpClient,
-    private _errorHandlerService: ErrorHandlerService
-  ) {}
+    private _errorHandlerService: ErrorHandlerService,
+  ) { }
 
   public getUserInfo(): Observable<IProfile> {
     return this._http.get<IProfile>(`${this._url}`).pipe(
@@ -50,4 +52,10 @@ export class ProfileService {
       PermissionsMap[value as keyof typeof PermissionsMap]
     );
   }
+
+  atualizarPerfil(perfil: IProfile) {
+    sessionStorage.setItem('user-profile', JSON.stringify(perfil))
+    this._sessionProfileSubject.next(perfil);
+  }
+
 }
