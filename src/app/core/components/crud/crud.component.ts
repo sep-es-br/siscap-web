@@ -56,31 +56,30 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   private clickListener!: () => void;
   public nomeInAction!: string;
 
-  constructor(private renderer: Renderer2, private router: Router, private modalService: NgbModal,private location: Location) { }
+  constructor(private renderer: Renderer2, private router: Router, private modalService: NgbModal, private location: Location) { }
 
   ngOnInit(): void {
-    let lastPage=0;
-    let lastSearchText="";
+    let lastPage = 0;
+    let lastSearchText = "";
     this.dtOptions = {
       dom: "<'row'<'col-sm-12'tr>>" +
         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       processing: true,
-      displayStart:lastPage,
-      search:{search:lastSearchText},
+      displayStart: lastPage,
+      search: { search: lastSearchText },
       layout: {
         topStart: 'search',
         topEnd: undefined,
       },
       paging: true,
       language: {
-        url:  `${this.router.parseUrl('/assets/plugins/datatable/translations/pt-BR.json')}`,
+        url: `${this.router.parseUrl('/assets/plugins/datatable/translations/pt-BR.json')}`,
         processing: '<span class="spinner-border spinner-border-sm align-middle"></span> Carregando...'
-      }, 
+      },
       ...this.datatableConfig,
       serverSide: true,
-      searching: true, 
+      searching: true,
     };
-    console.log("datatableConfig |||",this.datatableConfig);
     this.renderActionColumn();
 
     this.setupSweetAlert();
@@ -88,14 +87,14 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.reload) {
       this.reload.subscribe(data => {
         this.modalService.dismissAll();
-        this.datatableElement.dtInstance.then((dtInstance: Api ) => dtInstance.ajax.reload());
+        this.datatableElement.dtInstance.then((dtInstance: Api) => dtInstance.ajax.reload());
       });
     }
   }
 
   renderActionColumn(): void {
 
-    
+
     const actionColumn = {
       sortable: false,
       title: 'Gerenciar',
@@ -107,10 +106,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.deleteEvent.observed) {
           deleteButton = `
           <button class="btn dropdown-item" data-action="delete" data-name="${full.nome}" data-id="${full.id}">
-            <i class="ki-duotone ki-trash ">
-              <span class="path1"></span><span class="path2"></span>
-              <span class="path3"></span><span class="path4"></span><span class="path5"></span>
-            </i>
+            <i class="fa-regular fa-trash-can me-1"></i>
             Excluir
           </button>`;
         }
@@ -118,18 +114,15 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.editEvent.observed) {
           editButton = `
           <button class="btn dropdown-item" data-action="edit" data-id="${full.id}">
-            <i class="ki-duotone ki-pencil">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
+            <i class="fa-regular fa-pen-to-square fs-6 me-1"></i>
             Editar
           </button>`;
         }
-        
+
 
         const actionsDropdown = `
           <div class="btn-group">
-            <button type="button" class="btn border-0 btn-icon btn-light-primary" data-bs-toggle="dropdown">
+            <button type="button" class="btn btn-light-primary" data-bs-toggle="dropdown">
               <i class="fa-solid fa-ellipsis"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end">
@@ -154,16 +147,14 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
     this.clickListener = this.renderer.listen(document, 'click', (event) => {
       const closestBtn = event.target.closest('.btn');
       if (closestBtn) {
-        console.log("Closest ",closestBtn.dataset);
         const { action, id, name } = closestBtn.dataset;
         this.idInAction = id;
         this.nomeInAction = name;
-        // console.log("Nome",nonameme);
         this.textDelete = `Você está deletando o registro "<b>${name}</b>".<br>Esta ação não poderá ser desfeita. Deseja continuar?`;
 
-        
-           
-       
+
+
+
 
         switch (action) {
           case 'view':
@@ -182,12 +173,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
           case 'delete':
             setTimeout(() => {
-              console.log("Text",this.textDelete);
-              this.deleteSwal.fire().then((clicked) => {
-               if (clicked.isConfirmed) {
-                 console.log('Sucesso');
-               }
-             });
+              this.deleteSwal.fire();
             }, 0);
             break;
         }
@@ -208,7 +194,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // adjustTextDelete(): void {
-    
+
   // }
 
   triggerDelete() {
@@ -229,7 +215,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
       )
       .subscribe(({ action, value }) => {
         if (action === 'filter') {
-          this.datatableElement.dtInstance.then((dtInstance: Api ) => dtInstance.search(value).draw());
+          this.datatableElement.dtInstance.then((dtInstance: Api) => dtInstance.search(value).draw());
         }
       });
   }

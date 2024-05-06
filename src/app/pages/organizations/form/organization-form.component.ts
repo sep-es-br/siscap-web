@@ -5,8 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
-
 import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
@@ -308,48 +306,11 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  public deletarOrganizacao(id: number) {
-    const deleteModalRef = this._modalService.open(DeleteModalComponent);
-    deleteModalRef.componentInstance.title = 'Atenção!';
-    deleteModalRef.componentInstance.content =
-      'A organizacao será excluída. Tem certeza que deseja prosseguir?';
-
-    deleteModalRef.result.then(
-      (resolve) => {
-        this._organizacoesService
-          .deleteOrganizacao(id)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Organizacao excluída com sucesso.'
-                );
-                this._router
-                  .navigateByUrl('/', { skipLocationChange: true })
-                  .then(() => this._router.navigateByUrl('main/organizacoes'));
-              }
-            })
-          )
-          .subscribe();
-      },
-      (reject) => {}
-    );
-  }
-
   public handleActionBreadcrumb(actionType: string) {
-    console.log(actionType);
-    console.log('ORGANIZACAO');
     switch (actionType) {
       case 'edit':
-        if(this.isAllowed('organizacoeseditar')){
+        if (this.isAllowed('organizacoeseditar')) {
           this.switchMode(true, ['idOrganizacaoPai']);
-        }
-        break;
-
-      case 'delete':
-        if(this.isAllowed('organizacoesdeletar')){
-          this.deletarOrganizacao(this.organizationEditId);
         }
         break;
 

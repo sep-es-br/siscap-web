@@ -5,6 +5,7 @@ import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { NavMenuLinks, IMenuLink } from '../../../shared/utils/navmenu-links';
 import { IProfile } from '../../../shared/interfaces/profile.interface';
 import { ActivatedRoute } from '@angular/router';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'siscap-header',
@@ -32,16 +33,16 @@ export class HeaderComponent {
   constructor(
     private _router: Router,
     private _offcanvasService: NgbOffcanvas,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private _profileService: ProfileService
   ) {
     if (!!sessionStorage.getItem('user-profile')) {
-      this.userProfile = JSON.parse(sessionStorage.getItem('user-profile')!);
-      this.UserName = this.userProfile.nome.split(' ')[0] + ' ' + this.userProfile.nome.split(' ').slice(-1)[0];
-      this.UserEmail = this.userProfile.email;
-      if (this.userProfile.imagemPerfil !== undefined && this.userProfile.imagemPerfil !== null) {
-        this.imageUser = this.convertByteArraytoImg(this.userProfile.imagemPerfil);
-      }
+      this.fillProfile();
     }
+
+    this._profileService.sessionProfile$.subscribe(profile => {
+      this.fillProfile()
+    });
   }
 
   ngDoCheck(): void {
@@ -59,11 +60,9 @@ export class HeaderComponent {
     return 'data:image/jpeg;base64,' + data;
   }
 
- 
-
-    toggleMenu() {
-        this.showMenu = !this.showMenu;
-    }
+  toggleMenu() {
+    this.showMenu = !this.showMenu;
+  }
 
   activedCategory() {
     this.menuLinks.forEach((category) => {
@@ -87,4 +86,14 @@ export class HeaderComponent {
     sessionStorage.removeItem('user-profile');
     this._router.navigate(['login']);
   }
+
+  private fillProfile() {
+    this.userProfile = JSON.parse(sessionStorage.getItem('user-profile')!);
+    this.UserName = this.userProfile.nome.split(' ')[0] + ' ' + this.userProfile.nome.split(' ').slice(-1)[0];
+    this.UserEmail = this.userProfile.email;
+    if (this.userProfile.imagemPerfil !== undefined && this.userProfile.imagemPerfil !== null) {
+      this.imageUser = this.convertByteArraytoImg(this.userProfile.imagemPerfil);
+    }
+  }
+
 }
