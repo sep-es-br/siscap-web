@@ -330,22 +330,20 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
           )
           .subscribe();
       },
-      (reject) => {}
+      (reject) => { }
     );
   }
 
   public handleActionBreadcrumb(actionType: string) {
-    console.log(actionType);
-    console.log('ORGANIZACAO');
     switch (actionType) {
       case 'edit':
-        if(this.isAllowed('organizacoeseditar')){
+        if (this.isAllowed('organizacoeseditar')) {
           this.switchMode(true, ['idOrganizacaoPai']);
         }
         break;
 
       case 'delete':
-        if(this.isAllowed('organizacoesdeletar')){
+        if (this.isAllowed('organizacoesdeletar')) {
           this.deletarOrganizacao(this.organizationEditId);
         }
         break;

@@ -353,18 +353,16 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
 
   public handleActionBreadcrumb(actionType: string) {
-    console.log(actionType);
-    console.log('PROJETO');
     switch (actionType) {
       case 'edit':
-        if(this.isAllowed('projetoseditar')){
+        if (this.isAllowed('projetoseditar')) {
           this.switchMode(true, ['idProjetos']);
         }
         break;
 
       case 'delete':
-        if(this.isAllowed('projetosedeletar')){
-          this.deletarProjeto(this.projectEditId );
+        if (this.isAllowed('projetosedeletar')) {
+          this.deletarProjeto(this.projectEditId);
         }
         break;
 
@@ -377,7 +375,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  
+
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();

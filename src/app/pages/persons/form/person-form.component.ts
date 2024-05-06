@@ -391,8 +391,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   }
 
   handleActionBreadcrumb(actionType: string) {
-    console.log(actionType);
-    console.log('PESSOA');
     switch (actionType) {
       case 'edit':
         this.switchMode(true, ['email']);

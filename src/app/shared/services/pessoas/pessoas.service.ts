@@ -70,7 +70,6 @@ export class PessoasService {
 
   // TODO: Ver como anexar body no get (IHttpGetRequestBody)
   getPessoas(): Observable<IPersonGet> {
-    console.log("Get pessoas");
     return this._http.get<IPersonGet>(this._url).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);

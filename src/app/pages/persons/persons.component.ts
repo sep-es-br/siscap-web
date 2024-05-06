@@ -77,7 +77,6 @@ export class PersonsComponent implements OnInit, OnDestroy {
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
-        console.log("dataTablesParameters", dataTablesParameters);
         this.page = dataTablesParameters.start / dataTablesParameters.length;
         this.getDataPaginated().subscribe(resp => {
           callback({

@@ -59,7 +59,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         lastPage = dataTablesParameters.start;
         lastSearchText = dataTablesParameters.search.value;
         this.getData().subscribe(resp => {
-          console.log("RESP", resp);
           callback({
             recordsTotal: resp.totalElements,
             recordsFiltered: resp.totalElements,
@@ -116,9 +115,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   }
 
   public deletarOrganizacao(id: number) {
-
-    console.log("ID", id);
-
     this._organizacoesService
       .deleteOrganizacao(id)
       .pipe(
