@@ -7,7 +7,7 @@ import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
 
 import { SortColumn } from '../../core/directives/sortable/sortable.directive';
 
-import  Swal  from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 
 import {
@@ -32,10 +32,10 @@ export class PersonsComponent implements OnInit, OnDestroy {
 
   public datatableConfig: Config = {};
 
-  public dataTableList!:any;
+  public dataTableList!: any;
 
   public page = 0;
-  public pageSize = 10;
+  public pageSize = 15;
   public sort = '';
   public search = '';
 
@@ -56,8 +56,8 @@ export class PersonsComponent implements OnInit, OnDestroy {
 
 
   public convertByteArraytoImg(data: ArrayBuffer): string {
-    if(!data){
-     return this.imgUserDefault;
+    if (!data) {
+      return this.imgUserDefault;
     }
     return 'data:image/jpeg;base64,' + data;
   }
@@ -69,21 +69,21 @@ export class PersonsComponent implements OnInit, OnDestroy {
     });
   }
 
-  getDataPaginated(){
-   return this._pessoasService.getPessoaPaginated(this.page, this.pageSize, this.sort, this.search);
+  getDataPaginated() {
+    return this._pessoasService.getPessoaPaginated(this.page, this.pageSize, this.sort, this.search);
   }
 
-  treatDatatableConfig(){
+  treatDatatableConfig() {
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
-        console.log("dataTablesParameters",dataTablesParameters);
+        console.log("dataTablesParameters", dataTablesParameters);
         this.page = dataTablesParameters.start / dataTablesParameters.length;
         this.getDataPaginated().subscribe(resp => {
           callback({
             recordsTotal: resp.totalElements,
             recordsFiltered: resp.totalElements,
-            data:  resp.content
+            data: resp.content
           });
         });
       },
@@ -92,7 +92,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
       searching: true,
       pageLength: this.pageSize,
       columns: [
-        { data: 'imagemPerfil', title: '', orderable :false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="50" height="50">` } },
+        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="50" height="50">` } },
         { data: 'nome', title: 'Nome' },
         { data: 'email', title: 'E-mail' },
         { data: 'nomeOrganizacao', title: 'Organização' }
@@ -117,12 +117,12 @@ export class PersonsComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
-     
-   
-  }
-  
 
-  queryPerson() {}
+
+  }
+
+
+  queryPerson() { }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
