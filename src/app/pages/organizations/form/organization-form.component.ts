@@ -5,12 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
-
 import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
-import { BreadcrumpService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 import { IOrganization, IOrganizationCreate } from '../../../shared/interfaces/organization.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
@@ -68,7 +66,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     private _selectListService: SelectListService,
     private _toastService: ToastService,
     private _modalService: NgbModal,
-    private _breadcrumbService: BreadcrumpService
+    private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.organizationEditId = this._route.snapshot.queryParams['id'] ?? null;
@@ -125,9 +123,9 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       this._getPessoas$
     );
 
-    this._breadcrumbService.breadcrumpAction.subscribe((actionType: string) => {
+    this._subscription.add(this._breadcrumbService.breadcrumbAction.subscribe((actionType: string) => {
       this.handleActionBreadcrumb(actionType);
-    });
+    }));
   }
 
   private initForm(organization?: IOrganization) {
@@ -154,8 +152,8 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       idPessoaResponsavel: nnfb.control(
         organization?.idPessoaResponsavel?.toString() ?? null
       ),
-      idCidade: nnfb.control(organization?.idCidade.toString() ?? null),
-      idEstado: nnfb.control(organization?.idEstado.toString() ?? null),
+      idCidade: nnfb.control(organization?.idCidade?.toString() ?? null),
+      idEstado: nnfb.control(organization?.idEstado?.toString() ?? null),
       idPais: nnfb.control(organization?.idPais.toString() ?? null, {
         validators: Validators.required,
       }),
@@ -305,46 +303,11 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  public deletarOrganizacao(id: number) {
-    const deleteModalRef = this._modalService.open(DeleteModalComponent);
-    deleteModalRef.componentInstance.title = 'Atenção!';
-    deleteModalRef.componentInstance.content =
-      'A organizacao será excluída. Tem certeza que deseja prosseguir?';
-
-    deleteModalRef.result.then(
-      (resolve) => {
-        this._organizacoesService
-          .deleteOrganizacao(id)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Organizacao excluída com sucesso.'
-                );
-                this._router
-                  .navigateByUrl('/', { skipLocationChange: true })
-                  .then(() => this._router.navigateByUrl('main/organizacoes'));
-              }
-            })
-          )
-          .subscribe();
-      },
-      (reject) => {}
-    );
-  }
-
   public handleActionBreadcrumb(actionType: string) {
     switch (actionType) {
       case 'edit':
-        if(this.isAllowed('organizacoeseditar')){
+        if (this.isAllowed('organizacoeseditar')) {
           this.switchMode(true, ['idOrganizacaoPai']);
-        }
-        break;
-
-      case 'delete':
-        if(this.isAllowed('organizacoesdeletar')){
-          this.deletarOrganizacao(this.organizationEditId);
         }
         break;
 

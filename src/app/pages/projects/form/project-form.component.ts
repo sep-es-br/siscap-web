@@ -5,8 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
-
 import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
@@ -22,7 +20,7 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
 import { ArrayItemNumberToStringMapper } from '../../../shared/utils/array-item-mapper';
 
-import { BreadcrumpService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 @Component({
   selector: 'siscap-project-form',
@@ -40,7 +38,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   private _getProjetoById$!: Observable<IProject>;
 
   private _subscription: Subscription = new Subscription();
-
   public loading: boolean = true;
 
   public formMode!: string;
@@ -65,14 +62,14 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     private _selectListService: SelectListService,
     private _toastService: ToastService,
     private _modalService: NgbModal,
-    private _breadcrumbService: BreadcrumpService
+    private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.projectEditId = this._route.snapshot.queryParams['id'] ?? null;
 
-    this._breadcrumbService.breadcrumpAction.subscribe((actionType: string) => {
+    this._subscription.add(this._breadcrumbService.breadcrumbAction.subscribe((actionType: string) => {
       this.handleActionBreadcrumb(actionType);
-    });
+    }));
 
 
     this._getProjetoById$ = this._projetosService
@@ -316,54 +313,11 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * @public
-   * Método para deletar o projeto. Chama um modal e ao confirmar, chama requisição para deletar.
-   *
-   * @param {number} id - O id do projeto á ser deletado.
-   */
-  public deletarProjeto(id: number) {
-    const deleteModalRef = this._modalService.open(DeleteModalComponent);
-    deleteModalRef.componentInstance.title = 'Atenção!';
-    deleteModalRef.componentInstance.content =
-      'O projeto será excluído. Tem certeza que deseja prosseguir?';
-
-    deleteModalRef.result.then(
-      (resolve) => {
-        this._projetosService
-          .deleteProjeto(id)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Projeto excluído com sucesso.'
-                );
-                this._router
-                  .navigateByUrl('/', { skipLocationChange: true })
-                  .then(() => this._router.navigateByUrl('main/projetos'));
-              }
-            })
-          )
-          .subscribe();
-      },
-      (reject) => { }
-    );
-  }
-
-
-
   public handleActionBreadcrumb(actionType: string) {
     switch (actionType) {
       case 'edit':
-        if(this.isAllowed('projetoseditar')){
+        if (this.isAllowed('projetoseditar')) {
           this.switchMode(true, ['idProjetos']);
-        }
-        break;
-
-      case 'delete':
-        if(this.isAllowed('projetosedeletar')){
-          this.deletarProjeto(this.projectEditId );
         }
         break;
 
@@ -376,7 +330,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  
+
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();

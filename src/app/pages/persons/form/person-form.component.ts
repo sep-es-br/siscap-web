@@ -5,8 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, finalize, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { DeleteModalComponent } from '../../../core/components/modal/delete-modal/delete-modal.component';
-
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
@@ -18,7 +16,8 @@ import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
 import { ProfileService } from '../../../shared/services/profile/profile.service';
-import { BreadcrumpService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { HeaderComponent } from '../../../core/components/header/header.component';
 
 @Component({
   selector: 'siscap-person-form',
@@ -32,6 +31,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   private _getPaises$!: Observable<ISelectList[]>;
   private _getEstados$!: Observable<ISelectList[]>;
   private _getCidades$!: Observable<ISelectList[]>;
+  private _getOrganizacoes$!: Observable<ISelectList[]>;
   private _getAreasAtuacao$!: Observable<ISelectList[]>;
 
   private _getPessoaById$!: Observable<IPerson>;
@@ -52,12 +52,13 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
-  public defaultPhotoUser: string = '/assets/images/user.png';
+  public defaultPhotoUser: string = '/assets/images/blank.png';
   public photoUSer: string = this.defaultPhotoUser;
 
   public paisesList: ISelectList[] = [];
   public estadosList: ISelectList[] = [];
   public cidadesList: ISelectList[] = [];
+  public organizacoesList: ISelectList[] = [];
   public areasAtuacaoList: ISelectList[] = [];
 
   public paisSelected: string | undefined;
@@ -76,7 +77,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private _selectListService: SelectListService,
     private _toastService: ToastService,
     private _modalService: NgbModal,
-    private _breadcrumbService: BreadcrumpService
+    private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.paramMap.get('mode') ?? '';
     this.personEditId = Number(this._route.snapshot.queryParamMap.get('id')) ?? null;
@@ -91,7 +92,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
-          this.photoUSer = this.uploadedPhotoSrc;
+          if (this.uploadedPhotoSrc)
+            this.photoUSer = this.uploadedPhotoSrc;
+          else
+            this.photoUSer = this.defaultPhotoUser;
         }),
         tap((response) => {
           this.paisSelected =
@@ -142,9 +146,9 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         })
       );
 
-    this._breadcrumbService.breadcrumpAction.subscribe((actionType: string) => {
+    this._subscription.add(this._breadcrumbService.breadcrumbAction.subscribe((actionType: string) => {
       this.handleActionBreadcrumb(actionType);
-    });
+    }));
 
     this._getPaises$ = this._selectListService
       .getPaises()
@@ -153,6 +157,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     this._getAreasAtuacao$ = this._selectListService
       .getAreasAtuacao()
       .pipe(tap((response) => (this.areasAtuacaoList = response)));
+
+    this._getOrganizacoes$ = this._selectListService
+      .getOrganizacoes()
+      .pipe(tap((response) => (this.organizacoesList = response)));
   }
 
   /**
@@ -195,6 +203,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         codigoPostal: nnfb.control(person?.endereco?.codigoPostal ?? ''),
         idCidade: nnfb.control(person?.endereco?.idCidade?.toString() ?? null),
       }),
+      idOrganizacao: nnfb.control(person?.idOrganizacao?.toString() ?? null),
       idAreasAtuacao: nnfb.control(person?.idAreasAtuacao ?? []),
     });
   }
@@ -202,6 +211,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._subscription.add(this._getPaises$.subscribe());
     this._subscription.add(this._getAreasAtuacao$.subscribe());
+    this._subscription.add(this._getOrganizacoes$.subscribe());
 
     if (this.formMode == 'criar') {
       this.initForm();
@@ -340,6 +350,12 @@ export class PersonFormComponent implements OnInit, OnDestroy {
                   'success',
                   'Pessoa alterada com sucesso.'
                 );
+                var perfil = JSON.parse(sessionStorage.getItem('user-profile') || '{}');
+                if (perfil?.email == response.email) {
+                  console.log('HJEHE')
+                  perfil.imagemPerfil = response.imagemPerfil;
+                  this._profileService.atualizarPerfil(perfil);
+                }
                 this._router.navigateByUrl('main/pessoas');
               }
             })
@@ -351,35 +367,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-  }
-
-  public deletarPessoa(id: number) {
-    const deleteModalRef = this._modalService.open(DeleteModalComponent);
-    deleteModalRef.componentInstance.title = 'Atenção!';
-    deleteModalRef.componentInstance.content =
-      'A pessoa será excluída. Tem certeza que deseja prosseguir?';
-
-    deleteModalRef.result.then(
-      (resolve) => {
-        this._pessoasService
-          .deletePessoa(id)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Pessoa excluída com sucesso.'
-                );
-                this._router
-                  .navigateByUrl('/', { skipLocationChange: true })
-                  .then(() => this._router.navigateByUrl('main/pessoas'));
-              }
-            })
-          )
-          .subscribe();
-      },
-      (reject) => {}
-    );
   }
 
   handleActionBreadcrumb(actionType: string) {

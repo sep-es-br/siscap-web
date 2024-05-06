@@ -3,21 +3,11 @@
 </div>
 
 <div class="row mx-1" *ngIf="!loading && formMode != 'criar'">
-  <div class="d-flex justify-content-end">
+  <div class="d-flex justify-content-end p-0">
     <button class="btn btn-outline-primary d-flex justify-content-around" (click)="downloadDic(projectEditId)">
       <i class="fa-solid fa-download fs-6 mx-1 my-auto"></i>
-      <div class="mx-1 my-auto">Baixar PDF</div>
+      <label class="mx-1 fs-6">Baixar PDF</label>
     </button>
-
-    <!-- <button *ngIf="isAllowed('projetoseditar')" type="button" class="btn mx-2 edit-btn"
-      (click)="switchMode(true, ['plano', 'eixo', 'area'])" [disabled]="isEdit">
-      <i class="fa-solid fa-pencil"></i>
-    </button>
-
-    <button *ngIf="isAllowed('projetosdeletar')" type="button" class="btn delete-btn"
-      (click)="deletarProjeto(projectEditId)">
-      <i class="fa-solid fa-trash-can"></i>
-    </button> -->
   </div>
 </div>
 
@@ -35,14 +25,14 @@
                     context: { controlName: 'sigla' }
                   "></ng-container>
               </label>
-              <input mask="S*" [inputTransformFn]="toUppercaseInputTransformFn"
+              <input mask="" [inputTransformFn]="toUppercaseInputTransformFn"
                 [outputTransformFn]="toUppercaseOutputTransformFn" type="text" class="form-control" id="sigla"
                 formControlName="sigla" maxlength="12" />
             </div>
 
             <div class="col-12 col-md-9">
               <label for="titulo" class="form-label col-12">
-                Titulo do Projeto
+                Título do Projeto
                 <ng-container *ngTemplateOutlet="
                     appAlert;
                     context: { controlName: 'titulo' }

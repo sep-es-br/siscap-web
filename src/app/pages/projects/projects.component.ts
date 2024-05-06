@@ -12,6 +12,7 @@ import { IProjectGet, IProjectTable } from '../../shared/interfaces/project.inte
 import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
 import { Config } from 'datatables.net';
 import Swal from 'sweetalert2';
+import DataTable from 'datatables.net-bs5';
 
 @Component({
   selector: 'siscap-projects',
@@ -28,7 +29,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public datatableConfig: Config = {};
 
   public page = 0;
-  public pageSize = 10;
+  public pageSize = 15;
   public sort = '';
   public search = '';
 
@@ -43,7 +44,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.treatDatatableConfig();
   }
 
-  getData(){
+  getDataPaginated() {
     return this._projetosService.getProjetosPaginated(this.page, this.pageSize, this.sort, this.search);
   }
 
@@ -56,32 +57,29 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     );
   }
 
-  treatDatatableConfig(){
-    let lastPage=0;  
-    let lastSearchText="";
+  treatDatatableConfig() {
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
-        lastPage=dataTablesParameters.start;
-        lastSearchText=dataTablesParameters.search.value;
-        this.getData().subscribe(resp => {
+        this.page = dataTablesParameters.start / dataTablesParameters.length;
+        this.getDataPaginated().subscribe(resp => {
           callback({
             recordsTotal: resp.totalElements,
             recordsFiltered: resp.totalElements,
-            data:  resp.content
+            data: resp.content
           });
         });
       },
       searching: true,
       serverSide: true,
-      lengthMenu:['5','10','20'],
+      lengthMenu: ['5', '10', '20'],
       lengthChange: true,
       pageLength: this.pageSize,
       columns: [
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },
-        { data: 'nomesMicrorregioes', title: 'Micro Regiões' },
-        { data: 'valorEstimado', title: 'Valor Estimado' },
+        { data: 'nomesMicrorregioes', title: 'Microrregiões', render: (dado: string[]) => Array.isArray(dado) ? dado.join(", ") : dado },
+        { data: 'valorEstimado', title: 'Valor Estimado', render: DataTable.render.number('.', ',', 2, 'R$ '), className: 'text-end' },
       ],
       order: [[1, 'asc']],
     };
@@ -97,22 +95,22 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   public deletarProjeto(id: number) {
 
-        this._projetosService
-          .deleteProjeto(id)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                Swal.fire('Projeto deletado com sucesso!', '', 'success');
-                this._router
-                  .navigateByUrl('/', { skipLocationChange: true })
-                  .then(() => this._router.navigateByUrl('main/projetos'));
-              }
-            })
-          );
-          
+    this._projetosService
+      .deleteProjeto(id)
+      .pipe(
+        tap((response) => {
+          if (response) {
+            Swal.fire('Projeto deletado com sucesso!', '', 'success');
+            this._router
+              .navigateByUrl('/', { skipLocationChange: true })
+              .then(() => this._router.navigateByUrl('main/projetos'));
+          }
+        })
+      );
+
   }
 
-  queryProject() {}
+  queryProject() { }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
