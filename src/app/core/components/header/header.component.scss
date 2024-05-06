@@ -115,27 +115,76 @@ header{
 .navbar-nav li{
   background-color: #0096e1;
   padding: 0.5rem;
-  border-radius: 10px;
-  padding-left: 1.5rem;
+  width: 100%;
+  // border-radius: 10px;
+  // padding-left: 1.5rem;
   margin-top: 0.5rem;
 }
 
 .navbar-nav div.link-nav a{
-  color: #0096e1;
+  color: #fff;
   margin: 0 2rem;
   margin-top: 0.2rem;
-  background-color: #fff ;
+  background-color: #0096e142 ;
 }
 
-  @media screen and (max-width: 992) {
-    .nav-menu{
-      display: none !important;
-    }
-    .mt-header{
-      margin-top: 5rem;
-    }
-    .section-breadcrumb{
-      top: 5rem !important;
-    }
-    
+.accordion{
+  height: calc(100vh - 14.5rem) !important;
+  overflow: auto;
+}
+
+.offcanvas-body .accordion-body{
+  background-color: none;
+}
+
+.footer-menu{
+  background-color: #212529;
+  position: relative;
+  bottom: 0rem;
+  width: 100%;
+}
+
+.accordion-item{
+  border: 0 !important;
+  background: unset !important;
+}
+
+.header-sidebar{
+  background-color: #0096e1;
+  padding: 0.5rem;
+  border-radius: 10px !important;
+  button{
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
   }
+
+}
+
+.link-sidebar{
+  padding: 0.75rem;
+  border-radius: 5px;
+  border: 0.1rem solid #0096e142;
+  margin-bottom:1rem;
+  font-family: oswald;
+  a{
+    color: #fff;
+    text-decoration: none;
+  }
+  &.active{
+    background-color: #0096e142 !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .nav-menu{
+    display: none !important;
+  }
+  .mt-header{
+    margin-top: 5rem;
+  }
+  .section-breadcrumb{
+    top: 5rem !important;
+  }
+  
+}

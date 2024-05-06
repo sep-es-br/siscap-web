@@ -48,7 +48,8 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
   public organizationFormInitialValue!: IOrganizationCreate;
 
   public uploadedPhotoFile: File | undefined;
-  public uploadedPhotoSrc: string = '';
+  public defaultPhotoOrganization: string = '/assets/images/blank.png';
+  public photoOrganization = this.defaultPhotoOrganization;
 
   public tiposOrganizacoesList: Array<ISelectList> = [];
   public organizacoesList: Array<ISelectList> = [];
@@ -76,8 +77,9 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       .pipe(
         tap((response) => {
           this.initForm(response);
+          console.log(response);
 
-          this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
+          this.photoOrganization = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
         }),
@@ -164,6 +166,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         }
       ),
     });
+    console.log(this.organizationForm.value);
   }
 
   ngOnInit(): void {
@@ -209,20 +212,20 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
   }
 
   public convertByteArraytoImgSrc(data: ArrayBuffer): string {
-    return !!data ? 'data:image/jpeg;base64,' + data : '';
+    return !!data ? 'data:image/jpeg;base64,' + data : this.defaultPhotoOrganization;
   }
 
   public attachImg(event: any) {
     if (event.target.files && event.target.files[0]) {
       this.uploadedPhotoFile = event.target.files[0];
-      this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
+      this.photoOrganization = URL.createObjectURL(event.target.files[0]);
     }
   }
 
   public removeImg() {
     this.imagemPerfilInput.nativeElement.value = '';
     this.uploadedPhotoFile = undefined;
-    this.uploadedPhotoSrc = '';
+    this.photoOrganization = this.defaultPhotoOrganization
   }
 
   public isAllowed(path: string): boolean {

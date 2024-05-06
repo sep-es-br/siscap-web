@@ -79,6 +79,15 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
       ...this.datatableConfig,
       serverSide: true,
       searching: true,
+      rowId: 'id',
+      rowCallback: (row: Node, data: any[] | Object, index: number) => {
+        $(row).on('click', 'td:not(:last-child)', () => {
+          const rowData = data as any;
+          this.router.navigate([`${this.router.url}/form/editar`], { queryParams: { id: rowData?.id } });
+        });
+        return row;
+      }
+      
     };
     this.renderActionColumn();
 

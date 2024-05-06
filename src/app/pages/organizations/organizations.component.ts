@@ -50,7 +50,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   }
 
   treatDatatableConfig() {
-    // const contentdata = 
     let lastPage = 0;
     let lastSearchText = "";
     this.datatableConfig = {
@@ -58,6 +57,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       ajax: (dataTablesParameters: any, callback) => {
         lastPage = dataTablesParameters.start;
         lastSearchText = dataTablesParameters.search.value;
+        this.page = dataTablesParameters.start / dataTablesParameters.length;
         this.getData().subscribe(resp => {
           callback({
             recordsTotal: resp.totalElements,
@@ -67,6 +67,8 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         });
       },
       searching: true,
+      serverSide: true,
+      pageLength:this.pageSize,
       lengthMenu: ['5', '10', '20'],
       columns: [
         { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="50" height="50">` } },
