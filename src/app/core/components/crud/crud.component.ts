@@ -79,6 +79,27 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
       ...this.datatableConfig,
       serverSide: true,
       searching: true,
+      rowId: 'id',
+      rowCallback: (row: Node, data: any[] | Object, index: number) => {
+        const self = this;
+        // Unbind first in order to avoid any duplicate handler
+        // (see https://github.com/l-lin/angular-datatables/issues/87)
+        // Note: In newer jQuery v3 versions, `unbind` and `bind` are
+        // deprecated in favor of `off` and `on`
+        $(row).on('click', 'td:not(:last-child)', () => {
+          // self.onRowClick(data);
+          const rowData = data as any; // Type assertion
+          // console.log('row clicked',`${this.router.url}/form/editar?id=${rowData?.id}`);
+          this.router.navigate([`${this.router.url}/form/editar`], { queryParams: { id: rowData?.id } });
+        });
+        // $('td', row).off('click');
+        // $('td', row).on('click', () => {
+        //   if (index !== row.length - 1) {
+        //   }
+        // });
+        return row;
+      }
+      
     };
     this.renderActionColumn();
 

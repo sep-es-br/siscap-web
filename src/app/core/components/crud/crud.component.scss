@@ -2,6 +2,7 @@
     .table-crud tbody tr:nth-child(odd) td{
         background-color: #0096e1;
         color: #fff;
+        fill: #fff;
     }
     .table-crud tbody tr:nth-child(even) td{
         background-color: #ffffff;
@@ -11,5 +12,10 @@
     .table-crud tbody tr:hover td{
         background-color: #85BEFF;
         color: #fff;
+    }
+    @media screen and (max-width: 992px){
+        .div-table-responsive{
+            overflow: auto;
+        }
     }
 }
