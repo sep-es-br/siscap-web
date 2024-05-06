@@ -30,7 +30,7 @@
       [routerLink]="[path, 'form', 'criar']"
       [hidden]="!mainChildPaths.includes(path)"
     >
-    <i class="fa-solid fs-6 fa-plus me-2 "></i>
+    <i class="fa-solid fs-7 fa-plus me-2 "></i>
     <span>{{ path + "criar" | breadcrumbnavlink }}</span>
     </a>
   
@@ -39,15 +39,15 @@
 <!-- Botões de ação (ex.: Projetos -> Editar, Deletar) -->
 <ng-template #actionButtons let-path="path">
   <button class="btn btn-primary mx-1" (click)="breadcrumpAtcion('edit')"  [hidden]="!showEditButton" >
-    <i class="fa-solid fa-edit mx-1"></i>
-    <label>Editar</label>
+    <i class="fa-solid fa-edit mx-1 fs-6"></i>
+    <label class="mx-1 fs-6">Editar</label>
   </button>
   <button class="btn btn-outline-danger mx-1" (click)="breadcrumpAtcion('cancel')"  [hidden]="!showCancelButton" >
-    <i class="fa-solid fa-close mx-1"></i>
-    <label>Cancelar</label>
+    <i class="fa-solid fa-close mx-1 fs-6"></i>
+    <label class="mx-1 fs-6">Cancelar</label>
   </button>
   <button class="btn btn-success mx-1" (click)="breadcrumpAtcion('save')"  [hidden]="!showSaveButton" >
-    <i class="fa-solid fa-save mx-1"></i>
-    <label>Salvar</label>
+    <i class="fa-solid fa-save mx-1 fs-6"></i>
+    <label class="mx-1 fs-6">Salvar</label>
   </button>
 </ng-template>

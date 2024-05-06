@@ -106,10 +106,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.deleteEvent.observed) {
           deleteButton = `
           <button class="btn dropdown-item" data-action="delete" data-name="${full.nome}" data-id="${full.id}">
-            <i class="ki-duotone ki-trash ">
-              <span class="path1"></span><span class="path2"></span>
-              <span class="path3"></span><span class="path4"></span><span class="path5"></span>
-            </i>
+            <i class="fa-regular fa-trash-can me-1"></i>
             Excluir
           </button>`;
         }
@@ -117,10 +114,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.editEvent.observed) {
           editButton = `
           <button class="btn dropdown-item" data-action="edit" data-id="${full.id}">
-            <i class="ki-duotone ki-pencil">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
+            <i class="fa-regular fa-pen-to-square fs-6 me-1"></i>
             Editar
           </button>`;
         }
@@ -128,7 +122,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const actionsDropdown = `
           <div class="btn-group">
-            <button type="button" class="btn border-0 btn-icon btn-light-primary" data-bs-toggle="dropdown">
+            <button type="button" class="btn btn-light-primary" data-bs-toggle="dropdown">
               <i class="fa-solid fa-ellipsis"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end">
