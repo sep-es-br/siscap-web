@@ -29,7 +29,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
   public datatableConfig: Config = {};
   public page = 0;
-  public pageSize = 10;
+  public pageSize = 15;
   public sort = '';
   public search = '';
   imgUserDefault: string = 'assets/images/blank.png';
@@ -71,7 +71,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       pageLength:this.pageSize,
       lengthMenu: ['5', '10', '20'],
       columns: [
-        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="50" height="50">` } },
+        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="30" height="30">` } },
         { data: 'abreviatura', title: 'Sigla' },
         { data: 'nome', title: 'Nome' },
         { data: 'nomeTipoOrganizacao', title: 'Tipo' },

@@ -91,7 +91,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
       searching: true,
       pageLength: this.pageSize,
       columns: [
-        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="50" height="50">` } },
+        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="30" height="30">` } },
         { data: 'nome', title: 'Nome' },
         { data: 'email', title: 'E-mail' },
         { data: 'nomeOrganizacao', title: 'Organização' }

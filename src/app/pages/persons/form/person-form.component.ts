@@ -126,7 +126,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
-          this.photoUSer = this.uploadedPhotoSrc;
+          if (this.uploadedPhotoSrc)
+            this.photoUSer = this.uploadedPhotoSrc;
+          else
+            this.photoUSer = this.defaultPhotoUser;
         }),
         tap((response) => {
           this.paisSelected =
