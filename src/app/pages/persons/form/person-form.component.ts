@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, ControlConfig, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, Subscription, finalize, tap } from 'rxjs';
@@ -204,11 +204,19 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         bairro: nnfb.control(person?.endereco?.bairro ?? ''),
         complemento: nnfb.control(person?.endereco?.complemento ?? ''),
         codigoPostal: nnfb.control(person?.endereco?.codigoPostal ?? ''),
+        idPais: nnfb.control({ value: person?.endereco?.idPais?.toString() ?? null, disabled: !this.isEdit && this.formMode != 'criar' }),
+        idEstado: nnfb.control({ value: person?.endereco?.idEstado?.toString() ?? null, disabled: !this.isEdit && this.formMode != 'criar' }),
         idCidade: nnfb.control(person?.endereco?.idCidade?.toString() ?? null),
       }),
       idOrganizacao: nnfb.control(person?.idOrganizacao?.toString() ?? null),
       idAreasAtuacao: nnfb.control(person?.idAreasAtuacao ?? []),
     });
+    const enderecoGroup = this.personForm.get('endereco');
+    const idPaisControl = enderecoGroup?.get('idPais');
+    const idEstadoControl = enderecoGroup?.get('idEstado');
+    const idCidadeControl = enderecoGroup?.get('idCidade');
+
+    this.requiredAddressFields(idPaisControl, idEstadoControl, idCidadeControl, enderecoGroup);
   }
 
   ngOnInit(): void {
@@ -233,7 +241,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
   public paisChanged(value: string | undefined) {
     if (!value) {
-      this.estadoSelected = undefined;
+      this.personForm.get('endereco.idEstado')?.patchValue(null);
       this.personForm.get('endereco.idCidade')?.patchValue(null);
       this.estadosList = [];
       this.cidadesList = [];
@@ -389,7 +397,34 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     }
   }
 
+  private requiredAddressFields(idPaisControl: AbstractControl<any, any> | null | undefined, idEstadoControl: AbstractControl<any, any> | null | undefined, idCidadeControl: AbstractControl<any, any> | null | undefined, enderecoGroup: AbstractControl<any, any> | null) {
+    [idPaisControl, idEstadoControl, idCidadeControl].forEach(control => {
+      control?.markAsTouched();
+    });
+
+    enderecoGroup?.valueChanges.subscribe(endereco => {
+      const enderecoPreenchido = Object.values(endereco).some(value => !!value);
+
+      if (enderecoPreenchido) {
+        [idPaisControl, idEstadoControl, idCidadeControl].forEach(control => {
+          if (!control?.validator) {
+            control?.setValidators([Validators.required]);
+            control?.updateValueAndValidity();
+          }
+        });
+      } else {
+        [idPaisControl, idEstadoControl, idCidadeControl].forEach(control => {
+          if (control?.validator) {
+            control?.clearValidators();
+            control?.updateValueAndValidity();
+          }
+        });
+      }
+    });
+  }
+
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
   }
+
 }
