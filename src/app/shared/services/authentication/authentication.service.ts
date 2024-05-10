@@ -20,19 +20,4 @@ export class AuthenticationService {
     document.location.href = this._url;
   }
 
-  // public signIn() {
-  //   window.location.href = this.getUrlForAuth();
-  // }
-
-  // private getUrlForAuth() {
-  //   return `${
-  //     this.api
-  //   }/oauth2/authorization/idsvr?front_callback_url=${this.getFrontFallbackUrl()}`;
-  // }
-
-  // private getFrontFallbackUrl() {
-  //   const { protocol, host } = window.location;
-  //   // console.log(`${protocol}//${host}`);
-  //   return `${protocol}//${host}`;
-  // }
 }

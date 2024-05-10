@@ -1,0 +1,53 @@
+<div class="section-breadcrumb">
+  <div class="container pt-3">
+    <div class="row">
+      <div class="col">
+        <h1 class="oswald-semi-bold mb-0 font-Breadcrumb" >{{ currentPage | breadcrumbnavlink }}</h1>
+        <ul class="breadcrumb fw-semibold text-gray-600 fs-7">
+          <ng-container *ngFor="let path of breadcrumbNav">
+            <li class="breadcrumb-item text-gray-600">
+              <a [routerLink]="path"  [ngClass]="{ 'd-none': currentPage === 'main','link-atual': currentPage === path }"  class="text-gray-600 breadcrumb-link text-hover-primary">{{ path | breadcrumbnavlink }}</a>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+      <div class="col-md-4 m-auto">
+        <div class="d-flex justify-content-end">
+          <ng-container *ngTemplateOutlet="newButton; context: { path: currentPage }"></ng-container>
+          <ng-container *ngTemplateOutlet="actionButtons; context: { path: currentPage }"></ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Botão de criar um novo dado (ex.: Projetos -> Novo Projeto) -->
+
+<ng-template #newButton let-path="path">
+    <a
+      *ngIf="isAllowed(path)"
+      class="btn btn-outline-primary me-md-2 me-0 text-nowrap"
+      [routerLink]="[path, 'form', 'criar']"
+      [hidden]="!mainChildPaths.includes(path)"
+    >
+    <i class="fa-solid fs-7 fa-plus me-2 "></i>
+    <span>{{ path + "criar" | breadcrumbnavlink }}</span>
+    </a>
+  
+</ng-template>
+
+<!-- Botões de ação (ex.: Projetos -> Editar, Deletar) -->
+<ng-template #actionButtons let-path="path">
+  <button class="btn btn-primary mx-1" (click)="breadcrumpAtcion('edit')"  [hidden]="!showEditButton" >
+    <i class="fa-solid fa-edit mx-1 fs-6"></i>
+    <label class="mx-1 fs-6">Editar</label>
+  </button>
+  <button class="btn btn-outline-danger mx-1" (click)="breadcrumpAtcion('cancel')"  [hidden]="!showCancelButton" >
+    <i class="fa-solid fa-close mx-1 fs-6"></i>
+    <label class="mx-1 fs-6">Cancelar</label>
+  </button>
+  <button class="btn btn-success mx-1" (click)="breadcrumpAtcion('save')"  [hidden]="!showSaveButton" >
+    <i class="fa-solid fa-save mx-1 fs-6"></i>
+    <label class="mx-1 fs-6">Salvar</label>
+  </button>
+</ng-template>

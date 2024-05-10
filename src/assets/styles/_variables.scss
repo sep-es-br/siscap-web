@@ -1,0 +1,46 @@
+/* Override das variáveis do Bootstrap */
+
+$breadcrumb-divider: quote("•");
+
+// --- Cores ---
+
+
+//Tabelas
+$table-row-border: #7f7f7f8c;
+
+//Formulários
+$invalid: #dc3545;
+$disabled: #e9ecef;
+
+//Ícones
+$icon-secondary: #c2c2c2;
+
+
+//Taxa de Contraste (necessário para permitir o conteúdo branco com a cor $blue acima, por exemplo)
+//Valores possíveis somente 3, 4.5 e 7
+$min-contrast-ratio: 3;
+
+:root {
+  --primary: #107fcf;
+  --secondary: #aaaaaa;
+  --table-row-border: #7f7f7f8c;
+  --invalid: #dc3545;
+  --disabled: #e9ecef;
+  --icon-secondary: #c2c2c2;
+}
+
+
+//Tamanho de fontes menores (< 1rem)
+$small-1-font-size: 0.6875rem; //11px
+$small-2-font-size: 0.75rem; //12px
+$small-3-font-size: 0.8125rem; //13px
+$small-4-font-size: 0.875rem; //14px
+$small-5-font-size: 0.9375rem; //15px
+
+//Tamanho de fontes maiores (> 1rem)
+$large-1-font-size: 1.125rem; //18px
+$large-2-font-size: 1.25rem; //20px
+$large-3-font-size: 1.375rem; //22px
+$large-4-font-size: 1.5rem; //24px
+
+// --- Fontes ---

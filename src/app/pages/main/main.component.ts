@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'app-main',
+  selector: 'siscap-main',
   standalone: false,
   templateUrl: './main.component.html',
-  styleUrl: './main.component.css',
+  styleUrl: './main.component.scss',
 })
-export class MainComponent {}
+export class MainComponent {
+  @ViewChild('navmenuOffcanvas') navmenuOffcanvas!: TemplateRef<any>;
+}

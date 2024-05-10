@@ -1,0 +1,33 @@
+
+.font-Breadcrumb{
+    font-size: 1.6rem;
+    color: #10141d;
+}
+
+.breadcrumb-link{
+    color: #565254 !important;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+.link-atual{
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+.section-breadcrumb{
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    z-index: 10;
+    width: 100%;
+    top: 7rem;
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important
+}
+
+@media (max-width: 992px) {
+    .section-breadcrumb {
+        top: 5rem !important;
+    }
+}

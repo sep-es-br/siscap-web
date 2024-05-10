@@ -1,0 +1,30 @@
+::ng-deep{
+    .table-crud tbody tr:nth-child(odd) td{
+        background-color: #f2f2f2;
+        // color: #fff;
+        // fill: #fff;
+    }
+    .table-crud tbody tr:nth-child(even) td{
+        background-color: #ffffff;
+        color: #000;
+    }
+
+    .table-crud tbody tr:hover td{
+        background-color: #85beff;
+        color: #fff;
+    }
+
+    .table-crud td,th{
+        border-bottom: 1px solid #ccc;
+    }
+
+    .table-crud thead th{
+        text-transform:initial;
+    }
+
+    @media screen and (max-width: 992px){
+        .div-table-responsive{
+            overflow: auto;
+        }
+    }
+}

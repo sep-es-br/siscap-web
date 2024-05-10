@@ -1,28 +1,3 @@
-<div class="project-interaction mx-2">
-  <div class="row g-0 d-flex justify-content-between align-items-center">
-    <div class="col-6 col-sm-4 col-md-2 new-project-button">
-      <button class="btn btn-primary" (click)="redirectProjectForm('create')">
-        Novo Projeto
-      </button>
-    </div>
-    <div class="col-6 col-sm-4 col-md-2 search-input">
-      <div class="input-group ms-auto ms-sm-0">
-        <input type="text" placeholder="Pesquisar..." class="form-control" />
-        <button class="input-group-text px-2" (click)="queryProject()">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="project-datatable">
-    <div class="row g-0 mx-4 mt-3">
-      <div class="col-12">
-        <app-datatable
-          [sourceObject]="projetosDataTableObject"
-          (actionEventEmitter)="handleEvent($event)"
-        ></app-datatable>
-      </div>
-    </div>
-  </div>
+<div class="card shadow border-light p-3">
+  <app-crud [datatableConfig]="datatableConfig" (editEvent)="redirectProjectForm($event)"   (deleteEvent)="deletarProjeto($event)" ></app-crud>
 </div>
