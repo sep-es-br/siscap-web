@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { finalize, tap } from 'rxjs';
+import {catchError, finalize, tap} from 'rxjs';
 
 import { ProfileService } from '../../shared/services/profile/profile.service';
 
 import { IProfile } from '../../shared/interfaces/profile.interface';
+import {error} from "jquery";
 
 @Component({
   selector: 'siscap-auth-redirect',
@@ -45,10 +46,8 @@ export class AuthRedirectComponent {
           };
 
           sessionStorage.setItem('user-profile', JSON.stringify(userProfile));
-        }),
-        finalize(() => {
           this._router.navigate(['main']);
-        })
+        }),
       )
       .subscribe();
   }
