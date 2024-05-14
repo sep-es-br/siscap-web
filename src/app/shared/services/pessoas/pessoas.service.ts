@@ -1,16 +1,16 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 
-import { Observable, catchError, throwError } from 'rxjs';
+import {Observable, catchError, throwError} from 'rxjs';
 
-import { environment } from '../../../../environments/environment';
+import {environment} from '../../../../environments/environment';
 import {
   IPerson,
   IPersonCreate,
   IPersonEdit,
   IPersonGet,
 } from '../../interfaces/person.interface';
-import { ErrorHandlerService } from '../error-handler/error-handler.service';
+import {ErrorHandlerService} from '../error-handler/error-handler.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +21,8 @@ export class PessoasService {
   constructor(
     private _http: HttpClient,
     private _errorHandlerService: ErrorHandlerService
-  ) {}
+  ) {
+  }
 
   getPessoaById(id: number): Observable<IPerson> {
     return this._http.get<IPerson>(`${this._url}/${id}`).pipe(
@@ -40,7 +41,7 @@ export class PessoasService {
       search: search !== undefined ? search.toString() : '', // Ensure search is always a string
     };
 
-    return this._http.get<IPersonGet>(`${this._url}?${new URLSearchParams(params).toString()}` ).pipe(
+    return this._http.get<IPersonGet>(`${this._url}?${new URLSearchParams(params).toString()}`).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
         return throwError(() => err);
@@ -48,8 +49,9 @@ export class PessoasService {
     );
   }
 
-  putPessoa(id: number, body: FormData): Observable<IPerson> {
-    return this._http.put<IPerson>(`${this._url}/${id}`, body).pipe(
+  putPessoa(id: number, body: FormData, isByEmail: boolean): Observable<IPerson> {
+    let url = isByEmail ? `${this._url}/meu-perfil/${id}` : `${this._url}/${id}`;
+    return this._http.put<IPerson>(url, body).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
         return throwError(() => err);
@@ -59,7 +61,7 @@ export class PessoasService {
 
   deletePessoa(id: number): Observable<string> {
     return this._http
-      .delete(`${this._url}/${id}`, { responseType: 'text' })
+      .delete(`${this._url}/${id}`, {responseType: 'text'})
       .pipe(
         catchError((err: HttpErrorResponse) => {
           this._errorHandlerService.handleError(err);
@@ -68,7 +70,6 @@ export class PessoasService {
       );
   }
 
-  // TODO: Ver como anexar body no get (IHttpGetRequestBody)
   getPessoas(): Observable<IPersonGet> {
     return this._http.get<IPersonGet>(this._url).pipe(
       catchError((err: HttpErrorResponse) => {
@@ -87,13 +88,13 @@ export class PessoasService {
     );
   }
 
-  getPessoaByEmail(email: string): Observable<IPerson> {
+  getMeuPerfil(email: string): Observable<IPerson> {
     const params = {
       email: email,
     };
 
     return this._http
-      .get<IPerson>(`${this._url}/email`, { params: params })
+      .get<IPerson>(`${this._url}/meu-perfil`, {params: params})
       .pipe(
         catchError((err: HttpErrorResponse) => {
           this._errorHandlerService.handleError(err);

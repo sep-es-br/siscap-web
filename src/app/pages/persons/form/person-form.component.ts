@@ -1,23 +1,31 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, ControlConfig, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  AbstractControl,
+  ControlConfig,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { Observable, Subscription, finalize, tap } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {Observable, Subscription, finalize, tap} from 'rxjs';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
-import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { ToastService } from '../../../shared/services/toast/toast.service';
+import {PessoasService} from '../../../shared/services/pessoas/pessoas.service';
+import {SelectListService} from '../../../shared/services/select-list/select-list.service';
+import {ToastService} from '../../../shared/services/toast/toast.service';
 
-import { IPerson, IPersonCreate } from '../../../shared/interfaces/person.interface';
-import { ISelectList } from '../../../shared/interfaces/select-list.interface';
+import {IPerson, IPersonCreate} from '../../../shared/interfaces/person.interface';
+import {ISelectList} from '../../../shared/interfaces/select-list.interface';
 
-import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
-import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
-import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
-import { ProfileService } from '../../../shared/services/profile/profile.service';
-import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
-import { HeaderComponent } from '../../../core/components/header/header.component';
+import {PessoaFormLists} from '../../../shared/utils/pessoa-form-lists';
+import {FormDataHelper} from '../../../shared/helpers/form-data.helper';
+import {CPFValidator} from '../../../shared/helpers/cpf-validator.helper';
+import {ProfileService} from '../../../shared/services/profile/profile.service';
+import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.service';
+import {HeaderComponent} from '../../../core/components/header/header.component';
 
 @Component({
   selector: 'siscap-person-form',
@@ -116,7 +124,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
       );
 
     this._getPessoaByEmail$ = this._pessoasService
-      .getPessoaByEmail(this.personEditEmail)
+      .getMeuPerfil(this.personEditEmail)
       .pipe(
         tap((response) => {
           this.initForm(response);
@@ -204,8 +212,14 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         bairro: nnfb.control(person?.endereco?.bairro ?? ''),
         complemento: nnfb.control(person?.endereco?.complemento ?? ''),
         codigoPostal: nnfb.control(person?.endereco?.codigoPostal ?? ''),
-        idPais: nnfb.control({ value: person?.endereco?.idPais?.toString() ?? null, disabled: !this.isEdit && this.formMode != 'criar' }),
-        idEstado: nnfb.control({ value: person?.endereco?.idEstado?.toString() ?? null, disabled: !this.isEdit && this.formMode != 'criar' }),
+        idPais: nnfb.control({
+          value: person?.endereco?.idPais?.toString() ?? null,
+          disabled: !this.isEdit && this.formMode != 'criar'
+        }),
+        idEstado: nnfb.control({
+          value: person?.endereco?.idEstado?.toString() ?? null,
+          disabled: !this.isEdit && this.formMode != 'criar'
+        }),
         idCidade: nnfb.control(person?.endereco?.idCidade?.toString() ?? null),
       }),
       idOrganizacao: nnfb.control(person?.idOrganizacao?.toString() ?? null),
@@ -353,7 +367,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
       case 'editar':
         this._pessoasService
-          .putPessoa(this.personEditId, payload)
+          .putPessoa(this.personEditId, payload, !!this.personEditEmail)
           .pipe(
             tap((response) => {
               if (response) {
@@ -361,9 +375,8 @@ export class PersonFormComponent implements OnInit, OnDestroy {
                   'success',
                   'Pessoa alterada com sucesso.'
                 );
-                var perfil = JSON.parse(sessionStorage.getItem('user-profile') || '{}');
+                let perfil = JSON.parse(sessionStorage.getItem('user-profile') ?? '{}');
                 if (perfil?.email == response.email) {
-                  console.log('HJEHE')
                   perfil.imagemPerfil = response.imagemPerfil;
                   this._profileService.atualizarPerfil(perfil);
                 }
