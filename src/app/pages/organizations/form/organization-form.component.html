@@ -10,19 +10,8 @@
         <div class="card-header bg-white mb-3"> 
           <h5 class="card-title">Marca da Organização</h5>        
         </div>
-        <div class="row">
-          <div class="col-12 mb-3">
-            <div class="d-flex flex-column flex-md-row justify-content-md-around align-items-center">
-              <div class="col-12 col-md-4 mb-3 mb-md-0 text-center photo-upload">
-                  <img [src]="photoOrganization" class="uploaded-photo" />
-                  <span class="link-primary pointer" [ngClass]="{ invisible: !isEdit }" (click)="removeImg()">Remover</span>
-              </div>
-              <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
-                <input #imagemPerfil [disabled]="!isEdit && formMode != 'criar'" formControlName="imagemPerfil"  id="imagemPerfil" type="file"  accept=".jpg, .gif, .png" class="form-control" (change)="attachImg($event)" />
-                <small class="text-primary">JPG, GIF ou PNG. Tamanho máximo de 800k</small >
-              </div>
-            </div>
-          </div>
+        <div class="card-body">
+          <app-cropper [croppedImagethumb]="this.photoOrganization" [editImage]="!isEdit && formMode != 'criar'"  (imgcropped)="profilePhoto($event)" ></app-cropper> 
         </div>
       </div>
     </div>

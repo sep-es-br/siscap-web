@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { NgbDropdownModule, NgbToastModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbToastModule, NgbModule, NgbTooltipModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { PipesModule } from '../pipes/pipes.module';
 
@@ -13,6 +13,7 @@ import { AlertComponent } from './alert/alert.component';
 import { LoadingComponent } from './loading/loading.component';
 import { ToastComponent } from './toast/toast.component';
 import { CrudModule } from './crud/crud.module';
+import { CropperComponent } from './cropper/cropper.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,7 @@ import { CrudModule } from './crud/crud.module';
     LoadingComponent,
     ToastComponent,
   ],
-  imports: [CommonModule, RouterModule, PipesModule, NgbToastModule, NgbDropdownModule, NgbModule, CrudModule],
+  imports: [CommonModule, RouterModule, PipesModule, NgbToastModule, NgbDropdownModule, NgbModule, CrudModule, CropperComponent,NgbTooltipModule,NgbAlertModule],
   exports: [
     NavMenuComponent,
     HeaderComponent,
@@ -31,7 +32,8 @@ import { CrudModule } from './crud/crud.module';
     AlertComponent,
     LoadingComponent,
     ToastComponent,
-    CrudModule
+    CrudModule,
+    CropperComponent
   ],
 })
 export class ComponentsModule {}

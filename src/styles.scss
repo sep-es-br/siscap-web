@@ -260,3 +260,24 @@ i.fa-user {
 .no_underline {
   text-decoration: none;
 }
+
+.modal-header{
+  border: none !important;
+}
+.modal-footer{
+  border: none !important;
+}
+.modal-content{
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5) !important;
+  background-color: transparent !important;
+}
+
+.modalBlur{
+  backdrop-filter: blur(10px);
+  background-color: transparent !important;
+}
+
+.modal-backdrop.show{
+  background-color: transparent !important;
+  backdrop-filter: blur(10px);
+}
