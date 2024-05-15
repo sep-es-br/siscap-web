@@ -1,17 +1,8 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {
-  AbstractControl,
-  ControlConfig,
-  FormBuilder,
-  FormGroup,
-  ValidationErrors,
-  ValidatorFn,
-  Validators
-} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 
-import {Observable, Subscription, finalize, tap} from 'rxjs';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {finalize, Observable, Subscription, tap} from 'rxjs';
 
 import {PessoasService} from '../../../shared/services/pessoas/pessoas.service';
 import {SelectListService} from '../../../shared/services/select-list/select-list.service';
@@ -25,7 +16,6 @@ import {FormDataHelper} from '../../../shared/helpers/form-data.helper';
 import {CPFValidator} from '../../../shared/helpers/cpf-validator.helper';
 import {ProfileService} from '../../../shared/services/profile/profile.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.service';
-import {HeaderComponent} from '../../../core/components/header/header.component';
 
 @Component({
   selector: 'siscap-person-form',
@@ -43,7 +33,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   private _getAreasAtuacao$!: Observable<ISelectList[]>;
 
   private _getPessoaById$!: Observable<IPerson>;
-  private _getPessoaByEmail$!: Observable<IPerson>;
+  private _getPessoaBySubNovo$!: Observable<IPerson>;
 
   private _subscription: Subscription = new Subscription();
 
@@ -55,7 +45,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public isEdit!: boolean;
 
   public personEditId!: number;
-  public personEditEmail!: string;
+  public personEditSubNovo!: string;
   public personFormInitialValue!: IPersonCreate;
 
   public uploadedPhotoFile: File | undefined;
@@ -84,12 +74,11 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private _pessoasService: PessoasService,
     private _selectListService: SelectListService,
     private _toastService: ToastService,
-    private _modalService: NgbModal,
     private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.paramMap.get('mode') ?? '';
     this.personEditId = Number(this._route.snapshot.queryParamMap.get('id')) ?? null;
-    this.personEditEmail = this._route.snapshot.queryParamMap.get('email') ?? '';
+    this.personEditSubNovo = this._route.snapshot.queryParamMap.get('subNovo') ?? '';
 
     this._getPessoaById$ = this._pessoasService
       .getPessoaById(this.personEditId)
@@ -123,8 +112,8 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         })
       );
 
-    this._getPessoaByEmail$ = this._pessoasService
-      .getMeuPerfil(this.personEditEmail)
+    this._getPessoaBySubNovo$ = this._pessoasService
+      .getMeuPerfil(this.personEditSubNovo)
       .pipe(
         tap((response) => {
           this.initForm(response);
@@ -244,12 +233,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!!this.personEditId) {
+    if (this.personEditId) {
       this._subscription.add(this._getPessoaById$.subscribe());
-      return;
-    } else if (!!this.personEditEmail) {
-      this._subscription.add(this._getPessoaByEmail$.subscribe());
-      return;
+    } else if (this.personEditSubNovo) {
+      this._subscription.add(this._getPessoaBySubNovo$.subscribe());
     }
   }
 
@@ -367,7 +354,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
       case 'editar':
         this._pessoasService
-          .putPessoa(this.personEditId, payload, !!this.personEditEmail)
+          .putPessoa(this.personEditId, payload, !!this.personEditSubNovo)
           .pipe(
             tap((response) => {
               if (response) {

@@ -1,15 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 
-import {Observable, catchError, throwError} from 'rxjs';
+import {catchError, Observable, throwError} from 'rxjs';
 
 import {environment} from '../../../../environments/environment';
-import {
-  IPerson,
-  IPersonCreate,
-  IPersonEdit,
-  IPersonGet,
-} from '../../interfaces/person.interface';
+import {IPerson, IPersonGet,} from '../../interfaces/person.interface';
 import {ErrorHandlerService} from '../error-handler/error-handler.service';
 
 @Injectable({
@@ -49,8 +44,8 @@ export class PessoasService {
     );
   }
 
-  putPessoa(id: number, body: FormData, isByEmail: boolean): Observable<IPerson> {
-    let url = isByEmail ? `${this._url}/meu-perfil/${id}` : `${this._url}/${id}`;
+  putPessoa(id: number, body: FormData, isBySubNovo: boolean): Observable<IPerson> {
+    let url = isBySubNovo ? `${this._url}/meu-perfil/${id}` : `${this._url}/${id}`;
     return this._http.put<IPerson>(url, body).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
@@ -88,9 +83,9 @@ export class PessoasService {
     );
   }
 
-  getMeuPerfil(email: string): Observable<IPerson> {
+  getMeuPerfil(subNovo: string): Observable<IPerson> {
     const params = {
-      email: email,
+      subNovo: subNovo,
     };
 
     return this._http
