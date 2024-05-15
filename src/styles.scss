@@ -270,8 +270,6 @@ i.fa-user {
 .modal-content{
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5) !important;
   background-color: transparent !important;
-  // border: none !important;
-  // border-color: #fff;
 }
 
 .modalBlur{
@@ -280,7 +278,6 @@ i.fa-user {
 }
 
 .modal-backdrop.show{
-  // opacity: 0 !important;
   background-color: transparent !important;
   backdrop-filter: blur(10px);
 }
