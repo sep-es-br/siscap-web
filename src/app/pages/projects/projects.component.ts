@@ -78,7 +78,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       columns: [
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },
-        { data: 'nomesMicrorregioes', title: 'Microrregiões', render: (dado: string[]) => Array.isArray(dado) ? dado.join(", ") : dado },
+        { data: 'nomesMicrorregioes', title: 'Microrregiões', render: (dado: string[]) => Array.isArray(dado) ? '<div class="col-2 text-break">'+ dado.join(", ")+ '</div>' : dado },
         { data: 'valorEstimado', title: 'Valor Estimado', render: DataTable.render.number('.', ',', 2, 'R$ '), className: 'text-end' },
       ],
       order: [[1, 'asc']],

@@ -1,6 +1,27 @@
 <div class="container-fluid bg-secondary vh-100">
-  <div
-    class="col-12 col-sm-9 col-md-5 h-50 position-absolute top-50 start-50 translate-middle"
+
+  <div class="container vh-100 align-content-center">
+    <div class="d-grid col-10 col-sm-9 col-md-8 col-lg-7 col-xl-6 m-auto justify-content-center">
+        <div class="card shadow p-2 p-md-3">
+          <div class="logo">
+            <img class="img-fluid" src="../../../../assets/images/siscap.svg" style="width: 100%;"/>
+          </div>
+          <div class="login-button m-auto mt-5 col-8 col-sm-5 col-md-6 d-grid">
+            <button class="btn  btn-primary" (click)="logIn()">
+              <i class="fa-solid fa-user-lock me-3"></i>
+              <span>Entrar</span>
+            </button>
+          </div>
+          <div class="legal-footer mt-5 d-flex flex-column align-items-center text-center">
+          <span> &#169; SISCAP {{year_copyright()}}</span>
+          <span>Secretaria de Economia e Planejamento do Espírito Santo</span>
+        </div>
+        
+        </div>
+    </div>
+  </div>
+  <!-- <div
+    class="col-11 col-sm-10 col-md-9 col-lg-8 col-xl-6 m-auto d-flex align-content-center justify-content-center align-items-center"
   >
     <div class="card h-100">
       <div class="card-body shadow">
@@ -10,7 +31,7 @@
           <div class="col-md-6 text-center mt-5">
             <img
               class="w-100"
-              src="../../../../assets/images/siscap.png"
+              src="../../../../assets/images/siscap.svg"
             />
           </div>
 
@@ -29,5 +50,5 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>

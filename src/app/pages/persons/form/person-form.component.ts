@@ -44,7 +44,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   public loading: boolean = true;
 
   public formMode!: string;
-  public isEdit!: boolean;
+  public isEdit: boolean = false;
 
   public personEditId!: number;
   public personEditEmail!: string;
@@ -52,8 +52,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
-  public defaultPhotoUser: string = '/assets/images/blank.png';
-  public photoUSer: string = this.defaultPhotoUser;
 
   public paisesList: ISelectList[] = [];
   public estadosList: ISelectList[] = [];
@@ -76,7 +74,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private _pessoasService: PessoasService,
     private _selectListService: SelectListService,
     private _toastService: ToastService,
-    private _modalService: NgbModal,
     private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.paramMap.get('mode') ?? '';
@@ -92,10 +89,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
-          if (this.uploadedPhotoSrc)
-            this.photoUSer = this.uploadedPhotoSrc;
-          else
-            this.photoUSer = this.defaultPhotoUser;
         }),
         tap((response) => {
           this.paisSelected =
@@ -126,10 +119,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
-          if (this.uploadedPhotoSrc)
-            this.photoUSer = this.uploadedPhotoSrc;
-          else
-            this.photoUSer = this.defaultPhotoUser;
         }),
         tap((response) => {
           this.paisSelected =
@@ -269,20 +258,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     return !!data ? 'data:image/jpeg;base64,' + data : '';
   }
 
-  public attachImg(event: any) {
-    if (event.target.files && event.target.files[0]) {
-      this.uploadedPhotoFile = event.target.files[0];
-      this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
-      this.photoUSer = this.uploadedPhotoSrc;
-    }
-  }
-
-  public removeImg() {
-    this.imagemPerfilInput.nativeElement.value = '';
-    this.uploadedPhotoFile = undefined;
-    this.uploadedPhotoSrc = '';
-    this.photoUSer = this.defaultPhotoUser;
-  }
 
   public isAllowed(path: string): boolean {
     return this._profileService.isAllowed(path);
@@ -355,7 +330,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
                 );
                 var perfil = JSON.parse(sessionStorage.getItem('user-profile') || '{}');
                 if (perfil?.email == response.email) {
-                  console.log('HJEHE')
                   perfil.imagemPerfil = response.imagemPerfil;
                   this._profileService.atualizarPerfil(perfil);
                 }
@@ -387,6 +361,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
       default:
         break;
     }
+  }
+
+  profilePhoto(event: any){
+    this.uploadedPhotoFile = event[0];
   }
 
   ngOnDestroy(): void {

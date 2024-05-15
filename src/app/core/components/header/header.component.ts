@@ -87,6 +87,10 @@ export class HeaderComponent {
     this._router.navigate(['login']);
   }
 
+  navigateFirstLink(item: IMenuLink) {
+    this._router.navigate(['main/'+item.routes[0].path]);
+  }
+
   private fillProfile() {
     this.userProfile = JSON.parse(sessionStorage.getItem('user-profile')!);
     this.UserName = this.userProfile.nome.split(' ')[0] + ' ' + this.userProfile.nome.split(' ').slice(-1)[0];

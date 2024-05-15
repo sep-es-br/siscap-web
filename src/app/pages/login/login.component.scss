@@ -1,12 +1,29 @@
-.container-fluid {
-  background-color: rgba(215, 215, 215, 0.792156862745098);
+// .container-fluid {
+//   background-color: rgba(215, 215, 215, 0.792156862745098);
+// }
+
+// .card-body {
+//   background-color: white;
+// }
+
+// .legal-footer span {
+//   font-size: 0.9rem;
+//   color: #7f7f7f;
+// }
+.logo img{
+  width: 65%;
+  margin: auto;
+  display: grid;
 }
 
-.card-body {
-  background-color: white;
+@media screen and (max-width: 768px) {
+  .logo img{
+    width: 80%;
+  }
 }
 
-.legal-footer span {
-  font-size: 0.9rem;
-  color: #7f7f7f;
+@media screen and (max-width: 576px) {
+  .logo img{
+    width: 90%;
+  }
 }
