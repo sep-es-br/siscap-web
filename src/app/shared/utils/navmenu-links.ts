@@ -55,8 +55,8 @@ export abstract class NavMenuLinks {
       hidden: false,
       slug: 'configuracoes',
       routes: [
-        { title: 'Pessoas', path: 'pessoas', hidden: false },
         { title: 'Organizações', path: 'organizacoes', hidden: false },
+        { title: 'Pessoas', path: 'pessoas', hidden: false },
         { title: 'Grupos de Usuários', path: 'usuarios', hidden: true },
       ],
     },
