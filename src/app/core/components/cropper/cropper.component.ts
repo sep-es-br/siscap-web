@@ -1,11 +1,9 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
+import {Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild} from '@angular/core';
 
-import { ImageCropperComponent, ImageCroppedEvent, LoadedImage, ImageTransform } from 'ngx-image-cropper';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CommonModule } from '@angular/common';
-import { NgbActiveModal, NgbAlertModule,NgbModal  } from '@ng-bootstrap/ng-bootstrap';
-import { set } from 'lodash';
-
+import {ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage} from 'ngx-image-cropper';
+import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {CommonModule} from '@angular/common';
+import {NgbAlertModule, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 
 @Component({
@@ -61,7 +59,7 @@ export class CropperComponent {
       private sanitizer: DomSanitizer
     ) {
         this.modalService.dismissAll();
-        
+
     }
 
     ngOnInit(): void {
@@ -72,8 +70,8 @@ export class CropperComponent {
     }
 
     imageInitial(){
-        if(this.croppedImagethumb){    
-            this.editMode = true;        
+        if(this.croppedImagethumb){
+            this.editMode = true;
             const byteString = atob(this.croppedImagethumb.split(',')[1]);
             const mimeType = this.croppedImagethumb.split(',')[0].split(':')[1].split(';')[0];
             const byteArray = new Uint8Array(byteString.length);
@@ -95,12 +93,12 @@ export class CropperComponent {
     open() {
 		this.modalService.open(this.imageCropper,this.modalOptions);
 	}
-    
+
     fileChangeEvent(event: any): void {
         this.imageChangedEvent = event;
         this.open();
     }
-    
+
     imageCropped(event: ImageCroppedEvent) {
         this.croppedImage = this.sanitizer.bypassSecurityTrustUrl(event.objectUrl || event.base64 || '');
         this.file = new File([event.base64 || event.blob || ''  ], 'image2.png', { type: 'image/png' });
@@ -134,7 +132,7 @@ export class CropperComponent {
             this.flipAfterRotate();
         }, 10);
     }
-    
+
     flipHorizontal() {
         this.transform = {
             ...this.transform,
@@ -155,7 +153,7 @@ export class CropperComponent {
         this.canvasRotation = 0;
         this.transform = {};
     }
-    
+
     zoomOut() {
         this.scale -= .1;
         this.transform = {
@@ -171,7 +169,7 @@ export class CropperComponent {
             scale: this.scale
         };
     }
-    
+
     private flipAfterRotate() {
         const flippedH = this.transform.flipH;
         const flippedV = this.transform.flipV;
@@ -184,7 +182,7 @@ export class CropperComponent {
 
     cancelOperation() {
         this.modalService.dismissAll();
-        this.resetImage();    
+        this.resetImage();
     }
 
     moveLeft(){
@@ -230,5 +228,5 @@ export class CropperComponent {
         this.croppedImagethumb = this.imagePlaceholder;
         this.imgcropped.emit([]);
     }
-    
+
 }
