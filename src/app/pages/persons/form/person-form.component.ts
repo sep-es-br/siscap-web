@@ -54,7 +54,7 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
   public loading: boolean = true;
 
   public formMode!: string;
-  public isEdit!: boolean;
+  public isEdit: boolean = false;
 
   public personEditId!: number;
   public personEditSubNovo!: string;
@@ -62,8 +62,6 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public uploadedPhotoFile: File | undefined;
   public uploadedPhotoSrc: string = '';
-  public defaultPhotoUser: string = '/assets/images/blank.png';
-  public photoUSer: string = this.defaultPhotoUser;
 
   public paisesList: ISelectList[] = [];
   public estadosList: ISelectList[] = [];
@@ -101,10 +99,6 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
-          if (this.uploadedPhotoSrc)
-            this.photoUSer = this.uploadedPhotoSrc;
-          else
-            this.photoUSer = this.defaultPhotoUser;
         }),
         tap((response) => {
           this.paisSelected =
@@ -135,10 +129,6 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
           );
-          if (this.uploadedPhotoSrc)
-            this.photoUSer = this.uploadedPhotoSrc;
-          else
-            this.photoUSer = this.defaultPhotoUser;
         }),
         tap((response) => {
           this.paisSelected =
@@ -301,20 +291,6 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return !!data ? 'data:image/jpeg;base64,' + data : '';
   }
 
-  public attachImg(event: any) {
-    if (event.target.files && event.target.files[0]) {
-      this.uploadedPhotoFile = event.target.files[0];
-      this.uploadedPhotoSrc = URL.createObjectURL(event.target.files[0]);
-      this.photoUSer = this.uploadedPhotoSrc;
-    }
-  }
-
-  public removeImg() {
-    this.imagemPerfilInput.nativeElement.value = '';
-    this.uploadedPhotoFile = undefined;
-    this.uploadedPhotoSrc = '';
-    this.photoUSer = this.defaultPhotoUser;
-  }
 
   public isAllowed(path: string): boolean {
     return this._profileService.isAllowed(path);
@@ -418,6 +394,10 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
       default:
         break;
     }
+  }
+
+  profilePhoto(event: any){
+    this.uploadedPhotoFile = event[0];
   }
 
   private requiredAddressFields(idPaisControl: AbstractControl<any, any> | null | undefined, idEstadoControl: AbstractControl<any, any> | null | undefined, idCidadeControl: AbstractControl<any, any> | null | undefined, enderecoGroup: AbstractControl<any, any> | null) {

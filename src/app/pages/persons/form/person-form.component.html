@@ -169,31 +169,12 @@
       </div>
 
       <div class="col-12 col-md-4">
-        <div class="card shadow border-light mb-3">
+        <div class="card shadow border-light mb-3 mb-md-5">
           <div class="card-header bg-white">
             <h5 class="card-title">Foto de Perfil</h5>
           </div>
           <div class="card-body">
-            <div class="profile-img">
-
-              <div class="row">
-                <div class="d-flex flex-column flex-md-row justify-content-md-around align-items-center">
-                  <div class="col-12 col-md-4 mb-3 mb-md-0 text-center photo-upload">
-                    <ng-container>
-                      <img [src]="photoUSer" class="uploaded-photo"/>
-                      <span class="link-primary pointer" [hidden]="!uploadedPhotoSrc" [ngClass]="{ invisible: !isEdit}"
-                            (click)="removeImg()">Remover</span>
-                    </ng-container>
-                  </div>
-
-                  <div class="col-12 col-md-8 mt-3 mt-md-0 text-center">
-                    <input #imagemPerfil [disabled]="!isEdit && formMode != 'criar'" id="imagemPerfil" type="file"
-                           accept=".jpg, .gif, .png" class="form-control" (change)="attachImg($event)"/>
-                    <small class="text-primary">JPG, GIF ou PNG. Tamanho máximo de 800k</small>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <app-cropper [croppedImagethumb]="this.uploadedPhotoSrc" [editImage]="!isEdit && formMode != 'criar'"  (imgcropped)="profilePhoto($event)" ></app-cropper>
           </div>
         </div>
 
