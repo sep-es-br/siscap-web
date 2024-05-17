@@ -2,16 +2,16 @@
     <div class="row">
         <div class="col-4 col-sm-5 col-md-3 col-lg-4  mt-3">
             <label class="attachButton pointer justify-content-center d-grid mb-0" data-bs-toggle="tooltip" data-bs-title="Default tooltip">
-                <input type="file" (change)="fileChangeEvent($event)" [accept]="acceptedTypes" style="display: none;"/> 
+                <input type="file" (change)="fileChangeEvent($event)" [accept]="acceptedTypes" style="display: none;"/>
                 <span class="position-absolute mt-2 ms-1 z-1 translate-middle fs-5 badge border border-light rounded-pill p-2 bg-light shadow"  data-bs-toggle="tooltip" data-bs-title="Default tooltip">
                     <i class="material-symbols-outlined text-success">add_a_photo</i>
-                </span>                      
+                </span>
             </label>
             <div class="card card-photo justify-content-center border-light bg-white shadow text-opacity-75 mt-2 p-3"  >
                 <img class="img-fluid" [src]="croppedImagethumb">
                 <span [hidden]="!editMode" (click)="removeImage()" class="position-absolute pointer top-0 z-1 me-2 mt-0 start-100 translate-middle fs-5 badge border border-light rounded-pill p-2 bg-light shadow"  data-bs-toggle="tooltip" data-bs-title="Default tooltip">
                     <i class="material-symbols-outlined text-danger">close</i>
-                </span>  
+                </span>
                 <div class="edit-filter" (click)="open()" [hidden]="!editMode" ><span>Editar</span></div>
             </div>
         </div>
@@ -25,10 +25,10 @@
     </div>
 </div>
 <ng-template #cropperModal let-modal>
-    <div class="modal-header modalBlur">
-      <h4 class="modal-title text-dark">Editar Foto</h4>   
+    <div class="modal-header">
+      <h4 class="modal-title text-dark">Editar Foto</h4>
     </div>
-    <div class="modal-body modalBlur">
+    <div class="modal-body">
         <div class="row">
             <div class="col-md-8">
                 <h4 class="text-dark">Edição</h4>
@@ -59,15 +59,15 @@
                 </div>
             </div>
         </div>
-    
+
     </div>
-    <div class="modal-footer justify-content-center modalBlur text-light">
+    <div class="modal-footer justify-content-center text-light">
         <button type="button" class="btn btn-primary btn-icon" (click)="rotateLeft()" title="Girar para a esquerda"><i class="material-symbols-outlined">rotate_left</i></button>
         <button type="button" class="btn btn-primary btn-icon" (click)="rotateRight()" title="Girar para a direita" ><i class="material-symbols-outlined">rotate_right</i></button>
         <button type="button" class="btn btn-primary btn-icon" (click)="flipHorizontal()" title="Inverter posição horizontal"><i class="material-symbols-outlined"  style="transform: rotate(90deg);">swap_vert</i></button>
         <button type="button" class="btn btn-primary btn-icon" (click)="flipVertical()" title="Inverter posição vertical"><i class="material-symbols-outlined">swap_vert</i></button>
         <button type="button" class="btn btn-primary btn-icon" (click)="resetImage()" title="Resetar imagem" ><i class="material-symbols-outlined">history</i></button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="zoomOut()" title="Reduzir o zoom"><i class="material-symbols-outlined">zoom_out</i></button> 
+        <button type="button" class="btn btn-primary btn-icon" (click)="zoomOut()" title="Reduzir o zoom"><i class="material-symbols-outlined">zoom_out</i></button>
         <button type="button" class="btn btn-primary btn-icon" (click)="zoomIn()" title="Aumentar o zoom"><i class="material-symbols-outlined"> zoom_in </i></button>
         <button type="button" class="btn btn-primary btn-icon" (click)="moveLeft()" title="Mover para a esquerda" ><i class="material-symbols-outlined">arrow_back</i> </button>
         <button type="button" class="btn btn-primary btn-icon" (click)="moveRight()" title="Mover para a direita" ><i class="material-symbols-outlined">arrow_forward</i> </button>

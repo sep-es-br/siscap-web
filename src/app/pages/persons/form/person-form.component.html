@@ -14,10 +14,10 @@
           <div class="card-body">
             <div class="personal-info">
               <div class="row">
-  
+
                 <div class="col-12 col-md-12 mb-2 mb-md-0">
                   <label for="nome" class="form-label col-12"
-                    >Nome Completo
+                  >Nome Completo
                     <ng-container
                       *ngTemplateOutlet="
                         appAlert;
@@ -34,7 +34,7 @@
                 </div>
                 <div class="col-12 col-md-12 mb-2 mb-md-0">
                   <label for="nomeSocial" class="form-label col-12"
-                    >Nome Social
+                  >Nome Social
                     <ng-container
                       *ngTemplateOutlet="
                         appAlert;
@@ -50,15 +50,16 @@
                   />
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
-                  <label for="cpf" class="form-label col-12"
-                    >CPF
+                  <label for="cpf" class="form-label col-12">
+                    CPF
                     <ng-container
                       *ngTemplateOutlet="
                         appAlert;
                         context: { controlName: 'cpf' }
                       "
                     ></ng-container
-                  ></label>
+                    >
+                  </label>
                   <input
                     mask="000.000.000-00"
                     type="text"
@@ -67,10 +68,10 @@
                     formControlName="cpf"
                   />
                 </div>
-                
+
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="nacionalidade" class="form-label col-12"
-                    >Nacionalidade
+                  >Nacionalidade
                     <ng-container
                       *ngTemplateOutlet="
                         appAlert;
@@ -86,20 +87,22 @@
                     <ng-option
                       *ngFor="let nacionalidade of nacionalidadesList"
                       [value]="nacionalidade"
-                      >{{ nacionalidade }}</ng-option
+                    >{{ nacionalidade }}
+                    </ng-option
                     >
                   </ng-select>
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="genero" class="form-label col-12"
-                    >Gênero
+                  >Gênero
                     <ng-container
                       *ngTemplateOutlet="
                         appAlert;
                         context: { controlName: 'genero' }
                       "
                     ></ng-container
-                  ></label>
+                    >
+                  </label>
                   <ng-select
                     id="genero"
                     placeholder="-- Gênero --"
@@ -108,11 +111,12 @@
                     <ng-option
                       *ngFor="let genero of generosList"
                       [value]="genero"
-                      >{{ genero }}</ng-option
+                    >{{ genero }}
+                    </ng-option
                     >
                   </ng-select>
                 </div>
-             
+
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="email" class="form-label col-12">E-mail
                     <ng-container *ngTemplateOutlet=" appAlert; context: { controlName: 'email' }"></ng-container>
@@ -122,15 +126,16 @@
 
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="telefonePessoal" class="form-label col-12"
-                    >Telefone Pessoal
+                  >Telefone Pessoal
                     <ng-container
                       *ngTemplateOutlet="
                         appAlert;
                         context: { controlName: 'telefonePessoal' }
                       "
                     ></ng-container
-                  ></label>
-  
+                    >
+                  </label>
+
                   <input
                     type="text"
                     class="form-control"
@@ -140,7 +145,7 @@
                 </div>
                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                   <label for="telefoneComercial" class="form-label col-12"
-                    >Telefone Comercial
+                  >Telefone Comercial
                     <ng-container
                       *ngTemplateOutlet="
                         appAlert;
@@ -148,7 +153,7 @@
                       "
                     ></ng-container>
                   </label>
-  
+
                   <input
                     type="text"
                     class="form-control"
@@ -169,37 +174,42 @@
             <h5 class="card-title">Foto de Perfil</h5>
           </div>
           <div class="card-body">
-            <app-cropper [croppedImagethumb]="this.uploadedPhotoSrc" [editImage]="!isEdit && formMode != 'criar'"  (imgcropped)="profilePhoto($event)" ></app-cropper> 
+            <app-cropper [croppedImagethumb]="this.uploadedPhotoSrc" [editImage]="!isEdit && formMode != 'criar'"  (imgcropped)="profilePhoto($event)" ></app-cropper>
           </div>
         </div>
 
         <div class="card shadow border-light mb-3">
-  
+
           <div class="card-header bg-white">
             <h5 class="card-title">Informações Profissionais</h5>
           </div>
           <div class="card-body">
             <div class="professional-info">
-  
+
               <div class="row">
                 <div class="col-12">
                   <div class="col-12">
                     <label for="idOrganizacao" class="form-label col-12">
                       Organização
-                      <ng-container *ngTemplateOutlet=" appAlert; context: { controlName: 'idOrganizacao' } " ></ng-container>
+                      <ng-container
+                        *ngTemplateOutlet=" appAlert; context: { controlName: 'idOrganizacao' } "></ng-container>
                     </label>
-                    <ng-select id="idOrganizacao" placeholder="-- Organização --" formControlName="idOrganizacao" >
-                      <ng-option *ngFor="let organizacao of organizacoesList" [value]="organizacao.id" >{{ organizacao.nome }}</ng-option >
+                    <ng-select id="idOrganizacao" placeholder="-- Organização --" formControlName="idOrganizacao">
+                      <ng-option *ngFor="let organizacao of organizacoesList"
+                                 [value]="organizacao.id">{{ organizacao.nome }}
+                      </ng-option>
                     </ng-select>
                   </div>
 
-                  <div class="col-12 mt-3" [hidden]="true" >
+                  <div class="col-12 mt-3">
                     <label for="idAreasAtuacao" class="form-label col-12">
                       Áreas de Atuação
-                      <ng-container *ngTemplateOutlet=" appAlert; context: { controlName: 'idAreasAtuacao' } " ></ng-container>
+                      <ng-container
+                        *ngTemplateOutlet=" appAlert; context: { controlName: 'idAreasAtuacao' } "></ng-container>
                     </label>
-                    <ng-select [multiple]="true" [hideSelected]="true" id="idAreasAtuacao" placeholder="-- Áreas de Atuação --" formControlName="idAreasAtuacao" >
-                      <ng-option *ngFor="let area of areasAtuacaoList" [value]="area.id" >{{ area.nome }}</ng-option >
+                    <ng-select [multiple]="true" [hideSelected]="true" id="idAreasAtuacao"
+                               placeholder="-- Áreas de Atuação --" formControlName="idAreasAtuacao">
+                      <ng-option *ngFor="let area of areasAtuacaoList" [value]="area.id">{{ area.nome }}</ng-option>
                     </ng-select>
                   </div>
                 </div>
@@ -220,11 +230,11 @@
               <div formGroupName="endereco">
                 <div class="col-12">
                 </div>
-  
+
                 <div class="row">
                   <div class="col-12 col-md-8 mb-2 mb-md-0">
                     <label for="endereco.rua" class="form-label col-12"
-                      >Logradouro
+                    >Logradouro
                       <ng-container
                         *ngTemplateOutlet="
                           appAlert;
@@ -241,7 +251,7 @@
                   </div>
                   <div class="col-12 col-md-2 mb-2 mb-md-0">
                     <label for="endereco.numero" class="form-label col-12"
-                      >Número
+                    >Número
                       <ng-container
                         *ngTemplateOutlet="
                           appAlert;
@@ -277,7 +287,7 @@
                     />
                   </div>
                 </div>
-  
+
                 <div class="row">
                   <div class="col-12 col-md-8 mb-2 mb-md-0">
                     <label for="endereco.complemento" class="form-label col-12">
@@ -296,7 +306,7 @@
                       formControlName="complemento"
                     />
                   </div>
-  
+
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
                     <label for="endereco.bairro" class="form-label col-12">
                       Bairro
@@ -315,39 +325,53 @@
                     />
                   </div>
                 </div>
-  
+
                 <div class="row">
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
-                    <label for="pais" class="form-label">País</label>
+                    <label for="pais" class="form-label col-12">
+                      País
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'endereco.idPais' }
+                        "
+                      ></ng-container>
+                    </label>
                     <ng-select
                       id="pais"
                       placeholder="-- Pais --"
-                      [disabled]="!isEdit && formMode != 'criar'"
-                      [(ngModel)]="paisSelected"
-                      [ngModelOptions]="{ standalone: true, }"
+                      formControlName="idPais"
                       (change)="paisChanged($event)"
                     >
                       <ng-option
                         *ngFor="let pais of paisesList"
                         [value]="pais.id"
-                        >{{ pais.nome }}</ng-option
+                      >{{ pais.nome }}
+                      </ng-option
                       >
                     </ng-select>
                   </div>
                   <div class="col-12 col-md-4 mb-2 mb-md-0">
-                    <label for="estado" class="form-label">Estado</label>
+                    <label for="estado" class="form-label col-12">
+                      Estado
+                      <ng-container
+                        *ngTemplateOutlet="
+                          appAlert;
+                          context: { controlName: 'endereco.idEstado' }
+                        "
+                      ></ng-container>
+                    </label>
                     <ng-select
                       id="estado"
                       placeholder="-- Estado --"
-                      [disabled]="!isEdit && formMode != 'criar'"
-                      [(ngModel)]="estadoSelected"
-                      [ngModelOptions]="{ standalone: true }"
+                      formControlName="idEstado"
                       (change)="estadoChanged($event)"
                     >
                       <ng-option
                         *ngFor="let estado of estadosList"
                         [value]="estado.id"
-                        >{{ estado.nome }}</ng-option
+                      >{{ estado.nome }}
+                      </ng-option
                       >
                     </ng-select>
                   </div>
@@ -361,7 +385,7 @@
                         "
                       ></ng-container>
                     </label>
-                    <ng-select id="endereco.idCidade" placeholder="-- Cidade --" formControlName="idCidade" >
+                    <ng-select id="endereco.idCidade" placeholder="-- Cidade --" formControlName="idCidade">
                       <ng-option *ngFor="let cidade of cidadesList" [value]="cidade.id">{{ cidade.nome }}</ng-option>
                     </ng-select>
                   </div>
@@ -374,6 +398,32 @@
     </div>
   </form>
 </div>
+
+<ng-template #importPersonModal let-modal>
+  <div class="modal-header">
+    <h4 id="import-person-modal" class="modal-title text-dark">Importar pessoa do Acesso Cidadão</h4>
+    <button type="button" class="btn-close" aria-label="Fechar" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="importByCpfForm">
+      <label for="importByCpf" class="form-label col-12">
+        Digite o CPF
+      </label>
+      <input type="text" mask="000.000.000-00" ngbAutofocus class="form-control" id="importByCpf"
+             formControlName="cpfImport"/>
+    </form>
+  </div>
+  <div class="d-flex justify-content-end gap-3 pb-3 mx-3">
+    <button class="btn btn-outline-danger" (click)="modal.dismiss()">
+      <i class="fa fa-times mx-1"></i>
+      Cancelar
+    </button>
+    <button class="btn btn-primary" (keydown.enter)="importar(); modal.close()" (click)="importar(); modal.close()">
+      <i class="fa fa-check mx-1"></i>
+      Importar
+    </button>
+  </div>
+</ng-template>
 
 <ng-template #placeholderImg>
   <i class="fa-solid fa-user fa-3x pt-3 h-100 w-100 border border-1 rounded"></i>

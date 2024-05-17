@@ -1,16 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { Observable, Subscription, first, tap } from 'rxjs';
+import {Subscription, tap} from 'rxjs';
 
-import { ProjetosService } from '../../shared/services/projetos/projetos.service';
+import {ProjetosService} from '../../shared/services/projetos/projetos.service';
 
-import { SortColumn } from '../../core/directives/sortable/sortable.directive';
+import {SortColumn} from '../../core/directives/sortable/sortable.directive';
 
-import { IProjectGet, IProjectTable } from '../../shared/interfaces/project.interface';
+import {IProjectTable} from '../../shared/interfaces/project.interface';
 
-import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
-import { Config } from 'datatables.net';
+import {sortTableColumnsFunction} from '../../shared/utils/sort-table-columns-function';
+import {Config} from 'datatables.net';
 import Swal from 'sweetalert2';
 import DataTable from 'datatables.net-bs5';
 
@@ -78,7 +78,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       columns: [
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },
-        { data: 'nomesMicrorregioes', title: 'Microrregiões', render: (dado: string[]) => Array.isArray(dado) ? '<div class="col-2 text-break">'+ dado.join(", ")+ '</div>' : dado },
+        { data: 'nomesMicrorregioes', title: 'Microrregiões', render: (dado: string[]) => Array.isArray(dado) ? dado.join(", ") : dado },
         { data: 'valorEstimado', title: 'Valor Estimado', render: DataTable.render.number('.', ',', 2, 'R$ '), className: 'text-end' },
       ],
       order: [[1, 'asc']],
@@ -109,8 +109,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       );
 
   }
-
-  queryProject() { }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
