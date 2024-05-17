@@ -4,7 +4,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {catchError, Observable, throwError} from 'rxjs';
 
 import {environment} from '../../../../environments/environment';
-import {IPerson, IPersonGet,} from '../../interfaces/person.interface';
+import {IPerson, IPersonACApi, IPersonGet,} from '../../interfaces/person.interface';
 import {ErrorHandlerService} from '../error-handler/error-handler.service';
 
 @Injectable({
@@ -90,6 +90,16 @@ export class PessoasService {
 
     return this._http
       .get<IPerson>(`${this._url}/meu-perfil`, {params: params})
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          this._errorHandlerService.handleError(err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  searchACPessoaByCpf(cpf: string): Observable<IPersonACApi> {
+    return this._http.get<IPersonACApi>(`${this._url}/acesso-cidadao/${cpf}`)
       .pipe(
         catchError((err: HttpErrorResponse) => {
           this._errorHandlerService.handleError(err);

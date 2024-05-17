@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 
@@ -8,7 +8,7 @@ import {PessoasService} from '../../../shared/services/pessoas/pessoas.service';
 import {SelectListService} from '../../../shared/services/select-list/select-list.service';
 import {ToastService} from '../../../shared/services/toast/toast.service';
 
-import {IPerson, IPersonCreate} from '../../../shared/interfaces/person.interface';
+import {IPerson, IPersonACApi, IPersonCreate} from '../../../shared/interfaces/person.interface';
 import {ISelectList} from '../../../shared/interfaces/select-list.interface';
 
 import {PessoaFormLists} from '../../../shared/utils/pessoa-form-lists';
@@ -16,6 +16,7 @@ import {FormDataHelper} from '../../../shared/helpers/form-data.helper';
 import {CPFValidator} from '../../../shared/helpers/cpf-validator.helper';
 import {ProfileService} from '../../../shared/services/profile/profile.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.service';
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'siscap-person-form',
@@ -23,8 +24,18 @@ import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.
   templateUrl: './person-form.component.html',
   styleUrl: './person-form.component.scss',
 })
-export class PersonFormComponent implements OnInit, OnDestroy {
+export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('imagemPerfil') imagemPerfilInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('importPersonModal') importPersonModal!: TemplateRef<any>;
+
+  private _modalService: NgbModal = inject(NgbModal);
+  modalOptions: any = {
+    ariaLabelledBy: 'import-person-modal',
+    backdrop: 'static',
+    centered: true,
+    keyboard: false,
+    size: 'md'
+  };
 
   private _getPaises$!: Observable<ISelectList[]>;
   private _getEstados$!: Observable<ISelectList[]>;
@@ -38,6 +49,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   private _subscription: Subscription = new Subscription();
 
   public personForm!: FormGroup;
+  public importByCpfForm!: FormGroup;
 
   public loading: boolean = true;
 
@@ -173,6 +185,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
   private initForm(person?: IPerson) {
     const nnfb = this._formBuilder.nonNullable;
     this.personForm = nnfb.group({
+      sub: nnfb.control(undefined),
       nome: nnfb.control(person?.nome ?? '', {
         validators: Validators.required,
       }),
@@ -237,6 +250,16 @@ export class PersonFormComponent implements OnInit, OnDestroy {
       this._subscription.add(this._getPessoaById$.subscribe());
     } else if (this.personEditSubNovo) {
       this._subscription.add(this._getPessoaBySubNovo$.subscribe());
+    }
+  }
+
+  ngAfterViewInit() {
+    if (this.formMode == 'criar') {
+      const nnfb = this._formBuilder.nonNullable;
+      this.importByCpfForm = nnfb.group({
+        cpfImport: nnfb.control(undefined)
+      });
+      this.open(this.importPersonModal)
     }
   }
 
@@ -425,6 +448,31 @@ export class PersonFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
+  }
+
+  open(content: TemplateRef<any>) {
+    this._modalService.open(content, this.modalOptions);
+  }
+
+  importar() {
+    const cpf = this.importByCpfForm.controls['cpfImport'].value;
+    if (cpf) {
+      this._pessoasService.searchACPessoaByCpf(cpf)
+        .pipe(
+          tap((response) => {
+              if (response) {
+                this.importFormValues(response);
+              }
+            }
+          )).subscribe();
+    }
+  }
+
+  private importFormValues(response: IPersonACApi) {
+    this.personForm.controls['sub'].patchValue(response.sub);
+    this.personForm.controls['nome'].patchValue(response.nome);
+    this.personForm.controls['email'].patchValue(response.email);
+    this.personForm.controls['nomeSocial'].patchValue(response.apelido);
   }
 
 }
