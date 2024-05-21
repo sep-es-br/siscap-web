@@ -1,18 +1,41 @@
+.logo{
+  width: 65%;
+  margin: auto;
+}
+
+.fs-small{
+  font-size: 0.9rem;
+}
 
 .logo img{
-  width: 65%;
+  width: 85% !important;
   margin: auto;
   display: grid;
 }
 
 @media screen and (max-width: 768px) {
+  .logo{
+    width: 75% ;
+  }
+
   .logo img{
-    width: 80%;
+    width: 70% !important;
+  }
+  .fs-small{
+    font-size: 0.7rem;
   }
 }
 
 @media screen and (max-width: 576px) {
+  .logo{
+    width: 85%;
+  }
+
   .logo img{
-    width: 90%;
+    width: 80%;
+  }
+
+  .fs-small{
+    font-size: 0.5rem;
   }
 }

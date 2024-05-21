@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, inject, Input, OnDestroy, Output, ViewChild} from '@angular/core';
 
 import {ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage} from 'ngx-image-cropper';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
@@ -13,19 +13,18 @@ import {NgbAlertModule, NgbModal} from '@ng-bootstrap/ng-bootstrap';
     templateUrl: './cropper.component.html',
     styleUrls: ['./cropper.component.scss'],
 })
-export class CropperComponent {
+export class CropperComponent implements OnDestroy {
 
     private modalService = inject(NgbModal);
     @ViewChild('cropperModal') imageCropper!: ElementRef;
     @ViewChild(ImageCropperComponent) imageCropperComponent!: ImageCropperComponent;
     acceptedTypes: string[] = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif' ];
     urlImage!: string;
-    @Input() initialImage?: File;
+    CropFile!: File;
     @Input() editImage?: boolean;
     imageChangedEvent: Event | null = null;
     croppedImage: SafeUrl  = '';
-    @Input()
-    croppedImagethumb: any = false;
+    @Input() croppedImagethumb: any = false;
     @Output() imgcropped = new EventEmitter<any>();
     loading!: boolean;
     editMode: boolean = false;
@@ -40,8 +39,9 @@ export class CropperComponent {
         backdrop: 'static',
         backdropClass: 'customBackdrop',
         centered: true,
+        keyboard: false,
         windowClass: 'modal-cropper',
-        size: 'lg'
+        size: 'xl'
     };
     configCropper: any = {
         maintainAspectRatio: true,
@@ -51,6 +51,7 @@ export class CropperComponent {
         format: 'png',
         roundCropper:true,
         containWithinAspectRatio: true,
+        allowMoveImage: true,
     }
     file!: File;
 
@@ -82,6 +83,7 @@ export class CropperComponent {
             const imgUrl = URL.createObjectURL(tempImage);
             this.file = new File([tempImage ], 'image.png', { type: 'image/png' });
             this.urlImage = this.croppedImagethumb;
+            this.CropFile = this.file;
             this.croppedImage = tempImage;
             let imgs = [];
             imgs.push(this.file);
@@ -95,6 +97,7 @@ export class CropperComponent {
 	}
 
     fileChangeEvent(event: any): void {
+        this.CropFile =  event.target.files[0];
         this.imageChangedEvent = event;
         this.open();
     }
@@ -227,6 +230,10 @@ export class CropperComponent {
         this.editMode = false;
         this.croppedImagethumb = this.imagePlaceholder;
         this.imgcropped.emit([]);
+    }
+
+    ngOnDestroy(): void {
+        this.modalService.dismissAll();
     }
 
 }
