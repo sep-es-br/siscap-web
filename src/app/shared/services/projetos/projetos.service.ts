@@ -68,7 +68,6 @@ export class ProjetosService {
       );
   }
 
-  // TODO: Ver como anexar body no get (IHttpGetRequestBody)
   getProjetos(): Observable<IProjectGet> {
     return this._http.get<IProjectGet>(this._url).pipe(
       catchError((err: HttpErrorResponse) => {
