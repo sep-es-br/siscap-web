@@ -94,7 +94,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   public deletarProjeto(id: number) {
-
     this._projetosService
       .deleteProjeto(id)
       .pipe(
@@ -106,8 +105,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
               .then(() => this._router.navigateByUrl('main/projetos'));
           }
         })
-      );
-
+      ).subscribe();
   }
 
   ngOnDestroy(): void {
