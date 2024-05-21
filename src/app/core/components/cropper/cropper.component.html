@@ -1,0 +1,79 @@
+<div class="upload-photo-fake" [ngClass]="{ 'disabled': editImage }" >
+    <div class="row">
+        <div class="col-4 col-sm-5 col-md-3 col-lg-4  mt-3">
+            <label class="attachButton pointer justify-content-center d-grid mb-0" data-bs-toggle="tooltip" data-bs-title="Default tooltip">
+                <input type="file" (change)="fileChangeEvent($event)" [accept]="acceptedTypes" style="display: none;"/>
+                <span class="position-absolute mt-2 ms-1 z-1 translate-middle fs-5 badge border border-light rounded-pill p-2 bg-light shadow"  data-bs-toggle="tooltip" data-bs-title="Default tooltip">
+                    <i class="material-symbols-outlined text-success">add_a_photo</i>
+                </span>
+            </label>
+            <div class="card card-photo justify-content-center border-light bg-white shadow text-opacity-75 mt-2 p-3"  >
+                <img class="img-fluid" [src]="croppedImagethumb">
+                <span [hidden]="!editMode" (click)="removeImage()" class="position-absolute pointer top-0 z-1 me-2 mt-0 start-100 translate-middle fs-5 badge border border-light rounded-pill p-2 bg-light shadow"  data-bs-toggle="tooltip" data-bs-title="Default tooltip">
+                    <i class="material-symbols-outlined text-danger">close</i>
+                </span>
+                <div class="edit-filter" (click)="open()" [hidden]="!editMode" ><span>Editar</span></div>
+            </div>
+        </div>
+        <div class="col-8 col-sm-7 col-md-9 col-lg-8 mt-3 ">
+            <ngb-alert class="fs- mt-3" type="info" [dismissible]="false" >
+                <small>
+                    <b>Formatos aceitos:</b> JPEG, JPG, GIF ou PNG.<br><b>Tamanho máximo:</b> 5mb
+                </small>
+            </ngb-alert>
+        </div>
+    </div>
+</div>
+<ng-template #cropperModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title text-dark">Editar Foto</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="text-dark">Edição</h4>
+                <image-cropper
+                [imageURL]="urlImage"
+                [imageChangedEvent]="imageChangedEvent"
+                [maintainAspectRatio]="configCropper.maintainAspectRatio"
+                [resizeToWidth]="configCropper.resizeToWidth"
+                [cropperMinWidth]="configCropper.cropperMinWidth"
+                [roundCropper]="configCropper.roundCropper"
+                [containWithinAspectRatio]="configCropper.containWithinAspectRatio"
+                [canvasRotation]="canvasRotation"
+                [(transform)]="transform"
+                [aspectRatio]="configCropper.aspectRatio"
+                transformed="image"
+                format="png"
+                (imageURL)="croppedImage"
+                (imageCropped)="imageCropped($event)"
+                (imageLoaded)="imageLoaded()"
+                (cropperReady)="cropperReady()"
+                (loadImageFailed)="loadImageFailed()"
+            ></image-cropper>
+            </div>
+            <div class="col-md-4">
+                <div class="preview">
+                    <h4 class="text-dark">Visualização</h4>
+                    <img class="img-fluid" [src]="croppedImage" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer justify-content-center text-light">
+        <button type="button" class="btn btn-primary btn-icon" (click)="rotateLeft()" title="Girar para a esquerda"><i class="material-symbols-outlined">rotate_left</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="rotateRight()" title="Girar para a direita" ><i class="material-symbols-outlined">rotate_right</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="flipHorizontal()" title="Inverter posição horizontal"><i class="material-symbols-outlined"  style="transform: rotate(90deg);">swap_vert</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="flipVertical()" title="Inverter posição vertical"><i class="material-symbols-outlined">swap_vert</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="resetImage()" title="Resetar imagem" ><i class="material-symbols-outlined">history</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="zoomOut()" title="Reduzir o zoom"><i class="material-symbols-outlined">zoom_out</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="zoomIn()" title="Aumentar o zoom"><i class="material-symbols-outlined"> zoom_in </i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="moveLeft()" title="Mover para a esquerda" ><i class="material-symbols-outlined">arrow_back</i> </button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="moveRight()" title="Mover para a direita" ><i class="material-symbols-outlined">arrow_forward</i> </button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="moveUp()" title="Mover para cima" ><i class="material-symbols-outlined">arrow_upward</i> </button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="moveDown()" title="Mover para baixo" ><i class="material-symbols-outlined">arrow_downward</i></button>
+        <button type="button" class="btn btn-outline-success btn-icon" (click)="crop()" title="Cortar Imagem" ><i class="material-symbols-outlined">crop</i></button>
+        <button type="button" class="btn btn-outline-danger" (click)="cancelOperation()" title="Cancelar operação"><i class="material-symbols-outlined">close</i></button>
+    </div>
+</ng-template>

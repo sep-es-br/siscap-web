@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Router} from '@angular/router';
+import {HttpErrorResponse} from '@angular/common/http';
 
-import { ToastService } from '../toast/toast.service';
+import {ToastService} from '../toast/toast.service';
 
-import { IHttpError } from '../../interfaces/http-error.interface';
+import {IHttpError} from '../../interfaces/http-error.interface';
 
 /**
  * @service
@@ -14,7 +14,9 @@ import { IHttpError } from '../../interfaces/http-error.interface';
   providedIn: 'root',
 })
 export class ErrorHandlerService {
-  constructor(private _toastService: ToastService, private _router: Router) {}
+  constructor(private _toastService: ToastService, private _router: Router) {
+  }
+
   /**
    * @public
    * Método público invocado dentro dos métodos apropriados dos serviços (ex: `getProjeto` dentro de `ProjetosService`).
@@ -42,21 +44,17 @@ export class ErrorHandlerService {
       ]);
     }
 
-    this._toastService.toastNotifier$.subscribe((value) => {
-      if (value) {
-        const errorCode = backEndError.codigo;
+    const errorCode = backEndError.codigo;
 
-        switch (errorCode) {
-          case 401:
-            this._router.navigateByUrl('login');
-            break;
-          case 403:
-            this._router.navigateByUrl('main');
-            break;
-          default:
-            break;
-        }
-      }
-    });
+    switch (errorCode) {
+      case 401:
+        this._router.navigateByUrl('login');
+        break;
+      case 403:
+        this._router.navigateByUrl('main');
+        break;
+      default:
+        break;
+    }
   }
 }

@@ -1,20 +1,19 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {concat, finalize, Observable, Subscription, tap} from 'rxjs';
 
-import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
-import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { ToastService } from '../../../shared/services/toast/toast.service';
-import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import {OrganizacoesService} from '../../../shared/services/organizacoes/organizacoes.service';
+import {SelectListService} from '../../../shared/services/select-list/select-list.service';
+import {ToastService} from '../../../shared/services/toast/toast.service';
+import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.service';
 
-import { IOrganization, IOrganizationCreate } from '../../../shared/interfaces/organization.interface';
-import { ISelectList } from '../../../shared/interfaces/select-list.interface';
+import {IOrganization, IOrganizationCreate} from '../../../shared/interfaces/organization.interface';
+import {ISelectList} from '../../../shared/interfaces/select-list.interface';
 
-import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
-import { ProfileService } from '../../../shared/services/profile/profile.service';
+import {FormDataHelper} from '../../../shared/helpers/form-data.helper';
+import {ProfileService} from '../../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'siscap-organization-form',
@@ -23,7 +22,6 @@ import { ProfileService } from '../../../shared/services/profile/profile.service
   styleUrl: './organization-form.component.scss',
 })
 export class OrganizationFormComponent implements OnInit, OnDestroy {
-  @ViewChild('imagemPerfil') imagemPerfilInput!: ElementRef<HTMLInputElement>;
 
   private _getTiposOrganizacoes$: Observable<ISelectList[]>;
   private _getOrganizacoes$: Observable<ISelectList[]>;
@@ -48,8 +46,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
   public organizationFormInitialValue!: IOrganizationCreate;
 
   public uploadedPhotoFile: File | undefined;
-  public defaultPhotoOrganization: string = '/assets/images/blank.png';
-  public photoOrganization = this.defaultPhotoOrganization;
+  public photoOrganization: string = '';
 
   public tiposOrganizacoesList: Array<ISelectList> = [];
   public organizacoesList: Array<ISelectList> = [];
@@ -66,7 +63,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     private _organizacoesService: OrganizacoesService,
     private _selectListService: SelectListService,
     private _toastService: ToastService,
-    private _modalService: NgbModal,
     private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
@@ -77,7 +73,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       .pipe(
         tap((response) => {
           this.initForm(response);
-          console.log(response);
 
           this.photoOrganization = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
@@ -212,32 +207,19 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
   }
 
   public convertByteArraytoImgSrc(data: ArrayBuffer): string {
-    return !!data ? 'data:image/jpeg;base64,' + data : this.defaultPhotoOrganization;
-  }
-
-  public attachImg(event: any) {
-    if (event.target.files && event.target.files[0]) {
-      this.uploadedPhotoFile = event.target.files[0];
-      this.photoOrganization = URL.createObjectURL(event.target.files[0]);
-    }
-  }
-
-  public removeImg() {
-    this.imagemPerfilInput.nativeElement.value = '';
-    this.uploadedPhotoFile = undefined;
-    this.photoOrganization = this.defaultPhotoOrganization
+    return !!data ? 'data:image/jpeg;base64,' + data : '';
   }
 
   public isAllowed(path: string): boolean {
     return this._profileService.isAllowed(path);
   }
 
-  public switchMode(isEnabled: boolean, excluded?: Array<string>) {
+  public switchMode(isEnabled: boolean) {
     this.isEdit = isEnabled;
 
     const controls = this.organizationForm.controls;
     for (const key in controls) {
-      !excluded?.includes(key) && isEnabled
+      isEnabled
         ? controls[key].enable()
         : controls[key].disable();
     }
@@ -310,7 +292,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     switch (actionType) {
       case 'edit':
         if (this.isAllowed('organizacoeseditar')) {
-          this.switchMode(true, ['idOrganizacaoPai']);
+          this.switchMode(true);
         }
         break;
 
@@ -322,6 +304,10 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         this.submitOrganizationForm(this.organizationForm);
         break;
     }
+  }
+
+  profilePhoto(event: any){
+    this.uploadedPhotoFile = event[0];
   }
 
   ngOnDestroy(): void {

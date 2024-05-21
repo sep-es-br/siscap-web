@@ -12,7 +12,6 @@ export interface IToastInfo {
   providedIn: 'root',
 })
 export class ToastService {
-  public toastNotifier$: Subject<boolean> = new Subject<boolean>();
 
   public toastList: IToastInfo[] = [];
 
@@ -44,9 +43,5 @@ export class ToastService {
     this.toastList = this.toastList.filter((toast) => {
       return toast != targetToast;
     });
-
-    if (targetToast.type == 'error') {
-      this.toastNotifier$.next(true);
-    }
   }
 }

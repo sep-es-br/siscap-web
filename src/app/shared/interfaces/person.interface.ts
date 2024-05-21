@@ -28,6 +28,14 @@ export interface IPerson {
   imagemPerfil?: File | ArrayBuffer;
 }
 
+export interface IPersonACApi {
+  sub: string;
+  nome: string;
+  apelido: string;
+  email: string;
+  subDescontinuado: string;
+}
+
 export interface IPersonTable extends Pick<IPerson, 'id' | 'nome' | 'email' | 'imagemPerfil'> {}
 
 export interface IPersonGet extends IHttpGetResponseBody<IPersonTable> {}

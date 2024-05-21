@@ -1,11 +1,10 @@
-import { Component, Input, TemplateRef } from '@angular/core';
-import { Router } from '@angular/router';
+import {Component, Input, TemplateRef} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
-import { NavMenuLinks, IMenuLink } from '../../../shared/utils/navmenu-links';
-import { IProfile } from '../../../shared/interfaces/profile.interface';
-import { ActivatedRoute } from '@angular/router';
-import { ProfileService } from '../../../shared/services/profile/profile.service';
+import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
+import {IMenuLink, NavMenuLinks} from '../../../shared/utils/navmenu-links';
+import {IProfile} from '../../../shared/interfaces/profile.interface';
+import {ProfileService} from '../../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'siscap-header',
@@ -36,7 +35,7 @@ export class HeaderComponent {
     private activatedRoute: ActivatedRoute,
     private _profileService: ProfileService
   ) {
-    if (!!sessionStorage.getItem('user-profile')) {
+    if (sessionStorage.getItem('user-profile')) {
       this.fillProfile();
     }
 
@@ -77,7 +76,7 @@ export class HeaderComponent {
   redirectUserProfile() {
     this._router.navigate(['main', 'pessoas', 'form', 'editar'], {
       skipLocationChange: true,
-      queryParams: { email: this.userProfile.email },
+      queryParams: { subNovo: this.userProfile.subNovo },
     });
   }
 
@@ -85,6 +84,10 @@ export class HeaderComponent {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user-profile');
     this._router.navigate(['login']);
+  }
+
+  navigateFirstLink(item: IMenuLink) {
+    this._router.navigate(['main/'+item.routes[0].path]);
   }
 
   private fillProfile() {

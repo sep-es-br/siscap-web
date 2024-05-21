@@ -1,0 +1,52 @@
+.card-default-image{
+    width: 120px;
+    height: 130px;
+}
+
+.card-default-image:hover{
+    cursor: pointer;
+}
+
+.textAccent{
+    color: #007bff;
+    font-size: 0.77rem;
+    margin: 0.5rem;
+    font-weight: 700;
+}
+
+.card-photo{
+    width: 120px;
+    height: 130px;
+}
+
+.edit-filter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    opacity: 1;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    span{
+        font-size: 1.5rem;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+.disabled{
+    pointer-events: none;
+    opacity: 0.9;
+    filter: grayscale(100%);
+}
+
+.card-photo:hover .edit-filter {
+    opacity: 1;
+    cursor: pointer;
+}
