@@ -31,10 +31,11 @@ import { environment } from '../../../../environments/environment';
 })
 export class DashboardService {
   private _url = `${environment.supersetUrl}/api/v1/security`;
+  private idDashboard = `${environment.supersetDashboardId}`;
 
   private readonly _supersetEmbedId = {
-    desktop: '101ec9f0-b2ce-470c-9ebb-1a26fb1b3686', // Dashboard - SISCAP HOM
-    mobile: '2f450f7f-6d18-42bb-99e4-926eae9ba551', // SEP BI - PROJETOS ESTRATÉGICOS
+    desktop: this.idDashboard,
+    mobile: this.idDashboard,
   };
 
   constructor(
@@ -45,8 +46,8 @@ export class DashboardService {
 
   private supersetLogIn(): Observable<ISupersetLoginResponseBody> {
     const reqBody: ISupersetLoginRequestBody = {
-      username: 'embed',
-      password: 'Sup3Rs&t3mBeD@SEP',
+      username: `${environment.supersetUser}`,
+      password: `${environment.supersetPass}`,
       provider: 'db',
       refresh: false,
     };
