@@ -1,0 +1,30 @@
+.dashboard-info {
+  font-size: 3rem;
+}
+
+.card {
+  color: white;
+  background-image: url("/assets/images/card-background.jpg");
+  background-size: cover;
+  border-radius: 1rem;
+  border-width: 0;
+
+
+  .card-body, .card-footer {
+    border-width: 0;
+    background-color: rgba(30, 34, 39, 0.7);
+  }
+
+  .card-body {
+    border-radius: 1rem 1rem 0rem 0rem;
+  }
+
+  .card-footer {
+    border-radius: 0rem 0rem 1rem 1rem;
+    font-size: 1.3rem;
+  }
+}
+
+.fil0 {
+  fill: #5d5f63;
+}
