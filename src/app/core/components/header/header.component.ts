@@ -1,10 +1,8 @@
 import {Component, Input, TemplateRef} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
-import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
 import {IMenuLink, NavMenuLinks} from '../../../shared/utils/navmenu-links';
 import {IProfile} from '../../../shared/interfaces/profile.interface';
-import {ProfileService} from '../../../shared/services/profile/profile.service';
 
 @Component({
   selector: 'siscap-header',
@@ -31,36 +29,20 @@ export class HeaderComponent {
 
   constructor(
     private _router: Router,
-    private _offcanvasService: NgbOffcanvas,
     private activatedRoute: ActivatedRoute,
-    private _profileService: ProfileService
   ) {
     if (sessionStorage.getItem('user-profile')) {
       this.fillProfile();
     }
-
-    this._profileService.sessionProfile$.subscribe(profile => {
-      this.fillProfile()
-    });
   }
 
   ngDoCheck(): void {
-    //Called every time that the input properties of a component or a directive are checked. Use it to extend change detection by performing a custom check.
-    //Add 'implements DoCheck' to the class.
     this.currentUrl = this.activatedRoute.snapshot.children[0].routeConfig?.path?.split('/')[0];
     this.activedCategory();
   }
 
-  showOffcanvas() {
-    this._offcanvasService.open(this.navmenuOffcanvas);
-  }
-
   convertByteArraytoImg(data: ArrayBuffer): string {
     return 'data:image/jpeg;base64,' + data;
-  }
-
-  toggleMenu() {
-    this.showMenu = !this.showMenu;
   }
 
   activedCategory() {
@@ -83,7 +65,7 @@ export class HeaderComponent {
   logOut() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user-profile');
-    this._router.navigate(['login']);
+    window.location.href = "https://acessocidadao.es.gov.br/is/connect/endsession";
   }
 
   navigateFirstLink(item: IMenuLink) {
