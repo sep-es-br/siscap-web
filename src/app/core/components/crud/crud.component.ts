@@ -1,13 +1,25 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, Renderer2, TemplateRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
-import { DataTableDirective } from 'angular-datatables';
-import { fromEvent } from 'rxjs';
-import { debounceTime, map } from 'rxjs/operators';
-import { SweetAlertOptions } from 'sweetalert2';
-import { Api, Config } from 'datatables.net';
-import { Location } from '@angular/common';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  Renderer2,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
+import {Router} from '@angular/router';
+import {NgbModal, NgbModalOptions, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {SwalComponent} from '@sweetalert2/ngx-sweetalert2';
+import {DataTableDirective} from 'angular-datatables';
+import {fromEvent} from 'rxjs';
+import {debounceTime, map} from 'rxjs/operators';
+import {SweetAlertOptions} from 'sweetalert2';
+import {Api, Config} from 'datatables.net';
+import {Location} from '@angular/common';
+import {PermissionsMap} from "../../../shared/interfaces/profile.interface";
 
 
 @Component({
@@ -21,7 +33,6 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() route: string = '/';
 
-  // Reload emitter inside datatable
   @Input() reload!: EventEmitter<boolean>;
 
   @Input() modal!: TemplateRef<any>;
@@ -32,7 +43,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
   dtOptions: Config = {};
 
-  @ViewChild(DataTableDirective, { static: false })
+  @ViewChild(DataTableDirective, {static: false})
   private datatableElement!: DataTableDirective;
 
   @ViewChild('deleteSwal')
@@ -49,14 +60,15 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  swalOptions: SweetAlertOptions = { buttonsStyling: false };
+  swalOptions: SweetAlertOptions = {buttonsStyling: false};
 
   private modalRef!: NgbModalRef;
 
   private clickListener!: () => void;
   public nomeInAction!: string;
 
-  constructor(private renderer: Renderer2, private router: Router, private modalService: NgbModal, private location: Location) { }
+  constructor(private renderer: Renderer2, private router: Router, private modalService: NgbModal, private location: Location) {
+  }
 
   ngOnInit(): void {
     let lastPage = 0;
@@ -66,7 +78,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       processing: true,
       displayStart: lastPage,
-      search: { search: lastSearchText },
+      search: {search: lastSearchText},
       layout: {
         topStart: 'search',
         topEnd: undefined,
@@ -83,13 +95,14 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
       rowCallback: (row: Node, data: any[] | Object, index: number) => {
         $(row).on('click', 'td:not(:last-child)', () => {
           const rowData = data as any;
-          this.router.navigate([`${this.router.url}/form/editar`], { queryParams: { id: rowData?.id } });
+          this.router.navigate([`${this.router.url}/form/editar`], {queryParams: {id: rowData?.id}});
         });
         return row;
       }
-      
+
     };
-    this.renderActionColumn();
+
+    this.validateRenderActionColumn();
 
     this.setupSweetAlert();
 
@@ -101,8 +114,16 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  renderActionColumn(): void {
+  private validateRenderActionColumn() {
+    const userPermissions: Array<string> = JSON.parse(sessionStorage.getItem('user-profile')!).permissoes ?? [];
+    const route = this.router.url.replaceAll('/main/', '');
+    const isAdmin = userPermissions.includes(PermissionsMap['adminAuth' as keyof typeof PermissionsMap]);
+    const canEdit = userPermissions.includes(PermissionsMap[(route + 'editar') as keyof typeof PermissionsMap]);
+    if (isAdmin || canEdit)
+      this.renderActionColumn(isAdmin, canEdit);
+  }
 
+  renderActionColumn(isAdmin: boolean, canEdit: boolean): void {
 
     const actionColumn = {
       sortable: false,
@@ -112,7 +133,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
         let editButton = '';
         let deleteButton = '';
 
-        if (this.deleteEvent.observed) {
+        if (this.deleteEvent.observed && isAdmin) {
           deleteButton = `
           <button class="btn dropdown-item" data-action="delete" data-name="${full.nome}" data-id="${full.id}">
             <i class="fa-regular fa-trash-can me-1"></i>
@@ -120,14 +141,13 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
           </button>`;
         }
 
-        if (this.editEvent.observed) {
+        if (this.editEvent.observed && (isAdmin || canEdit)) {
           editButton = `
           <button class="btn dropdown-item" data-action="edit" data-id="${full.id}">
             <i class="fa-regular fa-pen-to-square fs-6 me-1"></i>
             Editar
           </button>`;
         }
-
 
         const actionsDropdown = `
           <div class="btn-group">
@@ -156,14 +176,10 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
     this.clickListener = this.renderer.listen(document, 'click', (event) => {
       const closestBtn = event.target.closest('.btn');
       if (closestBtn) {
-        const { action, id, name } = closestBtn.dataset;
+        const {action, id, name} = closestBtn.dataset;
         this.idInAction = id;
         this.nomeInAction = name;
         this.textDelete = `Você está deletando o registro "<b>${name}</b>".<br>Esta ação não poderá ser desfeita. Deseja continuar?`;
-
-
-
-
 
         switch (action) {
           case 'view':
@@ -202,10 +218,6 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
     this.modalService.dismissAll();
   }
 
-  // adjustTextDelete(): void {
-
-  // }
-
   triggerDelete() {
     this.deleteEvent.emit(this.idInAction);
   }
@@ -219,10 +231,10 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
           const action = target.getAttribute('data-action');
           const value = (target as HTMLInputElement).value?.trim().toLowerCase();
 
-          return { action, value };
+          return {action, value};
         })
       )
-      .subscribe(({ action, value }) => {
+      .subscribe(({action, value}) => {
         if (action === 'filter') {
           this.datatableElement.dtInstance.then((dtInstance: Api) => dtInstance.search(value).draw());
         }
