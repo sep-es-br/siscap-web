@@ -161,7 +161,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         }
       ),
     });
-    console.log(this.organizationForm.value);
   }
 
   ngOnInit(): void {
