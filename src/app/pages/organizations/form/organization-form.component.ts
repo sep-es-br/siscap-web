@@ -161,6 +161,8 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         }
       ),
     });
+
+    this.validateCnpjRequired();
   }
 
   ngOnInit(): void {
@@ -305,8 +307,24 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  profilePhoto(event: any){
+  profilePhoto(event: any) {
     this.uploadedPhotoFile = event[0];
+  }
+
+  private validateCnpjRequired() {
+    const idPaisControl = this.organizationForm.get('idPais');
+    const cnpjControl = this.organizationForm.get('cnpj');
+    cnpjControl?.markAsTouched();
+
+    idPaisControl?.valueChanges.subscribe(pais => {
+      if (pais == 1) {
+        cnpjControl?.setValidators([Validators.required]);
+        cnpjControl?.updateValueAndValidity();
+      } else {
+        cnpjControl?.clearValidators();
+        cnpjControl?.updateValueAndValidity();
+      }
+    });
   }
 
   ngOnDestroy(): void {
