@@ -112,7 +112,7 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.paisChanged(this.paisSelected);
           this.estadoChanged(this.estadoSelected);
 
-          this.switchMode(false);
+          this.switchMode(!!this._route.snapshot.queryParamMap.get('isEdit'));
 
           this.loading = false;
         })
