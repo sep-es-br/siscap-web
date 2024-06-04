@@ -89,7 +89,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public redirectProjectForm(projectId: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: projectId },
+      queryParams: { id: projectId, isEdit: true },
     });
   }
 

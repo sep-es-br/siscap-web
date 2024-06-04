@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {EventType, NavigationEnd, Router} from '@angular/router';
+import {ActivatedRoute, EventType, NavigationEnd, Router} from '@angular/router';
 
 import {filter} from 'rxjs';
 import {BreadcrumbLists} from '../../../shared/utils/breadcrumb-lists';
@@ -27,7 +27,8 @@ export class BreadcrumbComponent {
   constructor(
     private _profileService: ProfileService,
     private _router: Router,
-    private breadcrumbService: BreadcrumbService
+    private breadcrumbService: BreadcrumbService,
+    private _route: ActivatedRoute,
   ) {
     this._router.events
       .pipe(
@@ -153,7 +154,11 @@ export class BreadcrumbComponent {
   }
 
   checkActionButtons() {
-    const actionOnPage = this.untratedUrls[this.untratedUrls.length - 1];
+    let actionOnPage = this.untratedUrls[this.untratedUrls.length - 1];
+
+    if (['editar', 'criar'].includes(actionOnPage))
+      if (this._route.snapshot.queryParamMap.get('isEdit'))
+        actionOnPage = 'criar';
 
     switch (actionOnPage) {
       case 'editar':

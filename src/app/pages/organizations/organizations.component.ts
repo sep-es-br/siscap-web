@@ -1,19 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { Observable, Subscription, tap } from 'rxjs';
+import {Subscription, tap} from 'rxjs';
 
-import { OrganizacoesService } from '../../shared/services/organizacoes/organizacoes.service';
+import {OrganizacoesService} from '../../shared/services/organizacoes/organizacoes.service';
 
-import { SortColumn } from '../../core/directives/sortable/sortable.directive';
+import {SortColumn} from '../../core/directives/sortable/sortable.directive';
 
-import {
-  IOrganizationGet,
-  IOrganizationTable,
-} from '../../shared/interfaces/organization.interface';
+import {IOrganizationTable,} from '../../shared/interfaces/organization.interface';
 
-import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
-import { Config } from 'datatables.net';
+import {sortTableColumnsFunction} from '../../shared/utils/sort-table-columns-function';
+import {Config} from 'datatables.net';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -50,13 +47,9 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   }
 
   treatDatatableConfig() {
-    let lastPage = 0;
-    let lastSearchText = "";
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
-        lastPage = dataTablesParameters.start;
-        lastSearchText = dataTablesParameters.search.value;
         this.page = dataTablesParameters.start / dataTablesParameters.length;
         this.getData().subscribe(resp => {
           callback({
@@ -112,7 +105,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   public redirectOrganizationForm(OrganizationId: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: OrganizationId },
+      queryParams: { id: OrganizationId , isEdit: true },
     });
   }
 
@@ -133,8 +126,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       .subscribe();
 
   }
-
-  queryOrganization() { }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();

@@ -1,22 +1,15 @@
-import { Component, EventEmitter, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, EventEmitter, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { Observable, Subscription, tap } from 'rxjs';
+import {Subscription, tap} from 'rxjs';
 
-import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
-
-import { SortColumn } from '../../core/directives/sortable/sortable.directive';
+import {PessoasService} from '../../shared/services/pessoas/pessoas.service';
 
 import Swal from 'sweetalert2';
 
 
-import {
-  IPersonGet,
-  IPersonTable,
-} from '../../shared/interfaces/person.interface';
-
-import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
-import { Config } from 'datatables.net';
+import {IPersonTable,} from '../../shared/interfaces/person.interface';
+import {Config} from 'datatables.net';
 
 @Component({
   selector: 'siscap-persons',
@@ -65,7 +58,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
   public redirectPersonForm(idPerson: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: idPerson },
+      queryParams: { id: idPerson, isEdit: true },
     });
   }
 
@@ -119,9 +112,6 @@ export class PersonsComponent implements OnInit, OnDestroy {
 
 
   }
-
-
-  queryPerson() { }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();

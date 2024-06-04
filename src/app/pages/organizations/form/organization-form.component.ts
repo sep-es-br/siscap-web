@@ -85,7 +85,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.organizationFormInitialValue = this.organizationForm.value;
 
-          this.switchMode(false);
+          this.switchMode(!!this._route.snapshot.queryParamMap.get('isEdit'));
 
           this.loading = false;
         })

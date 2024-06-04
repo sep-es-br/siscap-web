@@ -1,26 +1,26 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {Observable, Subscription, concat, finalize, tap} from 'rxjs';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { ProfileService } from '../../../shared/services/profile/profile.service';
-import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
-import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { ToastService } from '../../../shared/services/toast/toast.service';
+import {ProfileService} from '../../../shared/services/profile/profile.service';
+import {ProjetosService} from '../../../shared/services/projetos/projetos.service';
+import {SelectListService} from '../../../shared/services/select-list/select-list.service';
+import {ToastService} from '../../../shared/services/toast/toast.service';
 
 import {
   IProject,
   IProjectCreate,
   IProjectEdit,
 } from '../../../shared/interfaces/project.interface';
-import { ISelectList } from '../../../shared/interfaces/select-list.interface';
+import {ISelectList} from '../../../shared/interfaces/select-list.interface';
 
-import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
-import { ArrayItemNumberToStringMapper } from '../../../shared/utils/array-item-mapper';
+import {NgxMaskTransformFunctionHelper} from '../../../shared/helpers/ngx-mask-transform-function.helper';
+import {ArrayItemNumberToStringMapper} from '../../../shared/utils/array-item-mapper';
 
-import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 @Component({
   selector: 'siscap-project-form',
@@ -81,7 +81,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.projectFormInitialValue = this.projectForm.value;
 
-          this.switchMode(false);
+          this.switchMode(!!this._route.snapshot.queryParamMap.get('isEdit'));
 
           this.loading = false;
         })
@@ -175,9 +175,9 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         }
       ),
       //AInda não implementados
-      plano: nnfb.control({ value: null, disabled: true }),
-      eixo: nnfb.control({ value: null, disabled: true }),
-      area: nnfb.control({ value: null, disabled: true }),
+      plano: nnfb.control({value: null, disabled: true}),
+      eixo: nnfb.control({value: null, disabled: true}),
+      area: nnfb.control({value: null, disabled: true}),
     });
   }
 
@@ -269,7 +269,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     }
 
     switch (this.formMode) {
-      case 'criar':
+      case 'criar': {
         const createPayload = form.value as IProjectCreate;
 
         this._projetosService
@@ -287,8 +287,8 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
           )
           .subscribe();
         break;
-
-      case 'editar':
+      }
+      case 'editar': {
         const editPayload = form.value as IProjectEdit;
 
         this._projetosService
@@ -307,7 +307,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
           .subscribe();
 
         break;
-
+      }
       default:
         break;
     }
