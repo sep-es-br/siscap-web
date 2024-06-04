@@ -6,7 +6,7 @@
   <div class="d-flex justify-content-end p-0">
     <button class="btn btn-outline-primary d-flex justify-content-around" (click)="downloadDic(projectEditId)">
       <i class="fa fa-file-arrow-down fs-5 mx-1 my-auto"></i>
-      <label class="mx-1 fs-6">Gerar DIC</label>
+      <span class="mx-1 fs-6">Gerar DIC</span>
     </button>
   </div>
 </div>
@@ -79,22 +79,12 @@
             <div class="col-12 col-md-6 mb-2 mb-md-0">
               <label for="plano" class="form-label"> Plano Estratégico </label>
               <ng-select id="plano" placeholder="Desabilitado" formControlName="plano">
-                <!-- <ng-option
-                  *ngFor="let plano of planosList"
-                  [value]="plano.id"
-                  >{{ plano.nome }}</ng-option
-                > -->
               </ng-select>
             </div>
 
             <div class="col-12 col-md-6">
               <label for="eixo" class="form-label">Eixo Estratégico</label>
               <ng-select id="eixo" placeholder="Desabilitado" formControlName="eixo">
-                <!-- <ng-option
-                  *ngFor="let placeholder of placeholderList"
-                  [value]="placeholder.id"
-                  >{{ placeholder.label }}</ng-option
-                > -->
               </ng-select>
             </div>
           </div>
@@ -103,11 +93,6 @@
             <div class="col-12 col-md-6 mb-2 mb-md-0">
               <label for="area" class="form-label">Área Estratégica</label>
               <ng-select id="area" placeholder="Desabilitado" formControlName="area">
-                <!-- <ng-option
-                  *ngFor="let placeholder of placeholderList"
-                  [value]="placeholder.id"
-                  >{{ placeholder.label }}</ng-option
-                > -->
               </ng-select>
             </div>
 
