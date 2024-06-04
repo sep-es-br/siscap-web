@@ -80,7 +80,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
           data: 'site', title: 'Site', render: function (data: string) {
             if (data) {
               let link = data.startsWith(`http`) ? data : '//' + data;
-              return `<p class="btn-link" onclick="window.open('${link}', '_blank')">${data}</p>`;
+              return `<span class="btn-link" onclick="window.open('${link}', '_blank')">${data}</span>`;
             }
             else
               return '';
