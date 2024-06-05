@@ -131,7 +131,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       nome: nnfb.control(organization?.nome ?? '', {
         validators: Validators.required,
       }),
-      abreviatura: nnfb.control(organization?.abreviatura ?? '', {
+      abreviatura: nnfb.control(organization?.nomeFantasia ?? '', {
         validators: Validators.required,
       }),
       telefone: nnfb.control(organization?.telefone ?? ''),

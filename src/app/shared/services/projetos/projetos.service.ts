@@ -37,7 +37,7 @@ export class ProjetosService {
       size: pageSize?.toString() ?? "15",
       page: page !== undefined ? page.toString() : "0",
       sort: sort !== undefined ? sort?.toString() : '',
-      search: search !== undefined ? search.toString() : '', // Ensure search is always a string
+      search: search !== undefined ? search.toString() : '',
     };
 
     return this._http.get<IProjectGet>(`${this._url}?${new URLSearchParams(params).toString()}` ).pipe(

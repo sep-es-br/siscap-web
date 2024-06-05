@@ -3,7 +3,7 @@ import { IHttpGetResponseBody } from './http-get.interface';
 export interface IOrganization {
   readonly id: number;
   nome: string;
-  abreviatura: string;
+  nomeFantasia: string;
   telefone: string;
   cnpj: string;
   fax: string;
@@ -22,7 +22,7 @@ export interface IOrganization {
 export interface IOrganizationTable
   extends Pick<
     IOrganization,
-    'id' | 'nome' | 'abreviatura' | 'telefone' | 'site' | 'imagemPerfil'
+    'id' | 'nome' | 'nomeFantasia' | 'telefone' | 'site' | 'imagemPerfil'
   > {
   nomeTipoOrganizacao: string;
 }

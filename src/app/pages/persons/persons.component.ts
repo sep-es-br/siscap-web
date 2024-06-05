@@ -58,7 +58,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
   public redirectPersonForm(idPerson: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: idPerson, isEdit: true },
+      queryParams: {id: idPerson, isEdit: true},
     });
   }
 
@@ -71,6 +71,9 @@ export class PersonsComponent implements OnInit, OnDestroy {
 
       ajax: (dataTablesParameters: any, callback) => {
         this.page = dataTablesParameters.start / dataTablesParameters.length;
+        const {order, columns} = dataTablesParameters;
+        const orderElement = order[0];
+        this.sort = orderElement ? `${columns[orderElement.column].data},${orderElement.dir}` : '';
         this.getDataPaginated().subscribe(resp => {
           callback({
             recordsTotal: resp.totalElements,
@@ -84,10 +87,14 @@ export class PersonsComponent implements OnInit, OnDestroy {
       searching: true,
       pageLength: this.pageSize,
       columns: [
-        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle img-profile" src="${this.convertByteArraytoImg(data)}" width="30" height="30">` } },
-        { data: 'nome', title: 'Nome' },
-        { data: 'email', title: 'E-mail' },
-        { data: 'nomeOrganizacao', title: 'Organização' }
+        {
+          data: 'imagemPerfil', title: '', orderable: false, render: (data: any) => {
+            return `<img class="rounded-circle img-profile" src="${this.convertByteArraytoImg(data)}" alt="Imagem da organização" width="30" height="30">`
+          }
+        },
+        {data: 'nome', title: 'Nome'},
+        {data: 'email', title: 'E-mail'},
+        {data: 'nomeOrganizacao', title: 'Organização', orderable: false}
       ],
       order: [[1, 'asc']],
     };
@@ -102,7 +109,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
           if (response) {
             Swal.fire('Sucesso!', 'Pessoa deletada com sucesso!', 'success').then(() => {
               this._router
-                .navigateByUrl('/', { skipLocationChange: true })
+                .navigateByUrl('/', {skipLocationChange: true})
                 .then(() => this._router.navigateByUrl('main/pessoas'));
             });
           }
