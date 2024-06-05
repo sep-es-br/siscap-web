@@ -42,7 +42,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     this.treatDatatableConfig();
   }
 
-  getData() {
+  getDataPaginated() {
     return this._organizacoesService.getOrganizacaoPaginated(this.page, this.pageSize, this.sort, this.search);
   }
 
@@ -51,7 +51,10 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
       ajax: (dataTablesParameters: any, callback) => {
         this.page = dataTablesParameters.start / dataTablesParameters.length;
-        this.getData().subscribe(resp => {
+        const { order, columns } = dataTablesParameters;
+        const orderElement = order[0];
+        this.sort = orderElement ? `${columns[orderElement.column].data},${orderElement.dir}` : '';
+        this.getDataPaginated().subscribe(resp => {
           callback({
             recordsTotal: resp.totalElements,
             recordsFiltered: resp.totalElements,
@@ -64,10 +67,10 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       pageLength:this.pageSize,
       lengthMenu: ['5', '10', '20'],
       columns: [
-        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="30" height="30">` } },
-        { data: 'abreviatura', title: 'Sigla' },
+        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" alt="Imagem de perfil" width="30" height="30">` } },
+        { data: 'nomeFantasia', title: 'Sigla' },
         { data: 'nome', title: 'Nome' },
-        { data: 'nomeTipoOrganizacao', title: 'Tipo' },
+        { data: 'nomeTipoOrganizacao', title: 'Tipo', orderable: false },
         { data: 'telefone', title: 'Telefone' },
         {
           data: 'site', title: 'Site', render: function (data: string) {

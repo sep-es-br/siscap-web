@@ -18,7 +18,6 @@ import {fromEvent} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
 import {SweetAlertOptions} from 'sweetalert2';
 import {Api, Config} from 'datatables.net';
-import {Location} from '@angular/common';
 import {PermissionsMap} from "../../../shared/interfaces/profile.interface";
 
 
@@ -67,7 +66,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   private clickListener!: () => void;
   public nomeInAction!: string;
 
-  constructor(private renderer: Renderer2, private router: Router, private modalService: NgbModal, private location: Location) {
+  constructor(private renderer: Renderer2, private router: Router, private modalService: NgbModal) {
   }
 
   ngOnInit(): void {
@@ -107,7 +106,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupSweetAlert();
 
     if (this.reload) {
-      this.reload.subscribe(data => {
+      this.reload.subscribe(() => {
         this.modalService.dismissAll();
         this.datatableElement.dtInstance.then((dtInstance: Api) => dtInstance.ajax.reload());
       });
@@ -127,7 +126,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const actionColumn = {
       sortable: false,
-      title: 'Gerenciar',
+      title: 'Ações',
 
       render: (data: any, type: any, full: any) => {
         let editButton = '';
