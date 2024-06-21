@@ -1,10 +1,11 @@
-import { Component, EventEmitter } from '@angular/core';
-import { EventType, NavigationEnd, Router } from '@angular/router';
+import {Component} from '@angular/core';
+import {ActivatedRoute, EventType, NavigationEnd, Router} from '@angular/router';
 
-import { filter } from 'rxjs';
-import { BreadcrumbLists } from '../../../shared/utils/breadcrumb-lists';
-import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
-import { ProfileService } from '../../../shared/services/profile/profile.service';
+import {filter} from 'rxjs';
+import {BreadcrumbLists} from '../../../shared/utils/breadcrumb-lists';
+import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.service';
+import {ProfileService} from '../../../shared/services/profile/profile.service';
+import {PermissionsMap} from "../../../shared/interfaces/profile.interface";
 
 @Component({
   selector: 'siscap-breadcrumb',
@@ -19,7 +20,6 @@ export class BreadcrumbComponent {
   public breadcrumbNav: Array<string> = []; // Rotas do breadcrumb atual
   public currentPage: string = ''; // Página atual (última rota do breadcrumbNav)
   protected untratedUrls: Array<string> = []; // URL atual
-  public isEditing: boolean = false;
   public showEditButton: boolean = false;
   public showCancelButton: boolean = false;
   public showSaveButton: boolean = false;
@@ -27,7 +27,8 @@ export class BreadcrumbComponent {
   constructor(
     private _profileService: ProfileService,
     private _router: Router,
-    private breadcrumbService: BreadcrumbService
+    private breadcrumbService: BreadcrumbService,
+    private _route: ActivatedRoute,
   ) {
     this._router.events
       .pipe(
@@ -40,9 +41,7 @@ export class BreadcrumbComponent {
         this.untratedUrls = this.getUntratedUrls(next['urlAfterRedirects']);
         this.checkActionButtons();
         const urlPaths = this.getUrlPaths(next['urlAfterRedirects']);
-        const treatedUrlPaths = this.treatUrlPaths(urlPaths);
-
-        this.breadcrumbNav = treatedUrlPaths;
+        this.breadcrumbNav = this.treatUrlPaths(urlPaths);
         this.currentPage = this.breadcrumbNav.at(
           this.breadcrumbNav.length - 1
         )!;
@@ -129,48 +128,20 @@ export class BreadcrumbComponent {
   }
 
   /**
-   * Volta para a pagina anterior.
-   */
-  public goBack() {
-    history.back();
-  }
-
-  /**
-   * Avança para a próxima página.
-   */
-  public goForward() {
-    history.forward();
-  }
-
-  /**
    * Emite a ação do breadcrumb.
    *
    * @param action - A ação do breadcrumb.
    */
-  
-  breadcrumpAtcion(action: string){
-    
-    switch (action) {
-      case 'edit':
+
+  breadcrumpAtcion(action: string) {
+
+    if (action === 'edit'){
         this.showCancelButton = true;
         this.showSaveButton = true;
         this.showEditButton = false;
-        break;
-      default:
-        break;  
     }
-    
-    this.breadcrumbService.breadcrumbAction.emit(action);
-  }
 
-  isActionAllowed(action:string) {
-    const actionOnPage = this.untratedUrls[this.untratedUrls.length - 1];
-    this.showEditButton = this.showSaveButton = this.showCancelButton = false;
-  
-    
-    
-    
-    // return true;
+    this.breadcrumbService.breadcrumbAction.emit(action);
   }
 
   getUntratedUrls(url: string): string[] {
@@ -182,19 +153,23 @@ export class BreadcrumbComponent {
       .filter((path) => !this.exclusionList.includes(path));
   }
 
-  checkActionButtons(){
-    const actionOnPage = this.untratedUrls[this.untratedUrls.length - 1];
-    
+  checkActionButtons() {
+    let actionOnPage = this.untratedUrls[this.untratedUrls.length - 1];
+
+    if (['editar', 'criar'].includes(actionOnPage))
+      if (this._route.snapshot.queryParamMap.get('isEdit'))
+        actionOnPage = 'criar';
+
     switch (actionOnPage) {
       case 'editar':
-          this.showEditButton = true;
-          this.showSaveButton = false;
-          this.showCancelButton = false;
+        this.showEditButton = this.canShowEditButton();
+        this.showSaveButton = false;
+        this.showCancelButton = false;
         break;
       case 'criar':
-          this.showEditButton = false;
-          this.showSaveButton = true;
-          this.showCancelButton = true;
+        this.showEditButton = false;
+        this.showSaveButton = true;
+        this.showCancelButton = true;
         break;
       default:
         this.showEditButton = this.showSaveButton = this.showCancelButton = false;
@@ -202,10 +177,12 @@ export class BreadcrumbComponent {
     }
   }
 
-
-
-
-  ngOnDestroy() {
+  canShowEditButton() {
+    const userPermissions: Array<string> = JSON.parse(sessionStorage.getItem('user-profile')!).permissoes ?? [];
+    const route = this._router.url.replaceAll('/main/', '').split('/')[0];
+    const isAdmin = userPermissions.includes(PermissionsMap['adminAuth' as keyof typeof PermissionsMap]);
+    const canEdit = userPermissions.includes(PermissionsMap[(route + 'editar') as keyof typeof PermissionsMap]);
+    return isAdmin || canEdit;
   }
 
 }

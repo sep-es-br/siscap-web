@@ -1,19 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { Observable, Subscription, tap } from 'rxjs';
+import {Subscription, tap} from 'rxjs';
 
-import { OrganizacoesService } from '../../shared/services/organizacoes/organizacoes.service';
+import {OrganizacoesService} from '../../shared/services/organizacoes/organizacoes.service';
 
-import { SortColumn } from '../../core/directives/sortable/sortable.directive';
+import {SortColumn} from '../../core/directives/sortable/sortable.directive';
 
-import {
-  IOrganizationGet,
-  IOrganizationTable,
-} from '../../shared/interfaces/organization.interface';
+import {IOrganizationTable,} from '../../shared/interfaces/organization.interface';
 
-import { sortTableColumnsFunction } from '../../shared/utils/sort-table-columns-function';
-import { Config } from 'datatables.net';
+import {sortTableColumnsFunction} from '../../shared/utils/sort-table-columns-function';
+import {Config} from 'datatables.net';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -45,20 +42,19 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     this.treatDatatableConfig();
   }
 
-  getData() {
+  getDataPaginated() {
     return this._organizacoesService.getOrganizacaoPaginated(this.page, this.pageSize, this.sort, this.search);
   }
 
   treatDatatableConfig() {
-    let lastPage = 0;
-    let lastSearchText = "";
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
-        lastPage = dataTablesParameters.start;
-        lastSearchText = dataTablesParameters.search.value;
         this.page = dataTablesParameters.start / dataTablesParameters.length;
-        this.getData().subscribe(resp => {
+        const { order, columns } = dataTablesParameters;
+        const orderElement = order[0];
+        this.sort = orderElement ? `${columns[orderElement.column].data},${orderElement.dir}` : '';
+        this.getDataPaginated().subscribe(resp => {
           callback({
             recordsTotal: resp.totalElements,
             recordsFiltered: resp.totalElements,
@@ -71,16 +67,16 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       pageLength:this.pageSize,
       lengthMenu: ['5', '10', '20'],
       columns: [
-        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any, type: any, full: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" width="30" height="30">` } },
-        { data: 'abreviatura', title: 'Sigla' },
+        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" alt="Imagem de perfil" width="30" height="30">` } },
+        { data: 'nomeFantasia', title: 'Sigla' },
         { data: 'nome', title: 'Nome' },
-        { data: 'nomeTipoOrganizacao', title: 'Tipo' },
+        { data: 'nomeTipoOrganizacao', title: 'Tipo', orderable: false },
         { data: 'telefone', title: 'Telefone' },
         {
           data: 'site', title: 'Site', render: function (data: string) {
             if (data) {
               let link = data.startsWith(`http`) ? data : '//' + data;
-              return `<p class="btn-link" onclick="window.open('${link}', '_blank')">${data}</p>`;
+              return `<span class="btn-link" onclick="window.open('${link}', '_blank')">${data}</span>`;
             }
             else
               return '';
@@ -112,7 +108,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   public redirectOrganizationForm(OrganizationId: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: OrganizationId },
+      queryParams: { id: OrganizationId , isEdit: true },
     });
   }
 
@@ -133,8 +129,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       .subscribe();
 
   }
-
-  queryOrganization() { }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();

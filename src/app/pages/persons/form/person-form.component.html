@@ -121,7 +121,7 @@
                   <label for="email" class="form-label col-12">E-mail
                     <ng-container *ngTemplateOutlet=" appAlert; context: { controlName: 'email' }"></ng-container>
                   </label>
-                  <input type="text" class="form-control" id="email" formControlName="email"/>
+                  <input type="text" class="form-control" id="email" formControlName="email" (keydown.space)="$event.preventDefault()"/>
                 </div>
 
                 <div class="col-12 col-md-6 mb-2 mb-md-0">

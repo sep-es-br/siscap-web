@@ -5,11 +5,7 @@ import {Subscription, tap} from 'rxjs';
 
 import {ProjetosService} from '../../shared/services/projetos/projetos.service';
 
-import {SortColumn} from '../../core/directives/sortable/sortable.directive';
-
 import {IProjectTable} from '../../shared/interfaces/project.interface';
-
-import {sortTableColumnsFunction} from '../../shared/utils/sort-table-columns-function';
 import {Config} from 'datatables.net';
 import Swal from 'sweetalert2';
 import DataTable from 'datatables.net-bs5';
@@ -48,20 +44,14 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     return this._projetosService.getProjetosPaginated(this.page, this.pageSize, this.sort, this.search);
   }
 
-  public sortTable(event: SortColumn) {
-    const column = event.column as keyof IProjectTable;
-    const direction = event.direction;
-
-    this.projetosList.sort((a, b) =>
-      sortTableColumnsFunction(a[column], b[column], direction)
-    );
-  }
-
   treatDatatableConfig() {
     this.datatableConfig = {
 
       ajax: (dataTablesParameters: any, callback) => {
         this.page = dataTablesParameters.start / dataTablesParameters.length;
+        const { order, columns } = dataTablesParameters;
+        const orderElement = order[0];
+        this.sort = orderElement ? `${columns[orderElement.column].data},${orderElement.dir}` : '';
         this.getDataPaginated().subscribe(resp => {
           callback({
             recordsTotal: resp.totalElements,
@@ -78,10 +68,9 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       columns: [
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },
-        { data: 'nomesMicrorregioes', title: 'Microrregiões', render: (dado: string[]) => Array.isArray(dado) ? dado.join(", ") : dado },
-        { data: 'valorEstimado', title: 'Valor Estimado', render: DataTable.render.number('.', ',', 2, 'R$ '), className: 'text-end' },
+        { data: 'nomesMicrorregioes', title: 'Microrregiões', orderable: false, render: (dado: string[]) => Array.isArray(dado) ? dado.join(", ") : dado },
+        { data: 'valorEstimado', title: 'Valor Estimado', render: DataTable.render.number('.', ',', 2, 'R$ '), className: 'text-end text-nowrap' },
       ],
-      order: [[1, 'asc']],
     };
 
   }
@@ -89,7 +78,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public redirectProjectForm(projectId: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: projectId },
+      queryParams: { id: projectId, isEdit: true },
     });
   }
 

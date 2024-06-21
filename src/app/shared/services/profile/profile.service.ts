@@ -1,22 +1,11 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 
-import { BehaviorSubject, Observable, catchError, throwError } from 'rxjs';
+import {BehaviorSubject, catchError, Observable, throwError} from 'rxjs';
 
-import { environment } from '../../../../environments/environment';
-import { IProfile } from '../../interfaces/profile.interface';
-import { ErrorHandlerService } from '../error-handler/error-handler.service';
-
-enum PermissionsMap {
-  projetoscriar = 'PROJETO_CADASTRAR',
-  projetoseditar = 'PROJETO_ATUALIZAR',
-
-  pessoascriar = 'PESSOA_CADASTRAR',
-  pessoaseditar = 'PESSOA_ATUALIZAR',
-
-  organizacoescriar = 'ORGANIZACAO_CADASTRAR',
-  organizacoeseditar = 'ORGANIZACAO_ATUALIZAR',
-}
+import {environment} from '../../../../environments/environment';
+import {IProfile, PermissionsMap} from '../../interfaces/profile.interface';
+import {ErrorHandlerService} from '../error-handler/error-handler.service';
 
 @Injectable({
   providedIn: 'root',

@@ -37,7 +37,7 @@ export class ProjetosService {
       size: pageSize?.toString() ?? "15",
       page: page !== undefined ? page.toString() : "0",
       sort: sort !== undefined ? sort?.toString() : '',
-      search: search !== undefined ? search.toString() : '', // Ensure search is always a string
+      search: search !== undefined ? search.toString() : '',
     };
 
     return this._http.get<IProjectGet>(`${this._url}?${new URLSearchParams(params).toString()}` ).pipe(
@@ -86,30 +86,12 @@ export class ProjetosService {
     );
   }
 
-  downloadDIC(id: number) {
-    const userHttpOptions: Object = {
-      responseType: 'arraybuffer',
-      observe: 'response'
-    };
-    this._http.get<Blob>(`${this._url}/dic/${id}`, userHttpOptions).subscribe((response) => {
-
-      if (response instanceof HttpResponse) {
-        const httpResponse = response as HttpResponse<Blob>;
-        const contentDisposition = httpResponse.headers.get('Content-Disposition');
-        if (httpResponse.body && contentDisposition) {
-          const filename = contentDisposition.split('filename=')[1].split(';')[0].replace(/["']/g, "");
-          const pdfBlob = new Blob([httpResponse.body], { type: "application/pdf", });
-          let url = window.URL.createObjectURL(pdfBlob);
-          let a = document.createElement('a');
-          document.body.appendChild(a);
-          a.setAttribute('style', 'display: none');
-          a.href = url;
-          a.download = filename;
-          a.click();
-          window.URL.revokeObjectURL(url);
-          a.remove();
-        }
-      }
-    });
+  downloadDIC(id: number): Observable<HttpResponse<Blob>> {
+    return this._http.get(`${this._url}/dic/${id}`, {responseType: 'blob', observe: 'response'}).pipe(
+      catchError((err: HttpErrorResponse) => {
+        this._errorHandlerService.handleError(err);
+        return throwError(() => err);
+      })
+    );
   }
 }

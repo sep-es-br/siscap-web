@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'siscap-loading',
@@ -6,4 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './loading.component.html',
   styleUrl: './loading.component.scss',
 })
-export class LoadingComponent {}
+export class LoadingComponent {
+  @Input('loadingText') loadingText: string = "Carregando";
+}
