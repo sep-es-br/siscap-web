@@ -2,16 +2,20 @@
   <siscap-loading></siscap-loading>
 </div>
 
+<div class="h-100" *ngIf="downloading">
+  <siscap-loading [loadingText]="'Baixando DIC'"></siscap-loading>
+</div>
+
 <div class="row mx-1" *ngIf="!loading && formMode != 'criar'">
   <div class="d-flex justify-content-end p-0">
-    <button class="btn btn-outline-primary d-flex justify-content-around" (click)="downloadDic(projectEditId)">
+    <button *ngIf="!downloading" class="btn btn-outline-primary d-flex justify-content-around" (click)="downloadDic(projectEditId)">
       <i class="fa fa-file-arrow-down fs-5 mx-1 my-auto"></i>
       <span class="mx-1 fs-6">Gerar DIC</span>
     </button>
   </div>
 </div>
 
-<div class="project-form" *ngIf="!loading">
+<div class="project-form" *ngIf="!loading && !downloading">
   <form [formGroup]="projectForm">
     <div class="row mx-1">
       <div class="card">

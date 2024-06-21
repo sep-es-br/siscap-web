@@ -21,6 +21,7 @@ import {NgxMaskTransformFunctionHelper} from '../../../shared/helpers/ngx-mask-t
 import {ArrayItemNumberToStringMapper} from '../../../shared/utils/array-item-mapper';
 
 import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'siscap-project-form',
@@ -39,6 +40,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
   private _subscription: Subscription = new Subscription();
   public loading: boolean = true;
+  public downloading: boolean = false;
 
   public formMode!: string;
   public isEdit!: boolean;
@@ -248,6 +250,27 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     this._router.navigate(['main', 'projetos']);
   }
 
+  public downloadDic(id: number): void {
+    this.downloading = true;
+
+    this._projetosService.downloadDIC(id).pipe(
+      tap((response: HttpResponse<Blob>) => {
+        const contentDisposition = response.headers.get('Content-Disposition');
+        const fileName = contentDisposition?.substring((contentDisposition.indexOf('"') + 1), (contentDisposition.length - 1))!
+        const blobPdfFile = window.URL.createObjectURL(response.body!);
+  
+        const anchorEl = document.createElement('a');
+        anchorEl.setAttribute('style', 'display: none');
+        anchorEl.href = blobPdfFile;
+        anchorEl.download = fileName;
+        anchorEl.click();
+        window.URL.revokeObjectURL(blobPdfFile);
+        anchorEl.remove();
+      }),
+      finalize(() => this.downloading = false)
+    ).subscribe()
+}
+
   /**
    * @public
    * Método para enviar o formulário. Verifica o `formMode` e chama o método apropriado
@@ -331,13 +354,8 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     }
   }
 
-
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
-  }
-
-  downloadDic(id: number): void {
-    this._projetosService.downloadDIC(id);
   }
 
 }
