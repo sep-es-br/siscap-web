@@ -24,6 +24,7 @@ export interface IPerson {
   telefonePessoal?: string;
   endereco?: IAddress;
   idOrganizacao: number,
+  isResponsavelOrganizacao: boolean,
   idAreasAtuacao: Array<string>;
   imagemPerfil?: File | ArrayBuffer;
 }
