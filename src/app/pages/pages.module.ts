@@ -21,6 +21,7 @@ import { PersonsComponent } from './persons/persons.component';
 import { PersonFormComponent } from './persons/form/person-form.component';
 import { OrganizationsComponent } from './organizations/organizations.component';
 import { OrganizationFormComponent } from './organizations/form/organization-form.component';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { OrganizationFormComponent } from './organizations/form/organization-for
     NgxMaskDirective,
     NgxMaskPipe,
     NgbTooltipModule,
+    SweetAlert2Module,
     CoreModule,
     PagesRoutingModule,
   ],
