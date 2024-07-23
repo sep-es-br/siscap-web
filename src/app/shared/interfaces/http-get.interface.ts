@@ -7,7 +7,8 @@ interface GetSort {
 export interface IHttpGetRequestBody {
   page?: number;
   size?: number;
-  sort?: string | Array<string>[];
+  sort?: string;
+  search?: string;
 }
 
 export interface IHttpGetResponseBody<T> {

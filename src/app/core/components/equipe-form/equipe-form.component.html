@@ -1,0 +1,185 @@
+<div class="mb-2">
+  <label for="equipe" class="form-label col-12">
+    {{ selectInputLabel }}
+    <ng-container>
+      <span class="error-message"> *</span>
+      <span
+        *ngIf="(targetArray.errors && targetArray.touched) || hasErrors()"
+        class="error-message float-end"
+        >A equipe de elaboração contém erros</span
+      >
+    </ng-container>
+  </label>
+
+  <ng-select
+    id="equipeElaboracao"
+    placeholder="-- Selecione os membros da equipe de elaboração --"
+    [ngClass]="{
+      'ng-touched ng-invalid':
+        (targetArray.errors && targetArray.touched) || hasErrors()
+    }"
+    [disabled]="!isEdit"
+    [(ngModel)]="membroEquipeNgSelectValue"
+    (change)="addMemberToEquipeFormArray($event)"
+  >
+    <ng-option *ngFor="let pessoa of membrosListFiltered" [value]="pessoa.id">{{
+      pessoa.nome
+    }}</ng-option>
+  </ng-select>
+</div>
+
+<div class="card" *ngIf="targetArray.value.length > 0">
+  <div class="row px-3 py-2">
+    <ng-container *ngFor="let itemGroup of targetArray.controls; index as i">
+      <div class="col-6 mb-2">
+        <div class="card">
+          <form [formGroup]="itemGroup">
+            <div
+              class="card-body p-2 col-12 d-flex justify-content-between align-items-center"
+            >
+              <div class="col">
+                <span>{{ getPessoaName(itemGroup.value.idPessoa) }}</span>
+              </div>
+
+              <div class="col d-inline-flex">
+                <div class="col-9">
+                  <ng-select
+                    name="papelSelect"
+                    id="papelSelect"
+                    class="papel-select"
+                    [readonly]="memberRemoved(i)"
+                    [clearable]="false"
+                    formControlName="idPapel"
+                  >
+                    <ng-option
+                      *ngFor="let papel of papeisList"
+                      [value]="papel.id"
+                    >
+                      {{ papel.nome }}
+                    </ng-option>
+                  </ng-select>
+                </div>
+
+                <div
+                  class="col-3 ps-2 d-inline-flex justify-content-between align-items-center"
+                >
+                  <button
+                    *ngIf="isNewMembroEquipe(i)"
+                    type="button"
+                    ngbTooltip="Excluir membro da equipe"
+                    class="btn btn-outline-danger rounded-circle"
+                    (click)="deleteMemberFromEquipeFormArray(i)"
+                  >
+                    <i class="fa-solid fa-close delete-btn-icon"></i>
+                  </button>
+                  <button
+                    *ngIf="
+                      formMode == 'editar' && isAllowed && !isNewMembroEquipe(i)
+                    "
+                    type="button"
+                    ngbTooltip="Remover membro da equipe"
+                    [disabled]="!isEdit || itemGroup.value.idStatus != 1"
+                    class="btn btn-outline-secondary rounded-circle"
+                    (click)="openRemoveMemberModal(removeMemberModal, i)"
+                  >
+                    <i class="fa-solid fa-minus remove-btn-icon"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<ng-template #removeMemberModal let-modal>
+  <div class="modal-header">
+    <div class="col-12">
+      <h4>Remover membro da equipe</h4>
+      <button
+        class="float-end p-0 m-0 btn border-none"
+        [ngbTooltip]="removeMemberModalHelpText"
+        triggers="click"
+      >
+        <i class="fa-regular fa-circle-question fs-tiny"></i>
+      </button>
+    </div>
+  </div>
+  <div class="modal-body">
+    <div class="col-12 d-flex justify-content-around align-items-center">
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="membroStatus"
+          id="membroStatus_excluir"
+          [value]="3"
+          [(ngModel)]="membroStatus"
+        />
+        <label class="form-check-label fs-6" for="membroStatus_excluir"
+          >Excluir</label
+        >
+      </div>
+
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="membroStatus"
+          id="membroStatus_remover"
+          [value]="2"
+          [(ngModel)]="membroStatus"
+        />
+        <label class="form-check-label fs-6" for="membroStatus_remover"
+          >Remover</label
+        >
+      </div>
+    </div>
+
+    <div class="col-12" *ngIf="membroStatus">
+      <div class="col-12 my-2">
+        <label class="fs-6" for="justificativa">Justificativa:</label>
+        <span class="float-end">{{ justificativa.length }}/255</span>
+      </div>
+      <input
+        maxlength="255"
+        class="form-control"
+        type="text"
+        name="justificativa"
+        id="justificativa"
+        [(ngModel)]="justificativa"
+      />
+      <span *ngIf="justificativa.trim() == ''" class="error-message">
+        Campo justificativa não pode ser vazio.
+      </span>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      class="btn btn-outline-danger mx-1"
+      (click)="modal.dismiss('cancel')"
+    >
+      <i class="fa-solid fa-close mx-1 fs-6"></i>
+      <span class="mx-1 fs-6">Cancelar</span>
+    </button>
+
+    <button class="btn btn-success mx-1" [disabled]="justificativa.trim() == ''" (click)="modal.close('save')">
+      <i class="fa-solid fa-check mx-1 fs-6"></i>
+      <span class="mx-1 fs-6">Confirmar</span>
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #removeMemberModalHelpText>
+  <p>
+    Excluir - Exclui um membro da equipe de elaboração. Utilize caso a inserção
+    do membro na equipe foi um engano.
+  </p>
+  <p>
+    Remover - Remove um membro da equipe de elaboração. Utilize caso o membro
+    não faça mais parte da equipe (ex: O membro foi realocado para outra
+    equipe/outro projeto, etc.).
+  </p>
+</ng-template>

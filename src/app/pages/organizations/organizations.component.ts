@@ -1,17 +1,18 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {Subscription, tap} from 'rxjs';
+import { Subscription, tap } from 'rxjs';
 
-import {OrganizacoesService} from '../../shared/services/organizacoes/organizacoes.service';
+import { OrganizacoesService } from '../../shared/services/organizacoes/organizacoes.service';
 
-import {SortColumn} from '../../core/directives/sortable/sortable.directive';
+import { IOrganizationTableData } from '../../shared/interfaces/organization.interface';
 
-import {IOrganizationTable,} from '../../shared/interfaces/organization.interface';
-
-import {sortTableColumnsFunction} from '../../shared/utils/sort-table-columns-function';
-import {Config} from 'datatables.net';
+import { Config } from 'datatables.net';
 import Swal from 'sweetalert2';
+import {
+  IHttpGetRequestBody,
+  IHttpGetResponseBody,
+} from '../../shared/interfaces/http-get.interface';
 
 @Component({
   selector: 'siscap-organizations',
@@ -22,80 +23,83 @@ import Swal from 'sweetalert2';
 export class OrganizationsComponent implements OnInit, OnDestroy {
   private _subscription: Subscription = new Subscription();
 
-  public organizacoesList: Array<IOrganizationTable> = [];
-
   public datatableConfig: Config = {};
-  public page = 0;
-  public pageSize = 15;
-  public sort = '';
-  public search = '';
+
+  private pageConfig: IHttpGetRequestBody = {
+    page: 0,
+    size: 15,
+    sort: '',
+    search: '',
+  };
+
   imgUserDefault: string = 'assets/images/blank.png';
 
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
     private _organizacoesService: OrganizacoesService
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.treatDatatableConfig();
   }
 
-  getDataPaginated() {
-    return this._organizacoesService.getOrganizacaoPaginated(this.page, this.pageSize, this.sort, this.search);
+  private getOrganizacoesPaginated() {
+    return this._organizacoesService.getOrganizacoesPaginated(this.pageConfig);
   }
 
-  treatDatatableConfig() {
+  private treatDatatableConfig() {
     this.datatableConfig = {
-
       ajax: (dataTablesParameters: any, callback) => {
-        this.page = dataTablesParameters.start / dataTablesParameters.length;
+        this.pageConfig.page =
+          dataTablesParameters.start / dataTablesParameters.length;
         const { order, columns } = dataTablesParameters;
         const orderElement = order[0];
-        this.sort = orderElement ? `${columns[orderElement.column].data},${orderElement.dir}` : '';
-        this.getDataPaginated().subscribe(resp => {
-          callback({
-            recordsTotal: resp.totalElements,
-            recordsFiltered: resp.totalElements,
-            data: resp.content
-          });
-        });
+        this.pageConfig.sort = orderElement
+          ? `${columns[orderElement.column].data},${orderElement.dir}`
+          : '';
+        this.getOrganizacoesPaginated().subscribe(
+          (response: IHttpGetResponseBody<IOrganizationTableData>) => {
+            callback({
+              recordsTotal: response.totalElements,
+              recordsFiltered: response.totalElements,
+              data: response.content,
+            });
+          }
+        );
       },
       searching: true,
       serverSide: true,
-      pageLength:this.pageSize,
+      pageLength: this.pageConfig.size,
       lengthMenu: ['5', '10', '20'],
       columns: [
-        { data: 'imagemPerfil', title: '', orderable: false, render: (data: any) => { return `<img class="rounded-circle" src="${this.convertByteArraytoImg(data)}" alt="Imagem de perfil" width="30" height="30">` } },
+        {
+          data: 'imagemPerfil',
+          title: '',
+          orderable: false,
+          render: (data: any) => {
+            return `<img class="rounded-circle" src="${this.convertByteArraytoImg(
+              data
+            )}" alt="Imagem de perfil" width="30" height="30">`;
+          },
+        },
         { data: 'nomeFantasia', title: 'Sigla' },
         { data: 'nome', title: 'Nome' },
         { data: 'nomeTipoOrganizacao', title: 'Tipo', orderable: false },
         { data: 'telefone', title: 'Telefone' },
         {
-          data: 'site', title: 'Site', render: function (data: string) {
+          data: 'site',
+          title: 'Site',
+          render: function (data: string) {
             if (data) {
               let link = data.startsWith(`http`) ? data : '//' + data;
               return `<span class="btn-link" onclick="window.open('${link}', '_blank')">${data}</span>`;
-            }
-            else
-              return '';
-          }
+            } else return '';
+          },
         },
       ],
       order: [[1, 'asc']],
     };
-
-  }
-
-
-  public sortTable(event: SortColumn) {
-    const column = event.column as keyof IOrganizationTable;
-    const direction = event.direction;
-
-    this.organizacoesList.sort((a, b) =>
-      sortTableColumnsFunction(a[column], b[column], direction)
-    );
   }
 
   public convertByteArraytoImg(data: ArrayBuffer): string {
@@ -108,7 +112,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   public redirectOrganizationForm(OrganizationId: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: OrganizationId , isEdit: true },
+      queryParams: { id: OrganizationId, isEdit: true },
     });
   }
 
@@ -118,16 +122,17 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       .pipe(
         tap((response) => {
           if (response) {
-            Swal.fire('Organização deletada com sucesso!', '', 'success').then(() => {
-              this._router
-                .navigateByUrl('/', { skipLocationChange: true })
-                .then(() => this._router.navigateByUrl('main/organizacoes'));
-            });
+            Swal.fire('Organização deletada com sucesso!', '', 'success').then(
+              () => {
+                this._router
+                  .navigateByUrl('/', { skipLocationChange: true })
+                  .then(() => this._router.navigateByUrl('main/organizacoes'));
+              }
+            );
           }
         })
       )
       .subscribe();
-
   }
 
   ngOnDestroy(): void {

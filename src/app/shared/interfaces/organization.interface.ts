@@ -1,5 +1,3 @@
-import { IHttpGetResponseBody } from './http-get.interface';
-
 export interface IOrganization {
   readonly id: number;
   nome: string;
@@ -19,7 +17,7 @@ export interface IOrganization {
   idTipoOrganizacao: number;
 }
 
-export interface IOrganizationTable
+export interface IOrganizationTableData
   extends Pick<
     IOrganization,
     'id' | 'nome' | 'abreviatura' | 'telefone' | 'site' | 'imagemPerfil'
@@ -27,8 +25,6 @@ export interface IOrganizationTable
   nomeTipoOrganizacao: string;
 }
 
-export interface IOrganizationGet extends IHttpGetResponseBody<IOrganizationTable> {}
-
 export interface IOrganizationCreate extends Omit<IOrganization, 'id' | 'idStatus'> {}
 
-export interface IOrganizationEdit extends Partial<IOrganizationCreate> {}
+export interface IOrganizationUpdate extends Partial<IOrganizationCreate> {}

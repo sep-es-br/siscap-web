@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 export interface IToastInfo {
   type: string;
@@ -14,6 +14,8 @@ export interface IToastInfo {
 export class ToastService {
 
   public toastList: IToastInfo[] = [];
+
+  public toastNotifier$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor() {}
 
@@ -37,11 +39,13 @@ export class ToastService {
     }
 
     this.toastList.push(toastInfo);
+    this.toastNotifier$.next(true);
   }
 
   public removeToast(targetToast: IToastInfo) {
     this.toastList = this.toastList.filter((toast) => {
       return toast != targetToast;
     });
+    this.toastNotifier$.next(false);
   }
 }
