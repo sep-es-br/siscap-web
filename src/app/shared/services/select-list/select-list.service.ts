@@ -76,4 +76,8 @@ export class SelectListService {
   public getAreasAtuacao() {
     return this.getSelectList('areas-atuacao');
   }
+
+  public getPapeis() {
+    return this.getSelectList('papeis');
+  }
 }

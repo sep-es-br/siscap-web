@@ -1,15 +1,18 @@
-import {Component, EventEmitter, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {Subscription, tap} from 'rxjs';
+import { Subscription, tap } from 'rxjs';
 
-import {PessoasService} from '../../shared/services/pessoas/pessoas.service';
+import { PessoasService } from '../../shared/services/pessoas/pessoas.service';
 
 import Swal from 'sweetalert2';
 
-
-import {IPersonTable,} from '../../shared/interfaces/person.interface';
-import {Config} from 'datatables.net';
+import { Config } from 'datatables.net';
+import {
+  IHttpGetRequestBody,
+  IHttpGetResponseBody,
+} from '../../shared/interfaces/http-get.interface';
+import { IPersonTableData } from '../../shared/interfaces/person.interface';
 
 @Component({
   selector: 'siscap-persons',
@@ -18,35 +21,29 @@ import {Config} from 'datatables.net';
   styleUrl: './persons.component.scss',
 })
 export class PersonsComponent implements OnInit, OnDestroy {
-
   private _subscription: Subscription = new Subscription();
-
-  public pessoasList: Array<IPersonTable> = [];
 
   public datatableConfig: Config = {};
 
-  public dataTableList!: any;
-
-  public page = 0;
-  public pageSize = 15;
-  public sort = '';
-  public search = '';
+  private pageConfig: IHttpGetRequestBody = {
+    page: 0,
+    size: 15,
+    sort: '',
+    search: '',
+  };
 
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
   imgUserDefault: string = 'assets/images/blank.png';
-
 
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
     private _pessoasService: PessoasService
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.treatDatatableConfig();
   }
-
 
   public convertByteArraytoImg(data: ArrayBuffer): string {
     if (!data) {
@@ -58,66 +55,76 @@ export class PersonsComponent implements OnInit, OnDestroy {
   public redirectPersonForm(idPerson: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: {id: idPerson, isEdit: true},
+      queryParams: { id: idPerson, isEdit: true },
     });
   }
 
-  getDataPaginated() {
-    return this._pessoasService.getPessoaPaginated(this.page, this.pageSize, this.sort, this.search);
+  private getPessoasPaginated() {
+    return this._pessoasService.getPessoasPaginated(this.pageConfig);
   }
 
-  treatDatatableConfig() {
+  private treatDatatableConfig() {
     this.datatableConfig = {
-
       ajax: (dataTablesParameters: any, callback) => {
-        this.page = dataTablesParameters.start / dataTablesParameters.length;
-        const {order, columns} = dataTablesParameters;
+        this.pageConfig.page =
+          dataTablesParameters.start / dataTablesParameters.length;
+        const { order, columns } = dataTablesParameters;
         const orderElement = order[0];
-        this.sort = orderElement ? `${columns[orderElement.column].data},${orderElement.dir}` : '';
-        this.getDataPaginated().subscribe(resp => {
-          callback({
-            recordsTotal: resp.totalElements,
-            recordsFiltered: resp.totalElements,
-            data: resp.content
-          });
-        });
+        this.pageConfig.sort = orderElement
+          ? `${columns[orderElement.column].data},${orderElement.dir}`
+          : '';
+        this.getPessoasPaginated().subscribe(
+          (response: IHttpGetResponseBody<IPersonTableData>) => {
+            callback({
+              recordsTotal: response.totalElements,
+              recordsFiltered: response.totalElements,
+              data: response.content,
+            });
+          }
+        );
       },
       processing: true,
       serverSide: true,
       searching: true,
-      pageLength: this.pageSize,
+      pageLength: this.pageConfig.size,
       columns: [
         {
-          data: 'imagemPerfil', title: '', orderable: false, render: (data: any) => {
-            return `<img class="rounded-circle img-profile" src="${this.convertByteArraytoImg(data)}" alt="Imagem da organização" width="30" height="30">`
-          }
+          data: 'imagemPerfil',
+          title: '',
+          orderable: false,
+          render: (data: any) => {
+            return `<img class="rounded-circle img-profile" src="${this.convertByteArraytoImg(
+              data
+            )}" alt="Imagem da organização" width="30" height="30">`;
+          },
         },
-        {data: 'nome', title: 'Nome'},
-        {data: 'email', title: 'E-mail'},
-        {data: 'nomeOrganizacao', title: 'Organização', orderable: false}
+        { data: 'nome', title: 'Nome' },
+        { data: 'email', title: 'E-mail' },
+        { data: 'nomeOrganizacao', title: 'Organização', orderable: false },
       ],
       order: [[1, 'asc']],
     };
   }
 
   public deletarPessoa(id: number) {
-
     this._pessoasService
       .deletePessoa(id)
       .pipe(
         tap((response) => {
           if (response) {
-            Swal.fire('Sucesso!', 'Pessoa deletada com sucesso!', 'success').then(() => {
+            Swal.fire(
+              'Sucesso!',
+              'Pessoa deletada com sucesso!',
+              'success'
+            ).then(() => {
               this._router
-                .navigateByUrl('/', {skipLocationChange: true})
+                .navigateByUrl('/', { skipLocationChange: true })
                 .then(() => this._router.navigateByUrl('main/pessoas'));
             });
           }
         })
       )
       .subscribe();
-
-
   }
 
   ngOnDestroy(): void {

@@ -23,6 +23,8 @@ import { finalize, Observable, Subscription, tap } from 'rxjs';
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 import {
   IPerson,
@@ -34,8 +36,6 @@ import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 import { PessoaFormLists } from '../../../shared/utils/pessoa-form-lists';
 import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 import { CPFValidator } from '../../../shared/helpers/cpf-validator.helper';
-import { ProfileService } from '../../../shared/services/profile/profile.service';
-import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 @Component({
   selector: 'siscap-person-form',
@@ -103,7 +103,7 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
     '<b>idOrganizacao</b>' +
     '<br />' +
     '<br />' +
-    '<span>Alterar a organização a qual esta pessoa pertence irá desvincula-la como responsável da organização acima!</span>'
+    '<span>Alterar a organização a qual esta pessoa pertence irá desvincula-la como responsável da organização acima!</span>';
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -183,14 +183,6 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       );
 
-    this._subscription.add(
-      this._breadcrumbService.breadcrumbAction.subscribe(
-        (actionType: string) => {
-          this.handleActionBreadcrumb(actionType);
-        }
-      )
-    );
-
     this._getPaises$ = this._selectListService
       .getPaises()
       .pipe(tap((response) => (this.paisesList = response)));
@@ -202,6 +194,12 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this._getOrganizacoes$ = this._selectListService
       .getOrganizacoes()
       .pipe(tap((response) => (this.organizacoesList = response)));
+
+    this._subscription.add(
+      this._breadcrumbService
+        .handleAction(this.handleActionBreadcrumb.bind(this))
+        .subscribe()
+    );
   }
 
   /**
@@ -244,16 +242,16 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
         complemento: nnfb.control(person?.endereco?.complemento ?? ''),
         codigoPostal: nnfb.control(person?.endereco?.codigoPostal ?? ''),
         idPais: nnfb.control({
-          value: person?.endereco?.idPais?.toString() ?? null,
+          value: person?.endereco?.idPais ?? null,
           disabled: !this.isEdit && this.formMode != 'criar',
         }),
         idEstado: nnfb.control({
-          value: person?.endereco?.idEstado?.toString() ?? null,
+          value: person?.endereco?.idEstado ?? null,
           disabled: !this.isEdit && this.formMode != 'criar',
         }),
-        idCidade: nnfb.control(person?.endereco?.idCidade?.toString() ?? null),
+        idCidade: nnfb.control(person?.endereco?.idCidade ?? null),
       }),
-      idOrganizacao: nnfb.control(person?.idOrganizacao?.toString() ?? null),
+      idOrganizacao: nnfb.control(person?.idOrganizacao ?? null),
       idAreasAtuacao: nnfb.control(person?.idAreasAtuacao ?? []),
     });
     const enderecoGroup = this.personForm.get('endereco');
@@ -331,15 +329,22 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this._subscription.add(this._getCidades$.subscribe());
   }
 
-  public organizationChanged(event: string) {
-    const orgName = this.organizacoesList.find((org) => org.id == this.personFormInitialValue.idOrganizacao.toString())?.nome;
+  public organizationChanged(event: number) {
+
+    const orgName = this.organizacoesList.find(
+      (org) => org.id == this.personFormInitialValue.idOrganizacao
+    )?.nome;
 
     if (
-      Number(event) != this.personFormInitialValue.idOrganizacao &&
+      event != this.personFormInitialValue.idOrganizacao &&
       this._isPersonResponsibleOrganization
     ) {
-      this.confirmPersonChangeSwalText = this.confirmPersonChangeSwalText.replace('idOrganizacao', orgName ?? '');
-      
+      this.confirmPersonChangeSwalText =
+        this.confirmPersonChangeSwalText.replace(
+          'idOrganizacao',
+          orgName ?? ''
+        );
+
       setTimeout(() => {
         this.confirmPersonChangeSwal.fire();
       }, 0);

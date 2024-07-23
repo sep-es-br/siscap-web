@@ -1,16 +1,24 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpResponse,
+} from '@angular/common/http';
 
 import { Observable, catchError, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import {
-  IProject,
-  IProjectCreate,
-  IProjectEdit,
-  IProjectGet,
-} from '../../interfaces/project.interface';
+
 import { ErrorHandlerService } from '../error-handler/error-handler.service';
+import {
+  IHttpGetRequestBody,
+  IHttpGetResponseBody,
+} from '../../interfaces/http-get.interface';
+import {
+  IProjeto,
+  IProjetoForm,
+  IProjetoTableData,
+} from '../../interfaces/projeto.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -23,8 +31,8 @@ export class ProjetosService {
     private _errorHandlerService: ErrorHandlerService
   ) {}
 
-  getProjetoById(id: number): Observable<IProject> {
-    return this._http.get<IProject>(`${this._url}/${id}`).pipe(
+  public getProjetoById(id: number): Observable<IProjeto> {
+    return this._http.get<IProjeto>(`${this._url}/${id}`).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
         return throwError(() => err);
@@ -32,15 +40,31 @@ export class ProjetosService {
     );
   }
 
-  getProjetosPaginated(page?: number, pageSize?: number, sort?: string, search?: string): Observable<IProjectGet> {
+  public getProjetosPaginated(
+    pageConfig: IHttpGetRequestBody
+  ): Observable<IHttpGetResponseBody<IProjetoTableData>> {
     const params = {
-      size: pageSize?.toString() ?? "15",
-      page: page !== undefined ? page.toString() : "0",
-      sort: sort !== undefined ? sort?.toString() : '',
-      search: search !== undefined ? search.toString() : '',
+      size: pageConfig.size?.toString() ?? '15',
+      page: pageConfig.page !== undefined ? pageConfig.page.toString() : '0',
+      sort: pageConfig.sort !== undefined ? pageConfig.sort?.toString() : '',
+      search:
+        pageConfig.search !== undefined ? pageConfig.search.toString() : '',
     };
 
-    return this._http.get<IProjectGet>(`${this._url}?${new URLSearchParams(params).toString()}` ).pipe(
+    return this._http
+      .get<IHttpGetResponseBody<IProjetoTableData>>(
+        `${this._url}?${new URLSearchParams(params).toString()}`
+      )
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          this._errorHandlerService.handleError(err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  public putProjeto(id: number, body: IProjetoForm): Observable<IProjeto> {
+    return this._http.put<IProjeto>(`${this._url}/${id}`, body).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
         return throwError(() => err);
@@ -48,16 +72,7 @@ export class ProjetosService {
     );
   }
 
-  putProjeto(id: number, body: IProjectEdit): Observable<IProject> {
-    return this._http.put<IProject>(`${this._url}/${id}`, body).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
-  }
-
-  deleteProjeto(id: number): Observable<string> {
+  public deleteProjeto(id: number): Observable<string> {
     return this._http
       .delete(`${this._url}/${id}`, { responseType: 'text' })
       .pipe(
@@ -68,8 +83,8 @@ export class ProjetosService {
       );
   }
 
-  getProjetos(): Observable<IProjectGet> {
-    return this._http.get<IProjectGet>(this._url).pipe(
+  public postProjeto(body: IProjetoForm): Observable<IProjeto> {
+    return this._http.post<IProjeto>(this._url, body).pipe(
       catchError((err: HttpErrorResponse) => {
         this._errorHandlerService.handleError(err);
         return throwError(() => err);
@@ -77,39 +92,38 @@ export class ProjetosService {
     );
   }
 
-  postProjeto(body: IProjectCreate): Observable<IProject> {
-    return this._http.post<IProject>(this._url, body).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
-  }
-
-  downloadDIC(id: number) {
+  public downloadDIC(id: number) {
     const userHttpOptions: Object = {
       responseType: 'arraybuffer',
-      observe: 'response'
+      observe: 'response',
     };
-    this._http.get<Blob>(`${this._url}/dic/${id}`, userHttpOptions).subscribe((response) => {
-
-      if (response instanceof HttpResponse) {
-        const httpResponse = response as HttpResponse<Blob>;
-        const contentDisposition = httpResponse.headers.get('Content-Disposition');
-        if (httpResponse.body && contentDisposition) {
-          const filename = contentDisposition.split('filename=')[1].split(';')[0].replace(/["']/g, "");
-          const pdfBlob = new Blob([httpResponse.body], { type: "application/pdf", });
-          let url = window.URL.createObjectURL(pdfBlob);
-          let a = document.createElement('a');
-          document.body.appendChild(a);
-          a.setAttribute('style', 'display: none');
-          a.href = url;
-          a.download = filename;
-          a.click();
-          window.URL.revokeObjectURL(url);
-          a.remove();
+    this._http
+      .get<Blob>(`${this._url}/dic/${id}`, userHttpOptions)
+      .subscribe((response) => {
+        if (response instanceof HttpResponse) {
+          const httpResponse = response as HttpResponse<Blob>;
+          const contentDisposition = httpResponse.headers.get(
+            'Content-Disposition'
+          );
+          if (httpResponse.body && contentDisposition) {
+            const filename = contentDisposition
+              .split('filename=')[1]
+              .split(';')[0]
+              .replace(/["']/g, '');
+            const pdfBlob = new Blob([httpResponse.body], {
+              type: 'application/pdf',
+            });
+            let url = window.URL.createObjectURL(pdfBlob);
+            let a = document.createElement('a');
+            document.body.appendChild(a);
+            a.setAttribute('style', 'display: none');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+          }
         }
-      }
-    });
+      });
   }
 }

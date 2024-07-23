@@ -1,0 +1,19 @@
+button.btn.rounded-circle {
+  margin: 6.75px 0;
+  height: 25px;
+  width: 25px;
+}
+
+.delete-btn-icon,
+.remove-btn-icon {
+  position: relative;
+  bottom: 50%;
+}
+
+.delete-btn-icon {
+  right: 0.345rem;
+}
+
+.remove-btn-icon {
+  right: 0.41rem;
+}

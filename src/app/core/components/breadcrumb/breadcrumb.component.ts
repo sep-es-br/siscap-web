@@ -19,7 +19,7 @@ export class BreadcrumbComponent {
 
   public breadcrumbNav: Array<string> = []; // Rotas do breadcrumb atual
   public currentPage: string = ''; // Página atual (última rota do breadcrumbNav)
-  protected untratedUrls: Array<string> = []; // URL atual
+  protected untreatedUrls: Array<string> = []; // URL atual
   public showEditButton: boolean = false;
   public showCancelButton: boolean = false;
   public showSaveButton: boolean = false;
@@ -27,7 +27,7 @@ export class BreadcrumbComponent {
   constructor(
     private _profileService: ProfileService,
     private _router: Router,
-    private breadcrumbService: BreadcrumbService,
+    private _breadcrumbService: BreadcrumbService,
     private _route: ActivatedRoute,
   ) {
     this._router.events
@@ -38,7 +38,7 @@ export class BreadcrumbComponent {
         })
       )
       .subscribe((next) => {
-        this.untratedUrls = this.getUntratedUrls(next['urlAfterRedirects']);
+        this.untreatedUrls = this.getUntreatedUrls(next['urlAfterRedirects']);
         this.checkActionButtons();
         const urlPaths = this.getUrlPaths(next['urlAfterRedirects']);
         this.breadcrumbNav = this.treatUrlPaths(urlPaths);
@@ -46,6 +46,26 @@ export class BreadcrumbComponent {
           this.breadcrumbNav.length - 1
         )!;
       });
+  }
+
+  public isAllowed(path: string): boolean {
+    return this._profileService.isAllowed(path + 'criar');
+  }
+
+  /**
+   * Emite a ação do breadcrumb.
+   *
+   * @param action - A ação do breadcrumb.
+   */
+  public breadcrumbAction(action: string): void {
+
+    if (action === 'edit'){
+        this.showCancelButton = true;
+        this.showSaveButton = true;
+        this.showEditButton = false;
+    }
+    
+    this._breadcrumbService.emitAction(action);
   }
 
   /**
@@ -123,28 +143,7 @@ export class BreadcrumbComponent {
     });
   }
 
-  public isAllowed(path: string): boolean {
-    return this._profileService.isAllowed(path + 'criar');
-  }
-
-  /**
-   * Emite a ação do breadcrumb.
-   *
-   * @param action - A ação do breadcrumb.
-   */
-
-  breadcrumpAtcion(action: string) {
-
-    if (action === 'edit'){
-        this.showCancelButton = true;
-        this.showSaveButton = true;
-        this.showEditButton = false;
-    }
-
-    this.breadcrumbService.breadcrumbAction.emit(action);
-  }
-
-  getUntratedUrls(url: string): string[] {
+  private getUntreatedUrls(url: string): string[] {
     return url
       .split('/')
       .map((path) => {
@@ -153,8 +152,8 @@ export class BreadcrumbComponent {
       .filter((path) => !this.exclusionList.includes(path));
   }
 
-  checkActionButtons() {
-    let actionOnPage = this.untratedUrls[this.untratedUrls.length - 1];
+  private checkActionButtons(): void {
+    let actionOnPage = this.untreatedUrls[this.untreatedUrls.length - 1];
 
     if (['editar', 'criar'].includes(actionOnPage))
       if (this._route.snapshot.queryParamMap.get('isEdit'))
@@ -177,7 +176,7 @@ export class BreadcrumbComponent {
     }
   }
 
-  canShowEditButton() {
+  private canShowEditButton(): boolean {
     const userPermissions: Array<string> = JSON.parse(sessionStorage.getItem('user-profile')!).permissoes ?? [];
     const route = this._router.url.replaceAll('/main/', '').split('/')[0];
     const isAdmin = userPermissions.includes(PermissionsMap['adminAuth' as keyof typeof PermissionsMap]);
