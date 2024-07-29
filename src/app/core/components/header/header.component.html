@@ -14,15 +14,15 @@
           <div class="d-none d-lg-block nav-menu">
             <ul ngbNav #nav="ngbNav" [activeId]="currentCategory.slug" class="nav-tabs nav justify-content-start">
               <li *ngFor="let item of menuLinks; let i = index;" [ngClass]="{ 'd-none': item.hidden }" [ngbNavItem]="item.slug" class="nav-item">
-                <a class="nav-link text-white fs-8 oswald-bold lh-1" (click)="navigateFirstLink(item)"  ngbNavLink >{{item.category}}</a>
+                <a class="nav-link text-white lh-1" (click)="navigateFirstLink(item)"  ngbNavLink >{{item.category}}</a>
                 <ng-template ngbNavContent>
                   <div class="row d-inline-flex">
                     <ng-container *ngFor="let route of item.routes">
-                      <a class="col nav-link text-nowrap p-2 mx-2 oswald-medium " 
+                      <a class="col nav-link text-nowrap p-2 mx-2 "
                          [ngClass]="{
                            'active': currentUrl === route.path,
                            'd-none': route.hidden
-                         }" 
+                         }"
                          [routerLink]="route.path">{{ route.title }}</a>
                     </ng-container>
                   </div>
@@ -35,7 +35,7 @@
           <div class="" ngbDropdown>
             <div class="btn d-flex btn-user-toggle show" ngbDropdownToggle>
                 <div class="d-none d-md-flex p-0 flex-column justify-content-center align-items-end me-2 me-md-4">
-                  <span class="text-white opacity-75 fs-tiny oswald-bold lh-1 mb-1">{{UserName}}</span>
+                  <span class="text-white opacity-75 fs-tiny lh-1 mb-1">{{UserName}}</span>
                   <span class="text-white fs-tiny fw-bold lh-1">{{UserEmail}}</span>
                 </div>
                 <div class="symbol symbol-30px symbol-md-40px">
@@ -48,7 +48,7 @@
                     <img src="{{imageUser}}" alt="imageUser" />
                   </div>
                   <div class="d-none d-md-flex p-0 flex-column justify-content-center align-items-start ms-2 ms-md-4">
-                    <span class="text-dark title-card oswald-bold lh-1 mb-1">{{UserName}}</span>
+                    <span class="text-dark title-card lh-1 mb-1">{{UserName}}</span>
                     <span class="text-dark subtitle-card opacity-75 fs-tiny fw-bold lh-1">{{UserEmail}}</span>
                   </div>
                 </div>
@@ -83,7 +83,7 @@
     </h5>
     <button type="button" class="btn-close btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
-  <div class="offcanvas-body"> 
+  <div class="offcanvas-body">
     <div>
       <div ngbAccordion [closeOthers]="true">
         <div ngbAccordionItem *ngFor="let item of menuLinks; let i = index;" class="mt-3" [ngClass]="{ 'd-none': item.hidden}" [collapsed]="currentCategory.slug !== item.slug">
@@ -98,7 +98,7 @@
                     'active': currentUrl === route.path,
                     'd-none': route.hidden
                   }" >
-                    <a  data-bs-dismiss="offcanvas" class="col text-sidebar text-light text-nowrap p-2 mx-2 oswald-medium " 
+                    <a  data-bs-dismiss="offcanvas" class="col text-sidebar text-light text-nowrap p-2 mx-2 "
                       [routerLink]="route.path">{{ route.title }}
                     </a>
                   </div>
@@ -118,8 +118,8 @@
               <img src="{{imageUser}}" alt="imageUser" />
             </div>
             <div class="d-md-flex p-0 flex-column justify-content-start align-items-start ms-2">
-              <div class="text-white oswald-bold">{{UserName}}</div>
-              <div class="text-white oswald-bold opacity-75">{{UserEmail}}</div>
+              <div class="text-white ">{{UserName}}</div>
+              <div class="text-white opacity-75">{{UserEmail}}</div>
             </div>
           </div>
         </div>
@@ -129,7 +129,7 @@
           </a>
         </div>
       </div>
-   
+
     </div>
   </div>
 </div>

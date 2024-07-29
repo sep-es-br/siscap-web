@@ -33,7 +33,7 @@
             <div class="col-md-8">
                 <h4 class="text-dark">Edição</h4>
                 <image-cropper
-                [imageURL]="urlImage"
+                [imageFile]="CropFile"
                 [imageChangedEvent]="imageChangedEvent"
                 [maintainAspectRatio]="configCropper.maintainAspectRatio"
                 [resizeToWidth]="configCropper.resizeToWidth"
@@ -41,6 +41,7 @@
                 [roundCropper]="configCropper.roundCropper"
                 [containWithinAspectRatio]="configCropper.containWithinAspectRatio"
                 [canvasRotation]="canvasRotation"
+                [allowMoveImage]="configCropper.allowMoveImage"
                 [(transform)]="transform"
                 [aspectRatio]="configCropper.aspectRatio"
                 transformed="image"

@@ -1,19 +1,22 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {concat, finalize, Observable, Subscription, tap} from 'rxjs';
+import { concat, finalize, Observable, Subscription, tap } from 'rxjs';
 
-import {OrganizacoesService} from '../../../shared/services/organizacoes/organizacoes.service';
-import {SelectListService} from '../../../shared/services/select-list/select-list.service';
-import {ToastService} from '../../../shared/services/toast/toast.service';
-import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
+import { SelectListService } from '../../../shared/services/select-list/select-list.service';
+import { ToastService } from '../../../shared/services/toast/toast.service';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
-import {IOrganization, IOrganizationCreate} from '../../../shared/interfaces/organization.interface';
-import {ISelectList} from '../../../shared/interfaces/select-list.interface';
+import {
+  IOrganization,
+  IOrganizationCreate,
+} from '../../../shared/interfaces/organization.interface';
+import { ISelectList } from '../../../shared/interfaces/select-list.interface';
 
-import {FormDataHelper} from '../../../shared/helpers/form-data.helper';
-import {ProfileService} from '../../../shared/services/profile/profile.service';
+import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 
 @Component({
   selector: 'siscap-organization-form',
@@ -22,7 +25,6 @@ import {ProfileService} from '../../../shared/services/profile/profile.service';
   styleUrl: './organization-form.component.scss',
 })
 export class OrganizationFormComponent implements OnInit, OnDestroy {
-
   private _getTiposOrganizacoes$: Observable<ISelectList[]>;
   private _getOrganizacoes$: Observable<ISelectList[]>;
   private _getPaises$: Observable<ISelectList[]>;
@@ -85,7 +87,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.organizationFormInitialValue = this.organizationForm.value;
 
-          this.switchMode(false);
+          this.switchMode(!!this._route.snapshot.queryParamMap.get('isEdit'));
 
           this.loading = false;
         })
@@ -120,9 +122,11 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       this._getPessoas$
     );
 
-    this._subscription.add(this._breadcrumbService.breadcrumbAction.subscribe((actionType: string) => {
-      this.handleActionBreadcrumb(actionType);
-    }));
+    this._subscription.add(
+      this._breadcrumbService
+        .handleAction(this.handleActionBreadcrumb.bind(this))
+        .subscribe()
+    );
   }
 
   private initForm(organization?: IOrganization) {
@@ -144,24 +148,25 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       }),
       site: nnfb.control(organization?.site ?? ''),
       idOrganizacaoPai: nnfb.control(
-        organization?.idOrganizacaoPai?.toString() ?? null
+        organization?.idOrganizacaoPai ?? null
       ),
       idPessoaResponsavel: nnfb.control(
-        organization?.idPessoaResponsavel?.toString() ?? null
+        organization?.idPessoaResponsavel ?? null
       ),
-      idCidade: nnfb.control(organization?.idCidade?.toString() ?? null),
-      idEstado: nnfb.control(organization?.idEstado?.toString() ?? null),
-      idPais: nnfb.control(organization?.idPais.toString() ?? null, {
+      idCidade: nnfb.control(organization?.idCidade ?? null),
+      idEstado: nnfb.control(organization?.idEstado ?? null),
+      idPais: nnfb.control(organization?.idPais ?? null, {
         validators: Validators.required,
       }),
       idTipoOrganizacao: nnfb.control(
-        organization?.idTipoOrganizacao.toString() ?? null,
+        organization?.idTipoOrganizacao ?? null,
         {
           validators: Validators.required,
         }
       ),
     });
-    console.log(this.organizationForm.value);
+
+    this.validateCnpjRequired();
   }
 
   ngOnInit(): void {
@@ -219,9 +224,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
 
     const controls = this.organizationForm.controls;
     for (const key in controls) {
-      isEnabled
-        ? controls[key].enable()
-        : controls[key].disable();
+      isEnabled ? controls[key].enable() : controls[key].disable();
     }
   }
 
@@ -306,8 +309,24 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  profilePhoto(event: any){
+  profilePhoto(event: any) {
     this.uploadedPhotoFile = event[0];
+  }
+
+  private validateCnpjRequired() {
+    const idPaisControl = this.organizationForm.get('idPais');
+    const cnpjControl = this.organizationForm.get('cnpj');
+    cnpjControl?.markAsTouched();
+
+    idPaisControl?.valueChanges.subscribe((pais) => {
+      if (pais == 1) {
+        cnpjControl?.setValidators([Validators.required]);
+        cnpjControl?.updateValueAndValidity();
+      } else {
+        cnpjControl?.clearValidators();
+        cnpjControl?.updateValueAndValidity();
+      }
+    });
   }
 
   ngOnDestroy(): void {

@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
-import { UiConfigType, embedDashboard } from '@superset-ui/embedded-sdk';
-
-import { DashboardService } from '../../../shared/services/dashboard/dashboard.service';
+import {DashboardService} from '../../../shared/services/dashboard/dashboard.service';
+import {Subscription} from "rxjs";
+import {IDashboardProjeto} from "../../../shared/interfaces/dashboard.interface";
+import {abbreviateNumber} from "js-abbreviation-number";
 
 @Component({
   selector: 'siscap-dashboard',
@@ -10,46 +11,26 @@ import { DashboardService } from '../../../shared/services/dashboard/dashboard.s
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
-export class DashboardComponent implements AfterViewInit {
-  @ViewChild('dashboardContainerDesktop')
-  dashboardContainerDesktop!: ElementRef<HTMLDivElement>;
-  @ViewChild('dashboardContainerMobile')
-  dashboardContainerMobile!: ElementRef<HTMLDivElement>;
+export class DashboardComponent implements OnInit, OnDestroy {
 
-  private _dashboardUiConfig: UiConfigType;
+  private _subscription: Subscription = new Subscription();
+
+  dados?: IDashboardProjeto;
+  valorEstimadoTotal?: string;
+  simbolos: {symbols: string[]} = { symbols: ["", " mil", " mi", " bi", " tri", " qua", " qui"] };
 
   constructor(private _dashboardService: DashboardService) {
-    this._dashboardUiConfig = {
-      hideTitle: true,
-      // hideTab: true,
-      hideChartControls: true,
-      filters: {
-        expanded: false,
-        visible: false,
-      },
-    };
   }
 
-  ngAfterViewInit(): void {
-    this.embedDashboardToContainer(false); // Inicializa dashboard para o viewport Desktop (width > 768px)
-    this.embedDashboardToContainer(true); // Inicializa dashboard para o viewport Mobile (width < 767px)
-  }
-
-  private embedDashboardToContainer(isMobile: boolean): void {
-    const dashboardContainer = isMobile
-      ? this.dashboardContainerMobile.nativeElement
-      : this.dashboardContainerDesktop.nativeElement;
-
-    const embedDashboardParams = this._dashboardService.getEmbedDashboardParams(
-      dashboardContainer,
-      isMobile,
-      this._dashboardUiConfig
-    );
-
-    embedDashboard(embedDashboardParams).then((dashboard) => {
-      const iframeEl = dashboardContainer.querySelector('iframe')!;
-      iframeEl.style.width = '100%';
-      iframeEl.style.height = isMobile ? '74vh' : '79.3vh';
+  ngOnInit() {
+    this._dashboardService.getQuantidadeProjetos().subscribe(response => {
+      this.dados = response;
+      this.valorEstimadoTotal = abbreviateNumber(this.dados.valorTotal, 1, this.simbolos);
     });
   }
+
+  ngOnDestroy() {
+    this._subscription.unsubscribe();
+  }
+
 }

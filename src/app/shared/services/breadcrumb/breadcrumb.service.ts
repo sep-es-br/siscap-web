@@ -1,10 +1,23 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Observable, Subject, tap } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BreadcrumbService {
-  breadcrumbAction: EventEmitter<string> = new EventEmitter<string>();
+  private _breadcrumbSubject$: Subject<string> = new Subject<string>();
 
-  constructor() { }
+  constructor() {}
+
+  public emitAction(value: string): void {
+    this._breadcrumbSubject$.next(value);
+  }
+
+  public handleAction(handlerFn: (actionType: string) => void): Observable<string> {
+    return this._breadcrumbSubject$.pipe(
+      tap((action: string) => {
+        handlerFn(action);
+      })
+    );
+  }
 }

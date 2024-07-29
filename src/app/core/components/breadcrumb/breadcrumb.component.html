@@ -2,7 +2,7 @@
   <div class="container pt-3">
     <div class="row">
       <div class="col">
-        <h1 class="oswald-semi-bold mb-0 font-Breadcrumb" >{{ currentPage | breadcrumbnavlink }}</h1>
+        <h1 class="mb-0 font-Breadcrumb" >{{ currentPage | breadcrumbnavlink }}</h1>
         <ul class="breadcrumb fw-semibold text-gray-600 fs-7">
           <ng-container *ngFor="let path of breadcrumbNav">
             <li class="breadcrumb-item text-gray-600">
@@ -33,21 +33,21 @@
     <i class="fa-solid fs-7 fa-plus me-2 "></i>
     <span>{{ path + "criar" | breadcrumbnavlink }}</span>
     </a>
-  
+
 </ng-template>
 
 <!-- Botões de ação (ex.: Projetos -> Editar, Deletar) -->
 <ng-template #actionButtons let-path="path">
-  <button class="btn btn-primary mx-1" (click)="breadcrumpAtcion('edit')"  [hidden]="!showEditButton" >
+  <button class="btn btn-primary mx-1" (click)="breadcrumbAction('edit')"  [hidden]="!showEditButton" >
     <i class="fa-solid fa-edit mx-1 fs-6"></i>
-    <label class="mx-1 fs-6">Editar</label>
+    <span class="mx-1 fs-6">Editar</span>
   </button>
-  <button class="btn btn-outline-danger mx-1" (click)="breadcrumpAtcion('cancel')"  [hidden]="!showCancelButton" >
+  <button class="btn btn-outline-danger mx-1" (click)="breadcrumbAction('cancel')"  [hidden]="!showCancelButton" >
     <i class="fa-solid fa-close mx-1 fs-6"></i>
-    <label class="mx-1 fs-6">Cancelar</label>
+    <span class="mx-1 fs-6">Cancelar</span>
   </button>
-  <button class="btn btn-success mx-1" (click)="breadcrumpAtcion('save')"  [hidden]="!showSaveButton" >
+  <button class="btn btn-success mx-1" (click)="breadcrumbAction('save')"  [hidden]="!showSaveButton" >
     <i class="fa-solid fa-save mx-1 fs-6"></i>
-    <label class="mx-1 fs-6">Salvar</label>
+    <span class="mx-1 fs-6">Salvar</span>
   </button>
 </ng-template>

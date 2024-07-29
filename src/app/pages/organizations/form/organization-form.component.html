@@ -7,11 +7,11 @@
   <div class="row">
     <div class="col-12 col-md-4">
       <div class="card shadow border-light mb-3">
-        <div class="card-header bg-white mb-3"> 
-          <h5 class="card-title">Marca da Organização</h5>        
+        <div class="card-header bg-white mb-3">
+          <h5 class="card-title">Marca da Organização</h5>
         </div>
         <div class="card-body">
-          <app-cropper [croppedImagethumb]="this.photoOrganization" [editImage]="!isEdit && formMode != 'criar'"  (imgcropped)="profilePhoto($event)" ></app-cropper> 
+          <app-cropper [croppedImagethumb]="this.photoOrganization" [editImage]="!isEdit && formMode != 'criar'"  (imgcropped)="profilePhoto($event)" ></app-cropper>
         </div>
       </div>
     </div>
@@ -25,7 +25,7 @@
             <div class="col-12 col-md-12 mb-2 mt-2 form-group ">
                 <label for="abreviatura" class="form-label col-12">
                   Sigla / Nome Fantasia
-                  <ng-container  *ngTemplateOutlet=" appAlert; context: { controlName: 'abreviatura' }" ></ng-container>
+                  <ng-container  *ngTemplateOutlet=" appAlert; context: { controlName: 'nomeFantasia' }" ></ng-container>
                 </label>
                 <input type="text" id="abreviatura" class="form-control" placeholder="" formControlName="abreviatura"/>
             </div>
@@ -100,7 +100,7 @@
                 E-mail
                 <ng-container *ngTemplateOutlet=" appAlert; context: { controlName: 'email' }"></ng-container>
               </label>
-              <input type="text" id="email" class="form-control" formControlName="email"/>
+              <input type="text" id="email" class="form-control" formControlName="email" (keydown.space)="$event.preventDefault()"/>
             </div>
             <div class="col-12 col-md-6 mb-2 mt-2 form-group ">
               <label for="site" class="form-label col-12">

@@ -1,5 +1,3 @@
-import { IHttpGetResponseBody } from './http-get.interface';
-
 interface IAddress {
   readonly id: number;
   rua?: string;
@@ -24,6 +22,7 @@ export interface IPerson {
   telefonePessoal?: string;
   endereco?: IAddress;
   idOrganizacao: number,
+  isResponsavelOrganizacao: boolean,
   idAreasAtuacao: Array<string>;
   imagemPerfil?: File | ArrayBuffer;
 }
@@ -36,10 +35,8 @@ export interface IPersonACApi {
   subDescontinuado: string;
 }
 
-export interface IPersonTable extends Pick<IPerson, 'id' | 'nome' | 'email' | 'imagemPerfil'> {}
-
-export interface IPersonGet extends IHttpGetResponseBody<IPersonTable> {}
+export interface IPersonTableData extends Pick<IPerson, 'id' | 'nome' | 'email' | 'imagemPerfil'> {}
 
 export interface IPersonCreate extends Omit<IPerson, 'id' | 'endereço.id'> {}
 
-export interface IPersonEdit extends Partial<IPersonCreate> {}
+export interface IPersonUpdate extends Partial<IPersonCreate> {}

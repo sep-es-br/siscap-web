@@ -1,18 +1,18 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {Subscription, tap} from 'rxjs';
-
-import {ProjetosService} from '../../shared/services/projetos/projetos.service';
-
-import {SortColumn} from '../../core/directives/sortable/sortable.directive';
-
-import {IProjectTable} from '../../shared/interfaces/project.interface';
-
-import {sortTableColumnsFunction} from '../../shared/utils/sort-table-columns-function';
-import {Config} from 'datatables.net';
+import { Subscription, tap } from 'rxjs';
+import { Config } from 'datatables.net';
 import Swal from 'sweetalert2';
 import DataTable from 'datatables.net-bs5';
+
+import { ProjetosService } from '../../shared/services/projetos/projetos.service';
+
+import {
+  IHttpGetRequestBody,
+  IHttpGetResponseBody,
+} from '../../shared/interfaces/http-get.interface';
+import { IProjetoTableData } from '../../shared/interfaces/projeto.interface';
 
 @Component({
   selector: 'siscap-projects',
@@ -21,80 +21,83 @@ import DataTable from 'datatables.net-bs5';
   styleUrl: './projects.component.scss',
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
-
   private _subscription: Subscription = new Subscription();
-
-  public projetosList: Array<IProjectTable> = [];
 
   public datatableConfig: Config = {};
 
-  public page = 0;
-  public pageSize = 15;
-  public sort = '';
-  public search = '';
-
+  private pageConfig: IHttpGetRequestBody = {
+    page: 0,
+    size: 15,
+    sort: '',
+    search: '',
+  };
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
-    private _projetosService: ProjetosService,
-  ) {
-  }
+    private _projetosService: ProjetosService
+  ) {}
 
   ngOnInit(): void {
     this.treatDatatableConfig();
   }
 
-  getDataPaginated() {
-    return this._projetosService.getProjetosPaginated(this.page, this.pageSize, this.sort, this.search);
+  private getProjetosPaginated() {
+    return this._projetosService.getProjetosPaginated(this.pageConfig);
   }
 
-  public sortTable(event: SortColumn) {
-    const column = event.column as keyof IProjectTable;
-    const direction = event.direction;
-
-    this.projetosList.sort((a, b) =>
-      sortTableColumnsFunction(a[column], b[column], direction)
-    );
-  }
-
-  treatDatatableConfig() {
+  private treatDatatableConfig() {
     this.datatableConfig = {
-
       ajax: (dataTablesParameters: any, callback) => {
-        this.page = dataTablesParameters.start / dataTablesParameters.length;
-        this.getDataPaginated().subscribe(resp => {
-          callback({
-            recordsTotal: resp.totalElements,
-            recordsFiltered: resp.totalElements,
-            data: resp.content
-          });
-        });
+        this.pageConfig.page =
+          dataTablesParameters.start / dataTablesParameters.length;
+        const { order, columns } = dataTablesParameters;
+        const orderElement = order[0];
+        this.pageConfig.sort = orderElement
+          ? `${columns[orderElement.column].data},${orderElement.dir}`
+          : '';
+        this.getProjetosPaginated().subscribe(
+          (response: IHttpGetResponseBody<IProjetoTableData>) => {
+            callback({
+              recordsTotal: response.totalElements,
+              recordsFiltered: response.totalElements,
+              data: response.content,
+            });
+          }
+        );
       },
       searching: true,
       serverSide: true,
       lengthMenu: ['5', '10', '20'],
       lengthChange: true,
-      pageLength: this.pageSize,
+      pageLength: this.pageConfig.size,
       columns: [
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },
-        { data: 'nomesMicrorregioes', title: 'Microrregiões', render: (dado: string[]) => Array.isArray(dado) ? dado.join(", ") : dado },
-        { data: 'valorEstimado', title: 'Valor Estimado', render: DataTable.render.number('.', ',', 2, 'R$ '), className: 'text-end' },
+        {
+          data: 'nomesMicrorregioes',
+          title: 'Microrregiões',
+          orderable: false,
+          render: (dado: string[]) =>
+            Array.isArray(dado) ? dado.join(', ') : dado,
+        },
+        {
+          data: 'valorEstimado',
+          title: 'Valor Estimado',
+          render: DataTable.render.number('.', ',', 2, 'R$ '),
+          className: 'text-end text-nowrap',
+        },
       ],
-      order: [[1, 'asc']],
     };
-
   }
 
   public redirectProjectForm(projectId: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: projectId },
+      queryParams: { id: projectId, isEdit: true },
     });
   }
 
   public deletarProjeto(id: number) {
-
     this._projetosService
       .deleteProjeto(id)
       .pipe(
@@ -106,8 +109,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
               .then(() => this._router.navigateByUrl('main/projetos'));
           }
         })
-      );
-
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {

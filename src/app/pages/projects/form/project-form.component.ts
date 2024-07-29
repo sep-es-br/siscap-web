@@ -1,26 +1,27 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AfterContentInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
+import { ProjetosFormService } from '../../../shared/services/projetos/projetos-form.service';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
+import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
-
-import {
-  IProject,
-  IProjectCreate,
-  IProjectEdit,
-} from '../../../shared/interfaces/project.interface';
-import { ISelectList } from '../../../shared/interfaces/select-list.interface';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
-import { ArrayItemNumberToStringMapper } from '../../../shared/utils/array-item-mapper';
 
-import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import {
+  IProjeto,
+  IProjetoForm,
+} from '../../../shared/interfaces/projeto.interface';
+import { ISelectList } from '../../../shared/interfaces/select-list.interface';
+
+import { ProjetoFormModel } from '../../../shared/models/projeto.model';
+import { EquipeFormModel } from '../../../shared/models/equipe.model';
 
 @Component({
   selector: 'siscap-project-form',
@@ -28,62 +29,60 @@ import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrum
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss',
 })
-export class ProjectFormComponent implements OnInit, OnDestroy {
+export class ProjectFormComponent
+  implements OnInit, AfterContentInit, OnDestroy
+{
   private _getOrganizacoes$!: Observable<ISelectList[]>;
   private _getPessoas$!: Observable<ISelectList[]>;
   private _getPlanos$!: Observable<ISelectList[]>;
   private _getMicrorregioes$!: Observable<ISelectList[]>;
+  private _getPapeis$!: Observable<ISelectList[]>;
   private _getAllSelectLists$!: Observable<ISelectList[]>;
 
-  private _getProjetoById$!: Observable<IProject>;
+  private _getProjetoById$!: Observable<IProjeto>;
 
   private _subscription: Subscription = new Subscription();
+
   public loading: boolean = true;
 
   public formMode!: string;
-  public isEdit!: boolean;
+  public isEdit: boolean = true;
 
   public projectForm!: FormGroup;
-
   public projectEditId!: number;
-  public projectFormInitialValue!: IProjectCreate;
+
+  public equipeElaboracaoNgSelectValue: string | null = null;
 
   public microrregioesList: ISelectList[] = [];
   public organizacoesList: ISelectList[] = [];
   public planosList: ISelectList[] = [];
   public pessoasList: ISelectList[] = [];
+  public papeisList: ISelectList[] = [];
+
+  public equipeElaboracaoList: ISelectList[] = [];
 
   constructor(
-    private _formBuilder: FormBuilder,
     private _router: Router,
     private _route: ActivatedRoute,
     private _profileService: ProfileService,
     private _projetosService: ProjetosService,
+    private _projetosFormService: ProjetosFormService,
     private _selectListService: SelectListService,
+    private _pessoasService: PessoasService,
     private _toastService: ToastService,
-    private _modalService: NgbModal,
     private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
     this.projectEditId = this._route.snapshot.queryParams['id'] ?? null;
 
-    this._subscription.add(this._breadcrumbService.breadcrumbAction.subscribe((actionType: string) => {
-      this.handleActionBreadcrumb(actionType);
-    }));
-
-
     this._getProjetoById$ = this._projetosService
       .getProjetoById(this.projectEditId)
       .pipe(
-        tap((response) => {
-          this.initForm(response);
+        tap((response: IProjeto) => {
+          this.patchForm(response);
         }),
         finalize(() => {
-          this.projectFormInitialValue = this.projectForm.value;
-
           this.switchMode(false);
-
-          this.loading = false;
         })
       );
 
@@ -96,7 +95,12 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     this._getPessoas$ = this._selectListService.getPessoas().pipe(
       tap((response) => {
         this.pessoasList = response;
-      })
+      }),
+      finalize(() =>
+        this.filterResponsavelProponenteFromEquipeElaboracaoList(
+          this._projetosFormService.idResponsavelProponente.value
+        )
+      )
     );
 
     this._getPlanos$ = this._selectListService.getPlanos().pipe(
@@ -111,11 +115,24 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       })
     );
 
+    this._getPapeis$ = this._selectListService.getPapeis().pipe(
+      tap((response) => {
+        this.papeisList = response;
+      })
+    );
+
     this._getAllSelectLists$ = concat(
       this._getOrganizacoes$,
       this._getPessoas$,
       this._getPlanos$,
-      this._getMicrorregioes$
+      this._getMicrorregioes$,
+      this._getPapeis$
+    );
+
+    this._subscription.add(
+      this._breadcrumbService
+        .handleAction(this.handleActionBreadcrumb.bind(this))
+        .subscribe()
     );
   }
 
@@ -124,73 +141,76 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
    * Método para inicialização do formulário. Popula valor inicial dos controles com valor original do projeto, caso houver.
    * Se não, inicial com controles vazios.
    *
-   * @param {IProject} project - Valor inicial do projeto.
+   * @param {IProjeto} projeto - Valor inicial do projeto.
    */
-  private initForm(project?: IProject) {
-    const nnfb = this._formBuilder.nonNullable;
-    this.projectForm = nnfb.group({
-      sigla: nnfb.control(project?.sigla ?? '', {
-        validators: [Validators.required, Validators.maxLength(12)],
-      }),
-      titulo: nnfb.control(project?.titulo ?? '', {
-        validators: [Validators.required, Validators.maxLength(150)],
-      }),
-      idOrganizacao: nnfb.control(project?.idOrganizacao?.toString() ?? null, {
-        validators: Validators.required,
-      }),
-      valorEstimado: nnfb.control(project?.valorEstimado ?? null, {
-        validators: [Validators.required, Validators.min(1)],
-      }),
-      idMicrorregioes: nnfb.control(
-        ArrayItemNumberToStringMapper(project?.idMicrorregioes) ?? [],
-        {
-          validators: Validators.required,
-        }
-      ),
-      objetivo: nnfb.control(project?.objetivo ?? '', {
-        validators: [Validators.required, Validators.maxLength(2000)],
-      }),
-      objetivoEspecifico: nnfb.control(project?.objetivoEspecifico ?? '', {
-        validators: [Validators.required, Validators.maxLength(2000)],
-      }),
-      situacaoProblema: nnfb.control(project?.situacaoProblema ?? '', {
-        validators: [Validators.required, Validators.maxLength(2000)],
-      }),
-      solucoesPropostas: nnfb.control(project?.solucoesPropostas ?? '', {
-        validators: [Validators.required, Validators.maxLength(2000)],
-      }),
-      impactos: nnfb.control(project?.impactos ?? '', {
-        validators: [Validators.required, Validators.maxLength(2000)],
-      }),
-      arranjosInstitucionais: nnfb.control(
-        project?.arranjosInstitucionais ?? '',
-        {
-          validators: [Validators.required, Validators.maxLength(2000)],
-        }
-      ),
-      idPessoasEquipeElab: nnfb.control(
-        ArrayItemNumberToStringMapper(project?.idPessoasEquipeElab) ?? [],
-        {
-          validators: Validators.required,
-        }
-      ),
-      //AInda não implementados
-      plano: nnfb.control({ value: null, disabled: true }),
-      eixo: nnfb.control({ value: null, disabled: true }),
-      area: nnfb.control({ value: null, disabled: true }),
+  private initForm(projeto: ProjetoFormModel): void {
+    this.projectForm = this._projetosFormService.buildProjetoForm(projeto);
+  }
+
+  private patchForm(projeto: IProjeto) {
+    this.projectForm.patchValue(projeto, { emitEvent: false });
+
+    projeto.equipeElaboracao.forEach((member) => {
+      const newMember = this._projetosFormService.buildMemberFormGroup(
+        member.idPessoa,
+        member.idPapel
+      );
+
+      this._projetosFormService.equipeElaboracao.push(newMember);
     });
+
+    this.filterResponsavelProponenteFromEquipeElaboracaoList(
+      this._projetosFormService.idResponsavelProponente.value
+    );
+  }
+
+  public getControl(controlName: string): FormControl {
+    return this._projetosFormService.getControl(controlName);
+  }
+
+  get equipeElaboracao(): FormArray<FormGroup<EquipeFormModel>> {
+    return this._projetosFormService.equipeElaboracao;
   }
 
   ngOnInit(): void {
     this._subscription.add(this._getAllSelectLists$.subscribe());
 
-    if (this.formMode == 'criar') {
-      this.initForm();
-      this.loading = false;
-      return;
-    }
+    this.initForm(new ProjetoFormModel());
 
-    this._subscription.add(this._getProjetoById$.subscribe());
+    this.loading = false;
+
+    if (this.formMode == 'editar') {
+      this._subscription.add(this._getProjetoById$.subscribe());
+    }
+  }
+
+  ngAfterContentInit(): void {
+    this._projetosFormService.idOrganizacao.valueChanges.subscribe((value) => {
+      if (this.formMode == 'criar' || this.isEdit) {
+        this.organizationChanged(value);
+      }
+    });
+
+    this._projetosFormService.idResponsavelProponente.valueChanges.subscribe(
+      (value) => {
+        if (this.formMode == 'criar' || this.isEdit) {
+          this.equipeElaboracaoList = this.pessoasList.filter(
+            (pessoa) => pessoa.id != value
+          );
+          this.filterResponsavelProponenteFromEquipeElaboracaoList(value);
+          if (
+            this.equipeElaboracao.length > 0 &&
+            this._projetosFormService.idResponsavelProponente.dirty
+          ) {
+            this._toastService.showToast(
+              'info',
+              'Responsável proponente alterado',
+              ['Limpando membros da equipe']
+            );
+          }
+        }
+      }
+    );
   }
 
   public rtlCurrencyInputTransformFn =
@@ -223,18 +243,39 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     }
   }
 
+  public organizationChanged(orgId: number | null): void {
+    const idResponsavelProponenteControl =
+      this._projetosFormService.idResponsavelProponente;
+
+    if (!orgId) {
+      idResponsavelProponenteControl.patchValue(null);
+      return;
+    }
+
+    this._pessoasService.getResponsavelByOrganizacaoId(orgId).subscribe({
+      next: (response: ISelectList) => {
+        idResponsavelProponenteControl.patchValue(response.id);
+      },
+      error: (err) => {
+        this._toastService.toastNotifier$.subscribe((value) => {
+          if (!value) this.cancelForm();
+        });
+      },
+    });
+  }
+
   public isAllowed(path: string): boolean {
     return this._profileService.isAllowed(path);
   }
 
-  public switchMode(isEnabled: boolean, excluded?: Array<string>) {
+  public switchMode(isEnabled: boolean, excluded?: Array<string>): void {
     this.isEdit = isEnabled;
 
     const controls = this.projectForm.controls;
     for (const key in controls) {
       !excluded?.includes(key) && isEnabled
-        ? controls[key].enable()
-        : controls[key].disable();
+        ? controls[key].enable({ emitEvent: false })
+        : controls[key].disable({ emitEvent: false });
     }
   }
 
@@ -244,7 +285,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
    * Envia o usuário para a página de listagem de projetos
    *
    */
-  public cancelForm() {
+  public cancelForm(): void {
     this._router.navigate(['main', 'projetos']);
   }
 
@@ -256,9 +297,9 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
    * @param form - O `FormGroup` do formulário
    *
    */
-  public submitProjectForm(form: FormGroup) {
+  public submitProjectForm(form: FormGroup): void {
     for (const key in form.controls) {
-      form.controls[key].markAsTouched();
+      form.controls[key].markAllAsTouched();
     }
 
     if (form.invalid) {
@@ -269,8 +310,8 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     }
 
     switch (this.formMode) {
-      case 'criar':
-        const createPayload = form.value as IProjectCreate;
+      case 'criar': {
+        const createPayload = form.value as IProjetoForm;
 
         this._projetosService
           .postProjeto(createPayload)
@@ -287,9 +328,9 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
           )
           .subscribe();
         break;
-
-      case 'editar':
-        const editPayload = form.value as IProjectEdit;
+      }
+      case 'editar': {
+        const editPayload = form.value as IProjetoForm;
 
         this._projetosService
           .putProjeto(this.projectEditId, editPayload)
@@ -307,13 +348,13 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
           .subscribe();
 
         break;
-
+      }
       default:
         break;
     }
   }
 
-  public handleActionBreadcrumb(actionType: string) {
+  private handleActionBreadcrumb(actionType: string) {
     switch (actionType) {
       case 'edit':
         if (this.isAllowed('projetoseditar')) {
@@ -331,6 +372,13 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     }
   }
 
+  private filterResponsavelProponenteFromEquipeElaboracaoList(
+    idResponsavelProponente: number | null
+  ): void {
+    this.equipeElaboracaoList = this.pessoasList.filter(
+      (pessoa) => pessoa.id != idResponsavelProponente
+    );
+  }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
@@ -339,5 +387,4 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   downloadDic(id: number): void {
     this._projetosService.downloadDIC(id);
   }
-
 }
