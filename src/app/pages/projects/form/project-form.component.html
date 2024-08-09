@@ -110,10 +110,7 @@
             </div>
           </div>
 
-          <div
-            class="row my-3"
-            *ngIf="getControl('idResponsavelProponente').value"
-          >
+          <div class="row" *ngIf="getControl('idResponsavelProponente')?.value">
             <div class="col-12 my-1">
               <siscap-equipe-form
                 [context]="'PROJETO'"
@@ -147,6 +144,7 @@
                 thousandSeparator="."
                 decimalMarker=","
                 [inputTransformFn]="rtlCurrencyInputTransformFn"
+                [outputTransformFn]="rtlCurrencyOutputTransformFn"
                 class="form-control"
                 id="valorEstimado"
                 formControlName="valorEstimado"
@@ -155,17 +153,141 @@
             </div>
           </div>
 
-          <div class="row">
+          <div class="row" *ngIf="getControl('valorEstimado')?.value">
+            <div class="col-12 my-1">
+              <siscap-rateio-form
+                [context]="'PROJETO'"
+                [formMode]="formMode"
+                [isEdit]="isEdit"
+                [targetRateioArray]="rateio"
+                [listArrays]="{
+                  microrregioesCidadesList: microrregioesCidadesList
+                }"
+              ></siscap-rateio-form>
+            </div>
+          </div>
+
+          <!-- <div class="row">
             <div class="col-12">
               <label for="idMicrorregioes" class="form-label col-12">
                 Microrregiões Atendidas
+
                 <ng-container
                   *ngTemplateOutlet="
                     appAlert;
-                    context: { controlName: 'idMicrorregioes' }
+                    context: { controlName: 'rateioMicrorregiao' }
                   "
                 ></ng-container>
               </label>
+
+              <div class="card">
+                <div class="card-body">
+                  <div
+                    class="col-12 mb-2 d-flex justify-content-between align-items-center"
+                  >
+                    <div
+                      class="col-3 d-inline-flex flex-row justify-content-between rateio-options"
+                    >
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="rateio-option-radio"
+                          id="microrregiao"
+                        />
+                        <label class="form-check-label" for="microrregiao"
+                          >Rateio por Microrregião</label
+                        >
+                      </div>
+
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="rateio-option-radio"
+                          id="cidade"
+                        />
+                        <label class="form-check-label" for="cidade"
+                          >Rateio por Cidade</label
+                        >
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-3 d-inline-flex flex-row justify-content-between values-label"
+                      *ngIf="
+                        !!getControl('valorEstimado')?.value;
+                        else nullValorEstimado
+                      "
+                    >
+                      <div class="col-4">
+                        <label
+                          [ngStyle]="{
+                            color: getControl('rateioMicrorregiao')?.hasError(
+                              'limiteRateio'
+                            )
+                              ? '#dc3545'
+                              : '#212529'
+                          }"
+                        >
+                          {{
+                            rateioService.rateioTotalPercentual
+                              .toFixed(2)
+                              .replace(".", ",")
+                              | mask
+                                : "percent.2"
+                                : {
+                                    suffix: "%",
+                                    leadZero: true,
+                                    decimalMarker: ","
+                                  }
+                          }}
+                          {{
+                            rateioService.getRateioTotalPercentualFormatted()
+                          }}
+                        </label>
+                      </div>
+                      <div class="col-8">
+                        <label
+                          [ngStyle]="{
+                            color: getControl('rateioMicrorregiao')?.hasError(
+                              'limiteRateio'
+                            )
+                              ? '#dc3545'
+                              : '#212529'
+                          }"
+                        >
+                          {{
+                            rateioService.rateioTotalMonetario
+                              | mask
+                                : "separator.2"
+                                : {
+                                    prefix: "R$",
+                                    leadZero: true,
+                                    thousandSeparator: ".",
+                                    decimalMarker: ","
+                                  }
+                          }}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <ng-container
+                      *ngFor="
+                        let microrregiao of microrregioesCidadesList;
+                        index as i
+                      "
+                    >
+                      <siscap-rateio-item-card
+                        [microrregiao]="microrregiao"
+                        [index]="i"
+                      ></siscap-rateio-item-card>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
               <ng-select
                 [multiple]="true"
                 [hideSelected]="true"
@@ -184,7 +306,7 @@
                 >
               </ng-select>
             </div>
-          </div>
+          </div> -->
 
           <div class="row">
             <div class="col-12">
@@ -315,4 +437,10 @@
 
 <ng-template #appAlert let-controlName="controlName">
   <siscap-alert [control]="getControl(controlName)"></siscap-alert>
+</ng-template>
+
+<ng-template #nullValorEstimado>
+  <div class="col-3 d-inline-flex flex-row justify-content-center">
+    <label class="text-warning">Sem Valor Estimado</label>
+  </div>
 </ng-template>

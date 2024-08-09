@@ -493,6 +493,6 @@
 
 <ng-template #appAlert let-controlName="controlName">
   <siscap-alert
-    [control]="personForm.get(controlName) ?? undefined"
+    [control]="personForm.get(controlName) ?? null"
   ></siscap-alert>
 </ng-template>

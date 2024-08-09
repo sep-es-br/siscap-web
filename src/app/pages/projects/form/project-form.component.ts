@@ -1,8 +1,20 @@
 import { AfterContentInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormGroup,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
+import {
+  Observable,
+  Subscription,
+  concat,
+  debounceTime,
+  finalize,
+  tap,
+} from 'rxjs';
 
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { ProjetosFormService } from '../../../shared/services/projetos/projetos-form.service';
@@ -18,10 +30,15 @@ import {
   IProjeto,
   IProjetoForm,
 } from '../../../shared/interfaces/projeto.interface';
-import { ISelectList } from '../../../shared/interfaces/select-list.interface';
+import {
+  IMicrorregiaoCidadesSelectList,
+  ISelectList,
+} from '../../../shared/interfaces/select-list.interface';
 
 import { ProjetoFormModel } from '../../../shared/models/projeto.model';
 import { EquipeFormModel } from '../../../shared/models/equipe.model';
+import { RateioService } from '../../../shared/services/projetos/rateio.service';
+import { RateioFormModel } from '../../../shared/models/rateio.model';
 
 @Component({
   selector: 'siscap-project-form',
@@ -35,8 +52,12 @@ export class ProjectFormComponent
   private _getOrganizacoes$!: Observable<ISelectList[]>;
   private _getPessoas$!: Observable<ISelectList[]>;
   private _getPlanos$!: Observable<ISelectList[]>;
-  private _getMicrorregioes$!: Observable<ISelectList[]>;
+  // private _getMicrorregioes$!: Observable<ISelectList[]>;
+  private _getMicrorregioesCidades$!: Observable<
+    IMicrorregiaoCidadesSelectList[]
+  >;
   private _getPapeis$!: Observable<ISelectList[]>;
+
   private _getAllSelectLists$!: Observable<ISelectList[]>;
 
   private _getProjetoById$!: Observable<IProjeto>;
@@ -53,10 +74,11 @@ export class ProjectFormComponent
 
   public equipeElaboracaoNgSelectValue: string | null = null;
 
-  public microrregioesList: ISelectList[] = [];
+  // public microrregioesList: ISelectList[] = [];
   public organizacoesList: ISelectList[] = [];
-  public planosList: ISelectList[] = [];
   public pessoasList: ISelectList[] = [];
+  public planosList: ISelectList[] = [];
+  public microrregioesCidadesList: IMicrorregiaoCidadesSelectList[] = [];
   public papeisList: ISelectList[] = [];
 
   public equipeElaboracaoList: ISelectList[] = [];
@@ -67,6 +89,7 @@ export class ProjectFormComponent
     private _profileService: ProfileService,
     private _projetosService: ProjetosService,
     private _projetosFormService: ProjetosFormService,
+    public rateioService: RateioService,
     private _selectListService: SelectListService,
     private _pessoasService: PessoasService,
     private _toastService: ToastService,
@@ -78,24 +101,16 @@ export class ProjectFormComponent
     this._getProjetoById$ = this._projetosService
       .getProjetoById(this.projectEditId)
       .pipe(
-        tap((response: IProjeto) => {
-          this.patchForm(response);
-        }),
-        finalize(() => {
-          this.switchMode(false);
-        })
+        tap((response: IProjeto) => this.patchForm(response)),
+        finalize(() => this.switchMode(false))
       );
 
-    this._getOrganizacoes$ = this._selectListService.getOrganizacoes().pipe(
-      tap((response) => {
-        this.organizacoesList = response;
-      })
-    );
+    this._getOrganizacoes$ = this._selectListService
+      .getOrganizacoes()
+      .pipe(tap((response) => (this.organizacoesList = response)));
 
     this._getPessoas$ = this._selectListService.getPessoas().pipe(
-      tap((response) => {
-        this.pessoasList = response;
-      }),
+      tap((response) => (this.pessoasList = response)),
       finalize(() =>
         this.filterResponsavelProponenteFromEquipeElaboracaoList(
           this._projetosFormService.idResponsavelProponente.value
@@ -103,30 +118,29 @@ export class ProjectFormComponent
       )
     );
 
-    this._getPlanos$ = this._selectListService.getPlanos().pipe(
-      tap((response) => {
-        this.planosList = response;
-      })
-    );
+    this._getPlanos$ = this._selectListService
+      .getPlanos()
+      .pipe(tap((response) => (this.planosList = response)));
 
-    this._getMicrorregioes$ = this._selectListService.getMicrorregioes().pipe(
-      tap((response) => {
-        this.microrregioesList = response;
-      })
-    );
+    // this._getMicrorregioes$ = this._selectListService
+    //   .getMicrorregioes()
+    //   .pipe(tap((response) => (this.microrregioesList = response)));
 
-    this._getPapeis$ = this._selectListService.getPapeis().pipe(
-      tap((response) => {
-        this.papeisList = response;
-      })
-    );
+    this._getMicrorregioesCidades$ = this._selectListService
+      .getMicrorregioesCidades()
+      .pipe(tap((response) => (this.microrregioesCidadesList = response)));
+
+    this._getPapeis$ = this._selectListService
+      .getPapeis()
+      .pipe(tap((response) => (this.papeisList = response)));
 
     this._getAllSelectLists$ = concat(
       this._getOrganizacoes$,
       this._getPessoas$,
       this._getPlanos$,
-      this._getMicrorregioes$,
-      this._getPapeis$
+      // this._getMicrorregioes$,
+      this._getPapeis$,
+      this._getMicrorregioesCidades$
     );
 
     this._subscription.add(
@@ -145,6 +159,10 @@ export class ProjectFormComponent
    */
   private initForm(projeto: ProjetoFormModel): void {
     this.projectForm = this._projetosFormService.buildProjetoForm(projeto);
+
+    this.rateioService.setRateioFormArray(
+      this.projectForm.get('rateio') as FormArray<FormGroup<RateioFormModel>>
+    );
   }
 
   private patchForm(projeto: IProjeto) {
@@ -164,12 +182,16 @@ export class ProjectFormComponent
     );
   }
 
-  public getControl(controlName: string): FormControl {
+  public getControl(controlName: string): AbstractControl<any, any> | null {
     return this._projetosFormService.getControl(controlName);
   }
 
   get equipeElaboracao(): FormArray<FormGroup<EquipeFormModel>> {
     return this._projetosFormService.equipeElaboracao;
+  }
+
+  get rateio(): FormArray<FormGroup<RateioFormModel>> {
+    return this._projetosFormService.rateio;
   }
 
   ngOnInit(): void {
@@ -211,10 +233,17 @@ export class ProjectFormComponent
         }
       }
     );
+
+    this._projetosFormService.valorEstimado.valueChanges.subscribe((value) => {
+      this.rateioService.valorEstimadoReferenciaObs$.next(value);
+    });
   }
 
   public rtlCurrencyInputTransformFn =
     NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
+
+  public rtlCurrencyOutputTransformFn =
+    NgxMaskTransformFunctionHelper.rtlCurrencyOutputTransformFn;
 
   public toUppercaseInputTransformFn =
     NgxMaskTransformFunctionHelper.toUppercaseInputTransformFn;
@@ -302,6 +331,8 @@ export class ProjectFormComponent
       form.controls[key].markAllAsTouched();
     }
 
+    console.log(form.value);
+
     if (form.invalid) {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
         'Por favor, verifique os campos.',
@@ -309,49 +340,49 @@ export class ProjectFormComponent
       return;
     }
 
-    switch (this.formMode) {
-      case 'criar': {
-        const createPayload = form.value as IProjetoForm;
+    // switch (this.formMode) {
+    //   case 'criar': {
+    //     const createPayload = form.value as IProjetoForm;
 
-        this._projetosService
-          .postProjeto(createPayload)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Projeto cadastrado com sucesso.'
-                );
-                this._router.navigateByUrl('main/projetos');
-              }
-            })
-          )
-          .subscribe();
-        break;
-      }
-      case 'editar': {
-        const editPayload = form.value as IProjetoForm;
+    //     this._projetosService
+    //       .postProjeto(createPayload)
+    //       .pipe(
+    //         tap((response) => {
+    //           if (response) {
+    //             this._toastService.showToast(
+    //               'success',
+    //               'Projeto cadastrado com sucesso.'
+    //             );
+    //             this._router.navigateByUrl('main/projetos');
+    //           }
+    //         })
+    //       )
+    //       .subscribe();
+    //     break;
+    //   }
+    //   case 'editar': {
+    //     const editPayload = form.value as IProjetoForm;
 
-        this._projetosService
-          .putProjeto(this.projectEditId, editPayload)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Projeto alterado com sucesso.'
-                );
-                this._router.navigateByUrl('main/projetos');
-              }
-            })
-          )
-          .subscribe();
+    //     this._projetosService
+    //       .putProjeto(this.projectEditId, editPayload)
+    //       .pipe(
+    //         tap((response) => {
+    //           if (response) {
+    //             this._toastService.showToast(
+    //               'success',
+    //               'Projeto alterado com sucesso.'
+    //             );
+    //             this._router.navigateByUrl('main/projetos');
+    //           }
+    //         })
+    //       )
+    //       .subscribe();
 
-        break;
-      }
-      default:
-        break;
-    }
+    //     break;
+    //   }
+    //   default:
+    //     break;
+    // }
   }
 
   private handleActionBreadcrumb(actionType: string) {

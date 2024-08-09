@@ -4,7 +4,10 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import { ISelectList } from '../../interfaces/select-list.interface';
+import {
+  IMicrorregiaoCidadesSelectList,
+  ISelectList,
+} from '../../interfaces/select-list.interface';
 import { ErrorHandlerService } from '../error-handler/error-handler.service';
 
 @Injectable({
@@ -79,5 +82,18 @@ export class SelectListService {
 
   public getPapeis() {
     return this.getSelectList('papeis');
+  }
+
+  public getMicrorregioesCidades() {
+    return this._http
+      .get<IMicrorregiaoCidadesSelectList[]>(
+        `${environment.apiUrl}/microrregioes-cidades/select`
+      )
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          this._errorHandlerService.handleError(err);
+          return throwError(() => err);
+        })
+      );
   }
 }

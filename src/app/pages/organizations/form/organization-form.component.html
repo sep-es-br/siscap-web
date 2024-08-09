@@ -126,5 +126,5 @@
 </form>
 
 <ng-template #appAlert let-controlName="controlName">
-  <siscap-alert [control]="organizationForm.get(controlName) ?? undefined"></siscap-alert>
+  <siscap-alert [control]="organizationForm.get(controlName) ?? null"></siscap-alert>
 </ng-template>

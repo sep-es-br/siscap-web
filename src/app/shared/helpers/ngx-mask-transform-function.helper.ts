@@ -16,7 +16,9 @@ export abstract class NgxMaskTransformFunctionHelper {
    * @param {unknown} value - Valor do input do campo.
    * @returns O valor formatado do tipo `string`.
    */
-  static rtlCurrencyInputTransformFn: InputTransformFn = (value) => {
+  public static readonly rtlCurrencyInputTransformFn: InputTransformFn = (
+    value: unknown
+  ): string => {
     //`value` é do tipo unknown, convertemos aqui para utilizar métodos da API de String
     //Trata caso de valor pré-existente com menos de 3 dígitos inteiros e sem decimais; Se não, fluxo normal
     let untreatedValue =
@@ -98,13 +100,30 @@ export abstract class NgxMaskTransformFunctionHelper {
   };
 
   /**
+   *
+   * @static
+   * Método estático para alimentar o valor do `FormControl` pertinente com o valor recebido de uma `inputTransformFn`.
+   * Nesse caso em específico, a função estática `rtlCurrencyInputTransformFn`.
+   *
+   * @param {string | number | undefined | null} value - O valor recebido da função `inputTransformFn` do mesmo campo.
+   * @returns O valor formatado do tipo `number` ou `null`.
+   */
+  public static readonly rtlCurrencyOutputTransformFn: OutputTransformFn = (
+    value: string | number | undefined | null
+  ): number | null => {
+    return !!value ? Number(value) : null;
+  };
+
+  /**
    * @static
    * Método estático que transforma todo o input em letras maiúsculas (uppercase)
    *
    * @param {unknown} value - O valor de input do campo.
    * @returns O valor formatado do tipo `string`.
    */
-  static toUppercaseInputTransformFn: InputTransformFn = (value): string => {
+  public static readonly toUppercaseInputTransformFn: InputTransformFn = (
+    value: unknown
+  ): string => {
     return typeof value === 'string' ? value.toUpperCase() : String(value);
   };
 
@@ -112,11 +131,120 @@ export abstract class NgxMaskTransformFunctionHelper {
    * @static
    * Método estático para alimentar o valor do `FormControl` pertinente com o valor recebido de uma `inputTransformFn`.
    * Nesse caso em específico, a função estática `toUppercaseInputTransformFn`.
-   * 
-   * @param {string} value - O valor recebido da função `inputTransformFn` do mesmo campo.
+   *
+   * @param {string | number | undefined | null} value - O valor recebido da função `inputTransformFn` do mesmo campo.
    * @returns O valor formatado do tipo `string`.
    */
-  static toUppercaseOutputTransformFn: OutputTransformFn = (value): string => {
+  public static readonly toUppercaseOutputTransformFn: OutputTransformFn = (
+    value: string | number | undefined | null
+  ): string => {
     return value ? String(value).toUpperCase() : '';
+  };
+
+  /**
+   * @static
+   * Método estático que formata o input de porcentagem para o formato 'XX,XX%'
+   *
+   * @param {unknown} value - O valor de input do campo.
+   * @returns O valor formatado do tipo `string`.
+   */
+  // public static readonly percentInputTransformFn: InputTransformFn = (
+  //   value: unknown
+  // ): string => {
+  //   //`value` é do tipo unknown, convertemos aqui para utilizar métodos da API de String
+  //   //Trata caso de valor pré-existente com menos de 3 dígitos inteiros e sem decimais; Se não, fluxo normal
+  //   let untreatedValue =
+  //     typeof value === 'number' ? Number(value).toFixed(2) : String(value);
+
+  //   //Remove o sufixo '%' do input quando houver
+  //   let valueAsString = untreatedValue.includes('%')
+  //     ? untreatedValue.replace('%', '')
+  //     : untreatedValue;
+
+  //   //Substitui o ponto por vírgula ao carregar o formulário pela primeira vez quando modo de edição/detalhes
+  //   valueAsString =
+  //     valueAsString.includes('.') && !valueAsString.includes(',')
+  //       ? valueAsString.replace('.', ',')
+  //       : valueAsString;
+
+  //   //Caso o usuário delete completamente o input (Ctrl + Backspace) ou remova inputs até o valor ser 0, retornamos uma string vazia
+  //   // if (!valueAsString || valueAsString == '0,0') {
+  //   if (!valueAsString || valueAsString == '0,') {
+  //     return '';
+  //   }
+  //   //Consulta `valueAsString` verificando a existência de caracteres que não sejam dígitos (0~9) ou vírgula (,)
+  //   const forbiddenValues = valueAsString.match(/[^\d\,]/g);
+
+  //   //Caso haja caracteres proibidos, removemos estes de `valueAsString`
+  //   if (forbiddenValues !== null) {
+  //     valueAsString = valueAsString.replace(forbiddenValues[0], '');
+  //   }
+
+  //   //Valor á ser manipulado, á fim de não mexermos diretamente no input do campo
+  //   let inputValue = '';
+
+  //   //Separamos `valueAsString` entre inteiros (caracteres antes da vírgula) e decimais (caracteres depois da vírgula)
+  //   const [integers, decimals] = valueAsString.split(',');
+
+  //   if (!decimals) {
+  //     //Caso do valor do input NÃO possuir valores decimais
+  //     switch (integers.length) {
+  //       //Primeiro input, verificamos de o primeiro digito é '0'. Caso sim, adicionamos a virgula
+  //       case 1:
+  //         inputValue = integers;
+  //         if (integers == '0') {
+  //           inputValue += ',';
+  //         }
+  //         break;
+  //       //Segundo input, fluxo normal
+  //       case 2:
+  //         inputValue = integers;
+  //         break;
+  //       case 3:
+  //         //Terceiro input, verificamos se o valor é '100'. Caso sim, retornamos '100'; se não, adicionamos a virgula
+  //         if (integers == '100') {
+  //           inputValue = '100';
+  //         } else {
+  //           inputValue =
+  //             integers.substring(0, 2) + ',' + integers[integers.length - 1];
+  //           break;
+  //         }
+  //         break;
+  //       default:
+  //         //Caso o usuario digite '100', mas queria utilizar algum decimal (ex.: '10,05')
+  //         inputValue =
+  //           integers.substring(0, 2) +
+  //           ',' +
+  //           integers.substring(2, integers.length);
+  //         break;
+  //     }
+  //   } else {
+  //     //Fluxo normal com inteiros e decimais
+  //     inputValue = integers + ',' + decimals;
+  //   }
+
+  //   //Retorna o valor adicionando o sufixo '%'
+  //   return `${inputValue}%`;
+  // };
+
+  public static readonly percentInputTransformFn: InputTransformFn = (value: unknown): string => {
+    let untreatedValue = typeof value === 'number' ? Number(value).toFixed(2) : String(value);
+
+    return untreatedValue.includes('.') ? untreatedValue.replace('.', ',') : untreatedValue; 
+  }
+
+  /**
+   *
+   * @static
+   * Método estático para alimentar o valor do `FormControl` pertinente com o valor recebido de uma `inputTransformFn`.
+   * Nesse caso em específico, a função estática `percentInputTransformFn`.
+   *
+   * @param {string | number | undefined | null} value - O valor recebido da função `inputTransformFn` do mesmo campo.
+   * @returns O valor formatado do tipo `number` ou `null`.
+   */
+  public static readonly percentOutputTransformFn: OutputTransformFn = (
+    value: string | number | undefined | null
+  ): number | null => {
+    return !!value ? Number(value) : null;
   };
 }
