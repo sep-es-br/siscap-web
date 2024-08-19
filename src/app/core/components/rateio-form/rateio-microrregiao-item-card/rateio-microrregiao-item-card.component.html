@@ -16,6 +16,7 @@
               name="microrregiao-checkbox-rateio"
               id="microrregiao-checkbox-rateio"
               [(ngModel)]="microrregiaoBooleanCheckbox"
+              [disabled]="formMode == 'editar' && !isEdit"
               (change)="microrregiaoCheckboxChange($event)"
             />
             <label
@@ -43,7 +44,7 @@
               id="microrregiao-percentual-rateio"
               [(ngModel)]="microrregiaoPercentualRateio"
               readonly="true"
-              [disabled]="!microrregiaoBooleanCheckbox"
+              [disabled]="!microrregiaoBooleanCheckbox || (formMode == 'editar' && !isEdit)"
             />
           </div>
           <div class="col-8">
@@ -60,7 +61,7 @@
               id="microrregiao-quantia-rateio"
               min="1"
               [(ngModel)]="microrregiaoQuantiaRateio"
-              [disabled]="!microrregiaoBooleanCheckbox"
+              [disabled]="!microrregiaoBooleanCheckbox || (formMode == 'editar' && !isEdit)"
               (input)="microrregiaoQuantiaRateioChange()"
             />
           </div>
@@ -78,6 +79,8 @@
               [microrregiaoBooleanCheckbox]="microrregiaoBooleanCheckbox"
               [microrregiaoPercentualRateio]="microrregiaoPercentualRateio"
               [microrregiaoQuantiaRateio]="microrregiaoQuantiaRateio"
+              [formMode]="formMode"
+              [isEdit]="isEdit"
               (cidadeCheck)="cidadeFilhaCheckboxChangeEvent($event)"
             ></cidade-item-card>
           </ng-container>

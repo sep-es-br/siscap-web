@@ -23,12 +23,14 @@
         <div class="col-4 btn-group">
           <button
             class="btn btn-outline-primary p-1"
+            [disabled]="formMode == 'editar' && !isEdit"
             (click)="notificarCalculoAutomaticoObs('microrregiao')"
           >
             <span class="fs-small-3">Microrregião</span>
           </button>
           <button
             class="btn btn-outline-primary p-1"
+            [disabled]="formMode == 'editar' && !isEdit"
             (click)="notificarCalculoAutomaticoObs('cidade')"
           >
             <span class="fs-small-3">Cidade</span>
@@ -92,6 +94,8 @@
         <microrregiao-item-card
           [microrregiao]="microrregiao"
           [index]="i"
+          [formMode]="formMode"
+          [isEdit]="isEdit"
         ></microrregiao-item-card>
       </ng-container>
     </div>

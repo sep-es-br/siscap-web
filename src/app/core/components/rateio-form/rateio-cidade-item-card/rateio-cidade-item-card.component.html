@@ -9,6 +9,7 @@
         [name]="'cidade-checkbox-rateio-' + cidade.id"
         [id]="'cidade-checkbox-rateio-' + cidade.id"
         [(ngModel)]="cidadeBooleanCheckbox"
+        [disabled]="formMode == 'editar' && !isEdit"
         (change)="cidadeCheckboxChange($event)"
       />
       <label
@@ -37,7 +38,7 @@
         id="cidade-percentual-rateio"
         [(ngModel)]="cidadePercentualRateio"
         [ngModelOptions]="{ standalone: true }"
-        [disabled]="!cidadeBooleanCheckbox"
+        [disabled]="!cidadeBooleanCheckbox || (formMode == 'editar' && !isEdit)"
         readonly="true"
       />
     </div>

@@ -30,6 +30,8 @@ import { NgxMaskTransformFunctionHelper } from '../../../../shared/helpers/ngx-m
 export class RateioMicrorregiaoItemCardComponent {
   @Input() public microrregiao!: IMicrorregiaoCidadesSelectList;
   @Input() public index!: number;
+  @Input() public formMode: string = '';
+  @Input() public isEdit: boolean = false;
 
   public microrregiaoBooleanCheckbox: boolean = false;
 
@@ -71,11 +73,6 @@ export class RateioMicrorregiaoItemCardComponent {
     if (event) {
       this.microrregiaoBooleanCheckbox = event;
     }
-
-    // Boa ideia:
-    // if (this.microrregiaoBooleanCheckbox) {
-    //   this._rateioService.calculoAutomaticoObs$.next('microrregiao');
-    // }
   }
 
   public microrregiaoQuantiaRateioChange(): void {

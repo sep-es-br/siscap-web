@@ -64,7 +64,7 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private _getPessoaById$!: Observable<IPerson>;
   private _getPessoaBySubNovo$!: Observable<IPerson>;
-  private _isPersonResponsibleOrganization!: boolean;
+  private _idOrganizacaoResponsavel!: number | null;
 
   private _subscription: Subscription = new Subscription();
 
@@ -100,10 +100,10 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
     '<span>A pessoa já está cadastrada como responsável da organização: </span>' +
     '<br />' +
     '<br />' +
-    '<b>idOrganizacao</b>' +
+    '<b>nomeOrganizacao</b>' +
     '<br />' +
     '<br />' +
-    '<span>Alterar a organização a qual esta pessoa pertence irá desvincula-la como responsável da organização acima!</span>';
+    '<span>Alterar as organizações a qual esta pessoa pertence irá desvincula-la como responsável da organização acima!</span>';
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -128,8 +128,7 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
         tap((response) => {
           this.initForm(response);
 
-          this._isPersonResponsibleOrganization =
-            response.isResponsavelOrganizacao;
+          this._idOrganizacaoResponsavel = response.idOrganizacaoResponsavel;
 
           this.uploadedPhotoSrc = this.convertByteArraytoImgSrc(
             response.imagemPerfil as ArrayBuffer
@@ -251,7 +250,7 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }),
         idCidade: nnfb.control(person?.endereco?.idCidade ?? null),
       }),
-      idOrganizacao: nnfb.control(person?.idOrganizacao ?? null),
+      idOrganizacoes: nnfb.control(person?.idOrganizacoes ?? []),
       idAreasAtuacao: nnfb.control(person?.idAreasAtuacao ?? []),
     });
     const enderecoGroup = this.personForm.get('endereco');
@@ -329,22 +328,20 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this._subscription.add(this._getCidades$.subscribe());
   }
 
-  public organizationChanged(event: number) {
-
-    const orgName = this.organizacoesList.find(
-      (org) => org.id == this.personFormInitialValue.idOrganizacao
-    )?.nome;
-
+  public organizationRemoved(event: number) {
     if (
-      event != this.personFormInitialValue.idOrganizacao &&
-      this._isPersonResponsibleOrganization
+      this._idOrganizacaoResponsavel &&
+      event == this._idOrganizacaoResponsavel
     ) {
+      const organizationName = this.organizacoesList.find(
+        (org) => org.id == this._idOrganizacaoResponsavel
+      )?.nome;
+
       this.confirmPersonChangeSwalText =
         this.confirmPersonChangeSwalText.replace(
-          'idOrganizacao',
-          orgName ?? ''
+          'nomeOrganizacao',
+          organizationName ?? ''
         );
-
       setTimeout(() => {
         this.confirmPersonChangeSwal.fire();
       }, 0);

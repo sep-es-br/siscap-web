@@ -39,6 +39,8 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
   @Input() public microrregiaoBooleanCheckbox: boolean = false;
   @Input() public microrregiaoPercentualRateio: number | null = null;
   @Input() public microrregiaoQuantiaRateio: number | null = null;
+  @Input() public formMode: string = '';
+  @Input() public isEdit: boolean = false;
 
   @Output('cidadeCheck')
   public cidadeCheckboxChangeEvent: EventEmitter<boolean> =
@@ -85,6 +87,10 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    if (!!this.rateioCidadeForm.value.quantia) {
+      this.tratarEdicaoRateioCidadeForm();
+    }
+
     const quantiaFormControl = this.rateioCidadeForm.get(
       'quantia'
     ) as FormControl<number | null>;
@@ -98,11 +104,13 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
   }
 
   public cidadeCheckboxChangeMicrorregiaoPai(): void {
-    if (this.microrregiaoBooleanCheckbox != this.cidadeBooleanCheckbox) {
-      this.cidadeBooleanCheckbox = this.microrregiaoBooleanCheckbox;
-      this.cidadeBooleanCheckbox
-        ? this.incluirCidadeNoRateio()
-        : this.removerCidadeDoRateio();
+    if (this.formMode != 'editar' || this.isEdit) {
+      if (this.microrregiaoBooleanCheckbox != this.cidadeBooleanCheckbox) {
+        this.cidadeBooleanCheckbox = this.microrregiaoBooleanCheckbox;
+        this.cidadeBooleanCheckbox
+          ? this.incluirCidadeNoRateio()
+          : this.removerCidadeDoRateio();
+      }
     }
   }
 
@@ -127,7 +135,7 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
 
   private removerCidadeDoRateio(): void {
     this._rateioService.removerCidadeDoRateio(this.rateioCidadeForm);
-    this.rateioCidadeForm.reset();
+    this.rateioCidadeForm.reset({ idCidade: this.cidade.id });
     this.rateioCidadeForm.disable();
   }
 
@@ -143,5 +151,21 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
         quantia: quantiaPorCidade,
       });
     }
+  }
+
+  private tratarEdicaoRateioCidadeForm(): void {
+    this.cidadeBooleanCheckbox = true;
+    this.cidadeCheckboxChangeEvent.emit(true);
+    if (this.formMode != 'editar' || this.isEdit) {
+      this.rateioCidadeForm.enable();
+    }
+    this.cidadePercentualRateio =
+      this._rateioService.calcularPercentualPorQuantia(
+        this.rateioCidadeForm.value.quantia!
+      );
+    setTimeout(
+      () => this._rateioService.calculoAutomaticoObs$.next('cidade'),
+      750
+    );
   }
 }

@@ -10,9 +10,9 @@ import {
 
 import { ProjetoFormModel } from '../../models/projeto.model';
 import { EquipeFormModel } from '../../models/equipe.model';
+import { RateioFormModel } from '../../models/rateio.model';
 
 import { rateioValidatorFn } from '../../helpers/rateio/rateio-validator';
-import { RateioFormModel } from '../../models/rateio.model';
 
 @Injectable({
   providedIn: 'root',
@@ -44,8 +44,6 @@ export class ProjetosFormService {
     projetoForm
       .get('valorEstimado')
       ?.addValidators([Validators.required, Validators.min(1)]);
-
-    // projetoForm.get('idMicrorregioes')?.addValidators(Validators.required);
 
     projetoForm
       .get('rateio')
@@ -110,10 +108,6 @@ export class ProjetosFormService {
   public get valorEstimado(): FormControl<number | null> {
     return this.form.get('valorEstimado') as FormControl<number | null>;
   }
-
-  // public get idMicrorregioes(): FormControl<number[] | null> {
-  //   return this.form.get('idMicrorregioes') as FormControl<number[] | null>;
-  // }
 
   public get rateio(): FormArray<FormGroup<RateioFormModel>> {
     return this.form.get('rateio') as FormArray<FormGroup<RateioFormModel>>;

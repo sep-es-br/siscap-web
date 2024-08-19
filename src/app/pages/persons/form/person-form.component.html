@@ -195,20 +195,22 @@
               <div class="row">
                 <div class="col-12">
                   <div class="col-12">
-                    <label for="idOrganizacao" class="form-label col-12">
-                      Organização
+                    <label for="idOrganizacoes" class="form-label col-12">
+                      Organizações
                       <ng-container
                         *ngTemplateOutlet="
                           appAlert;
-                          context: { controlName: 'idOrganizacao' }
+                          context: { controlName: 'idOrganizacoes' }
                         "
                       ></ng-container>
                     </label>
                     <ng-select
-                      id="idOrganizacao"
-                      placeholder="-- Organização --"
-                      formControlName="idOrganizacao"
-                      (change)="organizationChanged($event)"
+                      id="idOrganizacoes"
+                      placeholder="-- Organizações --"
+                      formControlName="idOrganizacoes"
+                      [multiple]="true"
+                      [hideSelected]="true"
+                      (remove)="organizationRemoved($event)"
                     >
                       <ng-option
                         *ngFor="let organizacao of organizacoesList"

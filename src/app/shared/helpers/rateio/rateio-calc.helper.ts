@@ -1,5 +1,3 @@
-// import { IRateioTotal } from '../../interfaces/rateio.interface';
-
 /**
  * @abstract
  * Classe abstrata para auxiliar nos calculos do rateio.
@@ -17,7 +15,7 @@ export abstract class RateioCalcHelper {
       this.calcularPercentualPorQuantia(totalRateioQuantia, valorProjeto)
     );
 
-    return [totalRateioPercentual, totalRateioQuantia];
+    return [totalRateioPercentual, this.arrendondarDecimalPraBaixoDuasCasas(totalRateioQuantia)];
   }
 
   public static calcularPercentualPorQuantia(

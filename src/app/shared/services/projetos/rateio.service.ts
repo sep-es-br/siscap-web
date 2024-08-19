@@ -13,6 +13,7 @@ import { RateioFormModel } from '../../models/rateio.model';
 import { IMicrorregiaoCidadesSelectList } from '../../interfaces/select-list.interface';
 
 import { RateioCalcHelper } from '../../helpers/rateio/rateio-calc.helper';
+import { IRateio } from '../../interfaces/rateio.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -77,7 +78,7 @@ export class RateioService {
 
   public setRateioFormArray(
     targetRateioFormArray: FormArray<FormGroup<RateioFormModel>>
-  ) {
+  ): void {
     this._rateio = targetRateioFormArray;
 
     this._rateio.valueChanges
@@ -87,16 +88,30 @@ export class RateioService {
       });
   }
 
+  public patchRateioFormArray(rateioValue: Array<IRateio>): void {
+    rateioValue.forEach((rateioCidade) => {
+      const rateioFormGroup = this._nnfb.group<RateioFormModel>(
+        new RateioFormModel(rateioCidade)
+      );
+      this.incluirCidadeNoRateio(rateioFormGroup);
+    });
+  }
+
   public construirRateioFormGroup(
     idCidade: number
   ): FormGroup<RateioFormModel> {
-    return this._nnfb.group<RateioFormModel>({
-      idCidade: this._nnfb.control(idCidade),
-      quantia: this._nnfb.control(
-        { value: null, disabled: true },
-        { validators: Validators.required }
-      ),
-    });
+    return (
+      this.rateio.controls.find(
+        (control) => control.value.idCidade === idCidade
+      ) ??
+      this._nnfb.group<RateioFormModel>({
+        idCidade: this._nnfb.control(idCidade),
+        quantia: this._nnfb.control(
+          { value: null, disabled: true },
+          { validators: Validators.required }
+        ),
+      })
+    );
   }
 
   public incluirCidadeNoRateio(cidade: FormGroup<RateioFormModel>): void {
