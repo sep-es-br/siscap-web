@@ -1,6 +1,7 @@
 import { FormControl, FormArray, FormGroup } from '@angular/forms';
 
 import { EquipeFormModel, EquipeModel } from './equipe.model';
+import { RateioFormModel, RateioModel } from './rateio.model';
 
 import { IProjeto, IProjetoForm } from '../interfaces/projeto.interface';
 
@@ -11,7 +12,7 @@ export class ProjetoModel implements IProjeto {
   public titulo: string = '';
   public idOrganizacao: number = 0;
   public valorEstimado: number = 0;
-  public idMicrorregioes: number[] = [];
+  public rateio: RateioModel[];
   public objetivo: string = '';
   public objetivoEspecifico: string = '';
   public situacaoProblema: string = '';
@@ -28,7 +29,7 @@ export class ProjetoModel implements IProjeto {
     this.titulo = projeto?.titulo ?? '';
     this.idOrganizacao = projeto?.idOrganizacao ?? 0;
     this.valorEstimado = projeto?.valorEstimado ?? 0;
-    this.idMicrorregioes = projeto?.idMicrorregioes ?? [];
+    this.rateio = projeto?.rateio ?? [];
     this.objetivo = projeto?.objetivo ?? '';
     this.objetivoEspecifico = projeto?.objetivoEspecifico ?? '';
     this.situacaoProblema = projeto?.situacaoProblema ?? '';
@@ -53,7 +54,9 @@ export class ProjetoFormModel implements IProjetoForm {
   public titulo: FormControl<string | null> = new FormControl(null);
   public idOrganizacao: FormControl<number | null> = new FormControl(null);
   public valorEstimado: FormControl<number | null> = new FormControl(null);
-  public idMicrorregioes: FormControl<number[] | null> = new FormControl(null);
+  public rateio: FormArray<FormGroup<RateioFormModel>> = new FormArray<
+    FormGroup<RateioFormModel>
+  >([]);
   public objetivo: FormControl<string | null> = new FormControl(null);
   public objetivoEspecifico: FormControl<string | null> = new FormControl(null);
   public situacaoProblema: FormControl<string | null> = new FormControl(null);
@@ -73,7 +76,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.titulo.setValue(projeto?.titulo ?? null);
     this.idOrganizacao.setValue(projeto?.idOrganizacao ?? null);
     this.valorEstimado.setValue(projeto?.valorEstimado ?? null);
-    this.idMicrorregioes.setValue(projeto?.idMicrorregioes ?? null);
+    this.rateio.setValue(projeto?.rateio ?? []);
     this.objetivo.setValue(projeto?.objetivo ?? null);
     this.objetivoEspecifico.setValue(projeto?.objetivoEspecifico ?? null);
     this.situacaoProblema.setValue(projeto?.situacaoProblema ?? null);
