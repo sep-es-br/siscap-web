@@ -100,7 +100,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
         },
         { data: 'nome', title: 'Nome' },
         { data: 'email', title: 'E-mail' },
-        { data: 'nomeOrganizacao', title: 'Organização', orderable: false },
+        { data: 'nomesOrganizacoes', title: 'Organizações', orderable: false },
       ],
       order: [[1, 'asc']],
     };

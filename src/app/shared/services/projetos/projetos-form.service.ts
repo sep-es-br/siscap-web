@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  AbstractControl,
   FormArray,
   FormControl,
   FormGroup,
@@ -9,6 +10,9 @@ import {
 
 import { ProjetoFormModel } from '../../models/projeto.model';
 import { EquipeFormModel } from '../../models/equipe.model';
+import { RateioFormModel } from '../../models/rateio.model';
+
+import { rateioValidatorFn } from '../../helpers/rateio/rateio-validator';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +20,7 @@ import { EquipeFormModel } from '../../models/equipe.model';
 export class ProjetosFormService {
   private _projetoForm!: FormGroup<ProjetoFormModel>;
 
-  get form() {
+  private get form() {
     return this._projetoForm;
   }
 
@@ -30,35 +34,53 @@ export class ProjetosFormService {
     projetoForm
       .get('sigla')
       ?.addValidators([Validators.required, Validators.maxLength(12)]);
+
     projetoForm
       .get('titulo')
       ?.addValidators([Validators.required, Validators.maxLength(150)]);
+
     projetoForm.get('idOrganizacao')?.addValidators(Validators.required);
+
     projetoForm
       .get('valorEstimado')
       ?.addValidators([Validators.required, Validators.min(1)]);
-    projetoForm.get('idMicrorregioes')?.addValidators(Validators.required);
+
+    projetoForm
+      .get('rateio')
+      ?.addValidators([
+        Validators.required,
+        Validators.minLength(1),
+        rateioValidatorFn(projetoForm.get('valorEstimado')),
+      ]);
+
     projetoForm
       .get('objetivo')
       ?.addValidators([Validators.required, Validators.maxLength(2000)]);
+
     projetoForm
       .get('objetivoEspecifico')
       ?.addValidators([Validators.required, Validators.maxLength(2000)]);
+
     projetoForm
       .get('situacaoProblema')
       ?.addValidators([Validators.required, Validators.maxLength(2000)]);
+
     projetoForm
       .get('solucoesPropostas')
       ?.addValidators([Validators.required, Validators.maxLength(2000)]);
+
     projetoForm
       .get('impactos')
       ?.addValidators([Validators.required, Validators.maxLength(2000)]);
+
     projetoForm
       .get('arranjosInstitucionais')
       ?.addValidators([Validators.required, Validators.maxLength(2000)]);
+
     projetoForm
       .get('idResponsavelProponente')
       ?.addValidators(Validators.required);
+
     projetoForm
       .get('equipeElaboracao')
       ?.addValidators([Validators.required, Validators.minLength(1)]);
@@ -67,63 +89,63 @@ export class ProjetosFormService {
     return projetoForm;
   }
 
-  public getControl(controlName: string): FormControl {
-    return this.form.get(controlName) as FormControl;
+  public getControl(controlName: string): AbstractControl<any, any> | null {
+    return this.form.get(controlName) ?? null;
   }
 
-  get sigla(): FormControl<string | null> {
+  public get sigla(): FormControl<string | null> {
     return this.form.get('sigla') as FormControl<string | null>;
   }
 
-  get titulo(): FormControl<string | null> {
+  public get titulo(): FormControl<string | null> {
     return this.form.get('titulo') as FormControl<string | null>;
   }
 
-  get idOrganizacao(): FormControl<number | null> {
+  public get idOrganizacao(): FormControl<number | null> {
     return this.form.get('idOrganizacao') as FormControl<number | null>;
   }
 
-  get valorEstimado(): FormControl<number | null> {
+  public get valorEstimado(): FormControl<number | null> {
     return this.form.get('valorEstimado') as FormControl<number | null>;
   }
 
-  get idMicrorregioes(): FormControl<number[] | null> {
-    return this.form.get('idMicrorregioes') as FormControl<number[] | null>;
+  public get rateio(): FormArray<FormGroup<RateioFormModel>> {
+    return this.form.get('rateio') as FormArray<FormGroup<RateioFormModel>>;
   }
 
-  get objetivo(): FormControl<string | null> {
+  public get objetivo(): FormControl<string | null> {
     return this.form.get('objetivo') as FormControl<string | null>;
   }
 
-  get objetivoEspecifico(): FormControl<string | null> {
+  public get objetivoEspecifico(): FormControl<string | null> {
     return this.form.get('objetivoEspecifico') as FormControl<string | null>;
   }
 
-  get situacaoProblema(): FormControl<string | null> {
+  public get situacaoProblema(): FormControl<string | null> {
     return this.form.get('situacaoProblema') as FormControl<string | null>;
   }
 
-  get solucoesPropostas(): FormControl<string | null> {
+  public get solucoesPropostas(): FormControl<string | null> {
     return this.form.get('solucoesPropostas') as FormControl<string | null>;
   }
 
-  get impactos(): FormControl<string | null> {
+  public get impactos(): FormControl<string | null> {
     return this.form.get('impactos') as FormControl<string | null>;
   }
 
-  get arranjosInstitucionais(): FormControl<string | null> {
+  public get arranjosInstitucionais(): FormControl<string | null> {
     return this.form.get('arranjosInstitucionais') as FormControl<
       string | null
     >;
   }
 
-  get idResponsavelProponente(): FormControl<number | null> {
+  public get idResponsavelProponente(): FormControl<number | null> {
     return this.form.get('idResponsavelProponente') as FormControl<
       number | null
     >;
   }
 
-  get equipeElaboracao(): FormArray<FormGroup<EquipeFormModel>> {
+  public get equipeElaboracao(): FormArray<FormGroup<EquipeFormModel>> {
     return this.form.get('equipeElaboracao') as FormArray<
       FormGroup<EquipeFormModel>
     >;

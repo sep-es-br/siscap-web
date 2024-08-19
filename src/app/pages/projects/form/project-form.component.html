@@ -110,10 +110,7 @@
             </div>
           </div>
 
-          <div
-            class="row my-3"
-            *ngIf="getControl('idResponsavelProponente').value"
-          >
+          <div class="row" *ngIf="getControl('idResponsavelProponente')?.value">
             <div class="col-12 my-1">
               <siscap-equipe-form
                 [context]="'PROJETO'"
@@ -147,6 +144,7 @@
                 thousandSeparator="."
                 decimalMarker=","
                 [inputTransformFn]="rtlCurrencyInputTransformFn"
+                [outputTransformFn]="rtlCurrencyOutputTransformFn"
                 class="form-control"
                 id="valorEstimado"
                 formControlName="valorEstimado"
@@ -155,34 +153,17 @@
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-12">
-              <label for="idMicrorregioes" class="form-label col-12">
-                Microrregiões Atendidas
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'idMicrorregioes' }
-                  "
-                ></ng-container>
-              </label>
-              <ng-select
-                [multiple]="true"
-                [hideSelected]="true"
-                placeholder="-- Selecione as microrregioes --"
-                id="idMicrorregioes"
-                formControlName="idMicrorregioes"
-                (add)="
-                  ngSelectAddAll($event, 'idMicrorregioes', microrregioesList)
-                "
-              >
-                <ng-option>Todas</ng-option>
-                <ng-option
-                  *ngFor="let microrregiao of microrregioesList"
-                  [value]="microrregiao.id"
-                  >{{ microrregiao.nome }}</ng-option
-                >
-              </ng-select>
+          <div class="row" *ngIf="getControl('valorEstimado')?.value">
+            <div class="col-12 my-1">
+              <siscap-rateio-form
+                [context]="'PROJETO'"
+                [formMode]="formMode"
+                [isEdit]="isEdit"
+                [targetRateioArray]="rateioService.rateio"
+                [listArrays]="{
+                  microrregioesCidadesList: microrregioesCidadesList
+                }"
+              ></siscap-rateio-form>
             </div>
           </div>
 

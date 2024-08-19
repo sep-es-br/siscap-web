@@ -21,8 +21,8 @@ export interface IPerson {
   telefoneComercial?: string;
   telefonePessoal?: string;
   endereco?: IAddress;
-  idOrganizacao: number,
-  isResponsavelOrganizacao: boolean,
+  idOrganizacoes: Array<number>,
+  idOrganizacaoResponsavel: number | null,
   idAreasAtuacao: Array<string>;
   imagemPerfil?: File | ArrayBuffer;
 }
@@ -35,7 +35,9 @@ export interface IPersonACApi {
   subDescontinuado: string;
 }
 
-export interface IPersonTableData extends Pick<IPerson, 'id' | 'nome' | 'email' | 'imagemPerfil'> {}
+export interface IPersonTableData extends Pick<IPerson, 'id' | 'nome' | 'email' | 'imagemPerfil'> {
+  nomesOrganizacoes: Array<string>;
+}
 
 export interface IPersonCreate extends Omit<IPerson, 'id' | 'endereço.id'> {}
 

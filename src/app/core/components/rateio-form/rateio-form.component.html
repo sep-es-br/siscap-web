@@ -1,0 +1,103 @@
+<label for="rateio" class="form-label col-12">
+  Rateio
+  <ng-container>
+    <span class="error-message"> *</span>
+    <span
+      *ngIf="targetRateioArray.errors && targetRateioArray.dirty"
+      class="error-message float-end"
+      >{{ getErrorMessage(targetRateioArray.errors) }}</span
+    >
+  </ng-container>
+</label>
+
+<div class="card">
+  <div class="card-body">
+    <div class="col-12 mb-2 d-flex justify-content-between align-items-center">
+      <div
+        class="col-3 d-inline-flex flex-row justify-content-between rateio-options"
+      >
+        <span class="fs-small-3 align-self-center"
+          >Calcular automaticamente por:
+        </span>
+
+        <div class="col-4 btn-group">
+          <button
+            class="btn btn-outline-primary p-1"
+            [disabled]="formMode == 'editar' && !isEdit"
+            (click)="notificarCalculoAutomaticoObs('microrregiao')"
+          >
+            <span class="fs-small-3">Microrregião</span>
+          </button>
+          <button
+            class="btn btn-outline-primary p-1"
+            [disabled]="formMode == 'editar' && !isEdit"
+            (click)="notificarCalculoAutomaticoObs('cidade')"
+          >
+            <span class="fs-small-3">Cidade</span>
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="col-3 d-inline-flex flex-row justify-content-between values-label"
+      >
+        <div class="col-4">
+          <span
+            class="fs-small-3"
+            [ngStyle]="{
+              color: targetRateioArray.hasError('limiteRateio')
+                ? '#dc3545'
+                : '#212529'
+            }"
+          >
+            {{
+              rateioService.totalRateioPercentual
+                | mask
+                  : "percent.2"
+                  : {
+                      prefix: "~",
+                      suffix: "%",
+                      decimalMarker: ","
+                    }
+            }}
+          </span>
+        </div>
+        <div class="col-8">
+          <span
+            class="fs-small-3"
+            [ngStyle]="{
+              color: targetRateioArray.hasError('limiteRateio')
+                ? '#dc3545'
+                : '#212529'
+            }"
+          >
+            {{
+              rateioService.totalRateioQuantia
+                | mask
+                  : "separator.2"
+                  : {
+                      prefix: "R$",
+                      leadZero: true,
+                      thousandSeparator: ".",
+                      decimalMarker: ","
+                    }
+            }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <ng-container
+        *ngFor="let microrregiao of microrregioesCidadesList; index as i"
+      >
+        <microrregiao-item-card
+          [microrregiao]="microrregiao"
+          [index]="i"
+          [formMode]="formMode"
+          [isEdit]="isEdit"
+        ></microrregiao-item-card>
+      </ng-container>
+    </div>
+  </div>
+</div>

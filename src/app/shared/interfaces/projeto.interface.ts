@@ -1,6 +1,7 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 
 import { IEquipe, IEquipeForm } from './equipe.interface';
+import { IRateio, IRateioForm } from './rateio.interface';
 
 export interface IProjeto {
   readonly id: number;
@@ -9,7 +10,7 @@ export interface IProjeto {
   titulo: string;
   idOrganizacao: number;
   valorEstimado: number;
-  idMicrorregioes: number[];
+  rateio: Array<IRateio>;
   objetivo: string;
   objetivoEspecifico: string;
   situacaoProblema: string;
@@ -25,7 +26,7 @@ export interface IProjetoForm {
   titulo: FormControl<string | null>;
   idOrganizacao: FormControl<number | null>;
   valorEstimado: FormControl<number | null>;
-  idMicrorregioes: FormControl<number[] | null>;
+  rateio: FormArray<FormGroup<IRateioForm>>;
   objetivo: FormControl<string | null>;
   objetivoEspecifico: FormControl<string | null>;
   situacaoProblema: FormControl<string | null>;
@@ -38,11 +39,5 @@ export interface IProjetoForm {
 
 export interface IProjetoTableData
   extends Pick<IProjeto, 'id' | 'sigla' | 'titulo' | 'valorEstimado'> {
-  nomesMicrorregioes: string[];
+  nomesCidadesRateio: Array<string>;
 }
-
-// export interface IProjetoForm extends Omit<IProjeto, 'id' | 'idStatus'> {}
-
-// export interface IProjetoCreateBody extends Omit<IProjeto, 'id' | 'idStatus'> {}
-
-// export interface IProjectUpdate extends Partial<IProjectCreate> {}

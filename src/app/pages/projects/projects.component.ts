@@ -14,6 +14,7 @@ import {
 } from '../../shared/interfaces/http-get.interface';
 import { IProjetoTableData } from '../../shared/interfaces/projeto.interface';
 
+import { TableTextTruncatePipe } from '../../core/pipes/table-text-truncate/table-text-truncate.pipe';
 @Component({
   selector: 'siscap-projects',
   standalone: false,
@@ -74,11 +75,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },
         {
-          data: 'nomesMicrorregioes',
-          title: 'Microrregiões',
+          data: 'nomesCidadesRateio',
+          title: 'Cidades Atendidas',
           orderable: false,
-          render: (dado: string[]) =>
-            Array.isArray(dado) ? dado.join(', ') : dado,
+          render: (dado: string[]) => TableTextTruncatePipe.prototype.transform(dado, 3),
         },
         {
           data: 'valorEstimado',

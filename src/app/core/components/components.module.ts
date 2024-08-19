@@ -21,6 +21,9 @@ import { ToastComponent } from './toast/toast.component';
 import { CrudModule } from './crud/crud.module';
 import { CropperComponent } from './cropper/cropper.component';
 import { EquipeFormComponent } from './equipe-form/equipe-form.component';
+import { RateioFormComponent } from './rateio-form/rateio-form.component';
+import { RateioMicrorregiaoItemCardComponent } from './rateio-form/rateio-microrregiao-item-card/rateio-microrregiao-item-card.component';
+import { RateioCidadeItemCardComponent } from './rateio-form/rateio-cidade-item-card/rateio-cidade-item-card.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +39,9 @@ import { EquipeFormComponent } from './equipe-form/equipe-form.component';
     RouterModule,
     PipesModule,
     EquipeFormComponent,
+    RateioFormComponent,
+    RateioMicrorregiaoItemCardComponent,
+    RateioCidadeItemCardComponent,
     NgbToastModule,
     NgbDropdownModule,
     NgbModule,
@@ -52,6 +58,9 @@ import { EquipeFormComponent } from './equipe-form/equipe-form.component';
     LoadingComponent,
     ToastComponent,
     EquipeFormComponent,
+    RateioFormComponent,
+    RateioMicrorregiaoItemCardComponent,
+    RateioCidadeItemCardComponent,
     CrudModule,
     CropperComponent,
   ],

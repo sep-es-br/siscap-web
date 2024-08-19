@@ -99,6 +99,12 @@ export class ProjetosService {
     };
     this._http
       .get<Blob>(`${this._url}/dic/${id}`, userHttpOptions)
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          this._errorHandlerService.handleError(err);
+          return throwError(() => err);
+        })
+      )
       .subscribe((response) => {
         if (response instanceof HttpResponse) {
           const httpResponse = response as HttpResponse<Blob>;
