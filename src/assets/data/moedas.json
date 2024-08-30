@@ -1,0 +1,14 @@
+{
+  "BRL": {
+    "texto": "Real Brasileiro",
+    "simbolo": "R$"
+  },
+  "USD": {
+    "texto": "Dólar Americano",
+    "simbolo": "$"
+  },
+  "JPY": {
+    "texto": "Iene Japonês",
+    "simbolo": "¥"
+  }
+}

@@ -27,7 +27,7 @@ export abstract class NavMenuLinks {
       slug: 'banco_projeto',
       routes: [
         { title: 'Projetos', path: 'projetos', hidden: false },
-        { title: 'Programas', path: 'programas', hidden: true },
+        { title: 'Programas', path: 'programas', hidden: false },
       ],
     },
     {
