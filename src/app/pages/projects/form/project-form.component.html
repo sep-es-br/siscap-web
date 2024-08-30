@@ -6,7 +6,7 @@
   <div class="d-flex justify-content-end p-0">
     <button
       class="btn btn-outline-primary d-flex justify-content-around"
-      (click)="downloadDic(projectEditId)"
+      (click)="downloadDic()"
     >
       <i class="fa fa-file-arrow-down fs-5 mx-1 my-auto"></i>
       <span class="mx-1 fs-6">Gerar DIC</span>
@@ -15,7 +15,7 @@
 </div>
 
 <div class="project-form" *ngIf="!loading">
-  <form [formGroup]="projectForm">
+  <form [formGroup]="projetoForm">
     <div class="row mx-1">
       <div class="card">
         <div class="card-body">
@@ -111,18 +111,44 @@
           </div>
 
           <div class="row" *ngIf="getControl('idResponsavelProponente')?.value">
-            <div class="col-12 my-1">
+            <div class="col-12">
+              <label for="membroEquipeElaboracao" class="col-12 form-label"
+                >Equipe de Elaboração
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'equipeElaboracao' }
+                  "
+                ></ng-container>
+              </label>
+
+              <ng-select
+                id="idMembroEquipeElaboracao"
+                placeholder="-- Selecione uma pessoa para incluir na equipe de elaboração --"
+                [(ngModel)]="idMembroEquipeElaboracao"
+                [ngModelOptions]="{ standalone: true }"
+                [disabled]="!isEdit"
+                (change)="idMembroNgSelectChangeEvent($event)"
+              >
+                <ng-option
+                  *ngFor="
+                    let pessoa of equipeService.filtrarPessoasList(
+                      filtrarResponsavelProponente(pessoasList)
+                    )
+                  "
+                  [value]="pessoa.id"
+                >
+                  {{ pessoa.nome }}
+                </ng-option>
+              </ng-select>
+            </div>
+            <div class="col-12 mt-2">
               <siscap-equipe-form
-                [context]="'PROJETO'"
+                [pessoasList]="pessoasList"
+                [papeisList]="papeisList"
                 [formMode]="formMode"
                 [isEdit]="isEdit"
-                [targetArray]="equipeElaboracao"
-                [listArrays]="{
-                  membrosList: equipeElaboracaoList,
-                  papeisList: papeisList
-                }"
-              >
-              </siscap-equipe-form>
+              ></siscap-equipe-form>
             </div>
           </div>
 
@@ -153,17 +179,62 @@
             </div>
           </div>
 
-          <div class="row" *ngIf="getControl('valorEstimado')?.value">
+          <!-- VER MELHOR SE VALE A PENA USAR *ngIf, [ngClass] OU NADA -->
+          <!-- 
+            1. *ngIf: BASEADO SE valorEstimado É NULO OU NÃO
+                PROS: 
+                |-> IMPEDE SEQUER O INICIO DE MANIPULAÇÃO DO RATEIO, EVITA ERROS
+
+                CONS:
+                |-> POSSIVEIS PROBLEMAS DURANTE INICIALIZACAO (PRINCIPALMENTE EM EDIÇÃO)
+                |-> ONERA O SISTEMA (SEMPRE QUE valorEstimado FOR NULO, CARREGA TUDO DE NOVO)
+          
+
+            2. [ngClass]: APLICA CLASSE BOOTSTRAP 'invisible' QUANDO valorEstimado FOR NULO
+                PROS:
+                |-> NÃO ONERA O SISTEMA (RATEIO CRIADO UMA VEZ, DADOS MANTÉM)
+
+                CONS:
+                |-> OCUPA ESPAÇO NO DOM ("EMPURRA" TODO O RESTO DO CONTEUDO PRA BAIXO)
+
+            3. NADA: 
+                PROS:
+                |-> NÃO ONERA O SISTEMA (RATEIO CRIADO UMA VEZ, DADOS MANTÉM)
+
+                CONS:
+                |-> MEIO QUE ONERA O SISTEMA SIM:
+                  |-> PRECISA CRIAR UM MONTE DE fromEvent() CAPTURANDO BOTÕES, INPUTS
+                      PRA APLICAR event.preventDefault() CASO valorEstimado SEJA NULO
+          -->
+
+          <!-- [ngClass]="{ invisible: !getControl('valorEstimado').value }" -->
+          <!-- <div class="row" *ngIf="getControl('valorEstimado')?.value"> -->
+          <div class="row">
             <div class="col-12 my-1">
-              <siscap-rateio-form
+              <label for="rateio" class="form-label col-12">
+                Rateio
+                <ng-container
+                  *ngTemplateOutlet="
+                    appAlert;
+                    context: { controlName: 'rateio' }
+                  "
+                ></ng-container>
+              </label>
+              <new-rateio-form
+                [microrregioesList]="microrregioesList"
+                [cidadesComMicrorregiaoList]="cidadesComMicrorregiaoList"
+                [formMode]="formMode"
+                [isEdit]="isEdit"
+              ></new-rateio-form>
+              <!-- <siscap-rateio-form
                 [context]="'PROJETO'"
                 [formMode]="formMode"
                 [isEdit]="isEdit"
-                [targetRateioArray]="rateioService.rateio"
+                [targetRateioArray]="oldRateioService.rateio"
                 [listArrays]="{
                   microrregioesCidadesList: microrregioesCidadesList
                 }"
-              ></siscap-rateio-form>
+              ></siscap-rateio-form> -->
             </div>
           </div>
 

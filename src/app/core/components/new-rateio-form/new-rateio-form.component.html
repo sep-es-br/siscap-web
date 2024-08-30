@@ -1,0 +1,174 @@
+<div class="card">
+  <div class="card-body">
+    <div class="col-12 mb-2 d-flex justify-content-between align-items-center">
+      <div class="col-3 d-inline-flex flex-row justify-content-between">
+        <span class="fs-small-3 align-self-center"
+          >Calcular automaticamente por:
+        </span>
+
+        <div class="col-4 btn-group">
+          <button
+            id="calculo-automatico-microrregiao"
+            class="btn btn-outline-primary p-1"
+            [disabled]="formMode == 'editar' && !isEdit"
+            (click)="rateioService.calculoAutomaticoPorMicrorregioes()"
+          >
+            <span class="fs-small-3">Microrregião</span>
+          </button>
+          <button
+            id="calculo-automatico-cidade"
+            class="btn btn-outline-primary p-1"
+            [disabled]="formMode == 'editar' && !isEdit"
+            (click)="rateioService.calculoAutomaticoPorCidades()"
+          >
+            <span class="fs-small-3">Cidade</span>
+          </button>
+        </div>
+      </div>
+      <div class="col-3 d-inline-flex flex-row justify-content-between">
+        <ng-container
+          *ngIf="rateioService.valorEstimadoReferencia; else nullValorEstimado"
+        >
+          <div class="col-4">
+            <span class="fs-small-3 total-percentual">0%</span>
+          </div>
+          <div class="col-8">
+            <span class="fs-small-3 total-quantia">R$0,00</span>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div ngbAccordion>
+        <ng-container *ngFor="let microrregiao of microrregioesList">
+          <div ngbAccordionItem [destroyOnHide]="false">
+            <div ngbAccordionHeader>
+              <rateio-microrregiao-form-card [microrregiao]="microrregiao">
+                <button
+                  ngbAccordionButton
+                  class="m-0 p-0 bg-transparent"
+                ></button>
+              </rateio-microrregiao-form-card>
+              <div ngbAccordionCollapse>
+                <div ngbAccordionBody>
+                  <ng-template>
+                    <ng-container
+                      *ngFor="
+                        let cidade of filtrarCidadesPorMicrorregiao(
+                          microrregiao.id
+                        )
+                      "
+                    >
+                      <rateio-cidade-form-card
+                        [cidade]="cidade"
+                      ></rateio-cidade-form-card>
+                    </ng-container>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #nullValorEstimado>
+  <div id="nullValorEstimadoCol" class="col-12 text-center">
+    <span class="fs-small-3 text-danger">Sem Valor Estimado</span>
+  </div>
+</ng-template>
+
+<!-- <div class="card">
+  <div class="card-body">
+    <div class="col-12 mb-2 d-flex justify-content-between align-items-center">
+      <div
+        class="col-3 d-inline-flex flex-row justify-content-between rateio-options"
+      >
+        <span class="fs-small-3 align-self-center"
+          >Calcular automaticamente por:
+        </span>
+
+        <div class="col-4 btn-group">
+          <button
+            class="btn btn-outline-primary p-1"
+            [disabled]="formMode == 'editar' && !isEdit"
+            (click)="notificarCalculoAutomaticoObs('microrregiao')"
+          >
+            <span class="fs-small-3">Microrregião</span>
+          </button>
+          <button
+            class="btn btn-outline-primary p-1"
+            [disabled]="formMode == 'editar' && !isEdit"
+            (click)="notificarCalculoAutomaticoObs('cidade')"
+          >
+            <span class="fs-small-3">Cidade</span>
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="col-3 d-inline-flex flex-row justify-content-between values-label"
+      >
+        <div class="col-4">
+          <span
+            class="fs-small-3"
+            [ngStyle]="{
+              color: targetRateioArray.hasError('limiteRateio')
+                ? '#dc3545'
+                : '#212529'
+            }"
+          >
+            {{
+              oldRateioService.totalRateioPercentual
+                | mask
+                  : "percent.2"
+                  : {
+                      prefix: "~",
+                      suffix: "%",
+                      decimalMarker: ","
+                    }
+            }}
+          </span>
+        </div>
+        <div class="col-8">
+          <span
+            class="fs-small-3"
+            [ngStyle]="{
+              color: targetRateioArray.hasError('limiteRateio')
+                ? '#dc3545'
+                : '#212529'
+            }"
+          >
+            {{
+              oldRateioService.totalRateioQuantia
+                | mask
+                  : "separator.2"
+                  : {
+                      prefix: "R$",
+                      leadZero: true,
+                      thousandSeparator: ".",
+                      decimalMarker: ","
+                    }
+            }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <ng-container
+        *ngFor="let microrregiao of microrregioesCidadesList; index as i"
+      >
+        <microrregiao-item-card
+          [microrregiao]="microrregiao"
+          [index]="i"
+          [formMode]="formMode"
+          [isEdit]="isEdit"
+        ></microrregiao-item-card>
+      </ng-container>
+    </div>
+  </div>
+</div> -->

@@ -12,11 +12,11 @@ import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
 import { RateioMicrorregiaoItemCardComponent } from './rateio-microrregiao-item-card/rateio-microrregiao-item-card.component';
 
-import { RateioService } from '../../../shared/services/projetos/rateio.service';
+import { OldRateioService } from '../../../shared/services/projetos/old-rateio.service';
 
 import { IMicrorregiaoCidadesSelectList } from '../../../shared/interfaces/select-list.interface';
 import { ErrorMessageMap } from '../../../shared/utils/error-messages-map';
-import { RateioFormModel } from '../../../shared/models/rateio.model';
+// import { RateioFormModel } from '../../../shared/models/rateio.model';
 
 @Component({
   selector: 'siscap-rateio-form',
@@ -37,8 +37,10 @@ export class RateioFormComponent implements OnChanges {
   @Input({ alias: 'formMode', required: true }) public formMode: string = '';
   @Input({ alias: 'isEdit', required: true }) public isEdit: boolean = false;
   @Input({ alias: 'targetRateioArray', required: true })
-  public targetRateioArray: FormArray<FormGroup<RateioFormModel>> =
-    new FormArray<FormGroup<RateioFormModel>>([]);
+  // public targetRateioArray: FormArray<FormGroup<RateioFormModel>> =
+  //   new FormArray<FormGroup<RateioFormModel>>([]);  
+  public targetRateioArray: FormArray<FormGroup<any>> =
+    new FormArray<FormGroup<any>>([]);
   @Input({ alias: 'listArrays', required: true }) public selectListArrayArgs: {
     [key: string]: Array<IMicrorregiaoCidadesSelectList>;
   } = {};
@@ -47,13 +49,13 @@ export class RateioFormComponent implements OnChanges {
 
   public microrregioesCidadesList: Array<IMicrorregiaoCidadesSelectList> = [];
 
-  constructor(public rateioService: RateioService) {}
+  constructor(public oldRateioService: OldRateioService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     this.microrregioesCidadesList =
       this.selectListArrayArgs['microrregioesCidadesList'];
 
-    this.rateioService.microrregioesCidadesList = this.microrregioesCidadesList;
+    this.oldRateioService.microrregioesCidadesList = this.microrregioesCidadesList;
   }
 
   public getErrorMessage(validationErrors: ValidationErrors | null): string {
@@ -70,6 +72,6 @@ export class RateioFormComponent implements OnChanges {
   }
 
   public notificarCalculoAutomaticoObs(tipo: string): void {
-    this.rateioService.calculoAutomaticoObs$.next(tipo);
+    this.oldRateioService.calculoAutomaticoObs$.next(tipo);
   }
 }

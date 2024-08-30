@@ -1,0 +1,25 @@
+span.total-percentual, span.total-quantia {
+  padding-left: 0.75rem;
+}
+
+div.accordion-item {
+  border: 0;
+
+  &:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+}
+
+div.accordion-body {
+  padding: 0;
+}
+
+button.accordion-button {
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:after {
+    margin: 0;
+  }
+}

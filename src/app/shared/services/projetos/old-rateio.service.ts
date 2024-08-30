@@ -8,7 +8,7 @@ import {
 
 import { debounceTime, Subject } from 'rxjs';
 
-import { RateioFormModel } from '../../models/rateio.model';
+// import { any } from '../../models/rateio.model';
 
 import { IMicrorregiaoCidadesSelectList } from '../../interfaces/select-list.interface';
 
@@ -18,12 +18,12 @@ import { IRateio } from '../../interfaces/rateio.interface';
 @Injectable({
   providedIn: 'root',
 })
-export class RateioService {
-  private _rateio: FormArray<FormGroup<RateioFormModel>> = new FormArray<
-    FormGroup<RateioFormModel>
+export class OldRateioService {
+  private _rateio: FormArray<FormGroup<any>> = new FormArray<
+    FormGroup<any>
   >([]);
 
-  public get rateio(): FormArray<FormGroup<RateioFormModel>> {
+  public get rateio(): FormArray<FormGroup<any>> {
     return this._rateio;
   }
 
@@ -77,7 +77,7 @@ export class RateioService {
   }
 
   public setRateioFormArray(
-    targetRateioFormArray: FormArray<FormGroup<RateioFormModel>>
+    targetRateioFormArray: FormArray<FormGroup<any>>
   ): void {
     this._rateio = targetRateioFormArray;
 
@@ -90,8 +90,9 @@ export class RateioService {
 
   public patchRateioFormArray(rateioValue: Array<IRateio>): void {
     rateioValue.forEach((rateioCidade) => {
-      const rateioFormGroup = this._nnfb.group<RateioFormModel>(
-        new RateioFormModel(rateioCidade)
+      const rateioFormGroup = this._nnfb.group<any>(
+        // new any(rateioCidade)
+        {}
       );
       this.incluirCidadeNoRateio(rateioFormGroup);
     });
@@ -99,12 +100,12 @@ export class RateioService {
 
   public construirRateioFormGroup(
     idCidade: number
-  ): FormGroup<RateioFormModel> {
+  ): FormGroup<any> {
     return (
       this.rateio.controls.find(
         (control) => control.value.idCidade === idCidade
       ) ??
-      this._nnfb.group<RateioFormModel>({
+      this._nnfb.group<any>({
         idCidade: this._nnfb.control(idCidade),
         quantia: this._nnfb.control(
           { value: null, disabled: true },
@@ -114,11 +115,11 @@ export class RateioService {
     );
   }
 
-  public incluirCidadeNoRateio(cidade: FormGroup<RateioFormModel>): void {
+  public incluirCidadeNoRateio(cidade: FormGroup<any>): void {
     this.rateio.push(cidade);
   }
 
-  public removerCidadeDoRateio(cidade: FormGroup<RateioFormModel>): void {
+  public removerCidadeDoRateio(cidade: FormGroup<any>): void {
     const index = this.rateio.value.findIndex(
       (targetCidade) => targetCidade.idCidade === cidade.value.idCidade
     );

@@ -18,9 +18,9 @@ import {
 import { debounceTime } from 'rxjs';
 import { NgxMaskDirective } from 'ngx-mask';
 
-import { RateioService } from '../../../../shared/services/projetos/rateio.service';
+import { OldRateioService } from '../../../../shared/services/projetos/old-rateio.service';
 
-import { RateioFormModel } from '../../../../shared/models/rateio.model';
+// import { RateioFormModel } from '../../../../shared/models/rateio.model';
 
 import { ISelectList } from '../../../../shared/interfaces/select-list.interface';
 
@@ -46,7 +46,8 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
   public cidadeCheckboxChangeEvent: EventEmitter<boolean> =
     new EventEmitter<boolean>();
 
-  public rateioCidadeForm!: FormGroup<RateioFormModel>;
+  // public rateioCidadeForm!: FormGroup<RateioFormModel>;
+  public rateioCidadeForm!: FormGroup<any>;
 
   public cidadeBooleanCheckbox: boolean = false;
 
@@ -64,8 +65,8 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
   public percentOutputTransformFn =
     NgxMaskTransformFunctionHelper.percentOutputTransformFn;
 
-  constructor(private _rateioService: RateioService) {
-    this._rateioService.calculoAutomaticoObs$.subscribe((tipo) => {
+  constructor(private _oldRateioService: OldRateioService) {
+    this._oldRateioService.calculoAutomaticoObs$.subscribe((tipo) => {
       if (tipo == 'microrregiao') {
         this.calcularValoresCidadeAutomatico();
       }
@@ -74,7 +75,7 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['cidade']?.isFirstChange())
-      this.rateioCidadeForm = this._rateioService.construirRateioFormGroup(
+      this.rateioCidadeForm = this._oldRateioService.construirRateioFormGroup(
         this.cidade.id
       );
 
@@ -99,7 +100,7 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
       .pipe(debounceTime(750))
       .subscribe((quantia) => {
         this.cidadePercentualRateio =
-          this._rateioService.calcularPercentualPorQuantia(quantia);
+          this._oldRateioService.calcularPercentualPorQuantia(quantia);
       });
   }
 
@@ -129,19 +130,19 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
   }
 
   private incluirCidadeNoRateio(): void {
-    this._rateioService.incluirCidadeNoRateio(this.rateioCidadeForm);
+    this._oldRateioService.incluirCidadeNoRateio(this.rateioCidadeForm);
     this.rateioCidadeForm.enable();
   }
 
   private removerCidadeDoRateio(): void {
-    this._rateioService.removerCidadeDoRateio(this.rateioCidadeForm);
+    this._oldRateioService.removerCidadeDoRateio(this.rateioCidadeForm);
     this.rateioCidadeForm.reset({ idCidade: this.cidade.id });
     this.rateioCidadeForm.disable();
   }
 
   private calcularValoresCidadeAutomatico(): void {
     const quantiaPorCidade =
-      this._rateioService.calcularValoresCidadeAutomatico(
+      this._oldRateioService.calcularValoresCidadeAutomatico(
         this.microrregiaoId,
         this.microrregiaoQuantiaRateio
       );
@@ -160,11 +161,11 @@ export class RateioCidadeItemCardComponent implements OnChanges, AfterViewInit {
       this.rateioCidadeForm.enable();
     }
     this.cidadePercentualRateio =
-      this._rateioService.calcularPercentualPorQuantia(
+      this._oldRateioService.calcularPercentualPorQuantia(
         this.rateioCidadeForm.value.quantia!
       );
     setTimeout(
-      () => this._rateioService.calculoAutomaticoObs$.next('cidade'),
+      () => this._oldRateioService.calculoAutomaticoObs$.next('cidade'),
       750
     );
   }

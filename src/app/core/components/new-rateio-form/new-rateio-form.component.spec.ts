@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EquipeFormComponent } from './equipe-form.component';
+import { NewRateioFormComponent } from './new-rateio-form.component';
 
-describe('EquipeFormComponent', () => {
-  let component: EquipeFormComponent;
-  let fixture: ComponentFixture<EquipeFormComponent>;
+describe('NewRateioFormComponent', () => {
+  let component: NewRateioFormComponent;
+  let fixture: ComponentFixture<NewRateioFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EquipeFormComponent]
+      imports: [NewRateioFormComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(EquipeFormComponent);
+    fixture = TestBed.createComponent(NewRateioFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -7,7 +7,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 
 import { RateioCidadeItemCardComponent } from '../rateio-cidade-item-card/rateio-cidade-item-card.component';
 
-import { RateioService } from '../../../../shared/services/projetos/rateio.service';
+import { OldRateioService } from '../../../../shared/services/projetos/old-rateio.service';
 
 import { IMicrorregiaoCidadesSelectList } from '../../../../shared/interfaces/select-list.interface';
 
@@ -50,8 +50,8 @@ export class RateioMicrorregiaoItemCardComponent {
   public percentOutputTransformFn =
     NgxMaskTransformFunctionHelper.percentOutputTransformFn;
 
-  constructor(private _rateioService: RateioService) {
-    this._rateioService.calculoAutomaticoObs$.subscribe((tipo) => {
+  constructor(private _oldRateioService: OldRateioService) {
+    this._oldRateioService.calculoAutomaticoObs$.subscribe((tipo) => {
       if (tipo == 'cidade') {
         this.calcularValoresMicrorregiaoAutomatico();
       }
@@ -77,14 +77,14 @@ export class RateioMicrorregiaoItemCardComponent {
 
   public microrregiaoQuantiaRateioChange(): void {
     this.microrregiaoPercentualRateio =
-      this._rateioService.calcularPercentualPorQuantia(
+      this._oldRateioService.calcularPercentualPorQuantia(
         this.microrregiaoQuantiaRateio
       );
   }
 
   private calcularValoresMicrorregiaoAutomatico(): void {
     const quantiaPorMicrorregiao =
-      this._rateioService.calcularValoresMicrorregiaoAutomatico(
+      this._oldRateioService.calcularValoresMicrorregiaoAutomatico(
         this.microrregiao.id
       );
 
