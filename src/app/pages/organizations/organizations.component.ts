@@ -112,7 +112,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   public redirectOrganizationForm(OrganizationId: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: OrganizationId, isEdit: true },
+      queryParams: { id: OrganizationId },
     });
   }
 
