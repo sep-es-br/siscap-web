@@ -6,9 +6,3 @@ export interface ISelectList {
 export interface ICidadeSelectList extends ISelectList {
   idMicrorregiao: number;
 }
-
-export interface IMicrorregiaoCidadesSelectList {
-  id: number;
-  nome: string;
-  cidades: Array<ISelectList>;
-}

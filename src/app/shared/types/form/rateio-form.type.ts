@@ -1,4 +1,14 @@
-import { FormControl } from '@angular/forms';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+
+export type RateioFormType = {
+  rateioMicrorregiao: FormArray<FormGroup<RateioMicrorregiaoFormType>>;
+  rateioCidade: FormArray<FormGroup<RateioCidadeFormType>>;
+};
+
+export type RateioFormTypeValue = Partial<{
+  rateioMicrorregiao: Array<RateioMicrorregiaoFormTypeValue>;
+  rateioCidade: Array<RateioCidadeFormTypeValue>;
+}>;
 
 export type RateioMicrorregiaoFormType = {
   idMicrorregiao: FormControl<number>;

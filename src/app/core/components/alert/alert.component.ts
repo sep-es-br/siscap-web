@@ -31,7 +31,7 @@ export class AlertComponent {
           (controlError) =>
             ErrorMessageMap[controlError as keyof typeof ErrorMessageMap]
         )
-        .join(', ');
+        .join(' | ');
     }
 
     return '';

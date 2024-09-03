@@ -75,8 +75,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         { data: 'sigla', title: 'Sigla' },
         { data: 'titulo', title: 'Título' },
         {
-          data: 'nomesCidadesRateio',
-          title: 'Cidades Atendidas',
+          data: 'nomesMicrorregioesRateio',
+          title: 'Microrregioes Atendidas',
           orderable: false,
           render: (dado: string[]) => TableTextTruncatePipe.prototype.transform(dado, 3),
         },

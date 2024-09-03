@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { debounceTime, filter, fromEvent, tap } from 'rxjs';
@@ -30,6 +37,12 @@ export class RateioMicrorregiaoFormCardComponent
   implements OnInit, AfterViewInit
 {
   @Input() public microrregiao!: ISelectList;
+  @Input() public formMode: string = '';
+  @Input() public isEdit: boolean = false;
+
+  @Output('microrregiaoEditInitCheck')
+  private microrregiaoEditInitCheck: EventEmitter<void> =
+    new EventEmitter<void>();
 
   public rateioMicrorregiaoFormGroup!: FormGroup<RateioMicrorregiaoFormType>;
 
@@ -59,9 +72,12 @@ export class RateioMicrorregiaoFormCardComponent
 
   ngOnInit(): void {
     this.rateioMicrorregiaoFormGroup =
-      this.rateioService.construirRateioMicrorregiaoFormGroupSelectList(
-        this.microrregiao.id
-      );
+      this.inicializarRateioMicrorregiaoFormGroup();
+
+    if (this.buscarIndiceRateioMicrorregiaoFormGroup() !== -1) {
+      this.microrregiaoBooleanCheckbox = true;
+      this.microrregiaoEditInitCheck.emit();
+    }
 
     this.rateioMicrorregiaoFormGroup.disable();
   }
@@ -128,6 +144,17 @@ export class RateioMicrorregiaoFormCardComponent
       : this.removerMicrorregiaoDoRateio();
   }
 
+  private inicializarRateioMicrorregiaoFormGroup(): FormGroup<RateioMicrorregiaoFormType> {
+    return (
+      this.rateioService.rateioMicrorregiaoFormArray.controls[
+        this.buscarIndiceRateioMicrorregiaoFormGroup()
+      ] ??
+      this.rateioService.construirRateioMicrorregiaoFormGroupSelectList(
+        this.microrregiao.id
+      )
+    );
+  }
+
   private cidadeFilhaCheckboxChange(
     cidadeCheckboxValue: ICidadeCheckboxChange
   ): void {
@@ -154,6 +181,9 @@ export class RateioMicrorregiaoFormCardComponent
     this.rateioService.removerMicrorregiaoDoRateio(
       this.buscarIndiceRateioMicrorregiaoFormGroup()
     );
+    this.rateioMicrorregiaoFormGroup.reset({
+      idMicrorregiao: this.microrregiao.id,
+    });
     this.rateioMicrorregiaoFormGroup.disable();
   }
 

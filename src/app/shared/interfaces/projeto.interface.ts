@@ -8,7 +8,6 @@ export interface IProjeto {
   titulo: string;
   idOrganizacao: number;
   valorEstimado: number;
-  // rateio: Array<IRateio>;
   rateio: IRateio;
   objetivo: string;
   objetivoEspecifico: string;
@@ -24,5 +23,5 @@ export interface IProjetoForm extends Omit<IProjeto, 'id' | 'idStatus'> {}
 
 export interface IProjetoTableData
   extends Pick<IProjeto, 'id' | 'sigla' | 'titulo' | 'valorEstimado'> {
-  nomesCidadesRateio: Array<string>;
+  nomesMicrorregioesRateio: Array<string>;
 }

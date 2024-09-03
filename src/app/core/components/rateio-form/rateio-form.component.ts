@@ -1,77 +1,78 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
+
+import { fromEvent, merge } from 'rxjs';
 import {
-  FormArray,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  ValidationErrors,
-} from '@angular/forms';
+  NgbAccordionItem,
+  NgbAccordionModule,
+} from '@ng-bootstrap/ng-bootstrap';
 
-import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
+import { RateioMicrorregiaoFormCardComponent } from './rateio-microrregiao-form-card/rateio-microrregiao-form-card.component';
+import { RateioCidadeFormCardComponent } from './rateio-cidade-form-card/rateio-cidade-form-card.component';
 
-import { RateioMicrorregiaoItemCardComponent } from './rateio-microrregiao-item-card/rateio-microrregiao-item-card.component';
+import { RateioService } from '../../../shared/services/rateio/rateio.service';
 
-import { OldRateioService } from '../../../shared/services/projetos/old-rateio.service';
+import {
+  ICidadeSelectList,
+  ISelectList,
+} from '../../../shared/interfaces/select-list.interface';
 
-import { IMicrorregiaoCidadesSelectList } from '../../../shared/interfaces/select-list.interface';
-import { ErrorMessageMap } from '../../../shared/utils/error-messages-map';
-// import { RateioFormModel } from '../../../shared/models/rateio.model';
+import { SIDEWAYS_SHAKE } from '../../../shared/utils/animations';
+import { NgxMaskPipe } from 'ngx-mask';
 
 @Component({
   selector: 'siscap-rateio-form',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgxMaskDirective,
     NgxMaskPipe,
-    RateioMicrorregiaoItemCardComponent,
+    NgbAccordionModule,
+    RateioMicrorregiaoFormCardComponent,
+    RateioCidadeFormCardComponent,
   ],
   templateUrl: './rateio-form.component.html',
-  styleUrls: ['./rateio-form.component.scss'],
+  styleUrl: './rateio-form.component.scss',
 })
-export class RateioFormComponent implements OnChanges {
-  @Input({ alias: 'context', required: true }) public context: string = '';
-  @Input({ alias: 'formMode', required: true }) public formMode: string = '';
-  @Input({ alias: 'isEdit', required: true }) public isEdit: boolean = false;
-  @Input({ alias: 'targetRateioArray', required: true })
-  // public targetRateioArray: FormArray<FormGroup<RateioFormModel>> =
-  //   new FormArray<FormGroup<RateioFormModel>>([]);  
-  public targetRateioArray: FormArray<FormGroup<any>> =
-    new FormArray<FormGroup<any>>([]);
-  @Input({ alias: 'listArrays', required: true }) public selectListArrayArgs: {
-    [key: string]: Array<IMicrorregiaoCidadesSelectList>;
-  } = {};
+export class RateioFormComponent implements AfterViewInit {
+  @ViewChild('rateioMicrorregiaoAccordionItem')
+  public rateioMicrorregiaoAccordionItem!: NgbAccordionItem;
 
-  public formGroupLabel: string = '';
+  @Input() public microrregioesList: Array<ISelectList> = [];
+  @Input() public cidadesComMicrorregiaoList: Array<ICidadeSelectList> = [];
+  @Input() public formMode: string = '';
+  @Input() public isEdit: boolean = false;
 
-  public microrregioesCidadesList: Array<IMicrorregiaoCidadesSelectList> = [];
+  constructor(public rateioService: RateioService) {}
 
-  constructor(public oldRateioService: OldRateioService) {}
+  ngAfterViewInit(): void {
+    const calculoAutomaticoMicrorregiaoButton = document.querySelector(
+      'button#calculo-automatico-microrregiao'
+    );
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.microrregioesCidadesList =
-      this.selectListArrayArgs['microrregioesCidadesList'];
+    const calculoAutomaticoCidadeButton = document.querySelector(
+      'button#calculo-automatico-cidade'
+    );
 
-    this.oldRateioService.microrregioesCidadesList = this.microrregioesCidadesList;
-  }
-
-  public getErrorMessage(validationErrors: ValidationErrors | null): string {
-    if (validationErrors) {
-      return Object.keys(validationErrors)
-        .map(
-          (controlError) =>
-            ErrorMessageMap[controlError as keyof typeof ErrorMessageMap]
-        )
-        .join(', ');
+    if (calculoAutomaticoMicrorregiaoButton && calculoAutomaticoCidadeButton) {
+      merge(
+        fromEvent(calculoAutomaticoMicrorregiaoButton, 'click'),
+        fromEvent(calculoAutomaticoCidadeButton, 'click')
+      ).subscribe((clickEvent) => {
+        if (!this.rateioService.valorEstimadoReferencia) {
+          clickEvent.preventDefault();
+          document
+            .querySelector('div#nullValorEstimadoCol')
+            ?.animate(SIDEWAYS_SHAKE.keyframes, SIDEWAYS_SHAKE.options);
+        }
+      });
     }
-
-    return '';
   }
 
-  public notificarCalculoAutomaticoObs(tipo: string): void {
-    this.oldRateioService.calculoAutomaticoObs$.next(tipo);
+  public filtrarCidadesPorMicrorregiao(
+    idMicrorregiao: number
+  ): Array<ICidadeSelectList> {
+    return this.cidadesComMicrorregiaoList.filter(
+      (cidade) => cidade.idMicrorregiao === idMicrorregiao
+    );
   }
 }

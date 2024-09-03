@@ -179,36 +179,6 @@
             </div>
           </div>
 
-          <!-- VER MELHOR SE VALE A PENA USAR *ngIf, [ngClass] OU NADA -->
-          <!-- 
-            1. *ngIf: BASEADO SE valorEstimado É NULO OU NÃO
-                PROS: 
-                |-> IMPEDE SEQUER O INICIO DE MANIPULAÇÃO DO RATEIO, EVITA ERROS
-
-                CONS:
-                |-> POSSIVEIS PROBLEMAS DURANTE INICIALIZACAO (PRINCIPALMENTE EM EDIÇÃO)
-                |-> ONERA O SISTEMA (SEMPRE QUE valorEstimado FOR NULO, CARREGA TUDO DE NOVO)
-          
-
-            2. [ngClass]: APLICA CLASSE BOOTSTRAP 'invisible' QUANDO valorEstimado FOR NULO
-                PROS:
-                |-> NÃO ONERA O SISTEMA (RATEIO CRIADO UMA VEZ, DADOS MANTÉM)
-
-                CONS:
-                |-> OCUPA ESPAÇO NO DOM ("EMPURRA" TODO O RESTO DO CONTEUDO PRA BAIXO)
-
-            3. NADA: 
-                PROS:
-                |-> NÃO ONERA O SISTEMA (RATEIO CRIADO UMA VEZ, DADOS MANTÉM)
-
-                CONS:
-                |-> MEIO QUE ONERA O SISTEMA SIM:
-                  |-> PRECISA CRIAR UM MONTE DE fromEvent() CAPTURANDO BOTÕES, INPUTS
-                      PRA APLICAR event.preventDefault() CASO valorEstimado SEJA NULO
-          -->
-
-          <!-- [ngClass]="{ invisible: !getControl('valorEstimado').value }" -->
-          <!-- <div class="row" *ngIf="getControl('valorEstimado')?.value"> -->
           <div class="row">
             <div class="col-12 my-1">
               <label for="rateio" class="form-label col-12">
@@ -220,21 +190,12 @@
                   "
                 ></ng-container>
               </label>
-              <new-rateio-form
+              <siscap-rateio-form
                 [microrregioesList]="microrregioesList"
                 [cidadesComMicrorregiaoList]="cidadesComMicrorregiaoList"
                 [formMode]="formMode"
                 [isEdit]="isEdit"
-              ></new-rateio-form>
-              <!-- <siscap-rateio-form
-                [context]="'PROJETO'"
-                [formMode]="formMode"
-                [isEdit]="isEdit"
-                [targetRateioArray]="oldRateioService.rateio"
-                [listArrays]="{
-                  microrregioesCidadesList: microrregioesCidadesList
-                }"
-              ></siscap-rateio-form> -->
+              ></siscap-rateio-form>
             </div>
           </div>
 

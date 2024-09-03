@@ -77,6 +77,22 @@ export class RateioService {
     return this._valorEstimadoReferencia$;
   }
 
+  private _totalRateio: { percentual: number; quantia: number } = {
+    percentual: 0,
+    quantia: 0,
+  };
+
+  public get totalRateio(): { percentual: number; quantia: number } {
+    return this._totalRateio;
+  }
+
+  private set totalRateio(totalRateio: {
+    percentual: number;
+    quantia: number;
+  }) {
+    this._totalRateio = totalRateio;
+  }
+
   private _microrregioesCidadesMapObject: Record<number, Array<number>> = {};
 
   public set microrregioesCidadesMapObject(
@@ -96,7 +112,6 @@ export class RateioService {
     this.valorEstimadoReferencia$
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
       .subscribe((valorEstimadoValue) => {
-        // console.log(valorEstimadoValue);
         this.valorEstimadoReferencia = valorEstimadoValue;
       });
   }
@@ -244,44 +259,6 @@ export class RateioService {
       return;
     }
 
-    /*
-      QUESTÃO VALORES QUEBRADOS
-
-      AO DISTRIBUIR VALORES DA MICRORREGIAO PAI PARA AS CIDADES FILHAS,
-      QUANDO A DIVISÃO NÃO FOR EXATA, O PROCESSO INVERSO (CALCULAR TOTAL RATEIO POR CIDADES)
-      GERALMENTE RESULTA EM UM PERCENTUAL MENOR QUE O MAXIMO (100%)
-      E UMA QUANTIA MAIOR QUE O MAXIMO (valorEstimado)
-
-      ex:
-        valorEstimado = R$ 100.000.000,00 (100 MILHÕES)
-        3 MICRORREGIOES -> PERCENTUAL = 33.33% | QUANTIA = R$ 33.333.333,33
-
-        * SÓ AQUI, O CALCULO DO RATEIO TOTAL POR MICRORREGIOES DÁ 99.99% E R$ 99.999.999,99
-          |-> FALTA 0.01% E R$ 0,01
-
-        CASO DE TESTE [CAPARAÓ, CENTRAL SERRANA E CENTRAL SUL]:
-
-        1. CAPARAÓ: 12 CIDADES -> PERCENTUAL: ~2.77% | QUANTIA: ~R$ 2.777.777,78
-        2. CENTRAL SERRANA: 5 CIDADES -> PERCENTUAL: ~6.66% | QUANTIA: ~R$ 6.666.666,67
-        3. CENTRAL SUL: 7 CIDADES -> PERCENTUAL: ~4.76% | QUANTIA: ~R$ 4.761.904,76
-        
-        * PROCESSO INVERSO (CALCULO TOTAL RATEIO POR CIDADES):
-          |-> TOTAL PERCENTUAL: 99.86000000000003 (FALTA 0.13999999999997)
-          |-> TOTAL QUANTIA: 100000000.03000005 (SOBRA ~0.3)
-          
-      + ABORDAGEM: UTILIZAR LOOP FOR PARA PREENCHER VALORES
-        - QUANDO FOR A VEZ DO ULTIMO ELEMENTO (array[array.length - 1]), 
-          INCLUIR A "DIFERENÇA" (PODE SER PRA CIMA OU PRA BAIXO)
-          NO VALOR
-        
-          PROS:
-          |-> CORRIGE ESSE PROBLEMA (NÃO É 100%)
-
-          CONS:
-          |->  TORNA PROCESSO MEIO ALEATÓRIO
-
-    */
-
     this._rateioMicrorregiaoControls.forEach((rateioMicrorregiaoFormGroup) => {
       const rateioCidadeControls =
         this.filtrarRateioCidadeControlsPorIdMicrorregiao(
@@ -299,6 +276,10 @@ export class RateioService {
         rateioCidadeFormGroup.controls.quantia.patchValue(quantiaCidade);
       });
     });
+
+    setTimeout(() => {
+      this.recalcularDiferencaRateioPorCidades();
+    }, TEMPO_RECALCULO);
   }
 
   public calculoAutomaticoPorCidades(): void {
@@ -321,19 +302,38 @@ export class RateioService {
         quantiaMicrorregiao
       );
     });
+
+    // setTimeout(() => {
+    //   this.recalcularDiferencaRateioPorMicrorregioes();
+    // }, TEMPO_RECALCULO);
+  }
+
+  public limparTotalRateio(): void {
+    this.totalRateio = {
+      percentual: 0,
+      quantia: 0,
+    };
+  }
+
+  private calcularTotalRateio(
+    rateioValueArray:
+      | Array<RateioMicrorregiaoFormTypeValue>
+      | Array<RateioCidadeFormTypeValue>
+  ): void {
+    const totalRateio =
+      RateioCalculoHelper.calcularTotalRateio(rateioValueArray);
+
+    this.totalRateio = {
+      percentual: totalRateio[0],
+      quantia: totalRateio[1],
+    };
   }
 
   private rateioMicrorregiaoFormArrayValueChanges$(): void {
     this.rateioMicrorregiaoFormArray.valueChanges
       .pipe(debounceTime(TEMPO_RECALCULO))
       .subscribe((rateioMicrorregiaoFormArrayValue) => {
-        const totalRateio =
-          RateioCalculoHelper.calcularTotalRateioPorMicrorregioes(
-            rateioMicrorregiaoFormArrayValue
-          );
-
-        console.log('por microrregioes:');
-        console.log(totalRateio);
+        this.calcularTotalRateio(rateioMicrorregiaoFormArrayValue);
       });
   }
 
@@ -341,13 +341,85 @@ export class RateioService {
     this.rateioCidadeFormArray.valueChanges
       .pipe(debounceTime(TEMPO_RECALCULO))
       .subscribe((rateioCidadeFormArrayValue) => {
-        const totalRateio = RateioCalculoHelper.calcularTotalRateioPorCidades(
-          rateioCidadeFormArrayValue
-        );
-
-        console.log('por cidades:');
-        console.log(totalRateio);
+        this.calcularTotalRateio(rateioCidadeFormArrayValue);
       });
+  }
+
+  // private recalcularDiferencaRateioPorMicrorregioes(): void {
+  //   if (!this.valorEstimadoReferencia) {
+  //     return;
+  //   }
+
+  //   const totalRateio = RateioCalculoHelper.calcularTotalRateioPorMicrorregioes(
+  //     this._rateioMicrorregiaoValue
+  //   );
+
+  //   const diferencaPercentual = 100 - totalRateio[0];
+  //   const diferencaQuantia = this.valorEstimadoReferencia - totalRateio[1];
+
+  //   if (diferencaPercentual === 0 && diferencaQuantia === 0) {
+  //     return;
+  //   }
+
+  //   const rateioMicrorregiaoFormGroupAleatorio =
+  //     this._rateioMicrorregiaoControls[
+  //       Math.floor(Math.random() * this._rateioMicrorregiaoControls.length)
+  //     ];
+
+  //   const percentualRateioMicrorregiaoFormGroupAleatorio =
+  //     rateioMicrorregiaoFormGroupAleatorio.controls.percentual;
+
+  //   const quantiaRateioMicrorregiaoFormGroupAleatorio =
+  //     rateioMicrorregiaoFormGroupAleatorio.controls.quantia;
+
+  //   percentualRateioMicrorregiaoFormGroupAleatorio.patchValue(
+  //     percentualRateioMicrorregiaoFormGroupAleatorio.value! +
+  //       diferencaPercentual
+  //   );
+
+  //   quantiaRateioMicrorregiaoFormGroupAleatorio.patchValue(
+  //     quantiaRateioMicrorregiaoFormGroupAleatorio.value! + diferencaQuantia
+  //   );
+  // }
+
+  private recalcularDiferencaRateioPorCidades(): void {
+    if (!this.valorEstimadoReferencia) {
+      return;
+    }
+
+    if (this._rateioCidadeControls.length === 0) {
+      return;
+    }
+
+    const totalRateio = RateioCalculoHelper.calcularTotalRateio(
+      this._rateioCidadeValue
+    );
+
+    const diferencaPercentual = 100 - totalRateio[0];
+    const diferencaQuantia = this.valorEstimadoReferencia - totalRateio[1];
+
+    if (diferencaPercentual === 0 && diferencaQuantia === 0) {
+      return;
+    }
+
+    const rateioCidadeFormGroupAleatorio =
+      this._rateioCidadeControls[
+        Math.floor(Math.random() * this._rateioCidadeControls.length)
+      ];
+
+    const percentualRateioCidadeFormGroupAleatorio =
+      rateioCidadeFormGroupAleatorio.controls.percentual;
+
+    const quantiaRateioCidadeFormGroupAleatorio =
+      rateioCidadeFormGroupAleatorio.controls.quantia;
+
+    percentualRateioCidadeFormGroupAleatorio.patchValue(
+      percentualRateioCidadeFormGroupAleatorio.value! + diferencaPercentual
+    );
+
+    quantiaRateioCidadeFormGroupAleatorio.patchValue(
+      quantiaRateioCidadeFormGroupAleatorio.value! + diferencaQuantia
+    );
   }
 
   private filtrarRateioCidadeControlsPorIdMicrorregiao(

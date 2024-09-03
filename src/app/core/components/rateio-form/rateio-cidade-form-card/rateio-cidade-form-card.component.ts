@@ -25,6 +25,8 @@ import { SIDEWAYS_SHAKE } from '../../../../shared/utils/animations';
 })
 export class RateioCidadeFormCardComponent implements OnInit, AfterViewInit {
   @Input() public cidade!: ICidadeSelectList;
+  @Input() public formMode: string = '';
+  @Input() public isEdit: boolean = false;
 
   public rateioCidadeFormGroup!: FormGroup<RateioCidadeFormType>;
 
@@ -42,10 +44,11 @@ export class RateioCidadeFormCardComponent implements OnInit, AfterViewInit {
   constructor(public rateioService: RateioService) {}
 
   ngOnInit(): void {
-    this.rateioCidadeFormGroup =
-      this.rateioService.construirRateioCidadeFormGroupSelectList(
-        this.cidade.id
-      );
+    this.rateioCidadeFormGroup = this.inicializarRateioCidadeFormGroup();
+
+    if (this.buscarIndiceRateioCidadeFormGroup() !== -1) {
+      this.cidadeBooleanCheckbox = true;
+    }
 
     this.rateioCidadeFormGroup.disable();
   }
@@ -116,6 +119,17 @@ export class RateioCidadeFormCardComponent implements OnInit, AfterViewInit {
       checkboxValue: this.cidadeBooleanCheckbox,
       idMicrorregiaoPai: this.cidade.idMicrorregiao,
     });
+  }
+
+  private inicializarRateioCidadeFormGroup(): FormGroup<RateioCidadeFormType> {
+    return (
+      this.rateioService.rateioCidadeFormArray.controls[
+        this.buscarIndiceRateioCidadeFormGroup()
+      ] ??
+      this.rateioService.construirRateioCidadeFormGroupSelectList(
+        this.cidade.id
+      )
+    );
   }
 
   private incluirCidadeNoRateio(): void {

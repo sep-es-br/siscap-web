@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
-  FormArray,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
@@ -14,17 +13,19 @@ import { Observable, Subscription, concat, finalize, tap } from 'rxjs';
 import { ProjetosService } from '../../../shared/services/projetos/projetos.service';
 import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { EquipeService } from '../../../shared/services/equipe/equipe.service';
+import { RateioService } from '../../../shared/services/rateio/rateio.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { PessoasService } from '../../../shared/services/pessoas/pessoas.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
 import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
+import { construirMicrorregioesCidadesMapObject } from '../../../shared/helpers/rateio/microrregioes-cidades-map-object.helper';
+import { rateioValidator } from '../../../shared/helpers/rateio/rateio-validator';
 
 import { IProjeto } from '../../../shared/interfaces/projeto.interface';
 import {
   ICidadeSelectList,
-  IMicrorregiaoCidadesSelectList,
   ISelectList,
 } from '../../../shared/interfaces/select-list.interface';
 
@@ -33,9 +34,7 @@ import {
   ProjetoModel,
 } from '../../../shared/models/projeto.model';
 
-import { OldRateioService } from '../../../shared/services/projetos/old-rateio.service';
-import { RateioService } from '../../../shared/services/rateio/rateio.service';
-import { construirMicrorregioesCidadesMapObject } from '../../../shared/helpers/rateio/microrregioes-cidades-map-object.helper';
+import { RateioFormType } from '../../../shared/types/form/rateio-form.type';
 
 @Component({
   selector: 'siscap-project-form',
@@ -47,9 +46,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   private _getOrganizacoes$!: Observable<ISelectList[]>;
   private _getPessoas$!: Observable<ISelectList[]>;
   private _getPlanos$!: Observable<ISelectList[]>;
-  // private _getMicrorregioesCidades$!: Observable<
-  //   IMicrorregiaoCidadesSelectList[]
-  // >;
   private _getMicrorregioes$!: Observable<ISelectList[]>;
   private _getCidadesComMicrorregiao$!: Observable<ICidadeSelectList[]>;
   private _getPapeis$!: Observable<ISelectList[]>;
@@ -73,7 +69,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   public pessoasList: ISelectList[] = [];
   public pessoasListFilrada: ISelectList[] = [];
   public planosList: ISelectList[] = [];
-  // public microrregioesCidadesList: IMicrorregiaoCidadesSelectList[] = [];
   public microrregioesList: ISelectList[] = [];
   public cidadesComMicrorregiaoList: ICidadeSelectList[] = [];
 
@@ -88,7 +83,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     private _profileService: ProfileService,
     private _projetosService: ProjetosService,
     public equipeService: EquipeService,
-    public oldRateioService: OldRateioService,
     private _rateioService: RateioService,
     private _selectListService: SelectListService,
     private _pessoasService: PessoasService,
@@ -128,10 +122,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       .getPlanos()
       .pipe(tap((response) => (this.planosList = response)));
 
-    // this._getMicrorregioesCidades$ = this._selectListService
-    //   .getMicrorregioesCidades()
-    //   .pipe(tap((response) => (this.microrregioesCidadesList = response)));
-
     this._getMicrorregioes$ = this._selectListService
       .getMicrorregioes()
       .pipe(tap((response) => (this.microrregioesList = response)));
@@ -149,7 +139,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       this._getPessoas$,
       this._getPlanos$,
       this._getPapeis$,
-      // this._getMicrorregioesCidades$,
       this._getMicrorregioes$,
       this._getCidadesComMicrorregiao$
     ).pipe(
@@ -234,16 +223,18 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.valorEstimado ?? null,
         [Validators.required, Validators.min(1)]
       ),
-      // rateio: this.rateioService.buildRateioFormArray(projetoFormModel?.rateio),
-      rateio: this._nnfb.group({
-        rateioMicrorregiao:
-          this._rateioService.construirRateioMicrorregiaoFormArray(
-            projetoFormModel?.rateio.rateioMicrorregiao
+      rateio: this._nnfb.group(
+        {
+          rateioMicrorregiao:
+            this._rateioService.construirRateioMicrorregiaoFormArray(
+              projetoFormModel?.rateio.rateioMicrorregiao
+            ),
+          rateioCidade: this._rateioService.construirRateioCidadeFormArray(
+            projetoFormModel?.rateio.rateioCidade
           ),
-        rateioCidade: this._rateioService.construirRateioCidadeFormArray(
-          projetoFormModel?.rateio.rateioCidade
-        ),
-      }),
+        },
+        { validators: Validators.required }
+      ),
       objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
         Validators.required,
         Validators.maxLength(2000),
@@ -277,10 +268,6 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       ),
     });
 
-    // this.projetoForm
-    //   .get('rateio')
-    //   ?.valueChanges.subscribe((rateioValue) => console.log(rateioValue));
-
     this.projetoFormValueChanges();
   }
 
@@ -296,6 +283,10 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     const valorEstimadoFormControl = this.projetoForm.get(
       'valorEstimado'
     ) as FormControl<number | null>;
+
+    const rateioFormGroup = this.projetoForm.get(
+      'rateio'
+    ) as FormGroup<RateioFormType>;
 
     idOrganizacaoFormControl.valueChanges.subscribe((idOrganizacaoValue) => {
       if (this.formMode == 'criar' || this.isEdit) {
@@ -321,13 +312,17 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     );
 
     valorEstimadoFormControl.valueChanges.subscribe((valorEstimadoValue) => {
-      // console.log(valorEstimadoValue)
-
       this._rateioService.valorEstimadoReferencia$.next(valorEstimadoValue);
 
-      // this.oldRateioService.valorEstimadoReferenciaObs$.next(
-      //   valorEstimadoValue
-      // );
+      rateioFormGroup.setErrors(
+        rateioValidator(valorEstimadoValue, rateioFormGroup.value)
+      );
+    });
+
+    rateioFormGroup.valueChanges.subscribe((rateioFormGroupValue) => {
+      rateioFormGroup.setErrors(
+        rateioValidator(valorEstimadoFormControl.value, rateioFormGroupValue)
+      );
     });
   }
 
@@ -382,7 +377,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     const controls = this.projetoForm.controls;
     for (const key in controls) {
       !excluded?.includes(key) && isEnabled
-        ? controls[key].enable({ emitEvent: false })
+        ? controls[key].enable()
         : controls[key].disable({ emitEvent: false });
     }
   }
@@ -405,54 +400,49 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
     const payload = new ProjetoFormModel(form.value);
 
-    console.log(payload);
+    switch (this.formMode) {
+      case 'criar': {
+        this._projetosService
+          .postProjeto(payload)
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Projeto cadastrado com sucesso.'
+                );
+                this._router.navigateByUrl('main/projetos');
+              }
+            })
+          )
+          .subscribe();
+        break;
+      }
+      case 'editar': {
+        this._projetosService
+          .putProjeto(this._projetoEditId, payload)
+          .pipe(
+            tap((response) => {
+              if (response) {
+                this._toastService.showToast(
+                  'success',
+                  'Projeto alterado com sucesso.'
+                );
+                this._router.navigateByUrl('main/projetos');
+              }
+            })
+          )
+          .subscribe();
 
-    // switch (this.formMode) {
-    //   case 'criar': {
-    //     // const createPayload = form.value as IProjetoForm;
-
-    //     this._projetosService
-    //       .postProjeto(payload)
-    //       .pipe(
-    //         tap((response) => {
-    //           if (response) {
-    //             this._toastService.showToast(
-    //               'success',
-    //               'Projeto cadastrado com sucesso.'
-    //             );
-    //             this._router.navigateByUrl('main/projetos');
-    //           }
-    //         })
-    //       )
-    //       .subscribe();
-    //     break;
-    //   }
-    //   case 'editar': {
-    //     // const editPayload = form.value as IProjetoForm;
-
-    //     this._projetosService
-    //       .putProjeto(this._projetoEditId, payload)
-    //       .pipe(
-    //         tap((response) => {
-    //           if (response) {
-    //             this._toastService.showToast(
-    //               'success',
-    //               'Projeto alterado com sucesso.'
-    //             );
-    //             this._router.navigateByUrl('main/projetos');
-    //           }
-    //         })
-    //       )
-    //       .subscribe();
-
-    //     break;
-    //   }
-    //   default:
-    //     break;
-    // }
+        break;
+      }
+      default:
+        break;
+    }
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
+    this._rateioService.limparTotalRateio();
   }
 }

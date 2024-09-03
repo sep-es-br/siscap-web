@@ -20,13 +20,8 @@ import { LoadingComponent } from './loading/loading.component';
 import { ToastComponent } from './toast/toast.component';
 import { CrudModule } from './crud/crud.module';
 import { CropperComponent } from './cropper/cropper.component';
-import { RateioFormComponent } from './rateio-form/rateio-form.component';
-import { RateioMicrorregiaoItemCardComponent } from './rateio-form/rateio-microrregiao-item-card/rateio-microrregiao-item-card.component';
-import { RateioCidadeItemCardComponent } from './rateio-form/rateio-cidade-item-card/rateio-cidade-item-card.component';
 import { EquipeFormComponent } from './equipe-form/equipe-form.component';
-import { NewRateioFormComponent } from './new-rateio-form/new-rateio-form.component';
-import { RateioMicrorregiaoFormCardComponent } from './new-rateio-form/rateio-microrregiao-form-card/rateio-microrregiao-form-card.component';
-import { RateioCidadeFormCardComponent } from './new-rateio-form/rateio-cidade-form-card/rateio-cidade-form-card.component';
+import { RateioFormComponent } from './rateio-form/rateio-form.component';
 
 @NgModule({
   declarations: [
@@ -43,11 +38,6 @@ import { RateioCidadeFormCardComponent } from './new-rateio-form/rateio-cidade-f
     PipesModule,
     EquipeFormComponent,
     RateioFormComponent,
-    RateioMicrorregiaoItemCardComponent,
-    RateioCidadeItemCardComponent,
-    NewRateioFormComponent,
-    // RateioMicrorregiaoFormCardComponent,
-    // RateioCidadeFormCardComponent,
     NgbToastModule,
     NgbDropdownModule,
     NgbModule,
@@ -65,11 +55,6 @@ import { RateioCidadeFormCardComponent } from './new-rateio-form/rateio-cidade-f
     ToastComponent,
     EquipeFormComponent,
     RateioFormComponent,
-    RateioMicrorregiaoItemCardComponent,
-    RateioCidadeItemCardComponent,
-    NewRateioFormComponent,
-    // RateioMicrorregiaoFormCardComponent,
-    // RateioCidadeFormCardComponent,
     CrudModule,
     CropperComponent,
   ],

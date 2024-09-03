@@ -1,4 +1,5 @@
 import { FormGroup } from '@angular/forms';
+
 import {
   RateioCidadeFormType,
   RateioCidadeFormTypeValue,
@@ -50,32 +51,21 @@ export abstract class RateioCalculoHelper {
     ];
   }
 
-  public static calcularTotalRateioPorMicrorregioes(
-    rateioMicrorregiaoFormArrayValue: Array<RateioMicrorregiaoFormTypeValue>
+  public static calcularTotalRateio(
+    rateioValuesArray:
+      | Array<RateioMicrorregiaoFormTypeValue>
+      | Array<RateioCidadeFormTypeValue>
   ): [number, number] {
     return [
-      this.somarValoresArray(
-        this.mapearRateioValoresArrayPorPercentual(
-          rateioMicrorregiaoFormArrayValue
+      Math.round(
+        this.somarValoresArray(
+          this.mapearRateioValoresArrayPorPercentual(rateioValuesArray)
         )
       ),
-      this.somarValoresArray(
-        this.mapearRateioValoresArrayPorQuantia(
-          rateioMicrorregiaoFormArrayValue
+      Math.round(
+        this.somarValoresArray(
+          this.mapearRateioValoresArrayPorQuantia(rateioValuesArray)
         )
-      ),
-    ];
-  }
-
-  public static calcularTotalRateioPorCidades(
-    rateioCidadeFormArrayValue: Array<RateioCidadeFormTypeValue>
-  ): [number, number] {
-    return [
-      this.somarValoresArray(
-        this.mapearRateioValoresArrayPorPercentual(rateioCidadeFormArrayValue)
-      ),
-      this.somarValoresArray(
-        this.mapearRateioValoresArrayPorQuantia(rateioCidadeFormArrayValue)
       ),
     ];
   }
@@ -111,6 +101,6 @@ export abstract class RateioCalculoHelper {
   }
 
   private static somarValoresArray(valoresArray: Array<number>): number {
-    return valoresArray.reduce((acc, curr) => acc + curr, 0);
+    return valoresArray.reduce((prev, curr) => prev + curr, 0);
   }
 }
