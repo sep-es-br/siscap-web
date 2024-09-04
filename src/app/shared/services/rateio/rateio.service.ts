@@ -16,6 +16,7 @@ import {
 } from '../../types/form/rateio-form.type';
 
 import {
+  IRateio,
   IRateioCidade,
   IRateioMicrorregiao,
 } from '../../interfaces/rateio.interface';
@@ -313,6 +314,38 @@ export class RateioService {
       percentual: 0,
       quantia: 0,
     };
+  }
+
+  public checarConsistenciaMicrorregioesCidades(rateioValue: IRateio): boolean {
+    const rateioMicrorregiaoValueIdMap: Array<number> =
+      rateioValue.rateioMicrorregiao.map(
+        (microrregiao) => microrregiao.idMicrorregiao
+      );
+
+    const rateioCidadeValueIdMap: Array<number> = rateioValue.rateioCidade.map(
+      (cidade) => cidade.idCidade
+    );
+
+    const checkConsistenciaMicrorregioes: boolean =
+      rateioMicrorregiaoValueIdMap.every((idMicrorregiao: number) =>
+        rateioCidadeValueIdMap.some((idCidade: number) =>
+          this._microrregioesCidadesMapObject[idMicrorregiao].includes(idCidade)
+        )
+      );
+
+    const checkConsistenciaCidades: boolean = rateioCidadeValueIdMap.every(
+      (idCidade: number) =>
+        rateioMicrorregiaoValueIdMap
+          .map(
+            (idMicrorregiao: number) =>
+              this._microrregioesCidadesMapObject[idMicrorregiao]
+          )
+          .some((cidadesArray: Array<number>) =>
+            cidadesArray.includes(idCidade)
+          )
+    );
+
+    return checkConsistenciaMicrorregioes && checkConsistenciaCidades;
   }
 
   private calcularTotalRateio(

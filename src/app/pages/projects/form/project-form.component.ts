@@ -398,6 +398,23 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (
+      !this._rateioService.checarConsistenciaMicrorregioesCidades(
+        form.value.rateio
+      )
+    ) {
+      this._toastService.showToast(
+        'warning',
+        'O formulário contém erros.',
+        [
+          'Certifique-se de que toda microrregião inclusa no rateio possua ao menos uma cidade a ela pertencente inclusa no rateio.',
+          'Certifique-se de que, para as cidades inclusas no rateio, a microrregião a qual estas pertencem está inclusa no rateio.',
+        ],
+        10000
+      );
+      return;
+    }
+
     const payload = new ProjetoFormModel(form.value);
 
     switch (this.formMode) {
