@@ -1,0 +1,114 @@
+<div class="card shadow border-light p-3">
+  <div class="mx-3">
+    <div id="header" class="row border-bottom">
+      <div class="col-1 ngbaccordionbutton-col">
+        <!-- Coluna para o botão de ação do ngbAccordion -->
+      </div>
+      <div class="col-2">
+        <span class="fs-small-4">Sigla</span>
+      </div>
+      <div class="col-5">
+        <span class="fs-small-4">Programa</span>
+      </div>
+      <div class="col-1">
+        <span class="fs-small-4">Moeda</span>
+      </div>
+      <div class="col-2">
+        <span class="fs-small-4">Valor</span>
+      </div>
+      <div class="col-1 ms-auto">
+        <span class="fs-small-4">Ações</span>
+      </div>
+    </div>
+    <div ngbAccordion>
+      <ng-container *ngFor="let programa of programasList">
+        <div
+          ngbAccordionItem
+          id="body"
+          class="row d-flex align-items-center py-2"
+        >
+          <div class="col-1 ngbaccordionbutton-col">
+            <!-- INVISIVEL POR ENQUANTO -->
+            <!-- RETOMAR APÓS PROSPECÇÃO/CAPTAÇÃO -->
+            <button class="m-0 py-2 px-0 invisible" ngbAccordionButton></button>
+          </div>
+          <div class="col-2">
+            <span class="fs-small-3 fw-semibold">{{ programa.sigla }}</span>
+          </div>
+          <div class="col-5">
+            <span class="fs-small-3 fw-semibold">{{ programa.titulo }}</span>
+          </div>
+          <div class="col-1">
+            <span class="fs-small-3 fw-semibold">{{ programa.moeda }}</span>
+          </div>
+          <div class="col-2">
+            <span class="fs-small-3 fw-semibold">{{ programa.valor }}</span>
+          </div>
+          <div class="col-1 ms-auto">
+            <div ngbDropdown>
+              <button class="btn border-none m-0 p-0" ngbDropdownToggle>
+                <i class="fa-solid fa-ellipsis"></i>
+              </button>
+              <div ngbDropdownMenu>
+                <button ngbDropdownItem (click)="editarPrograma(programa.id)">
+                  <i class="fa-regular fa-pen-to-square fs-6 me-1"></i>
+                  Editar
+                </button>
+                <button
+                  ngbDropdownItem
+                  (click)="dispararModalExcluirPrograma(programa)"
+                >
+                  <i class="fa-regular fa-trash-can me-1"></i>
+                  Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <div id="footer" class="row pt-3">
+      <div class="col-sm-12 col-md-5 d-flex">
+        <span class="align-self-center">
+          Mostrando de {{ primeiroItemPagina }} até
+          {{ ultimoItemPagina }} registros de {{ totalRegistros }}
+        </span>
+      </div>
+      <div class="col-sm-12 col-md-7">
+        <ngb-pagination
+          [(page)]="pageConfig.page"
+          [pageSize]="pageConfig.size"
+          [collectionSize]="totalRegistros"
+          [boundaryLinks]="true"
+        >
+          <ng-template ngbPaginationFirst>Primeiro</ng-template>
+          <ng-template ngbPaginationNext>Próximo</ng-template>
+          <ng-template ngbPaginationPrevious>Anterior</ng-template>
+          <ng-template ngbPaginationLast>Último</ng-template>
+        </ngb-pagination>
+      </div>
+    </div>
+  </div>
+</div>
+
+<swal
+  #deleteSwal
+  [swalOptions]="deleteSwalOptions"
+  title="Tem certeza que deseja excluir?"
+  [html]="deleteSwalText"
+  icon="warning"
+  [showCancelButton]="true"
+  [focusCancel]="true"
+  [customClass]="{ cancelButton: 'btn btn-outline-primary mx-1', confirmButton: 'btn btn-danger  mx-1',}"
+>
+</swal>
+
+<swal
+  #successSwal
+  [swalOptions]="successSwalOptions"
+  title="Programa excluído com sucesso!"
+  text=""
+  icon="success"
+  [customClass]="{ confirmButton: 'btn btn-success' }"
+>
+</swal>

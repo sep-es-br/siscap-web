@@ -74,7 +74,7 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
   public loading: boolean = true;
 
   public formMode!: string;
-  public isEdit: boolean = false;
+  public isEdit: boolean = true;
 
   public personEditId!: number;
   public personEditSubNovo!: string;
@@ -146,7 +146,7 @@ export class PersonFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.paisChanged(this.paisSelected);
           this.estadoChanged(this.estadoSelected);
 
-          this.switchMode(!!this._route.snapshot.queryParamMap.get('isEdit'));
+          this.switchMode(false);
 
           this.loading = false;
         })

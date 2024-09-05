@@ -42,7 +42,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
   public loading: boolean = true;
 
   public formMode: string;
-  public isEdit!: boolean;
+  public isEdit: boolean = true;
 
   public organizationEditId!: number;
   public organizationFormInitialValue!: IOrganizationCreate;
@@ -87,7 +87,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.organizationFormInitialValue = this.organizationForm.value;
 
-          this.switchMode(!!this._route.snapshot.queryParamMap.get('isEdit'));
+          this.switchMode(false);
 
           this.loading = false;
         })
@@ -147,9 +147,7 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         validators: Validators.email,
       }),
       site: nnfb.control(organization?.site ?? ''),
-      idOrganizacaoPai: nnfb.control(
-        organization?.idOrganizacaoPai ?? null
-      ),
+      idOrganizacaoPai: nnfb.control(organization?.idOrganizacaoPai ?? null),
       idPessoaResponsavel: nnfb.control(
         organization?.idPessoaResponsavel ?? null
       ),
@@ -158,12 +156,9 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       idPais: nnfb.control(organization?.idPais ?? null, {
         validators: Validators.required,
       }),
-      idTipoOrganizacao: nnfb.control(
-        organization?.idTipoOrganizacao ?? null,
-        {
-          validators: Validators.required,
-        }
-      ),
+      idTipoOrganizacao: nnfb.control(organization?.idTipoOrganizacao ?? null, {
+        validators: Validators.required,
+      }),
     });
 
     this.validateCnpjRequired();

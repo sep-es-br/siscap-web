@@ -1,0 +1,29 @@
+div[ngbaccordionitem] {
+  border-left: 5px solid #107fcf;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+div.ngbaccordionbutton-col {
+  width: 2.5rem !important;
+}
+
+button.dropdown-toggle {
+  &:after {
+    display: none;
+  }
+}
+
+button.accordion-button {
+  &::after {
+    margin-right: auto;
+  }
+
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:not(.collapsed) {
+    background: none;
+  }
+}

@@ -1,7 +1,5 @@
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
-
-import { IEquipe, IEquipeForm } from './equipe.interface';
-import { IRateio, IRateioForm } from './rateio.interface';
+import { IEquipe } from './equipe.interface';
+import { IRateio } from './rateio.interface';
 
 export interface IProjeto {
   readonly id: number;
@@ -10,7 +8,7 @@ export interface IProjeto {
   titulo: string;
   idOrganizacao: number;
   valorEstimado: number;
-  rateio: Array<IRateio>;
+  rateio: IRateio;
   objetivo: string;
   objetivoEspecifico: string;
   situacaoProblema: string;
@@ -21,23 +19,9 @@ export interface IProjeto {
   equipeElaboracao: Array<IEquipe>;
 }
 
-export interface IProjetoForm {
-  sigla: FormControl<string | null>;
-  titulo: FormControl<string | null>;
-  idOrganizacao: FormControl<number | null>;
-  valorEstimado: FormControl<number | null>;
-  rateio: FormArray<FormGroup<IRateioForm>>;
-  objetivo: FormControl<string | null>;
-  objetivoEspecifico: FormControl<string | null>;
-  situacaoProblema: FormControl<string | null>;
-  solucoesPropostas: FormControl<string | null>;
-  impactos: FormControl<string | null>;
-  arranjosInstitucionais: FormControl<string | null>;
-  idResponsavelProponente: FormControl<number | null>;
-  equipeElaboracao: FormArray<FormGroup<IEquipeForm>>;
-}
+export interface IProjetoForm extends Omit<IProjeto, 'id' | 'idStatus'> {}
 
 export interface IProjetoTableData
   extends Pick<IProjeto, 'id' | 'sigla' | 'titulo' | 'valorEstimado'> {
-  nomesCidadesRateio: Array<string>;
+  nomesMicrorregioesRateio: Array<string>;
 }

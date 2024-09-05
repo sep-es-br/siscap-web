@@ -5,7 +5,12 @@ import { RouterOutlet } from '@angular/router';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbAccordionModule,
+  NgbDropdownModule,
+  NgbPaginationModule,
+  NgbTooltipModule,
+} from '@ng-bootstrap/ng-bootstrap';
 
 import { CoreModule } from '../core/core.module';
 import { PagesRoutingModule } from './pages-routing.module';
@@ -22,6 +27,8 @@ import { PersonFormComponent } from './persons/form/person-form.component';
 import { OrganizationsComponent } from './organizations/organizations.component';
 import { OrganizationFormComponent } from './organizations/form/organization-form.component';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { ProgramasComponent } from './programas/programas.component';
+import { ProgramaFormComponent } from './programas/form/programa-form.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +43,8 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
     PersonFormComponent,
     OrganizationsComponent,
     OrganizationFormComponent,
+    ProgramasComponent,
+    ProgramaFormComponent,
   ],
   imports: [
     CommonModule,
@@ -45,6 +54,9 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
     NgSelectModule,
     NgxMaskDirective,
     NgxMaskPipe,
+    NgbAccordionModule,
+    NgbDropdownModule,
+    NgbPaginationModule,
     NgbTooltipModule,
     SweetAlert2Module,
     CoreModule,
@@ -63,6 +75,8 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
     PersonFormComponent,
     OrganizationsComponent,
     OrganizationFormComponent,
+    ProgramasComponent,
+    ProgramaFormComponent,
   ],
 })
 export class PagesModule {}

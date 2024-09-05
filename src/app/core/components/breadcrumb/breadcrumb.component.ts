@@ -1,11 +1,16 @@
-import {Component} from '@angular/core';
-import {ActivatedRoute, EventType, NavigationEnd, Router} from '@angular/router';
+import { Component } from '@angular/core';
+import {
+  ActivatedRoute,
+  EventType,
+  NavigationEnd,
+  Router,
+} from '@angular/router';
 
-import {filter} from 'rxjs';
-import {BreadcrumbLists} from '../../../shared/utils/breadcrumb-lists';
-import {BreadcrumbService} from '../../../shared/services/breadcrumb/breadcrumb.service';
-import {ProfileService} from '../../../shared/services/profile/profile.service';
-import {PermissionsMap} from "../../../shared/interfaces/profile.interface";
+import { filter } from 'rxjs';
+import { BreadcrumbLists } from '../../../shared/utils/breadcrumb-lists';
+import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { ProfileService } from '../../../shared/services/profile/profile.service';
+import { PermissionsMap } from '../../../shared/interfaces/profile.interface';
 
 @Component({
   selector: 'siscap-breadcrumb',
@@ -28,7 +33,7 @@ export class BreadcrumbComponent {
     private _profileService: ProfileService,
     private _router: Router,
     private _breadcrumbService: BreadcrumbService,
-    private _route: ActivatedRoute,
+    private _route: ActivatedRoute
   ) {
     this._router.events
       .pipe(
@@ -58,13 +63,12 @@ export class BreadcrumbComponent {
    * @param action - A ação do breadcrumb.
    */
   public breadcrumbAction(action: string): void {
-
-    if (action === 'edit'){
-        this.showCancelButton = true;
-        this.showSaveButton = true;
-        this.showEditButton = false;
+    if (action === 'edit') {
+      this.showCancelButton = true;
+      this.showSaveButton = true;
+      this.showEditButton = false;
     }
-    
+
     this._breadcrumbService.emitAction(action);
   }
 
@@ -155,10 +159,6 @@ export class BreadcrumbComponent {
   private checkActionButtons(): void {
     let actionOnPage = this.untreatedUrls[this.untreatedUrls.length - 1];
 
-    if (['editar', 'criar'].includes(actionOnPage))
-      if (this._route.snapshot.queryParamMap.get('isEdit'))
-        actionOnPage = 'criar';
-
     switch (actionOnPage) {
       case 'editar':
         this.showEditButton = this.canShowEditButton();
@@ -171,17 +171,24 @@ export class BreadcrumbComponent {
         this.showCancelButton = true;
         break;
       default:
-        this.showEditButton = this.showSaveButton = this.showCancelButton = false;
+        this.showEditButton =
+          this.showSaveButton =
+          this.showCancelButton =
+            false;
         break;
     }
   }
 
   private canShowEditButton(): boolean {
-    const userPermissions: Array<string> = JSON.parse(sessionStorage.getItem('user-profile')!).permissoes ?? [];
+    const userPermissions: Array<string> =
+      JSON.parse(sessionStorage.getItem('user-profile')!).permissoes ?? [];
     const route = this._router.url.replaceAll('/main/', '').split('/')[0];
-    const isAdmin = userPermissions.includes(PermissionsMap['adminAuth' as keyof typeof PermissionsMap]);
-    const canEdit = userPermissions.includes(PermissionsMap[(route + 'editar') as keyof typeof PermissionsMap]);
+    const isAdmin = userPermissions.includes(
+      PermissionsMap['adminAuth' as keyof typeof PermissionsMap]
+    );
+    const canEdit = userPermissions.includes(
+      PermissionsMap[(route + 'editar') as keyof typeof PermissionsMap]
+    );
     return isAdmin || canEdit;
   }
-
 }

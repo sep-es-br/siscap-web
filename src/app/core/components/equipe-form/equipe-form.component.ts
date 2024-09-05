@@ -1,19 +1,6 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges,
-  TemplateRef,
-} from '@angular/core';
-import {
-  FormArray,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { Component, Input, OnDestroy, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import {
@@ -22,124 +9,83 @@ import {
   NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
-import { ProjetosFormService } from '../../../shared/services/projetos/projetos-form.service';
+import { EquipeService } from '../../../shared/services/equipe/equipe.service';
 import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
 
-import { EquipeFormModel } from '../../../shared/models/equipe.model';
-
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
-import { IEquipe } from '../../../shared/interfaces/equipe.interface';
 
-enum EquipeContext {
-  PROJETO = 'Equipe de Elaboração',
-}
+import { StatusEnum } from '../../../shared/enums/status.enum';
 
 @Component({
   selector: 'siscap-equipe-form',
   standalone: true,
   imports: [
     CommonModule,
-    NgSelectModule,
     FormsModule,
     ReactiveFormsModule,
+    NgSelectModule,
     NgbTooltipModule,
     NgbModalModule,
   ],
   templateUrl: './equipe-form.component.html',
   styleUrl: './equipe-form.component.scss',
 })
-export class EquipeFormComponent implements OnInit, OnChanges, OnDestroy {
-  @Input({ alias: 'context', required: true }) context: string = '';
-  @Input({ alias: 'formMode', required: true }) formMode: string = '';
-  @Input({ alias: 'isEdit', required: true }) isEdit: boolean = false;
-  @Input({ alias: 'targetArray', required: true }) targetArray: FormArray<
-    FormGroup<EquipeFormModel>
-  > = new FormArray<FormGroup<EquipeFormModel>>([]);
-  @Input({ alias: 'listArrays', required: true }) selectListArrayArgs: {
-    [key: string]: Array<ISelectList>;
-  } = {};
+export class EquipeFormComponent implements OnDestroy {
+  @Input() public pessoasList: ISelectList[] = [];
+  @Input() public papeisList: ISelectList[] = [];
+  @Input() public formMode: string = '';
+  @Input() public isEdit: boolean = false;
 
-  private equipeElaboracaoSnapshot: IEquipe[] = [];
+  public StatusEnum = StatusEnum;
 
-  public isAllowed: boolean = false;
-
-  public selectInputLabel: string = '';
-
-  public membrosListOriginal: ISelectList[] = [];
-  public membrosListFiltered: ISelectList[] = [];
-  public papeisList: ISelectList[] = [];
-
-  public membroEquipeNgSelectValue: string | null = null;
-
-  public membroStatus: number = 0;
-  public justificativa: string = '';
+  public permissaoRemoverMembro: boolean = false;
 
   constructor(
-    private _projetosFormService: ProjetosFormService,
+    public equipeService: EquipeService,
     private _profileService: ProfileService,
     private _ngbModalService: NgbModal,
     private _toastService: ToastService
   ) {
-    this.isAllowed = this._profileService.isAllowed('ADMIN_AUTH');
+    this.permissaoRemoverMembro = this._profileService.isAllowed('adminAuth');
   }
 
-  ngOnInit(): void {
-    this._projetosFormService.idResponsavelProponente.valueChanges.subscribe(
-      () => {
-        this.targetArray.clear();
-      }
-    );
-
-    this.equipeElaboracaoSnapshot = this._projetosFormService.equipeElaboracao
-      .value as IEquipe[];
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    this.selectInputLabel =
-      EquipeContext[this.context as keyof typeof EquipeContext];
-
-    const { membrosList, papeisList } = this.selectListArrayArgs;
-    this.membrosListOriginal = this.membrosListFiltered = membrosList;
-    this.papeisList = papeisList;
-
-    if (changes['isEdit'] && !changes['isEdit'].isFirstChange()) {
-      this.filterMembrosEquipeList();
-    }
-  }
-
-  public getPessoaName(id: number | null | undefined): string {
+  public getMembroNome(idPessoa: number | null | undefined): string {
     return (
-      this.membrosListOriginal.find((membro) => membro.id === id)?.nome ?? ''
+      this.pessoasList.find((pessoa) => pessoa.id === idPessoa)?.nome ?? ''
     );
   }
 
-  public getPapelName(id: number | null | undefined): string {
-    return this.papeisList.find((papel) => papel.id === id)?.nome ?? '';
+  public getPapelNome(idPapel: number | null | undefined): string {
+    return this.papeisList.find((papel) => papel.id === idPapel)?.nome ?? '';
   }
 
-  public hasErrors(): boolean {
-    return this.targetArray.controls.some(
-      (control) => control.touched && control.invalid
+  public isMembroRemovido(index: number): boolean {
+    return (
+      this.equipeService.equipeFormArray.at(index).value.idStatus !=
+      StatusEnum.Ativo
     );
   }
 
-  public addMemberToEquipeFormArray(idPessoa: number): void {
-    const newMember = this._projetosFormService.buildMemberFormGroup(idPessoa);
-
-    this.targetArray.push(newMember);
-
-    this.filterMembrosEquipeList();
+  public isNovoMembro(index: number): boolean {
+    return !this.equipeService.equipeFormArraySnapshot.some(
+      (membro) =>
+        membro.idPessoa ===
+        this.equipeService.equipeFormArray.at(index).value.idPessoa
+    );
   }
 
-  public deleteMemberFromEquipeFormArray(index: number): void {
-    this.targetArray.removeAt(index);
-
-    this.filterMembrosEquipeList();
+  public removerMembroDaEquipe(index: number): void {
+    this.equipeService.removerMembroDaEquipe(index);
   }
 
-  public openRemoveMemberModal(modalTemplate: TemplateRef<any>, index: number) {
-    const membroGroup = this.targetArray.at(index);
+  public abrirExcluirMembroModal(
+    modalTemplate: TemplateRef<any>,
+    index: number
+  ) {
+    this.equipeService.construirExcluirMembroForm();
+
+    const membroFormGroup = this.equipeService.equipeFormArray.at(index);
 
     const modalRef = this._ngbModalService.open(modalTemplate, {
       centered: true,
@@ -147,55 +93,36 @@ export class EquipeFormComponent implements OnInit, OnChanges, OnDestroy {
 
     modalRef.result.then(
       (resolve) => {
-        membroGroup.get('idStatus')?.patchValue(this.membroStatus);
-        membroGroup.get('justificativa')?.patchValue(this.justificativa);
+        membroFormGroup
+          .get('idStatus')
+          ?.patchValue(
+            this.equipeService.excluirMembroFormMembroStatusFormControl.value!
+          );
+        membroFormGroup
+          .get('justificativa')
+          ?.patchValue(
+            this.equipeService.excluirMembroFormJustificativaFormControl.value
+          );
 
         this._toastService.showToast(
           'info',
-          this.membroStatus == 2
+          this.equipeService.excluirMembroFormMembroStatusFormControl.value ==
+            StatusEnum.Inativo
             ? 'Membro removido da equipe.'
             : 'Membro excluído da equipe.',
           [
-            `${this.getPessoaName(
-              membroGroup.value.idPessoa
-            )} - ${this.getPapelName(membroGroup.value.idPapel)}`,
-            `Motivo: ${this.justificativa}`,
+            `${this.getMembroNome(
+              membroFormGroup.value.idPessoa
+            )} - ${this.getPapelNome(membroFormGroup.value.idPapel)}`,
+            `Motivo: ${this.equipeService.excluirMembroFormJustificativaFormControl.value}`,
           ]
         );
-
-        this.membroStatus = 0;
-        this.justificativa = '';
       },
-      (reject) => {
-        this.membroStatus = 0;
-        this.justificativa = '';
-      }
+      (reject) => {}
     );
-  }
-
-  public memberRemoved(index: number): boolean {
-    return this.targetArray.at(index).value.idStatus != 1;
-  }
-
-  public isNewMembroEquipe(index: number): boolean {
-    return !this.equipeElaboracaoSnapshot.some(
-      (membro) => membro.idPessoa === this.targetArray.at(index).value.idPessoa
-    );
-  }
-
-  private filterMembrosEquipeList(): void {
-    const idPessoaArray = this.targetArray.value.map((item) => item.idPessoa);
-
-    this.membrosListFiltered = this.membrosListOriginal.filter(
-      (membro) => !idPessoaArray.includes(membro.id)
-    );
-
-    setTimeout(() => {
-      this.membroEquipeNgSelectValue = null;
-    }, 1);
   }
 
   ngOnDestroy(): void {
-    this.targetArray.clear();
+    this.equipeService.equipeFormArray.clear();
   }
 }

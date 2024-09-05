@@ -24,9 +24,12 @@ export abstract class NgxMaskTransformFunctionHelper {
     let untreatedValue =
       typeof value === 'number' ? Number(value).toFixed(2) : String(value);
 
-    //Remove o prefixo 'R$' do input quando houver
-    let valueAsString = untreatedValue.includes('R$')
-      ? untreatedValue.replace('R$', '')
+    //Checa a existência do prefixo de moeda (ex: 'R$') do input
+    const currencySymbol = untreatedValue.match(new RegExp(/[^\d.,]+/g));
+
+    //Remove o prefixo de moeda do input quando houver
+    let valueAsString = !!currencySymbol
+      ? untreatedValue.replace(currencySymbol[0], '')
       : untreatedValue;
 
     //Substitui o ponto por vírgula ao carregar o formulário pela primeira vez quando modo de edição/detalhes
@@ -95,8 +98,12 @@ export abstract class NgxMaskTransformFunctionHelper {
       inputValue = inputValue.replace('A', '0');
     }
 
-    //Retorna o valor adicionando o prefixo 'R$' á frente
-    return `R$${inputValue}`;
+    //Monta o valor de retorno do método, utilizando prefixo de Real Brasileiro ('R$') como padrão
+    const returnValue = !!currencySymbol
+      ? `${currencySymbol[0]}${inputValue}`
+      : 'R$' + inputValue;
+
+    return returnValue;
   };
 
   /**
@@ -227,11 +234,16 @@ export abstract class NgxMaskTransformFunctionHelper {
   //   return `${inputValue}%`;
   // };
 
-  public static readonly percentInputTransformFn: InputTransformFn = (value: unknown): string => {
-    let untreatedValue = typeof value === 'number' ? Number(value).toFixed(2) : String(value);
+  public static readonly percentInputTransformFn: InputTransformFn = (
+    value: unknown
+  ): string => {
+    let untreatedValue =
+      typeof value === 'number' ? Number(value).toFixed(2) : String(value);
 
-    return untreatedValue.includes('.') ? untreatedValue.replace('.', ',') : untreatedValue; 
-  }
+    return untreatedValue.includes('.')
+      ? untreatedValue.replace('.', ',')
+      : untreatedValue;
+  };
 
   /**
    *
