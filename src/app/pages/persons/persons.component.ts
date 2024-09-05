@@ -55,7 +55,7 @@ export class PersonsComponent implements OnInit, OnDestroy {
   public redirectPersonForm(idPerson: number) {
     this._router.navigate(['form', 'editar'], {
       relativeTo: this._route,
-      queryParams: { id: idPerson, isEdit: true },
+      queryParams: { id: idPerson },
     });
   }
 

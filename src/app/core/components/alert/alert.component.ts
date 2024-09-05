@@ -31,28 +31,9 @@ export class AlertComponent {
           (controlError) =>
             ErrorMessageMap[controlError as keyof typeof ErrorMessageMap]
         )
-        .join(', ');
+        .join(' | ');
     }
 
     return '';
   }
 }
-
-// switch (controlError) {
-//   case 'required':
-//     return 'Campo obrigatório';
-//   case 'email':
-//     return 'Email inválido';
-//   case 'maxlength':
-//     return 'Tamanho acima do limite';
-//   case 'minlength':
-//     return 'Tamanho abaixo do limite';
-//   case 'max':
-//     return 'Valor superior ao limite';
-//   case 'min':
-//     return 'Valor inferior ao limite';
-//   case 'cpf':
-//     return 'CPF inválido'
-//   default:
-//     return '';
-// }

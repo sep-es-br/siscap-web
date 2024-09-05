@@ -4,5 +4,5 @@
 export abstract class BreadcrumbLists {
   static exclusionList: Array<string> = ['', 'home', 'form'];
 
-  static mainChildPaths: Array<string> = ['projetos', 'pessoas', 'organizacoes'];
+  static mainChildPaths: Array<string> = ['projetos', 'programas', 'pessoas', 'organizacoes'];
 }

@@ -8,6 +8,11 @@ enum breadCrumbTitles {
   projetoscriar = 'Novo Projeto',
   projetoseditar = 'Editar Projeto',
 
+  programas = 'Programas',
+
+  programascriar = 'Novo Programa',
+  programaseditar = 'Editar Programa',
+
   pessoas = 'Pessoas',
 
   pessoascriar = 'Novo Usuário',

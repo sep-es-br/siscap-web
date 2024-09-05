@@ -1,19 +1,18 @@
-.cidade-card {
-  border: 1px solid rgba($color: #000000, $alpha: 0.1);
+.microrregiao-card {
   border-radius: 2px;
-  background-color: #fafafa;
+  background-color: #d7d7d7a6;
 }
 
 div.form-check {
-  margin-left: 4rem;
+  margin-left: 2rem;
 }
 
 label.form-check-label {
   vertical-align: text-bottom;
 }
 
-input#cidade-percentual-rateio,
-input#cidade-quantia-rateio {
+input.microrregiao-percentual-rateio,
+input.microrregiao-quantia-rateio {
   border: 1px solid #aaaaaa;
   border-radius: 3px;
   font-size: 0.8125rem;

@@ -5,7 +5,7 @@ import { Observable, catchError, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import {
-  IMicrorregiaoCidadesSelectList,
+  ICidadeSelectList,
   ISelectList,
 } from '../../interfaces/select-list.interface';
 import { ErrorHandlerService } from '../error-handler/error-handler.service';
@@ -84,10 +84,18 @@ export class SelectListService {
     return this.getSelectList('papeis');
   }
 
-  public getMicrorregioesCidades() {
+  public getProjetosSelectList() {
+    return this.getSelectList('projetos');
+  }
+
+  public getValores() {
+    return this.getSelectList('valor');
+  }
+
+  public getCidadesComMicrorregiao() {
     return this._http
-      .get<IMicrorregiaoCidadesSelectList[]>(
-        `${environment.apiUrl}/microrregioes-cidades/select`
+      .get<ICidadeSelectList[]>(
+        `${environment.apiUrl}/cidades/select/microrregioes`
       )
       .pipe(
         catchError((err: HttpErrorResponse) => {
