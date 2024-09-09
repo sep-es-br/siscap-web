@@ -13,14 +13,11 @@
 @import "./assets/styles/fonts";
 @import "./assets/styles/mixins";
 
-
 @import "./assets/plugins/keenicons/duotone/style.css";
 @import "./assets/plugins/keenicons/outline/style.css";
 @import "./assets/plugins/keenicons/solid/style.css";
 
 /* Estilo de botões */
-
-
 
 /* Estilo do Footer */
 
@@ -201,7 +198,6 @@ i.fa-user {
   width: 30px;
 }
 
-
 /* Estilo link (tag <a>) para elementos */
 .pointer {
   cursor: pointer;
@@ -221,7 +217,6 @@ i.fa-user {
 .test {
   border: 1px solid black;
 }
-
 
 /* Classes de fontes */
 
@@ -261,11 +256,11 @@ i.fa-user {
   font-size: $large-4-font-size;
 }
 
-.fs-tiny{
+.fs-tiny {
   font-size: 0.8rem;
 }
 
-.fs-r-2{
+.fs-r-2 {
   font-size: 1.5rem !important;
 }
 
@@ -275,24 +270,24 @@ i.fa-user {
   border-bottom: 1px solid var(--bs-border-color);
 }
 .my-2 {
-  margin-top: .5rem !important;
-  margin-bottom: .5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }
 
-.icon-default{
+.icon-default {
   color: var(--bs-primary) !important;
 }
 
-.icon-btn{
+.icon-btn {
   font-size: 1.5rem !important;
 }
 
 .ki-duotone,
 .ki-outline,
 .ki-solid {
-	line-height: 1;
-    font-size: 1rem;
-	color: var(--#{$prefix}text-muted);
+  line-height: 1;
+  font-size: 1rem;
+  color: var(--#{$prefix}text-muted);
 }
 
 .no_underline {

@@ -10,6 +10,8 @@ import { OrganizationsComponent } from './organizations/organizations.component'
 import { OrganizationFormComponent } from './organizations/form/organization-form.component';
 import { ProgramasComponent } from './programas/programas.component';
 import { ProgramaFormComponent } from './programas/form/programa-form.component';
+import { OrganizacoesFormComponent } from './organizacoes/form/organizacoes-form.component';
+import { OrganizacoesListComponent } from './organizacoes/list/organizacoes-list.component';
 
 const routes: Routes = [
   {
@@ -40,12 +42,14 @@ const routes: Routes = [
   {
     title: 'Organizacoes',
     path: 'organizacoes',
-    component: OrganizationsComponent,
+    // component: OrganizationsComponent,
+    component: OrganizacoesListComponent,
   },
   {
     title: 'Formulário de Organizacao',
     path: 'organizacoes/form/:mode',
-    component: OrganizationFormComponent,
+    // component: OrganizationFormComponent,
+    component: OrganizacoesFormComponent,
   },
   {
     title: 'Programas',

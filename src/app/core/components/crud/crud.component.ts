@@ -150,7 +150,9 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (this.deleteEvent.observed && isAdmin) {
           deleteButton = `
-          <button class="btn dropdown-item" data-action="delete" data-name="${full[this.targetNameMap()]}" data-id="${full.id}">
+          <button class="btn dropdown-item" data-action="delete" data-name="${
+            full[this.targetNameMap()]
+          }" data-id="${full.id}">
             <i class="fa-regular fa-trash-can me-1"></i>
             Excluir
           </button>`;
@@ -194,12 +196,12 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
         const { action, id, name } = closestBtn.dataset;
         this.idInAction = id;
         this.nomeInAction = name;
-        this.textDelete = 
-          "Você está deletando o seguinte registro:" +
-          "<br/ ><br />" +
+        this.textDelete =
+          'Você está deletando o seguinte registro:' +
+          '<br/ ><br />' +
           `<b>${name}</b>` +
-          "<br/ ><br />" +
-          "Esta ação não poderá ser desfeita. Deseja continuar?";
+          '<br/ ><br />' +
+          'Esta ação não poderá ser desfeita. Deseja continuar?';
 
         switch (action) {
           case 'view':

@@ -12,7 +12,8 @@ import Swal from 'sweetalert2';
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
-} from '../../shared/interfaces/http-get.interface';
+} from '../../shared/interfaces/http/http-get.interface';
+import { IOrganizacaoTableData } from '../../shared/interfaces/organizacao.interface';
 
 @Component({
   selector: 'siscap-organizations',
@@ -45,7 +46,8 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   }
 
   private getOrganizacoesPaginated() {
-    return this._organizacoesService.getOrganizacoesPaginated(this.pageConfig);
+    // return this._organizacoesService.getOrganizacoesPaginated(this.pageConfig);
+    return this._organizacoesService.getAllPaged(this.pageConfig);
   }
 
   private treatDatatableConfig() {
@@ -59,7 +61,8 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
           ? `${columns[orderElement.column].data},${orderElement.dir}`
           : '';
         this.getOrganizacoesPaginated().subscribe(
-          (response: IHttpGetResponseBody<IOrganizationTableData>) => {
+          // (response: IHttpGetResponseBody<IOrganizationTableData>) => {
+          (response: IHttpGetResponseBody<IOrganizacaoTableData>) => {
             callback({
               recordsTotal: response.totalElements,
               recordsFiltered: response.totalElements,
@@ -118,7 +121,8 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
   public deletarOrganizacao(id: number) {
     this._organizacoesService
-      .deleteOrganizacao(id)
+      // .deleteOrganizacao(id)
+      .delete(id)
       .pipe(
         tap((response) => {
           if (response) {

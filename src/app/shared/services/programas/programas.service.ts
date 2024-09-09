@@ -12,7 +12,7 @@ import {
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
-} from '../../interfaces/http-get.interface';
+} from '../../interfaces/http/http-get.interface';
 
 import { environment } from '../../../../environments/environment';
 

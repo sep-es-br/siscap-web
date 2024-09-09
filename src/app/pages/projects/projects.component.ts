@@ -11,7 +11,7 @@ import { ProjetosService } from '../../shared/services/projetos/projetos.service
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
-} from '../../shared/interfaces/http-get.interface';
+} from '../../shared/interfaces/http/http-get.interface';
 import { IProjetoTableData } from '../../shared/interfaces/projeto.interface';
 
 import { TableTextTruncatePipe } from '../../core/pipes/table-text-truncate/table-text-truncate.pipe';

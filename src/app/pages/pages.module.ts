@@ -29,6 +29,7 @@ import { OrganizationFormComponent } from './organizations/form/organization-for
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { ProgramasComponent } from './programas/programas.component';
 import { ProgramaFormComponent } from './programas/form/programa-form.component';
+import { OrganizacoesModule } from './organizacoes/organizacoes.module';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { ProgramaFormComponent } from './programas/form/programa-form.component'
     SweetAlert2Module,
     CoreModule,
     PagesRoutingModule,
+    OrganizacoesModule,
   ],
   providers: [provideNgxMask()],
   exports: [

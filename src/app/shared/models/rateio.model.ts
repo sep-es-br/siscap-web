@@ -5,8 +5,8 @@ import {
 } from '../interfaces/rateio.interface';
 
 export class RateioModel implements IRateio {
-  public rateioMicrorregiao: Array<IRateioMicrorregiao> = [];
-  public rateioCidade: Array<IRateioCidade> = [];
+  public rateioMicrorregiao: Array<RateioMicrorregiaoModel> = [];
+  public rateioCidade: Array<RateioCidadeModel> = [];
 
   constructor(rateio?: IRateio) {
     this.rateioMicrorregiao = this.contruirRateioMicrorregiao(

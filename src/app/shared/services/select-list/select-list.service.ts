@@ -20,14 +20,17 @@ export class SelectListService {
 
   private getSelectList(
     destination: string,
-    params?: any
+    params?: any,
+    ...pathArgs: Array<string>
   ): Observable<ISelectList[]> {
-    return this._http.get<ISelectList[]>(
-      this._url.replace('destination', destination),
-      {
-        params: params,
-      }
+    const urlReplaceDestination = this._url.replace('destination', destination);
+    const urlAddOptionalPathArgs = urlReplaceDestination.concat(
+      pathArgs.length > 0 ? `/${pathArgs.join('/')}` : ''
     );
+
+    return this._http.get<ISelectList[]>(urlAddOptionalPathArgs, {
+      params: params,
+    });
   }
 
   public getPessoas() {
@@ -86,8 +89,8 @@ export class SelectListService {
   }
 
   public getCidadesComMicrorregiao() {
-    return this._http.get<ICidadeSelectList[]>(
-      `${environment.apiUrl}/cidades/select/microrregioes`
-    );
+    return this.getSelectList('cidades', null, 'microrregioes') as Observable<
+      ICidadeSelectList[]
+    >;
   }
 }

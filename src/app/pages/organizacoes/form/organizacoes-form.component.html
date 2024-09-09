@@ -2,7 +2,6 @@
   <siscap-loading></siscap-loading>
 </div>
 
-<!-- <form [formGroup]="organizationForm" *ngIf="organizationForm"> -->
 <form [formGroup]="organizacaoForm" *ngIf="!loading">
   <div class="row">
     <div class="col-12 col-md-4">
@@ -134,7 +133,6 @@
                 placeholder="-- País --"
                 formControlName="idPais"
               >
-                <!-- (change)="paisChanged($event)" -->
                 <ng-option *ngFor="let pais of paisesList" [value]="pais.id">{{
                   pais.nome
                 }}</ng-option>
@@ -155,7 +153,6 @@
                 placeholder="-- Estado --"
                 formControlName="idEstado"
               >
-                <!-- (change)="estadoChanged($event)" -->
                 <ng-option
                   *ngFor="let estado of estadosList"
                   [value]="estado.id"
@@ -266,5 +263,4 @@
 
 <ng-template #appAlert let-controlName="controlName">
   <siscap-alert [control]="getControl(controlName)"></siscap-alert>
-  <!-- [control]="organizacaoForm.get(controlName) ?? null" -->
 </ng-template>

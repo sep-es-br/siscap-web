@@ -1,0 +1,53 @@
+<div class="card shadow border-light p-3">
+  <table class="table table-striped table-responsive">
+    <thead>
+      <tr>
+        <th>imagemPerfil</th>
+        <th [sortable]="'nomeFantasia'" (sort)="sortableDirectiveEvent($event)">
+          Sigla
+        </th>
+        <th [sortable]="'nome'" (sort)="sortableDirectiveEvent($event)">
+          Nome
+        </th>
+        <th>Tipo</th>
+        <th>Telefone</th>
+        <th>Site</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let organizacao of organizacoesList$ | async">
+        <td>img</td>
+        <td>{{ organizacao.nomeFantasia }}</td>
+        <td>{{ organizacao.nome }}</td>
+        <td>{{ organizacao.nomeTipoOrganizacao }}</td>
+        <td>{{ organizacao.telefone }}</td>
+        <td>{{ organizacao.site }}</td>
+        <td>ações</td>
+      </tr>
+    </tbody>
+  </table>
+  <siscap-pagination></siscap-pagination>
+  <!-- <div id="footer" class="row pt-3">
+    <div class="col-sm-12 col-md-5 d-flex">
+      <span class="align-self-center">
+        Mostrando de {{ primeiroItemPagina }} até
+        {{ ultimoItemPagina }} registros de {{ totalRegistros }}
+      </span>
+    </div>
+    <div class="col-sm-12 col-md-7">
+      <ngb-pagination
+        [page]="pageConfig.page + 1"
+        [pageSize]="pageConfig.size"
+        [collectionSize]="totalRegistros"
+        [boundaryLinks]="true"
+        (pageChange)="ngbPaginationPageChangeEvent($event)"
+      >
+        <ng-template ngbPaginationFirst>Primeiro</ng-template>
+        <ng-template ngbPaginationNext>Próximo</ng-template>
+        <ng-template ngbPaginationPrevious>Anterior</ng-template>
+        <ng-template ngbPaginationLast>Último</ng-template>
+      </ngb-pagination>
+    </div>
+  </div> -->
+</div>

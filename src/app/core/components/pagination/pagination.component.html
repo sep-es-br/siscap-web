@@ -1,0 +1,22 @@
+<div id="footer" class="row pt-3">
+  <div class="col-sm-12 col-md-5 d-flex">
+    <span class="align-self-center">
+      Mostrando de {{ primeiroItemPagina }} até {{ ultimoItemPagina }} registros
+      de {{ totalRegistros }}
+    </span>
+  </div>
+  <div class="col-sm-12 col-md-7">
+    <ngb-pagination
+      [page]="paginaAtual"
+      [pageSize]="itensPorPagina"
+      [collectionSize]="totalRegistros"
+      [boundaryLinks]="true"
+      (pageChange)="ngbPaginationPageChangeEvent($event)"
+    >
+      <ng-template ngbPaginationFirst>Primeiro</ng-template>
+      <ng-template ngbPaginationNext>Próximo</ng-template>
+      <ng-template ngbPaginationPrevious>Anterior</ng-template>
+      <ng-template ngbPaginationLast>Último</ng-template>
+    </ngb-pagination>
+  </div>
+</div>

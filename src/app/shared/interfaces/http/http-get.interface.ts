@@ -1,7 +1,10 @@
 interface GetSort {
-  empty: boolean;
-  unsorted: boolean;
-  sorted: boolean;
+  ascending: boolean;
+  descending: boolean;
+  direction: string;
+  ignoreCase: boolean;
+  nullHandling: string;
+  property: string;
 }
 
 export interface IHttpGetRequestBody {
@@ -17,13 +20,13 @@ export interface IHttpGetResponseBody<T> {
   size: number;
   content: Array<T>;
   number: number;
-  sort: GetSort;
+  sort: Array<GetSort>;
   first: boolean;
   last: boolean;
   numberOfElements: number;
   pageable: {
     offset: number;
-    sort: GetSort;
+    sort: Array<GetSort>;
     unpaged: boolean;
     paged: boolean;
     pageSize: number;

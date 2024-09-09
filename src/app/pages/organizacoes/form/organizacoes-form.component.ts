@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
-  FormBuilder,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
@@ -11,52 +10,43 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { concat, finalize, Observable, Subscription, tap } from 'rxjs';
 
+import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
 import { SelectListService } from '../../../shared/services/select-list/select-list.service';
 import { ToastService } from '../../../shared/services/toast/toast.service';
-import { ProfileService } from '../../../shared/services/profile/profile.service';
 import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
-import {
-  IOrganization,
-  IOrganizationCreate,
-} from '../../../shared/interfaces/organization.interface';
-import { ISelectList } from '../../../shared/interfaces/select-list.interface';
-
-import { FormDataHelper } from '../../../shared/helpers/form-data.helper';
 import {
   IOrganizacao,
   IOrganizacaoForm,
 } from '../../../shared/interfaces/organizacao.interface';
+import { ISelectList } from '../../../shared/interfaces/select-list.interface';
+
 import {
   OrganizacaoFormModel,
   OrganizacaoModel,
 } from '../../../shared/models/organizacao.model';
+
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
 
 @Component({
-  selector: 'siscap-organization-form',
+  selector: 'siscap-organizacao-form',
   standalone: false,
-  templateUrl: './organization-form.component.html',
-  styleUrl: './organization-form.component.scss',
+  templateUrl: './organizacoes-form.component.html',
+  styleUrl: './organizacoes-form.component.scss',
 })
-export class OrganizationFormComponent implements OnInit, OnDestroy {
+export class OrganizacoesFormComponent implements OnInit, OnDestroy {
   private _getTiposOrganizacoes$: Observable<ISelectList[]>;
   private _getOrganizacoes$: Observable<ISelectList[]>;
   private _getPaises$: Observable<ISelectList[]>;
-  // private _getEstados$!: Observable<ISelectList[]>;
-  // private _getCidades$!: Observable<ISelectList[]>;
   private _getPessoas$: Observable<ISelectList[]>;
   private _getAllSelectLists$: Observable<ISelectList[]>;
 
-  // private _getOrganizacaoById$!: Observable<IOrganization>;
   private _getOrganizacaoById$: Observable<IOrganizacao>;
 
   private _subscription: Subscription = new Subscription();
 
   private _organizacaoEditId: number;
-
-  // public organizationForm!: FormGroup;
 
   public loading: boolean = true;
 
@@ -64,9 +54,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
   public isEdit: boolean = true;
 
   public organizacaoForm: FormGroup = new FormGroup({});
-
-  // public organizationEditId!: number;
-  // public organizationFormInitialValue!: IOrganizationCreate;
 
   public tiposOrganizacoesList: Array<ISelectList> = [];
   public organizacoesList: Array<ISelectList> = [];
@@ -80,7 +67,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private _nnfb: NonNullableFormBuilder,
-    // private _formBuilder: FormBuilder,
     private _router: Router,
     private _route: ActivatedRoute,
     private _profileService: ProfileService,
@@ -90,7 +76,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     private _breadcrumbService: BreadcrumbService
   ) {
     this.formMode = this._route.snapshot.params['mode'];
-    // this.organizationEditId = this._route.snapshot.queryParams['id'] ?? null;
     this._organizacaoEditId = Number(
       this._route.snapshot.queryParams['id'] ?? null
     );
@@ -105,38 +90,12 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
 
           this.srcImagemOrganizacao =
             organizacaoModel.converterArrayBufferEmImgSrc();
-
-          // this.paisChanged(organizacaoModel.idPais);
-          // this.estadoChanged(organizacaoModel.idEstado);
         }),
         finalize(() => {
           this.switchMode(false);
           this.loading = false;
         })
       );
-
-    // this._getOrganizacaoById$ = this._organizacoesService
-    //   .getOrganizacaoById(this.organizationEditId)
-    //   .pipe(
-    //     tap((response) => {
-    //       this.initForm(response);
-
-    //       this.photoOrganization = this.convertByteArraytoImgSrc(
-    //         response.imagemPerfil as ArrayBuffer
-    //       );
-    //     }),
-    //     tap((response) => {
-    //       this.paisChanged(response.idPais);
-    //       this.estadoChanged(response.idEstado);
-    //     }),
-    //     finalize(() => {
-    //       this.organizationFormInitialValue = this.organizationForm.value;
-
-    //       this.switchMode(false);
-
-    //       this.loading = false;
-    //     })
-    //   );
 
     this._getTiposOrganizacoes$ = this._selectListService
       .getTiposOrganizacoes()
@@ -296,75 +255,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  // private initForm(organization?: IOrganization) {
-  //   const nnfb = this._formBuilder.nonNullable;
-  //   this.organizationForm = nnfb.group({
-  //     nome: nnfb.control(organization?.nome ?? '', {
-  //       validators: Validators.required,
-  //     }),
-  //     abreviatura: nnfb.control(organization?.abreviatura ?? '', {
-  //       validators: Validators.required,
-  //     }),
-  //     telefone: nnfb.control(organization?.telefone ?? ''),
-  //     cnpj: nnfb.control(organization?.cnpj ?? '', {
-  //       validators: [Validators.minLength(14), Validators.maxLength(14)],
-  //     }),
-  //     fax: nnfb.control(organization?.fax ?? ''),
-  //     email: nnfb.control(organization?.email ?? '', {
-  //       validators: Validators.email,
-  //     }),
-  //     site: nnfb.control(organization?.site ?? ''),
-  //     idOrganizacaoPai: nnfb.control(organization?.idOrganizacaoPai ?? null),
-  //     idPessoaResponsavel: nnfb.control(
-  //       organization?.idPessoaResponsavel ?? null
-  //     ),
-  //     idCidade: nnfb.control(organization?.idCidade ?? null),
-  //     idEstado: nnfb.control(organization?.idEstado ?? null),
-  //     idPais: nnfb.control(organization?.idPais ?? null, {
-  //       validators: Validators.required,
-  //     }),
-  //     idTipoOrganizacao: nnfb.control(organization?.idTipoOrganizacao ?? null, {
-  //       validators: Validators.required,
-  //     }),
-  //   });
-
-  //   this.validateCnpjRequired();
-  // }
-
-  // public idPaisChangeEvent(idPais?: number): void {
-  //   if (!idPais) {
-  //     this.organizacaoForm.get('idEstado')?.patchValue(null);
-  //     this.organizacaoForm.get('idCidade')?.patchValue(null);
-  //     this.estadosList = [];
-  //     this.cidadesList = [];
-  //     return;
-  //   }
-
-  //   this._getEstados$ = this._selectListService
-  //     .getEstados(idPais)
-  //     .pipe(tap((response) => (this.estadosList = response)));
-
-  //   this._subscription.add(this._getEstados$.subscribe());
-  // }
-
-  // public idEstadoChangeEvent(idEstado?: number): void {
-  //   if (!idEstado) {
-  //     this.organizacaoForm.get('idCidade')?.patchValue(null);
-  //     this.cidadesList = [];
-  //     return;
-  //   }
-
-  //   this._getCidades$ = this._selectListService
-  //     .getCidades('ESTADO', idEstado)
-  //     .pipe(tap((response) => (this.cidadesList = response)));
-
-  //   this._subscription.add(this._getCidades$.subscribe());
-  // }
-
-  // public convertByteArraytoImgSrc(data: ArrayBuffer): string {
-  //   return !!data ? 'data:image/jpeg;base64,' + data : '';
-  // }
-
   private isAllowed(path: string): boolean {
     return this._profileService.isAllowed(path);
   }
@@ -398,10 +288,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
     }
 
     const payload = new OrganizacaoFormModel(form.value as IOrganizacaoForm);
-
-    // console.log(payload);
-
-    // console.log(this.arquivoImagemOrganizacao);
 
     switch (this.formMode) {
       case 'criar':
@@ -441,52 +327,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-
-    // const payload = FormDataHelper.appendFormGrouptoFormData(form.value);
-
-    // if (!!this.uploadedPhotoFile) {
-    //   payload.append('imagemPerfil', this.uploadedPhotoFile);
-    // }
-
-    // switch (this.formMode) {
-    //   case 'criar':
-    //     this._organizacoesService
-    //       .postOrganizacao(payload)
-    //       .pipe(
-    //         tap((response) => {
-    //           if (response) {
-    //             this._toastService.showToast(
-    //               'success',
-    //               'Organização cadastrada com sucesso.'
-    //             );
-    //             this._router.navigateByUrl('main/organizacoes');
-    //           }
-    //         })
-    //       )
-    //       .subscribe();
-    //     break;
-
-    //   case 'editar':
-    //     this._organizacoesService
-    //       .putOrganizacao(this.organizationEditId, payload)
-    //       .pipe(
-    //         tap((response) => {
-    //           if (response) {
-    //             this._toastService.showToast(
-    //               'success',
-    //               'Organização alterada com sucesso.'
-    //             );
-    //             this._router.navigateByUrl('main/organizacoes');
-    //           }
-    //         })
-    //       )
-    //       .subscribe();
-
-    //     break;
-
-    //   default:
-    //     break;
-    // }
   }
 
   private handleActionBreadcrumb(actionType: string) {
@@ -506,22 +346,6 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
         break;
     }
   }
-
-  // private validateCnpjRequired() {
-  //   const idPaisControl = this.organizationForm.get('idPais');
-  //   const cnpjControl = this.organizationForm.get('cnpj');
-  //   cnpjControl?.markAsTouched();
-
-  //   idPaisControl?.valueChanges.subscribe((pais) => {
-  //     if (pais == 1) {
-  //       cnpjControl?.setValidators([Validators.required]);
-  //       cnpjControl?.updateValueAndValidity();
-  //     } else {
-  //       cnpjControl?.clearValidators();
-  //       cnpjControl?.updateValueAndValidity();
-  //     }
-  //   });
-  // }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();

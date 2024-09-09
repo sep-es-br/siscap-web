@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
-} from '../../interfaces/http-get.interface';
+} from '../../interfaces/http/http-get.interface';
 import {
   IProjeto,
   IProjetoForm,
