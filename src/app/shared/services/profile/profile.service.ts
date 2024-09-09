@@ -1,32 +1,30 @@
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-import {BehaviorSubject, catchError, Observable, throwError} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-import {environment} from '../../../../environments/environment';
-import {IProfile, PermissionsMap} from '../../interfaces/profile.interface';
-import {ErrorHandlerService} from '../error-handler/error-handler.service';
+import { IProfile, PermissionsMap } from '../../interfaces/profile.interface';
+
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProfileService {
   private _url = `${environment.apiUrl}/signin/user-info`;
-  private _sessionProfileSubject = new BehaviorSubject<IProfile>({token:"", nome:"", email:"", subNovo:"", permissoes:[]});
+  private _sessionProfileSubject = new BehaviorSubject<IProfile>({
+    token: '',
+    nome: '',
+    email: '',
+    subNovo: '',
+    permissoes: [],
+  });
   public sessionProfile$ = this._sessionProfileSubject.asObservable();
 
-  constructor(
-    private _http: HttpClient,
-    private _errorHandlerService: ErrorHandlerService,
-  ) { }
+  constructor(private _http: HttpClient) {}
 
   public getUserInfo(): Observable<IProfile> {
-    return this._http.get<IProfile>(`${this._url}`).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.get<IProfile>(`${this._url}`);
   }
 
   public isAllowed(value: string): boolean {
@@ -43,8 +41,7 @@ export class ProfileService {
   }
 
   atualizarPerfil(perfil: IProfile) {
-    sessionStorage.setItem('user-profile', JSON.stringify(perfil))
+    sessionStorage.setItem('user-profile', JSON.stringify(perfil));
     this._sessionProfileSubject.next(perfil);
   }
-
 }

@@ -1,15 +1,8 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpResponse,
-} from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { environment } from '../../../../environments/environment';
-
-import { ErrorHandlerService } from '../error-handler/error-handler.service';
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
@@ -20,24 +13,18 @@ import {
   IProjetoTableData,
 } from '../../interfaces/projeto.interface';
 
+import { environment } from '../../../../environments/environment';
+
 @Injectable({
   providedIn: 'root',
 })
 export class ProjetosService {
   private _url = `${environment.apiUrl}/projetos`;
 
-  constructor(
-    private _http: HttpClient,
-    private _errorHandlerService: ErrorHandlerService
-  ) {}
+  constructor(private _http: HttpClient) {}
 
   public getProjetoById(id: number): Observable<IProjeto> {
-    return this._http.get<IProjeto>(`${this._url}/${id}`).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.get<IProjeto>(`${this._url}/${id}`);
   }
 
   public getProjetosPaginated(
@@ -51,45 +38,21 @@ export class ProjetosService {
         pageConfig.search !== undefined ? pageConfig.search.toString() : '',
     };
 
-    return this._http
-      .get<IHttpGetResponseBody<IProjetoTableData>>(
-        `${this._url}?${new URLSearchParams(params).toString()}`
-      )
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.get<IHttpGetResponseBody<IProjetoTableData>>(
+      `${this._url}?${new URLSearchParams(params).toString()}`
+    );
   }
 
   public putProjeto(id: number, body: IProjetoForm): Observable<IProjeto> {
-    return this._http.put<IProjeto>(`${this._url}/${id}`, body).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.put<IProjeto>(`${this._url}/${id}`, body);
   }
 
   public deleteProjeto(id: number): Observable<string> {
-    return this._http
-      .delete(`${this._url}/${id}`, { responseType: 'text' })
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
   }
 
   public postProjeto(body: IProjetoForm): Observable<IProjeto> {
-    return this._http.post<IProjeto>(this._url, body).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.post<IProjeto>(this._url, body);
   }
 
   public downloadDIC(id: number) {
@@ -99,12 +62,6 @@ export class ProjetosService {
     };
     this._http
       .get<Blob>(`${this._url}/dic/${id}`, userHttpOptions)
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      )
       .subscribe((response) => {
         if (response instanceof HttpResponse) {
           const httpResponse = response as HttpResponse<Blob>;

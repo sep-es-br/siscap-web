@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { environment } from '../../../../environments/environment';
 import {
   ICidadeSelectList,
   ISelectList,
 } from '../../interfaces/select-list.interface';
-import { ErrorHandlerService } from '../error-handler/error-handler.service';
+
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -16,25 +16,18 @@ import { ErrorHandlerService } from '../error-handler/error-handler.service';
 export class SelectListService {
   private _url = `${environment.apiUrl}/destination/select`;
 
-  constructor(
-    private _http: HttpClient,
-    private _errorHandlerService: ErrorHandlerService
-  ) {}
+  constructor(private _http: HttpClient) {}
 
   private getSelectList(
     destination: string,
     params?: any
   ): Observable<ISelectList[]> {
-    return this._http
-      .get<ISelectList[]>(this._url.replace('destination', destination), {
+    return this._http.get<ISelectList[]>(
+      this._url.replace('destination', destination),
+      {
         params: params,
-      })
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+      }
+    );
   }
 
   public getPessoas() {
@@ -93,15 +86,8 @@ export class SelectListService {
   }
 
   public getCidadesComMicrorregiao() {
-    return this._http
-      .get<ICidadeSelectList[]>(
-        `${environment.apiUrl}/cidades/select/microrregioes`
-      )
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.get<ICidadeSelectList[]>(
+      `${environment.apiUrl}/cidades/select/microrregioes`
+    );
   }
 }

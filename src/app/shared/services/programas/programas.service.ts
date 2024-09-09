@@ -1,17 +1,20 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ErrorHandlerService } from '../error-handler/error-handler.service';
-import { environment } from '../../../../environments/environment';
+
+import { Observable } from 'rxjs';
+
 import { ProgramaFormModel } from '../../models/programa.model';
+
 import {
   IPrograma,
   IProgramaTableData,
 } from '../../interfaces/programa.interface';
-import { catchError, Observable, throwError } from 'rxjs';
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
 } from '../../interfaces/http-get.interface';
+
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -19,10 +22,7 @@ import {
 export class ProgramasService {
   private _url = `${environment.apiUrl}/programas`;
 
-  constructor(
-    private _http: HttpClient,
-    private _errorHandlerService: ErrorHandlerService
-  ) {}
+  constructor(private _http: HttpClient) {}
 
   public getProgramasPaged(
     pageConfig: IHttpGetRequestBody
@@ -35,56 +35,29 @@ export class ProgramasService {
         pageConfig.search !== undefined ? pageConfig.search.toString() : '',
     };
 
-    return this._http
-      .get<IHttpGetResponseBody<IProgramaTableData>>(this._url, {
-        params: params,
-      })
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.get<IHttpGetResponseBody<IProgramaTableData>>(this._url, {
+      params: params,
+    });
   }
 
   public getProgramaById(idPrograma: number): Observable<IPrograma> {
-    return this._http.get<IPrograma>(`${this._url}/${idPrograma}`).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.get<IPrograma>(`${this._url}/${idPrograma}`);
   }
 
   public postPrograma(body: ProgramaFormModel): Observable<IPrograma> {
-    return this._http.post<IPrograma>(this._url, body).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.post<IPrograma>(this._url, body);
   }
 
   public putPrograma(
     idPrograma: number,
     body: ProgramaFormModel
   ): Observable<IPrograma> {
-    return this._http.put<IPrograma>(`${this._url}/${idPrograma}`, body).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.put<IPrograma>(`${this._url}/${idPrograma}`, body);
   }
 
   public deletePrograma(idPrograma: number): Observable<string> {
-    return this._http
-      .delete(`${this._url}/${idPrograma}`, { responseType: 'text' })
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.delete(`${this._url}/${idPrograma}`, {
+      responseType: 'text',
+    });
   }
 }
