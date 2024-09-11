@@ -103,8 +103,8 @@ export class OrganizationFormComponent implements OnInit, OnDestroy {
 
           this.iniciarForm(organizacaoModel);
 
-          this.srcImagemOrganizacao =
-            organizacaoModel.converterArrayBufferEmImgSrc();
+          // this.srcImagemOrganizacao =
+          //   organizacaoModel.converterArrayBufferEmImgSrc();
 
           // this.paisChanged(organizacaoModel.idPais);
           // this.estadoChanged(organizacaoModel.idEstado);

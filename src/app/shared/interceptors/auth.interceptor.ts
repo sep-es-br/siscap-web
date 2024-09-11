@@ -8,7 +8,7 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 
 import { ErrorHandlerService } from '../services/error-handler/error-handler.service';
 
@@ -25,10 +25,26 @@ export class AuthInterceptor implements HttpInterceptor {
         'Authorization',
         `Bearer ${sessionStorage.getItem('token')}`
       ),
-      responseType: 'json',
+      // responseType: 'json',
     });
 
+    /*
+      QUESTÃO CENTRALIZAÇÃO DE TRATAMENTO DE ERROS:
+
+      - CASO [ERRO] Projeto.gerarDIC():
+        |-> responseType: 'arraybuffer'
+
+      - CASO [SUCESSO] delete():
+        |-> responseType: 'text'
+
+      ACHAR ALGUM JEITO DE SOMENTE ALTERAR responseType: 'json' QUANDO FOR ERRO
+    */
+
     return next.handle(reqClone).pipe(
+      tap((response) => {
+        console.log(response)
+        console.log(response.type)
+      }),
       catchError((error: HttpErrorResponse) => {
         this._errorHandlerService.handleError(error);
         return throwError(() => error);

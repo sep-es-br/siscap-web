@@ -28,6 +28,7 @@ import {
 } from '../../../shared/models/organizacao.model';
 
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
+import { converterArrayBufferEmImgSrc } from '../../../shared/utils/convert-array-buffer-image-source';
 
 @Component({
   selector: 'siscap-organizacao-form',
@@ -88,8 +89,9 @@ export class OrganizacoesFormComponent implements OnInit, OnDestroy {
 
           this.iniciarForm(organizacaoModel);
 
-          this.srcImagemOrganizacao =
-            organizacaoModel.converterArrayBufferEmImgSrc();
+          this.srcImagemOrganizacao = converterArrayBufferEmImgSrc(
+            organizacaoModel.imagemPerfil
+          );
         }),
         finalize(() => {
           this.switchMode(false);

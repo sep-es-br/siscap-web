@@ -1,15 +1,19 @@
-<div id="footer" class="row pt-3">
-  <div class="col-sm-12 col-md-5 d-flex">
-    <span class="align-self-center">
-      Mostrando de {{ primeiroItemPagina }} até {{ ultimoItemPagina }} registros
-      de {{ totalRegistros }}
+<div
+  id="footer"
+  class="d-flex flex-column flex-md-row align-items-center justify-content-around"
+>
+  <div class="col-10 col-md-4 mb-2 mb-md-0">
+    <span class="report-total">
+      Mostrando de {{ paginacaoInput().primeiroItemPagina }} até
+      {{ paginacaoInput().ultimoItemPagina }} registros de
+      {{ paginacaoInput().totalRegistros }}
     </span>
   </div>
-  <div class="col-sm-12 col-md-7">
+  <div class="col-10 col-md-4 mt-2 mt-md-0">
     <ngb-pagination
-      [page]="paginaAtual"
-      [pageSize]="itensPorPagina"
-      [collectionSize]="totalRegistros"
+      [page]="paginacaoInput().paginaAtual"
+      [pageSize]="paginacaoInput().itensPorPagina"
+      [collectionSize]="paginacaoInput().totalRegistros"
       [boundaryLinks]="true"
       (pageChange)="ngbPaginationPageChangeEvent($event)"
     >

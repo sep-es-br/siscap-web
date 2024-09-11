@@ -46,13 +46,7 @@ export class OrganizacaoModel
   constructor(organizacao?: IOrganizacao) {
     super(organizacao);
     this.id = organizacao?.id ?? 0;
-	this.idStatus = organizacao?.idStatus ?? 0;
+    this.idStatus = organizacao?.idStatus ?? 0;
     this.imagemPerfil = organizacao?.imagemPerfil ?? null;
-  }
-
-  public converterArrayBufferEmImgSrc(): string {
-    return this.imagemPerfil
-      ? 'data:image/jpeg;base64,' + this.imagemPerfil
-      : '';
   }
 }

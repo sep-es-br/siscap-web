@@ -1,53 +1,87 @@
 <div class="card shadow border-light p-3">
-  <table class="table table-striped table-responsive">
-    <thead>
-      <tr>
-        <th>imagemPerfil</th>
-        <th [sortable]="'nomeFantasia'" (sort)="sortableDirectiveEvent($event)">
-          Sigla
-        </th>
-        <th [sortable]="'nome'" (sort)="sortableDirectiveEvent($event)">
-          Nome
-        </th>
-        <th>Tipo</th>
-        <th>Telefone</th>
-        <th>Site</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let organizacao of organizacoesList$ | async">
-        <td>img</td>
-        <td>{{ organizacao.nomeFantasia }}</td>
-        <td>{{ organizacao.nome }}</td>
-        <td>{{ organizacao.nomeTipoOrganizacao }}</td>
-        <td>{{ organizacao.telefone }}</td>
-        <td>{{ organizacao.site }}</td>
-        <td>ações</td>
-      </tr>
-    </tbody>
-  </table>
-  <siscap-pagination></siscap-pagination>
-  <!-- <div id="footer" class="row pt-3">
-    <div class="col-sm-12 col-md-5 d-flex">
-      <span class="align-self-center">
-        Mostrando de {{ primeiroItemPagina }} até
-        {{ ultimoItemPagina }} registros de {{ totalRegistros }}
-      </span>
-    </div>
-    <div class="col-sm-12 col-md-7">
-      <ngb-pagination
-        [page]="pageConfig.page + 1"
-        [pageSize]="pageConfig.size"
-        [collectionSize]="totalRegistros"
-        [boundaryLinks]="true"
-        (pageChange)="ngbPaginationPageChangeEvent($event)"
-      >
-        <ng-template ngbPaginationFirst>Primeiro</ng-template>
-        <ng-template ngbPaginationNext>Próximo</ng-template>
-        <ng-template ngbPaginationPrevious>Anterior</ng-template>
-        <ng-template ngbPaginationLast>Último</ng-template>
-      </ngb-pagination>
-    </div>
-  </div> -->
+  <div class="table-responsive-md">
+    <table class="table table-striped">
+      <colgroup>
+        <col class="imagemPerfil-col" />
+        <col class="nomeFantasia-col" />
+        <col class="nome-col" />
+        <col class="tipo-col" />
+        <col class="telefone-col" />
+        <col class="site-col" />
+        <col class="acoes-col" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th></th>
+          <th
+            [sortable]="'nomeFantasia'"
+            (sort)="sortableDirectiveEvent($event)"
+            class="pointer"
+          >
+            Sigla
+          </th>
+          <th
+            [sortable]="'nome'"
+            (sort)="sortableDirectiveEvent($event)"
+            class="pointer"
+          >
+            Nome
+          </th>
+          <th>Tipo</th>
+          <th
+            [sortable]="'telefone'"
+            (sort)="sortableDirectiveEvent($event)"
+            class="pointer"
+          >
+            Telefone
+          </th>
+          <th
+            [sortable]="'site'"
+            (sort)="sortableDirectiveEvent($event)"
+            class="pointer"
+          >
+            Site
+          </th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody class="fw-semibold">
+        <tr
+          *ngFor="let organizacao of organizacoesList$ | async"
+          (click)="editarOrganizacao(organizacao.id)"
+        >
+          <td>
+            <img
+              [src]="
+                organizacao.imagemPerfil
+                  ? converterArrayBufferEmImgSrc(organizacao.imagemPerfil)
+                  : 'assets/images/blank.png'
+              "
+              alt="Imagem da organizacao"
+              class="rounded-circle profile-img"
+            />
+          </td>
+          <td>{{ organizacao.nomeFantasia }}</td>
+          <td>{{ organizacao.nome }}</td>
+          <td>{{ organizacao.nomeTipoOrganizacao }}</td>
+          <td>{{ organizacao.telefone }}</td>
+          <td (click)="$event.stopPropagation()">
+            <a [href]="'http://' + organizacao.site" target="_blank">
+              {{ organizacao.site }}
+            </a>
+          </td>
+          <td (click)="$event.stopPropagation()">
+            <table-actions-dropdown
+              [tableActionInput]="organizacao.id"
+              (tableActionOutput)="tableActionOutputEvent($event)"
+            ></table-actions-dropdown>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <siscap-pagination
+      [paginacaoInput]="paginacaoData"
+      (paginacaoOutput)="paginacaoOutputEvent($event)"
+    ></siscap-pagination>
+  </div>
 </div>
