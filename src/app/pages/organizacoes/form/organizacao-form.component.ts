@@ -17,15 +17,15 @@ import { ToastService } from '../../../shared/services/toast/toast.service';
 import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
 
 import {
+  OrganizacaoFormModel,
+  OrganizacaoModel,
+} from '../../../shared/models/organizacao.model';
+
+import {
   IOrganizacao,
   IOrganizacaoForm,
 } from '../../../shared/interfaces/organizacao.interface';
 import { ISelectList } from '../../../shared/interfaces/select-list.interface';
-
-import {
-  OrganizacaoFormModel,
-  OrganizacaoModel,
-} from '../../../shared/models/organizacao.model';
 
 import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
 import { converterArrayBufferEmImgSrc } from '../../../shared/utils/convert-array-buffer-image-source';
@@ -33,10 +33,10 @@ import { converterArrayBufferEmImgSrc } from '../../../shared/utils/convert-arra
 @Component({
   selector: 'siscap-organizacao-form',
   standalone: false,
-  templateUrl: './organizacoes-form.component.html',
-  styleUrl: './organizacoes-form.component.scss',
+  templateUrl: './organizacao-form.component.html',
+  styleUrl: './organizacao-form.component.scss',
 })
-export class OrganizacoesFormComponent implements OnInit, OnDestroy {
+export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   private _getTiposOrganizacoes$: Observable<ISelectList[]>;
   private _getOrganizacoes$: Observable<ISelectList[]>;
   private _getPaises$: Observable<ISelectList[]>;

@@ -26,7 +26,7 @@
 <ng-template #newButton let-path="path">
     <a
       *ngIf="isAllowed(path)"
-      class="btn btn-outline-primary me-md-2 me-0 text-nowrap"
+      class="btn btn-outline-primary text-nowrap"
       [routerLink]="[path, 'form', 'criar']"
       [hidden]="!mainChildPaths.includes(path)"
     >
@@ -38,7 +38,7 @@
 
 <!-- Botões de ação (ex.: Projetos -> Editar, Deletar) -->
 <ng-template #actionButtons let-path="path">
-  <button class="btn btn-primary mx-1" (click)="breadcrumbAction('edit')"  [hidden]="!showEditButton" >
+  <button class="btn btn-primary" (click)="breadcrumbAction('edit')"  [hidden]="!showEditButton" >
     <i class="fa-solid fa-edit mx-1 fs-6"></i>
     <span class="mx-1 fs-6">Editar</span>
   </button>
@@ -46,7 +46,7 @@
     <i class="fa-solid fa-close mx-1 fs-6"></i>
     <span class="mx-1 fs-6">Cancelar</span>
   </button>
-  <button class="btn btn-success mx-1" (click)="breadcrumbAction('save')"  [hidden]="!showSaveButton" >
+  <button class="btn btn-success" (click)="breadcrumbAction('save')"  [hidden]="!showSaveButton" >
     <i class="fa-solid fa-save mx-1 fs-6"></i>
     <span class="mx-1 fs-6">Salvar</span>
   </button>

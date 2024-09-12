@@ -3,24 +3,22 @@ import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
-import {
-  IOrganization,
-  IOrganizationTableData,
-} from '../../interfaces/organization.interface';
-import {
-  IHttpGetRequestBody,
-  IHttpGetResponseBody,
-} from '../../interfaces/http/http-get.interface';
+import { OrganizacaoFormModel } from '../../models/organizacao.model';
 
-import { environment } from '../../../../environments/environment';
-import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
 import { IHttpBase } from '../../interfaces/http/http-base.interface';
 import {
   IOrganizacao,
   IOrganizacaoTableData,
 } from '../../interfaces/organizacao.interface';
-import { OrganizacaoFormModel } from '../../models/organizacao.model';
+import {
+  IHttpGetRequestBody,
+  IHttpGetResponseBody,
+} from '../../interfaces/http/http-get.interface';
+
+import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
 import { FormDataHelper } from '../../helpers/form-data.helper';
+
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -74,36 +72,6 @@ export class OrganizacoesService
 
   public delete(id: number): Observable<string> {
     return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
-  }
-
-  public getOrganizacaoById(id: number): Observable<IOrganization> {
-    return this._http.get<IOrganization>(`${this._url}/${id}`);
-  }
-
-  public getOrganizacoesPaginated(
-    pageConfig: IHttpGetRequestBody
-  ): Observable<IHttpGetResponseBody<IOrganizationTableData>> {
-    return this._http.get<IHttpGetResponseBody<IOrganizationTableData>>(
-      this._url,
-      {
-        params:
-          PageableQueryStringParametersHelper.buildQueryStringParams(
-            pageConfig
-          ),
-      }
-    );
-  }
-
-  public putOrganizacao(id: number, body: FormData): Observable<IOrganization> {
-    return this._http.put<IOrganization>(`${this._url}/${id}`, body);
-  }
-
-  public deleteOrganizacao(id: number): Observable<string> {
-    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
-  }
-
-  public postOrganizacao(body: FormData): Observable<IOrganization> {
-    return this._http.post<IOrganization>(this._url, body);
   }
 
   private construirFormData(

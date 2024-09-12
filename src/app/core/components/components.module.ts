@@ -23,6 +23,7 @@ import { CropperComponent } from './cropper/cropper.component';
 import { EquipeFormComponent } from './equipe-form/equipe-form.component';
 import { RateioFormComponent } from './rateio-form/rateio-form.component';
 import { PaginationComponent } from './pagination/pagination.component';
+import { TableSearchComponent } from './table-search/table-search.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { PaginationComponent } from './pagination/pagination.component';
     EquipeFormComponent,
     RateioFormComponent,
     PaginationComponent,
+    TableSearchComponent,
     NgbToastModule,
     NgbDropdownModule,
     NgbModule,
@@ -58,6 +60,7 @@ import { PaginationComponent } from './pagination/pagination.component';
     EquipeFormComponent,
     RateioFormComponent,
     PaginationComponent,
+    TableSearchComponent,
     CrudModule,
     CropperComponent,
   ],

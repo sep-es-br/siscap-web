@@ -1,0 +1,30 @@
+<div class="h-100" *ngIf="loading">
+  <siscap-loading></siscap-loading>
+</div>
+
+<div class="row pb-2" *ngIf="!loading">
+  <siscap-table-search
+    [textInputPlaceholder]="'-- Pesquisar por sigla ou nome da organização --'"
+    (filtroPesquisaOutput)="filtroPesquisaOutputEvent($event)"
+  ></siscap-table-search>
+</div>
+
+<div class="card shadow border-light p-3" *ngIf="!loading">
+  <ng-container
+    *ngIf="(organizacoesList$ | async)?.length! > 0; else semResultados"
+  >
+    <siscap-organizacoes-list
+      [organizacoesList]="organizacoesList$ | async"
+      (sortableDirectiveOutput)="sortableDirectiveOutputEvent($event)"
+    >
+      <siscap-pagination
+        [paginacaoInput]="paginacaoData"
+        (paginacaoOutput)="paginacaoOutputEvent($event)"
+      ></siscap-pagination>
+    </siscap-organizacoes-list>
+  </ng-container>
+</div>
+
+<ng-template #semResultados>
+  <table-search-no-results></table-search-no-results>
+</ng-template>

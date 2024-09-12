@@ -4,14 +4,23 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective } from 'ngx-mask';
+import {
+  NgbAlertModule,
+  NgbPaginationModule,
+} from '@ng-bootstrap/ng-bootstrap';
 
 import { CoreModule } from '../../core/core.module';
+
+import { OrganizacoesComponent } from './organizacoes.component';
 import { OrganizacoesListComponent } from './list/organizacoes-list.component';
-import { OrganizacoesFormComponent } from './form/organizacoes-form.component';
-import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { OrganizacaoFormComponent } from './form/organizacao-form.component';
 
 @NgModule({
-  declarations: [OrganizacoesListComponent, OrganizacoesFormComponent],
+  declarations: [
+    OrganizacoesComponent,
+    OrganizacoesListComponent,
+    OrganizacaoFormComponent,
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -20,7 +29,12 @@ import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
     NgSelectModule,
     NgxMaskDirective,
     NgbPaginationModule,
+    NgbAlertModule,
   ],
-  exports: [OrganizacoesListComponent, OrganizacoesFormComponent],
+  exports: [
+    OrganizacoesComponent,
+    OrganizacoesListComponent,
+    OrganizacaoFormComponent,
+  ],
 })
 export class OrganizacoesModule {}
