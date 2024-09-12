@@ -2,7 +2,7 @@
   <siscap-loading></siscap-loading>
 </div>
 
-<div class="row pb-2" *ngIf="!loading">
+<div class="row py-2" *ngIf="!loading">
   <siscap-table-search
     [textInputPlaceholder]="'-- Pesquisar por sigla ou nome da organização --'"
     (filtroPesquisaOutput)="filtroPesquisaOutputEvent($event)"
