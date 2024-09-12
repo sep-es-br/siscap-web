@@ -19,21 +19,21 @@ export class ProjetoFormModel implements IProjetoForm {
   public idResponsavelProponente: number;
   public equipeElaboracao: Array<EquipeModel>;
 
-  constructor(projeto?: IProjeto) {
-    this.sigla = projeto?.sigla ?? '';
-    this.titulo = projeto?.titulo ?? '';
-    this.idOrganizacao = projeto?.idOrganizacao ?? 0;
-    this.valorEstimado = projeto?.valorEstimado ?? 0;
-    this.rateio = new RateioModel(projeto?.rateio);
-    this.objetivo = projeto?.objetivo ?? '';
-    this.objetivoEspecifico = projeto?.objetivoEspecifico ?? '';
-    this.situacaoProblema = projeto?.situacaoProblema ?? '';
-    this.solucoesPropostas = projeto?.solucoesPropostas ?? '';
-    this.impactos = projeto?.impactos ?? '';
-    this.arranjosInstitucionais = projeto?.arranjosInstitucionais ?? '';
-    this.idResponsavelProponente = projeto?.idResponsavelProponente ?? 0;
+  constructor(projetoForm?: IProjetoForm) {
+    this.sigla = projetoForm?.sigla ?? '';
+    this.titulo = projetoForm?.titulo ?? '';
+    this.idOrganizacao = projetoForm?.idOrganizacao ?? 0;
+    this.valorEstimado = projetoForm?.valorEstimado ?? 0;
+    this.rateio = new RateioModel(projetoForm?.rateio);
+    this.objetivo = projetoForm?.objetivo ?? '';
+    this.objetivoEspecifico = projetoForm?.objetivoEspecifico ?? '';
+    this.situacaoProblema = projetoForm?.situacaoProblema ?? '';
+    this.solucoesPropostas = projetoForm?.solucoesPropostas ?? '';
+    this.impactos = projetoForm?.impactos ?? '';
+    this.arranjosInstitucionais = projetoForm?.arranjosInstitucionais ?? '';
+    this.idResponsavelProponente = projetoForm?.idResponsavelProponente ?? 0;
     this.equipeElaboracao = this.construirEquipeElaboracao(
-      projeto?.equipeElaboracao
+      projetoForm?.equipeElaboracao
     );
   }
 

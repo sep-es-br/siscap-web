@@ -9,7 +9,7 @@ import { ProgramasService } from '../../shared/services/programas/programas.serv
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
-} from '../../shared/interfaces/http-get.interface';
+} from '../../shared/interfaces/http/http-get.interface';
 import { IProgramaTableData } from '../../shared/interfaces/programa.interface';
 
 @Component({

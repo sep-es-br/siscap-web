@@ -45,7 +45,10 @@ export class SortableDirective {
   @HostListener('click')
   emitSort() {
     for (const el of this._targetColumnSiblings) {
-      if (el != this._targetColumn && el.hasAttributeNS(null, 'sortable')) {
+      if (
+        el != this._targetColumn &&
+        el.hasAttributeNS(null, 'ng-reflect-sortable')
+      ) {
         this._r2.removeClass(el, 'asc');
         this._r2.removeClass(el, 'desc');
       }

@@ -1,20 +1,21 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
-import { catchError, Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { environment } from '../../../../environments/environment';
 import {
   IPerson,
   IPersonACApi,
   IPersonTableData,
 } from '../../interfaces/person.interface';
-import { ErrorHandlerService } from '../error-handler/error-handler.service';
+
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
-} from '../../interfaces/http-get.interface';
+} from '../../interfaces/http/http-get.interface';
 import { ISelectList } from '../../interfaces/select-list.interface';
+
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -22,29 +23,14 @@ import { ISelectList } from '../../interfaces/select-list.interface';
 export class PessoasService {
   private _url = `${environment.apiUrl}/pessoas`;
 
-  constructor(
-    private _http: HttpClient,
-    private _errorHandlerService: ErrorHandlerService
-  ) {}
+  constructor(private _http: HttpClient) {}
 
   public getPessoaById(id: number): Observable<IPerson> {
-    return this._http.get<IPerson>(`${this._url}/${id}`).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.get<IPerson>(`${this._url}/${id}`);
   }
 
   public getResponsavelByOrganizacaoId(orgId: number): Observable<ISelectList> {
-    return this._http
-      .get<ISelectList>(`${this._url}/responsavel/${orgId}`)
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.get<ISelectList>(`${this._url}/responsavel/${orgId}`);
   }
 
   public getPessoasPaginated(
@@ -58,16 +44,9 @@ export class PessoasService {
         pageConfig.search !== undefined ? pageConfig.search.toString() : '', // Ensure search is always a string
     };
 
-    return this._http
-      .get<IHttpGetResponseBody<IPersonTableData>>(
-        `${this._url}?${new URLSearchParams(params).toString()}`
-      )
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.get<IHttpGetResponseBody<IPersonTableData>>(
+      `${this._url}?${new URLSearchParams(params).toString()}`
+    );
   }
 
   public putPessoa(
@@ -78,32 +57,15 @@ export class PessoasService {
     let url = isBySubNovo
       ? `${this._url}/meu-perfil/${id}`
       : `${this._url}/${id}`;
-    return this._http.put<IPerson>(url, body).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.put<IPerson>(url, body);
   }
 
   public deletePessoa(id: number): Observable<string> {
-    return this._http
-      .delete(`${this._url}/${id}`, { responseType: 'text' })
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
   }
 
   public postPessoa(body: FormData): Observable<IPerson> {
-    return this._http.post<IPerson>(this._url, body).pipe(
-      catchError((err: HttpErrorResponse) => {
-        this._errorHandlerService.handleError(err);
-        return throwError(() => err);
-      })
-    );
+    return this._http.post<IPerson>(this._url, body);
   }
 
   public getMeuPerfil(subNovo: string): Observable<IPerson> {
@@ -111,24 +73,12 @@ export class PessoasService {
       subNovo: subNovo,
     };
 
-    return this._http
-      .get<IPerson>(`${this._url}/meu-perfil`, { params: params })
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.get<IPerson>(`${this._url}/meu-perfil`, {
+      params: params,
+    });
   }
 
   public searchACPessoaByCpf(cpf: string): Observable<IPersonACApi> {
-    return this._http
-      .get<IPersonACApi>(`${this._url}/acesso-cidadao/${cpf}`)
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this._errorHandlerService.handleError(err);
-          return throwError(() => err);
-        })
-      );
+    return this._http.get<IPersonACApi>(`${this._url}/acesso-cidadao/${cpf}`);
   }
 }

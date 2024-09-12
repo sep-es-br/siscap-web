@@ -24,11 +24,11 @@ import { ProjectsComponent } from './projects/projects.component';
 import { ProjectFormComponent } from './projects/form/project-form.component';
 import { PersonsComponent } from './persons/persons.component';
 import { PersonFormComponent } from './persons/form/person-form.component';
-import { OrganizationsComponent } from './organizations/organizations.component';
-import { OrganizationFormComponent } from './organizations/form/organization-form.component';
+
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { ProgramasComponent } from './programas/programas.component';
 import { ProgramaFormComponent } from './programas/form/programa-form.component';
+import { OrganizacoesModule } from './organizacoes/organizacoes.module';
 
 @NgModule({
   declarations: [
@@ -41,8 +41,6 @@ import { ProgramaFormComponent } from './programas/form/programa-form.component'
     ProjectFormComponent,
     PersonsComponent,
     PersonFormComponent,
-    OrganizationsComponent,
-    OrganizationFormComponent,
     ProgramasComponent,
     ProgramaFormComponent,
   ],
@@ -61,6 +59,7 @@ import { ProgramaFormComponent } from './programas/form/programa-form.component'
     SweetAlert2Module,
     CoreModule,
     PagesRoutingModule,
+    OrganizacoesModule,
   ],
   providers: [provideNgxMask()],
   exports: [
@@ -73,8 +72,6 @@ import { ProgramaFormComponent } from './programas/form/programa-form.component'
     ProjectFormComponent,
     PersonsComponent,
     PersonFormComponent,
-    OrganizationsComponent,
-    OrganizationFormComponent,
     ProgramasComponent,
     ProgramaFormComponent,
   ],

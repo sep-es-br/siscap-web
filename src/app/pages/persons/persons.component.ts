@@ -11,7 +11,7 @@ import { Config } from 'datatables.net';
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
-} from '../../shared/interfaces/http-get.interface';
+} from '../../shared/interfaces/http/http-get.interface';
 import { IPersonTableData } from '../../shared/interfaces/person.interface';
 
 @Component({

@@ -1,0 +1,71 @@
+<div class="table-responsive-md">
+  <table class="table table-striped">
+    <colgroup>
+      <col class="imagemPerfil-col" />
+      <col class="nomeFantasia-col" />
+      <col class="nome-col" />
+      <col class="tipo-col" />
+      <col class="telefone-col" />
+      <col class="site-col" />
+      <col class="acoes-col" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        <th
+          [sortable]="'nomeFantasia'"
+          (sort)="sortColumn($event)"
+          class="pointer"
+        >
+          Sigla
+        </th>
+        <th [sortable]="'nome'" (sort)="sortColumn($event)" class="pointer">
+          Nome
+        </th>
+        <th>Tipo</th>
+        <th [sortable]="'telefone'" (sort)="sortColumn($event)" class="pointer">
+          Telefone
+        </th>
+        <th [sortable]="'site'" (sort)="sortColumn($event)" class="pointer">
+          Site
+        </th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody class="fw-semibold">
+      <tr
+        *ngFor="let organizacao of organizacoesList()"
+        (click)="editarOrganizacao(organizacao.id)"
+      >
+        <td>
+          <img
+            [src]="
+              organizacao.imagemPerfil
+                ? converterArrayBufferEmImgSrc(organizacao.imagemPerfil)
+                : 'assets/images/blank.png'
+            "
+            alt="Imagem da organizacao"
+            class="rounded-circle profile-img"
+          />
+        </td>
+        <td>{{ organizacao.nomeFantasia }}</td>
+        <td>{{ organizacao.nome }}</td>
+        <td>{{ organizacao.nomeTipoOrganizacao }}</td>
+        <td>{{ organizacao.telefone }}</td>
+        <td (click)="$event.stopPropagation()">
+          <a [href]="'http://' + organizacao.site" target="_blank">
+            {{ organizacao.site }}
+          </a>
+        </td>
+        <td (click)="$event.stopPropagation()">
+          <table-actions-dropdown
+            [tableActionInput]="organizacao.id"
+            (tableActionOutput)="tableActionOutputEvent($event)"
+          ></table-actions-dropdown>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-content select="siscap-pagination"></ng-content>
+</div>

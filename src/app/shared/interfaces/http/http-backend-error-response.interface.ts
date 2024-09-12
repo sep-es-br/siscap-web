@@ -1,4 +1,4 @@
-export interface IHttpError {
+export interface IHttpBackEndErrorResponse {
   status: string;
   codigo: number;
   mensagem: string;

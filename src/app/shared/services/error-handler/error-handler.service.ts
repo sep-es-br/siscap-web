@@ -1,10 +1,10 @@
-import {Injectable} from '@angular/core';
-import {Router} from '@angular/router';
-import {HttpErrorResponse} from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
-import {ToastService} from '../toast/toast.service';
+import { ToastService } from '../toast/toast.service';
 
-import {IHttpError} from '../../interfaces/http-error.interface';
+import { IHttpBackEndErrorResponse } from '../../interfaces/http/http-backend-error-response.interface';
 
 /**
  * @service
@@ -14,8 +14,7 @@ import {IHttpError} from '../../interfaces/http-error.interface';
   providedIn: 'root',
 })
 export class ErrorHandlerService {
-  constructor(private _toastService: ToastService, private _router: Router) {
-  }
+  constructor(private _toastService: ToastService, private _router: Router) {}
 
   /**
    * @public
@@ -30,23 +29,31 @@ export class ErrorHandlerService {
    * @param {HttpErrorResponse} error - O erro fornecido pelo seletor do operador RxJS `catchError`.
    */
   public handleError(error: HttpErrorResponse): void {
-    const backEndError: IHttpError = error.error;
-
-    if (backEndError) {
-      this._toastService.showToast(
-        'error',
-        backEndError.mensagem,
-        backEndError.erros
-      );
+    if (error.status === 0) {
+      this.showDefaultErrorToast();
     } else {
-      this._toastService.showToast('error', 'Ocorreu um erro.', [
-        'Houve um erro ao processar sua requisição.',
-      ]);
+      this.showBackEndErrorToast(error.error);
+      this.handleRouting(error.status);
     }
+  }
 
-    const errorCode = backEndError.codigo;
+  private showDefaultErrorToast(): void {
+    this._toastService.showToast('error', 'Erro ao processar a requisição.', [
+      'Verifique sua conexão com a internet.',
+      'Caso o erro persista, contate o suporte.',
+    ]);
+  }
 
-    switch (errorCode) {
+  private showBackEndErrorToast(backEndError: IHttpBackEndErrorResponse): void {
+    this._toastService.showToast(
+      'error',
+      backEndError.mensagem,
+      backEndError.erros
+    );
+  }
+
+  private handleRouting(errorStatus: number): void {
+    switch (errorStatus) {
       case 401:
         this._router.navigateByUrl('login');
         break;

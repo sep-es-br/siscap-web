@@ -26,17 +26,17 @@ export class ProgramaFormModel implements IProgramaForm {
   public projetosPropostos: ProgramaProjetoPropostoModel[];
   public valor: ValorModel;
 
-  constructor(programa?: IPrograma) {
-    this.sigla = programa?.sigla ?? '';
-    this.titulo = programa?.titulo ?? '';
-    this.idOrgaoExecutor = programa?.idOrgaoExecutor ?? 0;
+  constructor(programaForm?: IProgramaForm) {
+    this.sigla = programaForm?.sigla ?? '';
+    this.titulo = programaForm?.titulo ?? '';
+    this.idOrgaoExecutor = programaForm?.idOrgaoExecutor ?? 0;
     this.equipeCaptacao = this.construirEquipeCaptação(
-      programa?.equipeCaptacao
+      programaForm?.equipeCaptacao
     );
     this.projetosPropostos = this.construirProjetosPropostos(
-      programa?.projetosPropostos
+      programaForm?.projetosPropostos
     );
-    this.valor = new ValorModel(programa?.valor);
+    this.valor = new ValorModel(programaForm?.valor);
   }
 
   private construirEquipeCaptação(equipeCaptacao?: IEquipe[]): EquipeModel[] {

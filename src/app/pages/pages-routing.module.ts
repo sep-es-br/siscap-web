@@ -6,10 +6,10 @@ import { ProjectsComponent } from './projects/projects.component';
 import { ProjectFormComponent } from './projects/form/project-form.component';
 import { PersonsComponent } from './persons/persons.component';
 import { PersonFormComponent } from './persons/form/person-form.component';
-import { OrganizationsComponent } from './organizations/organizations.component';
-import { OrganizationFormComponent } from './organizations/form/organization-form.component';
 import { ProgramasComponent } from './programas/programas.component';
 import { ProgramaFormComponent } from './programas/form/programa-form.component';
+import { OrganizacoesComponent } from './organizacoes/organizacoes.component';
+import { OrganizacaoFormComponent } from './organizacoes/form/organizacao-form.component';
 
 const routes: Routes = [
   {
@@ -40,12 +40,12 @@ const routes: Routes = [
   {
     title: 'Organizacoes',
     path: 'organizacoes',
-    component: OrganizationsComponent,
+    component: OrganizacoesComponent,
   },
   {
     title: 'Formulário de Organizacao',
     path: 'organizacoes/form/:mode',
-    component: OrganizationFormComponent,
+    component: OrganizacaoFormComponent,
   },
   {
     title: 'Programas',
