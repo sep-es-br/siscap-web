@@ -1,9 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import {DashboardService} from '../../../shared/services/dashboard/dashboard.service';
-import {Subscription} from "rxjs";
-import {IDashboardProjeto} from "../../../shared/interfaces/dashboard.interface";
-import {abbreviateNumber} from "js-abbreviation-number";
+import { Subscription } from 'rxjs';
+
+import { DashboardService } from '../../../core/services/dashboard/dashboard.service';
+
+import { IDashboardProjeto } from '../../../core/interfaces/dashboard.interface';
+
+import { abbreviateNumber } from 'js-abbreviation-number';
 
 @Component({
   selector: 'siscap-dashboard',
@@ -12,25 +15,28 @@ import {abbreviateNumber} from "js-abbreviation-number";
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-
   private _subscription: Subscription = new Subscription();
 
   dados?: IDashboardProjeto;
   valorEstimadoTotal?: string;
-  simbolos: {symbols: string[]} = { symbols: ["", " mil", " mi", " bi", " tri", " qua", " qui"] };
+  simbolos: { symbols: string[] } = {
+    symbols: ['', ' mil', ' mi', ' bi', ' tri', ' qua', ' qui'],
+  };
 
-  constructor(private _dashboardService: DashboardService) {
-  }
+  constructor(private _dashboardService: DashboardService) {}
 
   ngOnInit() {
-    this._dashboardService.getQuantidadeProjetos().subscribe(response => {
+    this._dashboardService.getQuantidadeProjetos().subscribe((response) => {
       this.dados = response;
-      this.valorEstimadoTotal = abbreviateNumber(this.dados.valorTotal, 1, this.simbolos);
+      this.valorEstimadoTotal = abbreviateNumber(
+        this.dados.valorTotal,
+        1,
+        this.simbolos
+      );
     });
   }
 
   ngOnDestroy() {
     this._subscription.unsubscribe();
   }
-
 }

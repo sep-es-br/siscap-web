@@ -3,13 +3,13 @@ import { RouterOutlet } from '@angular/router';
 
 import { NgSelectConfig } from '@ng-select/ng-select';
 
-import { CoreModule } from './core/core.module';
+import { SharedModule } from './shared/shared.module';
 import { PagesModule } from './pages/pages.module';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CoreModule, PagesModule],
+  imports: [RouterOutlet, SharedModule, PagesModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

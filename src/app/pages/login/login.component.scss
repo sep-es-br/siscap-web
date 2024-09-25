@@ -1,41 +1,41 @@
-.logo{
+.logo {
   width: 65%;
   margin: auto;
 }
 
-.fs-small{
+.fs-small {
   font-size: 0.9rem;
 }
 
-.logo img{
+.logo img {
   width: 85% !important;
   margin: auto;
   display: grid;
 }
 
 @media screen and (max-width: 768px) {
-  .logo{
-    width: 75% ;
+  .logo {
+    width: 75%;
   }
 
-  .logo img{
+  .logo img {
     width: 70% !important;
   }
-  .fs-small{
+  .fs-small {
     font-size: 0.7rem;
   }
 }
 
 @media screen and (max-width: 576px) {
-  .logo{
+  .logo {
     width: 85%;
   }
 
-  .logo img{
+  .logo img {
     width: 80%;
   }
 
-  .fs-small{
+  .fs-small {
     font-size: 0.5rem;
   }
 }

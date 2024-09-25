@@ -1,5 +1,5 @@
 <div class="h-100" *ngIf="loading">
-  <siscap-loading></siscap-loading>
+  <loading-spinner></loading-spinner>
 </div>
 
 <form [formGroup]="organizacaoForm" *ngIf="!loading">
@@ -12,7 +12,7 @@
         <div class="card-body">
           <app-cropper
             [croppedImagethumb]="srcImagemOrganizacao"
-            [editImage]="!isEdit && formMode != 'criar'"
+            [editImage]="!isModoEdicao"
             (imgcropped)="imgCropEvent($event)"
           ></app-cropper>
         </div>
@@ -27,13 +27,9 @@
           <div class="row">
             <div class="col-12 col-md-12 mb-2 mt-2 form-group">
               <label for="abreviatura" class="form-label col-12">
-                Sigla / Nome Fantasia
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'abreviatura' }
-                  "
-                ></ng-container>
+                <validation-message [control]="getControl('abreviatura')">
+                  Sigla / Nome Fantasia
+                </validation-message>
               </label>
               <input
                 mask=""
@@ -47,10 +43,9 @@
             </div>
             <div class="col-12 col-md-12 mb-2 mt-2 form-group">
               <label for="nome" class="form-label col-12">
-                Nome / Razão Social
-                <ng-container
-                  *ngTemplateOutlet="appAlert; context: { controlName: 'nome' }"
-                ></ng-container>
+                <validation-message [control]="getControl('nome')">
+                  Nome / Razão Social
+                </validation-message>
               </label>
               <input
                 type="text"
@@ -61,10 +56,9 @@
             </div>
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="cnpj" class="form-label col-12">
-                CNPJ
-                <ng-container
-                  *ngTemplateOutlet="appAlert; context: { controlName: 'cnpj' }"
-                ></ng-container>
+                <validation-message [control]="getControl('cnpj')">
+                  CNPJ
+                </validation-message>
               </label>
               <input
                 mask="00.000.000/0000-00"
@@ -76,13 +70,9 @@
             </div>
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="idTipoOrganizacao" class="form-label col-12">
-                Tipo
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'idTipoOrganizacao' }
-                  "
-                ></ng-container>
+                <validation-message [control]="getControl('idTipoOrganizacao')">
+                  Tipo
+                </validation-message>
               </label>
               <ng-select
                 id="idTipoOrganizacao"
@@ -90,7 +80,7 @@
                 formControlName="idTipoOrganizacao"
               >
                 <ng-option
-                  *ngFor="let tipoOrganizacao of tiposOrganizacoesList"
+                  *ngFor="let tipoOrganizacao of tiposOrganizacoesSelectList"
                   [value]="tipoOrganizacao.id"
                   >{{ tipoOrganizacao.nome }}</ng-option
                 >
@@ -98,13 +88,9 @@
             </div>
             <div class="col-12 col-md-12 mb-2 mt-2 form-group">
               <label for="idOrganizacaoPai" class="form-label col-12">
-                Matriz/Sede
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'idOrganizacaoPai' }
-                  "
-                ></ng-container>
+                <validation-message [control]="getControl('idOrganizacaoPai')">
+                  Matriz / Sede
+                </validation-message>
               </label>
               <ng-select
                 id="idOrganizacaoPai"
@@ -112,7 +98,7 @@
                 formControlName="idOrganizacaoPai"
               >
                 <ng-option
-                  *ngFor="let organizacao of organizacoesList"
+                  *ngFor="let organizacao of organizacoesSelectList"
                   [value]="organizacao.id"
                   >{{ organizacao.nome }}</ng-option
                 >
@@ -120,33 +106,27 @@
             </div>
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="idPais" class="form-label col-12">
-                País de Origem
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'idPais' }
-                  "
-                ></ng-container>
+                <validation-message [control]="getControl('idPais')">
+                  País de Origem
+                </validation-message>
               </label>
               <ng-select
                 id="idPais"
                 placeholder="-- País --"
                 formControlName="idPais"
               >
-                <ng-option *ngFor="let pais of paisesList" [value]="pais.id">{{
-                  pais.nome
-                }}</ng-option>
+                <ng-option
+                  *ngFor="let pais of paisesSelectList"
+                  [value]="pais.id"
+                  >{{ pais.nome }}</ng-option
+                >
               </ng-select>
             </div>
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="idEstado" class="form-label col-12">
-                Estado
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'idEstado' }
-                  "
-                ></ng-container>
+                <validation-message [control]="getControl('idEstado')">
+                  Estado
+                </validation-message>
               </label>
               <ng-select
                 id="idEstado"
@@ -154,7 +134,7 @@
                 formControlName="idEstado"
               >
                 <ng-option
-                  *ngFor="let estado of estadosList"
+                  *ngFor="let estado of estadosSelectList"
                   [value]="estado.id"
                   >{{ estado.nome }}</ng-option
                 >
@@ -162,13 +142,9 @@
             </div>
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="idCidade" class="form-label col-12">
-                Cidade
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'idCidade' }
-                  "
-                ></ng-container>
+                <validation-message [control]="getControl('idCidade')">
+                  Cidade
+                </validation-message>
               </label>
               <ng-select
                 id="idCidade"
@@ -177,7 +153,7 @@
                 [virtualScroll]="true"
               >
                 <ng-option
-                  *ngFor="let cidade of cidadesList"
+                  *ngFor="let cidade of cidadesSelectList"
                   [value]="cidade.id"
                   >{{ cidade.nome }}</ng-option
                 >
@@ -185,13 +161,9 @@
             </div>
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="telefone" class="form-label col-12">
-                Telefone
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'telefone' }
-                  "
-                ></ng-container>
+                <validation-message [control]="getControl('telefone')">
+                  Telefone
+                </validation-message>
               </label>
               <input
                 type="text"
@@ -202,13 +174,9 @@
             </div>
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="email" class="form-label col-12">
-                E-mail
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'email' }
-                  "
-                ></ng-container>
+                <validation-message [control]="getControl('email')">
+                  Email
+                </validation-message>
               </label>
               <input
                 type="text"
@@ -220,10 +188,9 @@
             </div>
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="site" class="form-label col-12">
-                Site
-                <ng-container
-                  *ngTemplateOutlet="appAlert; context: { controlName: 'site' }"
-                ></ng-container>
+                <validation-message [control]="getControl('site')">
+                  Site
+                </validation-message>
               </label>
               <input
                 type="text"
@@ -234,13 +201,11 @@
             </div>
             <div class="col-12 col-md-12 mb-2 mt-2 form-group">
               <label for="idPessoaResponsavel" class="form-label col-12">
-                Responsável
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'idPessoaResponsavel' }
-                  "
-                ></ng-container>
+                <validation-message
+                  [control]="getControl('idPessoaResponsavel')"
+                >
+                  Responsável
+                </validation-message>
               </label>
               <ng-select
                 id="idPessoaResponsavel"
@@ -248,7 +213,7 @@
                 formControlName="idPessoaResponsavel"
               >
                 <ng-option
-                  *ngFor="let pessoa of pessoasList"
+                  *ngFor="let pessoa of pessoasSelectList"
                   [value]="pessoa.id"
                   >{{ pessoa.nome }}</ng-option
                 >
@@ -260,7 +225,3 @@
     </div>
   </div>
 </form>
-
-<ng-template #appAlert let-controlName="controlName">
-  <siscap-alert [control]="getControl(controlName)"></siscap-alert>
-</ng-template>

@@ -2,60 +2,40 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
-import { ProjectsComponent } from './projects/projects.component';
-import { ProjectFormComponent } from './projects/form/project-form.component';
-import { PersonsComponent } from './persons/persons.component';
-import { PersonFormComponent } from './persons/form/person-form.component';
-import { ProgramasComponent } from './programas/programas.component';
-import { ProgramaFormComponent } from './programas/form/programa-form.component';
-import { OrganizacoesComponent } from './organizacoes/organizacoes.component';
-import { OrganizacaoFormComponent } from './organizacoes/form/organizacao-form.component';
 
-const routes: Routes = [
+import { authGuard } from '../core/guards/auth/auth.guard';
+
+const PAGES_ROUTES: Routes = [
   {
     title: 'Página Principal',
     path: 'home',
     component: HomeComponent,
   },
   {
-    title: 'Projetos',
     path: 'projetos',
-    component: ProjectsComponent,
+    loadChildren: () =>
+      import('./projetos/projetos.module').then((m) => m.ProjetosModule),
+    canActivateChild: [authGuard],
   },
   {
-    title: 'Formulário de Projeto',
-    path: 'projetos/form/:mode',
-    component: ProjectFormComponent,
-  },
-  {
-    title: 'Pessoas',
     path: 'pessoas',
-    component: PersonsComponent,
+    loadChildren: () =>
+      import('./pessoas/pessoas.module').then((m) => m.PessoasModule),
+    canActivateChild: [authGuard],
   },
   {
-    title: 'Formulário de Pessoa',
-    path: 'pessoas/form/:mode',
-    component: PersonFormComponent,
-  },
-  {
-    title: 'Organizacoes',
     path: 'organizacoes',
-    component: OrganizacoesComponent,
+    loadChildren: () =>
+      import('./organizacoes/organizacoes.module').then(
+        (m) => m.OrganizacoesModule
+      ),
+    canActivateChild: [authGuard],
   },
   {
-    title: 'Formulário de Organizacao',
-    path: 'organizacoes/form/:mode',
-    component: OrganizacaoFormComponent,
-  },
-  {
-    title: 'Programas',
     path: 'programas',
-    component: ProgramasComponent,
-  },
-  {
-    title: 'Formulário de Programa',
-    path: 'programas/form/:mode',
-    component: ProgramaFormComponent,
+    loadChildren: () =>
+      import('./programas/programas.module').then((m) => m.ProgramasModule),
+    canActivateChild: [authGuard],
   },
   {
     path: '**',
@@ -64,7 +44,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [RouterModule.forChild(PAGES_ROUTES)],
   exports: [RouterModule],
 })
 export class PagesRoutingModule {}

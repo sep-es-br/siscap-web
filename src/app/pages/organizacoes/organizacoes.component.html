@@ -1,5 +1,5 @@
 <div class="h-100" *ngIf="loading">
-  <siscap-loading></siscap-loading>
+  <loading-spinner></loading-spinner>
 </div>
 
 <div class="row py-2" *ngIf="!loading">
@@ -18,7 +18,7 @@
       (sortableDirectiveOutput)="sortableDirectiveOutputEvent($event)"
     >
       <siscap-pagination
-        [paginacaoInput]="paginacaoData"
+        [paginacaoDadosInput]="paginacaoDados"
         (paginacaoOutput)="paginacaoOutputEvent($event)"
       ></siscap-pagination>
     </siscap-organizacoes-list>
@@ -26,5 +26,5 @@
 </div>
 
 <ng-template #semResultados>
-  <table-search-no-results></table-search-no-results>
+  <query-no-results></query-no-results>
 </ng-template>

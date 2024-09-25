@@ -1,0 +1,32 @@
+button[ngbDropdownToggle] {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+
+  &:hover,
+  &:active {
+    background-color: #ffffffdf;
+
+    .text-white {
+      color: #0096e1 !important;
+    }
+  }
+
+  &::after {
+    display: none;
+  }
+}
+
+span#user-name,
+span#user-email {
+  font-size: 0.8rem;
+}
+
+span#details-user-name {
+  font-size: 1.1rem;
+}
+
+span#details-user-email {
+  font-size: 0.8rem;
+}

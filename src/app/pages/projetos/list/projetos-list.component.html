@@ -1,0 +1,61 @@
+<div class="table-responsive-md">
+  <table class="table table-striped">
+    <colgroup>
+      <col class="sigla-col" />
+      <col class="titulo-col" />
+      <col class="microrregioes-col" />
+      <col class="valorEstimado-col" />
+      <col class="acoes-col" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th [sortable]="'sigla'" (sort)="sortColumn($event)" class="pointer">
+          Sigla
+        </th>
+        <th [sortable]="'titulo'" (sort)="sortColumn($event)" class="pointer">
+          Titulo
+        </th>
+        <th>Microrregiões Atendidas</th>
+        <th
+          [sortable]="'valorEstimado'"
+          (sort)="sortColumn($event)"
+          class="pointer"
+        >
+          Valor Estimado
+        </th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody class="fw-semibold">
+      <tr
+        *ngFor="let projeto of projetosList()"
+        (click)="editarProjeto(projeto.id)"
+      >
+        <td>{{ projeto.sigla }}</td>
+        <td>{{ projeto.titulo }}</td>
+        <td>{{ projeto.nomesMicrorregioesRateio | texttrunc : 2 }}</td>
+        <td>
+          {{
+            projeto.valorEstimado
+              | mask
+                : "separator.2"
+                : {
+                    prefix: "R$ ",
+                    leadZero: true,
+                    thousandSeparator: ".",
+                    decimalMarker: ","
+                  }
+          }}
+        </td>
+        <td (click)="$event.stopPropagation()">
+          <table-actions-dropdown
+            [tableActionInput]="projeto.id"
+            (tableActionOutput)="tableActionOutputEvent($event)"
+          ></table-actions-dropdown>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-content select="siscap-pagination"></ng-content>
+</div>

@@ -1,31 +1,12 @@
-.nav-menu {
-  min-width: 251px;
+section#main-content {
+  margin-top: 13%;
 }
 
-.header {
-  height: 3rem;
-}
-
-.content {
-  padding-left: 251px;
-}
-
-@media (max-width: 767px) {
-  .content {
-    padding-left: 0;
-  }
-}
-
-.mt-header{
-  margin-top: 10rem;
-}
-
-.body{
-  min-height: calc(100vh - 14rem);
-}
-
-.footer{
-  height: 3rem;
+section#footer-content {
   position: relative;
-  bottom: 0;
+  top: 15vh;
+
+  div.footer span {
+    font-size: 0.875rem;
+  }
 }

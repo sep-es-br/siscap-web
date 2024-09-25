@@ -1,0 +1,26 @@
+<div class="modal-header bg-warning-subtle">
+  <h4 class="modal-title">Atenção!</h4>
+</div>
+<div class="modal-body text-center">
+  <p>A pessoa já está cadastrada como responsável da organização:</p>
+  <p class="fw-bold">{{ conteudo }}</p>
+  <p>
+    Alterar as organizações a qual esta pessoa pertence irá desvincula-la como
+    responsável da organização acima!
+  </p>
+</div>
+
+<div class="modal-footer d-flex justify-content-center">
+  <button class="btn btn-success icon-text-btn" (click)="activeModal.dismiss()">
+    <i class="fa-solid fa-thumbs-up"></i>
+    <span>Entendi</span>
+  </button>
+
+  <!-- 
+		ADICIONAR BOTÃO DESFAZER?
+		
+		ex: 
+		  activeModal.close('desfazer') [OU ALGO DO TIPO]
+		  |-> modalRef.then((resolve) => ...) -> pessoaForm.get('idOrganizacoes').patchValue([...idOrganizacoesAntigas, event])
+	-->
+</div>

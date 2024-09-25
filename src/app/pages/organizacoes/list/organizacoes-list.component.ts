@@ -1,19 +1,19 @@
 import { Component, input, output } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { DeleteModalComponent } from '../../../core/templates/delete-modal/delete-modal.component';
-import { SuccessModalComponent } from '../../../core/templates/success-modal/success-modal.component';
+import { DeleteModalComponent } from '../../../shared/templates/delete-modal/delete-modal.component';
+import { SuccessModalComponent } from '../../../shared/templates/success-modal/success-modal.component';
 
-import { SortColumn } from '../../../core/directives/sortable/sortable.directive';
+import { SortColumn } from '../../../shared/directives/sortable/sortable.directive';
 
-import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
+import { OrganizacoesService } from '../../../core/services/organizacoes/organizacoes.service';
 
-import { IOrganizacaoTableData } from '../../../shared/interfaces/organizacao.interface';
+import { IOrganizacaoTableData } from '../../../core/interfaces/organizacao.interface';
 
-import { converterArrayBufferEmImgSrc } from '../../../shared/utils/convert-array-buffer-image-source';
+import { converterArrayBufferEmImgSrc } from '../../../core/utils/functions';
 
 @Component({
   selector: 'siscap-organizacoes-list',
@@ -25,11 +25,12 @@ export class OrganizacoesListComponent {
   public organizacoesList = input<Array<IOrganizacaoTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();
 
-  public converterArrayBufferEmImgSrc = converterArrayBufferEmImgSrc;
+  public converterArrayBufferEmImgSrc: (
+    imgArrayBuffer: ArrayBuffer | null
+  ) => string = converterArrayBufferEmImgSrc;
 
   constructor(
     private _router: Router,
-    private _route: ActivatedRoute,
     private _organizacoesService: OrganizacoesService,
     private _ngbModalService: NgbModal
   ) {}
@@ -54,10 +55,9 @@ export class OrganizacoesListComponent {
   }
 
   public editarOrganizacao(id: number): void {
-    this._router.navigate(['form', 'editar'], {
-      relativeTo: this._route,
-      queryParams: { id: id },
-    });
+    this._organizacoesService.idOrganizacao$.next(id);
+
+    this._router.navigate(['main', 'organizacoes', 'editar']);
   }
 
   private deletarOrganizacao(id: number): void {
@@ -75,7 +75,7 @@ export class OrganizacoesListComponent {
       centered: true,
     });
 
-    modalRef.componentInstance.conteudo = `${organizacaoTableData?.nomeFantasia} - ${organizacaoTableData?.nome}`;
+    modalRef.componentInstance.conteudo = `${organizacaoTableData.nomeFantasia} - ${organizacaoTableData.nome}`;
 
     modalRef.result.then(
       (resolve) => {
