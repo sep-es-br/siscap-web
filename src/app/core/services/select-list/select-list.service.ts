@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 
 import {
   ICidadeSelectList,
+  IProjetoPropostoSelectList,
   ISelectList,
 } from '../../interfaces/select-list.interface';
 
@@ -80,8 +81,10 @@ export class SelectListService {
     return this.getSelectList('papeis');
   }
 
-  public getProjetosSelectList() {
-    return this.getSelectList('projetos');
+  public getProjetosPropostos() {
+    return this.getSelectList('projetos') as Observable<
+      IProjetoPropostoSelectList[]
+    >;
   }
 
   public getValores() {
