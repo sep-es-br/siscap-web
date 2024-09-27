@@ -429,7 +429,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const payload = new ProjetoFormModel(form.value as IProjetoForm);
 
-    const requisicao = !!this._idProjetoEdicao
+    const requisicao = this._idProjetoEdicao
       ? this.atualizarProjeto(payload)
       : this.cadastrarProjeto(payload);
 

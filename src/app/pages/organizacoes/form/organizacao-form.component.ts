@@ -314,7 +314,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
 
     const payload = new OrganizacaoFormModel(form.value as IOrganizacaoForm);
 
-    const requisicao = !!this._idOrganizacaoEdicao
+    const requisicao = this._idOrganizacaoEdicao
       ? this.atualizarOrganizacao(payload)
       : this.cadastrarOrganizacao(payload);
 

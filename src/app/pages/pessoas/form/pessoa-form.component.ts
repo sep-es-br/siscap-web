@@ -435,7 +435,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
 
     const payload = new PessoaFormModel(form.value as IPessoaForm);
 
-    const requisicao = !!this._idPessoaEdicao
+    const requisicao = this._idPessoaEdicao
       ? this.atualizarPessoa(payload)
       : this.cadastrarPessoa(payload);
 
