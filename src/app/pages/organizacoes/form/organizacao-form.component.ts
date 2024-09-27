@@ -6,29 +6,39 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
-import { concat, finalize, Observable, Subscription, tap } from 'rxjs';
+import {
+  concat,
+  finalize,
+  Observable,
+  partition,
+  Subscription,
+  switchMap,
+  tap,
+} from 'rxjs';
 
-import { ProfileService } from '../../../shared/services/profile/profile.service';
-import { OrganizacoesService } from '../../../shared/services/organizacoes/organizacoes.service';
-import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { ToastService } from '../../../shared/services/toast/toast.service';
-import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
+import { OrganizacoesService } from '../../../core/services/organizacoes/organizacoes.service';
+import { SelectListService } from '../../../core/services/select-list/select-list.service';
+import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
+import { ToastService } from '../../../core/services/toast/toast.service';
 
 import {
   OrganizacaoFormModel,
   OrganizacaoModel,
-} from '../../../shared/models/organizacao.model';
+} from '../../../core/models/organizacao.model';
 
 import {
   IOrganizacao,
   IOrganizacaoForm,
-} from '../../../shared/interfaces/organizacao.interface';
-import { ISelectList } from '../../../shared/interfaces/select-list.interface';
+} from '../../../core/interfaces/organizacao.interface';
+import { ISelectList } from '../../../core/interfaces/select-list.interface';
 
-import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
-import { converterArrayBufferEmImgSrc } from '../../../shared/utils/convert-array-buffer-image-source';
+import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
+import {
+  alterarEstadoControlesFormulario,
+  converterArrayBufferEmImgSrc,
+} from '../../../core/utils/functions';
 
 @Component({
   selector: 'siscap-organizacao-form',
@@ -37,31 +47,30 @@ import { converterArrayBufferEmImgSrc } from '../../../shared/utils/convert-arra
   styleUrl: './organizacao-form.component.scss',
 })
 export class OrganizacaoFormComponent implements OnInit, OnDestroy {
-  private _getTiposOrganizacoes$: Observable<ISelectList[]>;
-  private _getOrganizacoes$: Observable<ISelectList[]>;
-  private _getPaises$: Observable<ISelectList[]>;
-  private _getPessoas$: Observable<ISelectList[]>;
+  private _atualizarOrganizacao$: Observable<IOrganizacao>;
+  private _cadastrarOrganizacao$: Observable<number>;
+
+  private _getTiposOrganizacoesSelectList$: Observable<ISelectList[]>;
+  private _getOrganizacoesSelectList$: Observable<ISelectList[]>;
+  private _getPaisesSelectList$: Observable<ISelectList[]>;
+  private _getPessoasSelectList$: Observable<ISelectList[]>;
   private _getAllSelectLists$: Observable<ISelectList[]>;
 
-  private _getOrganizacaoById$: Observable<IOrganizacao>;
+  private _idOrganizacaoEdicao: number = 0;
 
   private _subscription: Subscription = new Subscription();
 
-  private _organizacaoEditId: number;
-
   public loading: boolean = true;
-
-  public formMode: string;
-  public isEdit: boolean = true;
+  public isModoEdicao: boolean = true;
 
   public organizacaoForm: FormGroup = new FormGroup({});
 
-  public tiposOrganizacoesList: Array<ISelectList> = [];
-  public organizacoesList: Array<ISelectList> = [];
-  public paisesList: Array<ISelectList> = [];
-  public estadosList: Array<ISelectList> = [];
-  public cidadesList: Array<ISelectList> = [];
-  public pessoasList: Array<ISelectList> = [];
+  public tiposOrganizacoesSelectList: Array<ISelectList> = [];
+  public organizacoesSelectList: Array<ISelectList> = [];
+  public paisesSelectList: Array<ISelectList> = [];
+  public estadosSelectList: Array<ISelectList> = [];
+  public cidadesSelectList: Array<ISelectList> = [];
+  public pessoasSelectList: Array<ISelectList> = [];
 
   public srcImagemOrganizacao: string = '';
   public arquivoImagemOrganizacao: File | undefined;
@@ -69,82 +78,88 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   constructor(
     private _nnfb: NonNullableFormBuilder,
     private _router: Router,
-    private _route: ActivatedRoute,
-    private _profileService: ProfileService,
     private _organizacoesService: OrganizacoesService,
     private _selectListService: SelectListService,
-    private _toastService: ToastService,
-    private _breadcrumbService: BreadcrumbService
+    private _breadcrumbService: BreadcrumbService,
+    private _toastService: ToastService
   ) {
-    this.formMode = this._route.snapshot.params['mode'];
-    this._organizacaoEditId = Number(
-      this._route.snapshot.queryParams['id'] ?? null
+    const [editar$, criar$] = partition(
+      this._organizacoesService.idOrganizacao$,
+      (idOrganizacao: number) => idOrganizacao > 0
     );
 
-    this._getOrganizacaoById$ = this._organizacoesService
-      .getById(this._organizacaoEditId)
+    this._atualizarOrganizacao$ = editar$.pipe(
+      switchMap((idOrganizacao: number) =>
+        this._organizacoesService.getById(idOrganizacao)
+      ),
+      tap((response: IOrganizacao) => {
+        const organizacaoModel = new OrganizacaoModel(response);
+
+        this.iniciarForm(organizacaoModel);
+
+        this._idOrganizacaoEdicao = organizacaoModel.id;
+
+        this.srcImagemOrganizacao = converterArrayBufferEmImgSrc(
+          organizacaoModel.imagemPerfil
+        );
+
+        this.trocarModo(false);
+
+        this.loading = false;
+      })
+    );
+
+    this._cadastrarOrganizacao$ = criar$.pipe(
+      tap(() => {
+        this.iniciarForm();
+
+        this.loading = false;
+      })
+    );
+
+    this._getTiposOrganizacoesSelectList$ = this._selectListService
+      .getTiposOrganizacoes()
+      .pipe(tap((response) => (this.tiposOrganizacoesSelectList = response)));
+
+    this._getOrganizacoesSelectList$ = this._selectListService
+      .getOrganizacoes()
       .pipe(
-        tap((response: IOrganizacao) => {
-          const organizacaoModel = new OrganizacaoModel(response);
-
-          this.iniciarForm(organizacaoModel);
-
-          this.srcImagemOrganizacao = converterArrayBufferEmImgSrc(
-            organizacaoModel.imagemPerfil
-          );
-        }),
-        finalize(() => {
-          this.switchMode(false);
-          this.loading = false;
+        tap((response) => {
+          this.organizacoesSelectList = response;
         })
       );
 
-    this._getTiposOrganizacoes$ = this._selectListService
-      .getTiposOrganizacoes()
-      .pipe(tap((response) => (this.tiposOrganizacoesList = response)));
-
-    this._getOrganizacoes$ = this._selectListService.getOrganizacoes().pipe(
+    this._getPaisesSelectList$ = this._selectListService.getPaises().pipe(
       tap((response) => {
-        this.organizacoesList = response;
+        this.paisesSelectList = response;
       })
     );
 
-    this._getPaises$ = this._selectListService.getPaises().pipe(
+    this._getPessoasSelectList$ = this._selectListService.getPessoas().pipe(
       tap((response) => {
-        this.paisesList = response;
-      })
-    );
-
-    this._getPessoas$ = this._selectListService.getPessoas().pipe(
-      tap((response) => {
-        this.pessoasList = response;
+        this.pessoasSelectList = response;
       })
     );
 
     this._getAllSelectLists$ = concat(
-      this._getTiposOrganizacoes$,
-      this._getOrganizacoes$,
-      this._getPaises$,
-      this._getPessoas$
+      this._getTiposOrganizacoesSelectList$,
+      this._getOrganizacoesSelectList$,
+      this._getPaisesSelectList$,
+      this._getPessoasSelectList$
     );
 
     this._subscription.add(
-      this._breadcrumbService
-        .handleAction(this.handleActionBreadcrumb.bind(this))
-        .subscribe()
+      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+        this.executarAcaoBreadcrumb(acao)
+      )
     );
   }
 
   ngOnInit(): void {
     this._subscription.add(this._getAllSelectLists$.subscribe());
 
-    if (this.formMode === 'criar') {
-      this.iniciarForm();
-      this.loading = false;
-      return;
-    }
-
-    this._subscription.add(this._getOrganizacaoById$.subscribe());
+    this._subscription.add(this._atualizarOrganizacao$.subscribe());
+    this._subscription.add(this._cadastrarOrganizacao$.subscribe());
   }
 
   public toUppercaseInputTransformFn =
@@ -223,20 +238,20 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
 
     cnpjFormControl.markAsTouched();
 
-    idPaisFormControl.valueChanges.subscribe((idPais) => {
-      if (!idPais) {
+    idPaisFormControl.valueChanges.subscribe((idPaisValue) => {
+      if (!idPaisValue) {
         idEstadoFormControl.patchValue(null);
         idCidadeFormControl.patchValue(null);
-        this.estadosList = [];
-        this.cidadesList = [];
+        this.estadosSelectList = [];
+        this.cidadesSelectList = [];
         cnpjFormControl.clearValidators();
       } else {
         this._selectListService
-          .getEstados(idPais)
-          .pipe(tap((response) => (this.estadosList = response)))
+          .getEstados(idPaisValue)
+          .pipe(tap((response) => (this.estadosSelectList = response)))
           .subscribe();
 
-        idPais === 1
+        idPaisValue === 1
           ? cnpjFormControl.setValidators([Validators.required])
           : cnpjFormControl.clearValidators();
       }
@@ -244,36 +259,44 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       cnpjFormControl.updateValueAndValidity();
     });
 
-    idEstadoFormControl.valueChanges.subscribe((idEstado) => {
-      if (!idEstado) {
+    idEstadoFormControl.valueChanges.subscribe((idEstadoValue) => {
+      if (!idEstadoValue) {
         idCidadeFormControl.patchValue(null);
-        this.cidadesList = [];
+        this.cidadesSelectList = [];
       } else {
         this._selectListService
-          .getCidades('ESTADO', idEstado)
-          .pipe(tap((response) => (this.cidadesList = response)))
+          .getCidades('ESTADO', idEstadoValue)
+          .pipe(tap((response) => (this.cidadesSelectList = response)))
           .subscribe();
       }
     });
   }
 
-  private isAllowed(path: string): boolean {
-    return this._profileService.isAllowed(path);
-  }
+  private executarAcaoBreadcrumb(acao: string): void {
+    switch (acao) {
+      case 'editar':
+        this.trocarModo(true);
+        break;
 
-  private switchMode(isEnabled: boolean): void {
-    this.isEdit = isEnabled;
+      case 'cancelar':
+        this.cancelar();
+        break;
 
-    const controls = this.organizacaoForm.controls;
-    for (const key in controls) {
-      isEnabled ? controls[key].enable() : controls[key].disable();
-      if (controls[key].value === 0) {
-        controls[key].patchValue(null);
-      }
+      case 'salvar':
+        this.submitOrganizationForm(this.organizacaoForm);
+        break;
     }
   }
 
-  private cancelForm(): void {
+  private trocarModo(permitir: boolean): void {
+    this.isModoEdicao = permitir;
+
+    const organizacaoFormControls = this.organizacaoForm.controls;
+
+    alterarEstadoControlesFormulario(permitir, organizacaoFormControls);
+  }
+
+  private cancelar(): void {
     this._router.navigate(['main', 'organizacoes']);
   }
 
@@ -291,65 +314,47 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
 
     const payload = new OrganizacaoFormModel(form.value as IOrganizacaoForm);
 
-    switch (this.formMode) {
-      case 'criar':
-        this._organizacoesService
-          .post(payload, this.arquivoImagemOrganizacao)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Organização cadastrada com sucesso.'
-                );
-                this._router.navigateByUrl('main/organizacoes');
-              }
-            })
-          )
-          .subscribe();
-        break;
+    const requisicao = this._idOrganizacaoEdicao
+      ? this.atualizarOrganizacao(payload)
+      : this.cadastrarOrganizacao(payload);
 
-      case 'editar':
-        this._organizacoesService
-          .put(this._organizacaoEditId, payload, this.arquivoImagemOrganizacao)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Organização alterada com sucesso.'
-                );
-                this._router.navigateByUrl('main/organizacoes');
-              }
-            })
-          )
-          .subscribe();
-        break;
-
-      default:
-        break;
-    }
+    requisicao.subscribe();
   }
 
-  private handleActionBreadcrumb(actionType: string) {
-    switch (actionType) {
-      case 'edit':
-        if (this.isAllowed('organizacoeseditar')) {
-          this.switchMode(true);
-        }
-        break;
+  private cadastrarOrganizacao(
+    payload: OrganizacaoFormModel
+  ): Observable<IOrganizacao> {
+    return this._organizacoesService
+      .post(payload, this.arquivoImagemOrganizacao)
+      .pipe(
+        tap((response: IOrganizacao) => {
+          this._toastService.showToast(
+            'success',
+            'Organização cadastrada com sucesso.'
+          );
+        }),
+        finalize(() => this.cancelar())
+      );
+  }
 
-      case 'cancel':
-        this.cancelForm();
-        break;
-
-      case 'save':
-        this.submitOrganizationForm(this.organizacaoForm);
-        break;
-    }
+  private atualizarOrganizacao(
+    payload: OrganizacaoFormModel
+  ): Observable<IOrganizacao> {
+    return this._organizacoesService
+      .put(this._idOrganizacaoEdicao, payload, this.arquivoImagemOrganizacao)
+      .pipe(
+        tap((response: IOrganizacao) => {
+          this._toastService.showToast(
+            'success',
+            'Organização alterada com sucesso.'
+          );
+        }),
+        finalize(() => this.cancelar())
+      );
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
+    this._organizacoesService.idOrganizacao$.next(0);
   }
 }

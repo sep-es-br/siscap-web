@@ -12,23 +12,15 @@ import {
   NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
-import { CoreModule } from '../core/core.module';
-import { PagesRoutingModule } from './pages-routing.module';
+import { SharedModule } from '../shared/shared.module';
 
 import { LoginComponent } from '../pages/login/login.component';
 import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
 import { MainComponent } from './main/main.component';
 import { HomeComponent } from '../pages/home/home.component';
 import { DashboardComponent } from './home/dashboard/dashboard.component';
-import { ProjectsComponent } from './projects/projects.component';
-import { ProjectFormComponent } from './projects/form/project-form.component';
-import { PersonsComponent } from './persons/persons.component';
-import { PersonFormComponent } from './persons/form/person-form.component';
 
-import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-import { ProgramasComponent } from './programas/programas.component';
-import { ProgramaFormComponent } from './programas/form/programa-form.component';
-import { OrganizacoesModule } from './organizacoes/organizacoes.module';
+import { PagesRoutingModule } from './pages-routing.module';
 
 @NgModule({
   declarations: [
@@ -37,17 +29,12 @@ import { OrganizacoesModule } from './organizacoes/organizacoes.module';
     MainComponent,
     HomeComponent,
     DashboardComponent,
-    ProjectsComponent,
-    ProjectFormComponent,
-    PersonsComponent,
-    PersonFormComponent,
-    ProgramasComponent,
-    ProgramaFormComponent,
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    SharedModule,
     RouterOutlet,
     NgSelectModule,
     NgxMaskDirective,
@@ -56,10 +43,7 @@ import { OrganizacoesModule } from './organizacoes/organizacoes.module';
     NgbDropdownModule,
     NgbPaginationModule,
     NgbTooltipModule,
-    SweetAlert2Module,
-    CoreModule,
     PagesRoutingModule,
-    OrganizacoesModule,
   ],
   providers: [provideNgxMask()],
   exports: [
@@ -68,12 +52,6 @@ import { OrganizacoesModule } from './organizacoes/organizacoes.module';
     MainComponent,
     HomeComponent,
     DashboardComponent,
-    ProjectsComponent,
-    ProjectFormComponent,
-    PersonsComponent,
-    PersonFormComponent,
-    ProgramasComponent,
-    ProgramaFormComponent,
   ],
 })
 export class PagesModule {}

@@ -2,11 +2,11 @@ import { Component, OnInit, Renderer2 } from '@angular/core';
 
 import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 
-import { OrganizacoesService } from '../../shared/services/organizacoes/organizacoes.service';
+import { OrganizacoesService } from '../../core/services/organizacoes/organizacoes.service';
 
-import { IHttpGetRequestBody } from '../../shared/interfaces/http/http-get.interface';
-import { IOrganizacaoTableData } from '../../shared/interfaces/organizacao.interface';
-import { IPagination } from '../../shared/interfaces/pagination.interface';
+import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
+import { IOrganizacaoTableData } from '../../core/interfaces/organizacao.interface';
+import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
 
 @Component({
   selector: 'siscap-organizacoes',
@@ -31,7 +31,7 @@ export class OrganizacoesComponent implements OnInit {
 
   public loading: boolean = true;
 
-  public paginacaoData: IPagination = {
+  public paginacaoDados: IPaginacaoDados = {
     paginaAtual: 1,
     itensPorPagina: 15,
     primeiroItemPagina: 0,
@@ -49,13 +49,20 @@ export class OrganizacoesComponent implements OnInit {
   }
 
   public filtroPesquisaOutputEvent(filtro: string | null): void {
-    this._pageConfig.search = filtro ?? '';
-    this.limparSortColumn();
+    if (filtro) {
+      this._pageConfig.search = filtro;
+    } else {
+      this._pageConfig.search = '';
+      this._pageConfig.sort = '';
+      this.limparSortColumn();
+    }
+
     this.fetchPage();
   }
 
   public sortableDirectiveOutputEvent(event: string): void {
-    this.fetchPage({ sort: event });
+    this._pageConfig.sort = event;
+    this.fetchPage();
   }
 
   public paginacaoOutputEvent(event: number): void {
@@ -73,7 +80,7 @@ export class OrganizacoesComponent implements OnInit {
         tap((response) => {
           this._organizacoesList$.next(response.content);
 
-          this.paginacaoData = {
+          this.paginacaoDados = {
             paginaAtual: response.pageable.pageNumber + 1,
             itensPorPagina: response.pageable.pageSize,
             primeiroItemPagina: response.pageable.offset + 1,

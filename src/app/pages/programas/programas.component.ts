@@ -1,16 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 
-import { Observable, Subscription, tap } from 'rxjs';
-import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
+import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 
-import { ProgramasService } from '../../shared/services/programas/programas.service';
+import { ProgramasService } from '../../core/services/programas/programas.service';
 
-import {
-  IHttpGetRequestBody,
-  IHttpGetResponseBody,
-} from '../../shared/interfaces/http/http-get.interface';
-import { IProgramaTableData } from '../../shared/interfaces/programa.interface';
+import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
+import { IProgramaTableData } from '../../core/interfaces/programa.interface';
+import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
 
 @Component({
   selector: 'siscap-programas',
@@ -19,106 +15,89 @@ import { IProgramaTableData } from '../../shared/interfaces/programa.interface';
   styleUrl: './programas.component.scss',
 })
 export class ProgramasComponent implements OnInit {
-  @ViewChild('deleteSwal')
-  public readonly deleteSwal!: SwalComponent;
-
-  @ViewChild('successSwal')
-  public readonly successSwal!: SwalComponent;
-
-  private _getProgramasPaged$!: Observable<
-    IHttpGetResponseBody<IProgramaTableData>
-  >;
-
-  private _subscription: Subscription = new Subscription();
-
-  public programasList: Array<IProgramaTableData> = [];
-
-  public pageConfig: IHttpGetRequestBody = {
-    size: 15,
+  private _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    sort: '',
     search: '',
+    size: 15,
+    sort: '',
   };
 
-  public primeiroItemPagina: number = 0;
-  public ultimoItemPagina: number = 0;
-  public totalRegistros: number = 0;
+  private _programasList$: BehaviorSubject<Array<IProgramaTableData>> =
+    new BehaviorSubject<Array<IProgramaTableData>>([]);
 
-  public deleteSwalOptions = {
-    buttonsStyling: false,
-    confirmButtonText: 'Sim, excluir',
-    cancelButtonText: 'Não, manter',
+  public get programasList$(): Observable<Array<IProgramaTableData>> {
+    return this._programasList$;
+  }
+
+  public loading: boolean = true;
+
+  public paginacaoDados: IPaginacaoDados = {
+    paginaAtual: 1,
+    itensPorPagina: 15,
+    primeiroItemPagina: 0,
+    ultimoItemPagina: 0,
+    totalRegistros: 0,
   };
-
-  public successSwalOptions = {
-    buttonsStyling: false,
-    confirmButtonText: 'Ok',
-  };
-
-  public deleteSwalText =
-    'Você está deletando o seguinte registro:' +
-    '<br/ ><br />' +
-    `<b>tituloPrograma</b>` +
-    '<br/ ><br />' +
-    'Esta ação não poderá ser desfeita. Deseja continuar?';
 
   constructor(
-    private _route: ActivatedRoute,
-    private _router: Router,
-    private _programasService: ProgramasService
-  ) {
-    this._getProgramasPaged$ = this._programasService
-      .getProgramasPaged(this.pageConfig)
-      .pipe(
-        tap((response: IHttpGetResponseBody<IProgramaTableData>) => {
-          this.programasList = response.content;
-          this.primeiroItemPagina = response.pageable.offset + 1;
-          this.ultimoItemPagina =
-            response.pageable.offset + response.numberOfElements;
-          this.totalRegistros = response.totalElements;
-        })
-      );
-  }
+    private _programasService: ProgramasService,
+    private _r2: Renderer2
+  ) {}
 
   ngOnInit(): void {
-    this._subscription.add(this._getProgramasPaged$.subscribe());
+    this.fetchPage();
   }
 
-  public editarPrograma(idPrograma: number): void {
-    this._router.navigate(['form', 'editar'], {
-      relativeTo: this._route,
-      queryParams: { id: idPrograma },
-    });
+  public filtroPesquisaOutputEvent(filtro: string | null): void {
+    if (filtro) {
+      this._pageConfig.search = filtro;
+    } else {
+      this._pageConfig.search = '';
+      this._pageConfig.sort = '';
+      this.limparSortColumn();
+    }
+
+    this.fetchPage();
   }
 
-  public dispararModalExcluirPrograma(programa: IProgramaTableData): void {
-    this.deleteSwalText = this.deleteSwalText.replace(
-      'tituloPrograma',
-      programa.titulo
-    );
-
-    setTimeout(() => {
-      this.deleteSwal.fire().then((result) => {
-        if (result.isConfirmed && result.value) {
-          this.excluirPrograma(programa.id);
-        }
-      });
-    }, 1);
+  public sortableDirectiveOutputEvent(event: string): void {
+    this._pageConfig.sort = event;
+    this.fetchPage();
   }
 
-  private excluirPrograma(idPrograma: number): void {
+  public paginacaoOutputEvent(event: number): void {
+    this.fetchPage({ page: event - 1 });
+  }
+
+  private fetchPage(pageConfigParam?: {
+    [K in keyof IHttpGetRequestBody]?: IHttpGetRequestBody[K];
+  }): void {
+    const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
+
     this._programasService
-      .deletePrograma(idPrograma)
+      .getAllPaged(tempPageConfig)
       .pipe(
         tap((response) => {
-          if (response) {
-            this.successSwal.fire();
-            this._router
-              .navigateByUrl('/', { skipLocationChange: true })
-              .then(() => this._router.navigateByUrl('main/programas'));
-          }
-        })
+          this._programasList$.next(response.content);
+
+          this.paginacaoDados = {
+            paginaAtual: response.pageable.pageNumber + 1,
+            itensPorPagina: response.pageable.pageSize,
+            primeiroItemPagina: response.pageable.offset + 1,
+            ultimoItemPagina:
+              response.pageable.offset + response.numberOfElements,
+            totalRegistros: response.totalElements,
+          };
+        }),
+        finalize(() => (this.loading = false))
       )
       .subscribe();
+  }
+
+  private limparSortColumn(): void {
+    document.querySelectorAll('th[ng-reflect-sortable]').forEach((el) => {
+      this._r2.removeClass(el, 'asc');
+      this._r2.removeClass(el, 'desc');
+    });
   }
 }

@@ -19,66 +19,12 @@
 
 /* Estilo de botões */
 
-/* Estilo do Footer */
-
-.footer span {
-  font-size: $small-4-font-size;
-}
-
-/* Estilos do siscap-navmenu*/
-
-.menu-items {
-  ul {
-    list-style-type: none;
-
-    span {
-      font-size: $small-4-font-size;
-      text-transform: uppercase;
-      color: white;
-    }
-
-    li {
-      background-color: shade-color($primary, 18%);
-
-      &:hover {
-        background-color: shade-color($primary, 33%);
-      }
-
-      &:active {
-        background-color: tint-color($primary, 33%);
-      }
-
-      a {
-        font-size: $small-3-font-size;
-        text-decoration: none;
-        text-transform: uppercase;
-        color: white;
-
-        &:active {
-          color: black;
-        }
-      }
-    }
-  }
-}
-
-/* Estilos do siscap-breadcrumb */
-
-.breadcrumb-title-area {
-  max-width: 50vw;
-
-  h4 {
-    font-size: $large-2-font-size;
-    color: $primary;
-    margin: 0;
-  }
-
-  ul {
-    margin: 0;
-
-    li a {
-      font-size: $small-3-font-size;
-    }
+button.icon-text-btn {
+  & svg,
+  span {
+    font-size: 1rem;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
   }
 }
 
@@ -119,26 +65,15 @@ th {
     float: inline-end;
     height: 10px;
     width: 10px;
-    // margin-left: 5px;
-    // padding-top: 4px;
   }
 }
 
 td {
   font-size: $small-3-font-size;
   vertical-align: middle;
-
-  // &.target-col {
-  //   color: $primary;
-  //   text-decoration: underline;
-  // }
 }
 
 /* Estilos de formulários */
-
-.row {
-  margin-bottom: 0.6rem;
-}
 
 label {
   font-size: $small-3-font-size;

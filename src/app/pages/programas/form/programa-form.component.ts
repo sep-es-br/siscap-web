@@ -6,27 +6,42 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
+
 import {
-  IPrograma,
-  IProgramaProjetoProposto,
-} from '../../../shared/interfaces/programa.interface';
-import { EquipeService } from '../../../shared/services/equipe/equipe.service';
-import { SelectListService } from '../../../shared/services/select-list/select-list.service';
-import { concat, finalize, Observable, Subscription, tap } from 'rxjs';
-import { ISelectList } from '../../../shared/interfaces/select-list.interface';
-import { BreadcrumbService } from '../../../shared/services/breadcrumb/breadcrumb.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ToastService } from '../../../shared/services/toast/toast.service';
-import { NgxMaskTransformFunctionHelper } from '../../../shared/helpers/ngx-mask-transform-function.helper';
-import { MoedaHelper } from '../../../shared/helpers/moeda.helper';
+  concat,
+  finalize,
+  Observable,
+  partition,
+  Subscription,
+  switchMap,
+  tap,
+} from 'rxjs';
+
+import { EquipeService } from '../../../core/services/equipe/equipe.service';
+import { SelectListService } from '../../../core/services/select-list/select-list.service';
+import { ProgramasService } from '../../../core/services/programas/programas.service';
+import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
+import { ToastService } from '../../../core/services/toast/toast.service';
+
 import {
   ProgramaFormModel,
   ProgramaModel,
-} from '../../../shared/models/programa.model';
-import { ProgramasService } from '../../../shared/services/programas/programas.service';
-import { ProfileService } from '../../../shared/services/profile/profile.service';
-import { IMoeda } from '../../../shared/interfaces/moeda.interface';
-import { ProgramaProjetoPropostoFormType } from '../../../shared/types/form/programa-projeto-proposto-form.type';
+} from '../../../core/models/programa.model';
+
+import {
+  IPrograma,
+  IProgramaForm,
+  IProgramaProjetoProposto,
+} from '../../../core/interfaces/programa.interface';
+import { ISelectList } from '../../../core/interfaces/select-list.interface';
+import { IMoeda } from '../../../core/interfaces/moeda.interface';
+
+import { ProgramaProjetoPropostoFormType } from '../../../core/types/form/programa-projeto-proposto-form.type';
+
+import { MoedaHelper } from '../../../core/helpers/moeda.helper';
+import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
+import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -35,77 +50,94 @@ import { ProgramaProjetoPropostoFormType } from '../../../shared/types/form/prog
   styleUrl: './programa-form.component.scss',
 })
 export class ProgramaFormComponent implements OnInit, OnDestroy {
-  private _getProgramaById$!: Observable<IPrograma>;
-  private _getOrganizacoes$!: Observable<ISelectList[]>;
-  private _getPessoas$!: Observable<ISelectList[]>;
-  private _getPapeis$!: Observable<ISelectList[]>;
-  private _getProjetosSelectList$!: Observable<ISelectList[]>;
-  private _getValores$!: Observable<ISelectList[]>;
+  private _atualizarPrograma$: Observable<IPrograma>;
+  private _cadastrarPrograma$: Observable<number>;
 
-  private _getAllSelectLists$!: Observable<ISelectList[]>;
+  private _getOrganizacoesSelectList$: Observable<ISelectList[]>;
+  private _getPessoasSelectList$: Observable<ISelectList[]>;
+  private _getPapeisSelectList$: Observable<ISelectList[]>;
+  private _getProjetosSelectList$: Observable<ISelectList[]>;
+  private _getValoresSelectList$: Observable<ISelectList[]>;
+  private _getAllSelectLists$: Observable<ISelectList[]>;
+
+  private _idProgramaEdicao: number = 0;
 
   private _subscription: Subscription = new Subscription();
 
-  private _programaEditId: number = 0;
-
   public loading: boolean = true;
+  public isModoEdicao: boolean = true;
 
   public programaForm: FormGroup = new FormGroup({});
 
-  public formMode: string = '';
-  public isEdit: boolean = true;
-
-  public organizacoesList: ISelectList[] = [];
-  public pessoasList: ISelectList[] = [];
-  public papeisList: ISelectList[] = [];
+  public organizacoesSelectList: ISelectList[] = [];
+  public pessoasSelectList: ISelectList[] = [];
+  public papeisSelectList: ISelectList[] = [];
   public projetosSelectList: ISelectList[] = [];
+  public valoresSelectList: ISelectList[] = [];
+
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
-  public valoresList: ISelectList[] = [];
 
   public idMembroEquipeCaptacao: number | null = null;
   public idProjetoProposto: number | null = null;
 
   constructor(
-    private _route: ActivatedRoute,
     private _router: Router,
     private _nnfb: NonNullableFormBuilder,
     public equipeService: EquipeService,
     private _programasService: ProgramasService,
     private _selectListService: SelectListService,
     private _breadcrumbService: BreadcrumbService,
-    private _profileService: ProfileService,
     private _toastService: ToastService
   ) {
-    this.formMode = this._route.snapshot.params['mode'];
-    this._programaEditId = Number(
-      this._route.snapshot.queryParams['id'] ?? null
+    const [editar$, criar$] = partition(
+      this._programasService.idPrograma$,
+      (idPrograma: number) => idPrograma > 0
     );
 
-    this._getProgramaById$ = this._programasService
-      .getProgramaById(this._programaEditId)
-      .pipe(
-        tap((response: IPrograma) =>
-          this.iniciarForm(new ProgramaModel(response))
-        ),
-        finalize(() => {
-          this.switchMode(false);
-          this.loading = false;
-        })
-      );
+    this._atualizarPrograma$ = editar$.pipe(
+      switchMap((idPrograma: number) =>
+        this._programasService.getById(idPrograma)
+      ),
+      tap((response: IPrograma) => {
+        const programaModel = new ProgramaModel(response);
 
-    this._getOrganizacoes$ = this._selectListService
+        this.iniciarForm(programaModel);
+
+        this._idProgramaEdicao = programaModel.id;
+
+        this.trocarModo(false);
+
+        this.loading = false;
+      })
+    );
+
+    this._cadastrarPrograma$ = criar$.pipe(
+      tap(() => {
+        this.iniciarForm();
+
+        this.loading = false;
+      })
+    );
+
+    this._getOrganizacoesSelectList$ = this._selectListService
       .getOrganizacoes()
       .pipe(
-        tap((response: ISelectList[]) => (this.organizacoesList = response))
+        tap(
+          (response: ISelectList[]) => (this.organizacoesSelectList = response)
+        )
       );
 
-    this._getPessoas$ = this._selectListService
+    this._getPessoasSelectList$ = this._selectListService
       .getPessoas()
-      .pipe(tap((response: ISelectList[]) => (this.pessoasList = response)));
+      .pipe(
+        tap((response: ISelectList[]) => (this.pessoasSelectList = response))
+      );
 
-    this._getPapeis$ = this._selectListService
+    this._getPapeisSelectList$ = this._selectListService
       .getPapeis()
-      .pipe(tap((response: ISelectList[]) => (this.papeisList = response)));
+      .pipe(
+        tap((response: ISelectList[]) => (this.papeisSelectList = response))
+      );
 
     this._getProjetosSelectList$ = this._selectListService
       .getProjetosSelectList()
@@ -113,35 +145,93 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         tap((response: ISelectList[]) => (this.projetosSelectList = response))
       );
 
-    this._getValores$ = this._selectListService
+    this._getValoresSelectList$ = this._selectListService
       .getValores()
-      .pipe(tap((response: ISelectList[]) => (this.valoresList = response)));
+      .pipe(
+        tap((response: ISelectList[]) => (this.valoresSelectList = response))
+      );
 
     this._getAllSelectLists$ = concat(
-      this._getOrganizacoes$,
-      this._getPessoas$,
-      this._getPapeis$,
+      this._getOrganizacoesSelectList$,
+      this._getPessoasSelectList$,
+      this._getPapeisSelectList$,
       this._getProjetosSelectList$,
-      this._getValores$
+      this._getValoresSelectList$
     );
 
     this._subscription.add(
-      this._breadcrumbService
-        .handleAction(this.handleActionBreadcrumb.bind(this))
-        .subscribe()
+      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+        this.executarAcaoBreadcrumb(acao)
+      )
     );
   }
 
   ngOnInit(): void {
     this._subscription.add(this._getAllSelectLists$.subscribe());
 
-    if (this.formMode === 'criar') {
-      this.iniciarForm();
-      this.loading = false;
-      return;
-    }
+    this._subscription.add(this._atualizarPrograma$.subscribe());
+    this._subscription.add(this._cadastrarPrograma$.subscribe());
+  }
 
-    this._subscription.add(this._getProgramaById$.subscribe());
+  public getControl(controlName: string): AbstractControl<any, any> {
+    return this.programaForm.get(controlName) as AbstractControl<any, any>;
+  }
+
+  public get projetosPropostos(): FormArray<
+    FormGroup<ProgramaProjetoPropostoFormType>
+  > {
+    return this.programaForm.get('projetosPropostos') as FormArray<
+      FormGroup<ProgramaProjetoPropostoFormType>
+    >;
+  }
+
+  public getSimbolo(): string {
+    return MoedaHelper.getSimbolo(this.programaForm.value.valor.moeda ?? 'BRL');
+  }
+
+  public rtlCurrencyInputTransformFn =
+    NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
+
+  public rtlCurrencyOutputTransformFn =
+    NgxMaskTransformFunctionHelper.rtlCurrencyOutputTransformFn;
+
+  public toUppercaseInputTransformFn =
+    NgxMaskTransformFunctionHelper.toUppercaseInputTransformFn;
+
+  public toUppercaseOutputTransformFn =
+    NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
+
+  public idMembroNgSelectChangeEvent(event: number): void {
+    this.equipeService.idMembroNgSelectValue$.next(event);
+
+    setTimeout(() => (this.idMembroEquipeCaptacao = null), 0);
+  }
+
+  public idProjetoPropostoNgSelectChangeEvent(event: number): void {
+    this.incluirProjetoPropostoNoPrograma(
+      this.construirProjetoPropostoFormGroupNgSelectValue(event)
+    );
+
+    setTimeout(() => (this.idProjetoProposto = null), 0);
+  }
+
+  public getProjetoPropostoNome(idProjetoProposto?: number): string {
+    return (
+      this.projetosSelectList.find(
+        (projetoSelect) => projetoSelect.id === idProjetoProposto
+      )?.nome ?? ''
+    );
+  }
+
+  public filtrarProjetosSelectList(
+    projetosSelectList: ISelectList[]
+  ): ISelectList[] {
+    return projetosSelectList.filter(
+      (projetoSelect) =>
+        !this.projetosPropostos.value.some(
+          (projetoProposto) => projetoProposto.idProjeto === projetoSelect.id
+        )
+    );
   }
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
@@ -232,40 +322,31 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this.projetosPropostos.removeAt(index);
   }
 
-  private handleActionBreadcrumb(actionType: string): void {
-    switch (actionType) {
-      case 'edit':
-        if (this.isAllowed('programaseditar')) {
-          this.switchMode(true);
-        }
+  private executarAcaoBreadcrumb(acao: string): void {
+    switch (acao) {
+      case 'editar':
+        this.trocarModo(true);
         break;
 
-      case 'cancel':
-        this.cancelForm();
+      case 'cancelar':
+        this.cancelar();
         break;
 
-      case 'save':
+      case 'salvar':
         this.submitProgramaForm(this.programaForm);
         break;
     }
   }
 
-  public isAllowed(path: string): boolean {
-    return this._profileService.isAllowed(path);
+  private trocarModo(permitir: boolean): void {
+    this.isModoEdicao = permitir;
+
+    const programaFormControls = this.programaForm.controls;
+
+    alterarEstadoControlesFormulario(permitir, programaFormControls);
   }
 
-  public switchMode(isEnabled: boolean, excluded?: Array<string>): void {
-    this.isEdit = isEnabled;
-
-    const controls = this.programaForm.controls;
-    for (const key in controls) {
-      !excluded?.includes(key) && isEnabled
-        ? controls[key].enable({ emitEvent: false })
-        : controls[key].disable({ emitEvent: false });
-    }
-  }
-
-  private cancelForm(): void {
+  private cancelar(): void {
     this._router.navigate(['main', 'programas']);
   }
 
@@ -281,113 +362,41 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const payload = new ProgramaFormModel(form.value);
+    const payload = new ProgramaFormModel(form.value as IProgramaForm);
 
-    // console.log(payload);
+    const requisicao = this._idProgramaEdicao
+      ? this.atualizarPrograma(payload)
+      : this.cadastrarPrograma(payload);
 
-    switch (this.formMode) {
-      case 'criar': {
-        this._programasService
-          .postPrograma(payload)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Programa cadastrado com sucesso.'
-                );
-                this._router.navigateByUrl('main/programas');
-              }
-            })
-          )
-          .subscribe();
-        break;
-      }
-      case 'editar': {
-        this._programasService
-          .putPrograma(this._programaEditId, payload)
-          .pipe(
-            tap((response) => {
-              if (response) {
-                this._toastService.showToast(
-                  'success',
-                  'Programa alterado com sucesso.'
-                );
-                this._router.navigateByUrl('main/programas');
-              }
-            })
-          )
-          .subscribe();
-
-        break;
-      }
-      default:
-        break;
-    }
+    requisicao.subscribe();
   }
 
-  public getControl(controlName: string): AbstractControl<any, any> {
-    return this.programaForm.get(controlName) as AbstractControl<any, any>;
-  }
-
-  public get projetosPropostos(): FormArray<
-    FormGroup<ProgramaProjetoPropostoFormType>
-  > {
-    return this.programaForm.get('projetosPropostos') as FormArray<
-      FormGroup<ProgramaProjetoPropostoFormType>
-    >;
-  }
-
-  public getSimbolo(): string {
-    return MoedaHelper.getSimbolo(this.programaForm.value.valor.moeda ?? 'BRL');
-  }
-
-  public rtlCurrencyInputTransformFn =
-    NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
-
-  public rtlCurrencyOutputTransformFn =
-    NgxMaskTransformFunctionHelper.rtlCurrencyOutputTransformFn;
-
-  public toUppercaseInputTransformFn =
-    NgxMaskTransformFunctionHelper.toUppercaseInputTransformFn;
-
-  public toUppercaseOutputTransformFn =
-    NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
-
-  public idMembroNgSelectChangeEvent(event: number): void {
-    this.equipeService.idMembroNgSelectValue$.next(event);
-
-    setTimeout(() => (this.idMembroEquipeCaptacao = null), 0);
-  }
-
-  public idProjetoPropostoNgSelectChangeEvent(event: number): void {
-    this.incluirProjetoPropostoNoPrograma(
-      this.construirProjetoPropostoFormGroupNgSelectValue(event)
-    );
-
-    setTimeout(() => (this.idProjetoProposto = null), 0);
-  }
-
-  public getProjetoPropostoNome(idProjetoProposto?: number) {
-    return (
-      this.projetosSelectList.find(
-        (projetoSelect) => projetoSelect.id === idProjetoProposto
-      )?.nome ?? ''
+  private cadastrarPrograma(payload: ProgramaFormModel): Observable<IPrograma> {
+    return this._programasService.post(payload).pipe(
+      tap((response: IPrograma) => {
+        this._toastService.showToast(
+          'success',
+          'Programa cadastrado com sucesso.'
+        );
+      }),
+      finalize(() => this.cancelar())
     );
   }
 
-  public filtrarProjetosSelectList(
-    projetosSelectList: ISelectList[]
-  ): ISelectList[] {
-    return projetosSelectList.filter(
-      (projetoSelect) =>
-        !this.projetosPropostos.value.some(
-          (projetoProposto) => projetoProposto.idProjeto === projetoSelect.id
-        )
+  private atualizarPrograma(payload: ProgramaFormModel): Observable<IPrograma> {
+    return this._programasService.put(this._idProgramaEdicao, payload).pipe(
+      tap((response: IPrograma) => {
+        this._toastService.showToast(
+          'success',
+          'Programa alterado com sucesso.'
+        );
+      }),
+      finalize(() => this.cancelar())
     );
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
+    this._programasService.idPrograma$.next(0);
   }
 }

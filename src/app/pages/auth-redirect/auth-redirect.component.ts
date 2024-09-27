@@ -1,11 +1,13 @@
-import {Component} from '@angular/core';
-import {Router} from '@angular/router';
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {tap} from 'rxjs';
+import { finalize, tap } from 'rxjs';
 
-import {ProfileService} from '../../shared/services/profile/profile.service';
+import { UsuarioService } from '../../core/services/usuario/usuario.service';
 
-import {IProfile} from '../../shared/interfaces/profile.interface';
+import { UsuarioPerfilModel } from '../../core/models/usuario.model';
+
+import { IUsuario } from '../../core/interfaces/usuario.interface';
 
 @Component({
   selector: 'siscap-auth-redirect',
@@ -16,38 +18,23 @@ import {IProfile} from '../../shared/interfaces/profile.interface';
 export class AuthRedirectComponent {
   constructor(
     private _router: Router,
-    private _profileService: ProfileService
+    private _route: ActivatedRoute,
+    private _usuarioService: UsuarioService
   ) {
-    const tokenQueryParamMap =
-      this._router.getCurrentNavigation()?.initialUrl.queryParamMap;
+    sessionStorage.setItem(
+      'token',
+      window.atob(this._route.snapshot.queryParams['token'])
+    );
 
-    if (tokenQueryParamMap?.has('token')) {
-      sessionStorage.setItem(
-        'token',
-        atob(tokenQueryParamMap.get('token') as string)
-      );
-    }
-
-    this._profileService
-      .getUserInfo()
+    this._usuarioService
+      .buscarUsuario()
       .pipe(
-        tap((response: IProfile) => {
-          const siscapToken = response.token;
+        tap((response: IUsuario) => {
+          sessionStorage.setItem('token', response.token);
 
-          sessionStorage.setItem('token', siscapToken);
+          this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
         }),
-        tap((response: IProfile) => {
-          const userProfile = {
-            nome: response.nome,
-            email: response.email,
-            imagemPerfil: response.imagemPerfil,
-            permissoes: response.permissoes,
-            subNovo: response.subNovo
-          };
-
-          sessionStorage.setItem('user-profile', JSON.stringify(userProfile));
-          this._router.navigate(['main']);
-        }),
+        finalize(() => this._router.navigate(['main']))
       )
       .subscribe();
   }

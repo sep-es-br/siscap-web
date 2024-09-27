@@ -9,11 +9,13 @@ import {
   NgbPaginationModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
-import { CoreModule } from '../../core/core.module';
+import { SharedModule } from '../../shared/shared.module';
 
 import { OrganizacoesComponent } from './organizacoes.component';
 import { OrganizacoesListComponent } from './list/organizacoes-list.component';
 import { OrganizacaoFormComponent } from './form/organizacao-form.component';
+
+import { OrganizacoesRoutingModule } from './organizacoes-routing.module';
 
 @NgModule({
   declarations: [
@@ -23,13 +25,14 @@ import { OrganizacaoFormComponent } from './form/organizacao-form.component';
   ],
   imports: [
     CommonModule,
+    SharedModule,
     FormsModule,
     ReactiveFormsModule,
-    CoreModule,
     NgSelectModule,
     NgxMaskDirective,
     NgbPaginationModule,
     NgbAlertModule,
+    OrganizacoesRoutingModule,
   ],
   exports: [
     OrganizacoesComponent,
