@@ -1,6 +1,6 @@
 export interface IEndereco {
   rua?: string;
-  numero?: number;
+  numero?: string;
   bairro?: string;
   complemento?: string;
   codigoPostal?: string;

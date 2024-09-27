@@ -6,7 +6,7 @@ import {
 
 export class EnderecoModel implements IEndereco {
   public rua: string;
-  public numero: number;
+  public numero: string;
   public bairro: string;
   public complemento: string;
   public codigoPostal: string;
@@ -16,7 +16,7 @@ export class EnderecoModel implements IEndereco {
 
   constructor(endereco?: IEndereco) {
     this.rua = endereco?.rua ?? '';
-    this.numero = endereco?.numero ?? 0;
+    this.numero = endereco?.numero ?? '';
     this.bairro = endereco?.bairro ?? '';
     this.complemento = endereco?.complemento ?? '';
     this.codigoPostal = endereco?.codigoPostal ?? '';

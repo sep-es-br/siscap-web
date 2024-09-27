@@ -2,7 +2,7 @@ import { FormControl } from '@angular/forms';
 
 export type EnderecoFormType = {
   rua: FormControl<string | null>;
-  numero: FormControl<number | null>;
+  numero: FormControl<string | null>;
   bairro: FormControl<string | null>;
   complemento: FormControl<string | null>;
   codigoPostal: FormControl<string | null>;
@@ -13,7 +13,7 @@ export type EnderecoFormType = {
 
 export type EnderecoFormTypeValue = Partial<{
   rua: string | null;
-  numero: number | null;
+  numero: string | null;
   bairro: string | null;
   complemento: string | null;
   codigoPostal: string | null;
