@@ -21,7 +21,7 @@ export class ProgramaProjetoPropostoModel implements IProgramaProjetoProposto {
 export class ProgramaFormModel implements IProgramaForm {
   public sigla: string;
   public titulo: string;
-  public idOrgaoExecutor: number;
+  public idOrgaoExecutorList: Array<number>;
   public equipeCaptacao: EquipeModel[];
   public projetosPropostos: ProgramaProjetoPropostoModel[];
   public valor: ValorModel;
@@ -29,7 +29,7 @@ export class ProgramaFormModel implements IProgramaForm {
   constructor(programaForm?: IProgramaForm) {
     this.sigla = programaForm?.sigla ?? '';
     this.titulo = programaForm?.titulo ?? '';
-    this.idOrgaoExecutor = programaForm?.idOrgaoExecutor ?? 0;
+    this.idOrgaoExecutorList = programaForm?.idOrgaoExecutorList ?? [];
     this.equipeCaptacao = this.construirEquipeCaptação(
       programaForm?.equipeCaptacao
     );

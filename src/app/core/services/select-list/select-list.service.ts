@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 
 import {
   ICidadeSelectList,
+  IProjetoPropostoSelectList,
   ISelectList,
 } from '../../interfaces/select-list.interface';
 
@@ -41,8 +42,14 @@ export class SelectListService {
     return this.getSelectList('planos');
   }
 
-  public getOrganizacoes() {
-    return this.getSelectList('organizacoes');
+  public getOrganizacoes(filtroTipoOrganizacao?: number) {
+    const params = {
+      filtroTipoOrganizacao: filtroTipoOrganizacao,
+    };
+
+    return filtroTipoOrganizacao
+      ? this.getSelectList('organizacoes', params)
+      : this.getSelectList('organizacoes');
   }
 
   public getTiposOrganizacoes() {
@@ -80,8 +87,10 @@ export class SelectListService {
     return this.getSelectList('papeis');
   }
 
-  public getProjetosSelectList() {
-    return this.getSelectList('projetos');
+  public getProjetosPropostos() {
+    return this.getSelectList('projetos') as Observable<
+      IProjetoPropostoSelectList[]
+    >;
   }
 
   public getValores() {

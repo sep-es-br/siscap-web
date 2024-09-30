@@ -4,4 +4,5 @@ export enum TipoOrganizacaoEnum {
   Autarquia = 3,
   Empresa_Privada = 4,
   Organizacao_Nao_Governamental = 5,
+  Secretaria = 6,
 }

@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
+  FormControl,
   FormGroup,
   NonNullableFormBuilder,
   Validators,
@@ -34,7 +35,10 @@ import {
   IProgramaForm,
   IProgramaProjetoProposto,
 } from '../../../core/interfaces/programa.interface';
-import { ISelectList } from '../../../core/interfaces/select-list.interface';
+import {
+  IProjetoPropostoSelectList,
+  ISelectList,
+} from '../../../core/interfaces/select-list.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
 
 import { ProgramaProjetoPropostoFormType } from '../../../core/types/form/programa-projeto-proposto-form.type';
@@ -42,6 +46,7 @@ import { ProgramaProjetoPropostoFormType } from '../../../core/types/form/progra
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
+import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -56,7 +61,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _getOrganizacoesSelectList$: Observable<ISelectList[]>;
   private _getPessoasSelectList$: Observable<ISelectList[]>;
   private _getPapeisSelectList$: Observable<ISelectList[]>;
-  private _getProjetosSelectList$: Observable<ISelectList[]>;
+  private _getProjetosPropostosSelectList$: Observable<
+    IProjetoPropostoSelectList[]
+  >;
   private _getValoresSelectList$: Observable<ISelectList[]>;
   private _getAllSelectLists$: Observable<ISelectList[]>;
 
@@ -72,7 +79,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public organizacoesSelectList: ISelectList[] = [];
   public pessoasSelectList: ISelectList[] = [];
   public papeisSelectList: ISelectList[] = [];
-  public projetosSelectList: ISelectList[] = [];
+  public projetosPropostosSelectList: IProjetoPropostoSelectList[] = [];
   public valoresSelectList: ISelectList[] = [];
 
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
@@ -120,7 +127,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
 
     this._getOrganizacoesSelectList$ = this._selectListService
-      .getOrganizacoes()
+      .getOrganizacoes(TipoOrganizacaoEnum.Secretaria)
       .pipe(
         tap(
           (response: ISelectList[]) => (this.organizacoesSelectList = response)
@@ -139,10 +146,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         tap((response: ISelectList[]) => (this.papeisSelectList = response))
       );
 
-    this._getProjetosSelectList$ = this._selectListService
-      .getProjetosSelectList()
+    this._getProjetosPropostosSelectList$ = this._selectListService
+      .getProjetosPropostos()
       .pipe(
-        tap((response: ISelectList[]) => (this.projetosSelectList = response))
+        tap(
+          (response: IProjetoPropostoSelectList[]) =>
+            (this.projetosPropostosSelectList = response)
+        )
       );
 
     this._getValoresSelectList$ = this._selectListService
@@ -155,7 +165,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this._getOrganizacoesSelectList$,
       this._getPessoasSelectList$,
       this._getPapeisSelectList$,
-      this._getProjetosSelectList$,
+      this._getProjetosPropostosSelectList$,
       this._getValoresSelectList$
     );
 
@@ -217,19 +227,21 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public getProjetoPropostoNome(idProjetoProposto?: number): string {
     return (
-      this.projetosSelectList.find(
-        (projetoSelect) => projetoSelect.id === idProjetoProposto
+      this.projetosPropostosSelectList.find(
+        (projetoPropostoSelectItem) =>
+          projetoPropostoSelectItem.id === idProjetoProposto
       )?.nome ?? ''
     );
   }
 
   public filtrarProjetosSelectList(
-    projetosSelectList: ISelectList[]
-  ): ISelectList[] {
-    return projetosSelectList.filter(
-      (projetoSelect) =>
+    projetosPropostosSelectList: IProjetoPropostoSelectList[]
+  ): IProjetoPropostoSelectList[] {
+    return projetosPropostosSelectList.filter(
+      (projetoPropostoSelectItem) =>
         !this.projetosPropostos.value.some(
-          (projetoProposto) => projetoProposto.idProjeto === projetoSelect.id
+          (projetoProposto) =>
+            projetoProposto.idProjeto === projetoPropostoSelectItem.id
         )
     );
   }
@@ -244,9 +256,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         Validators.required,
         Validators.maxLength(150),
       ]),
-      idOrgaoExecutor: this._nnfb.control(
-        programaModel?.idOrgaoExecutor ?? null,
-        Validators.required
+      idOrgaoExecutorList: this._nnfb.control(
+        programaModel?.idOrgaoExecutorList ?? [],
+        [Validators.required, Validators.min(1)]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao
@@ -269,6 +281,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         ]),
       }),
     });
+
+    this.programaFormValueChanges();
   }
 
   private construirProjetosPropostosFormArray(
@@ -308,7 +322,17 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     ngSelectValue: number
   ): FormGroup<ProgramaProjetoPropostoFormType> {
     const projetoPropostoFormGroup = this.construirProjetoPropostoFormGroup();
+
+    const projetoPropostoValorEstimado =
+      this.projetosPropostosSelectList.find(
+        (projetoPropostoSelectItem) =>
+          projetoPropostoSelectItem.id === ngSelectValue
+      )?.valorEstimado ?? null;
+
     projetoPropostoFormGroup.patchValue({ idProjeto: ngSelectValue });
+    projetoPropostoFormGroup.patchValue({
+      valor: projetoPropostoValorEstimado,
+    });
     return projetoPropostoFormGroup;
   }
 
@@ -320,6 +344,31 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public removerProjetoPropostoDoPrograma(index: number): void {
     this.projetosPropostos.removeAt(index);
+  }
+
+  private programaFormValueChanges(): void {
+    const projetosPropostosFormArray = this.projetosPropostos;
+
+    const valorFormGroupQuantiaFormControl = this.programaForm.get(
+      'valor.quantia'
+    ) as FormControl<number | null>;
+
+    projetosPropostosFormArray.valueChanges.subscribe(
+      (projetosPropostosValue) => {
+        const somatorioValorProjetosPropostos = projetosPropostosValue.reduce(
+          (acc, projetoProposto) => acc + (projetoProposto?.valor ?? 0),
+          0
+        );
+
+        if (this.isModoEdicao) {
+          valorFormGroupQuantiaFormControl.patchValue(
+            somatorioValorProjetosPropostos
+              ? somatorioValorProjetosPropostos
+              : null
+          );
+        }
+      }
+    );
   }
 
   private executarAcaoBreadcrumb(acao: string): void {

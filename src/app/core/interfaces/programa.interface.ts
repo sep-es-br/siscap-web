@@ -10,7 +10,7 @@ export interface IPrograma {
   readonly id: number;
   sigla: string;
   titulo: string;
-  idOrgaoExecutor: number;
+  idOrgaoExecutorList: Array<number>;
   equipeCaptacao: Array<IEquipe>;
   projetosPropostos: Array<IProgramaProjetoProposto>;
   valor: IValor;

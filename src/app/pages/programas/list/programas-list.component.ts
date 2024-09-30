@@ -13,6 +13,8 @@ import { ProgramasService } from '../../../core/services/programas/programas.ser
 
 import { IProgramaTableData } from '../../../core/interfaces/programa.interface';
 
+import { MoedaHelper } from '../../../core/helpers/moeda.helper';
+
 @Component({
   selector: 'siscap-programas-list',
   standalone: false,
@@ -28,6 +30,10 @@ export class ProgramasListComponent {
     private _programasService: ProgramasService,
     private _ngbModalService: NgbModal
   ) {}
+
+  public getSimbolo(codigoMoeda: string): string {
+    return MoedaHelper.getSimbolo(codigoMoeda);
+  }
 
   public sortColumn(event: SortColumn): void {
     this.sortableDirectiveOutput.emit(`${event.column},${event.direction}`);
