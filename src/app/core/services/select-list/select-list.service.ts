@@ -42,8 +42,14 @@ export class SelectListService {
     return this.getSelectList('planos');
   }
 
-  public getOrganizacoes() {
-    return this.getSelectList('organizacoes');
+  public getOrganizacoes(filtroTipoOrganizacao?: number) {
+    const params = {
+      filtroTipoOrganizacao: filtroTipoOrganizacao,
+    };
+
+    return filtroTipoOrganizacao
+      ? this.getSelectList('organizacoes', params)
+      : this.getSelectList('organizacoes');
   }
 
   public getTiposOrganizacoes() {
