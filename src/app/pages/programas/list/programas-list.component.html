@@ -42,27 +42,31 @@
             <span class="fs-small-3 fw-semibold">{{ programa.moeda }}</span>
           </div>
           <div class="col-2">
-            <span class="fs-small-3 fw-semibold">{{ programa.valor }}</span>
+            <span class="fs-small-3 fw-semibold">
+              {{
+                programa.valor
+                  | mask
+                    : "separator.2"
+                    : {
+                        prefix: getSimbolo(programa.moeda) + " ",
+                        leadZero: true,
+                        thousandSeparator: ".",
+                        decimalMarker: ","
+                      }
+              }}
+            </span>
           </div>
           <div class="col-1 ms-auto">
-            <div ngbDropdown>
-              <button class="btn border-none m-0 p-0" ngbDropdownToggle>
-                <i class="fa-solid fa-ellipsis"></i>
-              </button>
-              <div ngbDropdownMenu>
-                <button ngbDropdownItem (click)="editarPrograma(programa.id)">
-                  <i class="fa-regular fa-pen-to-square fs-6 me-1"></i>
-                  Editar
-                </button>
-                <button ngbDropdownItem (click)="deletarPrograma(programa.id)">
-                  <i class="fa-regular fa-trash-can me-1"></i>
-                  Excluir
-                </button>
-              </div>
-            </div>
+            <table-actions-dropdown
+              [tableActionInput]="programa.id"
+              (tableActionOutput)="tableActionOutputEvent($event)"
+            ></table-actions-dropdown>
           </div>
         </div>
       </ng-container>
     </div>
+  </div>
+  <div class="mt-3">
+    <ng-content select="siscap-pagination"></ng-content>
   </div>
 </div>

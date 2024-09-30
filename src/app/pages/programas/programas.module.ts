@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgSelectModule } from '@ng-select/ng-select';
-import { NgxMaskDirective } from 'ngx-mask';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
   NgbAlertModule,
   NgbPaginationModule,
@@ -31,6 +31,7 @@ import { ProgramasRoutingModule } from './programas-routing.module';
     SharedModule,
     NgSelectModule,
     NgxMaskDirective,
+    NgxMaskPipe,
     NgbPaginationModule,
     NgbAlertModule,
     NgbTooltipModule,
