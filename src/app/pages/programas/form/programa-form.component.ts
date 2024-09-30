@@ -46,6 +46,7 @@ import { ProgramaProjetoPropostoFormType } from '../../../core/types/form/progra
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
+import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -126,7 +127,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
 
     this._getOrganizacoesSelectList$ = this._selectListService
-      .getOrganizacoes()
+      .getOrganizacoes(TipoOrganizacaoEnum.Secretaria)
       .pipe(
         tap(
           (response: ISelectList[]) => (this.organizacoesSelectList = response)
@@ -255,9 +256,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         Validators.required,
         Validators.maxLength(150),
       ]),
-      idOrgaoExecutor: this._nnfb.control(
-        programaModel?.idOrgaoExecutor ?? null,
-        Validators.required
+      idOrgaoExecutorList: this._nnfb.control(
+        programaModel?.idOrgaoExecutorList ?? [],
+        [Validators.required, Validators.min(1)]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao
