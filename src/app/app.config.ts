@@ -14,6 +14,8 @@ import { SiscapTitleStrategy } from './core/utils/SiscapTitleStrategy';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
 
+import { provideQuillConfig } from 'ngx-quill';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(APP_ROUTES, withPreloading(PreloadAllModules)),
@@ -21,5 +23,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([authInterceptor, errorHandlerInterceptor])
     ),
+    provideQuillConfig({}),
   ],
 };
