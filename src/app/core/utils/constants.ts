@@ -20,6 +20,7 @@ export const BREADCRUMB_LISTA_CAMINHOS_PRINCIPAIS: Array<string> = [
   'programas',
   'pessoas',
   'organizacoes',
+  'cartasconsulta',
 ];
 
 export const BREADCRUMB_LISTA_CAMINHOS_FILHOS: Array<string> = [
@@ -51,6 +52,10 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   programas: 'Programas',
   programascriar: 'Novo Programa',
   programaseditar: 'Editar Programa',
+
+  cartasconsulta: 'Cartas Consulta',
+  cartasconsultacriar: 'Nova Carta Consulta',
+  cartasconsultaeditar: 'Editar Carta Consulta',
 };
 
 /**
