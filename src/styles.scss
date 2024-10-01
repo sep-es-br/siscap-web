@@ -17,6 +17,12 @@
 @import "./assets/plugins/keenicons/outline/style.css";
 @import "./assets/plugins/keenicons/solid/style.css";
 
+/* Estilo global do componente QuillEditorComponente (ngx-quill) */
+
+quill-editor {
+  width: 100%;
+}
+
 /* Estilo de botões */
 
 button.icon-text-btn {
