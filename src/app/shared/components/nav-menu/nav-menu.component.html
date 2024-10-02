@@ -1,17 +1,22 @@
-<ul ngbNav #nav="ngbNav" [(activeId)]="menuCategoriaAtiva" class="nav-tabs">
+<ul
+  ngbNav
+  #nav="ngbNav"
+  [(activeId)]="menuCategoriaAtiva"
+  class="nav-tabs pt-2"
+>
   <ng-container *ngFor="let menuItem of menuLinks">
     <li
       [ngbNavItem]="menuItem.slug"
       [ngClass]="{ 'd-none': menuItem.hidden }"
-      class="nav-item"
+      class="nav-item lh-1"
     >
       <a ngbNavLink>{{ menuItem.category }}</a>
 
       <ng-template ngbNavContent>
-        <div class="col-8 mx-auto py-1">
+        <div class="col-8 mx-auto py-2">
           <ng-container *ngFor="let route of menuItem.routes">
             <a
-              class="btn sub-menu-nav-link"
+              class="btn sub-menu-nav-link p-2 mx-2"
               [ngClass]="{
                 'd-none': route.hidden,
                 active: route.path === subMenuCategoriaAtiva
