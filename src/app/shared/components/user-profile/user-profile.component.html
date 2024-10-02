@@ -1,0 +1,55 @@
+<div ngbDropdown>
+  <button ngbDropdownToggle class="btn d-flex align-items-center pe-0">
+    <ng-container *ngTemplateOutlet="userInfo" />
+  </button>
+  <div ngbDropdownMenu>
+    <ng-container *ngTemplateOutlet="userDetails" />
+    <ng-container *ngTemplateOutlet="userActions" />
+  </div>
+</div>
+
+<ng-template #userInfo>
+  <div class="d-inline-flex flex-column align-items-end me-4">
+    <span id="user-name" class="text-white opacity-75 lh-1 mb-1">{{
+      usuarioPerfil.nome
+    }}</span>
+    <span id="user-email" class="text-white fw-bold lh-1">{{
+      usuarioPerfil.email
+    }}</span>
+  </div>
+  <div class="symbol symbol-30px symbol-md-40px">
+    <img [src]="usuarioAvatar" alt="Perfil do Usuario" />
+  </div>
+</ng-template>
+
+<ng-template #userDetails>
+  <div class="d-flex px-3">
+    <div class="symbol symbol-60px symbol-md-70px">
+      <img [src]="usuarioAvatar" alt="Perfil do Usuario" />
+    </div>
+    <div
+      class="d-inline-flex flex-column justify-content-center align-items-start ms-4"
+    >
+      <span id="details-user-name" class="text-dark lh-1 mb-1">{{
+        usuarioPerfil.nome
+      }}</span>
+      <span id="details-user-email" class="text-dark opacity-75 fw-bold lh-1">{{
+        usuarioPerfil.email
+      }}</span>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #userActions>
+  <div class="separator my-2 mx-0 p-0"></div>
+  <button ngbDropdownItem class="btn icon-text-btn" (click)="editarMeuPerfil()">
+    <i class="fa-solid fa-user text-primary"></i>
+    <span>Meu Perfil</span>
+  </button>
+
+  <div class="separator my-2 mx-0 p-0"></div>
+  <button ngbDropdownItem class="btn icon-text-btn" (click)="logOut()">
+    <i class="fa-solid fa-power-off text-danger"></i>
+    <span>Sair</span>
+  </button>
+</ng-template>

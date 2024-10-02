@@ -1,21 +1,25 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
-import { TitleStrategy, provideRouter } from '@angular/router';
+import { ApplicationConfig } from '@angular/core';
 import {
-  HttpClientModule,
-  provideHttpClient,
-  withInterceptors,
-} from '@angular/common/http';
+  PreloadAllModules,
+  TitleStrategy,
+  provideRouter,
+  withPreloading,
+} from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
-import { routes } from './app.routes';
+import { APP_ROUTES } from './app.routes';
 
-import { authInterceptor } from './shared/interceptors/auth.interceptor';
-import { SiscapTitleStrategy } from './shared/utils/SiscapTitleStrategy';
+import { SiscapTitleStrategy } from './core/utils/SiscapTitleStrategy';
+
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { errorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(APP_ROUTES, withPreloading(PreloadAllModules)),
     { provide: TitleStrategy, useClass: SiscapTitleStrategy },
-    importProvidersFrom(HttpClientModule),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(
+      withInterceptors([authInterceptor, errorHandlerInterceptor])
+    ),
   ],
 };

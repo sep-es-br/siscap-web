@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 
 import { LoginComponent } from './pages/login/login.component';
-import { MainComponent } from './pages/main/main.component';
 import { AuthRedirectComponent } from './pages/auth-redirect/auth-redirect.component';
-import { authGuard } from './shared/guards/auth.guard';
+import { MainComponent } from './pages/main/main.component';
 
+import { authGuard } from './core/guards/auth/auth.guard';
 
-export const routes: Routes = [
+export const APP_ROUTES: Routes = [
   {
     title: 'Login',
     path: 'login',

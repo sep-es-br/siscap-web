@@ -8,10 +8,9 @@ describe('ProgramaFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProgramaFormComponent]
-    })
-    .compileComponents();
-    
+      imports: [ProgramaFormComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ProgramaFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

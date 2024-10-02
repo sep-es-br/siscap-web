@@ -1,0 +1,36 @@
+div.breadcrumb-wrapper {
+  padding-top: 5.5rem;
+}
+
+h1.current-page-title {
+  font-size: 1.6rem;
+}
+
+li.breadcrumb-item a.breadcrumb-link {
+  font-size: 0.8rem;
+
+  // Entender se é melhor importar a variável $primary de styles.scss ou deixar assim
+  &:hover {
+    color: var(--bs-primary) !important;
+  }
+
+  &.active {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+div#action-buttons button.icon-text-btn {
+  &:first-child:nth-last-child(2) {
+    margin-left: 0.25rem;
+  }
+
+  &:last-child:nth-child(2) {
+    margin-right: 0.25rem;
+  }
+
+  &:not(:first-child):not(:last-child) {
+    margin: 0 0.25rem;
+  }
+}

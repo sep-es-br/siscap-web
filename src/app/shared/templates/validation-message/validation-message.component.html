@@ -1,0 +1,11 @@
+<ng-content></ng-content>
+
+<ng-container *ngIf="isRequired">
+  <span class="error-message"> *</span>
+</ng-container>
+
+<ng-container *ngIf="abstractControl.touched">
+  <span class="error-message float-end">
+    {{ mapErrorMessages(abstractControl.errors) }}
+  </span>
+</ng-container>

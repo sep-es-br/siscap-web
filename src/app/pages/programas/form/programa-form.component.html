@@ -1,300 +1,268 @@
 <div class="h-100" *ngIf="loading">
-  <siscap-loading></siscap-loading>
+  <loading-spinner></loading-spinner>
 </div>
 
 <div class="programa-form" *ngIf="!loading">
-  <form [formGroup]="programaForm">
-    <div class="row mx-1">
-      <div class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col-4">
-              <label for="sigla" class="col-12 form-label"
-                >Sigla do Programa
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'sigla' }
-                  "
-                ></ng-container>
-              </label>
-              <input
-                mask=""
-                [inputTransformFn]="toUppercaseInputTransformFn"
-                [outputTransformFn]="toUppercaseOutputTransformFn"
-                id="sigla"
-                type="text"
-                class="form-control"
-                formControlName="sigla"
-                maxlength="12"
-              />
-            </div>
-            <div class="col-8">
-              <label for="titulo" class="col-12 form-label">
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="programaForm">
+        <div class="row gy-2">
+          <div class="col-4">
+            <label for="sigla" class="col-12 form-label">
+              <validation-message [control]="getControl('sigla')">
+                Sigla do Programa
+              </validation-message>
+            </label>
+            <input
+              mask=""
+              [inputTransformFn]="toUppercaseInputTransformFn"
+              [outputTransformFn]="toUppercaseOutputTransformFn"
+              id="sigla"
+              type="text"
+              class="form-control"
+              formControlName="sigla"
+              maxlength="12"
+            />
+          </div>
+          <div class="col-8">
+            <label for="titulo" class="col-12 form-label">
+              <validation-message [control]="getControl('titulo')">
                 Titulo do Programa
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'titulo' }
-                  "
-                ></ng-container>
-              </label>
-              <input
-                id="titulo"
-                type="text"
-                class="form-control"
-                formControlName="titulo"
-                maxlength="150"
-              />
-            </div>
+              </validation-message>
+            </label>
+            <input
+              id="titulo"
+              type="text"
+              class="form-control"
+              formControlName="titulo"
+              maxlength="150"
+            />
           </div>
-          <div class="row">
-            <div class="col-12">
-              <label for="idOrgaoExecutor" class="col-12 form-label"
-                >Orgão Executor
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'idOrgaoExecutor' }
-                  "
-                ></ng-container>
-              </label>
-              <ng-select
-                id="idOrgaoExecutor"
-                placeholder="-- Selecione o orgão executor do programa --"
-                formControlName="idOrgaoExecutor"
-              >
-                <ng-option
-                  *ngFor="let organizacao of organizacoesList"
-                  [value]="organizacao.id"
-                >
-                  {{ organizacao.nome }}
-                </ng-option>
-              </ng-select>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-12">
-              <label for="membroEquipeCaptacao" class="col-12 form-label"
-                >Equipe de Captação
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'equipeCaptacao' }
-                  "
-                ></ng-container>
-              </label>
 
-              <ng-select
-                id="idMembroEquipeCaptacao"
-                placeholder="-- Selecione uma pessoa para incluir na equipe de captação --"
-                [(ngModel)]="idMembroEquipeCaptacao"
-                [ngModelOptions]="{ standalone: true }"
-                [disabled]="!isEdit"
-                (change)="idMembroNgSelectChangeEvent($event)"
+          <div class="col-12">
+            <label for="idOrgaoExecutorList" class="col-12 form-label">
+              <validation-message [control]="getControl('idOrgaoExecutorList')">
+                Orgão Executor
+              </validation-message>
+            </label>
+            <ng-select
+              id="idOrgaoExecutorList"
+              placeholder="-- Selecione os orgãos executores do programa --"
+              [multiple]="true"
+              [hideSelected]="true"
+              formControlName="idOrgaoExecutorList"
+            >
+              <ng-option
+                *ngFor="let organizacao of organizacoesSelectList"
+                [value]="organizacao.id"
               >
-                <ng-option
+                {{ organizacao.nome }}
+              </ng-option>
+            </ng-select>
+          </div>
+
+          <div class="col-12">
+            <label for="membroEquipeCaptacao" class="col-12 form-label">
+              <validation-message [control]="getControl('equipeCaptacao')">
+                Equipe de Captação
+              </validation-message>
+            </label>
+
+            <ng-select
+              id="idMembroEquipeCaptacao"
+              placeholder="-- Selecione uma pessoa para incluir na equipe de captação --"
+              [(ngModel)]="idMembroEquipeCaptacao"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="!isModoEdicao"
+              (change)="idMembroNgSelectChangeEvent($event)"
+            >
+              <ng-option
+                *ngFor="
+                  let pessoa of equipeService.filtrarPessoasList(
+                    pessoasSelectList
+                  )
+                "
+                [value]="pessoa.id"
+              >
+                {{ pessoa.nome }}
+              </ng-option>
+            </ng-select>
+          </div>
+          <div class="col-12 mt-2">
+            <siscap-equipe-form
+              [pessoasSelectList]="pessoasSelectList"
+              [papeisSelectList]="papeisSelectList"
+              [isModoEdicao]="isModoEdicao"
+            ></siscap-equipe-form>
+          </div>
+
+          <div class="col-12">
+            <label for="idProjetoProposto" class="col-12 form-label">
+              <validation-message [control]="getControl('projetosPropostos')">
+                Projetos Propostos
+              </validation-message>
+            </label>
+
+            <ng-select
+              id="idProjetoProposto"
+              placeholder="-- Selecione um projeto para incluir no programa --"
+              [(ngModel)]="idProjetoProposto"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="!isModoEdicao"
+              (change)="idProjetoPropostoNgSelectChangeEvent($event)"
+            >
+              <ng-option
+                *ngFor="
+                  let projetoPropostoSelectItem of filtrarProjetosSelectList(
+                    projetosPropostosSelectList
+                  )
+                "
+                [value]="projetoPropostoSelectItem.id"
+              >
+                {{ projetoPropostoSelectItem.nome }}
+              </ng-option>
+            </ng-select>
+          </div>
+
+          <div class="col-12 my-2">
+            <div class="card" *ngIf="projetosPropostos.length > 0">
+              <div class="card-body row gy-2 mb-0">
+                <ng-container
                   *ngFor="
-                    let pessoa of equipeService.filtrarPessoasList(pessoasList)
+                    let projetoProposto of projetosPropostos.controls;
+                    index as i
                   "
-                  [value]="pessoa.id"
                 >
-                  {{ pessoa.nome }}
-                </ng-option>
-              </ng-select>
-            </div>
-            <div class="col-12 mt-2">
-              <siscap-equipe-form
-                [pessoasList]="pessoasList"
-                [papeisList]="papeisList"
-                [formMode]="formMode"
-                [isEdit]="isEdit"
-              ></siscap-equipe-form>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-12">
-              <label for="idProjetoProposto" class="col-12 form-label"
-                >Projetos Propostos
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'projetosPropostos' }
-                  "
-                ></ng-container>
-              </label>
-
-              <ng-select
-                id="idProjetoProposto"
-                placeholder="-- Selecione um projeto para incluir no programa --"
-                [(ngModel)]="idProjetoProposto"
-                [ngModelOptions]="{ standalone: true }"
-                [disabled]="!isEdit"
-                (change)="idProjetoPropostoNgSelectChangeEvent($event)"
-              >
-                <ng-option
-                  *ngFor="
-                    let projeto of filtrarProjetosSelectList(projetosSelectList)
-                  "
-                  [value]="projeto.id"
-                >
-                  {{ projeto.nome }}
-                </ng-option>
-              </ng-select>
-            </div>
-
-            <div class="col-12 mt-2">
-              <div class="card" *ngIf="projetosPropostos.length > 0">
-                <div class="card-body row gy-2 mb-0">
-                  <ng-container
-                    *ngFor="
-                      let projetoProposto of projetosPropostos.controls;
-                      index as i
-                    "
-                  >
-                    <div class="col-6">
-                      <div class="card">
-                        <form [formGroup]="projetoProposto">
+                  <div class="col-6">
+                    <div class="card">
+                      <form [formGroup]="projetoProposto">
+                        <div
+                          class="card-body p-2 col-12 d-flex justify-content-between align-items-center"
+                        >
                           <div
-                            class="card-body p-2 col-12 d-flex justify-content-between align-items-center"
+                            class="col-4 text-truncate"
+                            #projetoPropostoNomeTarget
                           >
-                            <div
-                              class="col-4 text-truncate"
-                              #projetoPropostoNomeTarget
+                            <span
+                              placement="bottom"
+                              [positionTarget]="projetoPropostoNomeTarget"
+                              [ngbTooltip]="
+                                getProjetoPropostoNome(
+                                  projetoProposto.value.idProjeto
+                                )
+                              "
+                              >{{
+                                getProjetoPropostoNome(
+                                  projetoProposto.value.idProjeto
+                                )
+                              }}</span
                             >
-                              <span
-                                placement="bottom"
-                                [positionTarget]="projetoPropostoNomeTarget"
-                                [ngbTooltip]="
-                                  getProjetoPropostoNome(
-                                    projetoProposto.value.idProjeto
-                                  )
-                                "
-                                >{{
-                                  getProjetoPropostoNome(
-                                    projetoProposto.value.idProjeto
-                                  )
-                                }}</span
-                              >
-                            </div>
-                            <div class="col-6">
-                              <input
-                                mask="separator.2"
-                                prefix="R$"
-                                thousandSeparator="."
-                                decimalMarker=","
-                                [inputTransformFn]="rtlCurrencyInputTransformFn"
-                                [outputTransformFn]="
-                                  rtlCurrencyOutputTransformFn
-                                "
-                                id="projetoProposto-valor"
-                                placeholder="-- Valor do Projeto --"
-                                type="text"
-                                class="form-control"
-                                formControlName="valor"
-                                min="1"
-                              />
-                            </div>
-                            <div class="col-1">
-                              <button
-                                type="button"
-                                ngbTooltip="Remover Projeto do Programa"
-                                class="btn btn-outline-danger rounded-circle"
-                                [disabled]="!isEdit"
-                                (click)="removerProjetoPropostoDoPrograma(i)"
-                              >
-                                <i
-                                  class="fa-solid fa-close delete-btn-icon"
-                                ></i>
-                              </button>
-                            </div>
                           </div>
-                        </form>
-                      </div>
+                          <div class="col-6">
+                            <input
+                              mask="separator.2"
+                              prefix="R$"
+                              thousandSeparator="."
+                              decimalMarker=","
+                              [inputTransformFn]="rtlCurrencyInputTransformFn"
+                              [outputTransformFn]="rtlCurrencyOutputTransformFn"
+                              id="projetoProposto-valor"
+                              placeholder="-- Valor do Projeto --"
+                              type="text"
+                              class="form-control"
+                              formControlName="valor"
+                              min="1"
+                              readonly
+                              ngbTooltip="Favor alterar o valor estimado deste projeto na tela de edição de Projetos"
+                              triggers="focus:blur"
+                            />
+                          </div>
+                          <div class="col-1">
+                            <button
+                              type="button"
+                              ngbTooltip="Remover Projeto do Programa"
+                              class="btn btn-outline-danger rounded-circle"
+                              [disabled]="!isModoEdicao"
+                              (click)="removerProjetoPropostoDoPrograma(i)"
+                            >
+                              <i class="fa-solid fa-close delete-btn-icon"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </form>
                     </div>
-                  </ng-container>
-                </div>
+                  </div>
+                </ng-container>
               </div>
             </div>
           </div>
 
-          <form formGroupName="valor" class="row">
-            <div class="col-2">
-              <label for="valor-moeda" class="col-12 form-label">
-                Moeda
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'valor.moeda' }
-                  "
-                ></ng-container>
-              </label>
-              <ng-select
-                id="valor-moeda"
-                placeholder="-- Moeda --"
-                [clearable]="false"
-                formControlName="moeda"
-              >
-                <ng-option *ngFor="let moeda of moedasList" [value]="moeda.codigo">
-                  {{ moeda.texto }} ({{ moeda.simbolo }})
-                </ng-option>
-              </ng-select>
-            </div>
-            <div class="col-7">
-              <label for="valor-quantia" class="col-12 form-label">
-                Valor do Programa
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'valor.quantia' }
-                  "
-                ></ng-container>
-              </label>
-              <input
-                mask="separator.2"
-                [prefix]="getSimbolo()"
-                thousandSeparator="."
-                decimalMarker=","
-                [inputTransformFn]="rtlCurrencyInputTransformFn"
-                [outputTransformFn]="rtlCurrencyOutputTransformFn"
-                type="text"
-                id="valor-quantia"
-                class="form-control"
-                formControlName="quantia"
-                min="1"
-              />
-            </div>
-            <div class="col-3">
-              <label for="valor-tipo" class="col-12 form-label">
-                Tipo de Valor
-                <ng-container
-                  *ngTemplateOutlet="
-                    appAlert;
-                    context: { controlName: 'valor.tipo' }
-                  "
-                ></ng-container>
-              </label>
-              <ng-select
-                id="valor-tipo"
-                placeholder="-- Tipo --"
-                [clearable]="false"
-                formControlName="tipo"
-              >
-                <ng-option
-                  *ngFor="let tipoValor of valoresList"
-                  [value]="tipoValor.id"
+          <form formGroupName="valor">
+            <div class="row">
+              <div class="col-2">
+                <label for="valor-moeda" class="col-12 form-label">
+                  <validation-message [control]="getControl('valor.moeda')">
+                    Moeda
+                  </validation-message>
+                </label>
+                <ng-select
+                  id="valor-moeda"
+                  placeholder="-- Moeda --"
+                  [clearable]="false"
+                  formControlName="moeda"
                 >
-                  {{ tipoValor.nome }}
-                </ng-option>
-              </ng-select>
+                  <ng-option
+                    *ngFor="let moeda of moedasList"
+                    [value]="moeda.codigo"
+                  >
+                    {{ moeda.texto }} ({{ moeda.simbolo }})
+                  </ng-option>
+                </ng-select>
+              </div>
+              <div class="col-7">
+                <label for="valor-quantia" class="col-12 form-label">
+                  <validation-message [control]="getControl('valor.quantia')">
+                    Valor do Programa
+                  </validation-message>
+                </label>
+                <input
+                  mask="separator.2"
+                  [prefix]="getSimbolo()"
+                  thousandSeparator="."
+                  decimalMarker=","
+                  [inputTransformFn]="rtlCurrencyInputTransformFn"
+                  [outputTransformFn]="rtlCurrencyOutputTransformFn"
+                  type="text"
+                  id="valor-quantia"
+                  class="form-control"
+                  formControlName="quantia"
+                  min="1"
+                />
+              </div>
+              <div class="col-3">
+                <label for="valor-tipo" class="col-12 form-label">
+                  <validation-message [control]="getControl('valor.tipo')">
+                    Tipo de Valor
+                  </validation-message>
+                </label>
+                <ng-select
+                  id="valor-tipo"
+                  placeholder="-- Tipo --"
+                  [clearable]="false"
+                  formControlName="tipo"
+                >
+                  <ng-option
+                    *ngFor="let tipoValor of valoresSelectList"
+                    [value]="tipoValor.id"
+                  >
+                    {{ tipoValor.nome }}
+                  </ng-option>
+                </ng-select>
+              </div>
             </div>
           </form>
         </div>
-      </div>
+      </form>
     </div>
-  </form>
+  </div>
 </div>
-
-<ng-template #appAlert let-controlName="controlName">
-  <siscap-alert [control]="getControl(controlName)"></siscap-alert>
-</ng-template>
