@@ -1,12 +1,17 @@
 section#main-content {
-  margin-top: 13%;
+  margin-top: 10.5%;
+  margin-bottom: 1rem;
 }
 
 section#footer-content {
   position: relative;
-  top: 15vh;
+  bottom: 0;
 
-  div.footer span {
-    font-size: 0.875rem;
+  div.footer {
+    height: 3rem;
+
+    span {
+      font-size: 0.875rem;
+    }
   }
 }
