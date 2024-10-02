@@ -1,11 +1,13 @@
 section#main-content {
   margin-top: 10.5%;
-  margin-bottom: 1rem;
+  margin-bottom: 4rem;
 }
 
 section#footer-content {
-  position: relative;
+  position: fixed;
+  width: 100%;
   bottom: 0;
+  z-index: -1 !important;
 
   div.footer {
     height: 3rem;
