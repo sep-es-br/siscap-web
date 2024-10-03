@@ -52,17 +52,11 @@
         <div class="col-12">
           <label for="corpo" class="form-label col-12">
             <validation-message [control]="getControl('corpo')">
-              Corpo da Carta Consulta
+              Carta Consulta
             </validation-message>
           </label>
 
-          <!-- SUBSTITUIR PELO COMPONENTE quill-editor -->
-
-          <textarea
-            id="corpo"
-            class="form-control"
-            formControlName="corpo"
-          ></textarea>
+          <siscap-text-editor></siscap-text-editor>
         </div>
       </div>
     </form>
