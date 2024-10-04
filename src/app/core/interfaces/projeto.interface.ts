@@ -1,5 +1,6 @@
 import { IEquipe } from './equipe.interface';
 import { IRateio } from './rateio.interface';
+import { IValor } from './valor.interface';
 
 export interface IProjeto {
   readonly id: number;
@@ -7,7 +8,7 @@ export interface IProjeto {
   sigla: string;
   titulo: string;
   idOrganizacao: number;
-  valorEstimado: number;
+  valor: IValor;
   rateio: IRateio;
   objetivo: string;
   objetivoEspecifico: string;
@@ -22,6 +23,8 @@ export interface IProjeto {
 export interface IProjetoForm extends Omit<IProjeto, 'id' | 'idStatus'> {}
 
 export interface IProjetoTableData
-  extends Pick<IProjeto, 'id' | 'sigla' | 'titulo' | 'valorEstimado'> {
+  extends Pick<IProjeto, 'id' | 'sigla' | 'titulo'> {
+  moeda: string;
+  valor: number;
   nomesMicrorregioesRateio: Array<string>;
 }

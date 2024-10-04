@@ -93,10 +93,10 @@ export class RateioMicrorregiaoFormCardComponent
     if (microrregiaoPercentualRateioInput) {
       fromEvent(microrregiaoPercentualRateioInput, 'beforeinput').subscribe(
         (beforeInputEvent) => {
-          if (!this.rateioService.valorEstimadoReferencia) {
+          if (!this.rateioService.quantiaFormControlReferencia) {
             beforeInputEvent.preventDefault();
             document
-              .querySelector('div#nullValorEstimadoCol')
+              .querySelector('div#nullQuantiaFormControlValueCol')
               ?.animate(SIDEWAYS_SHAKE.keyframes, SIDEWAYS_SHAKE.options);
           }
         }
@@ -116,10 +116,10 @@ export class RateioMicrorregiaoFormCardComponent
     if (microrregiaoQuantiaRateioInput) {
       fromEvent(microrregiaoQuantiaRateioInput, 'beforeinput').subscribe(
         (beforeInputEvent) => {
-          if (!this.rateioService.valorEstimadoReferencia) {
+          if (!this.rateioService.quantiaFormControlReferencia) {
             beforeInputEvent.preventDefault();
             document
-              .querySelector('div#nullValorEstimadoCol')
+              .querySelector('div#nullQuantiaFormControlValueCol')
               ?.animate(SIDEWAYS_SHAKE.keyframes, SIDEWAYS_SHAKE.options);
           }
         }
