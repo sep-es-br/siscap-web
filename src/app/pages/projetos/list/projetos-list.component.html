@@ -36,11 +36,11 @@
         <td>{{ projeto.nomesMicrorregioesRateio | texttrunc : 2 }}</td>
         <td>
           {{
-            projeto.valorEstimado
+            projeto.valor
               | mask
                 : "separator.2"
                 : {
-                    prefix: "R$ ",
+                    prefix: getSimboloMoeda(projeto.moeda) + " ",
                     leadZero: true,
                     thousandSeparator: ".",
                     decimalMarker: ","

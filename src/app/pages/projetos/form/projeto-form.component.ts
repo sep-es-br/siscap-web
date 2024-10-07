@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import {
   concat,
   finalize,
+  map,
   Observable,
   partition,
   Subscription,
@@ -19,10 +20,11 @@ import {
 } from 'rxjs';
 
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
-import { EquipeService } from '../../../core/services/equipe/equipe.service';
-import { RateioService } from '../../../core/services/rateio/rateio.service';
-import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 import { SelectListService } from '../../../core/services/select-list/select-list.service';
+import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
+import { EquipeService } from '../../../core/services/equipe/equipe.service';
+import { ValorService } from '../../../core/services/valor/valor.service';
+import { RateioService } from '../../../core/services/rateio/rateio.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 
@@ -39,13 +41,17 @@ import {
   IProjeto,
   IProjetoForm,
 } from '../../../core/interfaces/projeto.interface';
+import { IMoeda } from '../../../core/interfaces/moeda.interface';
 
 import { RateioFormType } from '../../../core/types/form/rateio-form.type';
+import { ValorFormType } from '../../../core/types/form/valor-form.type';
 
 import { construirMicrorregioesCidadesMapObject } from '../../../core/helpers/microrregioes-cidades-map-object.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import { rateioValidator } from '../../../core/validators/rateio.validator';
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
+import { MoedaHelper } from '../../../core/helpers/moeda.helper';
+import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -60,6 +66,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private _getOrganizacoesSelectList$: Observable<ISelectList[]>;
   private _getPessoasSelectList$: Observable<ISelectList[]>;
   private _getPlanosSelectList$: Observable<ISelectList[]>;
+  private _getTiposValoresSelectList$: Observable<ISelectList[]>;
   private _getMicrorregioesSelectList$: Observable<ISelectList[]>;
   private _getCidadesComMicrorregiaoSelectList$: Observable<
     ICidadeSelectList[]
@@ -81,9 +88,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public pessoasSelectList: ISelectList[] = [];
   public pessoasSelectListFilrada: ISelectList[] = [];
   public planosSelectList: ISelectList[] = [];
+  public tiposValoresSelectList: ISelectList[] = [];
   public microrregioesSelectList: ISelectList[] = [];
   public cidadesComMicrorregiaoSelectList: ICidadeSelectList[] = [];
   public papeisSelectList: ISelectList[] = [];
+
+  public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
 
   public idMembroEquipeElaboracao: number | null = null;
 
@@ -91,10 +101,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private _router: Router,
     private _nnfb: NonNullableFormBuilder,
     private _projetosService: ProjetosService,
-    public equipeService: EquipeService,
-    private _rateioService: RateioService,
     private _selectListService: SelectListService,
     private _pessoasService: PessoasService,
+    public equipeService: EquipeService,
+    private _valorService: ValorService,
+    private _rateioService: RateioService,
     private _toastService: ToastService,
     private _breadcrumbService: BreadcrumbService
   ) {
@@ -105,11 +116,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = editar$.pipe(
       switchMap((idProjeto: number) =>
-        this._projetosService.getById(idProjeto)
+        this._projetosService
+          .getById(idProjeto)
+          .pipe(
+            map<IProjeto, ProjetoModel>(
+              (response: IProjeto) => new ProjetoModel(response)
+            )
+          )
       ),
-      tap((response: IProjeto) => {
-        const projetoModel = new ProjetoModel(response);
-
+      // map<IProjeto, ProjetoModel>(
+      //   (response: IProjeto) => new ProjetoModel(response)
+      // ),
+      tap((projetoModel: ProjetoModel) => {
         this.iniciarForm(projetoModel);
 
         this._idProjetoEdicao = projetoModel.id;
@@ -149,6 +167,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getPlanos()
       .pipe(tap((response) => (this.planosSelectList = response)));
 
+    this._getTiposValoresSelectList$ = this._selectListService
+      .getTiposValores()
+      .pipe(tap((response) => (this.tiposValoresSelectList = response)));
+
     this._getMicrorregioesSelectList$ = this._selectListService
       .getMicrorregioes()
       .pipe(tap((response) => (this.microrregioesSelectList = response)));
@@ -167,6 +189,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._getOrganizacoesSelectList$,
       this._getPessoasSelectList$,
       this._getPlanosSelectList$,
+      this._getTiposValoresSelectList$,
       this._getPapeisSelectList$,
       this._getMicrorregioesSelectList$,
       this._getCidadesComMicrorregiaoSelectList$
@@ -242,9 +265,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.idOrganizacao ?? null,
         Validators.required
       ),
-      valorEstimado: this._nnfb.control(
-        projetoFormModel?.valorEstimado ?? null,
-        [Validators.required, Validators.min(1)]
+      valor: this._valorService.construirValorFormGroup(
+        projetoFormModel?.valor
       ),
       rateio: this._nnfb.group(
         {
@@ -292,6 +314,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
 
     this.projetoFormValueChanges();
+    this.valorFormValueChanges();
+    this.rateioFormValueChanges();
   }
 
   private projetoFormValueChanges(): void {
@@ -302,14 +326,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const idResponsavelProponenteFormControl = this.projetoForm.get(
       'idResponsavelProponente'
     ) as FormControl<number | null>;
-
-    const valorEstimadoFormControl = this.projetoForm.get(
-      'valorEstimado'
-    ) as FormControl<number | null>;
-
-    const rateioFormGroup = this.projetoForm.get(
-      'rateio'
-    ) as FormGroup<RateioFormType>;
 
     idOrganizacaoFormControl.valueChanges.subscribe((idOrganizacaoValue) => {
       if (this.isModoEdicao) this.idOrganizacaoChange(idOrganizacaoValue);
@@ -331,18 +347,58 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
 
-    valorEstimadoFormControl.valueChanges.subscribe((valorEstimadoValue) => {
-      this._rateioService.valorEstimadoReferencia$.next(valorEstimadoValue);
+  private valorFormValueChanges(): void {
+    const valorFormGroup = this.projetoForm.get(
+      'valor'
+    ) as FormGroup<ValorFormType>;
+
+    const tipoFormControl = valorFormGroup.get('tipo') as FormControl<
+      number | null
+    >;
+    const moedaFormControl = valorFormGroup.get('moeda') as FormControl<
+      string | null
+    >;
+    const quantiaFormControl = valorFormGroup.get('quantia') as FormControl<
+      number | null
+    >;
+
+    const rateioFormGroup = this.projetoForm.get(
+      'rateio'
+    ) as FormGroup<RateioFormType>;
+
+    // Caso específico de Projetos; tipo do valor somente pode ser 'Estimado'
+    if (!tipoFormControl.value) {
+      tipoFormControl.patchValue(TipoValorEnum.Estimado);
+      tipoFormControl.disable();
+    }
+
+    moedaFormControl.valueChanges.subscribe((moedaValue) => {
+      this._rateioService.moedaFormControlReferencia$.next(moedaValue);
+    });
+
+    quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
+      this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
 
       rateioFormGroup.setErrors(
-        rateioValidator(valorEstimadoValue, rateioFormGroup.value)
+        rateioValidator(quantiaValue, rateioFormGroup.value)
       );
     });
+  }
+
+  private rateioFormValueChanges(): void {
+    const rateioFormGroup = this.projetoForm.get(
+      'rateio'
+    ) as FormGroup<RateioFormType>;
+
+    const quantiaFormControl = this.projetoForm.get(
+      'valor.quantia'
+    ) as FormControl<number | null>;
 
     rateioFormGroup.valueChanges.subscribe((rateioFormGroupValue) => {
       rateioFormGroup.setErrors(
-        rateioValidator(valorEstimadoFormControl.value, rateioFormGroupValue)
+        rateioValidator(quantiaFormControl.value, rateioFormGroupValue)
       );
     });
   }
@@ -392,6 +448,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const projetoFormControls = this.projetoForm.controls;
 
     alterarEstadoControlesFormulario(permitir, projetoFormControls);
+
+    // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
+    this.projetoForm.get('valor.tipo')?.disable();
   }
 
   private cancelar(): void {
@@ -426,6 +485,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
       return;
     }
+
+    // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
+    form.get('valor.tipo')?.enable();
 
     const payload = new ProjetoFormModel(form.value as IProjetoForm);
 

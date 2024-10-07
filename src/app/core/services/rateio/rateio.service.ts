@@ -24,6 +24,7 @@ import {
 import { RateioCalculoHelper } from '../../helpers/rateio-calculo.helper';
 
 import { TEMPO_INPUT_USUARIO, TEMPO_RECALCULO } from '../../utils/constants';
+import { getSimboloMoeda } from '../../utils/functions';
 
 export interface ICidadeCheckboxChange {
   idCidade: number;
@@ -60,22 +61,40 @@ export class RateioService {
     return this.rateioCidadeFormArray.value;
   }
 
-  private _valorEstimadoReferencia: number | null = null;
+  private _simboloMoeda: string = '';
 
-  public get valorEstimadoReferencia(): number | null {
-    return this._valorEstimadoReferencia;
+  public get simboloMoeda(): string {
+    return this._simboloMoeda;
   }
 
-  private set valorEstimadoReferencia(valorEstimado: number | null) {
-    this._valorEstimadoReferencia = valorEstimado;
+  private set simboloMoeda(simboloMoeda: string) {
+    this._simboloMoeda = simboloMoeda;
   }
 
-  private _valorEstimadoReferencia$: Subject<number | null> = new Subject<
+  private _moedaFormControlReferencia$: Subject<string | null> = new Subject<
+    string | null
+  >();
+
+  public get moedaFormControlReferencia$(): Subject<string | null> {
+    return this._moedaFormControlReferencia$;
+  }
+
+  private _quantiaFormControlReferencia: number | null = null;
+
+  public get quantiaFormControlReferencia(): number | null {
+    return this._quantiaFormControlReferencia;
+  }
+
+  private set quantiaFormControlReferencia(quantia: number | null) {
+    this._quantiaFormControlReferencia = quantia;
+  }
+
+  private _quantiaFormControlReferencia$: Subject<number | null> = new Subject<
     number | null
   >();
 
-  public get valorEstimadoReferencia$(): Subject<number | null> {
-    return this._valorEstimadoReferencia$;
+  public get quantiaFormControlReferencia$(): Subject<number | null> {
+    return this._quantiaFormControlReferencia$;
   }
 
   private _totalRateio: { percentual: number; quantia: number } = {
@@ -110,10 +129,16 @@ export class RateioService {
   }
 
   constructor(private _nnfb: NonNullableFormBuilder) {
-    this.valorEstimadoReferencia$
+    this.moedaFormControlReferencia$
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
-      .subscribe((valorEstimadoValue) => {
-        this.valorEstimadoReferencia = valorEstimadoValue;
+      .subscribe((moedaValue) => {
+        this.simboloMoeda = getSimboloMoeda(moedaValue);
+      });
+
+    this.quantiaFormControlReferencia$
+      .pipe(debounceTime(TEMPO_INPUT_USUARIO))
+      .subscribe((quantiaValue) => {
+        this.quantiaFormControlReferencia = quantiaValue;
       });
   }
 
@@ -234,29 +259,29 @@ export class RateioService {
   public calcularQuantiaPorPercentual(
     percentual: number | null
   ): number | null {
-    if (!this.valorEstimadoReferencia || !percentual) {
+    if (!this.quantiaFormControlReferencia || !percentual) {
       return null;
     }
 
     return RateioCalculoHelper.calcularQuantiaPorPercentual(
-      this.valorEstimadoReferencia,
+      this.quantiaFormControlReferencia,
       percentual
     );
   }
 
   public calcularPercentualPorQuantia(quantia: number | null): number | null {
-    if (!this.valorEstimadoReferencia || !quantia) {
+    if (!this.quantiaFormControlReferencia || !quantia) {
       return null;
     }
 
     return RateioCalculoHelper.calcularPercentualPorQuantia(
-      this.valorEstimadoReferencia,
+      this.quantiaFormControlReferencia,
       quantia
     );
   }
 
   public calculoAutomaticoPorMicrorregioes(): void {
-    if (!this.valorEstimadoReferencia) {
+    if (!this.quantiaFormControlReferencia) {
       return;
     }
 
@@ -284,7 +309,7 @@ export class RateioService {
   }
 
   public calculoAutomaticoPorCidades(): void {
-    if (!this.valorEstimadoReferencia) {
+    if (!this.quantiaFormControlReferencia) {
       return;
     }
 
@@ -379,7 +404,7 @@ export class RateioService {
   }
 
   // private recalcularDiferencaRateioPorMicrorregioes(): void {
-  //   if (!this.valorEstimadoReferencia) {
+  //   if (!this.quantiaFormControlReferencia) {
   //     return;
   //   }
 
@@ -388,7 +413,7 @@ export class RateioService {
   //   );
 
   //   const diferencaPercentual = 100 - totalRateio[0];
-  //   const diferencaQuantia = this.valorEstimadoReferencia - totalRateio[1];
+  //   const diferencaQuantia = this.quantiaFormControlReferencia - totalRateio[1];
 
   //   if (diferencaPercentual === 0 && diferencaQuantia === 0) {
   //     return;
@@ -416,7 +441,7 @@ export class RateioService {
   // }
 
   private recalcularDiferencaRateioPorCidades(): void {
-    if (!this.valorEstimadoReferencia) {
+    if (!this.quantiaFormControlReferencia) {
       return;
     }
 
@@ -429,7 +454,7 @@ export class RateioService {
     );
 
     const diferencaPercentual = 100 - totalRateio[0];
-    const diferencaQuantia = this.valorEstimadoReferencia - totalRateio[1];
+    const diferencaQuantia = this.quantiaFormControlReferencia - totalRateio[1];
 
     if (diferencaPercentual === 0 && diferencaQuantia === 0) {
       return;
