@@ -44,7 +44,7 @@
         <input
           type="text"
           mask="separator.2"
-          prefix="R$"
+          [prefix]="rateioService.simboloMoeda"
           thousandSeparator="."
           decimalMarker=","
           [inputTransformFn]="rtlCurrencyInputTransformFn"

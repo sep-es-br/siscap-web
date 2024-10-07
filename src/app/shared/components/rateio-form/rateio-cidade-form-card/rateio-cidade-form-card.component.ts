@@ -64,10 +64,10 @@ export class RateioCidadeFormCardComponent implements OnInit, AfterViewInit {
     if (cidadePercentualRateioInput) {
       fromEvent(cidadePercentualRateioInput, 'beforeinput').subscribe(
         (beforeInputEvent) => {
-          if (!this.rateioService.valorEstimadoReferencia) {
+          if (!this.rateioService.quantiaFormControlReferencia) {
             beforeInputEvent.preventDefault();
             document
-              .querySelector('div#nullValorEstimadoCol')
+              .querySelector('div#nullQuantiaFormControlValueCol')
               ?.animate(SIDEWAYS_SHAKE.keyframes, SIDEWAYS_SHAKE.options);
           }
         }
@@ -87,10 +87,10 @@ export class RateioCidadeFormCardComponent implements OnInit, AfterViewInit {
     if (cidadeQuantiaRateioInput) {
       fromEvent(cidadeQuantiaRateioInput, 'beforeinput').subscribe(
         (beforeInputEvent) => {
-          if (!this.rateioService.valorEstimadoReferencia) {
+          if (!this.rateioService.quantiaFormControlReferencia) {
             beforeInputEvent.preventDefault();
             document
-              .querySelector('div#nullValorEstimadoCol')
+              .querySelector('div#nullQuantiaFormControlValueCol')
               ?.animate(SIDEWAYS_SHAKE.keyframes, SIDEWAYS_SHAKE.options);
           }
         }

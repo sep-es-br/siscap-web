@@ -58,10 +58,10 @@ export class RateioFormComponent implements AfterViewInit {
         fromEvent(calculoAutomaticoMicrorregiaoButton, 'click'),
         fromEvent(calculoAutomaticoCidadeButton, 'click')
       ).subscribe((clickEvent) => {
-        if (!this.rateioService.valorEstimadoReferencia) {
+        if (!this.rateioService.quantiaFormControlReferencia) {
           clickEvent.preventDefault();
           document
-            .querySelector('div#nullValorEstimadoCol')
+            .querySelector('div#nullQuantiaFormControlValueCol')
             ?.animate(SIDEWAYS_SHAKE.keyframes, SIDEWAYS_SHAKE.options);
         }
       });

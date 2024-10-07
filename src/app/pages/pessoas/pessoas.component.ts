@@ -48,11 +48,10 @@ export class PessoasComponent implements OnInit {
     this.fetchPage();
   }
 
-  public filtroPesquisaOutputEvent(filtro: string | null): void {
-    if (filtro) {
-      this._pageConfig.search = filtro;
-    } else {
-      this._pageConfig.search = '';
+  public filtroPesquisaOutputEvent(filtro: string): void {
+    this._pageConfig.search = filtro;
+
+    if (!filtro) {
       this._pageConfig.sort = '';
       this.limparSortColumn();
     }

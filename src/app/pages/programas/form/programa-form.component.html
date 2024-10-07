@@ -197,70 +197,12 @@
             </div>
           </div>
 
-          <form formGroupName="valor">
-            <div class="row">
-              <div class="col-2">
-                <label for="valor-moeda" class="col-12 form-label">
-                  <validation-message [control]="getControl('valor.moeda')">
-                    Moeda
-                  </validation-message>
-                </label>
-                <ng-select
-                  id="valor-moeda"
-                  placeholder="-- Moeda --"
-                  [clearable]="false"
-                  formControlName="moeda"
-                >
-                  <ng-option
-                    *ngFor="let moeda of moedasList"
-                    [value]="moeda.codigo"
-                  >
-                    {{ moeda.texto }} ({{ moeda.simbolo }})
-                  </ng-option>
-                </ng-select>
-              </div>
-              <div class="col-7">
-                <label for="valor-quantia" class="col-12 form-label">
-                  <validation-message [control]="getControl('valor.quantia')">
-                    Valor do Programa
-                  </validation-message>
-                </label>
-                <input
-                  mask="separator.2"
-                  [prefix]="getSimbolo()"
-                  thousandSeparator="."
-                  decimalMarker=","
-                  [inputTransformFn]="rtlCurrencyInputTransformFn"
-                  [outputTransformFn]="rtlCurrencyOutputTransformFn"
-                  type="text"
-                  id="valor-quantia"
-                  class="form-control"
-                  formControlName="quantia"
-                  min="1"
-                />
-              </div>
-              <div class="col-3">
-                <label for="valor-tipo" class="col-12 form-label">
-                  <validation-message [control]="getControl('valor.tipo')">
-                    Tipo de Valor
-                  </validation-message>
-                </label>
-                <ng-select
-                  id="valor-tipo"
-                  placeholder="-- Tipo --"
-                  [clearable]="false"
-                  formControlName="tipo"
-                >
-                  <ng-option
-                    *ngFor="let tipoValor of valoresSelectList"
-                    [value]="tipoValor.id"
-                  >
-                    {{ tipoValor.nome }}
-                  </ng-option>
-                </ng-select>
-              </div>
-            </div>
-          </form>
+          <div class="col-12">
+            <siscap-valor-form
+              [moedasList]="moedasList"
+              [tiposValoresSelectList]="tiposValoresSelectList"
+            ></siscap-valor-form>
+          </div>
         </div>
       </form>
     </div>
