@@ -157,10 +157,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         )
       );
 
+    // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
     this._getTiposValoresSelectList$ = this._selectListService
       .getTiposValores()
       .pipe(
-        tap((response: ISelectList[]) => (this.tiposValoresSelectList = response))
+        tap(
+          (response: ISelectList[]) =>
+            (this.tiposValoresSelectList = response.filter(
+              (tipoValor) => tipoValor.id <= 3
+            ))
+        )
       );
 
     this._getAllSelectLists$ = concat(
