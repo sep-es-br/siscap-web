@@ -94,7 +94,7 @@ export class SelectListService {
     >;
   }
 
-  public getValores() {
+  public getTiposValores() {
     return this.getSelectList('valor');
   }
 

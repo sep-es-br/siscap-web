@@ -20,6 +20,7 @@ import {
 } from 'rxjs';
 
 import { EquipeService } from '../../../core/services/equipe/equipe.service';
+import { ValorService } from '../../../core/services/valor/valor.service';
 import { SelectListService } from '../../../core/services/select-list/select-list.service';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
@@ -64,7 +65,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _getProjetosPropostosSelectList$: Observable<
     IProjetoPropostoSelectList[]
   >;
-  private _getValoresSelectList$: Observable<ISelectList[]>;
+  private _getTiposValoresSelectList$: Observable<ISelectList[]>;
   private _getAllSelectLists$: Observable<ISelectList[]>;
 
   private _idProgramaEdicao: number = 0;
@@ -80,7 +81,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public pessoasSelectList: ISelectList[] = [];
   public papeisSelectList: ISelectList[] = [];
   public projetosPropostosSelectList: IProjetoPropostoSelectList[] = [];
-  public valoresSelectList: ISelectList[] = [];
+  public tiposValoresSelectList: ISelectList[] = [];
 
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
 
@@ -92,6 +93,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private _nnfb: NonNullableFormBuilder,
     public equipeService: EquipeService,
     private _programasService: ProgramasService,
+    private _valorService: ValorService,
     private _selectListService: SelectListService,
     private _breadcrumbService: BreadcrumbService,
     private _toastService: ToastService
@@ -155,10 +157,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         )
       );
 
-    this._getValoresSelectList$ = this._selectListService
-      .getValores()
+    // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
+    this._getTiposValoresSelectList$ = this._selectListService
+      .getTiposValores()
       .pipe(
-        tap((response: ISelectList[]) => (this.valoresSelectList = response))
+        tap(
+          (response: ISelectList[]) =>
+            (this.tiposValoresSelectList = response.filter(
+              (tipoValor) => tipoValor.id <= 3
+            ))
+        )
       );
 
     this._getAllSelectLists$ = concat(
@@ -166,7 +174,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this._getPessoasSelectList$,
       this._getPapeisSelectList$,
       this._getProjetosPropostosSelectList$,
-      this._getValoresSelectList$
+      this._getTiposValoresSelectList$
     );
 
     this._subscription.add(
@@ -193,10 +201,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     return this.programaForm.get('projetosPropostos') as FormArray<
       FormGroup<ProgramaProjetoPropostoFormType>
     >;
-  }
-
-  public getSimbolo(): string {
-    return MoedaHelper.getSimbolo(this.programaForm.value.valor.moeda ?? 'BRL');
   }
 
   public rtlCurrencyInputTransformFn =
@@ -266,20 +270,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       projetosPropostos: this.construirProjetosPropostosFormArray(
         programaModel?.projetosPropostos
       ),
-      valor: this._nnfb.group({
-        tipo: this._nnfb.control(
-          programaModel?.valor.tipo ?? null,
-          Validators.required
-        ),
-        moeda: this._nnfb.control(
-          programaModel?.valor.moeda,
-          Validators.required
-        ),
-        quantia: this._nnfb.control(programaModel?.valor.quantia ?? null, [
-          Validators.required,
-          Validators.min(1),
-        ]),
-      }),
+      valor: this._valorService.construirValorFormGroup(programaModel?.valor),
     });
 
     this.programaFormValueChanges();

@@ -27,7 +27,10 @@
       </div>
       <div class="col-3 d-inline-flex flex-row justify-content-between">
         <ng-container
-          *ngIf="rateioService.valorEstimadoReferencia; else nullValorEstimado"
+          *ngIf="
+            rateioService.quantiaFormControlReferencia;
+            else nullQuantiaFormControlValue
+          "
         >
           <div class="col-4">
             <span class="fs-small-3 total-percentual">
@@ -44,7 +47,7 @@
                   | mask
                     : "separator.2"
                     : {
-                        prefix: "R$ ",
+                        prefix: rateioService.simboloMoeda + " ",
                         leadZero: true,
                         thousandSeparator: ".",
                         decimalMarker: ","
@@ -105,8 +108,8 @@
   </div>
 </div>
 
-<ng-template #nullValorEstimado>
-  <div id="nullValorEstimadoCol" class="col-12 text-center">
+<ng-template #nullQuantiaFormControlValue>
+  <div id="nullQuantiaFormControlValueCol" class="col-12 text-center">
     <span class="fs-small-3 text-danger">Sem Valor Estimado</span>
   </div>
 </ng-template>

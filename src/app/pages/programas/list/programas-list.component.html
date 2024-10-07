@@ -1,72 +1,70 @@
-<div class="card shadow border-light p-3">
-  <div class="mx-3">
-    <div id="header" class="row border-bottom">
-      <div class="col-1 ngbaccordionbutton-col">
-        <!-- Coluna para o botão de ação do ngbAccordion -->
-      </div>
-      <div class="col-2">
-        <span class="fs-small-4">Sigla</span>
-      </div>
-      <div class="col-5">
-        <span class="fs-small-4">Programa</span>
-      </div>
-      <div class="col-1">
-        <span class="fs-small-4">Moeda</span>
-      </div>
-      <div class="col-2">
-        <span class="fs-small-4">Valor</span>
-      </div>
-      <div class="col-1 ms-auto">
-        <span class="fs-small-4">Ações</span>
-      </div>
+<div class="mx-3">
+  <div id="header" class="row border-bottom">
+    <div class="col-1 ngbaccordionbutton-col">
+      <!-- Coluna para o botão de ação do ngbAccordion -->
     </div>
-    <div ngbAccordion>
-      <ng-container *ngFor="let programa of programasList()">
-        <div
-          ngbAccordionItem
-          id="body"
-          class="row d-flex align-items-center py-2"
-        >
-          <div class="col-1 ngbaccordionbutton-col">
-            <!-- INVISIVEL POR ENQUANTO
+    <div class="col-2">
+      <span class="fs-small-4">Sigla</span>
+    </div>
+    <div class="col-5">
+      <span class="fs-small-4">Programa</span>
+    </div>
+    <div class="col-1">
+      <span class="fs-small-4">Moeda</span>
+    </div>
+    <div class="col-2">
+      <span class="fs-small-4">Valor</span>
+    </div>
+    <div class="col-1 ms-auto">
+      <span class="fs-small-4">Ações</span>
+    </div>
+  </div>
+  <div ngbAccordion>
+    <ng-container *ngFor="let programa of programasList()">
+      <div
+        ngbAccordionItem
+        id="body"
+        class="row d-flex align-items-center py-2 my-3"
+      >
+        <div class="col-1 ngbaccordionbutton-col">
+          <!-- INVISIVEL POR ENQUANTO
 			  RETOMAR APÓS PROSPECÇÃO/CAPTAÇÃO -->
-            <button class="m-0 py-2 px-0 invisible" ngbAccordionButton></button>
-          </div>
-          <div class="col-2">
-            <span class="fs-small-3 fw-semibold">{{ programa.sigla }}</span>
-          </div>
-          <div class="col-5">
-            <span class="fs-small-3 fw-semibold">{{ programa.titulo }}</span>
-          </div>
-          <div class="col-1">
-            <span class="fs-small-3 fw-semibold">{{ programa.moeda }}</span>
-          </div>
-          <div class="col-2">
-            <span class="fs-small-3 fw-semibold">
-              {{
-                programa.valor
-                  | mask
-                    : "separator.2"
-                    : {
-                        prefix: getSimbolo(programa.moeda) + " ",
-                        leadZero: true,
-                        thousandSeparator: ".",
-                        decimalMarker: ","
-                      }
-              }}
-            </span>
-          </div>
-          <div class="col-1 ms-auto">
-            <table-actions-dropdown
-              [tableActionInput]="programa.id"
-              (tableActionOutput)="tableActionOutputEvent($event)"
-            ></table-actions-dropdown>
-          </div>
+          <button class="m-0 py-2 px-0 invisible" ngbAccordionButton></button>
         </div>
-      </ng-container>
-    </div>
+        <div class="col-2">
+          <span class="fs-small-3 fw-semibold">{{ programa.sigla }}</span>
+        </div>
+        <div class="col-5">
+          <span class="fs-small-3 fw-semibold">{{ programa.titulo }}</span>
+        </div>
+        <div class="col-1">
+          <span class="fs-small-3 fw-semibold">{{ programa.moeda }}</span>
+        </div>
+        <div class="col-2">
+          <span class="fs-small-3 fw-semibold">
+            {{
+              programa.valor
+                | mask
+                  : "separator.2"
+                  : {
+                      prefix: getSimboloMoeda(programa.moeda) + " ",
+                      leadZero: true,
+                      thousandSeparator: ".",
+                      decimalMarker: ","
+                    }
+            }}
+          </span>
+        </div>
+        <div class="col-1 ms-auto">
+          <table-actions-dropdown
+            [tableActionInput]="programa.id"
+            (tableActionOutput)="tableActionOutputEvent($event)"
+          ></table-actions-dropdown>
+        </div>
+      </div>
+    </ng-container>
   </div>
-  <div class="mt-3">
-    <ng-content select="siscap-pagination"></ng-content>
-  </div>
+</div>
+<div class="mt-3">
+  <ng-content select="siscap-pagination"></ng-content>
 </div>

@@ -13,6 +13,8 @@ import { ProjetosService } from '../../../core/services/projetos/projetos.servic
 
 import { IProjetoTableData } from '../../../core/interfaces/projeto.interface';
 
+import { getSimboloMoeda } from '../../../core/utils/functions';
+
 @Component({
   selector: 'siscap-projetos-list',
   standalone: false,
@@ -22,6 +24,9 @@ import { IProjetoTableData } from '../../../core/interfaces/projeto.interface';
 export class ProjetosListComponent {
   public projetosList = input<Array<IProjetoTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();
+
+  public getSimboloMoeda: (moeda: string | undefined | null) => string =
+    getSimboloMoeda;
 
   constructor(
     private _router: Router,

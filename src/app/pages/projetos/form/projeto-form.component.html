@@ -128,27 +128,13 @@
           </div>
 
           <div class="col-12">
-            <label for="valorEstimado" class="form-label col-12">
-              <validation-message [control]="getControl('valorEstimado')">
-                Valor Estimado
-              </validation-message>
-            </label>
-            <input
-              type="text"
-              mask="separator.2"
-              prefix="R$"
-              thousandSeparator="."
-              decimalMarker=","
-              [inputTransformFn]="rtlCurrencyInputTransformFn"
-              [outputTransformFn]="rtlCurrencyOutputTransformFn"
-              class="form-control"
-              id="valorEstimado"
-              formControlName="valorEstimado"
-              min="1"
-            />
+            <siscap-valor-form
+              [moedasList]="moedasList"
+              [tiposValoresSelectList]="tiposValoresSelectList"
+            ></siscap-valor-form>
           </div>
 
-          <div class="col-12 my-1">
+          <div class="col-12 mt-2">
             <label for="rateio" class="form-label col-12">
               <validation-message [control]="getControl('rateio')">
                 Rateio
@@ -170,6 +156,7 @@
               </validation-message>
             </label>
             <textarea
+              rows="5"
               class="form-control"
               id="objetivo"
               formControlName="objetivo"
@@ -184,6 +171,7 @@
               </validation-message>
             </label>
             <textarea
+              rows="5"
               class="form-control"
               id="objetivoEspecifico"
               formControlName="objetivoEspecifico"
@@ -199,6 +187,7 @@
             </label>
 
             <textarea
+              rows="5"
               class="form-control"
               id="situacaoProblema"
               formControlName="situacaoProblema"
@@ -213,6 +202,7 @@
               </validation-message>
             </label>
             <textarea
+              rows="5"
               class="form-control"
               id="solucoesPropostas"
               formControlName="solucoesPropostas"
@@ -228,6 +218,7 @@
               </validation-message>
             </label>
             <textarea
+              rows="5"
               class="form-control"
               id="impactos"
               formControlName="impactos"
@@ -244,6 +235,7 @@
               </validation-message>
             </label>
             <textarea
+              rows="5"
               class="form-control"
               id="arranjosInstitucionais"
               formControlName="arranjosInstitucionais"
