@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,19 +10,13 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './table-search.component.scss',
 })
 export class TableSearchComponent {
-  public textInputPlaceholder = input<string>('Pesquisar');
-  public filtroPesquisaOutput = output<string | null>();
+  public filtroPesquisaOutput = output<string>();
 
-  public filtroPesquisa: string | null = null;
+  public filtroPesquisa: string = '';
 
   constructor() {}
 
   public aplicarFiltroPesquisa() {
     this.filtroPesquisaOutput.emit(this.filtroPesquisa);
-  }
-
-  public limparFiltroPesquisa() {
-    this.filtroPesquisa = null;
-    this.aplicarFiltroPesquisa();
   }
 }
