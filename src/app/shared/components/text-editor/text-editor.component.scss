@@ -42,12 +42,3 @@ $quill-header-labels: (
     }
   }
 }
-
-/*
-	1. ACHAR ALGUMA MANEIRA DE ADICIONAR UM TOOLTIP(MOUSEOVER)PARA DESCREVER O BOTÃO
-	   |-> ex: .ql-bold -> 'Negrito'
-
-	2. VER PROPRIEDADE DE CONFIGURAÇÃO 'defaultValue' (OU ALGO PARECIDO); SETTAR COMO null
-	3. VER COMO BINDAR formControl DO COMPONENTE PAI AO VALOR DO EDITOR
-	4. ENTENDER TIPO DE RETORNO ('text', 'html')
-*/

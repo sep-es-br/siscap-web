@@ -1,1 +1,16 @@
-<quill-editor></quill-editor>
+<quill-editor
+  [formControl]="controle"
+  (onEditorCreated)="editorCriado($event)"
+></quill-editor>
+
+<ng-container
+  *ngFor="let item of mapeamentoSeletorConteudoToolbarModuleTooltip | keyvalue"
+>
+  <button
+    type="button"
+    class="d-none"
+    #toolbarModuleTooltip="ngbTooltip"
+    [ngbTooltip]="item.value"
+    [positionTarget]="item.key"
+  ></button>
+</ng-container>

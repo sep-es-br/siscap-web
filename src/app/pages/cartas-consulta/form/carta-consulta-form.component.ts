@@ -132,6 +132,10 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
     this._subscription.add(this._cadastrarCartaConsulta$.subscribe());
   }
 
+  public get corpo(): FormControl<string | null> {
+    return this.getControl('corpo') as FormControl<string | null>;
+  }
+
   public getControl(controlName: string): AbstractControl<any, any> {
     return this.cartaConsultaForm.get(controlName) as AbstractControl<any, any>;
   }
@@ -145,7 +149,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
         validators: Validators.required,
       }),
       corpo: this._nnfb.control(cartaConsultaFormModel?.corpo ?? null, {
-        validators: [Validators.required, Validators.maxLength(2500)],
+        validators: Validators.required,
       }),
     });
 

@@ -29,5 +29,5 @@ export const quillEditorToolbarOptions: QuillToolbarConfig = [
   [{ align: [] }],
   [{ color: [] }, { background: [] }],
   ['link', 'image', 'video'],
-  ['clean'],
+  // ['clean'],
 ];
