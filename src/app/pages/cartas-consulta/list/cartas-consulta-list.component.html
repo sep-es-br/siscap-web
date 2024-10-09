@@ -1,1 +1,17 @@
-<p>list works!</p>
+<div class="mx-3">
+  <div id="header" class="row border-bottom">
+    <div class="col-1"><span class="fs-small-4">Carta Consulta</span></div>
+    <div class="col-1"><span class="fs-small-4">Operação</span></div>
+    <div class="col-1"><span class="fs-small-4">Objeto</span></div>
+    <div class="col-1"><span class="fs-small-4">Data</span></div>
+    <div class="col-1"><span class="fs-small-4">Ações</span></div>
+  </div>
+  <ng-container *ngFor="let cartaConsulta of cartasConsultaList()">
+    <!-- COMPONENTE DE CARTA CONSULTA LIST CARD -->
+
+    <table-actions-dropdown
+      [tableActionInput]="cartaConsulta.id"
+      (tableActionOutput)="tableActionOutputEvent($event)"
+    ></table-actions-dropdown>
+  </ng-container>
+</div>
