@@ -9,8 +9,8 @@ export interface ICartaConsulta {
 
 export interface ICartaConsultaForm extends Omit<ICartaConsulta, 'id'> {}
 
-export interface ICartaConsultaTableData
-  extends Pick<ICartaConsulta, 'id' | 'operacao'> {
+export interface ICartaConsultaTableData extends Pick<ICartaConsulta, 'id'> {
+  nomeTipoOperacao: string;
   nomeObjeto: string;
   data: string; // DATA DE CRIAÇÃO (PUXAR 'criado_em'?)
 }

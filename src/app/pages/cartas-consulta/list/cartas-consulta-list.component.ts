@@ -29,6 +29,12 @@ export class CartasConsultaListComponent {
     private _ngbModalService: NgbModal
   ) {}
 
+  public preencherIdAteQuatroDigitos(id: number): string {
+    const idAsString = id.toString();
+
+    return idAsString.length < 4 ? idAsString.padStart(4, '0') : idAsString;
+  }
+
   public sortColumn(event: SortColumn): void {
     this.sortableDirectiveOutput.emit(`${event.column},${event.direction}`);
   }
@@ -51,7 +57,7 @@ export class CartasConsultaListComponent {
   public editarCartaConsulta(id: number): void {
     this._cartasConsultaService.idCartaConsulta$.next(id);
 
-    this._router.navigate(['main', 'programas', 'cartasconsulta']);
+    this._router.navigate(['main', 'cartasconsulta', 'editar']);
   }
 
   public deletarCartaConsulta(id: number): void {
