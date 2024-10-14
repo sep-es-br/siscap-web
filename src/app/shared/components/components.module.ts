@@ -9,6 +9,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { TableSearchComponent } from './table-search/table-search.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
+import { TextPreviewComponent } from './text-preview/text-preview.component';
 import { EquipeFormComponent } from './equipe-form/equipe-form.component';
 import { ValorFormComponent } from './valor-form/valor-form.component';
 import { RateioFormComponent } from './rateio-form/rateio-form.component';
@@ -26,6 +27,7 @@ import { CropperComponent } from './cropper/cropper.component';
     TableSearchComponent,
     PaginationComponent,
     TextEditorComponent,
+    TextPreviewComponent,
     EquipeFormComponent,
     ValorFormComponent,
     RateioFormComponent,
@@ -40,6 +42,7 @@ import { CropperComponent } from './cropper/cropper.component';
     TableSearchComponent,
     PaginationComponent,
     TextEditorComponent,
+    TextPreviewComponent,
     EquipeFormComponent,
     ValorFormComponent,
     RateioFormComponent,

@@ -1,5 +1,6 @@
 <quill-editor
   [formControl]="controle"
+  [readOnly]="!isModoEdicao"
   (onEditorCreated)="editorCriado($event)"
 ></quill-editor>
 

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgSelectModule } from '@ng-select/ng-select';
-import { NgxMaskDirective } from 'ngx-mask';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
   NgbAlertModule,
   NgbPaginationModule,
@@ -14,6 +14,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { CartasConsultaComponent } from './cartas-consulta.component';
 import { CartasConsultaListComponent } from './list/cartas-consulta-list.component';
 import { CartaConsultaFormComponent } from './form/carta-consulta-form.component';
+import { CartaConsultaViewComponent } from './view/carta-consulta-view.component';
 
 import { CartasConsultaRoutingModule } from './cartas-consulta-routing.module';
 
@@ -22,6 +23,7 @@ import { CartasConsultaRoutingModule } from './cartas-consulta-routing.module';
     CartasConsultaComponent,
     CartasConsultaListComponent,
     CartaConsultaFormComponent,
+    CartaConsultaViewComponent,
   ],
   imports: [
     CommonModule,
@@ -30,6 +32,7 @@ import { CartasConsultaRoutingModule } from './cartas-consulta-routing.module';
     ReactiveFormsModule,
     NgSelectModule,
     NgxMaskDirective,
+    NgxMaskPipe,
     NgbPaginationModule,
     NgbAlertModule,
     CartasConsultaRoutingModule,
@@ -38,6 +41,7 @@ import { CartasConsultaRoutingModule } from './cartas-consulta-routing.module';
     CartasConsultaComponent,
     CartasConsultaListComponent,
     CartaConsultaFormComponent,
+    CartaConsultaViewComponent,
   ],
 })
 export class CartasConsultaModule {}

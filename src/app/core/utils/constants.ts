@@ -31,7 +31,10 @@ export const BREADCRUMB_LISTA_CAMINHOS_FILHOS: Array<string> = [
 export const BREADCRUMB_LISTA_CAMINHOS_ESPECIFICOS: Array<{
   caminho: string;
   contexto: string;
-}> = [{ caminho: 'meu-perfil', contexto: 'pessoas' }];
+}> = [
+  { caminho: 'meu-perfil', contexto: 'pessoas' },
+  { caminho: 'visualizar', contexto: 'cartasconsulta' },
+];
 
 export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   home: 'Página Principal',
@@ -56,6 +59,7 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   cartasconsulta: 'Cartas Consulta',
   cartasconsultacriar: 'Nova Carta Consulta',
   cartasconsultaeditar: 'Editar Carta Consulta',
+  cartasconsultavisualizar: 'Visualizar Carta Consulta', // Caso específico
 };
 
 /**

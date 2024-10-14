@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CartasConsultaComponent } from './cartas-consulta.component';
 import { CartaConsultaFormComponent } from './form/carta-consulta-form.component';
+import { CartaConsultaViewComponent } from './view/carta-consulta-view.component';
 
 import { cartasConsulta_NoIdEditarGuard } from '../../core/guards/cartas-consulta/no-id-editar.guard';
 
@@ -28,6 +29,18 @@ const CARTAS_CONSULTA_ROUTES: Routes = [
     component: CartaConsultaFormComponent,
     canActivate: [cartasConsulta_NoIdEditarGuard],
     resolve: { botoesAcao: breadcrumbBotoesAcao_FormResolver },
+  },
+  {
+    title: 'Visualizar Carta Consulta',
+    path: 'visualizar',
+    component: CartaConsultaViewComponent,
+    canActivate: [cartasConsulta_NoIdEditarGuard],
+    data: {
+      botoesAcao: {
+        botoes: ['editar'],
+        contexto: 'pessoas',
+      },
+    },
   },
 ];
 

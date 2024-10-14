@@ -15,9 +15,10 @@
   <ng-container *ngFor="let cartaConsulta of cartasConsultaList()">
     <div
       class="row border-top border-bottom d-flex align-items-center mb-3 py-2"
+      (click)="visualizarCartaConsulta(cartaConsulta.id)"
     >
       <div class="col-2 id-col ms-4">
-        <span class="fs-small-3 text-primary text-decoration-underline">{{
+        <span class="fs-small-3 text-primary text-decoration-underline pointer">{{
           preencherIdAteQuatroDigitos(cartaConsulta.id)
         }}</span>
       </div>
@@ -34,11 +35,19 @@
       <div class="col-1">
         <span class="fs-small-3 fw-semibold">{{ cartaConsulta.data }}</span>
       </div>
-      <div class="col-1 acoes-col">
+      <div class="col-1 acoes-col" (click)="$event.stopPropagation()">
         <table-actions-dropdown
           [tableActionInput]="cartaConsulta.id"
           (tableActionOutput)="tableActionOutputEvent($event)"
-        ></table-actions-dropdown>
+        >
+          <button
+            class="dropdown-item"
+            (click)="visualizarCartaConsulta(cartaConsulta.id)"
+          >
+            <i class="fa-regular fa-clipboard me-2"></i>
+            <span>Visualizar</span>
+          </button>
+        </table-actions-dropdown>
       </div>
     </div>
   </ng-container>

@@ -54,6 +54,12 @@ export class CartasConsultaListComponent {
     }
   }
 
+  public visualizarCartaConsulta(id: number): void {
+    this._cartasConsultaService.idCartaConsulta$.next(id);
+
+    this._router.navigate(['main', 'cartasconsulta', 'visualizar']);
+  }
+
   public editarCartaConsulta(id: number): void {
     this._cartasConsultaService.idCartaConsulta$.next(id);
 

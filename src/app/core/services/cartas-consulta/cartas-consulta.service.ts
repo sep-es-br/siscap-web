@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { IHttpBase } from '../../interfaces/http/http-base.interface';
 import {
   ICartaConsulta,
+  ICartaConsultaDetalhes,
   ICartaConsultaTableData,
 } from '../../interfaces/carta-consulta.interface';
 import { CartaConsultaFormModel } from '../../models/carta-consulta.model';
@@ -64,5 +65,13 @@ export class CartasConsultaService
 
   public delete(id: number): Observable<string> {
     return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
+  }
+
+  public getCartaConsultaDetalhes(
+    id: number
+  ): Observable<ICartaConsultaDetalhes> {
+    return this._http.get<ICartaConsultaDetalhes>(
+      `${this._url}/${id}/detalhes`
+    );
   }
 }

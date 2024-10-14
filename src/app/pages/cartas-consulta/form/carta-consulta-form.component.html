@@ -2,7 +2,7 @@
   <loading-spinner></loading-spinner>
 </div>
 
-<div class="card">
+<div class="card" *ngIf="!loading">
   <div class="card-body">
     <form [formGroup]="cartaConsultaForm">
       <div class="row gy-2">
@@ -55,7 +55,10 @@
               Carta Consulta
             </validation-message>
           </label>
-          <siscap-text-editor [controle]="corpo"></siscap-text-editor>
+          <siscap-text-editor
+            [controle]="corpo"
+            [isModoEdicao]="isModoEdicao"
+          ></siscap-text-editor>
         </div>
       </div>
     </form>

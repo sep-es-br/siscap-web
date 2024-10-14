@@ -202,13 +202,11 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       form.value as ICartaConsultaForm
     );
 
-    console.log(payload);
+    const requisicao = this._idCartaConsultaEdicao
+      ? this.atualizarCartaConsulta(payload)
+      : this.cadastrarCartaConsulta(payload);
 
-    // const requisicao = this._idCartaConsultaEdicao
-    //   ? this.atualizarCartaConsulta(payload)
-    //   : this.cadastrarCartaConsulta(payload);
-
-    // requisicao.subscribe();
+    requisicao.subscribe();
   }
 
   private cadastrarCartaConsulta(

@@ -26,6 +26,7 @@ import { NgbTooltip, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 })
 export class TextEditorComponent implements OnDestroy {
   @Input() public controle!: FormControl<string | null>;
+  @Input() public isModoEdicao: boolean = true;
 
   @ViewChildren('toolbarModuleTooltip')
   public ngbTooltipList!: QueryList<NgbTooltip>;
