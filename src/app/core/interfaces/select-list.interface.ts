@@ -10,3 +10,7 @@ export interface ICidadeSelectList extends ISelectList {
 export interface IProjetoPropostoSelectList extends ISelectList {
   valorEstimado: number;
 }
+
+export interface IObjetoSelectList extends ISelectList {
+  tipo: string;
+}

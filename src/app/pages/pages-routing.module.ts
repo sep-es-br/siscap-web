@@ -38,6 +38,14 @@ const PAGES_ROUTES: Routes = [
     canActivateChild: [authGuard],
   },
   {
+    path: 'cartasconsulta',
+    loadChildren: () =>
+      import('./cartas-consulta/cartas-consulta.module').then(
+        (m) => m.CartasConsultaModule
+      ),
+    canActivateChild: [authGuard],
+  },
+  {
     path: '**',
     redirectTo: 'home',
   },
