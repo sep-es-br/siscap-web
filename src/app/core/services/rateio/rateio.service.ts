@@ -9,57 +9,91 @@ import {
 import { debounceTime, Subject } from 'rxjs';
 
 import {
-  RateioCidadeFormType,
-  RateioCidadeFormTypeValue,
-  RateioMicrorregiaoFormType,
-  RateioMicrorregiaoFormTypeValue,
+  RateioLocalidadeFormType,
+  RateioLocalidadeFormTypeValue,
 } from '../../types/form/rateio-form.type';
-
-import {
-  IRateio,
-  IRateioCidade,
-  IRateioMicrorregiao,
-} from '../../interfaces/rateio.interface';
 
 import { RateioCalculoHelper } from '../../helpers/rateio-calculo.helper';
 
 import { TEMPO_INPUT_USUARIO, TEMPO_RECALCULO } from '../../utils/constants';
 import { getSimboloMoeda } from '../../utils/functions';
 
-export interface ICidadeCheckboxChange {
-  idCidade: number;
+import { ILocalidadeSelectList } from '../../interfaces/select-list.interface';
+import { RateioModel } from '../../models/rateio.model';
+
+export interface ILocalidadeCheckboxChange {
+  idLocalidade: number;
+  tipo: 'Microrregiao' | 'Municipio';
   checkboxValue: boolean;
-  idMicrorregiaoPai: number;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class RateioService {
-  public rateioMicrorregiaoFormArray: FormArray<
-    FormGroup<RateioMicrorregiaoFormType>
-  > = new FormArray<FormGroup<RateioMicrorregiaoFormType>>([]);
+  public rateioFormArray: FormArray<FormGroup<RateioLocalidadeFormType>> =
+    new FormArray<FormGroup<RateioLocalidadeFormType>>(
+      [],
+      [Validators.required, Validators.minLength(1)]
+    );
 
-  public rateioCidadeFormArray: FormArray<FormGroup<RateioCidadeFormType>> =
-    new FormArray<FormGroup<RateioCidadeFormType>>([]);
+  private _localidadesSelectList: Array<ILocalidadeSelectList> = [];
 
-  private get _rateioMicrorregiaoControls(): Array<
-    FormGroup<RateioMicrorregiaoFormType>
-  > {
-    return this.rateioMicrorregiaoFormArray.controls;
+  public get localidadesSelectList(): Array<ILocalidadeSelectList> {
+    return this._localidadesSelectList;
   }
 
-  private get _rateioMicrorregiaoValue(): Array<RateioMicrorregiaoFormTypeValue> {
-    return this.rateioMicrorregiaoFormArray.value;
+  public set localidadesSelectList(
+    localidadesSelectList: Array<ILocalidadeSelectList>
+  ) {
+    this._localidadesSelectList = localidadesSelectList;
+    this.controleCheckboxLocalidades =
+      this.mapearControlesCheckboxLocalidades();
   }
 
-  private get _rateioCidadeControls(): Array<FormGroup<RateioCidadeFormType>> {
-    return this.rateioCidadeFormArray.controls;
+  private _controleCheckboxLocalidades: Record<number, boolean> = {};
+
+  public get controleCheckboxLocalidades(): Record<number, boolean> {
+    return this._controleCheckboxLocalidades;
   }
 
-  private get _rateioCidadeValue(): Array<RateioCidadeFormTypeValue> {
-    return this.rateioCidadeFormArray.value;
+  private set controleCheckboxLocalidades(
+    checkboxLocalidadesObj: Record<number, boolean>
+  ) {
+    this._controleCheckboxLocalidades = checkboxLocalidadesObj;
   }
+
+  private _localidadeCheckboxChange$: Subject<ILocalidadeCheckboxChange> =
+    new Subject<ILocalidadeCheckboxChange>();
+
+  public get localidadeCheckboxChange$(): Subject<ILocalidadeCheckboxChange> {
+    return this._localidadeCheckboxChange$;
+  }
+
+  // public rateioMicrorregiaoFormArray: FormArray<
+  //   FormGroup<RateioMicrorregiaoFormType>
+  // > = new FormArray<FormGroup<RateioMicrorregiaoFormType>>([]);
+
+  // public rateioCidadeFormArray: FormArray<FormGroup<RateioCidadeFormType>> =
+  //   new FormArray<FormGroup<RateioCidadeFormType>>([]);
+
+  // private get _rateioMicrorregiaoControls(): Array<
+  //   FormGroup<RateioMicrorregiaoFormType>
+  // > {
+  //   return this.rateioMicrorregiaoFormArray.controls;
+  // }
+
+  // private get _rateioMicrorregiaoValue(): Array<RateioMicrorregiaoFormTypeValue> {
+  //   return this.rateioMicrorregiaoFormArray.value;
+  // }
+
+  // private get _rateioCidadeControls(): Array<FormGroup<RateioCidadeFormType>> {
+  //   return this.rateioCidadeFormArray.controls;
+  // }
+
+  // private get _rateioCidadeValue(): Array<RateioCidadeFormTypeValue> {
+  //   return this.rateioCidadeFormArray.value;
+  // }
 
   private _simboloMoeda: string = '';
 
@@ -113,22 +147,22 @@ export class RateioService {
     this._totalRateio = totalRateio;
   }
 
-  private _microrregioesCidadesMapObject: Record<number, Array<number>> = {};
+  // private _microrregioesCidadesMapObject: Record<number, boolean> = {};
 
-  public set microrregioesCidadesMapObject(
-    microrregioesCidadesMapObject: Record<number, Array<number>>
-  ) {
-    this._microrregioesCidadesMapObject = microrregioesCidadesMapObject;
-  }
+  // public set microrregioesCidadesMapObject(
+  //   microrregioesCidadesMapObject: Record<number, boolean>
+  // ) {
+  //   this._microrregioesCidadesMapObject = microrregioesCidadesMapObject;
+  // }
 
-  private _cidadeCheckboxChange$: Subject<ICidadeCheckboxChange> =
-    new Subject<ICidadeCheckboxChange>();
+  // private _cidadeCheckboxChange$: Subject<ICidadeCheckboxChange> =
+  //   new Subject<ICidadeCheckboxChange>();
 
-  public get cidadeCheckboxChange$(): Subject<ICidadeCheckboxChange> {
-    return this._cidadeCheckboxChange$;
-  }
+  // public get cidadeCheckboxChange$(): Subject<ICidadeCheckboxChange> {
+  //   return this._cidadeCheckboxChange$;
+  // }
 
-  constructor(private _nnfb: NonNullableFormBuilder) {
+  constructor(private readonly _nnfb: NonNullableFormBuilder) {
     this.moedaFormControlReferencia$
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
       .subscribe((moedaValue) => {
@@ -142,119 +176,232 @@ export class RateioService {
       });
   }
 
-  public construirRateioMicrorregiaoFormArray(
-    rateioMicrorregiao?: Array<IRateioMicrorregiao>
-  ): FormArray<FormGroup<RateioMicrorregiaoFormType>> {
-    const rateioMicrorregiaoFormArray = this._nnfb.array<
-      FormGroup<RateioMicrorregiaoFormType>
+  public filtrarLocalidadesPorMicrorregiao(): Array<ILocalidadeSelectList> {
+    return this.localidadesSelectList.filter(
+      (localidade) => localidade.tipo === 'Microrregiao'
+    );
+  }
+
+  public filtrarLocalidadesPorMunicipio(
+    idMicrorregiao: number
+  ): Array<ILocalidadeSelectList> {
+    return this.localidadesSelectList.filter(
+      (localidade) =>
+        localidade.tipo === 'Municipio' &&
+        localidade.idLocalidadePai === idMicrorregiao
+    );
+  }
+
+  public verificarControleLocalidadesCheckbox(
+    localidadeCheckboxChange: ILocalidadeCheckboxChange
+  ): void {
+    this.controleCheckboxLocalidades[localidadeCheckboxChange.idLocalidade] =
+      localidadeCheckboxChange.checkboxValue;
+
+    if (localidadeCheckboxChange.tipo === 'Microrregiao') {
+      this.alterarCheckboxLocalidadePorMicrorregiao(localidadeCheckboxChange);
+    }
+
+    if (localidadeCheckboxChange.tipo === 'Municipio') {
+      this.alterarCheckboxLocalidadePorMunicipio(localidadeCheckboxChange);
+    }
+  }
+
+  public buscarValorCheckboxLocalidade(idLocalidade: number): boolean {
+    return this.controleCheckboxLocalidades[idLocalidade];
+  }
+
+  public construirRateioFormArray(
+    rateioModelArray?: Array<RateioModel>
+  ): FormArray<FormGroup<RateioLocalidadeFormType>> {
+    const rateioFormArray = this._nnfb.array<
+      FormGroup<RateioLocalidadeFormType>
     >([], [Validators.required, Validators.minLength(1)]);
 
-    if (rateioMicrorregiao) {
-      rateioMicrorregiao.forEach((microrregiao) => {
-        rateioMicrorregiaoFormArray.push(
-          this.construirRateioMicrorregiaoFormGroup(microrregiao)
+    if (rateioModelArray) {
+      rateioModelArray.forEach((rateioModel) => {
+        rateioFormArray.push(
+          this.construirRateioLocalidadeFormGroupPorRateioModel(rateioModel)
         );
       });
     }
 
-    this.rateioMicrorregiaoFormArray = rateioMicrorregiaoFormArray;
+    this.rateioFormArray = rateioFormArray;
 
-    this.rateioMicrorregiaoFormArrayValueChanges$();
+    this.rateioFormArrayValueChanges();
 
-    return this.rateioMicrorregiaoFormArray;
+    return this.rateioFormArray;
   }
 
-  public construirRateioCidadeFormArray(
-    rateioCidade?: Array<IRateioCidade>
-  ): FormArray<FormGroup<RateioCidadeFormType>> {
-    const rateioCidadeFormArray = this._nnfb.array<
-      FormGroup<RateioCidadeFormType>
-    >([], [Validators.required, Validators.minLength(1)]);
-
-    if (rateioCidade) {
-      rateioCidade.forEach((cidade) => {
-        rateioCidadeFormArray.push(this.construirRateioCidadeFormGroup(cidade));
-      });
-    }
-
-    this.rateioCidadeFormArray = rateioCidadeFormArray;
-
-    this.rateioCidadeFormArrayValueChanges$();
-
-    return this.rateioCidadeFormArray;
-  }
-
-  public construirRateioMicrorregiaoFormGroup(
-    microrregiao?: IRateioMicrorregiao
-  ): FormGroup<RateioMicrorregiaoFormType> {
-    return this._nnfb.group<RateioMicrorregiaoFormType>({
-      idMicrorregiao: this._nnfb.control(
-        microrregiao?.idMicrorregiao ?? 0,
+  public construirRateioLocalidadeFormGroupPorRateioModel(
+    rateioModel: RateioModel
+  ): FormGroup<RateioLocalidadeFormType> {
+    return this._nnfb.group<RateioLocalidadeFormType>({
+      idLocalidade: this._nnfb.control(
+        rateioModel.idLocalidade,
         Validators.required
       ),
-      percentual: this._nnfb.control(microrregiao?.percentual ?? null, [
+      percentual: this._nnfb.control(rateioModel.percentual, [
         Validators.required,
         Validators.min(1),
       ]),
-      quantia: this._nnfb.control(microrregiao?.quantia ?? null, [
-        Validators.required,
-        Validators.min(1),
-      ]),
-    });
-  }
-
-  public construirRateioMicrorregiaoFormGroupSelectList(
-    idMicrorregiao: number
-  ): FormGroup<RateioMicrorregiaoFormType> {
-    const rateioMicrorregiaoFormGroup =
-      this.construirRateioMicrorregiaoFormGroup();
-    rateioMicrorregiaoFormGroup.patchValue({ idMicrorregiao });
-    return rateioMicrorregiaoFormGroup;
-  }
-
-  public construirRateioCidadeFormGroup(
-    cidade?: IRateioCidade
-  ): FormGroup<RateioCidadeFormType> {
-    return this._nnfb.group<RateioCidadeFormType>({
-      idCidade: this._nnfb.control(cidade?.idCidade ?? 0, Validators.required),
-      percentual: this._nnfb.control(cidade?.percentual ?? null, [
-        Validators.required,
-        Validators.min(1),
-      ]),
-      quantia: this._nnfb.control(cidade?.quantia ?? null, [
+      quantia: this._nnfb.control(rateioModel.quantia, [
         Validators.required,
         Validators.min(1),
       ]),
     });
   }
 
-  public construirRateioCidadeFormGroupSelectList(
-    idCidade: number
-  ): FormGroup<RateioCidadeFormType> {
-    const rateioCidadeFormGroup = this.construirRateioCidadeFormGroup();
-    rateioCidadeFormGroup.patchValue({ idCidade });
-    return rateioCidadeFormGroup;
+  public construirRateioLocalidadeFormGroupPorIdLocalidade(
+    idLocalidade: number
+  ): FormGroup<RateioLocalidadeFormType> {
+    return this._nnfb.group<RateioLocalidadeFormType>({
+      idLocalidade: this._nnfb.control(idLocalidade, Validators.required),
+      percentual: this._nnfb.control(null, [
+        Validators.required,
+        Validators.min(1),
+      ]),
+      quantia: this._nnfb.control(null, [
+        Validators.required,
+        Validators.min(1),
+      ]),
+    });
   }
 
-  public incluirMicrorregiaoNoRateio(
-    microrregiaoFormGroup: FormGroup<RateioMicrorregiaoFormType>
+  public buscarIndiceControleRateioLocalidadeFormGroup(
+    idLocalidade: number
+  ): number {
+    return this.rateioFormArray.controls.findIndex(
+      (rateioLocalidadeFormGroup) =>
+        rateioLocalidadeFormGroup.controls.idLocalidade.value === idLocalidade
+    );
+  }
+
+  public incluirLocalidadeNoRateio(
+    rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType>
   ): void {
-    this.rateioMicrorregiaoFormArray.push(microrregiaoFormGroup);
+    this.rateioFormArray.push(rateioLocalidadeFormGroup);
   }
 
-  public incluirCidadeNoRateio(
-    cidadeFormGroup: FormGroup<RateioCidadeFormType>
-  ): void {
-    this.rateioCidadeFormArray.push(cidadeFormGroup);
+  public removerLocalidadeDoRateio(idLocalidade: number): void {
+    const index =
+      this.buscarIndiceControleRateioLocalidadeFormGroup(idLocalidade);
+    this.rateioFormArray.removeAt(index);
   }
 
-  public removerMicrorregiaoDoRateio(index: number): void {
-    this.rateioMicrorregiaoFormArray.removeAt(index);
-  }
+  // public construirRateioMicrorregiaoFormArray(
+  //   rateioMicrorregiao?: Array<IRateioMicrorregiao>
+  // ): FormArray<FormGroup<RateioMicrorregiaoFormType>> {
+  //   const rateioMicrorregiaoFormArray = this._nnfb.array<
+  //     FormGroup<RateioMicrorregiaoFormType>
+  //   >([], [Validators.required, Validators.minLength(1)]);
 
-  public removerCidadeDoRateio(index: number): void {
-    this.rateioCidadeFormArray.removeAt(index);
-  }
+  //   if (rateioMicrorregiao) {
+  //     rateioMicrorregiao.forEach((microrregiao) => {
+  //       rateioMicrorregiaoFormArray.push(
+  //         this.construirRateioMicrorregiaoFormGroup(microrregiao)
+  //       );
+  //     });
+  //   }
+
+  //   this.rateioMicrorregiaoFormArray = rateioMicrorregiaoFormArray;
+
+  //   this.rateioMicrorregiaoFormArrayValueChanges$();
+
+  //   return this.rateioMicrorregiaoFormArray;
+  // }
+
+  // public construirRateioCidadeFormArray(
+  //   rateioCidade?: Array<IRateioCidade>
+  // ): FormArray<FormGroup<RateioCidadeFormType>> {
+  //   const rateioCidadeFormArray = this._nnfb.array<
+  //     FormGroup<RateioCidadeFormType>
+  //   >([], [Validators.required, Validators.minLength(1)]);
+
+  //   if (rateioCidade) {
+  //     rateioCidade.forEach((cidade) => {
+  //       rateioCidadeFormArray.push(this.construirRateioCidadeFormGroup(cidade));
+  //     });
+  //   }
+
+  //   this.rateioCidadeFormArray = rateioCidadeFormArray;
+
+  //   this.rateioCidadeFormArrayValueChanges$();
+
+  //   return this.rateioCidadeFormArray;
+  // }
+
+  // public construirRateioMicrorregiaoFormGroup(
+  //   microrregiao?: IRateioMicrorregiao
+  // ): FormGroup<RateioMicrorregiaoFormType> {
+  //   return this._nnfb.group<RateioMicrorregiaoFormType>({
+  //     idMicrorregiao: this._nnfb.control(
+  //       microrregiao?.idMicrorregiao ?? 0,
+  //       Validators.required
+  //     ),
+  //     percentual: this._nnfb.control(microrregiao?.percentual ?? null, [
+  //       Validators.required,
+  //       Validators.min(1),
+  //     ]),
+  //     quantia: this._nnfb.control(microrregiao?.quantia ?? null, [
+  //       Validators.required,
+  //       Validators.min(1),
+  //     ]),
+  //   });
+  // }
+
+  // public construirRateioMicrorregiaoFormGroupSelectList(
+  //   idMicrorregiao: number
+  // ): FormGroup<RateioMicrorregiaoFormType> {
+  //   const rateioMicrorregiaoFormGroup =
+  //     this.construirRateioMicrorregiaoFormGroup();
+  //   rateioMicrorregiaoFormGroup.patchValue({ idMicrorregiao });
+  //   return rateioMicrorregiaoFormGroup;
+  // }
+
+  // public construirRateioCidadeFormGroup(
+  //   cidade?: IRateioCidade
+  // ): FormGroup<RateioCidadeFormType> {
+  //   return this._nnfb.group<RateioCidadeFormType>({
+  //     idCidade: this._nnfb.control(cidade?.idCidade ?? 0, Validators.required),
+  //     percentual: this._nnfb.control(cidade?.percentual ?? null, [
+  //       Validators.required,
+  //       Validators.min(1),
+  //     ]),
+  //     quantia: this._nnfb.control(cidade?.quantia ?? null, [
+  //       Validators.required,
+  //       Validators.min(1),
+  //     ]),
+  //   });
+  // }
+
+  // public construirRateioCidadeFormGroupSelectList(
+  //   idCidade: number
+  // ): FormGroup<RateioCidadeFormType> {
+  //   const rateioCidadeFormGroup = this.construirRateioCidadeFormGroup();
+  //   rateioCidadeFormGroup.patchValue({ idCidade });
+  //   return rateioCidadeFormGroup;
+  // }
+
+  // public incluirMicrorregiaoNoRateio(
+  //   microrregiaoFormGroup: FormGroup<RateioMicrorregiaoFormType>
+  // ): void {
+  //   this.rateioMicrorregiaoFormArray.push(microrregiaoFormGroup);
+  // }
+
+  // public incluirCidadeNoRateio(
+  //   cidadeFormGroup: FormGroup<RateioCidadeFormType>
+  // ): void {
+  //   this.rateioCidadeFormArray.push(cidadeFormGroup);
+  // }
+
+  // public removerMicrorregiaoDoRateio(index: number): void {
+  //   this.rateioMicrorregiaoFormArray.removeAt(index);
+  // }
+
+  // public removerCidadeDoRateio(index: number): void {
+  //   this.rateioCidadeFormArray.removeAt(index);
+  // }
 
   public calcularQuantiaPorPercentual(
     percentual: number | null
@@ -280,136 +427,241 @@ export class RateioService {
     );
   }
 
-  public calculoAutomaticoPorMicrorregioes(): void {
-    if (!this.quantiaFormControlReferencia) {
-      return;
-    }
+  public testeMaluco(idMicrorregiao: number): void {
+    console.log(this._controleCheckboxLocalidades);
 
-    this._rateioMicrorregiaoControls.forEach((rateioMicrorregiaoFormGroup) => {
-      const rateioCidadeControls =
-        this.filtrarRateioCidadeControlsPorIdMicrorregiao(
-          rateioMicrorregiaoFormGroup.controls.idMicrorregiao.value
-        );
+    console.log(idMicrorregiao);
+  }
 
-      const [percentualCidade, quantiaCidade] =
-        RateioCalculoHelper.calcularValoresCidadesPorMicrorregiao(
-          rateioMicrorregiaoFormGroup,
-          rateioCidadeControls.length
-        );
+  private mapearControlesCheckboxLocalidades(): Record<number, boolean> {
+    let controleCheckboxLocalidadesObj: Record<number, boolean> = {};
 
-      rateioCidadeControls.forEach((rateioCidadeFormGroup) => {
-        rateioCidadeFormGroup.controls.percentual.patchValue(percentualCidade);
-        rateioCidadeFormGroup.controls.quantia.patchValue(quantiaCidade);
+    this.localidadesSelectList.forEach((localidade) => {
+      Object.defineProperty(controleCheckboxLocalidadesObj, localidade.id, {
+        value: false,
       });
     });
 
-    setTimeout(() => {
-      this.recalcularDiferencaRateioPorCidades();
-    }, TEMPO_RECALCULO);
+    return controleCheckboxLocalidadesObj;
   }
 
-  public calculoAutomaticoPorCidades(): void {
-    if (!this.quantiaFormControlReferencia) {
-      return;
-    }
+  private alterarCheckboxLocalidadePorMicrorregiao(
+    localidadeCheckboxChange: ILocalidadeCheckboxChange
+  ): void {
+    const idMunicipiosFilhosDaMicrorregiaoMap =
+      this.filtrarLocalidadesPorMunicipio(
+        localidadeCheckboxChange.idLocalidade
+      ).map((municipio) => municipio.id);
 
-    this._rateioMicrorregiaoControls.forEach((rateioMicrorregiaoFormGroup) => {
-      const [percentualMicrorregiao, quantiaMicrorregiao] =
-        RateioCalculoHelper.calcularValoresMicrorregiaoPorCidades(
-          this.filtrarRateioCidadeControlsPorIdMicrorregiao(
-            rateioMicrorregiaoFormGroup.controls.idMicrorregiao.value
-          )
-        );
-
-      rateioMicrorregiaoFormGroup.controls.percentual.patchValue(
-        percentualMicrorregiao
-      );
-      rateioMicrorregiaoFormGroup.controls.quantia.patchValue(
-        quantiaMicrorregiao
-      );
+    idMunicipiosFilhosDaMicrorregiaoMap.forEach((idMunicipio) => {
+      this.controleCheckboxLocalidades[idMunicipio] =
+        localidadeCheckboxChange.checkboxValue !=
+        this.controleCheckboxLocalidades[idMunicipio]
+          ? localidadeCheckboxChange.checkboxValue
+          : this.controleCheckboxLocalidades[idMunicipio];
     });
-
-    // setTimeout(() => {
-    //   this.recalcularDiferencaRateioPorMicrorregioes();
-    // }, TEMPO_RECALCULO);
   }
 
-  public limparTotalRateio(): void {
-    this.totalRateio = {
-      percentual: 0,
-      quantia: 0,
-    };
+  // AINDA NAO IMPLEMENTADO
+  private alterarCheckboxLocalidadePorMunicipio(
+    localidadeCheckboxChange: ILocalidadeCheckboxChange
+  ): void {
+    return;
   }
 
-  public checarConsistenciaMicrorregioesCidades(rateioValue: IRateio): boolean {
-    const rateioMicrorregiaoValueIdMap: Array<number> =
-      rateioValue.rateioMicrorregiao.map(
-        (microrregiao) => microrregiao.idMicrorregiao
-      );
+  private rateioFormArrayValueChanges(): void {
+    this.rateioFormArray.valueChanges
+      .pipe(debounceTime(TEMPO_RECALCULO))
+      .subscribe((rateioFormArrayValue) => {
+        this.calcularTotalRateio(rateioFormArrayValue);
 
-    const rateioCidadeValueIdMap: Array<number> = rateioValue.rateioCidade.map(
-      (cidade) => cidade.idCidade
-    );
-
-    const checkConsistenciaMicrorregioes: boolean =
-      rateioMicrorregiaoValueIdMap.every((idMicrorregiao: number) =>
-        rateioCidadeValueIdMap.some((idCidade: number) =>
-          this._microrregioesCidadesMapObject[idMicrorregiao].includes(idCidade)
-        )
-      );
-
-    const checkConsistenciaCidades: boolean = rateioCidadeValueIdMap.every(
-      (idCidade: number) =>
-        rateioMicrorregiaoValueIdMap
-          .map(
-            (idMicrorregiao: number) =>
-              this._microrregioesCidadesMapObject[idMicrorregiao]
-          )
-          .some((cidadesArray: Array<number>) =>
-            cidadesArray.includes(idCidade)
-          )
-    );
-
-    return checkConsistenciaMicrorregioes && checkConsistenciaCidades;
+        console.log(this.totalRateio);
+      });
   }
 
   private calcularTotalRateio(
-    rateioValueArray:
-      | Array<RateioMicrorregiaoFormTypeValue>
-      | Array<RateioCidadeFormTypeValue>
+    rateioFormArrayValue: Array<RateioLocalidadeFormTypeValue>
   ): void {
-    const totalRateio =
-      RateioCalculoHelper.calcularTotalRateio(rateioValueArray);
+    const [totalPercentual, totalQuantia] =
+      RateioCalculoHelper.calcularTotalRateio(rateioFormArrayValue);
 
     this.totalRateio = {
-      percentual: totalRateio[0],
-      quantia: totalRateio[1],
+      percentual: totalPercentual,
+      quantia: totalQuantia,
     };
   }
 
-  private rateioMicrorregiaoFormArrayValueChanges$(): void {
-    this.rateioMicrorregiaoFormArray.valueChanges
-      .pipe(debounceTime(TEMPO_RECALCULO))
-      .subscribe((rateioMicrorregiaoFormArrayValue) => {
-        this.calcularTotalRateio(rateioMicrorregiaoFormArrayValue);
-      });
-  }
-
-  private rateioCidadeFormArrayValueChanges$(): void {
-    this.rateioCidadeFormArray.valueChanges
-      .pipe(debounceTime(TEMPO_RECALCULO))
-      .subscribe((rateioCidadeFormArrayValue) => {
-        this.calcularTotalRateio(rateioCidadeFormArrayValue);
-      });
-  }
-
-  // private recalcularDiferencaRateioPorMicrorregioes(): void {
+  // public calculoAutomaticoPorMicrorregioes(): void {
   //   if (!this.quantiaFormControlReferencia) {
   //     return;
   //   }
 
-  //   const totalRateio = RateioCalculoHelper.calcularTotalRateioPorMicrorregioes(
-  //     this._rateioMicrorregiaoValue
+  //   this._rateioMicrorregiaoControls.forEach((rateioMicrorregiaoFormGroup) => {
+  //     const rateioCidadeControls =
+  //       this.filtrarRateioCidadeControlsPorIdMicrorregiao(
+  //         rateioMicrorregiaoFormGroup.controls.idMicrorregiao.value
+  //       );
+
+  //     const [percentualCidade, quantiaCidade] =
+  //       RateioCalculoHelper.calcularValoresCidadesPorMicrorregiao(
+  //         rateioMicrorregiaoFormGroup,
+  //         rateioCidadeControls.length
+  //       );
+
+  //     rateioCidadeControls.forEach((rateioCidadeFormGroup) => {
+  //       rateioCidadeFormGroup.controls.percentual.patchValue(percentualCidade);
+  //       rateioCidadeFormGroup.controls.quantia.patchValue(quantiaCidade);
+  //     });
+  //   });
+
+  //   setTimeout(() => {
+  //     this.recalcularDiferencaRateioPorCidades();
+  //   }, TEMPO_RECALCULO);
+  // }
+
+  // public calculoAutomaticoPorCidades(): void {
+  //   if (!this.quantiaFormControlReferencia) {
+  //     return;
+  //   }
+
+  //   this._rateioMicrorregiaoControls.forEach((rateioMicrorregiaoFormGroup) => {
+  //     const [percentualMicrorregiao, quantiaMicrorregiao] =
+  //       RateioCalculoHelper.calcularValoresMicrorregiaoPorCidades(
+  //         this.filtrarRateioCidadeControlsPorIdMicrorregiao(
+  //           rateioMicrorregiaoFormGroup.controls.idMicrorregiao.value
+  //         )
+  //       );
+
+  //     rateioMicrorregiaoFormGroup.controls.percentual.patchValue(
+  //       percentualMicrorregiao
+  //     );
+  //     rateioMicrorregiaoFormGroup.controls.quantia.patchValue(
+  //       quantiaMicrorregiao
+  //     );
+  //   });
+
+  //   // setTimeout(() => {
+  //   //   this.recalcularDiferencaRateioPorMicrorregioes();
+  //   // }, TEMPO_RECALCULO);
+  // }
+
+  // public limparTotalRateio(): void {
+  //   this.totalRateio = {
+  //     percentual: 0,
+  //     quantia: 0,
+  //   };
+  // }
+
+  // public checarConsistenciaMicrorregioesCidades(rateioValue: IRateio): boolean {
+  //   const rateioMicrorregiaoValueIdMap: Array<number> =
+  //     rateioValue.rateioMicrorregiao.map(
+  //       (microrregiao) => microrregiao.idMicrorregiao
+  //     );
+
+  //   const rateioCidadeValueIdMap: Array<number> = rateioValue.rateioCidade.map(
+  //     (cidade) => cidade.idCidade
+  //   );
+
+  //   const checkConsistenciaMicrorregioes: boolean =
+  //     rateioMicrorregiaoValueIdMap.every((idMicrorregiao: number) =>
+  //       rateioCidadeValueIdMap.some((idCidade: number) =>
+  //         this._microrregioesCidadesMapObject[idMicrorregiao].includes(idCidade)
+  //       )
+  //     );
+
+  //   const checkConsistenciaCidades: boolean = rateioCidadeValueIdMap.every(
+  //     (idCidade: number) =>
+  //       rateioMicrorregiaoValueIdMap
+  //         .map(
+  //           (idMicrorregiao: number) =>
+  //             this._microrregioesCidadesMapObject[idMicrorregiao]
+  //         )
+  //         .some((cidadesArray: Array<number>) =>
+  //           cidadesArray.includes(idCidade)
+  //         )
+  //   );
+
+  //   return checkConsistenciaMicrorregioes && checkConsistenciaCidades;
+  // }
+
+  // private calcularTotalRateio(
+  //   rateioValueArray:
+  //     | Array<RateioMicrorregiaoFormTypeValue>
+  //     | Array<RateioCidadeFormTypeValue>
+  // ): void {
+  //   const totalRateio =
+  //     RateioCalculoHelper.calcularTotalRateio(rateioValueArray);
+
+  //   this.totalRateio = {
+  //     percentual: totalRateio[0],
+  //     quantia: totalRateio[1],
+  //   };
+  // }
+
+  // private rateioMicrorregiaoFormArrayValueChanges$(): void {
+  //   this.rateioMicrorregiaoFormArray.valueChanges
+  //     .pipe(debounceTime(TEMPO_RECALCULO))
+  //     .subscribe((rateioMicrorregiaoFormArrayValue) => {
+  //       this.calcularTotalRateio(rateioMicrorregiaoFormArrayValue);
+  //     });
+  // }
+
+  // private rateioCidadeFormArrayValueChanges$(): void {
+  //   this.rateioCidadeFormArray.valueChanges
+  //     .pipe(debounceTime(TEMPO_RECALCULO))
+  //     .subscribe((rateioCidadeFormArrayValue) => {
+  //       this.calcularTotalRateio(rateioCidadeFormArrayValue);
+  //     });
+  // }
+
+  // // private recalcularDiferencaRateioPorMicrorregioes(): void {
+  // //   if (!this.quantiaFormControlReferencia) {
+  // //     return;
+  // //   }
+
+  // //   const totalRateio = RateioCalculoHelper.calcularTotalRateioPorMicrorregioes(
+  // //     this._rateioMicrorregiaoValue
+  // //   );
+
+  // //   const diferencaPercentual = 100 - totalRateio[0];
+  // //   const diferencaQuantia = this.quantiaFormControlReferencia - totalRateio[1];
+
+  // //   if (diferencaPercentual === 0 && diferencaQuantia === 0) {
+  // //     return;
+  // //   }
+
+  // //   const rateioMicrorregiaoFormGroupAleatorio =
+  // //     this._rateioMicrorregiaoControls[
+  // //       Math.floor(Math.random() * this._rateioMicrorregiaoControls.length)
+  // //     ];
+
+  // //   const percentualRateioMicrorregiaoFormGroupAleatorio =
+  // //     rateioMicrorregiaoFormGroupAleatorio.controls.percentual;
+
+  // //   const quantiaRateioMicrorregiaoFormGroupAleatorio =
+  // //     rateioMicrorregiaoFormGroupAleatorio.controls.quantia;
+
+  // //   percentualRateioMicrorregiaoFormGroupAleatorio.patchValue(
+  // //     percentualRateioMicrorregiaoFormGroupAleatorio.value! +
+  // //       diferencaPercentual
+  // //   );
+
+  // //   quantiaRateioMicrorregiaoFormGroupAleatorio.patchValue(
+  // //     quantiaRateioMicrorregiaoFormGroupAleatorio.value! + diferencaQuantia
+  // //   );
+  // // }
+
+  // private recalcularDiferencaRateioPorCidades(): void {
+  //   if (!this.quantiaFormControlReferencia) {
+  //     return;
+  //   }
+
+  //   if (this._rateioCidadeControls.length === 0) {
+  //     return;
+  //   }
+
+  //   const totalRateio = RateioCalculoHelper.calcularTotalRateio(
+  //     this._rateioCidadeValue
   //   );
 
   //   const diferencaPercentual = 100 - totalRateio[0];
@@ -419,74 +671,33 @@ export class RateioService {
   //     return;
   //   }
 
-  //   const rateioMicrorregiaoFormGroupAleatorio =
-  //     this._rateioMicrorregiaoControls[
-  //       Math.floor(Math.random() * this._rateioMicrorregiaoControls.length)
+  //   const rateioCidadeFormGroupAleatorio =
+  //     this._rateioCidadeControls[
+  //       Math.floor(Math.random() * this._rateioCidadeControls.length)
   //     ];
 
-  //   const percentualRateioMicrorregiaoFormGroupAleatorio =
-  //     rateioMicrorregiaoFormGroupAleatorio.controls.percentual;
+  //   const percentualRateioCidadeFormGroupAleatorio =
+  //     rateioCidadeFormGroupAleatorio.controls.percentual;
 
-  //   const quantiaRateioMicrorregiaoFormGroupAleatorio =
-  //     rateioMicrorregiaoFormGroupAleatorio.controls.quantia;
+  //   const quantiaRateioCidadeFormGroupAleatorio =
+  //     rateioCidadeFormGroupAleatorio.controls.quantia;
 
-  //   percentualRateioMicrorregiaoFormGroupAleatorio.patchValue(
-  //     percentualRateioMicrorregiaoFormGroupAleatorio.value! +
-  //       diferencaPercentual
+  //   percentualRateioCidadeFormGroupAleatorio.patchValue(
+  //     percentualRateioCidadeFormGroupAleatorio.value! + diferencaPercentual
   //   );
 
-  //   quantiaRateioMicrorregiaoFormGroupAleatorio.patchValue(
-  //     quantiaRateioMicrorregiaoFormGroupAleatorio.value! + diferencaQuantia
+  //   quantiaRateioCidadeFormGroupAleatorio.patchValue(
+  //     quantiaRateioCidadeFormGroupAleatorio.value! + diferencaQuantia
   //   );
   // }
 
-  private recalcularDiferencaRateioPorCidades(): void {
-    if (!this.quantiaFormControlReferencia) {
-      return;
-    }
-
-    if (this._rateioCidadeControls.length === 0) {
-      return;
-    }
-
-    const totalRateio = RateioCalculoHelper.calcularTotalRateio(
-      this._rateioCidadeValue
-    );
-
-    const diferencaPercentual = 100 - totalRateio[0];
-    const diferencaQuantia = this.quantiaFormControlReferencia - totalRateio[1];
-
-    if (diferencaPercentual === 0 && diferencaQuantia === 0) {
-      return;
-    }
-
-    const rateioCidadeFormGroupAleatorio =
-      this._rateioCidadeControls[
-        Math.floor(Math.random() * this._rateioCidadeControls.length)
-      ];
-
-    const percentualRateioCidadeFormGroupAleatorio =
-      rateioCidadeFormGroupAleatorio.controls.percentual;
-
-    const quantiaRateioCidadeFormGroupAleatorio =
-      rateioCidadeFormGroupAleatorio.controls.quantia;
-
-    percentualRateioCidadeFormGroupAleatorio.patchValue(
-      percentualRateioCidadeFormGroupAleatorio.value! + diferencaPercentual
-    );
-
-    quantiaRateioCidadeFormGroupAleatorio.patchValue(
-      quantiaRateioCidadeFormGroupAleatorio.value! + diferencaQuantia
-    );
-  }
-
-  private filtrarRateioCidadeControlsPorIdMicrorregiao(
-    idMicrorregiao: number
-  ): Array<FormGroup<RateioCidadeFormType>> {
-    return this._rateioCidadeControls.filter((rateioCidadeFormGroup) =>
-      this._microrregioesCidadesMapObject[idMicrorregiao].includes(
-        rateioCidadeFormGroup.controls.idCidade.value
-      )
-    );
-  }
+  // private filtrarRateioCidadeControlsPorIdMicrorregiao(
+  //   idMicrorregiao: number
+  // ): Array<FormGroup<RateioCidadeFormType>> {
+  //   return this._rateioCidadeControls.filter((rateioCidadeFormGroup) =>
+  //     this._microrregioesCidadesMapObject[idMicrorregiao].includes(
+  //       rateioCidadeFormGroup.controls.idCidade.value
+  //     )
+  //   );
+  // }
 }

@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 
 import {
   ICidadeSelectList,
+  ILocalidadeSelectList,
   IObjetoSelectList,
   IProjetoPropostoSelectList,
   ISelectList,
@@ -110,5 +111,11 @@ export class SelectListService {
 
   public getTiposOperacao() {
     return this.getSelectList('tipos-operacao');
+  }
+
+  public getLocalidades() {
+    return this.getSelectList('localidades') as Observable<
+      ILocalidadeSelectList[]
+    >;
   }
 }

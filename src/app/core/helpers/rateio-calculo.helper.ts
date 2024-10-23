@@ -1,11 +1,12 @@
 import { FormGroup } from '@angular/forms';
+import { RateioLocalidadeFormTypeValue } from '../types/form/rateio-form.type';
 
-import {
-  RateioCidadeFormType,
-  RateioCidadeFormTypeValue,
-  RateioMicrorregiaoFormType,
-  RateioMicrorregiaoFormTypeValue,
-} from '../types/form/rateio-form.type';
+// import {
+//   RateioCidadeFormType,
+//   RateioCidadeFormTypeValue,
+//   RateioMicrorregiaoFormType,
+//   RateioMicrorregiaoFormTypeValue,
+// } from '../types/form/rateio-form.type';
 
 // TERMINAR DOCUMENTACAO
 
@@ -79,22 +80,22 @@ export abstract class RateioCalculoHelper {
    * @param {Array<FormGroup<RateioCidadeFormType>>} rateioCidadeControlsArray - `Array` de `FormGroup`s contendo controles do tipo {@link RateioCidadeFormType}
    * @returns {[number, number]} Tupla (`Array` de dois elementos) do tipo `number`; O primeiro é o valor percentual e o segundo é o valor quantia
    */
-  public static calcularValoresMicrorregiaoPorCidades(
-    rateioCidadeControlsArray: Array<FormGroup<RateioCidadeFormType>>
-  ): [number, number] {
-    return [
-      this.somarValoresArray(
-        this.mapearRateioCidadeControlsArrayPorPercentual(
-          rateioCidadeControlsArray
-        )
-      ),
-      this.somarValoresArray(
-        this.mapearRateioCidadeControlsArrayPorQuantia(
-          rateioCidadeControlsArray
-        )
-      ),
-    ];
-  }
+  // public static calcularValoresMicrorregiaoPorCidades(
+  //   rateioCidadeControlsArray: Array<FormGroup<RateioCidadeFormType>>
+  // ): [number, number] {
+  //   return [
+  //     this.somarValoresArray(
+  //       this.mapearRateioCidadeControlsArrayPorPercentual(
+  //         rateioCidadeControlsArray
+  //       )
+  //     ),
+  //     this.somarValoresArray(
+  //       this.mapearRateioCidadeControlsArrayPorQuantia(
+  //         rateioCidadeControlsArray
+  //       )
+  //     ),
+  //   ];
+  // }
 
   /**
    * @public
@@ -106,17 +107,17 @@ export abstract class RateioCalculoHelper {
    * @param {FormGroup<RateioMicrorregiaoFormType>} rateioMicrorregiaoControl - `FormGroup` contendo controles do tipo {@link RateioMicrorregiaoFormType}
    * @returns {[number, number]} Tupla (`Array` de dois elementos) do tipo `number`; O primeiro é o valor percentual e o segundo é o valor quantia
    */
-  public static calcularValoresCidadesPorMicrorregiao(
-    rateioMicrorregiaoControl: FormGroup<RateioMicrorregiaoFormType>,
-    rateioCidadeControlsLength: number
-  ): [number, number] {
-    return [
-      (rateioMicrorregiaoControl.controls.percentual.value ?? 0) /
-        rateioCidadeControlsLength,
-      (rateioMicrorregiaoControl.controls.quantia.value ?? 0) /
-        rateioCidadeControlsLength,
-    ];
-  }
+  // public static calcularValoresCidadesPorMicrorregiao(
+  //   rateioMicrorregiaoControl: FormGroup<RateioMicrorregiaoFormType>,
+  //   rateioCidadeControlsLength: number
+  // ): [number, number] {
+  //   return [
+  //     (rateioMicrorregiaoControl.controls.percentual.value ?? 0) /
+  //       rateioCidadeControlsLength,
+  //     (rateioMicrorregiaoControl.controls.quantia.value ?? 0) /
+  //       rateioCidadeControlsLength,
+  //   ];
+  // }
 
   /**
    * @public
@@ -127,19 +128,17 @@ export abstract class RateioCalculoHelper {
    * @returns {[number, number]} Tupla (`Array` de dois elementos) do tipo `number`; O primeiro é o valor percentual e o segundo é o valor quantia
    */
   public static calcularTotalRateio(
-    rateioValuesArray:
-      | Array<RateioMicrorregiaoFormTypeValue>
-      | Array<RateioCidadeFormTypeValue>
+    rateioFormArrayValue: Array<RateioLocalidadeFormTypeValue>
   ): [number, number] {
     return [
       Math.round(
         this.somarValoresArray(
-          this.mapearRateioValoresArrayPorPercentual(rateioValuesArray)
+          this.mapearRateioValoresArrayPorPercentual(rateioFormArrayValue)
         )
       ),
       Math.round(
         this.somarValoresArray(
-          this.mapearRateioValoresArrayPorQuantia(rateioValuesArray)
+          this.mapearRateioValoresArrayPorQuantia(rateioFormArrayValue)
         )
       ),
     ];
@@ -157,13 +156,13 @@ export abstract class RateioCalculoHelper {
    * @param {Array<FormGroup<RateioCidadeFormType>>} controlsArray - `Array` de `FormGroup`s contendo controles do tipo {@link RateioCidadeFormType}
    * @returns {Array<number>} `Array` contendo os valores percentuais
    */
-  private static mapearRateioCidadeControlsArrayPorPercentual(
-    controlsArray: Array<FormGroup<RateioCidadeFormType>>
-  ): Array<number> {
-    return controlsArray.map(
-      (control) => control.controls.percentual.value ?? 0
-    );
-  }
+  // private static mapearRateioCidadeControlsArrayPorPercentual(
+  //   controlsArray: Array<FormGroup<RateioCidadeFormType>>
+  // ): Array<number> {
+  //   return controlsArray.map(
+  //     (control) => control.controls.percentual.value ?? 0
+  //   );
+  // }
 
   /**
    * @private
@@ -211,11 +210,9 @@ export abstract class RateioCalculoHelper {
    * @returns {Array<number>} `Array` contendo os valores percentuais
    */
   private static mapearRateioValoresArrayPorPercentual(
-    rateioValoresArray:
-      | Array<RateioMicrorregiaoFormTypeValue>
-      | Array<RateioCidadeFormTypeValue>
+    rateioFormArrayValue: Array<RateioLocalidadeFormTypeValue>
   ): Array<number> {
-    return rateioValoresArray.map((rateio) => rateio.percentual ?? 0);
+    return rateioFormArrayValue.map((rateio) => rateio.percentual ?? 0);
   }
 
   /**
@@ -230,11 +227,11 @@ export abstract class RateioCalculoHelper {
    * @param {Array<FormGroup<RateioCidadeFormType>>} controlsArray - `Array` de `FormGroup`s contendo controles do tipo {@link RateioCidadeFormType}
    * @returns {Array<number>} `Array` contendo os valores de quantias
    */
-  private static mapearRateioCidadeControlsArrayPorQuantia(
-    controlsArray: Array<FormGroup<RateioCidadeFormType>>
-  ): Array<number> {
-    return controlsArray.map((control) => control.controls.quantia.value ?? 0);
-  }
+  // private static mapearRateioCidadeControlsArrayPorQuantia(
+  //   controlsArray: Array<FormGroup<RateioCidadeFormType>>
+  // ): Array<number> {
+  //   return controlsArray.map((control) => control.controls.quantia.value ?? 0);
+  // }
 
   /**
    * @private
@@ -282,11 +279,9 @@ export abstract class RateioCalculoHelper {
    * @returns {Array<number>} `Array` contendo os valores de quantias
    */
   private static mapearRateioValoresArrayPorQuantia(
-    rateioValoresArray:
-      | Array<RateioMicrorregiaoFormTypeValue>
-      | Array<RateioCidadeFormTypeValue>
+    rateioFormArrayValue: Array<RateioLocalidadeFormTypeValue>
   ): Array<number> {
-    return rateioValoresArray.map((rateio) => rateio.quantia ?? 0);
+    return rateioFormArrayValue.map((rateio) => rateio.quantia ?? 0);
   }
 
   /**

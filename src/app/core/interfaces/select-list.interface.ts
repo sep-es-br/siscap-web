@@ -14,3 +14,8 @@ export interface IProjetoPropostoSelectList extends ISelectList {
 export interface IObjetoSelectList extends ISelectList {
   tipo: string;
 }
+
+export interface ILocalidadeSelectList extends ISelectList {
+  tipo: string;
+  idLocalidadePai: number;
+}

@@ -9,7 +9,7 @@ export interface IProjeto {
   titulo: string;
   idOrganizacao: number;
   valor: IValor;
-  rateio: IRateio;
+  rateio: Array<IRateio>;
   objetivo: string;
   objetivoEspecifico: string;
   situacaoProblema: string;

@@ -6,25 +6,25 @@
       <input
         class="form-check-input"
         type="checkbox"
-        [name]="'cidade-checkbox-rateio-' + cidade.id"
-        [id]="'cidade-checkbox-rateio-' + cidade.id"
-        [(ngModel)]="cidadeBooleanCheckbox"
+        [name]="'municipio-checkbox-rateio-' + municipio.id"
+        [id]="'municipio-checkbox-rateio-' + municipio.id"
+        [(ngModel)]="municipioBooleanCheckbox"
         [disabled]="!isModoEdicao"
-        (change)="cidadeCheckboxChange()"
+        (change)="municipioCheckboxChange()"
       />
       <label
         class="form-check-label"
-        [for]="'cidade-checkbox-rateio-' + cidade.id"
-        >{{ cidade.nome }}</label
+        [for]="'municipio-checkbox-rateio-' + municipio.id"
+        >{{ municipio.nome }}</label
       >
     </div>
   </div>
 
   <div class="col"></div>
 
-  <ng-container *ngIf="rateioCidadeFormGroup">
+  <ng-container *ngIf="rateioLocalidadeFormGroupMunicipio">
     <form
-      [formGroup]="rateioCidadeFormGroup"
+      [formGroup]="rateioLocalidadeFormGroupMunicipio"
       class="col-3 d-inline-flex justify-content-between"
     >
       <div class="col-4">
@@ -34,9 +34,9 @@
           suffix="%"
           decimalMarker=","
           [outputTransformFn]="percentOutputTransformFn"
-          class="form-control cidade-percentual-rateio"
-          [name]="'cidade-percentual-rateio-' + cidade.id"
-          [id]="'cidade-percentual-rateio-' + cidade.id"
+          class="form-control municipio-percentual-rateio"
+          [name]="'municipio-percentual-rateio-' + municipio.id"
+          [id]="'municipio-percentual-rateio-' + municipio.id"
           formControlName="percentual"
         />
       </div>
@@ -49,9 +49,9 @@
           decimalMarker=","
           [inputTransformFn]="rtlCurrencyInputTransformFn"
           [outputTransformFn]="rtlCurrencyOutputTransformFn"
-          class="form-control cidade-quantia-rateio"
-          [name]="'cidade-quantia-rateio-' + cidade.id"
-          [id]="'cidade-quantia-rateio-' + cidade.id"
+          class="form-control municipio-quantia-rateio"
+          [name]="'municipio-quantia-rateio-' + municipio.id"
+          [id]="'municipio-quantia-rateio-' + municipio.id"
           formControlName="quantia"
           min="1"
         />

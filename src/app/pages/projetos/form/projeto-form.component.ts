@@ -35,6 +35,7 @@ import {
 
 import {
   ICidadeSelectList,
+  ILocalidadeSelectList,
   ISelectList,
 } from '../../../core/interfaces/select-list.interface';
 import {
@@ -43,12 +44,12 @@ import {
 } from '../../../core/interfaces/projeto.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
 
-import { RateioFormType } from '../../../core/types/form/rateio-form.type';
+// import { RateioFormType } from '../../../core/types/form/rateio-form.type';
 import { ValorFormType } from '../../../core/types/form/valor-form.type';
 
 import { construirMicrorregioesCidadesMapObject } from '../../../core/helpers/microrregioes-cidades-map-object.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
-import { rateioValidator } from '../../../core/validators/rateio.validator';
+// import { rateioValidator } from '../../../core/validators/rateio.validator';
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
@@ -67,10 +68,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private _getPessoasSelectList$: Observable<ISelectList[]>;
   private _getPlanosSelectList$: Observable<ISelectList[]>;
   private _getTiposValoresSelectList$: Observable<ISelectList[]>;
-  private _getMicrorregioesSelectList$: Observable<ISelectList[]>;
-  private _getCidadesComMicrorregiaoSelectList$: Observable<
-    ICidadeSelectList[]
-  >;
+  // private _getMicrorregioesSelectList$: Observable<ISelectList[]>;
+  // private _getCidadesComMicrorregiaoSelectList$: Observable<
+  //   ICidadeSelectList[]
+  // >;
+  private _getLocalidadesSelectList$: Observable<ILocalidadeSelectList[]>;
   private _getPapeisSelectList$: Observable<ISelectList[]>;
   private _getAllSelectLists$: Observable<ISelectList[]>;
 
@@ -89,8 +91,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public pessoasSelectListFilrada: ISelectList[] = [];
   public planosSelectList: ISelectList[] = [];
   public tiposValoresSelectList: ISelectList[] = [];
-  public microrregioesSelectList: ISelectList[] = [];
-  public cidadesComMicrorregiaoSelectList: ICidadeSelectList[] = [];
+  // public microrregioesSelectList: ISelectList[] = [];
+  // public cidadesComMicrorregiaoSelectList: ICidadeSelectList[] = [];
+  public localidadesSelectList: ILocalidadeSelectList[] = [];
   public papeisSelectList: ISelectList[] = [];
 
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
@@ -171,15 +174,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getTiposValores()
       .pipe(tap((response) => (this.tiposValoresSelectList = response)));
 
-    this._getMicrorregioesSelectList$ = this._selectListService
-      .getMicrorregioes()
-      .pipe(tap((response) => (this.microrregioesSelectList = response)));
+    // this._getMicrorregioesSelectList$ = this._selectListService
+    //   .getMicrorregioes()
+    //   .pipe(tap((response) => (this.microrregioesSelectList = response)));
 
-    this._getCidadesComMicrorregiaoSelectList$ = this._selectListService
-      .getCidadesComMicrorregiao()
-      .pipe(
-        tap((response) => (this.cidadesComMicrorregiaoSelectList = response))
-      );
+    // this._getCidadesComMicrorregiaoSelectList$ = this._selectListService
+    //   .getCidadesComMicrorregiao()
+    //   .pipe(
+    //     tap((response) => (this.cidadesComMicrorregiaoSelectList = response))
+    //   );
+
+    this._getLocalidadesSelectList$ = this._selectListService
+      .getLocalidades()
+      .pipe(tap((response) => (this.localidadesSelectList = response)));
 
     this._getPapeisSelectList$ = this._selectListService
       .getPapeis()
@@ -191,16 +198,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._getPlanosSelectList$,
       this._getTiposValoresSelectList$,
       this._getPapeisSelectList$,
-      this._getMicrorregioesSelectList$,
-      this._getCidadesComMicrorregiaoSelectList$
+      // this._getMicrorregioesSelectList$,
+      // this._getCidadesComMicrorregiaoSelectList$,
+      this._getLocalidadesSelectList$
     ).pipe(
-      finalize(() => {
-        this._rateioService.microrregioesCidadesMapObject =
-          construirMicrorregioesCidadesMapObject(
-            this.microrregioesSelectList,
-            this.cidadesComMicrorregiaoSelectList
-          );
-      })
+      finalize(
+        () =>
+          (this._rateioService.localidadesSelectList =
+            this.localidadesSelectList)
+        // (this._rateioService.microrregioesCidadesMapObject =
+        //   construirMicrorregioesCidadesMapObject(this.localidadesSelectList))
+      )
     );
 
     this._subscription.add(
@@ -268,18 +276,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       valor: this._valorService.construirValorFormGroup(
         projetoFormModel?.valor
       ),
-      rateio: this._nnfb.group(
-        {
-          rateioMicrorregiao:
-            this._rateioService.construirRateioMicrorregiaoFormArray(
-              projetoFormModel?.rateio.rateioMicrorregiao
-            ),
-          rateioCidade: this._rateioService.construirRateioCidadeFormArray(
-            projetoFormModel?.rateio.rateioCidade
-          ),
-        },
-        { validators: Validators.required }
+      rateio: this._rateioService.construirRateioFormArray(
+        projetoFormModel?.rateio
       ),
+      // rateio: this._nnfb.group(
+      //   {
+      //     rateioMicrorregiao:
+      //       this._rateioService.construirRateioMicrorregiaoFormArray(
+      //         projetoFormModel?.rateio.rateioMicrorregiao
+      //       ),
+      //     rateioCidade: this._rateioService.construirRateioCidadeFormArray(
+      //       projetoFormModel?.rateio.rateioCidade
+      //     ),
+      //   },
+      //   { validators: Validators.required }
+      // ),
       objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
         Validators.required,
         Validators.maxLength(2000),
@@ -315,7 +326,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.projetoFormValueChanges();
     this.valorFormValueChanges();
-    this.rateioFormValueChanges();
+    // this.rateioFormValueChanges();
   }
 
   private projetoFormValueChanges(): void {
@@ -364,9 +375,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       number | null
     >;
 
-    const rateioFormGroup = this.projetoForm.get(
-      'rateio'
-    ) as FormGroup<RateioFormType>;
+    // const rateioFormGroup = this.projetoForm.get(
+    //   'rateio'
+    // ) as FormGroup<RateioFormType>;
 
     // Caso específico de Projetos; tipo do valor somente pode ser 'Estimado'
     if (!tipoFormControl.value) {
@@ -381,27 +392,27 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
 
-      rateioFormGroup.setErrors(
-        rateioValidator(quantiaValue, rateioFormGroup.value)
-      );
+      // rateioFormGroup.setErrors(
+      //   rateioValidator(quantiaValue, rateioFormGroup.value)
+      // );
     });
   }
 
-  private rateioFormValueChanges(): void {
-    const rateioFormGroup = this.projetoForm.get(
-      'rateio'
-    ) as FormGroup<RateioFormType>;
+  // private rateioFormValueChanges(): void {
+  //   const rateioFormGroup = this.projetoForm.get(
+  //     'rateio'
+  //   ) as FormGroup<RateioFormType>;
 
-    const quantiaFormControl = this.projetoForm.get(
-      'valor.quantia'
-    ) as FormControl<number | null>;
+  //   const quantiaFormControl = this.projetoForm.get(
+  //     'valor.quantia'
+  //   ) as FormControl<number | null>;
 
-    rateioFormGroup.valueChanges.subscribe((rateioFormGroupValue) => {
-      rateioFormGroup.setErrors(
-        rateioValidator(quantiaFormControl.value, rateioFormGroupValue)
-      );
-    });
-  }
+  //   rateioFormGroup.valueChanges.subscribe((rateioFormGroupValue) => {
+  //     rateioFormGroup.setErrors(
+  //       rateioValidator(quantiaFormControl.value, rateioFormGroupValue)
+  //     );
+  //   });
+  // }
 
   private idOrganizacaoChange(idOrganizacaoValue: number | null): void {
     const idResponsavelProponenteFormControl = this.projetoForm.get(
@@ -469,22 +480,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (
-      !this._rateioService.checarConsistenciaMicrorregioesCidades(
-        form.value.rateio
-      )
-    ) {
-      this._toastService.showToast(
-        'warning',
-        'O formulário contém erros.',
-        [
-          'Certifique-se de que toda microrregião inclusa no rateio possua ao menos uma cidade a ela pertencente inclusa no rateio.',
-          'Certifique-se de que, para as cidades inclusas no rateio, a microrregião a qual estas pertencem está inclusa no rateio.',
-        ],
-        10000
-      );
-      return;
-    }
+    // if (
+    //   !this._rateioService.checarConsistenciaMicrorregioesCidades(
+    //     form.value.rateio
+    //   )
+    // ) {
+    //   this._toastService.showToast(
+    //     'warning',
+    //     'O formulário contém erros.',
+    //     [
+    //       'Certifique-se de que toda microrregião inclusa no rateio possua ao menos uma cidade a ela pertencente inclusa no rateio.',
+    //       'Certifique-se de que, para as cidades inclusas no rateio, a microrregião a qual estas pertencem está inclusa no rateio.',
+    //     ],
+    //     10000
+    //   );
+    //   return;
+    // }
 
     // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
     form.get('valor.tipo')?.enable();
@@ -524,7 +535,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
-    this._rateioService.limparTotalRateio();
+    // this._rateioService.limparTotalRateio();
     this._projetosService.idProjeto$.next(0);
   }
 }
