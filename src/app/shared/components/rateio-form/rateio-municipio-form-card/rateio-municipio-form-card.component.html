@@ -9,7 +9,7 @@
         [name]="'municipio-checkbox-rateio-' + municipio.id"
         [id]="'municipio-checkbox-rateio-' + municipio.id"
         [(ngModel)]="municipioBooleanCheckbox"
-        [disabled]="!isModoEdicao"
+        [disabled]="!isModoEdicao || bloquearMunicipioBooleanCheckbox"
         (change)="municipioCheckboxChange()"
       />
       <label

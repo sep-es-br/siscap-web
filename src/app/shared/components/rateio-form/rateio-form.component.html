@@ -1,30 +1,6 @@
 <div class="card">
   <div class="card-body">
-    <div class="col-12 mb-2 d-flex justify-content-between align-items-center">
-      <div class="col-3 d-inline-flex flex-row justify-content-between">
-        <span class="fs-small-3 align-self-center"
-          >Calcular automaticamente por:
-        </span>
-
-        <div class="col-4 btn-group">
-          <!-- <button
-            id="calculo-automatico-microrregiao"
-            class="btn btn-outline-primary p-1"
-            [disabled]="!isModoEdicao"
-            (click)="rateioService.calculoAutomaticoPorMicrorregioes()"
-          >
-            <span class="fs-small-3">Microrregião</span>
-          </button>
-          <button
-            id="calculo-automatico-cidade"
-            class="btn btn-outline-primary p-1"
-            [disabled]="!isModoEdicao"
-            (click)="rateioService.calculoAutomaticoPorCidades()"
-          >
-            <span class="fs-small-3">Cidade</span>
-          </button> -->
-        </div>
-      </div>
+    <div class="col-12 mb-2 d-flex justify-content-end align-items-center">
       <div class="col-3 d-inline-flex flex-row justify-content-between">
         <ng-container
           *ngIf="
@@ -33,15 +9,28 @@
           "
         >
           <div class="col-4">
-            <span class="fs-small-3 total-percentual">
+            <span
+              class="fs-small-3 total-percentual"
+              [ngClass]="{
+              'error-message':
+                rateioService.rateioFormArray.errors?.['limiteRateio']
+            }"
+            >
               {{
                 rateioService.totalRateio.percentual
-                  | mask : "percent.2" : { suffix: "%", decimalMarker: "." }
+                  .toFixed(2)
+                  .replace(".", ",") + "%"
               }}
             </span>
           </div>
           <div class="col-8">
-            <span class="fs-small-3 total-quantia">
+            <span
+              class="fs-small-3 total-quantia"
+              [ngClass]="{
+                'error-message':
+                  rateioService.rateioFormArray.errors?.['limiteRateio']
+              }"
+            >
               {{
                 rateioService.totalRateio.quantia
                   | mask
@@ -63,7 +52,7 @@
       <div ngbAccordion>
         <ng-container
           *ngFor="
-            let microrregiao of rateioService.filtrarLocalidadesPorMicrorregiao()
+            let microrregiao of rateioService.filtrarLocalidadesPorTipoMicrorregiao()
           "
         >
           <div
@@ -77,9 +66,6 @@
               <rateio-microrregiao-form-card
                 [microrregiao]="microrregiao"
                 [isModoEdicao]="isModoEdicao"
-                (microrregiaoEditInitCheck)="
-                  rateioMicrorregiaoAccordionItem.expand()
-                "
               >
                 <button
                   ngbAccordionButton
@@ -91,7 +77,7 @@
                   <ng-template>
                     <ng-container
                       *ngFor="
-                        let municipio of rateioService.filtrarLocalidadesPorMunicipio(
+                        let municipio of rateioService.filtrarLocalidadesPorTipoMunicipioEIdMicrorregiao(
                           microrregiao.id
                         )
                       "
@@ -99,6 +85,9 @@
                       <rateio-municipio-form-card
                         [municipio]="municipio"
                         [isModoEdicao]="isModoEdicao"
+                        (municipioSelectedInitCheck)="
+                          expandirMicrorregiaoAccordionItem($event)
+                        "
                       ></rateio-municipio-form-card>
                     </ng-container>
                   </ng-template>

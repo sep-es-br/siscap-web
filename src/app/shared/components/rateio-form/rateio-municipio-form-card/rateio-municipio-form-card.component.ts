@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { debounceTime, fromEvent } from 'rxjs';
@@ -7,15 +16,14 @@ import { NgxMaskDirective } from 'ngx-mask';
 
 import { RateioService } from '../../../../core/services/rateio/rateio.service';
 
-// import { RateioCidadeFormType } from '../../../../core/types/form/rateio-form.type';
+import { RateioLocalidadeFormType } from '../../../../core/types/form/rateio-form.type';
 
-import { ILocalidadeSelectList } from '../../../../core/interfaces/select-list.interface';
+import { ILocalidadeOpcoesDropdown } from '../../../../core/interfaces/opcoes-dropdown.interface';
 
 import { NgxMaskTransformFunctionHelper } from '../../../../core/helpers/ngx-mask-transform-function.helper';
 
 import { TEMPO_INPUT_USUARIO } from '../../../../core/utils/constants';
 import { SIDEWAYS_SHAKE } from '../../../../core/utils/animations';
-import { RateioLocalidadeFormType } from '../../../../core/types/form/rateio-form.type';
 
 @Component({
   selector: 'rateio-municipio-form-card',
@@ -24,13 +32,20 @@ import { RateioLocalidadeFormType } from '../../../../core/types/form/rateio-for
   templateUrl: './rateio-municipio-form-card.component.html',
   styleUrl: './rateio-municipio-form-card.component.scss',
 })
-export class RateioMunicipioFormCardComponent implements OnInit, AfterViewInit {
-  @Input() public municipio!: ILocalidadeSelectList;
+export class RateioMunicipioFormCardComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
+  @Input() public municipio!: ILocalidadeOpcoesDropdown;
   @Input() public isModoEdicao: boolean = false;
+
+  @Output() public municipioSelectedInitCheck: EventEmitter<number> =
+    new EventEmitter<number>();
 
   public rateioLocalidadeFormGroupMunicipio!: FormGroup<RateioLocalidadeFormType>;
 
   public municipioBooleanCheckbox: boolean = false;
+
+  public bloquearMunicipioBooleanCheckbox: boolean = false;
 
   public rtlCurrencyInputTransformFn =
     NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
@@ -44,26 +59,39 @@ export class RateioMunicipioFormCardComponent implements OnInit, AfterViewInit {
   constructor(public rateioService: RateioService) {}
 
   ngOnInit(): void {
-    this.rateioLocalidadeFormGroupMunicipio =
-      this.inicializarRateioLocalidadeFormGroupMunicipio();
+    this.inicializarRateioLocalidadeFormGroupMunicipio();
 
-    // if (this.buscarIndiceRateioMunicipioFormGroup() !== -1) {
-    //   this.MunicipioBooleanCheckbox = true;
-    // }
+    this.rateioService.microrregiaoBooleanCheckboxChange$.subscribe(
+      (localidadeCheckboxChange) => {
+        const resultadoMunicipioCheckbox =
+          this.rateioService.checarValorCheckboxPorMunicipio(
+            localidadeCheckboxChange,
+            this.municipio.idLocalidadePai
+          );
 
-    this.rateioLocalidadeFormGroupMunicipio.disable();
+        if (resultadoMunicipioCheckbox != null)
+          this.bloquearMunicipioBooleanCheckbox = resultadoMunicipioCheckbox;
+      }
+    );
+  }
 
-    this.rateioService.localidadeCheckboxChange$.subscribe(() => {
-      // console.log(`dentro de RateioMunicipioFormCardComponent`);
-      // console.log('mudou algum checkbox');
+  /*
+      Fez-se necessário a utilização do hook OnChanges
+      para configuração inicial do componente no cenário
+      de edição, garantindo o comportamento correto.
+      No caso da microrregião a qual o município pertence 
+      estiver incluída no rateio (portanto o checkbox dela é marcado),
+      o comportamento esperado é que o checkbox do município esteja bloqueado.
+  */
+  ngOnChanges(changes: SimpleChanges): void {
+    const isModoEdicaoChange = changes['isModoEdicao'];
 
-      const valorCheckbox = this.rateioService.buscarValorCheckboxLocalidade(
-        this.municipio.id
-      );
-
-      console.log('MUNICIPIO');
-      console.log(valorCheckbox);
-    });
+    if (isModoEdicaoChange && !isModoEdicaoChange.firstChange) {
+      this.bloquearMunicipioBooleanCheckbox =
+        this.rateioService.checarValorCheckboxLocalidade(
+          this.municipio.idLocalidadePai
+        );
+    }
   }
 
   ngAfterViewInit(): void {
@@ -127,24 +155,29 @@ export class RateioMunicipioFormCardComponent implements OnInit, AfterViewInit {
       ? this.incluirMunicipioNoRateio()
       : this.removerMunicipioDoRateio();
 
-    // this.rateioService.MunicipioCheckboxChange$.next({
-    //   idMunicipio: this.Municipio.id,
-    //   checkboxValue: this.MunicipioBooleanCheckbox,
-    //   idMicrorregiaoPai: this.Municipio.idMicrorregiao,
-    // });
+    this.notificarMunicipioCheckboxChange();
   }
 
-  private inicializarRateioLocalidadeFormGroupMunicipio(): FormGroup<RateioLocalidadeFormType> {
-    return (
-      this.rateioService.rateioFormArray.controls[
-        this.rateioService.buscarIndiceControleRateioLocalidadeFormGroup(
-          this.municipio.id
-        )
-      ] ??
-      this.rateioService.construirRateioLocalidadeFormGroupPorIdLocalidade(
+  private inicializarRateioLocalidadeFormGroupMunicipio(): void {
+    const controlIndex =
+      this.rateioService.buscarIndiceControleRateioLocalidadeFormGroup(
         this.municipio.id
-      )
-    );
+      );
+
+    if (controlIndex !== -1) {
+      this.rateioLocalidadeFormGroupMunicipio =
+        this.rateioService.rateioFormArray.controls[controlIndex];
+      this.municipioBooleanCheckbox = true;
+      this.municipioSelectedInitCheck.emit(this.municipio.idLocalidadePai);
+      this.notificarMunicipioCheckboxChange();
+    } else {
+      this.rateioLocalidadeFormGroupMunicipio =
+        this.rateioService.construirRateioLocalidadeFormGroupPorIdLocalidade(
+          this.municipio.id
+        );
+    }
+
+    this.rateioLocalidadeFormGroupMunicipio.disable();
   }
 
   private incluirMunicipioNoRateio(): void {
@@ -156,18 +189,14 @@ export class RateioMunicipioFormCardComponent implements OnInit, AfterViewInit {
 
   private removerMunicipioDoRateio(): void {
     this.rateioService.removerLocalidadeDoRateio(this.municipio.id);
-
     this.rateioLocalidadeFormGroupMunicipio.reset();
     this.rateioLocalidadeFormGroupMunicipio.disable();
-
-    // this.rateioMunicipioFormGroup.reset({ idMunicipio: this.municipio.id });
-    // this.rateioMunicipioFormGroup.disable();
   }
 
-  // private buscarIndiceRateioMunicipioFormGroup(): number {
-  //   return this.rateioService.rateioMunicipioFormArray.controls.findIndex(
-  //     (rateioMunicipioFormGroup) =>
-  //       rateioMunicipioFormGroup.get('idMunicipio')?.value === this.municipio.id
-  //   );
-  // }
+  private notificarMunicipioCheckboxChange(): void {
+    this.rateioService.municipioBooleanCheckboxChange$.next({
+      idLocalidade: this.municipio.id,
+      checkboxValue: this.municipioBooleanCheckbox,
+    });
+  }
 }

@@ -9,7 +9,7 @@
         [name]="'microrregiao-checkbox-rateio-' + microrregiao.id"
         [id]="'microrregiao-checkbox-rateio-' + microrregiao.id"
         [(ngModel)]="microrregiaoBooleanCheckbox"
-        [disabled]="!isModoEdicao"
+        [disabled]="!isModoEdicao || bloquearMicrorregiaoBooleanCheckbox"
         (change)="microrregiaoCheckboxChange()"
       />
       <label
