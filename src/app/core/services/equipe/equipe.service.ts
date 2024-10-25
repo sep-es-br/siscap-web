@@ -9,12 +9,12 @@ import {
 
 import { Subject } from 'rxjs';
 
-import { ISelectList } from '../../interfaces/select-list.interface';
+import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
 import { IEquipe } from '../../interfaces/equipe.interface';
 
 import { EquipeFormType } from '../../types/form/equipe-form.type';
 
-import { StatusEnum } from '../../enums/status.enum';
+import { TipoStatusEnum } from '../../enums/tipo-status.enum';
 import { equipeValidator } from '../../validators/equipe.validator';
 
 @Injectable({
@@ -93,7 +93,7 @@ export class EquipeService {
       idPessoa: this._nnfb.control(membro?.idPessoa ?? 0, Validators.required),
       idPapel: this._nnfb.control(membro?.idPapel ?? null, Validators.required),
       idStatus: this._nnfb.control(
-        membro?.idStatus ?? StatusEnum.Ativo,
+        membro?.idStatus ?? TipoStatusEnum.Ativo,
         Validators.required
       ),
       justificativa: this._nnfb.control(membro?.justificativa ?? null),
@@ -132,8 +132,10 @@ export class EquipeService {
     return this.excluirMembroForm;
   }
 
-  public filtrarPessoasList(pessoasSelectList: ISelectList[]): ISelectList[] {
-    return pessoasSelectList.filter(
+  public filtrarPessoasOpcoes(
+    pessoasOpcoes: IOpcoesDropdown[]
+  ): IOpcoesDropdown[] {
+    return pessoasOpcoes.filter(
       (pessoa) =>
         !this.equipeFormArray.value.some(
           (membro) => membro.idPessoa === pessoa.id

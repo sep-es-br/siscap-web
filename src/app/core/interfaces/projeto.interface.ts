@@ -26,5 +26,5 @@ export interface IProjetoTableData
   extends Pick<IProjeto, 'id' | 'sigla' | 'titulo'> {
   moeda: string;
   valor: number;
-  nomesMicrorregioesRateio: Array<string>;
+  nomesLocalidadesRateio: Array<string>;
 }

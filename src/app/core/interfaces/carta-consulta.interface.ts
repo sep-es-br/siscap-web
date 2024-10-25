@@ -1,9 +1,12 @@
-import { IObjetoSelectList, ISelectList } from './select-list.interface';
+import {
+  IObjetoOpcoesDropdown,
+  IOpcoesDropdown,
+} from './opcoes-dropdown.interface';
 import { IValor } from './valor.interface';
 
 export interface ICartaConsulta {
   readonly id: number;
-  objeto: IObjetoSelectList;
+  objeto: IObjetoOpcoesDropdown;
   operacao: number;
   corpo: string;
 }
@@ -18,6 +21,6 @@ export interface ICartaConsultaTableData extends Pick<ICartaConsulta, 'id'> {
 
 export interface ICartaConsultaDetalhes
   extends Pick<ICartaConsulta, 'id' | 'objeto' | 'corpo'> {
-  projetosPropostos: Array<ISelectList>;
+  projetosPropostos: Array<IOpcoesDropdown>;
   valor: IValor;
 }

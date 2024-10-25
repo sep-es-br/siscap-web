@@ -53,7 +53,7 @@
               formControlName="idOrgaoExecutorList"
             >
               <ng-option
-                *ngFor="let organizacao of organizacoesSelectList"
+                *ngFor="let organizacao of organizacoesOpcoes"
                 [value]="organizacao.id"
               >
                 {{ organizacao.nome }}
@@ -78,8 +78,8 @@
             >
               <ng-option
                 *ngFor="
-                  let pessoa of equipeService.filtrarPessoasList(
-                    pessoasSelectList
+                  let pessoa of equipeService.filtrarPessoasOpcoes(
+                    pessoasOpcoes
                   )
                 "
                 [value]="pessoa.id"
@@ -90,8 +90,8 @@
           </div>
           <div class="col-12 mt-2">
             <siscap-equipe-form
-              [pessoasSelectList]="pessoasSelectList"
-              [papeisSelectList]="papeisSelectList"
+              [pessoasOpcoes]="pessoasOpcoes"
+              [tiposPapelOpcoes]="tiposPapelOpcoes"
               [isModoEdicao]="isModoEdicao"
             ></siscap-equipe-form>
           </div>
@@ -113,13 +113,13 @@
             >
               <ng-option
                 *ngFor="
-                  let projetoPropostoSelectItem of filtrarProjetosSelectList(
-                    projetosPropostosSelectList
+                  let projetoPropostoOpcao of filtrarProjetosPropostosOpcoes(
+                    projetosPropostosOpcoes
                   )
                 "
-                [value]="projetoPropostoSelectItem.id"
+                [value]="projetoPropostoOpcao.id"
               >
-                {{ projetoPropostoSelectItem.nome }}
+                {{ projetoPropostoOpcao.nome }}
               </ng-option>
             </ng-select>
           </div>
@@ -200,7 +200,7 @@
           <div class="col-12">
             <siscap-valor-form
               [moedasList]="moedasList"
-              [tiposValoresSelectList]="tiposValoresSelectList"
+              [tiposValorOpcoes]="tiposValorOpcoes"
             ></siscap-valor-form>
           </div>
         </div>

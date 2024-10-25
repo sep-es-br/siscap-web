@@ -20,7 +20,7 @@ import {
 } from 'rxjs';
 
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
-import { SelectListService } from '../../../core/services/select-list/select-list.service';
+import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 import { EquipeService } from '../../../core/services/equipe/equipe.service';
 import { ValorService } from '../../../core/services/valor/valor.service';
@@ -34,22 +34,18 @@ import {
 } from '../../../core/models/projeto.model';
 
 import {
-  ICidadeSelectList,
-  ILocalidadeSelectList,
-  ISelectList,
-} from '../../../core/interfaces/select-list.interface';
+  ILocalidadeOpcoesDropdown,
+  IOpcoesDropdown,
+} from '../../../core/interfaces/opcoes-dropdown.interface';
 import {
   IProjeto,
   IProjetoForm,
 } from '../../../core/interfaces/projeto.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
 
-// import { RateioFormType } from '../../../core/types/form/rateio-form.type';
 import { ValorFormType } from '../../../core/types/form/valor-form.type';
 
-import { construirMicrorregioesCidadesMapObject } from '../../../core/helpers/microrregioes-cidades-map-object.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
-// import { rateioValidator } from '../../../core/validators/rateio.validator';
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
@@ -64,17 +60,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private _atualizarProjeto$: Observable<IProjeto>;
   private _cadastrarProjeto$: Observable<number>;
 
-  private _getOrganizacoesSelectList$: Observable<ISelectList[]>;
-  private _getPessoasSelectList$: Observable<ISelectList[]>;
-  private _getPlanosSelectList$: Observable<ISelectList[]>;
-  private _getTiposValoresSelectList$: Observable<ISelectList[]>;
-  // private _getMicrorregioesSelectList$: Observable<ISelectList[]>;
-  // private _getCidadesComMicrorregiaoSelectList$: Observable<
-  //   ICidadeSelectList[]
-  // >;
-  private _getLocalidadesSelectList$: Observable<ILocalidadeSelectList[]>;
-  private _getPapeisSelectList$: Observable<ISelectList[]>;
-  private _getAllSelectLists$: Observable<ISelectList[]>;
+  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getLocalidadesOpcoes$: Observable<ILocalidadeOpcoesDropdown[]>;
+  private _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idProjetoEdicao: number = 0;
 
@@ -86,15 +78,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public projetoForm: FormGroup = new FormGroup({});
 
-  public organizacoesSelectList: ISelectList[] = [];
-  public pessoasSelectList: ISelectList[] = [];
-  public pessoasSelectListFilrada: ISelectList[] = [];
-  public planosSelectList: ISelectList[] = [];
-  public tiposValoresSelectList: ISelectList[] = [];
-  // public microrregioesSelectList: ISelectList[] = [];
-  // public cidadesComMicrorregiaoSelectList: ICidadeSelectList[] = [];
-  public localidadesSelectList: ILocalidadeSelectList[] = [];
-  public papeisSelectList: ISelectList[] = [];
+  public organizacoesOpcoes: IOpcoesDropdown[] = [];
+  public pessoasOpcoes: IOpcoesDropdown[] = [];
+  public pessoasOpcoesFilrada: IOpcoesDropdown[] = [];
+  public planosOpcoes: IOpcoesDropdown[] = [];
+  public tiposValorOpcoes: IOpcoesDropdown[] = [];
+  public localidadesOpcoes: ILocalidadeOpcoesDropdown[] = [];
+  public tiposPapelOpcoes: IOpcoesDropdown[] = [];
 
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
 
@@ -104,7 +94,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private _router: Router,
     private _nnfb: NonNullableFormBuilder,
     private _projetosService: ProjetosService,
-    private _selectListService: SelectListService,
+    private _opcoesDropdownService: OpcoesDropdownService,
     private _pessoasService: PessoasService,
     public equipeService: EquipeService,
     private _valorService: ValorService,
@@ -127,9 +117,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             )
           )
       ),
-      // map<IProjeto, ProjetoModel>(
-      //   (response: IProjeto) => new ProjetoModel(response)
-      // ),
       tap((projetoModel: ProjetoModel) => {
         this.iniciarForm(projetoModel);
 
@@ -153,61 +140,45 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       })
     );
 
-    this._getOrganizacoesSelectList$ = this._selectListService
-      .getOrganizacoes()
-      .pipe(tap((response) => (this.organizacoesSelectList = response)));
+    this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
+      .getOpcoesOrganizacoes()
+      .pipe(tap((response) => (this.organizacoesOpcoes = response)));
 
-    this._getPessoasSelectList$ = this._selectListService
-      .getPessoas()
+    this._getPessoasOpcoes$ = this._opcoesDropdownService
+      .getOpcoesPessoas()
       .pipe(
         tap(
           (response) =>
-            (this.pessoasSelectListFilrada = this.pessoasSelectList = response)
+            (this.pessoasOpcoesFilrada = this.pessoasOpcoes = response)
         )
       );
 
-    this._getPlanosSelectList$ = this._selectListService
-      .getPlanos()
-      .pipe(tap((response) => (this.planosSelectList = response)));
+    this._getPlanosOpcoes$ = this._opcoesDropdownService
+      .getOpcoesPlanos()
+      .pipe(tap((response) => (this.planosOpcoes = response)));
 
-    this._getTiposValoresSelectList$ = this._selectListService
-      .getTiposValores()
-      .pipe(tap((response) => (this.tiposValoresSelectList = response)));
+    this._getTiposValorOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposValor()
+      .pipe(tap((response) => (this.tiposValorOpcoes = response)));
 
-    // this._getMicrorregioesSelectList$ = this._selectListService
-    //   .getMicrorregioes()
-    //   .pipe(tap((response) => (this.microrregioesSelectList = response)));
+    this._getLocalidadesOpcoes$ = this._opcoesDropdownService
+      .getOpcoesLocalidades()
+      .pipe(tap((response) => (this.localidadesOpcoes = response)));
 
-    // this._getCidadesComMicrorregiaoSelectList$ = this._selectListService
-    //   .getCidadesComMicrorregiao()
-    //   .pipe(
-    //     tap((response) => (this.cidadesComMicrorregiaoSelectList = response))
-    //   );
+    this._getTiposPapelOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposPapel()
+      .pipe(tap((response) => (this.tiposPapelOpcoes = response)));
 
-    this._getLocalidadesSelectList$ = this._selectListService
-      .getLocalidades()
-      .pipe(tap((response) => (this.localidadesSelectList = response)));
-
-    this._getPapeisSelectList$ = this._selectListService
-      .getPapeis()
-      .pipe(tap((response) => (this.papeisSelectList = response)));
-
-    this._getAllSelectLists$ = concat(
-      this._getOrganizacoesSelectList$,
-      this._getPessoasSelectList$,
-      this._getPlanosSelectList$,
-      this._getTiposValoresSelectList$,
-      this._getPapeisSelectList$,
-      // this._getMicrorregioesSelectList$,
-      // this._getCidadesComMicrorregiaoSelectList$,
-      this._getLocalidadesSelectList$
+    this._getAllOpcoes$ = concat(
+      this._getOrganizacoesOpcoes$,
+      this._getPessoasOpcoes$,
+      this._getPlanosOpcoes$,
+      this._getTiposValorOpcoes$,
+      this._getTiposPapelOpcoes$,
+      this._getLocalidadesOpcoes$
     ).pipe(
       finalize(
-        () =>
-          (this._rateioService.localidadesSelectList =
-            this.localidadesSelectList)
-        // (this._rateioService.microrregioesCidadesMapObject =
-        //   construirMicrorregioesCidadesMapObject(this.localidadesSelectList))
+        () => (this._rateioService.localidadesOpcoes = this.localidadesOpcoes)
       )
     );
 
@@ -219,7 +190,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._subscription.add(this._getAllSelectLists$.subscribe());
+    this._subscription.add(this._getAllOpcoes$.subscribe());
 
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
@@ -242,9 +213,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public filtrarResponsavelProponente(
-    pessoasSelectList: ISelectList[]
-  ): ISelectList[] {
-    return pessoasSelectList.filter(
+    pessoasOpcoes: IOpcoesDropdown[]
+  ): IOpcoesDropdown[] {
+    return pessoasOpcoes.filter(
       (pessoa) => pessoa.id != this.getControl('idResponsavelProponente').value
     );
   }
@@ -279,18 +250,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       rateio: this._rateioService.construirRateioFormArray(
         projetoFormModel?.rateio
       ),
-      // rateio: this._nnfb.group(
-      //   {
-      //     rateioMicrorregiao:
-      //       this._rateioService.construirRateioMicrorregiaoFormArray(
-      //         projetoFormModel?.rateio.rateioMicrorregiao
-      //       ),
-      //     rateioCidade: this._rateioService.construirRateioCidadeFormArray(
-      //       projetoFormModel?.rateio.rateioCidade
-      //     ),
-      //   },
-      //   { validators: Validators.required }
-      // ),
       objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
         Validators.required,
         Validators.maxLength(2000),
@@ -326,7 +285,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.projetoFormValueChanges();
     this.valorFormValueChanges();
-    // this.rateioFormValueChanges();
   }
 
   private projetoFormValueChanges(): void {
@@ -375,12 +333,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       number | null
     >;
 
-    // const rateioFormGroup = this.projetoForm.get(
-    //   'rateio'
-    // ) as FormGroup<RateioFormType>;
+    // Inicializa moeda com tipo 'BRL' [Localizar lógica no serviço]
+    if (!moedaFormControl.value) {
+      moedaFormControl.patchValue('BRL');
+      this._rateioService.moedaFormControlReferencia$.next(
+        moedaFormControl.value
+      );
+    }
 
-    // Caso específico de Projetos; tipo do valor somente pode ser 'Estimado'
     if (!tipoFormControl.value) {
+      // Caso específico de Projetos; tipo do valor somente pode ser 'Estimado'
       tipoFormControl.patchValue(TipoValorEnum.Estimado);
       tipoFormControl.disable();
     }
@@ -391,28 +353,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
-
-      // rateioFormGroup.setErrors(
-      //   rateioValidator(quantiaValue, rateioFormGroup.value)
-      // );
     });
   }
-
-  // private rateioFormValueChanges(): void {
-  //   const rateioFormGroup = this.projetoForm.get(
-  //     'rateio'
-  //   ) as FormGroup<RateioFormType>;
-
-  //   const quantiaFormControl = this.projetoForm.get(
-  //     'valor.quantia'
-  //   ) as FormControl<number | null>;
-
-  //   rateioFormGroup.valueChanges.subscribe((rateioFormGroupValue) => {
-  //     rateioFormGroup.setErrors(
-  //       rateioValidator(quantiaFormControl.value, rateioFormGroupValue)
-  //     );
-  //   });
-  // }
 
   private idOrganizacaoChange(idOrganizacaoValue: number | null): void {
     const idResponsavelProponenteFormControl = this.projetoForm.get(
@@ -427,7 +369,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._pessoasService
       .buscarResponsavelPorIdOrganizacao(idOrganizacaoValue)
       .subscribe({
-        next: (response: ISelectList) => {
+        next: (response: IOpcoesDropdown) => {
           idResponsavelProponenteFormControl.patchValue(response.id);
         },
         error: (err) => {
@@ -480,23 +422,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // if (
-    //   !this._rateioService.checarConsistenciaMicrorregioesCidades(
-    //     form.value.rateio
-    //   )
-    // ) {
-    //   this._toastService.showToast(
-    //     'warning',
-    //     'O formulário contém erros.',
-    //     [
-    //       'Certifique-se de que toda microrregião inclusa no rateio possua ao menos uma cidade a ela pertencente inclusa no rateio.',
-    //       'Certifique-se de que, para as cidades inclusas no rateio, a microrregião a qual estas pertencem está inclusa no rateio.',
-    //     ],
-    //     10000
-    //   );
-    //   return;
-    // }
-
     // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
     form.get('valor.tipo')?.enable();
 
@@ -535,7 +460,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
-    // this._rateioService.limparTotalRateio();
+    this._rateioService.resetarRateio();
     this._projetosService.idProjeto$.next(0);
   }
 }

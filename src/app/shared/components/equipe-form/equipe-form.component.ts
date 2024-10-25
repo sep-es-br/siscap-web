@@ -14,9 +14,9 @@ import { EquipeService } from '../../../core/services/equipe/equipe.service';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 
-import { ISelectList } from '../../../core/interfaces/select-list.interface';
+import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
 
-import { StatusEnum } from '../../../core/enums/status.enum';
+import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 
 @Component({
   selector: 'siscap-equipe-form',
@@ -34,11 +34,11 @@ import { StatusEnum } from '../../../core/enums/status.enum';
   styleUrl: './equipe-form.component.scss',
 })
 export class EquipeFormComponent implements OnDestroy {
-  @Input() public pessoasSelectList: ISelectList[] = [];
-  @Input() public papeisSelectList: ISelectList[] = [];
+  @Input() public pessoasOpcoes: IOpcoesDropdown[] = [];
+  @Input() public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   @Input() public isModoEdicao: boolean = false;
 
-  public StatusEnum = StatusEnum;
+  public TipoStatusEnum = TipoStatusEnum;
 
   public permissaoRemoverMembro: boolean = false;
 
@@ -54,21 +54,20 @@ export class EquipeFormComponent implements OnDestroy {
 
   public getMembroNome(idPessoa: number | null | undefined): string {
     return (
-      this.pessoasSelectList.find((pessoa) => pessoa.id === idPessoa)?.nome ??
-      ''
+      this.pessoasOpcoes.find((pessoa) => pessoa.id === idPessoa)?.nome ?? ''
     );
   }
 
   public getPapelNome(idPapel: number | null | undefined): string {
     return (
-      this.papeisSelectList.find((papel) => papel.id === idPapel)?.nome ?? ''
+      this.tiposPapelOpcoes.find((papel) => papel.id === idPapel)?.nome ?? ''
     );
   }
 
   public isMembroRemovido(index: number): boolean {
     return (
       this.equipeService.equipeFormArray.at(index).value.idStatus !=
-      StatusEnum.Ativo
+      TipoStatusEnum.Ativo
     );
   }
 
@@ -113,7 +112,7 @@ export class EquipeFormComponent implements OnDestroy {
         this._toastService.showToast(
           'info',
           this.equipeService.excluirMembroFormMembroStatusFormControl.value ==
-            StatusEnum.Inativo
+            TipoStatusEnum.Inativo
             ? 'Membro removido da equipe.'
             : 'Membro excluído da equipe.',
           [

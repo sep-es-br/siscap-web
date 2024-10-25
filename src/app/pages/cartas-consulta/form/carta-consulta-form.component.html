@@ -14,7 +14,7 @@
           </label>
 
           <ng-select
-            [items]="objetosSelectList"
+            [items]="objetosOpcoes"
             bindLabel="nome"
             groupBy="tipo"
             [clearable]="false"
@@ -41,7 +41,7 @@
             formControlName="operacao"
           >
             <ng-option
-              *ngFor="let tipoOperacao of tiposOperacaoSelectList"
+              *ngFor="let tipoOperacao of tiposOperacaoOpcoes"
               [value]="tipoOperacao.id"
             >
               {{ tipoOperacao.nome }}

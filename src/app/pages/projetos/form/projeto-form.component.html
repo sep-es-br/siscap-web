@@ -61,7 +61,7 @@
               formControlName="idOrganizacao"
             >
               <ng-option
-                *ngFor="let organizacao of organizacoesSelectList"
+                *ngFor="let organizacao of organizacoesOpcoes"
                 [value]="organizacao.id"
                 >{{ organizacao.nome }}</ng-option
               >
@@ -82,7 +82,7 @@
               formControlName="idResponsavelProponente"
             >
               <ng-option
-                *ngFor="let pessoa of pessoasSelectList"
+                *ngFor="let pessoa of pessoasOpcoes"
                 [value]="pessoa.id"
                 >{{ pessoa.nome }}</ng-option
               >
@@ -109,8 +109,8 @@
             >
               <ng-option
                 *ngFor="
-                  let pessoa of equipeService.filtrarPessoasList(
-                    filtrarResponsavelProponente(pessoasSelectList)
+                  let pessoa of equipeService.filtrarPessoasOpcoes(
+                    filtrarResponsavelProponente(pessoasOpcoes)
                   )
                 "
                 [value]="pessoa.id"
@@ -121,8 +121,8 @@
           </div>
           <div class="col-12 mt-2">
             <siscap-equipe-form
-              [pessoasSelectList]="pessoasSelectList"
-              [papeisSelectList]="papeisSelectList"
+              [pessoasOpcoes]="pessoasOpcoes"
+              [tiposPapelOpcoes]="tiposPapelOpcoes"
               [isModoEdicao]="isModoEdicao"
             ></siscap-equipe-form>
           </div>
@@ -130,7 +130,7 @@
           <div class="col-12">
             <siscap-valor-form
               [moedasList]="moedasList"
-              [tiposValoresSelectList]="tiposValoresSelectList"
+              [tiposValorOpcoes]="tiposValorOpcoes"
             ></siscap-valor-form>
           </div>
 
@@ -140,7 +140,6 @@
                 Rateio
               </validation-message>
             </label>
-            <!-- [localidadesSelectList]="localidadesSelectList" -->
             <siscap-rateio-form
               [isModoEdicao]="isModoEdicao"
             ></siscap-rateio-form>
