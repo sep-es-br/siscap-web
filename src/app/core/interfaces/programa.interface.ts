@@ -1,10 +1,10 @@
 import { IEquipe } from './equipe.interface';
 import { IValor } from './valor.interface';
 
-export interface IProgramaProjetoProposto {
-  idProjeto: number;
-  valor: number;
-}
+// export interface IProgramaProjetoProposto {
+//   idProjeto: number;
+//   valor: number;
+// }
 
 export interface IPrograma {
   readonly id: number;
@@ -12,7 +12,8 @@ export interface IPrograma {
   titulo: string;
   idOrgaoExecutorList: Array<number>;
   equipeCaptacao: Array<IEquipe>;
-  projetosPropostos: Array<IProgramaProjetoProposto>;
+  // projetosPropostos: Array<IProgramaProjetoProposto>;
+  idProjetoPropostoList: Array<number>;
   valor: IValor;
 }
 

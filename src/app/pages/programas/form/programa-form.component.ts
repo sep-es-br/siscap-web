@@ -34,7 +34,7 @@ import {
 import {
   IPrograma,
   IProgramaForm,
-  IProgramaProjetoProposto,
+  // IProgramaProjetoProposto,
 } from '../../../core/interfaces/programa.interface';
 import {
   IProjetoPropostoOpcoesDropdown,
@@ -42,7 +42,7 @@ import {
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
 
-import { ProgramaProjetoPropostoFormType } from '../../../core/types/form/programa-projeto-proposto-form.type';
+// import { ProgramaProjetoPropostoFormType } from '../../../core/types/form/programa-projeto-proposto-form.type';
 
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
@@ -195,13 +195,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     return this.programaForm.get(controlName) as AbstractControl<any, any>;
   }
 
-  public get projetosPropostos(): FormArray<
-    FormGroup<ProgramaProjetoPropostoFormType>
-  > {
-    return this.programaForm.get('projetosPropostos') as FormArray<
-      FormGroup<ProgramaProjetoPropostoFormType>
-    >;
-  }
+  // public get projetosPropostos(): FormArray<
+  //   FormGroup<ProgramaProjetoPropostoFormType>
+  // > {
+  //   return this.programaForm.get('projetosPropostos') as FormArray<
+  //     FormGroup<ProgramaProjetoPropostoFormType>
+  //   >;
+  // }
 
   public rtlCurrencyInputTransformFn =
     NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
@@ -221,34 +221,52 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     setTimeout(() => (this.idMembroEquipeCaptacao = null), 0);
   }
 
-  public idProjetoPropostoNgSelectChangeEvent(event: number): void {
-    this.incluirProjetoPropostoNoPrograma(
-      this.construirProjetoPropostoFormGroupNgSelectValue(event)
-    );
+  /*
+    REFATORAÇÃO FLUXO PROJETOS PROPOSTOS
 
-    setTimeout(() => (this.idProjetoProposto = null), 0);
-  }
+    - AGORA NÃO É MAIS "Array<IProgramaProjetoProposto>", MAS SIM "Array<number>"
+      CONTENDO SÓ OS IDS DOS PROJETOS PROPOSTOS A SEREM VINCULADOS AO PROGRAMA
+      |-> MANTER MAIS OU MENOS O MESMO COMPONENTE, PARECIDO COM EquipeForm
+          (
+            <ng-select> PRA SELECIONAR O PROJETO, MOSTRAR NO CARD O "SUB-CARD"
+            CONTENDO NOME E VALOR DO PROJETO, E BOTAO DE REMOVER (X REDONDO VERMELHO)
+          )
+      |-> AVALIAR SE A IDEIA NO BACK END DE ENVIAR idPrograma DO PROJETO (SE JÁ EXISTIR)
+          VALE A PENA
+          |-> SE SIM, DECIDIR ENTRE:
+              ~ MOSTRAR MODAL ALERTANDO USUARIO DA MODIFICACAO
+              - SÓ NÃO MANDAR O PROJETO DA LISTA DE IProjetoPropostoOpcoesDropdown
+          |-> SE NÃO, SEI LÁ BICHO (CHANCE DE VÁRIOS BUGS!!!!)
+  */
 
-  public getProjetoPropostoNome(idProjetoProposto?: number): string {
-    return (
-      this.projetosPropostosOpcoes.find(
-        (projetoPropostoSelectItem) =>
-          projetoPropostoSelectItem.id === idProjetoProposto
-      )?.nome ?? ''
-    );
-  }
+  // public idProjetoPropostoNgSelectChangeEvent(event: number): void {
+  //   this.incluirProjetoPropostoNoPrograma(
+  //     this.construirProjetoPropostoFormGroupNgSelectValue(event)
+  //   );
 
-  public filtrarProjetosPropostosOpcoes(
-    projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[]
-  ): IProjetoPropostoOpcoesDropdown[] {
-    return projetosPropostosOpcoes.filter(
-      (projetoPropostoOpcao) =>
-        !this.projetosPropostos.value.some(
-          (projetoProposto) =>
-            projetoProposto.idProjeto === projetoPropostoOpcao.id
-        )
-    );
-  }
+  //   setTimeout(() => (this.idProjetoProposto = null), 0);
+  // }
+
+  // public getProjetoPropostoNome(idProjetoProposto?: number): string {
+  //   return (
+  //     this.projetosPropostosOpcoes.find(
+  //       (projetoPropostoSelectItem) =>
+  //         projetoPropostoSelectItem.id === idProjetoProposto
+  //     )?.nome ?? ''
+  //   );
+  // }
+
+  // public filtrarProjetosPropostosOpcoes(
+  //   projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[]
+  // ): IProjetoPropostoOpcoesDropdown[] {
+  //   return projetosPropostosOpcoes.filter(
+  //     (projetoPropostoOpcao) =>
+  //       !this.projetosPropostos.value.some(
+  //         (projetoProposto) =>
+  //           projetoProposto.idProjeto === projetoPropostoOpcao.id
+  //       )
+  //   );
+  // }
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
     this.programaForm = this._nnfb.group({
@@ -262,104 +280,108 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ]),
       idOrgaoExecutorList: this._nnfb.control(
         programaModel?.idOrgaoExecutorList ?? [],
-        [Validators.required, Validators.min(1)]
+        [Validators.required, Validators.minLength(1)]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao
       ),
-      projetosPropostos: this.construirProjetosPropostosFormArray(
-        programaModel?.projetosPropostos
+      idProjetoPropostoList: this._nnfb.control(
+        programaModel?.idProjetoPropostoList ?? [],
+        [Validators.required, Validators.minLength(1)]
       ),
+      // projetosPropostos: this.construirProjetosPropostosFormArray(
+      //   programaModel?.projetosPropostos
+      // ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
     });
 
     this.programaFormValueChanges();
   }
 
-  private construirProjetosPropostosFormArray(
-    projetosPropostos?: Array<IProgramaProjetoProposto>
-  ): FormArray<FormGroup<ProgramaProjetoPropostoFormType>> {
-    const projetosPropostosFormArray = this._nnfb.array<
-      FormGroup<ProgramaProjetoPropostoFormType>
-    >([], [Validators.required, Validators.minLength(1)]);
+  // private construirProjetosPropostosFormArray(
+  //   projetosPropostos?: Array<IProgramaProjetoProposto>
+  // ): FormArray<FormGroup<ProgramaProjetoPropostoFormType>> {
+  //   const projetosPropostosFormArray = this._nnfb.array<
+  //     FormGroup<ProgramaProjetoPropostoFormType>
+  //   >([], [Validators.required, Validators.minLength(1)]);
 
-    if (projetosPropostos) {
-      projetosPropostos.forEach((projetoProposto) => {
-        projetosPropostosFormArray.push(
-          this.construirProjetoPropostoFormGroup(projetoProposto)
-        );
-      });
-    }
+  //   if (projetosPropostos) {
+  //     projetosPropostos.forEach((projetoProposto) => {
+  //       projetosPropostosFormArray.push(
+  //         this.construirProjetoPropostoFormGroup(projetoProposto)
+  //       );
+  //     });
+  //   }
 
-    return projetosPropostosFormArray;
-  }
+  //   return projetosPropostosFormArray;
+  // }
 
-  private construirProjetoPropostoFormGroup(
-    projetoProposto?: IProgramaProjetoProposto
-  ): FormGroup<ProgramaProjetoPropostoFormType> {
-    return this._nnfb.group({
-      idProjeto: this._nnfb.control(
-        projetoProposto?.idProjeto ?? 0,
-        Validators.required
-      ),
-      valor: this._nnfb.control(projetoProposto?.valor ?? null, [
-        Validators.required,
-        Validators.min(1),
-      ]),
-    });
-  }
+  // private construirProjetoPropostoFormGroup(
+  //   projetoProposto?: IProgramaProjetoProposto
+  // ): FormGroup<ProgramaProjetoPropostoFormType> {
+  //   return this._nnfb.group({
+  //     idProjeto: this._nnfb.control(
+  //       projetoProposto?.idProjeto ?? 0,
+  //       Validators.required
+  //     ),
+  //     valor: this._nnfb.control(projetoProposto?.valor ?? null, [
+  //       Validators.required,
+  //       Validators.min(1),
+  //     ]),
+  //   });
+  // }
 
-  private construirProjetoPropostoFormGroupNgSelectValue(
-    ngSelectValue: number
-  ): FormGroup<ProgramaProjetoPropostoFormType> {
-    const projetoPropostoFormGroup = this.construirProjetoPropostoFormGroup();
+  // private construirProjetoPropostoFormGroupNgSelectValue(
+  //   ngSelectValue: number
+  // ): FormGroup<ProgramaProjetoPropostoFormType> {
+  //   const projetoPropostoFormGroup = this.construirProjetoPropostoFormGroup();
 
-    const projetoPropostoValorEstimado =
-      this.projetosPropostosOpcoes.find(
-        (projetoPropostoSelectItem) =>
-          projetoPropostoSelectItem.id === ngSelectValue
-      )?.valorEstimado ?? null;
+  //   const projetoPropostoValorEstimado =
+  //     this.projetosPropostosOpcoes.find(
+  //       (projetoPropostoSelectItem) =>
+  //         projetoPropostoSelectItem.id === ngSelectValue
+  //     )?.valorEstimado ?? null;
 
-    projetoPropostoFormGroup.patchValue({ idProjeto: ngSelectValue });
-    projetoPropostoFormGroup.patchValue({
-      valor: projetoPropostoValorEstimado,
-    });
-    return projetoPropostoFormGroup;
-  }
+  //   projetoPropostoFormGroup.patchValue({ idProjeto: ngSelectValue });
+  //   projetoPropostoFormGroup.patchValue({
+  //     valor: projetoPropostoValorEstimado,
+  //   });
+  //   return projetoPropostoFormGroup;
+  // }
 
-  private incluirProjetoPropostoNoPrograma(
-    projetoPropostoFormGroup: FormGroup<ProgramaProjetoPropostoFormType>
-  ): void {
-    this.projetosPropostos.push(projetoPropostoFormGroup);
-  }
+  // private incluirProjetoPropostoNoPrograma(
+  //   projetoPropostoFormGroup: FormGroup<ProgramaProjetoPropostoFormType>
+  // ): void {
+  //   this.projetosPropostos.push(projetoPropostoFormGroup);
+  // }
 
-  public removerProjetoPropostoDoPrograma(index: number): void {
-    this.projetosPropostos.removeAt(index);
-  }
+  // public removerProjetoPropostoDoPrograma(index: number): void {
+  //   this.projetosPropostos.removeAt(index);
+  // }
 
   private programaFormValueChanges(): void {
-    const projetosPropostosFormArray = this.projetosPropostos;
+    // const projetosPropostosFormArray = this.projetosPropostos;
 
     const valorFormGroupQuantiaFormControl = this.programaForm.get(
       'valor.quantia'
     ) as FormControl<number | null>;
 
-    projetosPropostosFormArray.valueChanges.subscribe(
-      (projetosPropostosValue) => {
-        const somatorioValorProjetosPropostos = projetosPropostosValue.reduce(
-          (acc, projetoProposto) => acc + (projetoProposto?.valor ?? 0),
-          0
-        );
+    // projetosPropostosFormArray.valueChanges.subscribe(
+    //   (projetosPropostosValue) => {
+    //     const somatorioValorProjetosPropostos = projetosPropostosValue.reduce(
+    //       (acc, projetoProposto) => acc + (projetoProposto?.valor ?? 0),
+    //       0
+    //     );
 
-        if (this.isModoEdicao) {
-          valorFormGroupQuantiaFormControl.patchValue(
-            somatorioValorProjetosPropostos
-              ? somatorioValorProjetosPropostos
-              : null
-          );
-        }
-      }
-    );
+    //     if (this.isModoEdicao) {
+    //       valorFormGroupQuantiaFormControl.patchValue(
+    //         somatorioValorProjetosPropostos
+    //           ? somatorioValorProjetosPropostos
+    //           : null
+    //       );
+    //     }
+    //   }
+    // );
   }
 
   private executarAcaoBreadcrumb(acao: string): void {
