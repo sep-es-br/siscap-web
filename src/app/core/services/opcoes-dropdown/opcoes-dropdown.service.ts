@@ -90,6 +90,10 @@ export class OpcoesDropdownService {
     >;
   }
 
+  public getOpcoesProgramas() {
+    return this.getOpcoesDropdown('programas');
+  }
+
   public getOpcoesTiposValor() {
     return this.getOpcoesDropdown('tipos-valor');
   }

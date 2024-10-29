@@ -98,7 +98,9 @@
 
           <div class="col-12">
             <label for="idProjetoProposto" class="col-12 form-label">
-              <validation-message [control]="getControl('projetosPropostos')">
+              <validation-message
+                [control]="getControl('idProjetoPropostoList')"
+              >
                 Projetos Propostos
               </validation-message>
             </label>
@@ -117,7 +119,7 @@
                     projetosPropostosOpcoes
                   )
                 "
-                [value]="projetoPropostoOpcao.id"
+                [value]="projetoPropostoOpcao"
               >
                 {{ projetoPropostoOpcao.nome }}
               </ng-option>
@@ -125,71 +127,62 @@
           </div>
 
           <div class="col-12 my-2">
-            <div class="card" *ngIf="projetosPropostos.length > 0">
+            <div class="card" *ngIf="idProjetoPropostoList.value.length > 0">
               <div class="card-body row gy-2 mb-0">
                 <ng-container
                   *ngFor="
-                    let projetoProposto of projetosPropostos.controls;
+                    let idProjetoProposto of idProjetoPropostoList.value;
                     index as i
                   "
                 >
                   <div class="col-6">
                     <div class="card">
-                      <form [formGroup]="projetoProposto">
+                      <div
+                        class="card-body p-2 col-12 d-flex justify-content-between align-items-center"
+                      >
                         <div
-                          class="card-body p-2 col-12 d-flex justify-content-between align-items-center"
+                          class="col-5 text-truncate"
+                          #projetoPropostoNomeTarget
                         >
-                          <div
-                            class="col-4 text-truncate"
-                            #projetoPropostoNomeTarget
+                          <span
+                            placement="bottom"
+                            [positionTarget]="projetoPropostoNomeTarget"
+                            [ngbTooltip]="
+                              getProjetoPropostoOpcao(idProjetoProposto).nome
+                            "
+                            >{{
+                              getProjetoPropostoOpcao(idProjetoProposto).nome
+                            }}</span
                           >
-                            <span
-                              placement="bottom"
-                              [positionTarget]="projetoPropostoNomeTarget"
-                              [ngbTooltip]="
-                                getProjetoPropostoNome(
-                                  projetoProposto.value.idProjeto
-                                )
-                              "
-                              >{{
-                                getProjetoPropostoNome(
-                                  projetoProposto.value.idProjeto
-                                )
-                              }}</span
-                            >
-                          </div>
-                          <div class="col-6">
-                            <input
-                              mask="separator.2"
-                              prefix="R$"
-                              thousandSeparator="."
-                              decimalMarker=","
-                              [inputTransformFn]="rtlCurrencyInputTransformFn"
-                              [outputTransformFn]="rtlCurrencyOutputTransformFn"
-                              id="projetoProposto-valor"
-                              placeholder="-- Valor do Projeto --"
-                              type="text"
-                              class="form-control"
-                              formControlName="valor"
-                              min="1"
-                              readonly
-                              ngbTooltip="Favor alterar o valor estimado deste projeto na tela de edição de Projetos"
-                              triggers="focus:blur"
-                            />
-                          </div>
-                          <div class="col-1">
-                            <button
-                              type="button"
-                              ngbTooltip="Remover Projeto do Programa"
-                              class="btn btn-outline-danger rounded-circle"
-                              [disabled]="!isModoEdicao"
-                              (click)="removerProjetoPropostoDoPrograma(i)"
-                            >
-                              <i class="fa-solid fa-close delete-btn-icon"></i>
-                            </button>
-                          </div>
                         </div>
-                      </form>
+                        <div class="col-5">
+                          <span>
+                            {{
+                              getProjetoPropostoOpcao(idProjetoProposto)
+                                .valorEstimado
+                                | mask
+                                  : "separator.2"
+                                  : {
+                                      prefix: "R$ ",
+                                      leadZero: true,
+                                      thousandSeparator: ".",
+                                      decimalMarker: ","
+                                    }
+                            }}
+                          </span>
+                        </div>
+                        <div class="col-1">
+                          <button
+                            type="button"
+                            ngbTooltip="Remover Projeto do Programa"
+                            class="btn btn-outline-danger rounded-circle"
+                            [disabled]="!isModoEdicao"
+                            (click)="removerProjetoPropostoDoPrograma(i)"
+                          >
+                            <i class="fa-solid fa-close delete-btn-icon"></i>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </ng-container>

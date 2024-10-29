@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
-  FormArray,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
@@ -18,6 +17,9 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { ProgramaProjetoPropostoVinculadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-vinculado-warning-modal/programa-projeto-proposto-vinculado-warning-modal.component';
 
 import { EquipeService } from '../../../core/services/equipe/equipe.service';
 import { ValorService } from '../../../core/services/valor/valor.service';
@@ -34,15 +36,12 @@ import {
 import {
   IPrograma,
   IProgramaForm,
-  // IProgramaProjetoProposto,
 } from '../../../core/interfaces/programa.interface';
 import {
   IProjetoPropostoOpcoesDropdown,
   IOpcoesDropdown,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
-
-// import { ProgramaProjetoPropostoFormType } from '../../../core/types/form/programa-projeto-proposto-form.type';
 
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
@@ -65,6 +64,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _getProjetosPropostosOpcoes$: Observable<
     IProjetoPropostoOpcoesDropdown[]
   >;
+  private _getProgramasOpcoes$: Observable<IOpcoesDropdown[]>;
   private _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
   private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
@@ -81,6 +81,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public pessoasOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   public projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[] = [];
+  public programasOpcoes: IOpcoesDropdown[] = [];
   public tiposValorOpcoes: IOpcoesDropdown[] = [];
 
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
@@ -89,14 +90,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public idProjetoProposto: number | null = null;
 
   constructor(
-    private _router: Router,
-    private _nnfb: NonNullableFormBuilder,
+    private readonly _router: Router,
+    private readonly _nnfb: NonNullableFormBuilder,
     public equipeService: EquipeService,
-    private _programasService: ProgramasService,
-    private _valorService: ValorService,
-    private _opcoesDropdownService: OpcoesDropdownService,
-    private _breadcrumbService: BreadcrumbService,
-    private _toastService: ToastService
+    private readonly _programasService: ProgramasService,
+    private readonly _valorService: ValorService,
+    private readonly _opcoesDropdownService: OpcoesDropdownService,
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _ngbModalService: NgbModal,
+    private readonly _toastService: ToastService
   ) {
     const [editar$, criar$] = partition(
       this._programasService.idPrograma$,
@@ -157,6 +159,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         )
       );
 
+    this._getProgramasOpcoes$ = this._opcoesDropdownService
+      .getOpcoesProgramas()
+      .pipe(
+        tap((response: IOpcoesDropdown[]) => (this.programasOpcoes = response))
+      );
+
     // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
     this._getTiposValorOpcoes$ = this._opcoesDropdownService
       .getOpcoesTiposValor()
@@ -174,6 +182,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this._getPessoasOpcoes$,
       this._getTiposPapelOpcoes$,
       this._getProjetosPropostosOpcoes$,
+      this._getProgramasOpcoes$,
       this._getTiposValorOpcoes$
     );
 
@@ -195,13 +204,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     return this.programaForm.get(controlName) as AbstractControl<any, any>;
   }
 
-  // public get projetosPropostos(): FormArray<
-  //   FormGroup<ProgramaProjetoPropostoFormType>
-  // > {
-  //   return this.programaForm.get('projetosPropostos') as FormArray<
-  //     FormGroup<ProgramaProjetoPropostoFormType>
-  //   >;
-  // }
+  public get idProjetoPropostoList(): FormControl<Array<number>> {
+    return this.programaForm.get('idProjetoPropostoList') as FormControl<
+      Array<number>
+    >;
+  }
 
   public rtlCurrencyInputTransformFn =
     NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
@@ -221,52 +228,48 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     setTimeout(() => (this.idMembroEquipeCaptacao = null), 0);
   }
 
-  /*
-    REFATORAÇÃO FLUXO PROJETOS PROPOSTOS
+  public idProjetoPropostoNgSelectChangeEvent(
+    event: IProjetoPropostoOpcoesDropdown
+  ): void {
+    if (event.idPrograma) {
+      const nomeProjeto = event.nome;
 
-    - AGORA NÃO É MAIS "Array<IProgramaProjetoProposto>", MAS SIM "Array<number>"
-      CONTENDO SÓ OS IDS DOS PROJETOS PROPOSTOS A SEREM VINCULADOS AO PROGRAMA
-      |-> MANTER MAIS OU MENOS O MESMO COMPONENTE, PARECIDO COM EquipeForm
-          (
-            <ng-select> PRA SELECIONAR O PROJETO, MOSTRAR NO CARD O "SUB-CARD"
-            CONTENDO NOME E VALOR DO PROJETO, E BOTAO DE REMOVER (X REDONDO VERMELHO)
-          )
-      |-> AVALIAR SE A IDEIA NO BACK END DE ENVIAR idPrograma DO PROJETO (SE JÁ EXISTIR)
-          VALE A PENA
-          |-> SE SIM, DECIDIR ENTRE:
-              ~ MOSTRAR MODAL ALERTANDO USUARIO DA MODIFICACAO
-              - SÓ NÃO MANDAR O PROJETO DA LISTA DE IProjetoPropostoOpcoesDropdown
-          |-> SE NÃO, SEI LÁ BICHO (CHANCE DE VÁRIOS BUGS!!!!)
-  */
+      const nomePrograma = this.programasOpcoes.find(
+        (programaOpcao) => programaOpcao.id === event.idPrograma
+      )?.nome;
+      this.dispararModalAtencao(nomeProjeto, nomePrograma!);
+    }
 
-  // public idProjetoPropostoNgSelectChangeEvent(event: number): void {
-  //   this.incluirProjetoPropostoNoPrograma(
-  //     this.construirProjetoPropostoFormGroupNgSelectValue(event)
-  //   );
+    this.idProjetoPropostoList.patchValue([
+      ...this.idProjetoPropostoList.value,
+      event.id,
+    ]);
 
-  //   setTimeout(() => (this.idProjetoProposto = null), 0);
-  // }
+    setTimeout(() => (this.idProjetoProposto = null), 0);
+  }
 
-  // public getProjetoPropostoNome(idProjetoProposto?: number): string {
-  //   return (
-  //     this.projetosPropostosOpcoes.find(
-  //       (projetoPropostoSelectItem) =>
-  //         projetoPropostoSelectItem.id === idProjetoProposto
-  //     )?.nome ?? ''
-  //   );
-  // }
+  public filtrarProjetosPropostosOpcoes(
+    projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[]
+  ): IProjetoPropostoOpcoesDropdown[] {
+    return projetosPropostosOpcoes.filter(
+      (projetoProposto) =>
+        !this.idProjetoPropostoList.value.includes(projetoProposto.id)
+    );
+  }
 
-  // public filtrarProjetosPropostosOpcoes(
-  //   projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[]
-  // ): IProjetoPropostoOpcoesDropdown[] {
-  //   return projetosPropostosOpcoes.filter(
-  //     (projetoPropostoOpcao) =>
-  //       !this.projetosPropostos.value.some(
-  //         (projetoProposto) =>
-  //           projetoProposto.idProjeto === projetoPropostoOpcao.id
-  //       )
-  //   );
-  // }
+  public getProjetoPropostoOpcao(
+    idProjetoProposto: number
+  ): IProjetoPropostoOpcoesDropdown {
+    return this.projetosPropostosOpcoes.find(
+      (projetoPropostoOpcao) => projetoPropostoOpcao.id === idProjetoProposto
+    )!;
+  }
+
+  public removerProjetoPropostoDoPrograma(index: number): void {
+    this.idProjetoPropostoList.value.splice(index, 1);
+
+    this.idProjetoPropostoList.patchValue(this.idProjetoPropostoList.value);
+  }
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
     this.programaForm = this._nnfb.group({
@@ -289,99 +292,50 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         programaModel?.idProjetoPropostoList ?? [],
         [Validators.required, Validators.minLength(1)]
       ),
-      // projetosPropostos: this.construirProjetosPropostosFormArray(
-      //   programaModel?.projetosPropostos
-      // ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
     });
 
     this.programaFormValueChanges();
   }
 
-  // private construirProjetosPropostosFormArray(
-  //   projetosPropostos?: Array<IProgramaProjetoProposto>
-  // ): FormArray<FormGroup<ProgramaProjetoPropostoFormType>> {
-  //   const projetosPropostosFormArray = this._nnfb.array<
-  //     FormGroup<ProgramaProjetoPropostoFormType>
-  //   >([], [Validators.required, Validators.minLength(1)]);
-
-  //   if (projetosPropostos) {
-  //     projetosPropostos.forEach((projetoProposto) => {
-  //       projetosPropostosFormArray.push(
-  //         this.construirProjetoPropostoFormGroup(projetoProposto)
-  //       );
-  //     });
-  //   }
-
-  //   return projetosPropostosFormArray;
-  // }
-
-  // private construirProjetoPropostoFormGroup(
-  //   projetoProposto?: IProgramaProjetoProposto
-  // ): FormGroup<ProgramaProjetoPropostoFormType> {
-  //   return this._nnfb.group({
-  //     idProjeto: this._nnfb.control(
-  //       projetoProposto?.idProjeto ?? 0,
-  //       Validators.required
-  //     ),
-  //     valor: this._nnfb.control(projetoProposto?.valor ?? null, [
-  //       Validators.required,
-  //       Validators.min(1),
-  //     ]),
-  //   });
-  // }
-
-  // private construirProjetoPropostoFormGroupNgSelectValue(
-  //   ngSelectValue: number
-  // ): FormGroup<ProgramaProjetoPropostoFormType> {
-  //   const projetoPropostoFormGroup = this.construirProjetoPropostoFormGroup();
-
-  //   const projetoPropostoValorEstimado =
-  //     this.projetosPropostosOpcoes.find(
-  //       (projetoPropostoSelectItem) =>
-  //         projetoPropostoSelectItem.id === ngSelectValue
-  //     )?.valorEstimado ?? null;
-
-  //   projetoPropostoFormGroup.patchValue({ idProjeto: ngSelectValue });
-  //   projetoPropostoFormGroup.patchValue({
-  //     valor: projetoPropostoValorEstimado,
-  //   });
-  //   return projetoPropostoFormGroup;
-  // }
-
-  // private incluirProjetoPropostoNoPrograma(
-  //   projetoPropostoFormGroup: FormGroup<ProgramaProjetoPropostoFormType>
-  // ): void {
-  //   this.projetosPropostos.push(projetoPropostoFormGroup);
-  // }
-
-  // public removerProjetoPropostoDoPrograma(index: number): void {
-  //   this.projetosPropostos.removeAt(index);
-  // }
-
   private programaFormValueChanges(): void {
-    // const projetosPropostosFormArray = this.projetosPropostos;
-
     const valorFormGroupQuantiaFormControl = this.programaForm.get(
       'valor.quantia'
     ) as FormControl<number | null>;
 
-    // projetosPropostosFormArray.valueChanges.subscribe(
-    //   (projetosPropostosValue) => {
-    //     const somatorioValorProjetosPropostos = projetosPropostosValue.reduce(
-    //       (acc, projetoProposto) => acc + (projetoProposto?.valor ?? 0),
-    //       0
-    //     );
+    this.idProjetoPropostoList.valueChanges.subscribe(
+      (idProjetoPropostoListValue) => {
+        const somatorioValorProjetosPropostos = idProjetoPropostoListValue
+          .map(
+            (idProjetoProposto) =>
+              this.getProjetoPropostoOpcao(idProjetoProposto).valorEstimado
+          )
+          .reduce((acc, valorEstimado) => acc + (valorEstimado ?? 0), 0);
 
-    //     if (this.isModoEdicao) {
-    //       valorFormGroupQuantiaFormControl.patchValue(
-    //         somatorioValorProjetosPropostos
-    //           ? somatorioValorProjetosPropostos
-    //           : null
-    //       );
-    //     }
-    //   }
-    // );
+        if (this.isModoEdicao) {
+          valorFormGroupQuantiaFormControl.patchValue(
+            somatorioValorProjetosPropostos
+              ? somatorioValorProjetosPropostos
+              : null
+          );
+        }
+      }
+    );
+  }
+
+  private dispararModalAtencao(
+    nomeProjeto: string,
+    nomePrograma: string
+  ): void {
+    const modalRef = this._ngbModalService.open(
+      ProgramaProjetoPropostoVinculadoWarningModalComponent,
+      {
+        centered: true,
+      }
+    );
+
+    modalRef.componentInstance.nomeProjeto = nomeProjeto;
+    modalRef.componentInstance.nomePrograma = nomePrograma;
   }
 
   private executarAcaoBreadcrumb(acao: string): void {
