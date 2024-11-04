@@ -182,7 +182,7 @@
                       (remove)="organizacaoResponsavelRemovida($event)"
                     >
                       <ng-option
-                        *ngFor="let organizacao of organizacoesSelectList"
+                        *ngFor="let organizacao of organizacoesOpcoes"
                         [value]="organizacao.id"
                         >{{ organizacao.nome }}
                       </ng-option>
@@ -205,7 +205,7 @@
                       formControlName="idAreasAtuacao"
                     >
                       <ng-option
-                        *ngFor="let areaAtuacao of areasAtuacaoSelectList"
+                        *ngFor="let areaAtuacao of areasAtuacaoOpcoes"
                         [value]="areaAtuacao.id"
                         >{{ areaAtuacao.nome }}</ng-option
                       >
@@ -328,7 +328,7 @@
                       formControlName="idPais"
                     >
                       <ng-option
-                        *ngFor="let pais of paisesSelectList"
+                        *ngFor="let pais of paisesOpcoes"
                         [value]="pais.id"
                         >{{ pais.nome }}
                       </ng-option>
@@ -348,7 +348,7 @@
                       formControlName="idEstado"
                     >
                       <ng-option
-                        *ngFor="let estado of estadosSelectList"
+                        *ngFor="let estado of estadosOpcoes"
                         [value]="estado.id"
                         >{{ estado.nome }}
                       </ng-option>
@@ -368,7 +368,7 @@
                       formControlName="idCidade"
                     >
                       <ng-option
-                        *ngFor="let cidade of cidadesSelectList"
+                        *ngFor="let cidade of cidadesOpcoes"
                         [value]="cidade.id"
                         >{{ cidade.nome }}</ng-option
                       >

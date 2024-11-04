@@ -14,7 +14,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { ValorService } from '../../../core/services/valor/valor.service';
 
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
-import { ISelectList } from '../../../core/interfaces/select-list.interface';
+import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import { getSimboloMoeda } from '../../../core/utils/functions';
@@ -35,7 +35,7 @@ import { getSimboloMoeda } from '../../../core/utils/functions';
 })
 export class ValorFormComponent {
   public moedasList = input<Array<IMoeda>>();
-  public tiposValoresSelectList = input<Array<ISelectList>>();
+  public tiposValorOpcoes = input<Array<IOpcoesDropdown>>();
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;

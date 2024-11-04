@@ -52,7 +52,7 @@
         formControlName="tipo"
       >
         <ng-option
-          *ngFor="let tipoValor of tiposValoresSelectList()"
+          *ngFor="let tipoValor of tiposValorOpcoes()"
           [value]="tipoValor.id"
         >
           {{ tipoValor.nome }}

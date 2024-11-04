@@ -24,7 +24,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { OrganizationResponsibleChangeWarningModalComponent } from '../../../shared/templates/organization-responsible-change-warning-modal/organization-responsible-change-warning-modal.component';
 
 import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
-import { SelectListService } from '../../../core/services/select-list/select-list.service';
+import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
@@ -35,7 +35,7 @@ import {
   PessoaModel,
 } from '../../../core/models/pessoa.model';
 
-import { ISelectList } from '../../../core/interfaces/select-list.interface';
+import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
 import {
   IPessoa,
   IPessoaForm,
@@ -65,10 +65,10 @@ import { CPFValidator } from '../../../core/validators/cpf.validator';
 export class MeuPerfilComponent implements OnInit, OnDestroy {
   private _atualizarMeuPerfil$: Observable<IPessoa>;
 
-  private _getPaisesSelectList$: Observable<ISelectList[]>;
-  private _getOrganizacoesSelectList$: Observable<ISelectList[]>;
-  private _getAreasAtuacaoSelectList$: Observable<ISelectList[]>;
-  private _getAllSelectLists$: Observable<ISelectList[]>;
+  private _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getAreasAtuacaoOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idPessoaEdicao: number = 0;
   private _idOrganizacaoResponsavel: number | null = null;
@@ -80,11 +80,11 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
 
   public meuPerfilForm: FormGroup = new FormGroup({});
 
-  public paisesSelectList: ISelectList[] = [];
-  public estadosSelectList: ISelectList[] = [];
-  public cidadesSelectList: ISelectList[] = [];
-  public organizacoesSelectList: ISelectList[] = [];
-  public areasAtuacaoSelectList: ISelectList[] = [];
+  public paisesOpcoes: IOpcoesDropdown[] = [];
+  public estadosOpcoes: IOpcoesDropdown[] = [];
+  public cidadesOpcoes: IOpcoesDropdown[] = [];
+  public organizacoesOpcoes: IOpcoesDropdown[] = [];
+  public areasAtuacaoOpcoes: IOpcoesDropdown[] = [];
 
   // Por hora, lista de valores hard-coded
   public nacionalidadesList: Array<string> = LISTA_NACIONALIDADES;
@@ -97,7 +97,7 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
     private _nnfb: NonNullableFormBuilder,
     private _router: Router,
     private _pessoasService: PessoasService,
-    private _selectListService: SelectListService,
+    private _opcoesDropdownService: OpcoesDropdownService,
     private _usuarioService: UsuarioService,
     private _breadcrumbService: BreadcrumbService,
     private _toastService: ToastService,
@@ -126,22 +126,22 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
       })
     );
 
-    this._getPaisesSelectList$ = this._selectListService
-      .getPaises()
-      .pipe(tap((response) => (this.paisesSelectList = response)));
+    this._getPaisesOpcoes$ = this._opcoesDropdownService
+      .getOpcoesPaises()
+      .pipe(tap((response) => (this.paisesOpcoes = response)));
 
-    this._getOrganizacoesSelectList$ = this._selectListService
-      .getOrganizacoes()
-      .pipe(tap((response) => (this.organizacoesSelectList = response)));
+    this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
+      .getOpcoesOrganizacoes()
+      .pipe(tap((response) => (this.organizacoesOpcoes = response)));
 
-    this._getAreasAtuacaoSelectList$ = this._selectListService
-      .getAreasAtuacao()
-      .pipe(tap((response) => (this.areasAtuacaoSelectList = response)));
+    this._getAreasAtuacaoOpcoes$ = this._opcoesDropdownService
+      .getOpcoesAreasAtuacao()
+      .pipe(tap((response) => (this.areasAtuacaoOpcoes = response)));
 
-    this._getAllSelectLists$ = concat(
-      this._getPaisesSelectList$,
-      this._getOrganizacoesSelectList$,
-      this._getAreasAtuacaoSelectList$
+    this._getAllOpcoes$ = concat(
+      this._getPaisesOpcoes$,
+      this._getOrganizacoesOpcoes$,
+      this._getAreasAtuacaoOpcoes$
     );
 
     this._subscription.add(
@@ -152,7 +152,7 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._subscription.add(this._getAllSelectLists$.subscribe());
+    this._subscription.add(this._getAllOpcoes$.subscribe());
 
     this._subscription.add(this._atualizarMeuPerfil$.subscribe());
   }
@@ -170,7 +170,7 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
       this._idOrganizacaoResponsavel &&
       event == this._idOrganizacaoResponsavel
     ) {
-      const nomeOrganizacao = this.organizacoesSelectList.find(
+      const nomeOrganizacao = this.organizacoesOpcoes.find(
         (org) => org.id == this._idOrganizacaoResponsavel
       )?.nome!;
 
@@ -243,12 +243,12 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
       if (!idPaisValue) {
         endereco_idEstadoFormControl.patchValue(null);
         endereco_idCidadeFormControl.patchValue(null);
-        this.estadosSelectList = [];
-        this.cidadesSelectList = [];
+        this.estadosOpcoes = [];
+        this.cidadesOpcoes = [];
       } else {
-        this._selectListService
-          .getEstados(idPaisValue)
-          .pipe(tap((response) => (this.estadosSelectList = response)))
+        this._opcoesDropdownService
+          .getOpcoesEstados(idPaisValue)
+          .pipe(tap((response) => (this.estadosOpcoes = response)))
           .subscribe();
       }
     });
@@ -256,11 +256,11 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
     endereco_idEstadoFormControl.valueChanges.subscribe((idEstadoValue) => {
       if (!idEstadoValue) {
         endereco_idCidadeFormControl.patchValue(null);
-        this.cidadesSelectList = [];
+        this.cidadesOpcoes = [];
       } else {
-        this._selectListService
-          .getCidades('ESTADO', idEstadoValue)
-          .pipe(tap((response) => (this.cidadesSelectList = response)))
+        this._opcoesDropdownService
+          .getOpcoesCidades('ESTADO', idEstadoValue)
+          .pipe(tap((response) => (this.cidadesOpcoes = response)))
           .subscribe();
       }
     });

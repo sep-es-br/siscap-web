@@ -14,6 +14,9 @@ import { SiscapTitleStrategy } from './core/utils/SiscapTitleStrategy';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
 
+import { provideQuillConfig } from 'ngx-quill';
+import { quillEditorToolbarOptions } from './core/utils/quill-editor-toolbar-options';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(APP_ROUTES, withPreloading(PreloadAllModules)),
@@ -21,5 +24,11 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([authInterceptor, errorHandlerInterceptor])
     ),
+    provideQuillConfig({
+      modules: {
+        toolbar: quillEditorToolbarOptions,
+      },
+      placeholder: '-- Insira o texto aqui --',
+    }),
   ],
 };

@@ -9,7 +9,7 @@ export interface IProjeto {
   titulo: string;
   idOrganizacao: number;
   valor: IValor;
-  rateio: IRateio;
+  rateio: Array<IRateio>;
   objetivo: string;
   objetivoEspecifico: string;
   situacaoProblema: string;
@@ -26,5 +26,5 @@ export interface IProjetoTableData
   extends Pick<IProjeto, 'id' | 'sigla' | 'titulo'> {
   moeda: string;
   valor: number;
-  nomesMicrorregioesRateio: Array<string>;
+  nomesLocalidadesRateio: Array<string>;
 }

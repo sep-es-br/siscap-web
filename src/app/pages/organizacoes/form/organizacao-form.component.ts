@@ -19,7 +19,7 @@ import {
 } from 'rxjs';
 
 import { OrganizacoesService } from '../../../core/services/organizacoes/organizacoes.service';
-import { SelectListService } from '../../../core/services/select-list/select-list.service';
+import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 
@@ -32,7 +32,7 @@ import {
   IOrganizacao,
   IOrganizacaoForm,
 } from '../../../core/interfaces/organizacao.interface';
-import { ISelectList } from '../../../core/interfaces/select-list.interface';
+import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import {
@@ -50,11 +50,11 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   private _atualizarOrganizacao$: Observable<IOrganizacao>;
   private _cadastrarOrganizacao$: Observable<number>;
 
-  private _getTiposOrganizacoesSelectList$: Observable<ISelectList[]>;
-  private _getOrganizacoesSelectList$: Observable<ISelectList[]>;
-  private _getPaisesSelectList$: Observable<ISelectList[]>;
-  private _getPessoasSelectList$: Observable<ISelectList[]>;
-  private _getAllSelectLists$: Observable<ISelectList[]>;
+  private _getTiposOrganizacaoOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idOrganizacaoEdicao: number = 0;
 
@@ -65,12 +65,12 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
 
   public organizacaoForm: FormGroup = new FormGroup({});
 
-  public tiposOrganizacoesSelectList: Array<ISelectList> = [];
-  public organizacoesSelectList: Array<ISelectList> = [];
-  public paisesSelectList: Array<ISelectList> = [];
-  public estadosSelectList: Array<ISelectList> = [];
-  public cidadesSelectList: Array<ISelectList> = [];
-  public pessoasSelectList: Array<ISelectList> = [];
+  public tiposOrganizacaoOpcoes: Array<IOpcoesDropdown> = [];
+  public organizacoesOpcoes: Array<IOpcoesDropdown> = [];
+  public paisesOpcoes: Array<IOpcoesDropdown> = [];
+  public estadosOpcoes: Array<IOpcoesDropdown> = [];
+  public cidadesOpcoes: Array<IOpcoesDropdown> = [];
+  public pessoasOpcoes: Array<IOpcoesDropdown> = [];
 
   public srcImagemOrganizacao: string = '';
   public arquivoImagemOrganizacao: File | undefined;
@@ -79,7 +79,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     private _nnfb: NonNullableFormBuilder,
     private _router: Router,
     private _organizacoesService: OrganizacoesService,
-    private _selectListService: SelectListService,
+    private _opcoesDropdownService: OpcoesDropdownService,
     private _breadcrumbService: BreadcrumbService,
     private _toastService: ToastService
   ) {
@@ -117,35 +117,37 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       })
     );
 
-    this._getTiposOrganizacoesSelectList$ = this._selectListService
-      .getTiposOrganizacoes()
-      .pipe(tap((response) => (this.tiposOrganizacoesSelectList = response)));
+    this._getTiposOrganizacaoOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposOrganizacao()
+      .pipe(tap((response) => (this.tiposOrganizacaoOpcoes = response)));
 
-    this._getOrganizacoesSelectList$ = this._selectListService
-      .getOrganizacoes()
+    this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
+      .getOpcoesOrganizacoes()
       .pipe(
         tap((response) => {
-          this.organizacoesSelectList = response;
+          this.organizacoesOpcoes = response;
         })
       );
 
-    this._getPaisesSelectList$ = this._selectListService.getPaises().pipe(
+    this._getPaisesOpcoes$ = this._opcoesDropdownService.getOpcoesPaises().pipe(
       tap((response) => {
-        this.paisesSelectList = response;
+        this.paisesOpcoes = response;
       })
     );
 
-    this._getPessoasSelectList$ = this._selectListService.getPessoas().pipe(
-      tap((response) => {
-        this.pessoasSelectList = response;
-      })
-    );
+    this._getPessoasOpcoes$ = this._opcoesDropdownService
+      .getOpcoesPessoas()
+      .pipe(
+        tap((response) => {
+          this.pessoasOpcoes = response;
+        })
+      );
 
-    this._getAllSelectLists$ = concat(
-      this._getTiposOrganizacoesSelectList$,
-      this._getOrganizacoesSelectList$,
-      this._getPaisesSelectList$,
-      this._getPessoasSelectList$
+    this._getAllOpcoes$ = concat(
+      this._getTiposOrganizacaoOpcoes$,
+      this._getOrganizacoesOpcoes$,
+      this._getPaisesOpcoes$,
+      this._getPessoasOpcoes$
     );
 
     this._subscription.add(
@@ -156,7 +158,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._subscription.add(this._getAllSelectLists$.subscribe());
+    this._subscription.add(this._getAllOpcoes$.subscribe());
 
     this._subscription.add(this._atualizarOrganizacao$.subscribe());
     this._subscription.add(this._cadastrarOrganizacao$.subscribe());
@@ -242,13 +244,13 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       if (!idPaisValue) {
         idEstadoFormControl.patchValue(null);
         idCidadeFormControl.patchValue(null);
-        this.estadosSelectList = [];
-        this.cidadesSelectList = [];
+        this.estadosOpcoes = [];
+        this.cidadesOpcoes = [];
         cnpjFormControl.clearValidators();
       } else {
-        this._selectListService
-          .getEstados(idPaisValue)
-          .pipe(tap((response) => (this.estadosSelectList = response)))
+        this._opcoesDropdownService
+          .getOpcoesEstados(idPaisValue)
+          .pipe(tap((response) => (this.estadosOpcoes = response)))
           .subscribe();
 
         idPaisValue === 1
@@ -262,11 +264,11 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     idEstadoFormControl.valueChanges.subscribe((idEstadoValue) => {
       if (!idEstadoValue) {
         idCidadeFormControl.patchValue(null);
-        this.cidadesSelectList = [];
+        this.cidadesOpcoes = [];
       } else {
-        this._selectListService
-          .getCidades('ESTADO', idEstadoValue)
-          .pipe(tap((response) => (this.cidadesSelectList = response)))
+        this._opcoesDropdownService
+          .getOpcoesCidades('ESTADO', idEstadoValue)
+          .pipe(tap((response) => (this.cidadesOpcoes = response)))
           .subscribe();
       }
     });
