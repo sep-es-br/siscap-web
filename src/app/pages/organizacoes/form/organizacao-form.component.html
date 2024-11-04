@@ -80,7 +80,7 @@
                 formControlName="idTipoOrganizacao"
               >
                 <ng-option
-                  *ngFor="let tipoOrganizacao of tiposOrganizacoesSelectList"
+                  *ngFor="let tipoOrganizacao of tiposOrganizacaoOpcoes"
                   [value]="tipoOrganizacao.id"
                   >{{ tipoOrganizacao.nome }}</ng-option
                 >
@@ -98,7 +98,7 @@
                 formControlName="idOrganizacaoPai"
               >
                 <ng-option
-                  *ngFor="let organizacao of organizacoesSelectList"
+                  *ngFor="let organizacao of organizacoesOpcoes"
                   [value]="organizacao.id"
                   >{{ organizacao.nome }}</ng-option
                 >
@@ -116,7 +116,7 @@
                 formControlName="idPais"
               >
                 <ng-option
-                  *ngFor="let pais of paisesSelectList"
+                  *ngFor="let pais of paisesOpcoes"
                   [value]="pais.id"
                   >{{ pais.nome }}</ng-option
                 >
@@ -134,7 +134,7 @@
                 formControlName="idEstado"
               >
                 <ng-option
-                  *ngFor="let estado of estadosSelectList"
+                  *ngFor="let estado of estadosOpcoes"
                   [value]="estado.id"
                   >{{ estado.nome }}</ng-option
                 >
@@ -153,7 +153,7 @@
                 [virtualScroll]="true"
               >
                 <ng-option
-                  *ngFor="let cidade of cidadesSelectList"
+                  *ngFor="let cidade of cidadesOpcoes"
                   [value]="cidade.id"
                   >{{ cidade.nome }}</ng-option
                 >
@@ -213,7 +213,7 @@
                 formControlName="idPessoaResponsavel"
               >
                 <ng-option
-                  *ngFor="let pessoa of pessoasSelectList"
+                  *ngFor="let pessoa of pessoasOpcoes"
                   [value]="pessoa.id"
                   >{{ pessoa.nome }}</ng-option
                 >

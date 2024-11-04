@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
-  FormArray,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
@@ -18,10 +17,13 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { ProgramaProjetoPropostoVinculadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-vinculado-warning-modal/programa-projeto-proposto-vinculado-warning-modal.component';
 
 import { EquipeService } from '../../../core/services/equipe/equipe.service';
 import { ValorService } from '../../../core/services/valor/valor.service';
-import { SelectListService } from '../../../core/services/select-list/select-list.service';
+import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
@@ -34,15 +36,12 @@ import {
 import {
   IPrograma,
   IProgramaForm,
-  IProgramaProjetoProposto,
 } from '../../../core/interfaces/programa.interface';
 import {
-  IProjetoPropostoSelectList,
-  ISelectList,
-} from '../../../core/interfaces/select-list.interface';
+  IProjetoPropostoOpcoesDropdown,
+  IOpcoesDropdown,
+} from '../../../core/interfaces/opcoes-dropdown.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
-
-import { ProgramaProjetoPropostoFormType } from '../../../core/types/form/programa-projeto-proposto-form.type';
 
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
@@ -59,14 +58,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _atualizarPrograma$: Observable<IPrograma>;
   private _cadastrarPrograma$: Observable<number>;
 
-  private _getOrganizacoesSelectList$: Observable<ISelectList[]>;
-  private _getPessoasSelectList$: Observable<ISelectList[]>;
-  private _getPapeisSelectList$: Observable<ISelectList[]>;
-  private _getProjetosPropostosSelectList$: Observable<
-    IProjetoPropostoSelectList[]
+  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getProjetosPropostosOpcoes$: Observable<
+    IProjetoPropostoOpcoesDropdown[]
   >;
-  private _getTiposValoresSelectList$: Observable<ISelectList[]>;
-  private _getAllSelectLists$: Observable<ISelectList[]>;
+  private _getProgramasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
+  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idProgramaEdicao: number = 0;
 
@@ -77,11 +77,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public programaForm: FormGroup = new FormGroup({});
 
-  public organizacoesSelectList: ISelectList[] = [];
-  public pessoasSelectList: ISelectList[] = [];
-  public papeisSelectList: ISelectList[] = [];
-  public projetosPropostosSelectList: IProjetoPropostoSelectList[] = [];
-  public tiposValoresSelectList: ISelectList[] = [];
+  public organizacoesOpcoes: IOpcoesDropdown[] = [];
+  public pessoasOpcoes: IOpcoesDropdown[] = [];
+  public tiposPapelOpcoes: IOpcoesDropdown[] = [];
+  public projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[] = [];
+  public programasOpcoes: IOpcoesDropdown[] = [];
+  public tiposValorOpcoes: IOpcoesDropdown[] = [];
 
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
 
@@ -89,14 +90,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public idProjetoProposto: number | null = null;
 
   constructor(
-    private _router: Router,
-    private _nnfb: NonNullableFormBuilder,
+    private readonly _router: Router,
+    private readonly _nnfb: NonNullableFormBuilder,
     public equipeService: EquipeService,
-    private _programasService: ProgramasService,
-    private _valorService: ValorService,
-    private _selectListService: SelectListService,
-    private _breadcrumbService: BreadcrumbService,
-    private _toastService: ToastService
+    private readonly _programasService: ProgramasService,
+    private readonly _valorService: ValorService,
+    private readonly _opcoesDropdownService: OpcoesDropdownService,
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _ngbModalService: NgbModal,
+    private readonly _toastService: ToastService
   ) {
     const [editar$, criar$] = partition(
       this._programasService.idPrograma$,
@@ -128,53 +130,60 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       })
     );
 
-    this._getOrganizacoesSelectList$ = this._selectListService
-      .getOrganizacoes(TipoOrganizacaoEnum.Secretaria)
+    this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
+      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
       .pipe(
         tap(
-          (response: ISelectList[]) => (this.organizacoesSelectList = response)
+          (response: IOpcoesDropdown[]) => (this.organizacoesOpcoes = response)
         )
       );
 
-    this._getPessoasSelectList$ = this._selectListService
-      .getPessoas()
+    this._getPessoasOpcoes$ = this._opcoesDropdownService
+      .getOpcoesPessoas()
       .pipe(
-        tap((response: ISelectList[]) => (this.pessoasSelectList = response))
+        tap((response: IOpcoesDropdown[]) => (this.pessoasOpcoes = response))
       );
 
-    this._getPapeisSelectList$ = this._selectListService
-      .getPapeis()
+    this._getTiposPapelOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposPapel()
       .pipe(
-        tap((response: ISelectList[]) => (this.papeisSelectList = response))
+        tap((response: IOpcoesDropdown[]) => (this.tiposPapelOpcoes = response))
       );
 
-    this._getProjetosPropostosSelectList$ = this._selectListService
-      .getProjetosPropostos()
+    this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
+      .getOpcoesProjetosPropostos()
       .pipe(
         tap(
-          (response: IProjetoPropostoSelectList[]) =>
-            (this.projetosPropostosSelectList = response)
+          (response: IProjetoPropostoOpcoesDropdown[]) =>
+            (this.projetosPropostosOpcoes = response)
         )
+      );
+
+    this._getProgramasOpcoes$ = this._opcoesDropdownService
+      .getOpcoesProgramas()
+      .pipe(
+        tap((response: IOpcoesDropdown[]) => (this.programasOpcoes = response))
       );
 
     // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
-    this._getTiposValoresSelectList$ = this._selectListService
-      .getTiposValores()
+    this._getTiposValorOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposValor()
       .pipe(
         tap(
-          (response: ISelectList[]) =>
-            (this.tiposValoresSelectList = response.filter(
+          (response: IOpcoesDropdown[]) =>
+            (this.tiposValorOpcoes = response.filter(
               (tipoValor) => tipoValor.id <= 3
             ))
         )
       );
 
-    this._getAllSelectLists$ = concat(
-      this._getOrganizacoesSelectList$,
-      this._getPessoasSelectList$,
-      this._getPapeisSelectList$,
-      this._getProjetosPropostosSelectList$,
-      this._getTiposValoresSelectList$
+    this._getAllOpcoes$ = concat(
+      this._getOrganizacoesOpcoes$,
+      this._getPessoasOpcoes$,
+      this._getTiposPapelOpcoes$,
+      this._getProjetosPropostosOpcoes$,
+      this._getProgramasOpcoes$,
+      this._getTiposValorOpcoes$
     );
 
     this._subscription.add(
@@ -185,7 +194,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._subscription.add(this._getAllSelectLists$.subscribe());
+    this._subscription.add(this._getAllOpcoes$.subscribe());
 
     this._subscription.add(this._atualizarPrograma$.subscribe());
     this._subscription.add(this._cadastrarPrograma$.subscribe());
@@ -195,11 +204,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     return this.programaForm.get(controlName) as AbstractControl<any, any>;
   }
 
-  public get projetosPropostos(): FormArray<
-    FormGroup<ProgramaProjetoPropostoFormType>
-  > {
-    return this.programaForm.get('projetosPropostos') as FormArray<
-      FormGroup<ProgramaProjetoPropostoFormType>
+  public get idProjetoPropostoList(): FormControl<Array<number>> {
+    return this.programaForm.get('idProjetoPropostoList') as FormControl<
+      Array<number>
     >;
   }
 
@@ -221,33 +228,47 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     setTimeout(() => (this.idMembroEquipeCaptacao = null), 0);
   }
 
-  public idProjetoPropostoNgSelectChangeEvent(event: number): void {
-    this.incluirProjetoPropostoNoPrograma(
-      this.construirProjetoPropostoFormGroupNgSelectValue(event)
-    );
+  public idProjetoPropostoNgSelectChangeEvent(
+    event: IProjetoPropostoOpcoesDropdown
+  ): void {
+    if (event.idPrograma) {
+      const nomeProjeto = event.nome;
+
+      const nomePrograma = this.programasOpcoes.find(
+        (programaOpcao) => programaOpcao.id === event.idPrograma
+      )?.nome;
+      this.dispararModalAtencao(nomeProjeto, nomePrograma!);
+    }
+
+    this.idProjetoPropostoList.patchValue([
+      ...this.idProjetoPropostoList.value,
+      event.id,
+    ]);
 
     setTimeout(() => (this.idProjetoProposto = null), 0);
   }
 
-  public getProjetoPropostoNome(idProjetoProposto?: number): string {
-    return (
-      this.projetosPropostosSelectList.find(
-        (projetoPropostoSelectItem) =>
-          projetoPropostoSelectItem.id === idProjetoProposto
-      )?.nome ?? ''
+  public filtrarProjetosPropostosOpcoes(
+    projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[]
+  ): IProjetoPropostoOpcoesDropdown[] {
+    return projetosPropostosOpcoes.filter(
+      (projetoProposto) =>
+        !this.idProjetoPropostoList.value.includes(projetoProposto.id)
     );
   }
 
-  public filtrarProjetosSelectList(
-    projetosPropostosSelectList: IProjetoPropostoSelectList[]
-  ): IProjetoPropostoSelectList[] {
-    return projetosPropostosSelectList.filter(
-      (projetoPropostoSelectItem) =>
-        !this.projetosPropostos.value.some(
-          (projetoProposto) =>
-            projetoProposto.idProjeto === projetoPropostoSelectItem.id
-        )
-    );
+  public getProjetoPropostoOpcao(
+    idProjetoProposto: number
+  ): IProjetoPropostoOpcoesDropdown {
+    return this.projetosPropostosOpcoes.find(
+      (projetoPropostoOpcao) => projetoPropostoOpcao.id === idProjetoProposto
+    )!;
+  }
+
+  public removerProjetoPropostoDoPrograma(index: number): void {
+    this.idProjetoPropostoList.value.splice(index, 1);
+
+    this.idProjetoPropostoList.patchValue(this.idProjetoPropostoList.value);
   }
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
@@ -262,13 +283,14 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ]),
       idOrgaoExecutorList: this._nnfb.control(
         programaModel?.idOrgaoExecutorList ?? [],
-        [Validators.required, Validators.min(1)]
+        [Validators.required, Validators.minLength(1)]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao
       ),
-      projetosPropostos: this.construirProjetosPropostosFormArray(
-        programaModel?.projetosPropostos
+      idProjetoPropostoList: this._nnfb.control(
+        programaModel?.idProjetoPropostoList ?? [],
+        [Validators.required, Validators.minLength(1)]
       ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
     });
@@ -276,80 +298,19 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this.programaFormValueChanges();
   }
 
-  private construirProjetosPropostosFormArray(
-    projetosPropostos?: Array<IProgramaProjetoProposto>
-  ): FormArray<FormGroup<ProgramaProjetoPropostoFormType>> {
-    const projetosPropostosFormArray = this._nnfb.array<
-      FormGroup<ProgramaProjetoPropostoFormType>
-    >([], [Validators.required, Validators.minLength(1)]);
-
-    if (projetosPropostos) {
-      projetosPropostos.forEach((projetoProposto) => {
-        projetosPropostosFormArray.push(
-          this.construirProjetoPropostoFormGroup(projetoProposto)
-        );
-      });
-    }
-
-    return projetosPropostosFormArray;
-  }
-
-  private construirProjetoPropostoFormGroup(
-    projetoProposto?: IProgramaProjetoProposto
-  ): FormGroup<ProgramaProjetoPropostoFormType> {
-    return this._nnfb.group({
-      idProjeto: this._nnfb.control(
-        projetoProposto?.idProjeto ?? 0,
-        Validators.required
-      ),
-      valor: this._nnfb.control(projetoProposto?.valor ?? null, [
-        Validators.required,
-        Validators.min(1),
-      ]),
-    });
-  }
-
-  private construirProjetoPropostoFormGroupNgSelectValue(
-    ngSelectValue: number
-  ): FormGroup<ProgramaProjetoPropostoFormType> {
-    const projetoPropostoFormGroup = this.construirProjetoPropostoFormGroup();
-
-    const projetoPropostoValorEstimado =
-      this.projetosPropostosSelectList.find(
-        (projetoPropostoSelectItem) =>
-          projetoPropostoSelectItem.id === ngSelectValue
-      )?.valorEstimado ?? null;
-
-    projetoPropostoFormGroup.patchValue({ idProjeto: ngSelectValue });
-    projetoPropostoFormGroup.patchValue({
-      valor: projetoPropostoValorEstimado,
-    });
-    return projetoPropostoFormGroup;
-  }
-
-  private incluirProjetoPropostoNoPrograma(
-    projetoPropostoFormGroup: FormGroup<ProgramaProjetoPropostoFormType>
-  ): void {
-    this.projetosPropostos.push(projetoPropostoFormGroup);
-  }
-
-  public removerProjetoPropostoDoPrograma(index: number): void {
-    this.projetosPropostos.removeAt(index);
-  }
-
   private programaFormValueChanges(): void {
-    const projetosPropostosFormArray = this.projetosPropostos;
-
     const valorFormGroupQuantiaFormControl = this.programaForm.get(
       'valor.quantia'
     ) as FormControl<number | null>;
 
-    projetosPropostosFormArray.valueChanges.subscribe(
-      (projetosPropostosValue) => {
-        const somatorioValorProjetosPropostos = projetosPropostosValue.reduce(
-          (acc, projetoProposto) => acc + (projetoProposto?.valor ?? 0),
-          0
-        );
+    this.idProjetoPropostoList.valueChanges.subscribe(
+      (idProjetoPropostoListValue) => {
+        const somatorioValorProjetosPropostos = idProjetoPropostoListValue
+          .map(
+            (idProjetoProposto) =>
+              this.getProjetoPropostoOpcao(idProjetoProposto).valorEstimado
+          )
+          .reduce((acc, valorEstimado) => acc + (valorEstimado ?? 0), 0);
 
         if (this.isModoEdicao) {
           valorFormGroupQuantiaFormControl.patchValue(
@@ -360,6 +321,21 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  private dispararModalAtencao(
+    nomeProjeto: string,
+    nomePrograma: string
+  ): void {
+    const modalRef = this._ngbModalService.open(
+      ProgramaProjetoPropostoVinculadoWarningModalComponent,
+      {
+        centered: true,
+      }
+    );
+
+    modalRef.componentInstance.nomeProjeto = nomeProjeto;
+    modalRef.componentInstance.nomePrograma = nomePrograma;
   }
 
   private executarAcaoBreadcrumb(acao: string): void {

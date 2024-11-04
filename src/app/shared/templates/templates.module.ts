@@ -10,12 +10,14 @@ import { QueryNoResultsComponent } from './query-no-results/query-no-results.com
 import { SuccessModalComponent } from './success-modal/success-modal.component';
 import { TableActionsDropdownComponent } from './table-actions-dropdown/table-actions-dropdown.component';
 import { ValidationMessageComponent } from './validation-message/validation-message.component';
+import { ProgramaProjetoPropostoVinculadoWarningModalComponent } from './programa-projeto-proposto-vinculado-warning-modal/programa-projeto-proposto-vinculado-warning-modal.component';
 
 @NgModule({
   declarations: [
     DeleteModalComponent,
     LoadingSpinnerComponent,
     OrganizationResponsibleChangeWarningModalComponent,
+    ProgramaProjetoPropostoVinculadoWarningModalComponent,
     QueryNoResultsComponent,
     SuccessModalComponent,
     TableActionsDropdownComponent,
@@ -26,6 +28,7 @@ import { ValidationMessageComponent } from './validation-message/validation-mess
     DeleteModalComponent,
     LoadingSpinnerComponent,
     OrganizationResponsibleChangeWarningModalComponent,
+    ProgramaProjetoPropostoVinculadoWarningModalComponent,
     QueryNoResultsComponent,
     SuccessModalComponent,
     TableActionsDropdownComponent,

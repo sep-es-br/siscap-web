@@ -1,4 +1,4 @@
-export enum PapelEnum {
+export enum TipoPapelEnum {
   Gerente_de_Projeto = 1,
   Responavel_Proponente = 2,
   Proponente = 3,

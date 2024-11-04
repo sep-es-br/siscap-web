@@ -20,7 +20,7 @@ import {
 } from 'rxjs';
 
 import { CartasConsultaService } from '../../../core/services/cartas-consulta/cartas-consulta.service';
-import { SelectListService } from '../../../core/services/select-list/select-list.service';
+import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 
@@ -34,9 +34,9 @@ import {
   ICartaConsultaForm,
 } from '../../../core/interfaces/carta-consulta.interface';
 import {
-  IObjetoSelectList,
-  ISelectList,
-} from '../../../core/interfaces/select-list.interface';
+  IObjetoOpcoesDropdown,
+  IOpcoesDropdown,
+} from '../../../core/interfaces/opcoes-dropdown.interface';
 
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
 
@@ -50,9 +50,9 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
   private readonly _atualizarCartaConsulta$: Observable<ICartaConsulta>;
   private readonly _cadastrarCartaConsulta$: Observable<number>;
 
-  private readonly _getObjetosSelectList$: Observable<IObjetoSelectList[]>;
-  private readonly _getTiposOperacaoSelectList$: Observable<ISelectList[]>;
-  private readonly _getAllSelectLists$: Observable<ISelectList[]>;
+  private readonly _getObjetosOpcoes$: Observable<IObjetoOpcoesDropdown[]>;
+  private readonly _getTiposOperacaoOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private readonly _subscription: Subscription = new Subscription();
 
@@ -63,14 +63,14 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
   public cartaConsultaForm: FormGroup = new FormGroup({});
 
-  public objetosSelectList: IObjetoSelectList[] = [];
-  public tiposOperacaoSelectList: ISelectList[] = [];
+  public objetosOpcoes: IObjetoOpcoesDropdown[] = [];
+  public tiposOperacaoOpcoes: IOpcoesDropdown[] = [];
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
     private readonly _router: Router,
     private readonly _cartasConsultaService: CartasConsultaService,
-    private readonly _selectListService: SelectListService,
+    private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _toastService: ToastService
   ) {
@@ -105,17 +105,17 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       })
     );
 
-    this._getObjetosSelectList$ = this._selectListService
-      .getObjetos()
-      .pipe(tap((response) => (this.objetosSelectList = response)));
+    this._getObjetosOpcoes$ = this._opcoesDropdownService
+      .getOpcoesObjetos()
+      .pipe(tap((response) => (this.objetosOpcoes = response)));
 
-    this._getTiposOperacaoSelectList$ = this._selectListService
-      .getTiposOperacao()
-      .pipe(tap((response) => (this.tiposOperacaoSelectList = response)));
+    this._getTiposOperacaoOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposOperacao()
+      .pipe(tap((response) => (this.tiposOperacaoOpcoes = response)));
 
-    this._getAllSelectLists$ = concat(
-      this._getObjetosSelectList$,
-      this._getTiposOperacaoSelectList$
+    this._getAllOpcoes$ = concat(
+      this._getObjetosOpcoes$,
+      this._getTiposOperacaoOpcoes$
     );
 
     this._subscription.add(
@@ -126,7 +126,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._subscription.add(this._getAllSelectLists$.subscribe());
+    this._subscription.add(this._getAllOpcoes$.subscribe());
 
     this._subscription.add(this._atualizarCartaConsulta$.subscribe());
     this._subscription.add(this._cadastrarCartaConsulta$.subscribe());

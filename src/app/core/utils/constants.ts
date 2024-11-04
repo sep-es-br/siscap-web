@@ -215,10 +215,8 @@ const ERRO_MENSAGEM_MIN: string = 'Valor inferior ao limite';
 const ERRO_MENSAGEM_CPF: string = 'CPF inválido';
 const ERRO_MENSAGEM_MEMBRO_EQUIPE_SEM_PAPEL: string =
   'Algum membro da equipe não possui um papel atribuído';
-const ERRO_MENSAGEM_RATEIO_FORMARRAY_VAZIO: string =
-  'O rateio deve conter ao menos uma microrregião e uma cidade';
-const ERRO_MENSAGEM_RATEIO_VALORES_INCOMPATIVEIS: string =
-  'Alguns valores não estão compatíveis. Por favor, verifique os campos do rateio';
+const ERRO_MENSAGEM_LIMITE_RATEIO: string =
+  'Alguns valores ultrapassam o limite do valor total fornecido.';
 
 /**
  * Objeto de coleção de mensagens padrão de erro para validações de formulários.
@@ -233,7 +231,6 @@ export const COLECAO_ERRO_MENSAGEM: Record<string, string> = {
   max: ERRO_MENSAGEM_MAX,
   min: ERRO_MENSAGEM_MIN,
   cpf: ERRO_MENSAGEM_CPF,
-  rateioFormArrayVazio: ERRO_MENSAGEM_RATEIO_FORMARRAY_VAZIO,
-  rateioValoresIncompativeis: ERRO_MENSAGEM_RATEIO_VALORES_INCOMPATIVEIS,
   membroEquipeSemPapel: ERRO_MENSAGEM_MEMBRO_EQUIPE_SEM_PAPEL,
+  limiteRateio: ERRO_MENSAGEM_LIMITE_RATEIO,
 };

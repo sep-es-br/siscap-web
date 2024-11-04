@@ -4,14 +4,14 @@ import {
   ICartaConsultaForm,
 } from '../interfaces/carta-consulta.interface';
 import {
-  IObjetoSelectList,
-  ISelectList,
-} from '../interfaces/select-list.interface';
+  IObjetoOpcoesDropdown,
+  IOpcoesDropdown,
+} from '../interfaces/opcoes-dropdown.interface';
 
 import { ValorModel } from './valor.model';
 
 export class CartaConsultaFormModel implements ICartaConsultaForm {
-  public objeto: IObjetoSelectList;
+  public objeto: IObjetoOpcoesDropdown;
   public operacao: number;
   public corpo: string;
 
@@ -36,9 +36,9 @@ export class CartaConsultaModel
 
 export class CartaConsultaDetalhesModel implements ICartaConsultaDetalhes {
   public readonly id: number;
-  public objeto: IObjetoSelectList;
+  public objeto: IObjetoOpcoesDropdown;
   public corpo: string;
-  public projetosPropostos: ISelectList[];
+  public projetosPropostos: IOpcoesDropdown[];
   public valor: ValorModel;
 
   constructor(cartaConsultaDetalhes?: ICartaConsultaDetalhes) {

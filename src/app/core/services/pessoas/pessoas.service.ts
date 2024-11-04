@@ -15,7 +15,7 @@ import {
   IPessoaAcessoCidadao,
   IPessoaTableData,
 } from '../../interfaces/pessoa.interface';
-import { ISelectList } from '../../interfaces/select-list.interface';
+import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
 
 import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
 import { FormDataHelper } from '../../helpers/form-data.helper';
@@ -90,8 +90,8 @@ export class PessoasService
 
   public buscarResponsavelPorIdOrganizacao(
     idOrganizacao: number
-  ): Observable<ISelectList> {
-    return this._http.get<ISelectList>(
+  ): Observable<IOpcoesDropdown> {
+    return this._http.get<IOpcoesDropdown>(
       `${this._url}/responsavel/${idOrganizacao}`
     );
   }

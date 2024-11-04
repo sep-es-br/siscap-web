@@ -1,29 +1,16 @@
 import { IEquipe } from '../interfaces/equipe.interface';
-import {
-  IPrograma,
-  IProgramaForm,
-  IProgramaProjetoProposto,
-} from '../interfaces/programa.interface';
+import { IPrograma, IProgramaForm } from '../interfaces/programa.interface';
 
 import { EquipeModel } from './equipe.model';
 import { ValorModel } from './valor.model';
-
-export class ProgramaProjetoPropostoModel implements IProgramaProjetoProposto {
-  valor: number;
-  idProjeto: number;
-
-  constructor(programaProjetoProposto?: IProgramaProjetoProposto) {
-    this.valor = programaProjetoProposto?.valor ?? 0;
-    this.idProjeto = programaProjetoProposto?.idProjeto ?? 0;
-  }
-}
 
 export class ProgramaFormModel implements IProgramaForm {
   public sigla: string;
   public titulo: string;
   public idOrgaoExecutorList: Array<number>;
   public equipeCaptacao: EquipeModel[];
-  public projetosPropostos: ProgramaProjetoPropostoModel[];
+
+  public idProjetoPropostoList: number[];
   public valor: ValorModel;
 
   constructor(programaForm?: IProgramaForm) {
@@ -33,9 +20,8 @@ export class ProgramaFormModel implements IProgramaForm {
     this.equipeCaptacao = this.construirEquipeCaptação(
       programaForm?.equipeCaptacao
     );
-    this.projetosPropostos = this.construirProjetosPropostos(
-      programaForm?.projetosPropostos
-    );
+    this.idProjetoPropostoList = programaForm?.idProjetoPropostoList ?? [];
+
     this.valor = new ValorModel(programaForm?.valor);
   }
 
@@ -45,18 +31,6 @@ export class ProgramaFormModel implements IProgramaForm {
     }
 
     return equipeCaptacao.map((equipe) => new EquipeModel(equipe));
-  }
-
-  private construirProjetosPropostos(
-    projetosPropostos?: Array<IProgramaProjetoProposto>
-  ): Array<ProgramaProjetoPropostoModel> {
-    if (!projetosPropostos) {
-      return [];
-    }
-
-    return projetosPropostos.map(
-      (projetoProposto) => new ProgramaProjetoPropostoModel(projetoProposto)
-    );
   }
 }
 
