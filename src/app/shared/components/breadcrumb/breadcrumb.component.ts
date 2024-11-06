@@ -25,7 +25,7 @@ export class BreadcrumbComponent {
   public listaBotoesAcao: Array<string> = [];
   public contextoBotoesAcao: string = '';
 
-  constructor(private _breadcrumbService: BreadcrumbService) {
+  constructor(private readonly _breadcrumbService: BreadcrumbService) {
     this._breadcrumbService.listaBreadcrumbItems$.subscribe(
       (breadcrumbItemArray: Array<IBreadcrumbItem>) => {
         this.paginaAtual = breadcrumbItemArray[breadcrumbItemArray.length - 1];

@@ -1,0 +1,46 @@
+$side-menu-accordion-item-border: 2px solid var(--siscap-light-primary-2);
+
+div.side-menu-accordion-item {
+  border-radius: 5px;
+  border: $side-menu-accordion-item-border;
+  background-color: transparent;
+
+  &:not(:first-of-type) {
+    border-top: $side-menu-accordion-item-border;
+  }
+}
+
+div.side-menu-accordion-header {
+  border-radius: 5px;
+  background-color: transparent;
+  color: white;
+
+  &::after {
+    content: none;
+  }
+
+  &:not(.collapsed) button.side-menu-accordion-toggle {
+    transform: var(--bs-accordion-btn-icon-transform);
+  }
+
+  button.side-menu-accordion-toggle {
+    transition: var(--bs-accordion-btn-icon-transition);
+
+    &:active {
+      border: 0;
+    }
+  }
+}
+
+div.side-menu-accordion-body {
+  background-color: var(--siscap-light-primary-1);
+
+  a.sub-menu-nav-link {
+    color: white;
+    &.active {
+      border-radius: 5px;
+      color: var(--siscap-light-primary-1) !important;
+      background-color: rgba(var(--bs-light-rgb), 0.85);
+    }
+  }
+}

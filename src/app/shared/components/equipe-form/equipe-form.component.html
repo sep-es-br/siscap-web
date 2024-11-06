@@ -6,18 +6,22 @@
         index as i
       "
     >
-      <div class="col-6">
+      <div class="col-12 col-sm-6">
         <div class="card">
           <form [formGroup]="membroFormGroup">
             <div
-              class="card-body p-2 col-12 d-flex justify-content-between align-items-center"
+              class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center"
             >
-              <div class="col">
-                <span>{{ getMembroNome(membroFormGroup.value.idPessoa) }}</span>
+              <div
+                class="col-12 col-lg pb-2 pb-lg-0 d-inline-flex justify-content-center justify-content-md-start"
+              >
+                <span class="nome-membro">{{
+                  getMembroNome(membroFormGroup.value.idPessoa)
+                }}</span>
               </div>
 
-              <div class="col d-inline-flex">
-                <div class="col-9">
+              <div class="col-12 col-lg d-inline-flex flex-wrap flex-lg-nowrap">
+                <div class="col-12 col-md-9">
                   <ng-select
                     name="papelSelect"
                     id="papelSelect"
@@ -37,7 +41,7 @@
                 </div>
 
                 <div
-                  class="col-3 ps-2 d-inline-flex justify-content-between align-items-center"
+                  class="col-12 col-md-3 ps-0 ps-md-2 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-between align-items-center"
                 >
                   <button
                     *ngIf="isNovoMembro(i)"

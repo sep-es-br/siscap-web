@@ -24,3 +24,19 @@ button.accordion-button {
     margin: 0;
   }
 }
+
+@media (max-width: 575px) {
+  span.total-percentual {
+    padding-left: calc(1rem + 1vw);
+  }
+
+  span.total-quantia {
+    padding-left: calc(1rem + 2vw);
+  }
+}
+
+@media (max-width: 320px) {
+  span.total-quantia {
+    padding-left: 0.15rem;
+  }
+}

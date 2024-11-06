@@ -24,9 +24,9 @@ export class CartasConsultaListComponent {
   public sortableDirectiveOutput = output<string>();
 
   constructor(
-    private _router: Router,
-    private _cartasConsultaService: CartasConsultaService,
-    private _ngbModalService: NgbModal
+    private readonly _router: Router,
+    private readonly _cartasConsultaService: CartasConsultaService,
+    private readonly _ngbModalService: NgbModal
   ) {}
 
   public preencherIdAteQuatroDigitos(id: number): string {

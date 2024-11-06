@@ -1,0 +1,7 @@
+// Media query utilizada pois classes bootstrap
+// 'my-2 my-md-0' não aplica margens apropriadamente
+@media (max-width: 767px) {
+  div#valor-col {
+    margin: 0.5rem 0;
+  }
+}
