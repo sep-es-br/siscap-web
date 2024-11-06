@@ -3,29 +3,25 @@
     <div class="col-1 ngbaccordionbutton-col">
       <!-- Coluna para o botão de ação do ngbAccordion -->
     </div>
-    <div class="col-2">
+    <div class="col-2 sigla-col">
       <span class="fs-small-4">Sigla</span>
     </div>
-    <div class="col-5">
+    <div class="col-5 col-md-4 col-lg-5 programa-col">
       <span class="fs-small-4">Programa</span>
     </div>
-    <div class="col-1">
-      <span class="fs-small-4">Moeda</span>
+    <div class="col-1 col-md-2 col-lg-1">
+      <span class="fs-small-4 text-nowrap">Moeda</span>
     </div>
     <div class="col-2">
       <span class="fs-small-4">Valor</span>
     </div>
     <div class="col-1 ms-auto">
-      <span class="fs-small-4">Ações</span>
+      <span class="fs-small-4 text-nowrap">Ações</span>
     </div>
   </div>
-  <div ngbAccordion>
+  <div ngbAccordion id="body">
     <ng-container *ngFor="let programa of programasList()">
-      <div
-        ngbAccordionItem
-        id="body"
-        class="row d-flex align-items-center py-2 my-3"
-      >
+      <div ngbAccordionItem class="row d-flex align-items-center py-2 my-3">
         <div class="col-1 ngbaccordionbutton-col">
           <!-- INVISIVEL POR ENQUANTO
 			  RETOMAR APÓS PROSPECÇÃO/CAPTAÇÃO -->
@@ -34,14 +30,14 @@
         <div class="col-2">
           <span class="fs-small-3 fw-semibold">{{ programa.sigla }}</span>
         </div>
-        <div class="col-5">
+        <div class="col-5 col-md-4 col-lg-5">
           <span class="fs-small-3 fw-semibold">{{ programa.titulo }}</span>
         </div>
-        <div class="col-1">
+        <div class="col-1 col-md-2 col-lg-1">
           <span class="fs-small-3 fw-semibold">{{ programa.moeda }}</span>
         </div>
         <div class="col-2">
-          <span class="fs-small-3 fw-semibold">
+          <span class="fs-small-3 fw-semibold text-nowrap">
             {{
               programa.tetoPrograma
                 | mask

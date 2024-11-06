@@ -1,3 +1,10 @@
+div.sigla-col,
+div.programa-col {
+  span {
+    padding-left: 5px;
+  }
+}
+
 div[ngbaccordionitem] {
   border-left: 6px solid var(--bs-primary);
   border-top-left-radius: 5px;

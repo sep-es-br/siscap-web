@@ -1,13 +1,17 @@
 <div class="mx-3">
   <div id="header" class="row mb-2 flex-nowrap">
-    <div class="col-2 id-col ms-4">
+    <div class="col-2 id-col ms-4 ms-md-2 ms-lg-4 text-truncate">
       <span class="fs-small-4">Carta Consulta</span>
     </div>
     <div class="col-2 operacao-col">
       <span class="fs-small-4">Operação</span>
     </div>
-    <div class="col-6"><span class="fs-small-4">Objeto</span></div>
-    <div class="col-1"><span class="fs-small-4">Data</span></div>
+    <div class="col-6 col-md-5 col-lg-6">
+      <span class="fs-small-4">Objeto</span>
+    </div>
+    <div class="col-1 col-md-2 col-lg-1">
+      <span class="fs-small-4">Data</span>
+    </div>
     <div class="col-1 acoes-col">
       <span class="fs-small-4">Ações</span>
     </div>
@@ -17,7 +21,7 @@
       class="row border-top border-bottom flex-nowrap align-items-center mb-3 py-2"
       (click)="visualizarCartaConsulta(cartaConsulta.id)"
     >
-      <div class="col-2 id-col ms-4">
+      <div class="col-2 id-col ms-4 ms-md-2 ms-lg-4">
         <span
           class="fs-small-3 text-primary text-decoration-underline pointer"
           >{{ preencherIdAteQuatroDigitos(cartaConsulta.id) }}</span
@@ -28,12 +32,12 @@
           cartaConsulta.nomeTipoOperacao
         }}</span>
       </div>
-      <div class="col-6">
+      <div class="col-6 col-md-5 col-lg-6">
         <span class="fs-small-3 fw-semibold">{{
           cartaConsulta.nomeObjeto
         }}</span>
       </div>
-      <div class="col-1">
+      <div class="col-1 col-md-2 col-lg-1">
         <span class="fs-small-3 fw-semibold text-nowrap">{{
           cartaConsulta.data
         }}</span>
