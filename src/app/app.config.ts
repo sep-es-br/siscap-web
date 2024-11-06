@@ -1,15 +1,18 @@
 import { ApplicationConfig } from '@angular/core';
 import {
   PreloadAllModules,
+  RouteReuseStrategy,
   TitleStrategy,
   provideRouter,
   withPreloading,
+  withRouterConfig,
 } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { APP_ROUTES } from './app.routes';
 
 import { SiscapTitleStrategy } from './core/utils/SiscapTitleStrategy';
+import { SiscapRouteReuseStrategy } from './core/utils/SiscapRouteReuseStrategy';
 
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
@@ -19,8 +22,13 @@ import { quillEditorToolbarOptions } from './core/utils/quill-editor-toolbar-opt
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(APP_ROUTES, withPreloading(PreloadAllModules)),
+    provideRouter(
+      APP_ROUTES,
+      withRouterConfig({ onSameUrlNavigation: 'reload' }),
+      withPreloading(PreloadAllModules)
+    ),
     { provide: TitleStrategy, useClass: SiscapTitleStrategy },
+    { provide: RouteReuseStrategy, useClass: SiscapRouteReuseStrategy },
     provideHttpClient(
       withInterceptors([authInterceptor, errorHandlerInterceptor])
     ),
