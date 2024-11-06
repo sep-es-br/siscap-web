@@ -7,10 +7,11 @@ a.nav-link {
   color: white;
   margin-top: 0.75rem;
   padding: 0.75rem;
+  text-wrap: nowrap;
 
   &:hover {
     background-color: #ffffffdf;
-    color: #0096e1;
+    color: var(--siscap-light-primary-1);
   }
 }
 
@@ -23,19 +24,20 @@ a.sub-menu-nav-link {
   color: black;
   text-decoration: none;
   padding: 0.75rem;
+  text-wrap: nowrap;
 
   &:first-child {
     margin-left: 0 !important;
   }
 
   &:hover {
-    color: #85beff;
-    border: 1px solid #85beff;
+    color: var(--siscap-light-primary-2);
+    border: 1px solid var(--siscap-light-primary-2);
     border-radius: 5px;
   }
 
   &.active {
-    background-color: #85beff;
+    background-color: var(--siscap-light-primary-2);
     color: white;
     border-radius: 5px;
   }

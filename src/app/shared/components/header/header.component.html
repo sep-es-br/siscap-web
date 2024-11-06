@@ -1,6 +1,6 @@
 <header class="header-wrapper">
   <div
-    class="col-12 col-md-8 mx-auto d-flex justify-content-between align-items-center"
+    class="col-10 col-xl-8 mx-auto d-flex justify-content-between align-items-center"
   >
     <img
       class="siscap-logo w-100"
@@ -8,10 +8,21 @@
       alt="Emblema Siscap"
     />
 
-    <div class="mx-3 flex-grow-1">
-      <siscap-nav-menu></siscap-nav-menu>
+    <div
+      class="d-none d-md-block mx-3 flex-grow-1 overflow-x-scroll overflow-y-hidden"
+    >
+      <siscap-nav-menu
+        [menuCategoriaAtiva]="menuCategoriaAtiva"
+        [subMenuCategoriaAtiva]="subMenuCategoriaAtiva"
+      ></siscap-nav-menu>
     </div>
 
-    <siscap-user-profile></siscap-user-profile>
+    <siscap-user-profile class="d-none d-md-block"></siscap-user-profile>
+
+    <div class="d-block d-md-none my-2 py-1">
+      <button class="btn" (click)="abrirSideMenuOffcanvas()">
+        <i class="fa-solid fa-bars text-white"></i>
+      </button>
+    </div>
   </div>
 </header>

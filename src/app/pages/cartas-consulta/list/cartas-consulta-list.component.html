@@ -1,5 +1,5 @@
 <div class="mx-3">
-  <div id="header" class="row mb-2">
+  <div id="header" class="row mb-2 flex-nowrap">
     <div class="col-2 id-col ms-4">
       <span class="fs-small-4">Carta Consulta</span>
     </div>
@@ -14,13 +14,14 @@
   </div>
   <ng-container *ngFor="let cartaConsulta of cartasConsultaList()">
     <div
-      class="row border-top border-bottom d-flex align-items-center mb-3 py-2"
+      class="row border-top border-bottom flex-nowrap align-items-center mb-3 py-2"
       (click)="visualizarCartaConsulta(cartaConsulta.id)"
     >
       <div class="col-2 id-col ms-4">
-        <span class="fs-small-3 text-primary text-decoration-underline pointer">{{
-          preencherIdAteQuatroDigitos(cartaConsulta.id)
-        }}</span>
+        <span
+          class="fs-small-3 text-primary text-decoration-underline pointer"
+          >{{ preencherIdAteQuatroDigitos(cartaConsulta.id) }}</span
+        >
       </div>
       <div class="col-2 operacao-col">
         <span class="fs-small-3 fw-semibold">{{
@@ -33,7 +34,9 @@
         }}</span>
       </div>
       <div class="col-1">
-        <span class="fs-small-3 fw-semibold">{{ cartaConsulta.data }}</span>
+        <span class="fs-small-3 fw-semibold text-nowrap">{{
+          cartaConsulta.data
+        }}</span>
       </div>
       <div class="col-1 acoes-col" (click)="$event.stopPropagation()">
         <table-actions-dropdown
@@ -51,4 +54,7 @@
       </div>
     </div>
   </ng-container>
+</div>
+<div class="mt-3 ms-4">
+  <ng-content select="siscap-pagination"></ng-content>
 </div>

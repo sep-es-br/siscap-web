@@ -1,26 +1,34 @@
 <div
-  id="footer"
-  class="d-flex flex-column flex-md-row align-items-center justify-content-around"
+  id="pagination-wrapper"
+  class="d-flex flex-column flex-md-row align-items-center align-items-md-baseline justify-content-around"
 >
-  <div class="col-10 col-md-4 mb-2 mb-md-0">
-    <span class="report-total">
-      Mostrando de {{ paginacaoDadosInput().primeiroItemPagina }} até
-      {{ paginacaoDadosInput().ultimoItemPagina }} registros de
-      {{ paginacaoDadosInput().totalRegistros }}
-    </span>
-  </div>
-  <div class="col-10 col-md-4 mt-2 mt-md-0">
-    <ngb-pagination
-      [page]="paginacaoDadosInput().paginaAtual"
-      [pageSize]="paginacaoDadosInput().itensPorPagina"
-      [collectionSize]="paginacaoDadosInput().totalRegistros"
-      [boundaryLinks]="true"
-      (pageChange)="ngbPaginationPageChangeEvent($event)"
-    >
-      <ng-template ngbPaginationFirst>Primeiro</ng-template>
-      <ng-template ngbPaginationNext>Próximo</ng-template>
-      <ng-template ngbPaginationPrevious>Anterior</ng-template>
-      <ng-template ngbPaginationLast>Último</ng-template>
-    </ngb-pagination>
-  </div>
+  <span class="report-total">
+    Mostrando {{ paginacaoDadosInput().primeiroItemPagina }} até
+    {{ paginacaoDadosInput().ultimoItemPagina }} registros de
+    {{ paginacaoDadosInput().totalRegistros }}
+  </span>
+
+  <ngb-pagination
+    [page]="paginacaoDadosInput().paginaAtual"
+    [pageSize]="paginacaoDadosInput().itensPorPagina"
+    [collectionSize]="paginacaoDadosInput().totalRegistros"
+    [boundaryLinks]="true"
+    (pageChange)="ngbPaginationPageChangeEvent($event)"
+  >
+    <ng-template ngbPaginationFirst>
+      <span class="ngb-pagination-text"> Primeiro </span>
+    </ng-template>
+
+    <ng-template ngbPaginationNext>
+      <span class="ngb-pagination-text"> Próximo </span>
+    </ng-template>
+
+    <ng-template ngbPaginationPrevious>
+      <span class="ngb-pagination-text"> Anterior </span>
+    </ng-template>
+
+    <ng-template ngbPaginationLast>
+      <span class="ngb-pagination-text"> Último </span>
+    </ng-template>
+  </ngb-pagination>
 </div>

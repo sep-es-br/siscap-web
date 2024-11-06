@@ -7,7 +7,7 @@
           preencherIdAteQuatroDigitos(cartaConsultaDetalhes.id)
         }}</span>
       </div>
-      <div class="col-9 pt-2">
+      <div class="col-12 col-md-9 pt-2">
         <span class="fs-small-4 fw-semibold">Objeto:</span>
         <br />
         <span class="fs-small-4">{{ cartaConsultaDetalhes.objeto.nome }}</span>
@@ -18,14 +18,14 @@
           "
         >
           <span
-            class="fs-small-4 text-primary pointer"
+            class="ms-0 ms-md-2 fs-small-4 text-primary pointer"
             (click)="baixarDIC(projetoProposto.id)"
             >{{ projetoProposto.nome }}</span
           >
           <br />
         </ng-container>
       </div>
-      <div class="col-3 pt-2">
+      <div class="col-12 col-md-3 pt-2">
         <span class="fs-small-4 fw-semibold">Valor Estimado:</span>
         <br />
         <span class="fs-small-4">{{
@@ -41,7 +41,7 @@
                 }
         }}</span>
       </div>
-      <div class="col-12 mt-2">
+      <div class="col-12 mt-4">
         <siscap-text-preview
           [conteudo]="cartaConsultaDetalhes.corpo"
         ></siscap-text-preview>

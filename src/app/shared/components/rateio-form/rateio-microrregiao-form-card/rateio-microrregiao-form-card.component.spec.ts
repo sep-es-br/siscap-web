@@ -8,10 +8,9 @@ describe('RateioMicrorregiaoFormCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RateioMicrorregiaoFormCardComponent]
-    })
-    .compileComponents();
-    
+      imports: [RateioMicrorregiaoFormCardComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(RateioMicrorregiaoFormCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

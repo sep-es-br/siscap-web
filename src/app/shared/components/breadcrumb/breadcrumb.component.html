@@ -1,15 +1,15 @@
 <div class="breadcrumb-wrapper bg-light pb-3">
   <div
-    class="col-12 col-md-8 mx-auto d-flex justify-content-between align-items-center"
+    class="col-10 col-xl-8 mx-auto d-flex flex-wrap justify-content-between align-items-center"
   >
     <div
       id="current-page-title-breadcrumb"
-      class="col-8 d-inline-flex flex-column"
+      class="col-12 col-md-8 d-inline-flex flex-column"
     >
       <h1 class="current-page-title mb-0">{{ paginaAtual.titulo }}</h1>
 
-      <nav>
-        <ol class="breadcrumb fw-semibold mb-0">
+      <nav class="overflow-x-scroll">
+        <ol style="min-width: 425px" class="breadcrumb fw-semibold mb-0">
           <ng-container *ngFor="let breadcrumbItem of listaBreadcrumbItems">
             <li class="breadcrumb-item">
               <a
@@ -27,7 +27,7 @@
 
     <div
       id="action-buttons"
-      class="col-4 d-inline-flex flex-row-reverse align-self-end"
+      class="col-12 col-md-4 mt-2 mt-md-0 d-inline-flex flex-row-reverse justify-content-end justify-content-md-start align-self-end"
     >
       <ng-container *ngFor="let botaoAcao of listaBotoesAcao">
         <ng-container [ngSwitch]="botaoAcao">
@@ -66,7 +66,7 @@
 
 <ng-template #botaoSalvar>
   <button
-    class="btn btn-success icon-text-btn"
+    class="btn btn-success icon-text-btn text-nowrap"
     (click)="emitirAcaoBreadcrumb('salvar')"
   >
     <i class="fa-solid fa-save"></i>
@@ -76,7 +76,7 @@
 
 <ng-template #botaoCancelar>
   <button
-    class="btn btn-outline-danger icon-text-btn"
+    class="btn btn-outline-danger icon-text-btn text-nowrap"
     (click)="emitirAcaoBreadcrumb('cancelar')"
   >
     <i class="fa-solid fa-close"></i>
@@ -86,7 +86,7 @@
 
 <ng-template #botaoEditar>
   <button
-    class="btn btn-primary icon-text-btn"
+    class="btn btn-primary icon-text-btn text-nowrap"
     (click)="emitirAcaoBreadcrumb('editar')"
   >
     <i class="fa-solid fa-edit"></i>
