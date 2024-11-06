@@ -3,13 +3,12 @@ div.breadcrumb-wrapper {
 }
 
 h1.current-page-title {
-  font-size: 1.6rem;
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
 }
 
 li.breadcrumb-item a.breadcrumb-link {
   font-size: 0.8rem;
 
-  // Entender se é melhor importar a variável $primary de styles.scss ou deixar assim
   &:hover {
     color: var(--bs-primary) !important;
   }
@@ -32,5 +31,11 @@ div#action-buttons button.icon-text-btn {
 
   &:not(:first-child):not(:last-child) {
     margin: 0 0.25rem;
+  }
+}
+
+@media (max-width: 767px) {
+  div.breadcrumb-wrapper {
+    padding-top: 0.75rem;
   }
 }

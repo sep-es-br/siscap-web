@@ -1,0 +1,45 @@
+<div ngbAccordion [closeOthers]="true" class="side-menu-accordion">
+  <ng-container *ngFor="let menuItem of menuLinks">
+    <div
+      ngbAccordionItem
+      [collapsed]="menuItem.slug !== menuCategoriaAtiva"
+      class="my-3 side-menu-accordion-item"
+      [ngClass]="{ 'd-none': menuItem.hidden }"
+    >
+      <div
+        ngbAccordionHeader
+        ngbAccordionToggle
+        class="accordion-button side-menu-accordion-header"
+      >
+        <span>
+          {{ menuItem.category }}
+        </span>
+        <button class="btn ms-auto p-0 text-white side-menu-accordion-toggle">
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+      </div>
+
+      <div ngbAccordionCollapse class="side-menu-accordion-collapse">
+        <div ngbAccordionBody class="side-menu-accordion-body">
+          <ng-template>
+            <ng-container *ngFor="let route of menuItem.routes">
+              <a
+                class="btn col-12 text-start sub-menu-nav-link"
+                [ngClass]="{
+                  'd-none': route.hidden,
+                  active: route.path === subMenuCategoriaAtiva
+                }"
+                [routerLink]="['main', route.path]"
+                (click)="
+                  navegacaoSideMenu.emit(route.path != subMenuCategoriaAtiva)
+                "
+              >
+                {{ route.title }}
+              </a>
+            </ng-container>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

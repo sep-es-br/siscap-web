@@ -1,24 +1,27 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 
 import {
   IMenuLink,
   MenuLinksHelper,
-} from '../../../core/helpers/menu-links.helper';
+} from '../../../../core/helpers/menu-links.helper';
 
 @Component({
-  selector: 'siscap-nav-menu',
+  selector: 'siscap-offcanvas-nav-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgbNavModule],
+  imports: [CommonModule, RouterModule, NgbAccordionModule],
   templateUrl: './nav-menu.component.html',
   styleUrl: './nav-menu.component.scss',
 })
-export class NavMenuComponent {
+export class OffcanvasNavMenuComponent {
   @Input() public menuCategoriaAtiva: string = '';
   @Input() public subMenuCategoriaAtiva: string = '';
+
+  @Output() public navegacaoSideMenu: EventEmitter<boolean> =
+    new EventEmitter<boolean>();
 
   public menuLinks: Array<IMenuLink> = MenuLinksHelper.menuLinks;
 }

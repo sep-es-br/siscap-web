@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RateioCidadeFormCardComponent } from './rateio-cidade-form-card.component';
+import { RateioMunicipioFormCardComponent } from './rateio-municipio-form-card.component';
 
-describe('RateioCidadeFormCardComponent', () => {
-  let component: RateioCidadeFormCardComponent;
-  let fixture: ComponentFixture<RateioCidadeFormCardComponent>;
+describe('RateioMunicipioFormCardComponent', () => {
+  let component: RateioMunicipioFormCardComponent;
+  let fixture: ComponentFixture<RateioMunicipioFormCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RateioCidadeFormCardComponent]
-    })
-    .compileComponents();
-    
-    fixture = TestBed.createComponent(RateioCidadeFormCardComponent);
+      imports: [RateioMunicipioFormCardComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(RateioMunicipioFormCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

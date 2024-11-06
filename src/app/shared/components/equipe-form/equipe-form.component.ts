@@ -44,9 +44,9 @@ export class EquipeFormComponent implements OnDestroy {
 
   constructor(
     public equipeService: EquipeService,
-    private _usuarioService: UsuarioService,
-    private _ngbModalService: NgbModal,
-    private _toastService: ToastService
+    private readonly _usuarioService: UsuarioService,
+    private readonly _ngbModalService: NgbModal,
+    private readonly _toastService: ToastService
   ) {
     this.permissaoRemoverMembro =
       this._usuarioService.verificarPermissao('adminAuth');

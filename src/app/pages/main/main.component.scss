@@ -1,5 +1,19 @@
+/* 
+  Valor aproximado do somatório das alturas dos seguintes componentes/elementos:
+  * <siscap-header>
+    |-> <img class="siscap-logo">
+    |-> <siscap-nav-menu>
+    |-> <siscap-user-profile>
+  * <siscap-breadcrumb>
+
+  Utilizado para ajustar o valor da propriedade margin-top da seção que encapsula conteúdo 
+  principal da aplicação (<router-outlet>), devido á propriedade position: absolute de algum(ns) 
+  elemento(s) acima.
+*/
+$main-content-margin-top: 200px;
+
 section#main-content {
-  margin-top: 10.5%;
+  margin-top: $main-content-margin-top;
   margin-bottom: 4rem;
 }
 
@@ -15,5 +29,15 @@ section#footer-content {
     span {
       font-size: 0.875rem;
     }
+  }
+}
+
+/*
+  Valor calculado para breakpoints abaixo de 767px (smartphones e tablets em modo retrato). 
+  Leva em consideração a redução do padding de <siscap-breadcrumb>.
+*/
+@media (max-width: 767px) {
+  section#main-content {
+    margin-top: calc($main-content-margin-top - 1.3vw);
   }
 }

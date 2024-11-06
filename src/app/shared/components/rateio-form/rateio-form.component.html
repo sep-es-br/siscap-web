@@ -1,14 +1,18 @@
 <div class="card">
   <div class="card-body">
-    <div class="col-12 mb-2 d-flex justify-content-end align-items-center">
-      <div class="col-3 d-inline-flex flex-row justify-content-between">
+    <div
+      class="col-12 mb-2 d-flex justify-content-between justify-content-sm-end align-items-center"
+    >
+      <div
+        class="col-12 col-sm-6 col-lg-4 d-inline-flex flex-row justify-content-between"
+      >
         <ng-container
           *ngIf="
             rateioService.quantiaFormControlReferencia;
             else nullQuantiaFormControlValue
           "
         >
-          <div class="col-4">
+          <div class="col-5 col-sm-4">
             <span
               class="fs-small-3 total-percentual"
               [ngClass]="{
@@ -23,7 +27,7 @@
               }}
             </span>
           </div>
-          <div class="col-8">
+          <div class="col-7 col-sm-8">
             <span
               class="fs-small-3 total-quantia"
               [ngClass]="{
@@ -69,7 +73,7 @@
               >
                 <button
                   ngbAccordionButton
-                  class="m-0 p-0 bg-transparent"
+                  class="m-0 p-0 bg-transparent justify-content-center justify-content-md-start"
                 ></button>
               </rateio-microrregiao-form-card>
               <div ngbAccordionCollapse>

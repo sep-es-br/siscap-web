@@ -20,3 +20,9 @@ input.municipio-quantia-rateio {
   height: 1.5rem;
   width: 80%;
 }
+
+@media (max-width: 575px) {
+  div.form-check {
+    margin-left: 1.35rem;
+  }
+}

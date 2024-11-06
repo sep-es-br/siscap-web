@@ -1,0 +1,45 @@
+<div ngbDropdown>
+  <button
+    ngbDropdownToggle
+    class="btn mx-auto py-3 w-100 d-flex justify-content-evenly align-items-center"
+  >
+    <ng-container *ngTemplateOutlet="offcanvasUserInfo" />
+  </button>
+  <div ngbDropdownMenu>
+    <ng-container *ngTemplateOutlet="offcanvasUserActions" />
+  </div>
+</div>
+
+<ng-template #offcanvasUserInfo>
+  <div class="symbol symbol-60px">
+    <img [src]="usuarioAvatar" alt="Perfil do Usuario" />
+  </div>
+
+  <div class="my-auto d-inline-flex flex-column align-items-start">
+    <span id="user-name" class="py-1 text-white opacity-75 lh-1">{{
+      usuarioPerfil.nome
+    }}</span>
+    <span id="user-email" class="py-1 text-white opacity-fw-bold lh-1">{{
+      usuarioPerfil.email
+    }}</span>
+  </div>
+</ng-template>
+
+<ng-template #offcanvasUserActions>
+  <button
+    class="w-100 btn icon-text-btn text-start align-self-start"
+    (click)="editarMeuPerfil()"
+  >
+    <i class="fa-solid fa-user text-primary"></i>
+    <span class="text-white">Meu Perfil</span>
+  </button>
+
+  <div class="separator my-2 mx-0 p-0"></div>
+  <button
+    class="w-100 btn icon-text-btn text-start align-self-start"
+    (click)="logOut()"
+  >
+    <i class="fa-solid fa-power-off text-danger"></i>
+    <span class="text-danger">Sair</span>
+  </button>
+</ng-template>

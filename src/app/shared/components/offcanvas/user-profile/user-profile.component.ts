@@ -1,29 +1,30 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 
-import { UsuarioService } from '../../../core/services/usuario/usuario.service';
-import { AuthenticationService } from '../../../core/services/authentication/authentication.service';
-import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
+import { UsuarioService } from '../../../../core/services/usuario/usuario.service';
+import { AuthenticationService } from '../../../../core/services/authentication/authentication.service';
+import { PessoasService } from '../../../../core/services/pessoas/pessoas.service';
 
-import { UsuarioPerfilModel } from '../../../core/models/usuario.model';
+import { UsuarioPerfilModel } from '../../../../core/models/usuario.model';
 
-import { converterArrayBufferEmImgSrc } from '../../../core/utils/functions';
+import { converterArrayBufferEmImgSrc } from '../../../../core/utils/functions';
 
 @Component({
-  selector: 'siscap-user-profile',
+  selector: 'siscap-offcanvas-user-profile',
   standalone: true,
   imports: [CommonModule, NgbDropdownModule],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss',
 })
-export class UserProfileComponent {
+export class OffcanvasUserProfileComponent {
   public usuarioPerfil: UsuarioPerfilModel = new UsuarioPerfilModel();
   public usuarioAvatar: string = '';
 
   constructor(
+    private readonly _ngbOffcanvasService: NgbOffcanvas,
     private readonly _usuarioService: UsuarioService,
     private readonly _authService: AuthenticationService,
     private readonly _pessoasService: PessoasService,
@@ -42,6 +43,8 @@ export class UserProfileComponent {
     this._pessoasService.subNovoPessoa$.next(this.usuarioPerfil.subNovo);
 
     this._router.navigate(['main', 'pessoas', 'meu-perfil']);
+
+    this._ngbOffcanvasService.dismiss();
   }
 
   public logOut(): void {
