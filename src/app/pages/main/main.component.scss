@@ -10,7 +10,7 @@
   principal da aplicação (<router-outlet>), devido á propriedade position: absolute de algum(ns) 
   elemento(s) acima.
 */
-$main-content-margin-top: 200px;
+$main-content-margin-top: 225px;
 
 section#main-content {
   margin-top: $main-content-margin-top;
@@ -38,6 +38,6 @@ section#footer-content {
 */
 @media (max-width: 767px) {
   section#main-content {
-    margin-top: calc($main-content-margin-top - 1.3vw);
+    margin-top: calc($main-content-margin-top - 4vw);
   }
 }
