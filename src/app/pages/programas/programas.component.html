@@ -8,12 +8,15 @@
   ></siscap-table-search>
 </div>
 
-<div class="card shadow border-light p-3 overflow-scroll" *ngIf="!loading">
+<div
+  id="programas-table-wrapper"
+  class="card shadow border-light p-3"
+  *ngIf="!loading"
+>
   <ng-container
     *ngIf="(programasList$ | async)?.length! > 0; else semResultados"
   >
     <siscap-programas-list
-      style="min-width: 1024px"
       [programasList]="programasList$ | async"
       (sortableDirectiveOutput)="sortableDirectiveOutputEvent($event)"
     >

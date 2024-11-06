@@ -38,4 +38,12 @@ div#action-buttons button.icon-text-btn {
   div.breadcrumb-wrapper {
     padding-top: 0.75rem;
   }
+
+  nav {
+    overflow-x: scroll;
+  }
+
+  ol.breadcrumb {
+    min-width: 425px;
+  }
 }
