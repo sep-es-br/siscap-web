@@ -57,20 +57,22 @@ import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
   styleUrl: './projeto-form.component.scss',
 })
 export class ProjetoFormComponent implements OnInit, OnDestroy {
-  private _atualizarProjeto$: Observable<IProjeto>;
-  private _cadastrarProjeto$: Observable<number>;
+  private readonly _atualizarProjeto$: Observable<IProjeto>;
+  private readonly _cadastrarProjeto$: Observable<number>;
 
-  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getLocalidadesOpcoes$: Observable<ILocalidadeOpcoesDropdown[]>;
-  private _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getLocalidadesOpcoes$: Observable<
+    ILocalidadeOpcoesDropdown[]
+  >;
+  private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idProjetoEdicao: number = 0;
 
-  private _subscription: Subscription = new Subscription();
+  private readonly _subscription: Subscription = new Subscription();
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -91,16 +93,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public idMembroEquipeElaboracao: number | null = null;
 
   constructor(
-    private _router: Router,
-    private _nnfb: NonNullableFormBuilder,
-    private _projetosService: ProjetosService,
-    private _opcoesDropdownService: OpcoesDropdownService,
-    private _pessoasService: PessoasService,
+    private readonly _router: Router,
+    private readonly _nnfb: NonNullableFormBuilder,
+    private readonly _projetosService: ProjetosService,
+    private readonly _opcoesDropdownService: OpcoesDropdownService,
+    private readonly _pessoasService: PessoasService,
     public equipeService: EquipeService,
-    private _valorService: ValorService,
-    private _rateioService: RateioService,
-    private _toastService: ToastService,
-    private _breadcrumbService: BreadcrumbService
+    private readonly _valorService: ValorService,
+    private readonly _rateioService: RateioService,
+    private readonly _toastService: ToastService,
+    private readonly _breadcrumbService: BreadcrumbService
   ) {
     const [editar$, criar$] = partition(
       this._projetosService.idProjeto$,
@@ -297,19 +299,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     ) as FormControl<number | null>;
 
     idOrganizacaoFormControl.valueChanges.subscribe((idOrganizacaoValue) => {
-      if (this.isModoEdicao) this.idOrganizacaoChange(idOrganizacaoValue);
+      if (this.isModoEdicao && !idResponsavelProponenteFormControl.value)
+        this.idOrganizacaoChange(idOrganizacaoValue);
     });
 
     idResponsavelProponenteFormControl.valueChanges.subscribe(
       (idResponsavelProponenteValue) => {
+        const isEquipePossuiIdResponsavelProponente =
+          this.equipeService.equipeFormArray.value.some(
+            (membro) => membro.idPessoa === idResponsavelProponenteValue
+          );
+
         if (
           this.equipeService.equipeFormArray.length > 0 &&
-          idResponsavelProponenteFormControl.dirty
+          idResponsavelProponenteFormControl.dirty &&
+          isEquipePossuiIdResponsavelProponente
         ) {
           this._toastService.showToast(
             'info',
-            'Responsável proponente alterado',
-            ['Limpando membros da equipe']
+            'Responsável proponente já incluso na equipe',
+            ['Limpando membros da equipe.']
           );
 
           this.equipeService.equipeFormArray.clear();
