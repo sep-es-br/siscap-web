@@ -26,6 +26,12 @@
     <form
       [formGroup]="rateioLocalidadeFormGroupMunicipio"
       class="col-12 col-sm-6 col-lg-4 d-inline-flex justify-content-center justify-content-sm-between py-1 py-sm-0"
+      [ngClass]="
+        rateioService.alterarVisibilidadeElementoForm(
+          rateioLocalidadeFormGroupMunicipio,
+          isModoEdicao
+        )
+      "
     >
       <div class="col-5 col-sm-4">
         <input
