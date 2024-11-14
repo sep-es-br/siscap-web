@@ -314,6 +314,24 @@ export class RateioService {
     };
   }
 
+  public alterarVisibilidadeElementoForm(
+    rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType>,
+    isModoEdicao: boolean
+  ): string {
+    const isPercentualValueNotNull =
+      !!rateioLocalidadeFormGroup.value.percentual;
+
+    const isQuantiaValueNotNull = !!rateioLocalidadeFormGroup.value.quantia;
+
+    const isFormGroupEnabled = rateioLocalidadeFormGroup.enabled;
+
+    const check =
+      (!isModoEdicao && isPercentualValueNotNull && isQuantiaValueNotNull) ||
+      isFormGroupEnabled;
+
+    return check ? 'visible' : 'invisible';
+  }
+
   private mapearControleLocalidadesCheckboxObj(
     localidadesOpcoes: Array<ILocalidadeOpcoesDropdown>
   ): Record<number, boolean> {
