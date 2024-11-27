@@ -1,0 +1,9 @@
+@media (max-width: 767px) {
+  div#prospeccoes-table-wrapper {
+    overflow: scroll;
+  }
+
+  siscap-prospeccoes-list {
+    min-width: 1024px;
+  }
+}
