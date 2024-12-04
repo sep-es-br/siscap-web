@@ -8,6 +8,7 @@ import {
   IObjetoOpcoesDropdown,
   IOpcoesDropdown,
   IProjetoPropostoOpcoesDropdown,
+  IProspeccaoInteressadoOpcoesDropdown,
 } from '../../interfaces/opcoes-dropdown.interface';
 
 import { environment } from '../../../../environments/environment';
@@ -111,6 +112,16 @@ export class OpcoesDropdownService {
   public getOpcoesLocalidades() {
     return this.getOpcoesDropdown('localidades') as Observable<
       ILocalidadeOpcoesDropdown[]
+    >;
+  }
+
+  public getOpcoesCartasConsulta() {
+    return this.getOpcoesDropdown('cartas-consulta');
+  }
+
+  public getOpcoesInteressados() {
+    return this.getOpcoesDropdown('interessados') as Observable<
+      IProspeccaoInteressadoOpcoesDropdown[]
     >;
   }
 }

@@ -46,6 +46,13 @@ const PAGES_ROUTES: Routes = [
     canActivateChild: [authGuard],
   },
   {
+    path: 'prospeccao',
+    loadChildren: () =>
+      import('./prospeccoes/prospeccoes.module').then(
+        (m) => m.ProspeccoesModule
+      ),
+  },
+  {
     path: '**',
     redirectTo: 'home',
   },

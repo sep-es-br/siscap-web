@@ -1,0 +1,117 @@
+<div class="card">
+  <div class="card-body">
+    <div class="row px-3">
+      <div class="col-12 d-inline-flex border-bottom pb-2">
+        <div class="me-3">
+          <span class="fs-small-4 fw-semibold">Carta Consulta: </span>
+          <span class="fs-small-4 text-primary">{{
+            preencherIdAteQuatroDigitos(
+              prospeccaoDetalhes.cartaConsultaDetalhes.id
+            )
+          }}</span>
+        </div>
+        <div class="ms-3">
+          <span class="fs-small-4 fw-semibold">Prospecção: </span>
+          <span class="fs-small-4 text-primary">{{
+            preencherIdAteQuatroDigitos(prospeccaoDetalhes.id)
+          }}</span>
+        </div>
+      </div>
+
+      <div class="col-12 py-2">
+        <span class="fs-small-4 fw-semibold">De:</span>
+        <br />
+        <ng-container
+          *ngTemplateOutlet="
+            prospeccaoOrganizacaoDetalhesTemplate;
+            context: { org: prospeccaoDetalhes.organizacaoProspectoraDetalhes }
+          "
+        ></ng-container>
+      </div>
+
+      <div class="col-12 py-2">
+        <span class="fs-small-4 fw-semibold">Para:</span>
+        <br />
+        <ng-container
+          *ngTemplateOutlet="
+            prospeccaoOrganizacaoDetalhesTemplate;
+            context: { org: prospeccaoDetalhes.organizacaoProspectadaDetalhes }
+          "
+        ></ng-container>
+      </div>
+
+      <div class="col-12 py-2">
+        <span class="fs-small-4 fw-semibold">Interessado(a)(s):</span>
+        <br />
+        <span
+          class="fs-small-4"
+          *ngFor="let nome of prospeccaoDetalhes.nomesInteressados"
+          >{{ nome }}</span
+        >
+      </div>
+
+      <div class="col-12 py-2">
+        <span class="fs-small-4 fw-semibold">Operação:</span>
+        <br />
+        <span class="fs-small-4">{{ prospeccaoDetalhes.tipoOperacao }}</span>
+      </div>
+
+      <div class="col-12 col-md-9 py-2">
+        <span class="fs-small-4 fw-semibold">Objeto:</span>
+        <br />
+        <span class="fs-small-4">{{
+          prospeccaoDetalhes.cartaConsultaDetalhes.objeto.nome
+        }}</span>
+        <br />
+        <ng-container
+          *ngFor="
+            let projetoProposto of prospeccaoDetalhes.cartaConsultaDetalhes
+              .projetosPropostos
+          "
+        >
+          <span
+            class="ms-0 ms-md-2 fs-small-4 text-primary pointer"
+            (click)="baixarDIC(projetoProposto.id)"
+            >{{ projetoProposto.nome }}</span
+          >
+          <br />
+        </ng-container>
+      </div>
+      <div class="col-12 col-md-3 py-2">
+        <span class="fs-small-4 fw-semibold">Valor Estimado:</span>
+        <br />
+        <span class="fs-small-4">{{
+          prospeccaoDetalhes.cartaConsultaDetalhes.valor.quantia
+            | mask
+              : "separator.2"
+              : {
+                  prefix:
+                    getSimboloMoeda(
+                      prospeccaoDetalhes.cartaConsultaDetalhes.valor.moeda
+                    ) + " ",
+                  leadZero: true,
+                  thousandSeparator: ".",
+                  decimalMarker: ","
+                }
+        }}</span>
+      </div>
+      <div class="col-12 mt-4">
+        <siscap-text-preview
+          [conteudo]="prospeccaoDetalhes.cartaConsultaDetalhes.corpo"
+        ></siscap-text-preview>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #prospeccaoOrganizacaoDetalhesTemplate let-org="org">
+  <div class="d-inline-flex flex-column">
+    <span class="fs-small-4">{{ org.nomeFantasia }}</span>
+    <span class="fs-small-4">{{ org.nome }}</span>
+    <span class="fs-small-4">{{
+      formatarEndereco(org.cidade, org.estado, org.pais)
+    }}</span>
+    <span class="fs-small-4">{{ org.telefone }}</span>
+    <span class="fs-small-4">{{ org.email }}</span>
+  </div>
+</ng-template>

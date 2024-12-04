@@ -48,6 +48,10 @@
             *ngSwitchCase="'cancelar'"
             [ngTemplateOutlet]="botaoCancelar"
           ></ng-container>
+          <ng-container
+            *ngSwitchCase="'prospectar'"
+            [ngTemplateOutlet]="botaoProspectar"
+          ></ng-container>
         </ng-container>
       </ng-container>
     </div>
@@ -91,5 +95,15 @@
   >
     <i class="fa-solid fa-edit"></i>
     <span>Editar</span>
+  </button>
+</ng-template>
+
+<ng-template #botaoProspectar>
+  <button
+    class="btn btn-outline-success icon-text-btn text-nowrap"
+    (click)="emitirAcaoBreadcrumb('prospectar')"
+  >
+    <i class="fa-solid fa-paper-plane"></i>
+    <span>Prospectar</span>
   </button>
 </ng-template>

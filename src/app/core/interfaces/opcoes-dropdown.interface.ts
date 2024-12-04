@@ -16,3 +16,8 @@ export interface ILocalidadeOpcoesDropdown extends IOpcoesDropdown {
   tipo: string;
   idLocalidadePai: number;
 }
+
+export interface IProspeccaoInteressadoOpcoesDropdown extends IOpcoesDropdown {
+  email: string;
+  idsOrganizacoesList: Array<number>;
+}
