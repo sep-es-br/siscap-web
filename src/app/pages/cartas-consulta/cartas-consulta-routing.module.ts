@@ -38,7 +38,7 @@ const CARTAS_CONSULTA_ROUTES: Routes = [
     data: {
       botoesAcao: {
         botoes: ['editar'],
-        contexto: 'pessoas',
+        contexto: 'cartasconsulta',
       },
     },
   },

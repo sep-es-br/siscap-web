@@ -1,0 +1,88 @@
+<div class="mx-3">
+  <div id="header" class="row mb-2 flex-nowrap">
+    <div class="col-1 ms-4 ms-md-2 ms-lg-4 text-truncate">
+      <span class="fs-small-4">Prospecção</span>
+    </div>
+    <div class="col-3 text-truncate">
+      <span class="fs-small-4">Organização</span>
+    </div>
+    <div class="col-2 text-truncate">
+      <span class="fs-small-4">Operação</span>
+    </div>
+    <div class="col-1 text-truncate">
+      <span class="fs-small-4">Objeto</span>
+    </div>
+    <div class="col-1 text-truncate">
+      <span class="fs-small-4">Tipo</span>
+    </div>
+    <div class="col-2 text-truncate">
+      <span class="fs-small-4">Status</span>
+    </div>
+    <div class="col-1 text-truncate">
+      <span class="fs-small-4">Data</span>
+    </div>
+    <div class="col-1 acoes-col">
+      <span class="fs-small-4">Ações</span>
+    </div>
+  </div>
+  <ng-container *ngFor="let prospeccao of prospeccoesList()">
+    <div
+      class="row border-top border-bottom flex-nowrap align-items-center mb-3 py-2"
+      (click)="visualizarProspeccao(prospeccao.id)"
+    >
+      <div class="col-1 ms-4 ms-md-2 ms-lg-4">
+        <span
+          class="fs-small-3 text-primary text-decoration-underline pointer"
+          >{{ preencherIdAteQuatroDigitos(prospeccao.id) }}</span
+        >
+      </div>
+      <div class="col-3">
+        <span class="fs-small-3 fw-semibold">{{
+          prospeccao.nomeOrganizacaoProspectada
+        }}</span>
+      </div>
+      <div class="col-2">
+        <span class="fs-small-3 fw-semibold">{{
+          prospeccao.tipoOperacao
+        }}</span>
+      </div>
+      <div class="col-1">
+        <span class="fs-small-3 fw-semibold">{{
+          formatarSiglaObjetoCartaConsulta(prospeccao.objetoCartaConsulta)
+        }}</span>
+      </div>
+      <div class="col-1">
+        <span class="fs-small-3 fw-semibold">{{
+          prospeccao.tipoProspeccao
+        }}</span>
+      </div>
+      <div class="col-2">
+        <span class="fs-small-3 fw-semibold text-truncate">{{
+          prospeccao.statusProspeccao
+        }}</span>
+      </div>
+      <div class="col-1">
+        <span class="fs-small-3 fw-semibold text-nowrap">{{
+          prospeccao.dataProspeccao
+        }}</span>
+      </div>
+      <div class="col-1 acoes-col" (click)="$event.stopPropagation()">
+        <table-actions-dropdown
+          [tableActionInput]="prospeccao.id"
+          (tableActionOutput)="tableActionOutputEvent($event)"
+        >
+          <button
+            class="dropdown-item"
+            (click)="visualizarProspeccao(prospeccao.id)"
+          >
+            <i class="fa-regular fa-clipboard me-2"></i>
+            <span>Visualizar</span>
+          </button>
+        </table-actions-dropdown>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<div class="mt-3 ms-4">
+  <ng-content select="siscap-pagination"></ng-content>
+</div>

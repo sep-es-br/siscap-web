@@ -94,7 +94,7 @@ export class BreadcrumbService {
 
       return this.filtrarCaminhosFilhos(caminho)
         ? this.tratarCaminhoFilho(caminho, urlTratada[index - 1])
-        : this.tratarCaminhoCasoEspecifico(caminho);
+        : this.tratarCaminhoCasoEspecifico(caminho, urlTratada[index - 1]);
     });
 
     if (
@@ -135,9 +135,14 @@ export class BreadcrumbService {
     };
   }
 
-  private tratarCaminhoCasoEspecifico(caminho: string): IBreadcrumbItem {
+  private tratarCaminhoCasoEspecifico(
+    caminho: string,
+    caminhoAnterior: string
+  ): IBreadcrumbItem {
     const itemCasoEspecifico = BREADCRUMB_LISTA_CAMINHOS_ESPECIFICOS.find(
-      (casoEspecifico) => casoEspecifico.caminho === caminho
+      (casoEspecifico) =>
+        casoEspecifico.caminho === caminho &&
+        casoEspecifico.contexto === caminhoAnterior
     );
 
     if (!itemCasoEspecifico) {

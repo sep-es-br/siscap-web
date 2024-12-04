@@ -7,7 +7,11 @@
  *
  * Utilizado em `src/app/core/components/breadcrumb/breadcrumb.component.ts`
  */
-export const BREADCRUMB_LISTA_CAMINHOS_EXCLUSAO: Array<string> = ['', 'main'];
+export const BREADCRUMB_LISTA_CAMINHOS_EXCLUSAO: Array<string> = [
+  '',
+  'main',
+  'login',
+];
 
 /**
  * Lista de caminhos "principais" da aplicação.
@@ -21,6 +25,7 @@ export const BREADCRUMB_LISTA_CAMINHOS_PRINCIPAIS: Array<string> = [
   'pessoas',
   'organizacoes',
   'cartasconsulta',
+  'prospeccao',
 ];
 
 export const BREADCRUMB_LISTA_CAMINHOS_FILHOS: Array<string> = [
@@ -34,6 +39,7 @@ export const BREADCRUMB_LISTA_CAMINHOS_ESPECIFICOS: Array<{
 }> = [
   { caminho: 'meu-perfil', contexto: 'pessoas' },
   { caminho: 'visualizar', contexto: 'cartasconsulta' },
+  { caminho: 'visualizar', contexto: 'prospeccao' },
 ];
 
 export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
@@ -60,6 +66,11 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   cartasconsultacriar: 'Nova Carta Consulta',
   cartasconsultaeditar: 'Editar Carta Consulta',
   cartasconsultavisualizar: 'Visualizar Carta Consulta', // Caso específico
+
+  prospeccao: 'Prospecção',
+  prospeccaocriar: 'Nova Prospecção',
+  prospeccaoeditar: 'Editar Prospecção',
+  prospeccaovisualizar: 'Visualizar Prospecção', // Caso específico
 };
 
 /**
