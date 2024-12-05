@@ -70,4 +70,8 @@ export class ProspeccoesService
   public getProspeccaoDetalhes(id: number): Observable<IProspeccaoDetalhes> {
     return this._http.get<IProspeccaoDetalhes>(`${this._url}/${id}/detalhes`);
   }
+
+  public enviarEmailProspeccao(id: number): Observable<any> {
+    return this._http.post(`${this._url}/${id}/prospectar`, null);
+  }
 }

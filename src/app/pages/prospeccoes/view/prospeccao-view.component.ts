@@ -97,12 +97,21 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
         break;
 
       case 'prospectar':
-        console.log('INICIAR PROCESSO DE PROSPECCAO');
+        this.enviarEmailProspeccao();
         break;
 
       default:
         break;
     }
+  }
+
+  private enviarEmailProspeccao(): void {
+    const enviarEmailProspeccao$ =
+      this._prospeccoesService.enviarEmailProspeccao(
+        this.prospeccaoDetalhes.id
+      );
+
+    enviarEmailProspeccao$.subscribe();
   }
 
   ngOnDestroy(): void {
