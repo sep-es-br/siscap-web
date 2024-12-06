@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { debounceTime, fromEvent } from 'rxjs';
@@ -24,7 +31,7 @@ import { TEMPO_INPUT_USUARIO } from '../../../../core/utils/constants';
   styleUrl: './rateio-microrregiao-form-card.component.scss',
 })
 export class RateioMicrorregiaoFormCardComponent
-  implements OnInit, AfterViewInit
+  implements OnInit, OnChanges, AfterViewInit
 {
   @Input() public microrregiao!: ILocalidadeOpcoesDropdown;
   @Input() public isModoEdicao: boolean = false;
@@ -49,6 +56,12 @@ export class RateioMicrorregiaoFormCardComponent
   ngOnInit(): void {
     this.inicializarRateioLocalidadeFormGroupMicrorregiao();
 
+    this.rateioService.estadoBooleanCheckboxChange$.subscribe(
+      (estadoCheckboxChange) => {
+        this.bloquearMicrorregiaoBooleanCheckbox = estadoCheckboxChange;
+      }
+    );
+
     this.rateioService.municipioBooleanCheckboxChange$.subscribe(
       (localidadeCheckboxChange) => {
         const resultadoMicrorregiaoCheckbox =
@@ -62,6 +75,17 @@ export class RateioMicrorregiaoFormCardComponent
             resultadoMicrorregiaoCheckbox;
       }
     );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const isModoEdicaoChange = changes['isModoEdicao'];
+
+    if (isModoEdicaoChange && !isModoEdicaoChange.firstChange) {
+      const estadoBooleanCheckboxValue =
+        this.rateioService.estadoBooleanCheckboxReferencia;
+
+      this.bloquearMicrorregiaoBooleanCheckbox = estadoBooleanCheckboxValue;
+    }
   }
 
   ngAfterViewInit(): void {

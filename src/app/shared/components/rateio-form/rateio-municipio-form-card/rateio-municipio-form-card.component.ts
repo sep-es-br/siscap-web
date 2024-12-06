@@ -61,6 +61,12 @@ export class RateioMunicipioFormCardComponent
   ngOnInit(): void {
     this.inicializarRateioLocalidadeFormGroupMunicipio();
 
+    this.rateioService.estadoBooleanCheckboxChange$.subscribe(
+      (estadoCheckboxChange) => {
+        this.bloquearMunicipioBooleanCheckbox = estadoCheckboxChange;
+      }
+    );
+
     this.rateioService.microrregiaoBooleanCheckboxChange$.subscribe(
       (localidadeCheckboxChange) => {
         const resultadoMunicipioCheckbox =
@@ -87,10 +93,16 @@ export class RateioMunicipioFormCardComponent
     const isModoEdicaoChange = changes['isModoEdicao'];
 
     if (isModoEdicaoChange && !isModoEdicaoChange.firstChange) {
-      this.bloquearMunicipioBooleanCheckbox =
+      const estadoBooleanCheckboxValue =
+        this.rateioService.estadoBooleanCheckboxReferencia;
+
+      const checkboxIdLocalidadePaiValue =
         this.rateioService.checarValorCheckboxLocalidade(
           this.municipio.idLocalidadePai
         );
+
+      this.bloquearMunicipioBooleanCheckbox =
+        estadoBooleanCheckboxValue || checkboxIdLocalidadePaiValue;
     }
   }
 
