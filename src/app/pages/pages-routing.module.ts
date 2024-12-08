@@ -12,6 +12,12 @@ const PAGES_ROUTES: Routes = [
     component: HomeComponent,
   },
   {
+    path: 'propostas',
+    loadChildren: () =>
+      import('./propostas/propostas.module').then((m) => m.PropostasModule),
+    canActivateChild: [authGuard],
+  },
+  {
     path: 'projetos',
     loadChildren: () =>
       import('./projetos/projetos.module').then((m) => m.ProjetosModule),

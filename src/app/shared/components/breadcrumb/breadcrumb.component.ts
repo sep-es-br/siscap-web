@@ -10,6 +10,7 @@ import {
 } from '../../../core/interfaces/breadcrumb.interface';
 
 import { BREADCRUMB_COLECAO_CAMINHO_TITULO } from '../../../core/utils/constants';
+import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 
 @Component({
   selector: 'siscap-breadcrumb',
@@ -22,10 +23,17 @@ export class BreadcrumbComponent {
   public paginaAtual: IBreadcrumbItem = { titulo: '', caminho: '' };
   public listaBreadcrumbItems: Array<IBreadcrumbItem> = [];
 
+  public isProponente: boolean = false;
+
   public listaBotoesAcao: Array<string> = [];
   public contextoBotoesAcao: string = '';
 
-  constructor(private readonly _breadcrumbService: BreadcrumbService) {
+  constructor(
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _usuarioService: UsuarioService
+  ) {
+    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
     this._breadcrumbService.listaBreadcrumbItems$.subscribe(
       (breadcrumbItemArray: Array<IBreadcrumbItem>) => {
         this.paginaAtual = breadcrumbItemArray[breadcrumbItemArray.length - 1];

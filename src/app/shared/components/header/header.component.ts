@@ -14,11 +14,13 @@ import {
   IMenuLink,
   MenuLinksHelper,
 } from '../../../core/helpers/menu-links.helper';
+import { UsuarioService } from '../../../core/services/usuario/usuario.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'siscap-header',
   standalone: true,
-  imports: [NavMenuComponent, UserProfileComponent],
+  imports: [CommonModule, NavMenuComponent, UserProfileComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
@@ -26,13 +28,17 @@ export class HeaderComponent {
   public menuLinks: Array<IMenuLink> = MenuLinksHelper.menuLinks;
   public menuCategoriaAtiva: string = '';
   public subMenuCategoriaAtiva: string = '';
+  public isProponente: boolean = false;
 
   private _sideMenuOffcanvasRef: NgbOffcanvasRef | null = null;
 
   constructor(
+    private readonly _usuarioService: UsuarioService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _ngbOffcanvasService: NgbOffcanvas
   ) {
+    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
     this._breadcrumbService.listaBreadcrumbItems$.subscribe(
       (breadcrumbItemsArray: Array<IBreadcrumbItem>) => {
         const paginaAtual =
