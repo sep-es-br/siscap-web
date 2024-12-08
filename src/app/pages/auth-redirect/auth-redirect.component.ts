@@ -34,7 +34,13 @@ export class AuthRedirectComponent {
 
           this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
         }),
-        finalize(() => this._router.navigate(['main']))
+        finalize(() => {
+          const destino = this._usuarioService.usuarioPerfil.isProponente
+            ? 'propostas'
+            : 'home';
+
+          this._router.navigate(['main', destino]);
+        })
       )
       .subscribe();
   }
