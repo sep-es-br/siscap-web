@@ -88,14 +88,6 @@ export class PessoasService
     );
   }
 
-  public testeGrupos(cpf: string): Observable<any> {
-    return this._http.get(`${this._url}/teste/${cpf}`);
-  }
-
-  public testeOrganogramaOrganizacao(guid: string): Observable<any> {
-    return this._http.get(`${this._url}/outroteste/${guid}`);
-  }
-
   public buscarResponsavelPorIdOrganizacao(
     idOrganizacao: number
   ): Observable<IOpcoesDropdown> {
