@@ -3,9 +3,10 @@
 </div>
 
 <div class="row py-2" *ngIf="!loading">
-  <siscap-table-search
+  <!-- <siscap-table-search
     (filtroPesquisaOutput)="filtroPesquisaOutputEvent($event)"
-  ></siscap-table-search>
+  ></siscap-table-search> -->
+  <siscap-projetos-pesquisa></siscap-projetos-pesquisa>
 </div>
 
 <div class="card shadow border-light p-3" *ngIf="!loading">
