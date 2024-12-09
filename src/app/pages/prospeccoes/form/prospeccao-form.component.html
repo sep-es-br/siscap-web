@@ -59,10 +59,12 @@
             formControlName="idOrganizacaoProspectora"
           >
             <ng-option
-              *ngFor="let organizacao of organizacoesOpcoesFiltradas"
-              [value]="organizacao.id"
+              *ngFor="
+                let organizacaoProspectora of organizacaoProspectoraOpcoesFiltradas
+              "
+              [value]="organizacaoProspectora.id"
             >
-              {{ organizacao.nome }}
+              {{ organizacaoProspectora.nome }}
             </ng-option>
           </ng-select>
         </div>
@@ -102,10 +104,12 @@
             formControlName="idOrganizacaoProspectada"
           >
             <ng-option
-              *ngFor="let organizacao of organizacoesOpcoesFiltradas"
-              [value]="organizacao.id"
+              *ngFor="
+                let organizacaoProspectada of organizacaoProspectadaOpcoesFiltradas
+              "
+              [value]="organizacaoProspectada.id"
             >
-              {{ organizacao.nome }}
+              {{ organizacaoProspectada.nome }}
             </ng-option>
           </ng-select>
         </div>

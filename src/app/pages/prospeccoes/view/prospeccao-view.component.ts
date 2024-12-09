@@ -106,6 +106,7 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this._prospeccoesService.idProspeccao$.next(0);
     this._subscription.unsubscribe();
   }
 }

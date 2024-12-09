@@ -1,3 +1,7 @@
+div.form-check {
+  margin-left: 2rem;
+}
+
 span.total-percentual,
 span.total-quantia {
   padding-left: 0.75rem;
@@ -32,6 +36,10 @@ button.accordion-button {
 
   span.total-quantia {
     padding-left: calc(1rem + 2vw);
+  }
+
+  div.form-check {
+    margin-left: 1rem;
   }
 }
 

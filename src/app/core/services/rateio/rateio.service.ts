@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { debounceTime, merge, Subject } from 'rxjs';
+import { debounceTime, merge, Subject, tap } from 'rxjs';
 
 import { ILocalidadeOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
 
@@ -35,6 +35,8 @@ export class RateioService {
   public rateioFormArray: FormArray<FormGroup<RateioLocalidadeFormType>> =
     new FormArray<FormGroup<RateioLocalidadeFormType>>([]);
 
+  private rateioFormArraySnapshot: Array<RateioLocalidadeFormTypeValue> = [];
+
   private _localidadesOpcoes: Array<ILocalidadeOpcoesDropdown> = [];
 
   public get localidadesOpcoes(): Array<ILocalidadeOpcoesDropdown> {
@@ -55,6 +57,23 @@ export class RateioService {
     controleLocalidadesCheckboxObj: Record<number, boolean>
   ) {
     this._controleLocalidadesCheckboxObj = controleLocalidadesCheckboxObj;
+  }
+
+  private _estadoBooleanCheckboxChange$: Subject<boolean> =
+    new Subject<boolean>();
+
+  public get estadoBooleanCheckboxChange$(): Subject<boolean> {
+    return this._estadoBooleanCheckboxChange$;
+  }
+
+  private _estadoBooleanCheckboxReferencia: boolean = false;
+
+  public get estadoBooleanCheckboxReferencia(): boolean {
+    return this._estadoBooleanCheckboxReferencia;
+  }
+
+  private set estadoBooleanCheckboxReferencia(estadoBooleanCheckbox: boolean) {
+    this._estadoBooleanCheckboxReferencia = estadoBooleanCheckbox;
   }
 
   private _microrregiaoBooleanCheckboxChange$: Subject<ILocalidadeCheckboxChange> =
@@ -149,6 +168,14 @@ export class RateioService {
         localidadeCheckboxChange.idLocalidade
       ] = localidadeCheckboxChange.checkboxValue;
     });
+
+    this.estadoBooleanCheckboxChange$.subscribe((estadoCheckboxChange) => {
+      this.estadoBooleanCheckboxReferencia = estadoCheckboxChange;
+
+      estadoCheckboxChange
+        ? this.incluirEstadoNoRateio()
+        : this.removerEstadoDoRateio();
+    });
   }
 
   public filtrarLocalidadesPorTipoMicrorregiao(): Array<ILocalidadeOpcoesDropdown> {
@@ -183,6 +210,7 @@ export class RateioService {
     }
 
     this.rateioFormArray = rateioFormArray;
+    this.rateioFormArraySnapshot = rateioFormArray.value;
 
     this.rateioFormArrayValueChanges();
 
@@ -330,6 +358,58 @@ export class RateioService {
       isFormGroupEnabled;
 
     return check ? 'visible' : 'invisible';
+  }
+
+  private incluirEstadoNoRateio(): void {
+    const isEstadoInclusoNoRateio = this.rateioFormArray.value.some(
+      (rateioLocalidadeValue) => rateioLocalidadeValue.idLocalidade == 1
+    );
+
+    if (isEstadoInclusoNoRateio) return;
+
+    this.rateioFormArraySnapshot = this.rateioFormArray.value;
+
+    const estadoFormGroup =
+      this.construirRateioLocalidadeFormGroupPorIdLocalidade(1);
+    estadoFormGroup.controls.quantia.setValue(
+      this.quantiaFormControlReferencia
+    );
+    estadoFormGroup.controls.percentual.setValue(100);
+
+    if (this.rateioFormArray.value.length > 0) this.rateioFormArray.clear();
+
+    this.incluirLocalidadeNoRateio(estadoFormGroup);
+  }
+
+  private removerEstadoDoRateio(): void {
+    const isEstadoInclusoNoRateio = this.rateioFormArray.value.some(
+      (rateioLocalidadeValue) => rateioLocalidadeValue.idLocalidade == 1
+    );
+
+    if (!isEstadoInclusoNoRateio) return;
+
+    this.removerLocalidadeDoRateio(1);
+
+    this.restaurarRateioFormArraySnapshot();
+  }
+
+  private restaurarRateioFormArraySnapshot(): void {
+    if (this.rateioFormArraySnapshot.length == 0) return;
+    if (this.rateioFormArraySnapshot[0].idLocalidade == 1) return;
+
+    this.rateioFormArraySnapshot.forEach((rateioLocalidadeValue) => {
+      const rateioFormGroup =
+        this.construirRateioLocalidadeFormGroupPorIdLocalidade(
+          rateioLocalidadeValue.idLocalidade!
+        );
+
+      rateioFormGroup.controls.percentual.setValue(
+        rateioLocalidadeValue.percentual!
+      );
+      rateioFormGroup.controls.quantia.setValue(rateioLocalidadeValue.quantia!);
+
+      this.rateioFormArray.push(rateioFormGroup);
+    });
   }
 
   private mapearControleLocalidadesCheckboxObj(
