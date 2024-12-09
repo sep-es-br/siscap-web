@@ -1,0 +1,51 @@
+<div class="card">
+  <div class="card-body">
+    <div class="row px-3">
+      <div class="col-12 border-bottom pb-2">
+        <span class="fs-small-4 fw-semibold">Carta Consulta: </span>
+        <span class="fs-small-4 text-primary">{{
+          preencherIdAteQuatroDigitos(cartaConsultaDetalhes.id)
+        }}</span>
+      </div>
+      <div class="col-12 col-md-9 pt-2">
+        <span class="fs-small-4 fw-semibold">Objeto:</span>
+        <br />
+        <span class="fs-small-4">{{ cartaConsultaDetalhes.objeto.nome }}</span>
+        <br />
+        <ng-container
+          *ngFor="
+            let projetoProposto of cartaConsultaDetalhes.projetosPropostos
+          "
+        >
+          <span
+            class="ms-0 ms-md-2 fs-small-4 text-primary pointer"
+            (click)="baixarDIC(projetoProposto.id)"
+            >{{ projetoProposto.nome }}</span
+          >
+          <br />
+        </ng-container>
+      </div>
+      <div class="col-12 col-md-3 pt-2">
+        <span class="fs-small-4 fw-semibold">Valor Estimado:</span>
+        <br />
+        <span class="fs-small-4">{{
+          cartaConsultaDetalhes.valor.quantia
+            | mask
+              : "separator.2"
+              : {
+                  prefix:
+                    getSimboloMoeda(cartaConsultaDetalhes.valor.moeda) + " ",
+                  leadZero: true,
+                  thousandSeparator: ".",
+                  decimalMarker: ","
+                }
+        }}</span>
+      </div>
+      <div class="col-12 mt-4">
+        <siscap-text-preview
+          [conteudo]="cartaConsultaDetalhes.corpo"
+        ></siscap-text-preview>
+      </div>
+    </div>
+  </div>
+</div>

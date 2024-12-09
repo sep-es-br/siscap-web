@@ -1,0 +1,66 @@
+<div class="h-100" *ngIf="loading">
+  <loading-spinner></loading-spinner>
+</div>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-body">
+    <form [formGroup]="cartaConsultaForm">
+      <div class="row gy-2">
+        <div class="col-12">
+          <label for="objeto" class="form-label col-12">
+            <validation-message [control]="getControl('objeto')">
+              Objeto
+            </validation-message>
+          </label>
+
+          <ng-select
+            [items]="objetosOpcoes"
+            bindLabel="nome"
+            groupBy="tipo"
+            [clearable]="false"
+            id="objeto"
+            placeholder="-- Selecione um objeto da lista abaixo --"
+            formControlName="objeto"
+          >
+            <ng-template ng-optgroup-tmp let-item="item">
+              {{ item.tipo }}
+            </ng-template>
+          </ng-select>
+        </div>
+
+        <div class="col-12">
+          <label for="operacao" class="form-label col-12">
+            <validation-message [control]="getControl('operacao')">
+              Operação
+            </validation-message>
+          </label>
+          <ng-select
+            [clearable]="false"
+            id="operacao"
+            placeholder="-- Selecione uma operação da lista abaixo --"
+            formControlName="operacao"
+          >
+            <ng-option
+              *ngFor="let tipoOperacao of tiposOperacaoOpcoes"
+              [value]="tipoOperacao.id"
+            >
+              {{ tipoOperacao.nome }}
+            </ng-option>
+          </ng-select>
+        </div>
+
+        <div class="col-12">
+          <label for="corpo" class="form-label col-12">
+            <validation-message [control]="getControl('corpo')">
+              Carta Consulta
+            </validation-message>
+          </label>
+          <siscap-text-editor
+            [controle]="corpo"
+            [isModoEdicao]="isModoEdicao"
+          ></siscap-text-editor>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

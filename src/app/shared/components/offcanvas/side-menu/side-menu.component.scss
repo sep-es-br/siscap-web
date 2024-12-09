@@ -1,0 +1,12 @@
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--siscap-dark-background);
+  box-shadow: 5px 0 10px 0 rgba(170, 170, 170, 0.171);
+}
+
+img.siscap-logo {
+  max-width: 150px;
+}

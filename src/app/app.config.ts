@@ -1,21 +1,42 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
-import { TitleStrategy, provideRouter } from '@angular/router';
+import { ApplicationConfig } from '@angular/core';
 import {
-  HttpClientModule,
-  provideHttpClient,
-  withInterceptors,
-} from '@angular/common/http';
+  PreloadAllModules,
+  RouteReuseStrategy,
+  TitleStrategy,
+  provideRouter,
+  withPreloading,
+  withRouterConfig,
+} from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
-import { routes } from './app.routes';
+import { APP_ROUTES } from './app.routes';
 
-import { authInterceptor } from './shared/interceptors/auth.interceptor';
-import { SiscapTitleStrategy } from './shared/utils/SiscapTitleStrategy';
+import { SiscapTitleStrategy } from './core/utils/SiscapTitleStrategy';
+import { SiscapRouteReuseStrategy } from './core/utils/SiscapRouteReuseStrategy';
+
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { errorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
+
+import { provideQuillConfig } from 'ngx-quill';
+import { quillEditorToolbarOptions } from './core/utils/quill-editor-toolbar-options';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(
+      APP_ROUTES,
+      withRouterConfig({ onSameUrlNavigation: 'reload' }),
+      withPreloading(PreloadAllModules)
+    ),
     { provide: TitleStrategy, useClass: SiscapTitleStrategy },
-    importProvidersFrom(HttpClientModule),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    { provide: RouteReuseStrategy, useClass: SiscapRouteReuseStrategy },
+    provideHttpClient(
+      withInterceptors([authInterceptor, errorHandlerInterceptor])
+    ),
+    provideQuillConfig({
+      modules: {
+        toolbar: quillEditorToolbarOptions,
+      },
+      placeholder: '-- Insira o texto aqui --',
+    }),
   ],
 };

@@ -1,0 +1,50 @@
+div.form-check {
+  margin-left: 2rem;
+}
+
+span.total-percentual,
+span.total-quantia {
+  padding-left: 0.75rem;
+}
+
+div.accordion-item {
+  border: 0;
+
+  &:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+}
+
+div.accordion-body {
+  padding: 0;
+}
+
+button.accordion-button {
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:after {
+    margin: 0;
+  }
+}
+
+@media (max-width: 575px) {
+  span.total-percentual {
+    padding-left: calc(1rem + 1vw);
+  }
+
+  span.total-quantia {
+    padding-left: calc(1rem + 2vw);
+  }
+
+  div.form-check {
+    margin-left: 1rem;
+  }
+}
+
+@media (max-width: 320px) {
+  span.total-quantia {
+    padding-left: 0.15rem;
+  }
+}

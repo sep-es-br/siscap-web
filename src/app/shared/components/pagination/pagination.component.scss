@@ -1,0 +1,15 @@
+span.report-total,
+span.ngb-pagination-text {
+  font-size: clamp(13px, 2vw, 1rem);
+}
+
+span.report-total {
+  line-height: 2.5rem;
+}
+
+@media (max-width: 606px) {
+  span.report-total,
+  ngb-pagination {
+    align-self: flex-start;
+  }
+}

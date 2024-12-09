@@ -1,0 +1,245 @@
+<div class="h-100" *ngIf="loading">
+  <loading-spinner></loading-spinner>
+</div>
+
+<div class="row" *ngIf="!loading && mostrarBotaoGerarDic">
+  <div class="mb-2 d-inline-flex justify-content-end">
+    <button class="btn btn-outline-primary icon-text-btn" (click)="baixarDIC()">
+      <i class="fa-solid fa-file-arrow-down"></i>
+      <span>Gerar DIC</span>
+    </button>
+  </div>
+</div>
+
+<div class="project-form" *ngIf="!loading">
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="projetoForm">
+        <div class="row gy-2">
+          <div class="col-12 col-md-3 mb-2 mb-md-0">
+            <label for="sigla" class="form-label col-12">
+              <validation-message [control]="getControl('sigla')">
+                Sigla do Projeto
+              </validation-message>
+            </label>
+            <input
+              mask=""
+              [inputTransformFn]="toUppercaseInputTransformFn"
+              [outputTransformFn]="toUppercaseOutputTransformFn"
+              type="text"
+              class="form-control"
+              id="sigla"
+              formControlName="sigla"
+              maxlength="12"
+            />
+          </div>
+
+          <div class="col-12 col-md-9">
+            <label for="titulo" class="form-label col-12">
+              <validation-message [control]="getControl('titulo')">
+                Titulo do Projeto
+              </validation-message>
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="titulo"
+              formControlName="titulo"
+              maxLength="150"
+            />
+          </div>
+
+          <div class="col-12 col-md-6" id="orgao">
+            <label for="idOrganizacao" class="form-label col-12">
+              <validation-message [control]="getControl('idOrganizacao')">
+                Orgão de Origem
+              </validation-message>
+            </label>
+            <ng-select
+              id="idOrganizacao"
+              placeholder="-- Selecione um orgão da lista abaixo --"
+              formControlName="idOrganizacao"
+            >
+              <ng-option
+                *ngFor="let organizacao of organizacoesOpcoes"
+                [value]="organizacao.id"
+                >{{ organizacao.nome }}</ng-option
+              >
+            </ng-select>
+          </div>
+
+          <div class="col-12 col-md-6" id="responsavel-proponente">
+            <label for="responsavelProponente" class="form-label col-12">
+              <validation-message
+                [control]="getControl('idResponsavelProponente')"
+              >
+                Responsavel Proponente
+              </validation-message>
+            </label>
+            <ng-select
+              id="responsavelProponente"
+              placeholder="-- Selecione o responsável proponente --"
+              formControlName="idResponsavelProponente"
+            >
+              <ng-option
+                *ngFor="let pessoa of pessoasOpcoes"
+                [value]="pessoa.id"
+                >{{ pessoa.nome }}</ng-option
+              >
+            </ng-select>
+          </div>
+
+          <div
+            class="col-12"
+            *ngIf="getControl('idResponsavelProponente')?.value"
+          >
+            <label for="membroEquipeElaboracao" class="form-label col-12">
+              <validation-message [control]="getControl('equipeElaboracao')">
+                Equipe de Elaboração
+              </validation-message>
+            </label>
+
+            <ng-select
+              id="idMembroEquipeElaboracao"
+              placeholder="-- Selecione uma pessoa para incluir na equipe de elaboração --"
+              [(ngModel)]="idMembroEquipeElaboracao"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="!isModoEdicao"
+              (change)="idMembroNgSelectChangeEvent($event)"
+            >
+              <ng-option
+                *ngFor="
+                  let pessoa of equipeService.filtrarPessoasOpcoes(
+                    filtrarResponsavelProponente(pessoasOpcoes)
+                  )
+                "
+                [value]="pessoa.id"
+              >
+                {{ pessoa.nome }}
+              </ng-option>
+            </ng-select>
+          </div>
+          <div class="col-12 mt-2">
+            <siscap-equipe-form
+              [pessoasOpcoes]="pessoasOpcoes"
+              [tiposPapelOpcoes]="tiposPapelOpcoes"
+              [isModoEdicao]="isModoEdicao"
+            ></siscap-equipe-form>
+          </div>
+
+          <div class="col-12">
+            <siscap-valor-form
+              [moedasList]="moedasList"
+              [tiposValorOpcoes]="tiposValorOpcoes"
+            ></siscap-valor-form>
+          </div>
+
+          <div class="col-12 mt-2">
+            <label for="rateio" class="form-label col-12">
+              <validation-message [control]="getControl('rateio')">
+                Rateio
+              </validation-message>
+            </label>
+            <siscap-rateio-form
+              [isModoEdicao]="isModoEdicao"
+            ></siscap-rateio-form>
+          </div>
+
+          <div class="col-12">
+            <label for="objetivo" class="form-label col-12">
+              <validation-message [control]="getControl('objetivo')">
+                Objetivo
+              </validation-message>
+            </label>
+            <textarea
+              rows="5"
+              class="form-control"
+              id="objetivo"
+              formControlName="objetivo"
+              maxLength="2000"
+            ></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="objetivoEspecifico" class="form-label col-12">
+              <validation-message [control]="getControl('objetivoEspecifico')">
+                Objetivo Específico
+              </validation-message>
+            </label>
+            <textarea
+              rows="5"
+              class="form-control"
+              id="objetivoEspecifico"
+              formControlName="objetivoEspecifico"
+              maxLength="2000"
+            ></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="situacaoProblema" class="form-label col-12">
+              <validation-message [control]="getControl('situacaoProblema')">
+                Situação Problema
+              </validation-message>
+            </label>
+
+            <textarea
+              rows="5"
+              class="form-control"
+              id="situacaoProblema"
+              formControlName="situacaoProblema"
+              maxLength="2000"
+            ></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="solucoesPropostas" class="form-label col-12">
+              <validation-message [control]="getControl('solucoesPropostas')">
+                Soluções Propostas/Resultados Esperados
+              </validation-message>
+            </label>
+            <textarea
+              rows="5"
+              class="form-control"
+              id="solucoesPropostas"
+              formControlName="solucoesPropostas"
+              maxLength="2000"
+            ></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="impactos" class="form-label col-12">
+              <validation-message [control]="getControl('impactos')">
+                Impactos do Projeto no Âmbito Ambiental, Social e de Governança
+                (ESG)
+              </validation-message>
+            </label>
+            <textarea
+              rows="5"
+              class="form-control"
+              id="impactos"
+              formControlName="impactos"
+              maxLength="2000"
+            ></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="arranjosInstitucionais" class="form-label col-12">
+              <validation-message
+                [control]="getControl('arranjosInstitucionais')"
+              >
+                Arranjo Institucional
+              </validation-message>
+            </label>
+            <textarea
+              rows="5"
+              class="form-control"
+              id="arranjosInstitucionais"
+              formControlName="arranjosInstitucionais"
+              maxLength="2000"
+            ></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

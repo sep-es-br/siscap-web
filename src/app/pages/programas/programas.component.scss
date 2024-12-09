@@ -1,0 +1,9 @@
+@media (max-width: 767px) {
+  div#programas-table-wrapper {
+    overflow: scroll;
+  }
+
+  siscap-programas-list {
+    min-width: 1024px;
+  }
+}

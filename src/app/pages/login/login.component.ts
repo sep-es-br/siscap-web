@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { AuthenticationService } from '../../shared/services/authentication/authentication.service';
+import { AuthenticationService } from '../../core/services/authentication/authentication.service';
 
 @Component({
   selector: 'siscap-login',
@@ -16,7 +16,7 @@ export class LoginComponent {
     this._authService.acessoCidadaoSignIn();
   }
 
-  year_copyright(){
+  year_copyright() {
     const currentYear = new Date().getFullYear();
     if (currentYear > parseInt(this.yearPublish)) {
       const currentDate = new Date().getFullYear();

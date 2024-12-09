@@ -1,0 +1,208 @@
+<div class="h-100" *ngIf="loading">
+  <loading-spinner></loading-spinner>
+</div>
+
+<div class="programa-form" *ngIf="!loading">
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="programaForm">
+        <div class="row gy-2">
+          <div class="col-12 col-md-4">
+            <label for="sigla" class="col-12 form-label">
+              <validation-message [control]="getControl('sigla')">
+                Sigla do Programa
+              </validation-message>
+            </label>
+            <input
+              mask=""
+              [inputTransformFn]="toUppercaseInputTransformFn"
+              [outputTransformFn]="toUppercaseOutputTransformFn"
+              id="sigla"
+              type="text"
+              class="form-control"
+              formControlName="sigla"
+              maxlength="12"
+            />
+          </div>
+          <div class="col-12 col-md-8">
+            <label for="titulo" class="col-12 form-label">
+              <validation-message [control]="getControl('titulo')">
+                Titulo do Programa
+              </validation-message>
+            </label>
+            <input
+              id="titulo"
+              type="text"
+              class="form-control"
+              formControlName="titulo"
+              maxlength="150"
+            />
+          </div>
+
+          <div class="col-12">
+            <label for="idOrgaoExecutorList" class="col-12 form-label">
+              <validation-message [control]="getControl('idOrgaoExecutorList')">
+                Orgão Executor
+              </validation-message>
+            </label>
+            <ng-select
+              id="idOrgaoExecutorList"
+              placeholder="-- Selecione os orgãos executores do programa --"
+              [multiple]="true"
+              [hideSelected]="true"
+              formControlName="idOrgaoExecutorList"
+            >
+              <ng-option
+                *ngFor="let organizacao of organizacoesOpcoes"
+                [value]="organizacao.id"
+              >
+                {{ organizacao.nome }}
+              </ng-option>
+            </ng-select>
+          </div>
+
+          <div class="col-12">
+            <label for="membroEquipeCaptacao" class="col-12 form-label">
+              <validation-message [control]="getControl('equipeCaptacao')">
+                Equipe de Captação
+              </validation-message>
+            </label>
+
+            <ng-select
+              id="idMembroEquipeCaptacao"
+              placeholder="-- Selecione uma pessoa para incluir na equipe de captação --"
+              [(ngModel)]="idMembroEquipeCaptacao"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="!isModoEdicao"
+              (change)="idMembroNgSelectChangeEvent($event)"
+            >
+              <ng-option
+                *ngFor="
+                  let pessoa of equipeService.filtrarPessoasOpcoes(
+                    pessoasOpcoes
+                  )
+                "
+                [value]="pessoa.id"
+              >
+                {{ pessoa.nome }}
+              </ng-option>
+            </ng-select>
+          </div>
+          <div class="col-12 mt-2">
+            <siscap-equipe-form
+              [pessoasOpcoes]="pessoasOpcoes"
+              [tiposPapelOpcoes]="tiposPapelOpcoes"
+              [isModoEdicao]="isModoEdicao"
+            ></siscap-equipe-form>
+          </div>
+
+          <div class="col-12">
+            <label for="idProjetoProposto" class="col-12 form-label">
+              <validation-message
+                [control]="getControl('idProjetoPropostoList')"
+              >
+                Projetos Propostos
+              </validation-message>
+            </label>
+
+            <ng-select
+              id="idProjetoProposto"
+              placeholder="-- Selecione um projeto para incluir no programa --"
+              [(ngModel)]="idProjetoProposto"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="!isModoEdicao"
+              (change)="idProjetoPropostoNgSelectChangeEvent($event)"
+            >
+              <ng-option
+                *ngFor="
+                  let projetoPropostoOpcao of filtrarProjetosPropostosOpcoes(
+                    projetosPropostosOpcoes
+                  )
+                "
+                [value]="projetoPropostoOpcao"
+              >
+                {{ projetoPropostoOpcao.nome }}
+              </ng-option>
+            </ng-select>
+          </div>
+
+          <div class="col-12 my-2">
+            <div class="card" *ngIf="idProjetoPropostoList.value.length > 0">
+              <div class="card-body row gy-2 mb-0">
+                <ng-container
+                  *ngFor="
+                    let idProjetoProposto of idProjetoPropostoList.value;
+                    index as i
+                  "
+                >
+                  <div class="col-12 col-sm-6">
+                    <div class="card">
+                      <div
+                        class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center"
+                      >
+                        <div
+                          class="col-12 col-lg-5 pb-2 pb-lg-0 text-truncate"
+                          #projetoPropostoNomeTarget
+                        >
+                          <span
+                            class="nome-projeto-proposto"
+                            placement="bottom"
+                            [positionTarget]="projetoPropostoNomeTarget"
+                            [ngbTooltip]="
+                              getProjetoPropostoOpcao(idProjetoProposto).nome
+                            "
+                            >{{
+                              getProjetoPropostoOpcao(idProjetoProposto).nome
+                            }}</span
+                          >
+                        </div>
+                        <div
+                          class="col-12 col-md-5 d-inline-flex justify-content-center justify-content-md-start align-items-center"
+                        >
+                          <span>
+                            {{
+                              getProjetoPropostoOpcao(idProjetoProposto)
+                                .valorEstimado
+                                | mask
+                                  : "separator.2"
+                                  : {
+                                      prefix: "R$ ",
+                                      leadZero: true,
+                                      thousandSeparator: ".",
+                                      decimalMarker: ","
+                                    }
+                            }}
+                          </span>
+                        </div>
+                        <div
+                          class="col-12 col-md-2 col-lg-1 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-start align-items-center"
+                        >
+                          <button
+                            type="button"
+                            ngbTooltip="Remover Projeto do Programa"
+                            class="btn btn-outline-danger rounded-circle"
+                            [disabled]="!isModoEdicao"
+                            (click)="removerProjetoPropostoDoPrograma(i)"
+                          >
+                            <i class="fa-solid fa-close delete-btn-icon"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <siscap-valor-form
+              [moedasList]="moedasList"
+              [tiposValorOpcoes]="tiposValorOpcoes"
+            ></siscap-valor-form>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

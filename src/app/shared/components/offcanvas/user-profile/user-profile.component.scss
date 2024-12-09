@@ -1,0 +1,26 @@
+button.dropdown-toggle {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  color: white;
+  font-size: clamp(0.75rem, 4vw, 1rem);
+
+  &:hover,
+  &:active {
+    border: none;
+    background-color: #ffffffdf;
+
+    .text-white {
+      color: var(--siscap-light-primary-1) !important;
+    }
+  }
+
+  &::after {
+    display: none;
+  }
+}
+
+div.dropdown-menu.show {
+  background-color: var(--siscap-dark-background);
+  width: 100%;
+  border: 2px solid var(--siscap-light-primary-2);
+}

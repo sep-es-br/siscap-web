@@ -1,0 +1,23 @@
+<div
+  class="col-10 px-2 py-3 h-100 d-inline-flex flex-column justify-content-between"
+>
+  <div class="d-inline-flex flex-row justify-content-between">
+    <img
+      class="siscap-logo"
+      src="/assets/images/siscap.svg"
+      alt="Emblema Siscap"
+    />
+    <button class="btn" (click)="fecharSideMenuOffcanvas()">
+      <i class="fa-solid fa-chevron-left fa-xl" style="color: white"></i>
+    </button>
+  </div>
+
+  <siscap-offcanvas-nav-menu
+    style="height: 80%"
+    [menuCategoriaAtiva]="menuCategoriaAtiva"
+    [subMenuCategoriaAtiva]="subMenuCategoriaAtiva"
+    (navegacaoSideMenu)="$event ? fecharSideMenuOffcanvas() : null"
+  ></siscap-offcanvas-nav-menu>
+
+  <siscap-offcanvas-user-profile></siscap-offcanvas-user-profile>
+</div>

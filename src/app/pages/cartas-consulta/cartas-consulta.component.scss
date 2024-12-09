@@ -1,0 +1,9 @@
+@media (max-width: 767px) {
+  div#cartas-consulta-table-wrapper {
+    overflow: scroll;
+  }
+
+  siscap-cartas-consulta-list {
+    min-width: 1024px;
+  }
+}

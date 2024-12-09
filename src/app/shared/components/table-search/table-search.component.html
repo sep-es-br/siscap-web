@@ -1,0 +1,12 @@
+<div class="col-12 d-flex flex-row-reverse">
+  <div class="col-12 col-md-5 col-xl-3">
+    <input
+      type="text"
+      id="pesquisar"
+      class="form-control"
+      placeholder="Pesquisar"
+      [(ngModel)]="filtroPesquisa"
+      (keyup.enter)="aplicarFiltroPesquisa()"
+    />
+  </div>
+</div>

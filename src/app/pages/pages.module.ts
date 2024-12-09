@@ -5,22 +5,22 @@ import { RouterOutlet } from '@angular/router';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbAccordionModule,
+  NgbDropdownModule,
+  NgbPaginationModule,
+  NgbTooltipModule,
+} from '@ng-bootstrap/ng-bootstrap';
 
-import { CoreModule } from '../core/core.module';
-import { PagesRoutingModule } from './pages-routing.module';
+import { SharedModule } from '../shared/shared.module';
 
 import { LoginComponent } from '../pages/login/login.component';
 import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
 import { MainComponent } from './main/main.component';
 import { HomeComponent } from '../pages/home/home.component';
 import { DashboardComponent } from './home/dashboard/dashboard.component';
-import { ProjectsComponent } from './projects/projects.component';
-import { ProjectFormComponent } from './projects/form/project-form.component';
-import { PersonsComponent } from './persons/persons.component';
-import { PersonFormComponent } from './persons/form/person-form.component';
-import { OrganizationsComponent } from './organizations/organizations.component';
-import { OrganizationFormComponent } from './organizations/form/organization-form.component';
+
+import { PagesRoutingModule } from './pages-routing.module';
 
 @NgModule({
   declarations: [
@@ -29,23 +29,20 @@ import { OrganizationFormComponent } from './organizations/form/organization-for
     MainComponent,
     HomeComponent,
     DashboardComponent,
-    ProjectsComponent,
-    ProjectFormComponent,
-    PersonsComponent,
-    PersonFormComponent,
-    OrganizationsComponent,
-    OrganizationFormComponent,
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    SharedModule,
     RouterOutlet,
     NgSelectModule,
     NgxMaskDirective,
     NgxMaskPipe,
+    NgbAccordionModule,
+    NgbDropdownModule,
+    NgbPaginationModule,
     NgbTooltipModule,
-    CoreModule,
     PagesRoutingModule,
   ],
   providers: [provideNgxMask()],
@@ -55,12 +52,6 @@ import { OrganizationFormComponent } from './organizations/form/organization-for
     MainComponent,
     HomeComponent,
     DashboardComponent,
-    ProjectsComponent,
-    ProjectFormComponent,
-    PersonsComponent,
-    PersonFormComponent,
-    OrganizationsComponent,
-    OrganizationFormComponent,
   ],
 })
 export class PagesModule {}

@@ -1,31 +1,43 @@
-.nav-menu {
-  min-width: 251px;
+/* 
+  Valor aproximado do somatório das alturas dos seguintes componentes/elementos:
+  * <siscap-header>
+    |-> <img class="siscap-logo">
+    |-> <siscap-nav-menu>
+    |-> <siscap-user-profile>
+  * <siscap-breadcrumb>
+
+  Utilizado para ajustar o valor da propriedade margin-top da seção que encapsula conteúdo 
+  principal da aplicação (<router-outlet>), devido á propriedade position: absolute de algum(ns) 
+  elemento(s) acima.
+*/
+$main-content-margin-top: 225px;
+
+section#main-content {
+  margin-top: $main-content-margin-top;
+  margin-bottom: 4rem;
 }
 
-.header {
-  height: 3rem;
-}
+section#footer-content {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  z-index: -1 !important;
 
-.content {
-  padding-left: 251px;
-}
+  div.footer {
+    height: 3rem;
 
-@media (max-width: 767px) {
-  .content {
-    padding-left: 0;
+    span {
+      font-size: 0.875rem;
+    }
   }
 }
 
-.mt-header{
-  margin-top: 10rem;
-}
-
-.body{
-  min-height: calc(100vh - 14rem);
-}
-
-.footer{
-  height: 3rem;
-  position: relative;
-  bottom: 0;
+/*
+  Valor calculado para breakpoints abaixo de 767px (smartphones e tablets em modo retrato). 
+  Leva em consideração a redução do padding de <siscap-breadcrumb>.
+*/
+@media (max-width: 767px) {
+  section#main-content {
+    margin-top: calc($main-content-margin-top - 4vw);
+  }
 }

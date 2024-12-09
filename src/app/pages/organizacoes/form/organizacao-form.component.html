@@ -1,0 +1,227 @@
+<div class="h-100" *ngIf="loading">
+  <loading-spinner></loading-spinner>
+</div>
+
+<form [formGroup]="organizacaoForm" *ngIf="!loading">
+  <div class="row">
+    <div class="col-12 col-md-4">
+      <div class="card shadow border-light mb-3">
+        <div class="card-header bg-white mb-3">
+          <h5 class="card-title">Marca da Organização</h5>
+        </div>
+        <div class="card-body">
+          <app-cropper
+            [croppedImagethumb]="srcImagemOrganizacao"
+            [editImage]="!isModoEdicao"
+            (imgcropped)="imgCropEvent($event)"
+          ></app-cropper>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-8">
+      <div class="card shadow border-light mb-3">
+        <div class="card-header bg-white">
+          <h5 class="card-title">Informações da Organização</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-12 col-md-12 mb-2 mt-2 form-group">
+              <label for="abreviatura" class="form-label col-12">
+                <validation-message [control]="getControl('abreviatura')">
+                  Sigla / Nome Fantasia
+                </validation-message>
+              </label>
+              <input
+                mask=""
+                [inputTransformFn]="toUppercaseInputTransformFn"
+                [outputTransformFn]="toUppercaseOutputTransformFn"
+                type="text"
+                id="abreviatura"
+                class="form-control"
+                formControlName="abreviatura"
+              />
+            </div>
+            <div class="col-12 col-md-12 mb-2 mt-2 form-group">
+              <label for="nome" class="form-label col-12">
+                <validation-message [control]="getControl('nome')">
+                  Nome / Razão Social
+                </validation-message>
+              </label>
+              <input
+                type="text"
+                id="nome"
+                class="form-control"
+                formControlName="nome"
+              />
+            </div>
+            <div class="col-12 col-md-6 mb-2 mt-2 form-group">
+              <label for="cnpj" class="form-label col-12">
+                <validation-message [control]="getControl('cnpj')">
+                  CNPJ
+                </validation-message>
+              </label>
+              <input
+                mask="00.000.000/0000-00"
+                type="text"
+                id="cnpj"
+                class="form-control"
+                formControlName="cnpj"
+              />
+            </div>
+            <div class="col-12 col-md-6 mb-2 mt-2 form-group">
+              <label for="idTipoOrganizacao" class="form-label col-12">
+                <validation-message [control]="getControl('idTipoOrganizacao')">
+                  Tipo
+                </validation-message>
+              </label>
+              <ng-select
+                id="idTipoOrganizacao"
+                placeholder="-- Tipo de Organizacao --"
+                formControlName="idTipoOrganizacao"
+              >
+                <ng-option
+                  *ngFor="let tipoOrganizacao of tiposOrganizacaoOpcoes"
+                  [value]="tipoOrganizacao.id"
+                  >{{ tipoOrganizacao.nome }}</ng-option
+                >
+              </ng-select>
+            </div>
+            <div class="col-12 col-md-12 mb-2 mt-2 form-group">
+              <label for="idOrganizacaoPai" class="form-label col-12">
+                <validation-message [control]="getControl('idOrganizacaoPai')">
+                  Matriz / Sede
+                </validation-message>
+              </label>
+              <ng-select
+                id="idOrganizacaoPai"
+                placeholder="-- Matriz/Sede --"
+                formControlName="idOrganizacaoPai"
+              >
+                <ng-option
+                  *ngFor="let organizacao of organizacoesOpcoes"
+                  [value]="organizacao.id"
+                  >{{ organizacao.nome }}</ng-option
+                >
+              </ng-select>
+            </div>
+            <div class="col-12 col-md-6 mb-2 mt-2 form-group">
+              <label for="idPais" class="form-label col-12">
+                <validation-message [control]="getControl('idPais')">
+                  País de Origem
+                </validation-message>
+              </label>
+              <ng-select
+                id="idPais"
+                placeholder="-- País --"
+                formControlName="idPais"
+              >
+                <ng-option
+                  *ngFor="let pais of paisesOpcoes"
+                  [value]="pais.id"
+                  >{{ pais.nome }}</ng-option
+                >
+              </ng-select>
+            </div>
+            <div class="col-12 col-md-6 mb-2 mt-2 form-group">
+              <label for="idEstado" class="form-label col-12">
+                <validation-message [control]="getControl('idEstado')">
+                  Estado
+                </validation-message>
+              </label>
+              <ng-select
+                id="idEstado"
+                placeholder="-- Estado --"
+                formControlName="idEstado"
+              >
+                <ng-option
+                  *ngFor="let estado of estadosOpcoes"
+                  [value]="estado.id"
+                  >{{ estado.nome }}</ng-option
+                >
+              </ng-select>
+            </div>
+            <div class="col-12 col-md-6 mb-2 mt-2 form-group">
+              <label for="idCidade" class="form-label col-12">
+                <validation-message [control]="getControl('idCidade')">
+                  Cidade
+                </validation-message>
+              </label>
+              <ng-select
+                id="idCidade"
+                placeholder="-- Cidade --"
+                formControlName="idCidade"
+                [virtualScroll]="true"
+              >
+                <ng-option
+                  *ngFor="let cidade of cidadesOpcoes"
+                  [value]="cidade.id"
+                  >{{ cidade.nome }}</ng-option
+                >
+              </ng-select>
+            </div>
+            <div class="col-12 col-md-6 mb-2 mt-2 form-group">
+              <label for="telefone" class="form-label col-12">
+                <validation-message [control]="getControl('telefone')">
+                  Telefone
+                </validation-message>
+              </label>
+              <input
+                type="text"
+                id="telefone"
+                class="form-control"
+                formControlName="telefone"
+              />
+            </div>
+            <div class="col-12 col-md-6 mb-2 mt-2 form-group">
+              <label for="email" class="form-label col-12">
+                <validation-message [control]="getControl('email')">
+                  Email
+                </validation-message>
+              </label>
+              <input
+                type="text"
+                id="email"
+                class="form-control"
+                formControlName="email"
+                (keydown.space)="$event.preventDefault()"
+              />
+            </div>
+            <div class="col-12 col-md-6 mb-2 mt-2 form-group">
+              <label for="site" class="form-label col-12">
+                <validation-message [control]="getControl('site')">
+                  Site
+                </validation-message>
+              </label>
+              <input
+                type="text"
+                id="site"
+                class="form-control"
+                formControlName="site"
+              />
+            </div>
+            <div class="col-12 col-md-12 mb-2 mt-2 form-group">
+              <label for="idPessoaResponsavel" class="form-label col-12">
+                <validation-message
+                  [control]="getControl('idPessoaResponsavel')"
+                >
+                  Responsável
+                </validation-message>
+              </label>
+              <ng-select
+                id="idPessoaResponsavel"
+                placeholder="-- Responsável --"
+                formControlName="idPessoaResponsavel"
+              >
+                <ng-option
+                  *ngFor="let pessoa of pessoasOpcoes"
+                  [value]="pessoa.id"
+                  >{{ pessoa.nome }}</ng-option
+                >
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

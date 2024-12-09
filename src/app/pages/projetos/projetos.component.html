@@ -1,0 +1,29 @@
+<div class="h-100" *ngIf="loading">
+  <loading-spinner></loading-spinner>
+</div>
+
+<div class="row py-2" *ngIf="!loading">
+  <siscap-table-search
+    (filtroPesquisaOutput)="filtroPesquisaOutputEvent($event)"
+  ></siscap-table-search>
+</div>
+
+<div class="card shadow border-light p-3" *ngIf="!loading">
+  <ng-container
+    *ngIf="(projetosList$ | async)?.length! > 0; else semResultados"
+  >
+    <siscap-projetos-list
+      [projetosList]="projetosList$ | async"
+      (sortableDirectiveOutput)="sortableDirectiveOutputEvent($event)"
+    >
+      <siscap-pagination
+        [paginacaoDadosInput]="paginacaoDados"
+        (paginacaoOutput)="paginacaoOutputEvent($event)"
+      ></siscap-pagination>
+    </siscap-projetos-list>
+  </ng-container>
+</div>
+
+<ng-template #semResultados>
+  <query-no-results></query-no-results>
+</ng-template>

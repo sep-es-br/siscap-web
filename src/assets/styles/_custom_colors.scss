@@ -1,0 +1,25 @@
+/*
+	- Configuração de cores do SISCAP - 
+
+	Cria variáveis CSS na raiz da aplicação com prefixo "--siscap-"
+	Facilita acesso por parte dos componentes sem conflitar com variáveis CSS do Bootstrap
+*/
+
+$light-colors: (
+  "primary-1": #0096e1,
+  "primary-2": #85beff,
+);
+
+$dark-colors: (
+  "background": #1e2227,
+);
+
+:root {
+  @each $property, $value in $light-colors {
+    --siscap-light-#{$property}: #{$value};
+  }
+
+  @each $property, $value in $dark-colors {
+    --siscap-dark-#{$property}: #{$value};
+  }
+}

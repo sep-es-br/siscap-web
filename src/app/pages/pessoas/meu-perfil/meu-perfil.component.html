@@ -1,0 +1,385 @@
+<div class="h-100" *ngIf="loading">
+  <loading-spinner></loading-spinner>
+</div>
+
+<div class="meu-perfil-form" *ngIf="!loading">
+  <form [formGroup]="meuPerfilForm">
+    <div class="row">
+      <div class="col-12 col-md-8">
+        <div class="card shadow border-light mb-3">
+          <div class="card-header bg-white">
+            <h5 class="card-title">Informações Pessoais</h5>
+          </div>
+          <div class="card-body">
+            <div class="personal-info">
+              <div class="row">
+                <div class="col-12 col-md-12 mb-2 mb-md-0">
+                  <label for="nome" class="form-label col-12">
+                    <validation-message [control]="getControl('nome')">
+                      Nome Completo
+                    </validation-message>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nome"
+                    formControlName="nome"
+                  />
+                </div>
+                <div class="col-12 col-md-12 mb-2 mb-md-0">
+                  <label for="nomeSocial" class="form-label col-12">
+                    <validation-message [control]="getControl('nomeSocial')">
+                      Nome Social
+                    </validation-message>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nomeSocial"
+                    formControlName="nomeSocial"
+                  />
+                </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="cpf" class="form-label col-12">
+                    <validation-message [control]="getControl('cpf')">
+                      CPF
+                    </validation-message>
+                  </label>
+                  <input
+                    mask="000.000.000-00"
+                    type="text"
+                    class="form-control"
+                    id="cpf"
+                    formControlName="cpf"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="nacionalidade" class="form-label col-12">
+                    <validation-message [control]="getControl('nacionalidade')">
+                      Nacionalidade
+                    </validation-message>
+                  </label>
+                  <ng-select
+                    id="nacionalidade"
+                    placeholder="-- Nacionalidade --"
+                    formControlName="nacionalidade"
+                  >
+                    <ng-option
+                      *ngFor="let nacionalidade of nacionalidadesList"
+                      [value]="nacionalidade"
+                      >{{ nacionalidade }}
+                    </ng-option>
+                  </ng-select>
+                </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="genero" class="form-label col-12">
+                    <validation-message [control]="getControl('genero')">
+                      Gênero
+                    </validation-message>
+                  </label>
+                  <ng-select
+                    id="genero"
+                    placeholder="-- Gênero --"
+                    formControlName="genero"
+                  >
+                    <ng-option
+                      *ngFor="let genero of generosList"
+                      [value]="genero"
+                      >{{ genero }}
+                    </ng-option>
+                  </ng-select>
+                </div>
+
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="email" class="form-label col-12">
+                    <validation-message [control]="getControl('email')">
+                      E-mail
+                    </validation-message>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="email"
+                    formControlName="email"
+                    (keydown.space)="$event.preventDefault()"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="telefonePessoal" class="form-label col-12">
+                    <validation-message
+                      [control]="getControl('telefonePessoal')"
+                    >
+                      Telefone Pessoal
+                    </validation-message>
+                  </label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="telefonePessoal"
+                    formControlName="telefonePessoal"
+                  />
+                </div>
+                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                  <label for="telefoneComercial" class="form-label col-12">
+                    <validation-message
+                      [control]="getControl('telefoneComercial')"
+                    >
+                      Telefone Comercial
+                    </validation-message>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="telefoneComercial"
+                    formControlName="telefoneComercial"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="card shadow border-light mb-3 mb-md-5">
+          <div class="card-header bg-white">
+            <h5 class="card-title">Foto de Perfil</h5>
+          </div>
+          <div class="card-body">
+            <app-cropper
+              [croppedImagethumb]="srcImagemPessoa"
+              [editImage]="!isModoEdicao"
+              (imgcropped)="imgCropEvent($event)"
+            ></app-cropper>
+          </div>
+        </div>
+
+        <div class="card shadow border-light mb-3">
+          <div class="card-header bg-white">
+            <h5 class="card-title">Informações Profissionais</h5>
+          </div>
+          <div class="card-body">
+            <div class="professional-info">
+              <div class="row">
+                <div class="col-12">
+                  <div class="col-12">
+                    <label for="idOrganizacoes" class="form-label col-12">
+                      <validation-message
+                        [control]="getControl('idOrganizacoes')"
+                      >
+                        Organizações
+                      </validation-message>
+                    </label>
+                    <ng-select
+                      id="idOrganizacoes"
+                      placeholder="-- Organizações --"
+                      formControlName="idOrganizacoes"
+                      [multiple]="true"
+                      [hideSelected]="true"
+                      (remove)="organizacaoResponsavelRemovida($event)"
+                    >
+                      <ng-option
+                        *ngFor="let organizacao of organizacoesOpcoes"
+                        [value]="organizacao.id"
+                        >{{ organizacao.nome }}
+                      </ng-option>
+                    </ng-select>
+                  </div>
+
+                  <div class="col-12 mt-3">
+                    <label for="idAreasAtuacao" class="form-label col-12">
+                      <validation-message
+                        [control]="getControl('idAreasAtuacao')"
+                      >
+                        Áreas de Atuação
+                      </validation-message>
+                    </label>
+                    <ng-select
+                      [multiple]="true"
+                      [hideSelected]="true"
+                      id="idAreasAtuacao"
+                      placeholder="-- Áreas de Atuação --"
+                      formControlName="idAreasAtuacao"
+                    >
+                      <ng-option
+                        *ngFor="let areaAtuacao of areasAtuacaoOpcoes"
+                        [value]="areaAtuacao.id"
+                        >{{ areaAtuacao.nome }}</ng-option
+                      >
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-12">
+        <div class="card shadow border-light">
+          <div class="card-header bg-white">
+            <h5 class="card-title">Informações de Endereço</h5>
+          </div>
+          <div class="card-body">
+            <div class="address-info">
+              <div formGroupName="endereco">
+                <div class="col-12"></div>
+
+                <div class="row">
+                  <div class="col-12 col-md-8 mb-2 mb-md-0">
+                    <label for="endereco.rua" class="form-label col-12">
+                      <validation-message
+                        [control]="getControl('endereco.rua')"
+                      >
+                        Logradouro
+                      </validation-message>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="endereco.rua"
+                      formControlName="rua"
+                    />
+                  </div>
+                  <div class="col-12 col-md-2 mb-2 mb-md-0">
+                    <label for="endereco.numero" class="form-label col-12">
+                      <validation-message
+                        [control]="getControl('endereco.numero')"
+                      >
+                        Número
+                      </validation-message>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="endereco.numero"
+                      formControlName="numero"
+                    />
+                  </div>
+                  <div class="col-12 col-md-2 mb-2 mb-md-0">
+                    <label
+                      for="endereco.codigoPostal"
+                      class="form-label col-12"
+                    >
+                      <validation-message
+                        [control]="getControl('endereco.codigoPostal')"
+                      >
+                        Código Postal
+                      </validation-message>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="endereco.codigoPostal"
+                      formControlName="codigoPostal"
+                    />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12 col-md-8 mb-2 mb-md-0">
+                    <label for="endereco.complemento" class="form-label col-12">
+                      <validation-message
+                        [control]="getControl('endereco.complemento')"
+                      >
+                        Complemento
+                      </validation-message>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="endereco.complemento"
+                      formControlName="complemento"
+                    />
+                  </div>
+
+                  <div class="col-12 col-md-4 mb-2 mb-md-0">
+                    <label for="endereco.bairro" class="form-label col-12">
+                      <validation-message
+                        [control]="getControl('endereco.bairro')"
+                      >
+                        Bairro
+                      </validation-message>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="endereco.bairro"
+                      formControlName="bairro"
+                    />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12 col-md-4 mb-2 mb-md-0">
+                    <label for="pais" class="form-label col-12">
+                      <validation-message
+                        [control]="getControl('endereco.idPais')"
+                      >
+                        País
+                      </validation-message>
+                    </label>
+                    <ng-select
+                      id="pais"
+                      placeholder="-- Pais --"
+                      formControlName="idPais"
+                    >
+                      <ng-option
+                        *ngFor="let pais of paisesOpcoes"
+                        [value]="pais.id"
+                        >{{ pais.nome }}
+                      </ng-option>
+                    </ng-select>
+                  </div>
+                  <div class="col-12 col-md-4 mb-2 mb-md-0">
+                    <label for="estado" class="form-label col-12">
+                      <validation-message
+                        [control]="getControl('endereco.idEstado')"
+                      >
+                        Estado
+                      </validation-message>
+                    </label>
+                    <ng-select
+                      id="estado"
+                      placeholder="-- Estado --"
+                      formControlName="idEstado"
+                    >
+                      <ng-option
+                        *ngFor="let estado of estadosOpcoes"
+                        [value]="estado.id"
+                        >{{ estado.nome }}
+                      </ng-option>
+                    </ng-select>
+                  </div>
+                  <div class="col-12 col-md-4 mb-2 mb-md-0">
+                    <label for="endereco.idCidade" class="form-label col-12">
+                      <validation-message
+                        [control]="getControl('endereco.idCidade')"
+                      >
+                        Cidade
+                      </validation-message>
+                    </label>
+                    <ng-select
+                      id="endereco.idCidade"
+                      placeholder="-- Cidade --"
+                      formControlName="idCidade"
+                    >
+                      <ng-option
+                        *ngFor="let cidade of cidadesOpcoes"
+                        [value]="cidade.id"
+                        >{{ cidade.nome }}</ng-option
+                      >
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,53 @@
+<div class="table-responsive-md">
+  <table class="table table-striped">
+    <colgroup>
+      <col class="imagemPerfil-col" />
+      <col class="nome-col" />
+      <col class="email-col" />
+      <col class="nomesOrganizacoes-col" />
+      <col class="acoes-col" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        <th [sortable]="'nome'" (sort)="sortColumn($event)" class="pointer">
+          Nome
+        </th>
+        <th [sortable]="'email'" (sort)="sortColumn($event)" class="pointer">
+          E-mail
+        </th>
+        <th>Organizacoes</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody class="fw-semibold">
+      <tr
+        *ngFor="let pessoa of pessoasList()"
+        (click)="editarPessoa(pessoa.id)"
+      >
+        <td>
+          <img
+            [src]="
+              pessoa.imagemPerfil
+                ? converterArrayBufferEmImgSrc(pessoa.imagemPerfil)
+                : 'assets/images/blank.png'
+            "
+            alt="Imagem da pessoa"
+            class="rounded-circle profile-img"
+          />
+        </td>
+        <td>{{ pessoa.nome }}</td>
+        <td>{{ pessoa.email }}</td>
+        <td>{{ pessoa.nomesOrganizacoes }}</td>
+        <td (click)="$event.stopPropagation()">
+          <table-actions-dropdown
+            [tableActionInput]="pessoa.id"
+            (tableActionOutput)="tableActionOutputEvent($event)"
+          ></table-actions-dropdown>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-content select="siscap-pagination"></ng-content>
+</div>

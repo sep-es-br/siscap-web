@@ -1,0 +1,66 @@
+<div class="mx-3">
+  <div id="header" class="row border-bottom">
+    <div class="col-1 ngbaccordionbutton-col">
+      <!-- Coluna para o botão de ação do ngbAccordion -->
+    </div>
+    <div class="col-2 sigla-col">
+      <span class="fs-small-4">Sigla</span>
+    </div>
+    <div class="col-5 col-md-4 col-lg-5 programa-col">
+      <span class="fs-small-4">Programa</span>
+    </div>
+    <div class="col-1 col-md-2 col-lg-1">
+      <span class="fs-small-4 text-nowrap">Moeda</span>
+    </div>
+    <div class="col-2">
+      <span class="fs-small-4">Valor</span>
+    </div>
+    <div class="col-1 ms-auto">
+      <span class="fs-small-4 text-nowrap">Ações</span>
+    </div>
+  </div>
+  <div ngbAccordion id="body">
+    <ng-container *ngFor="let programa of programasList()">
+      <div ngbAccordionItem class="row d-flex align-items-center py-2 my-3">
+        <div class="col-1 ngbaccordionbutton-col">
+          <!-- INVISIVEL POR ENQUANTO
+			  RETOMAR APÓS PROSPECÇÃO/CAPTAÇÃO -->
+          <button class="m-0 py-2 px-0 invisible" ngbAccordionButton></button>
+        </div>
+        <div class="col-2">
+          <span class="fs-small-3 fw-semibold">{{ programa.sigla }}</span>
+        </div>
+        <div class="col-5 col-md-4 col-lg-5">
+          <span class="fs-small-3 fw-semibold">{{ programa.titulo }}</span>
+        </div>
+        <div class="col-1 col-md-2 col-lg-1">
+          <span class="fs-small-3 fw-semibold">{{ programa.moeda }}</span>
+        </div>
+        <div class="col-2">
+          <span class="fs-small-3 fw-semibold text-nowrap">
+            {{
+              programa.tetoPrograma
+                | mask
+                  : "separator.2"
+                  : {
+                      prefix: getSimboloMoeda(programa.moeda) + " ",
+                      leadZero: true,
+                      thousandSeparator: ".",
+                      decimalMarker: ","
+                    }
+            }}
+          </span>
+        </div>
+        <div class="col-1 ms-auto">
+          <table-actions-dropdown
+            [tableActionInput]="programa.id"
+            (tableActionOutput)="tableActionOutputEvent($event)"
+          ></table-actions-dropdown>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+<div class="mt-3">
+  <ng-content select="siscap-pagination"></ng-content>
+</div>

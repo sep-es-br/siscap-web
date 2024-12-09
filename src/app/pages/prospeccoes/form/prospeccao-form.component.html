@@ -1,0 +1,207 @@
+<div class="h-100" *ngIf="loading">
+  <loading-spinner></loading-spinner>
+</div>
+
+<div class="card" *ngIf="!loading">
+  <div class="card-body">
+    <form [formGroup]="prospeccaoForm">
+      <div class="row gy-2">
+        <div class="col-12">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="isClonarProspeccao"
+              [ngModelOptions]="{ standalone: true }"
+              id="clonarProspeccao"
+            />
+            <label class="form-check-label" for="clonarProspeccao">
+              Clonar Prospecção
+            </label>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label for="idCartaConsulta" class="form-label col-12">
+            <validation-message [control]="getControl('idCartaConsulta')">
+              Carta Consulta
+            </validation-message>
+          </label>
+
+          <ng-select
+            [clearable]="false"
+            id="idCartaConsulta"
+            placeholder="-- Selecione a carta consulta --"
+            formControlName="idCartaConsulta"
+          >
+            <ng-option
+              *ngFor="let cartaConsulta of cartasConsultaOpcoes"
+              [value]="cartaConsulta.id"
+            >
+              {{ cartaConsulta.nome }}
+            </ng-option>
+          </ng-select>
+        </div>
+
+        <div class="col-12">
+          <label for="idOrganizacaoProspectora" class="form-label col-12">
+            <validation-message
+              [control]="getControl('idOrganizacaoProspectora')"
+            >
+              Organização Prospectora
+            </validation-message>
+          </label>
+
+          <ng-select
+            [clearable]="false"
+            id="idOrganizacaoProspectora"
+            placeholder="-- Selecione a organização prospectora --"
+            formControlName="idOrganizacaoProspectora"
+          >
+            <ng-option
+              *ngFor="
+                let organizacaoProspectora of organizacaoProspectoraOpcoesFiltradas
+              "
+              [value]="organizacaoProspectora.id"
+            >
+              {{ organizacaoProspectora.nome }}
+            </ng-option>
+          </ng-select>
+        </div>
+
+        <div class="col-12">
+          <label for="idPessoaProspectora" class="form-label col-12">
+            <validation-message [control]="getControl('idPessoaProspectora')">
+              Prospector
+            </validation-message>
+          </label>
+
+          <ng-select
+            [clearable]="false"
+            id="idPessoaProspectora"
+            placeholder="-- Selecione o prospector --"
+            formControlName="idPessoaProspectora"
+          >
+            <ng-option *ngFor="let pessoa of pessoasOpcoes" [value]="pessoa.id">
+              {{ pessoa.nome }}
+            </ng-option>
+          </ng-select>
+        </div>
+
+        <div class="col-12">
+          <label for="idOrganizacaoProspectada" class="form-label col-12">
+            <validation-message
+              [control]="getControl('idOrganizacaoProspectada')"
+            >
+              Organização Prospectada
+            </validation-message>
+          </label>
+
+          <ng-select
+            [clearable]="false"
+            id="idOrganizacaoProspectada"
+            placeholder="-- Selecione a organização prospectada --"
+            formControlName="idOrganizacaoProspectada"
+          >
+            <ng-option
+              *ngFor="
+                let organizacaoProspectada of organizacaoProspectadaOpcoesFiltradas
+              "
+              [value]="organizacaoProspectada.id"
+            >
+              {{ organizacaoProspectada.nome }}
+            </ng-option>
+          </ng-select>
+        </div>
+
+        <div
+          class="col-12"
+          *ngIf="getControl('idOrganizacaoProspectada').value"
+        >
+          <label for="idInteressado" class="col-12 form-label">
+            <validation-message [control]="getControl('interessadosList')">
+              Interessado(a) s
+            </validation-message>
+          </label>
+
+          <ng-select
+            id="idInteressado"
+            placeholder="-- Selecione um(a) interessado(a) --"
+            [(ngModel)]="idInteressado"
+            [ngModelOptions]="{ standalone: true }"
+            [disabled]="!isModoEdicao"
+            (change)="idInteressadoNgSelectChangeEvent($event)"
+          >
+            <ng-option
+              *ngFor="let interessado of interessadosOpcoesFiltradas"
+              [value]="interessado.id"
+              [disabled]="checarIsDisabledInteressadoOpcao(interessado.id)"
+            >
+              {{ interessado.nome }}
+            </ng-option>
+          </ng-select>
+        </div>
+
+        <div class="col-12 my-2">
+          <div class="card" *ngIf="interessadosList.value.length > 0">
+            <div class="card-body row gy-2 mb-0">
+              <ng-container
+                *ngFor="
+                  let interessadoFormGroup of interessadosList.controls;
+                  index as i
+                "
+              >
+                <div class="col-12 col-sm-6">
+                  <div class="card">
+                    <form [formGroup]="interessadoFormGroup">
+                      <div
+                        class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center"
+                      >
+                        <div
+                          class="col-12 col-lg pb-2 pb-lg-0 d-inline-flex justify-content-center justify-content-md-start"
+                        >
+                          <span class="nome-interessado">{{
+                            getInteressadoNome(
+                              interessadoFormGroup.value.idInteressado
+                            )
+                          }}</span>
+                        </div>
+
+                        <div
+                          class="col-12 col-lg d-inline-flex flex-wrap flex-lg-nowrap"
+                        >
+                          <div class="col-12 col-md-10">
+                            <input
+                              id="emailInteressado"
+                              type="text"
+                              class="form-control"
+                              readonly="true"
+                              formControlName="emailInteressado"
+                            />
+                          </div>
+
+                          <div
+                            class="col-12 col-md-2 pt-2 pt-md-0 d-inline-flex justify-content-center align-items-center"
+                          >
+                            <button
+                              type="button"
+                              ngbTooltip="Remover Interessado(a)"
+                              class="btn btn-outline-danger rounded-circle"
+                              (click)="removerInteressadoDaProspeccao(i)"
+                            >
+                              <i class="fa-solid fa-close delete-btn-icon"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

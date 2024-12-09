@@ -9,79 +9,30 @@
 /* ng-select */
 @import "@ng-select/ng-select/themes/default.theme.css";
 
+@import "./assets/styles/custom_colors";
 @import "./assets/styles/custom_styles";
 @import "./assets/styles/fonts";
 @import "./assets/styles/mixins";
-
 
 @import "./assets/plugins/keenicons/duotone/style.css";
 @import "./assets/plugins/keenicons/outline/style.css";
 @import "./assets/plugins/keenicons/solid/style.css";
 
+/* Estilo global do componente QuillEditorComponente (ngx-quill) */
+
+quill-editor {
+  width: 100%;
+  height: 35vh; // ENTENDER QUESTÃO DE ALTURA PADRÃO MELHOR
+}
+
 /* Estilo de botões */
 
-
-
-/* Estilo do Footer */
-
-.footer span {
-  font-size: $small-4-font-size;
-}
-
-/* Estilos do siscap-navmenu*/
-
-.menu-items {
-  ul {
-    list-style-type: none;
-
-    span {
-      font-size: $small-4-font-size;
-      text-transform: uppercase;
-      color: white;
-    }
-
-    li {
-      background-color: shade-color($primary, 18%);
-
-      &:hover {
-        background-color: shade-color($primary, 33%);
-      }
-
-      &:active {
-        background-color: tint-color($primary, 33%);
-      }
-
-      a {
-        font-size: $small-3-font-size;
-        text-decoration: none;
-        text-transform: uppercase;
-        color: white;
-
-        &:active {
-          color: black;
-        }
-      }
-    }
-  }
-}
-
-/* Estilos do siscap-breadcrumb */
-
-.breadcrumb-title-area {
-  max-width: 50vw;
-
-  h4 {
-    font-size: $large-2-font-size;
-    color: $primary;
-    margin: 0;
-  }
-
-  ul {
-    margin: 0;
-
-    li a {
-      font-size: $small-3-font-size;
-    }
+button.icon-text-btn {
+  & svg,
+  span {
+    font-size: 1rem;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
   }
 }
 
@@ -89,6 +40,11 @@
 
 tbody tr:hover {
   cursor: pointer;
+
+  td {
+    background-color: #85beff;
+    color: #fff;
+  }
 }
 
 th,
@@ -100,40 +56,32 @@ th {
   font-size: $small-4-font-size;
   font-weight: normal;
 
+  &[ng-reflect-sortable]::after {
+    content: url(./assets/icons/sort-none-solid.svg);
+  }
+
   &.asc::after {
-    content: url(./assets/icons/caret-up-solid.svg);
-    display: inline-block;
-    vertical-align: text-top;
-    height: 10px;
-    width: 10px;
-    margin-left: 5px;
+    content: url(./assets/icons/sort-up-solid.svg);
   }
 
   &.desc::after {
-    content: url(./assets/icons/caret-down-solid.svg);
-    display: inline-block;
-    vertical-align: text-top;
+    content: url(./assets/icons/sort-down-solid.svg);
+  }
+
+  &::after {
+    display: block;
+    float: inline-end;
     height: 10px;
     width: 10px;
-    margin-left: 5px;
   }
 }
 
 td {
   font-size: $small-3-font-size;
   vertical-align: middle;
-
-  &.target-col {
-    color: $primary;
-    text-decoration: underline;
-  }
 }
 
 /* Estilos de formulários */
-
-.row {
-  margin-bottom: 0.6rem;
-}
 
 label {
   font-size: $small-3-font-size;
@@ -182,25 +130,12 @@ i.fa-user {
   color: $icon-secondary;
 }
 
-/* Coluna de preview de imagem */
-
-.photo-upload {
-  height: 80px;
-  width: 80px;
-}
-
-.uploaded-photo {
-  height: 100%;
-  width: 100%;
-}
-
 /* Coluna de exibição da imagem das tabelas */
 
-.profile-pic {
+.profile-img {
   height: 30px;
   width: 30px;
 }
-
 
 /* Estilo link (tag <a>) para elementos */
 .pointer {
@@ -222,12 +157,49 @@ i.fa-user {
   border: 1px solid black;
 }
 
+/* Classes de fontes */
 
-.fs-tiny{
+.fs-small-1 {
+  font-size: $small-1-font-size;
+}
+
+.fs-small-2 {
+  font-size: $small-2-font-size;
+}
+
+.fs-small-3 {
+  font-size: $small-3-font-size;
+}
+
+.fs-small-4 {
+  font-size: $small-4-font-size;
+}
+
+.fs-small-5 {
+  font-size: $small-5-font-size;
+}
+
+.fs-large-1 {
+  font-size: $large-1-font-size;
+}
+
+.fs-large-2 {
+  font-size: $large-2-font-size;
+}
+
+.fs-large-3 {
+  font-size: $large-3-font-size;
+}
+
+.fs-large-4 {
+  font-size: $large-4-font-size;
+}
+
+.fs-tiny {
   font-size: 0.8rem;
 }
 
-.fs-r-2{
+.fs-r-2 {
   font-size: 1.5rem !important;
 }
 
@@ -237,24 +209,24 @@ i.fa-user {
   border-bottom: 1px solid var(--bs-border-color);
 }
 .my-2 {
-  margin-top: .5rem !important;
-  margin-bottom: .5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }
 
-.icon-default{
+.icon-default {
   color: var(--bs-primary) !important;
 }
 
-.icon-btn{
+.icon-btn {
   font-size: 1.5rem !important;
 }
 
 .ki-duotone,
 .ki-outline,
 .ki-solid {
-	line-height: 1;
-    font-size: 1rem;
-	color: var(--#{$prefix}text-muted);
+  line-height: 1;
+  font-size: 1rem;
+  color: var(--#{$prefix}text-muted);
 }
 
 .no_underline {

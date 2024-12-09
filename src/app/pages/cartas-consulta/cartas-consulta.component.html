@@ -1,0 +1,33 @@
+<div class="h-100" *ngIf="loading">
+  <loading-spinner></loading-spinner>
+</div>
+
+<div class="row py-2" *ngIf="!loading">
+  <siscap-table-search
+    (filtroPesquisaOutput)="filtroPesquisaOutputEvent($event)"
+  ></siscap-table-search>
+</div>
+
+<div
+  id="cartas-consulta-table-wrapper"
+  class="card shadow border-light p-3"
+  *ngIf="!loading"
+>
+  <ng-container
+    *ngIf="(cartasConsultaList$ | async)?.length! > 0; else semResultados"
+  >
+    <siscap-cartas-consulta-list
+      [cartasConsultaList]="cartasConsultaList$ | async"
+      (sortableDirectiveOutput)="sortableDirectiveOutputEvent($event)"
+    >
+      <siscap-pagination
+        [paginacaoDadosInput]="paginacaoDados"
+        (paginacaoOutput)="paginacaoOutputEvent($event)"
+      ></siscap-pagination>
+    </siscap-cartas-consulta-list>
+  </ng-container>
+</div>
+
+<ng-template #semResultados>
+  <query-no-results></query-no-results>
+</ng-template>

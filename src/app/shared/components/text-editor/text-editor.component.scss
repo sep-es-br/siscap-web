@@ -1,0 +1,44 @@
+// Override das labels dos dropdowns de seleção proveniente da biblioteca Quill.js
+
+// Mapa de valores e labels traduzidas para dropdown de tamanho de fonte
+$quill-size-labels: (
+  "small": "Pequeno",
+  "large": "Grande",
+  "huge": "Enorme",
+);
+
+// Mapa de valores e labels traduzidas para dropdown de cabeçalhos
+$quill-header-labels: (
+  "1": "Título 1",
+  "2": "Título 2",
+  "3": "Título 3",
+  "4": "Título 4",
+  "5": "Título 5",
+  "6": "Título 6",
+);
+
+// Loop @each para alterar conteudo do pseudo-elemento ::before dos tamanhos de fonte
+// Uso de '!important' é necessário
+@each $size, $label in $quill-size-labels {
+  ::ng-deep.ql-picker.ql-size {
+    .ql-picker-item,
+    .ql-picker-label {
+      &[data-value="#{$size}"]::before {
+        content: "#{$label}" !important;
+      }
+    }
+  }
+}
+
+// Loop @each para alterar conteudo do pseudo-elemento ::before dos tamanhos de cabeçalho
+// Uso de '!important' é necessário
+@each $header, $label in $quill-header-labels {
+  ::ng-deep.ql-picker.ql-header {
+    .ql-picker-item,
+    .ql-picker-label {
+      &[data-value="#{$header}"]::before {
+        content: "#{$label}" !important;
+      }
+    }
+  }
+}
