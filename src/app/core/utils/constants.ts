@@ -20,7 +20,7 @@ export const BREADCRUMB_LISTA_CAMINHOS_EXCLUSAO: Array<string> = [
  */
 export const BREADCRUMB_LISTA_CAMINHOS_PRINCIPAIS: Array<string> = [
   'home',
-  'propostas',
+  // 'propostas',
   'projetos',
   'programas',
   'pessoas',
@@ -46,9 +46,9 @@ export const BREADCRUMB_LISTA_CAMINHOS_ESPECIFICOS: Array<{
 export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   home: 'Página Principal',
 
-  propostas: 'Propostas',
-  propostascriar: 'Novo DIC',
-  propostaseditar: 'Editar DIC',
+  // propostas: 'Propostas',
+  // propostascriar: 'Novo DIC',
+  // propostaseditar: 'Editar DIC',
 
   projetos: 'Projetos',
   projetoscriar: 'Novo Projeto',

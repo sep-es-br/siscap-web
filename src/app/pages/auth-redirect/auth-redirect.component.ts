@@ -36,7 +36,7 @@ export class AuthRedirectComponent {
         }),
         finalize(() => {
           const destino = this._usuarioService.usuarioPerfil.isProponente
-            ? 'propostas'
+            ? 'projetos'
             : 'home';
 
           this._router.navigate(['main', destino]);

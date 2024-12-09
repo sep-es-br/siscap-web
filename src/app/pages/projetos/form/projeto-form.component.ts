@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
+  FormArray,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
@@ -27,6 +28,7 @@ import { ValorService } from '../../../core/services/valor/valor.service';
 import { RateioService } from '../../../core/services/rateio/rateio.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
+import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 
 import {
   ProjetoFormModel,
@@ -49,6 +51,11 @@ import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-t
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
+import {
+  RateioLocalidadeFormType,
+  RateioLocalidadeFormTypeValue,
+} from '../../../core/types/form/rateio-form.type';
+import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -77,6 +84,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
   public mostrarBotaoGerarDic: boolean = false;
+  public isProponente: boolean = false;
 
   public projetoForm: FormGroup = new FormGroup({});
 
@@ -86,6 +94,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public planosOpcoes: IOpcoesDropdown[] = [];
   public tiposValorOpcoes: IOpcoesDropdown[] = [];
   public localidadesOpcoes: ILocalidadeOpcoesDropdown[] = [];
+  public microrregioesOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
 
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
@@ -95,6 +104,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   constructor(
     private readonly _router: Router,
     private readonly _nnfb: NonNullableFormBuilder,
+    private readonly _usuarioService: UsuarioService,
     private readonly _projetosService: ProjetosService,
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _pessoasService: PessoasService,
@@ -104,6 +114,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private readonly _toastService: ToastService,
     private readonly _breadcrumbService: BreadcrumbService
   ) {
+    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
     const [editar$, criar$] = partition(
       this._projetosService.idProjeto$,
       (idProjeto: number) => idProjeto > 0
@@ -120,13 +132,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           )
       ),
       tap((projetoModel: ProjetoModel) => {
+        console.log(projetoModel);
+
         this.iniciarForm(projetoModel);
 
         this._idProjetoEdicao = projetoModel.id;
 
         this.mostrarBotaoGerarDic = true;
 
-        this.trocarModo(false);
+        if (projetoModel.status == StatusProjetoEnum.Em_Analise)
+          this.trocarModo(false);
+
+        // this.trocarModo(false);
 
         this.loading = false;
       })
@@ -165,7 +182,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._getLocalidadesOpcoes$ = this._opcoesDropdownService
       .getOpcoesLocalidades()
-      .pipe(tap((response) => (this.localidadesOpcoes = response)));
+      .pipe(
+        tap((response) => {
+          this.localidadesOpcoes = response;
+
+          const microrregioesOpcoes: IOpcoesDropdown[] = [
+            { id: 1, nome: 'Todo o Estado' },
+          ];
+
+          this.microrregioesOpcoes = microrregioesOpcoes.concat(
+            response.filter((localidade) => localidade.tipo == 'Microrregiao')
+          );
+        })
+      );
 
     this._getTiposPapelOpcoes$ = this._opcoesDropdownService
       .getOpcoesTiposPapel()
@@ -228,11 +257,43 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     setTimeout(() => (this.idMembroEquipeElaboracao = null), 0);
   }
 
+  public microrregioesNgSelectAddEvent(event: number): void {
+    const idMicrorregioesListFormControl = this.getControl(
+      'idMicrorregioesList'
+    ) as FormControl<Array<number>>;
+
+    if (event == 1) {
+      idMicrorregioesListFormControl.patchValue([1]);
+    }
+  }
+
+  public travarMicrorregiaoOpcao(idMicrorregiao: number): boolean {
+    const idMicrorregioesListFormControl = this.getControl(
+      'idMicrorregioesList'
+    ) as FormControl<Array<number>>;
+
+    return (
+      idMicrorregioesListFormControl.value?.includes(1) && idMicrorregiao != 1
+    );
+  }
+
   public baixarDIC(): void {
     this._projetosService.baixarDIC(this._idProjetoEdicao);
   }
 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
+    const valorInicialControleValorEstimado = this.isProponente
+      ? this._projetosService.construirValorControleValorEstimado(
+          projetoFormModel?.valor
+        )
+      : null;
+
+    const valorInicialControleIdMicrorregioesList = this.isProponente
+      ? this._projetosService.construirValorControleIdMicrorregioesList(
+          projetoFormModel?.rateio
+        )
+      : null;
+
     this.projetoForm = this._nnfb.group({
       sigla: this._nnfb.control(projetoFormModel?.sigla ?? null, [
         Validators.required,
@@ -249,8 +310,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       valor: this._valorService.construirValorFormGroup(
         projetoFormModel?.valor
       ),
+      valorEstimado: this._nnfb.control(valorInicialControleValorEstimado, [
+        Validators.required,
+        Validators.min(1),
+      ]),
       rateio: this._rateioService.construirRateioFormArray(
         projetoFormModel?.rateio
+      ),
+      idMicrorregioesList: this._nnfb.control(
+        valorInicialControleIdMicrorregioesList,
+        [Validators.required, Validators.minLength(1)]
       ),
       objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
         Validators.required,
@@ -399,7 +468,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         break;
 
       case 'salvar':
-        this.submitProjetoForm(this.projetoForm);
+        if (this.isProponente) this.validarProjetoForm();
+        this.submitProjetoForm(this.projetoForm, true);
+        break;
+
+      case 'enviar':
+        // ENVIAR SEM SER RASCUNHO
+        if (this.isProponente) this.validarProjetoForm();
+        this.submitProjetoForm(this.projetoForm, false);
         break;
     }
   }
@@ -419,7 +495,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._router.navigate(['main', 'projetos']);
   }
 
-  private submitProjetoForm(form: FormGroup): void {
+  private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
     for (const key in form.controls) {
       form.controls[key].markAllAsTouched();
     }
@@ -436,15 +512,56 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const payload = new ProjetoFormModel(form.value as IProjetoForm);
 
+    console.log(payload);
+
     const requisicao = this._idProjetoEdicao
-      ? this.atualizarProjeto(payload)
-      : this.cadastrarProjeto(payload);
+      ? this.atualizarProjeto(payload, isRascunho)
+      : this.cadastrarProjeto(payload, isRascunho);
 
     requisicao.subscribe();
   }
 
-  private cadastrarProjeto(payload: ProjetoFormModel): Observable<IProjeto> {
-    return this._projetosService.post(payload).pipe(
+  private validarProjetoForm(): void {
+    const rateioFormArray = this.projetoForm.get('rateio') as FormArray<
+      FormGroup<RateioLocalidadeFormType>
+    >;
+    const valorFormGroup = this.projetoForm.get(
+      'valor'
+    ) as FormGroup<ValorFormType>;
+    const idMicrorregioesListFormControl = this.projetoForm.get(
+      'idMicrorregioesList'
+    ) as FormControl<Array<number>>;
+    const valorEstimadoFormControl = this.projetoForm.get(
+      'valorEstimado'
+    ) as FormControl<number>;
+
+    const projetoFormModelRateio =
+      this._projetosService.construirProjetoModelRateio(
+        idMicrorregioesListFormControl.value,
+        valorEstimadoFormControl.value
+      );
+    const projetoFormModelValor =
+      this._projetosService.construirProjetoModelValor(
+        valorEstimadoFormControl.value
+      );
+
+    projetoFormModelRateio.forEach((rateioModel) => {
+      const novoRateioLocalidadeFormGroup =
+        this._rateioService.construirRateioLocalidadeFormGroupPorRateioModel(
+          rateioModel
+        );
+
+      rateioFormArray.push(novoRateioLocalidadeFormGroup);
+    });
+
+    valorFormGroup.patchValue(projetoFormModelValor);
+  }
+
+  private cadastrarProjeto(
+    payload: ProjetoFormModel,
+    isRascunho: boolean
+  ): Observable<IProjeto> {
+    return this._projetosService.post(payload, isRascunho).pipe(
       tap((response: IProjeto) => {
         this._toastService.showToast(
           'success',
@@ -455,16 +572,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  private atualizarProjeto(payload: ProjetoFormModel): Observable<IProjeto> {
-    return this._projetosService.put(this._idProjetoEdicao, payload).pipe(
-      tap((response: IProjeto) => {
-        this._toastService.showToast(
-          'success',
-          'Projeto alterado com sucesso.'
-        );
-      }),
-      finalize(() => this.cancelar())
-    );
+  private atualizarProjeto(
+    payload: ProjetoFormModel,
+    isRascunho: boolean
+  ): Observable<IProjeto> {
+    return this._projetosService
+      .put(this._idProjetoEdicao, payload, isRascunho)
+      .pipe(
+        tap((response: IProjeto) => {
+          this._toastService.showToast(
+            'success',
+            'Projeto alterado com sucesso.'
+          );
+        }),
+        finalize(() => this.cancelar())
+      );
   }
 
   ngOnDestroy(): void {

@@ -56,6 +56,10 @@ export class BreadcrumbComponent {
   }
 
   public buscarTextoBotaoCriar(contexto: string): string {
+    if (contexto === 'projetos' && this.isProponente) {
+      return 'Novo DIC';
+    }
+
     return BREADCRUMB_COLECAO_CAMINHO_TITULO[contexto + 'criar'];
   }
 

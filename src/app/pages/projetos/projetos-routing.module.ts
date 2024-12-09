@@ -8,6 +8,7 @@ import { projetos_NoIdEditarGuard } from '../../core/guards/projetos/no-id-edita
 
 import { breadcrumbBotoesAcao_ListResolver } from '../../core/resolvers/breadcrumb-botoesacao/list.resolver';
 import { breadcrumbBotoesAcao_FormResolver } from '../../core/resolvers/breadcrumb-botoesacao/form.resolver';
+import { breadcrumbBotoesAcao_ProjetoFormResolver } from '../../core/resolvers/projetos/projetos-form.resolver';
 
 const PROJETOS_ROUTES: Routes = [
   {
@@ -20,14 +21,14 @@ const PROJETOS_ROUTES: Routes = [
     title: 'Cadastrar Projeto',
     path: 'criar',
     component: ProjetoFormComponent,
-    resolve: { botoesAcao: breadcrumbBotoesAcao_FormResolver },
+    resolve: { botoesAcao: breadcrumbBotoesAcao_ProjetoFormResolver },
   },
   {
     title: 'Editar Projeto',
     path: 'editar',
     component: ProjetoFormComponent,
     canActivate: [projetos_NoIdEditarGuard],
-    resolve: { botoesAcao: breadcrumbBotoesAcao_FormResolver },
+    resolve: { botoesAcao: breadcrumbBotoesAcao_ProjetoFormResolver },
   },
 ];
 

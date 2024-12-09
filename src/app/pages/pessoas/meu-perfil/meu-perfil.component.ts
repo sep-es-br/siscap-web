@@ -341,7 +341,11 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
   }
 
   private cancelar(): void {
-    this._router.navigate(['main', 'pessoas']);
+    const destino = this._usuarioService.usuarioPerfil.isProponente
+      ? 'projetos'
+      : 'pessoas';
+
+    this._router.navigate(['main', destino]);
   }
 
   private submitMeuPerfilForm(form: FormGroup) {

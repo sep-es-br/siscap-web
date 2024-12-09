@@ -39,7 +39,9 @@ export class ProjetoFormModel implements IProjetoForm {
     );
   }
 
-  private construirRateioModelArray(rateioArray?: Array<IRateio>): Array<RateioModel> {
+  private construirRateioModelArray(
+    rateioArray?: Array<IRateio>
+  ): Array<RateioModel> {
     if (!rateioArray) {
       return [];
     }
@@ -61,10 +63,12 @@ export class ProjetoFormModel implements IProjetoForm {
 export class ProjetoModel extends ProjetoFormModel implements IProjeto {
   public readonly id: number;
   public readonly idStatus: number;
+  public readonly status: string;
 
   constructor(projeto?: IProjeto) {
     super(projeto);
     this.id = projeto?.id ?? 0;
     this.idStatus = projeto?.idStatus ?? 0;
+    this.status = projeto?.status ?? '';
   }
 }
