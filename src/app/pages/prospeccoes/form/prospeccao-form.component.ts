@@ -15,7 +15,6 @@ import {
   finalize,
   map,
   Observable,
-  pairwise,
   partition,
   Subscription,
   switchMap,
@@ -45,6 +44,7 @@ import {
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
+import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 
 @Component({
   selector: 'siscap-prospeccao-form',
@@ -57,7 +57,12 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
   private readonly _cadastrarProspeccao$: Observable<number>;
 
   private readonly _getCartasConsultaOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getOrganizacaoProspectoraOpcoes$: Observable<
+    IOpcoesDropdown[]
+  >;
+  private readonly _getOrganizacaoProspectadaOpcoes$: Observable<
+    IOpcoesDropdown[]
+  >;
   private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getInteressadosOpcoes$: Observable<
     IProspeccaoInteressadoOpcoesDropdown[]
@@ -76,11 +81,12 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
   public isClonarProspeccao: boolean = false;
 
   public cartasConsultaOpcoes: IOpcoesDropdown[] = [];
-  public organizacoesOpcoes: IOpcoesDropdown[] = [];
+  public organizacaoProspectoraOpcoes: IOpcoesDropdown[] = [];
+  public organizacaoProspectoraOpcoesFiltradas: IOpcoesDropdown[] = [];
+  public organizacaoProspectadaOpcoes: IOpcoesDropdown[] = [];
+  public organizacaoProspectadaOpcoesFiltradas: IOpcoesDropdown[] = [];
   public pessoasOpcoes: IOpcoesDropdown[] = [];
   public interessadosOpcoes: IProspeccaoInteressadoOpcoesDropdown[] = [];
-
-  public organizacoesOpcoesFiltradas: IOpcoesDropdown[] = [];
   public interessadosOpcoesFiltradas: IProspeccaoInteressadoOpcoesDropdown[] =
     [];
 
@@ -129,13 +135,25 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
       .getOpcoesCartasConsulta()
       .pipe(tap((response) => (this.cartasConsultaOpcoes = response)));
 
-    this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
+    this._getOrganizacaoProspectoraOpcoes$ = this._opcoesDropdownService
+      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
+      .pipe(
+        tap(
+          (response) =>
+            (this.organizacaoProspectoraOpcoesFiltradas =
+              this.organizacaoProspectoraOpcoes =
+                response)
+        )
+      );
+
+    this._getOrganizacaoProspectadaOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes()
       .pipe(
         tap(
           (response) =>
-            (this.organizacoesOpcoesFiltradas = this.organizacoesOpcoes =
-              response)
+            (this.organizacaoProspectadaOpcoesFiltradas =
+              this.organizacaoProspectadaOpcoes =
+                response)
         )
       );
 
@@ -155,7 +173,8 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
 
     this._getAllOpcoes$ = concat(
       this._getCartasConsultaOpcoes$,
-      this._getOrganizacoesOpcoes$,
+      this._getOrganizacaoProspectoraOpcoes$,
+      this._getOrganizacaoProspectadaOpcoes$,
       this._getPessoasOpcoes$,
       this._getInteressadosOpcoes$
     );
@@ -306,20 +325,24 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
 
     idOrganizacaoProspectoraFormControl.valueChanges.subscribe(
       (idOrganizacaoProspectoraValue) => {
-        this.organizacoesOpcoesFiltradas = this.filtrarOrganizacoesOpcoes(
-          idOrganizacaoProspectoraValue,
-          idOrganizacaoProspectadaFormControl.value
-        );
+        this.organizacaoProspectadaOpcoesFiltradas =
+          this.filtrarOrganizacoesOpcoes(
+            this.organizacaoProspectadaOpcoes,
+            idOrganizacaoProspectoraValue,
+            idOrganizacaoProspectadaFormControl.value
+          );
       }
     );
 
     idOrganizacaoProspectadaFormControl.valueChanges
       .pipe(distinct())
       .subscribe((idOrganizacaoProspectadaValue) => {
-        this.organizacoesOpcoesFiltradas = this.filtrarOrganizacoesOpcoes(
-          idOrganizacaoProspectoraFormControl.value,
-          idOrganizacaoProspectadaValue
-        );
+        this.organizacaoProspectoraOpcoesFiltradas =
+          this.filtrarOrganizacoesOpcoes(
+            this.organizacaoProspectoraOpcoes,
+            idOrganizacaoProspectoraFormControl.value,
+            idOrganizacaoProspectadaValue
+          );
 
         this.interessadosOpcoesFiltradas = this.filtrarInteressadosOpcoes(
           idOrganizacaoProspectadaValue
@@ -332,10 +355,11 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
   }
 
   private filtrarOrganizacoesOpcoes(
+    opcoesDropdownAlvo: IOpcoesDropdown[],
     idOrganizacaoProspectoraValue: number | null,
     idOrganizacaoProspectadaValue: number | null
   ): IOpcoesDropdown[] {
-    return this.organizacoesOpcoes.filter(
+    return opcoesDropdownAlvo.filter(
       (organizacaoOpcao) =>
         organizacaoOpcao.id !== idOrganizacaoProspectoraValue &&
         organizacaoOpcao.id !== idOrganizacaoProspectadaValue

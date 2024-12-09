@@ -84,6 +84,7 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this._cartasConsultaService.idCartaConsulta$.next(0);
     this._subscription.unsubscribe();
   }
 }
