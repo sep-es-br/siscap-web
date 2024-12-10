@@ -147,7 +147,7 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
       );
 
     this._getOrganizacaoProspectadaOpcoes$ = this._opcoesDropdownService
-      .getOpcoesOrganizacoes()
+      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Instituicao_Financeira)
       .pipe(
         tap(
           (response) =>
@@ -408,6 +408,14 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
     const prospeccaoFormControls = this.prospeccaoForm.controls;
 
     alterarEstadoControlesFormulario(permitir, prospeccaoFormControls);
+
+    // 10/12/2024 - Correção de bug emergencial
+    const idOrganizacaoProspectadaValue =
+      prospeccaoFormControls['idOrganizacaoProspectada'].value;
+
+    this.interessadosOpcoesFiltradas = this.filtrarInteressadosOpcoes(
+      idOrganizacaoProspectadaValue
+    );
   }
 
   private cancelar(): void {

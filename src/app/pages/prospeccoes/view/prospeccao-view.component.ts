@@ -45,21 +45,23 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
     private _breadcrumbService: BreadcrumbService,
     private _router: Router
   ) {
-    this._getProspeccaoDetalhes$ = this._prospeccoesService.idProspeccao$.pipe(
-      switchMap((idProspeccao: number) =>
-        this._prospeccoesService.getProspeccaoDetalhes(idProspeccao)
-      ),
-      map<IProspeccaoDetalhes, ProspeccaoDetalhesModel>(
-        (response: IProspeccaoDetalhes) => new ProspeccaoDetalhesModel(response)
-      ),
-      tap((prospeccaoDetalhesModel: ProspeccaoDetalhesModel) => {
-        this.prospeccaoDetalhes = prospeccaoDetalhesModel;
-        this.organizacaoProspectoraDetalhes =
-          prospeccaoDetalhesModel.organizacaoProspectoraDetalhes;
-        this.organizacaoProspectadaDetalhes =
-          prospeccaoDetalhesModel.organizacaoProspectadaDetalhes;
-      })
-    );
+    this._getProspeccaoDetalhes$ =
+      this._prospeccoesService.idProspeccaoDetalhes$.pipe(
+        switchMap((idProspeccao: number) =>
+          this._prospeccoesService.getProspeccaoDetalhes(idProspeccao)
+        ),
+        map<IProspeccaoDetalhes, ProspeccaoDetalhesModel>(
+          (response: IProspeccaoDetalhes) =>
+            new ProspeccaoDetalhesModel(response)
+        ),
+        tap((prospeccaoDetalhesModel: ProspeccaoDetalhesModel) => {
+          this.prospeccaoDetalhes = prospeccaoDetalhesModel;
+          this.organizacaoProspectoraDetalhes =
+            prospeccaoDetalhesModel.organizacaoProspectoraDetalhes;
+          this.organizacaoProspectadaDetalhes =
+            prospeccaoDetalhesModel.organizacaoProspectadaDetalhes;
+        })
+      );
 
     this._subscription.add(
       this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
@@ -93,6 +95,7 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
       case 'editar':
+        this._prospeccoesService.idProspeccao$.next(this.prospeccaoDetalhes.id);
         this._router.navigate(['main', 'prospeccao', 'editar']);
         break;
 
@@ -106,7 +109,7 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._prospeccoesService.idProspeccao$.next(0);
     this._subscription.unsubscribe();
+    this._prospeccoesService.idProspeccaoDetalhes$.next(0);
   }
 }

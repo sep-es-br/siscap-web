@@ -9,6 +9,7 @@ import { cartasConsulta_NoIdEditarGuard } from '../../core/guards/cartas-consult
 
 import { breadcrumbBotoesAcao_ListResolver } from '../../core/resolvers/breadcrumb-botoesacao/list.resolver';
 import { breadcrumbBotoesAcao_FormResolver } from '../../core/resolvers/breadcrumb-botoesacao/form.resolver';
+import { cartasConsulta_NoIdVisualizarGuard } from '../../core/guards/cartas-consulta/no-id-visualizar.guard';
 
 const CARTAS_CONSULTA_ROUTES: Routes = [
   {
@@ -34,7 +35,7 @@ const CARTAS_CONSULTA_ROUTES: Routes = [
     title: 'Visualizar Carta Consulta',
     path: 'visualizar',
     component: CartaConsultaViewComponent,
-    canActivate: [cartasConsulta_NoIdEditarGuard],
+    canActivate: [cartasConsulta_NoIdVisualizarGuard],
     data: {
       botoesAcao: {
         botoes: ['editar'],
