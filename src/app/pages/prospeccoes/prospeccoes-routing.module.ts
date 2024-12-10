@@ -9,6 +9,7 @@ import { prospeccoes_NoIdEditarGuard } from '../../core/guards/prospeccoes/no-id
 
 import { breadcrumbBotoesAcao_ListResolver } from '../../core/resolvers/breadcrumb-botoesacao/list.resolver';
 import { breadcrumbBotoesAcao_FormResolver } from '../../core/resolvers/breadcrumb-botoesacao/form.resolver';
+import { prospeccoes_NoIdVisualizarGuard } from '../../core/guards/prospeccoes/no-id-visualizar.guard';
 
 const PROSPECCOES_ROUTES: Routes = [
   {
@@ -34,7 +35,7 @@ const PROSPECCOES_ROUTES: Routes = [
     title: 'Visualizar Prospecção',
     path: 'visualizar',
     component: ProspeccaoViewComponent,
-    canActivate: [prospeccoes_NoIdEditarGuard],
+    canActivate: [prospeccoes_NoIdVisualizarGuard],
     data: {
       botoesAcao: {
         botoes: ['editar', 'prospectar'],

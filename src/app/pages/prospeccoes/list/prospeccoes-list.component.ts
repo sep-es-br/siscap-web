@@ -59,7 +59,7 @@ export class ProspeccoesListComponent {
   }
 
   public visualizarProspeccao(id: number): void {
-    this._prospeccoesService.idProspeccao$.next(id);
+    this._prospeccoesService.idProspeccaoDetalhes$.next(id);
 
     this._router.navigate(['main', 'prospeccao', 'visualizar']);
   }

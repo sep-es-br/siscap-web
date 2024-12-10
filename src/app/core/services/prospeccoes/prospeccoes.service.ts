@@ -35,6 +35,13 @@ export class ProspeccoesService
     return this._idProspeccao$;
   }
 
+  private readonly _idProspeccaoDetalhes$: BehaviorSubject<number> =
+    new BehaviorSubject<number>(0);
+
+  public get idProspeccaoDetalhes$(): BehaviorSubject<number> {
+    return this._idProspeccaoDetalhes$;
+  }
+
   constructor(private readonly _http: HttpClient) {}
 
   public getAllPaged(
