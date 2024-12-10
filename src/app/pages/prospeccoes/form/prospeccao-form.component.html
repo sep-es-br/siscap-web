@@ -187,6 +187,7 @@
                               type="button"
                               ngbTooltip="Remover Interessado(a)"
                               class="btn btn-outline-danger rounded-circle"
+                              [disabled]="!isModoEdicao"
                               (click)="removerInteressadoDaProspeccao(i)"
                             >
                               <i class="fa-solid fa-close delete-btn-icon"></i>
