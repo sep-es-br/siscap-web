@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import { filter, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 
 import { CartasConsultaService } from '../../../core/services/cartas-consulta/cartas-consulta.service';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
@@ -38,6 +38,7 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
   ) {
     this._getCartaConsultaDetalhes$ =
       this._cartasConsultaService.idCartaConsulta$.pipe(
+        filter((idCartaConsulta) => idCartaConsulta > 0),
         switchMap((idCartaConsulta: number) =>
           this._cartasConsultaService.getCartaConsultaDetalhes(idCartaConsulta)
         ),
