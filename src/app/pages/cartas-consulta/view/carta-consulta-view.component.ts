@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { filter, map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import { map, Observable, Subscription, switchMap, tap } from 'rxjs';
 
 import { CartasConsultaService } from '../../../core/services/cartas-consulta/cartas-consulta.service';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
@@ -37,10 +37,11 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
     private readonly _router: Router
   ) {
     this._getCartaConsultaDetalhes$ =
-      this._cartasConsultaService.idCartaConsulta$.pipe(
-        filter((idCartaConsulta) => idCartaConsulta > 0),
-        switchMap((idCartaConsulta: number) =>
-          this._cartasConsultaService.getCartaConsultaDetalhes(idCartaConsulta)
+      this._cartasConsultaService.idCartaConsultaDetalhes$.pipe(
+        switchMap((idCartaConsultaDetalhes: number) =>
+          this._cartasConsultaService.getCartaConsultaDetalhes(
+            idCartaConsultaDetalhes
+          )
         ),
         map<ICartaConsultaDetalhes, CartaConsultaDetalhesModel>(
           (response: ICartaConsultaDetalhes) =>
@@ -76,6 +77,9 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
       case 'editar':
+        this._cartasConsultaService.idCartaConsulta$.next(
+          this.cartaConsultaDetalhes.id
+        );
         this._router.navigate(['main', 'cartasconsulta', 'editar']);
         break;
 
@@ -85,7 +89,7 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._cartasConsultaService.idCartaConsulta$.next(0);
     this._subscription.unsubscribe();
+    this._cartasConsultaService.idCartaConsultaDetalhes$.next(0);
   }
 }
