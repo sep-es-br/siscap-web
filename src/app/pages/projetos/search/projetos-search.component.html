@@ -1,5 +1,5 @@
 <form [formGroup]="projetosPesquisaForm">
-  <div class="col-12 d-inline-flex justify-content-between align-items-center">
+  <div class="col-12 d-inline-flex justify-content-between align-items-end">
     <div class="col px-2">
       <label for="sigla" class="form-label">Sigla</label>
       <input
@@ -9,9 +9,6 @@
         class="form-control"
         formControlName="sigla"
       />
-    </div>
-
-    <div class="col px-2">
       <label for="titulo" class="form-label">Titulo</label>
       <input
         type="text"
@@ -31,9 +28,6 @@
           >{{ statusProjeto }}</ng-option
         >
       </ng-select>
-    </div>
-
-    <div class="col px-2">
       <label for="organizacao" class="form-label">Organização</label>
       <ng-select
         id="organizacao"
@@ -47,6 +41,23 @@
           {{ organizacao.nome }}
         </ng-option>
       </ng-select>
+    </div>
+
+    <div class="col px-2">
+      <label for="">Data</label>
+      <div class="input-group">
+        <input
+          name="data"
+          id="data"
+          class="form-control"
+          ngbDatepicker
+          #dp="ngbDatepicker"
+          formControlName="data"
+        />
+        <button class="btn btn-outline-secondary" (click)="dp.toggle()">
+          <i class="fa-solid fa-calendar-days"></i>
+        </button>
+      </div>
     </div>
   </div>
 </form>

@@ -6,6 +6,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
   NgbAlertModule,
+  NgbDatepickerModule,
   NgbPaginationModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
@@ -34,6 +35,7 @@ import { ProjetosPesquisaComponent } from './search/projetos-search.component';
     NgxMaskPipe,
     NgbPaginationModule,
     NgbAlertModule,
+    NgbDatepickerModule,
     ProjetosRoutingModule,
   ],
   exports: [

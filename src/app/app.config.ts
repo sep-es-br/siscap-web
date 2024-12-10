@@ -19,6 +19,8 @@ import { errorHandlerInterceptor } from './core/interceptors/error-handler.inter
 
 import { provideQuillConfig } from 'ngx-quill';
 import { quillEditorToolbarOptions } from './core/utils/quill-editor-toolbar-options';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { SiscapNgbDateParserFormatter } from './core/utils/SiscapNgbDateParserFormatter';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,5 +40,6 @@ export const appConfig: ApplicationConfig = {
       },
       placeholder: '-- Insira o texto aqui --',
     }),
+    { provide: NgbDateParserFormatter, useClass: SiscapNgbDateParserFormatter },
   ],
 };

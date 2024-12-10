@@ -19,7 +19,7 @@ import { TEMPO_INPUT_USUARIO } from '../../../core/utils/constants';
 export class ProjetosPesquisaComponent implements OnInit {
   private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
 
-  public statusProjetoOpcoes: Array<string> = Object.values(StatusProjetoEnum);
+  public statusProjetoOpcoes: Array<string> = [];
   public organizacoesOpcoes: Array<IOpcoesDropdown> = [];
 
   public projetosPesquisaForm: FormGroup;
@@ -27,19 +27,24 @@ export class ProjetosPesquisaComponent implements OnInit {
   // CRIAR OUTPUT DE FORM.VALUE (JÁ PREPARAR A QUERY PARAMS STRING?)
 
   constructor(private readonly _opcoesDropdownService: OpcoesDropdownService) {
+    this.statusProjetoOpcoes = ['Todos', ...Object.values(StatusProjetoEnum)];
+
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes()
       .pipe(
         tap((response) => {
-          this.organizacoesOpcoes = response;
+          this.organizacoesOpcoes = [{ id: 0, nome: 'Todos' }];
+
+          this.organizacoesOpcoes = this.organizacoesOpcoes.concat(response);
         })
       );
 
     this.projetosPesquisaForm = new FormGroup({
       sigla: new FormControl(''),
       titulo: new FormControl(''),
-      status: new FormControl(''),
-      organizacao: new FormControl(''),
+      status: new FormControl('Todos'),
+      organizacao: new FormControl(0),
+      data: new FormControl(''),
     });
 
     this.projetoPesquisaFormValueChanges();
