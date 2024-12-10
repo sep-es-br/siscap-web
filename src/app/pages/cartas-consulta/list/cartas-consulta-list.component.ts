@@ -55,7 +55,7 @@ export class CartasConsultaListComponent {
   }
 
   public visualizarCartaConsulta(id: number): void {
-    this._cartasConsultaService.idCartaConsulta$.next(id);
+    this._cartasConsultaService.idCartaConsultaDetalhes$.next(id);
 
     this._router.navigate(['main', 'cartasconsulta', 'visualizar']);
   }

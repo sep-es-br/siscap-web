@@ -32,6 +32,13 @@ export class CartasConsultaService
     return this._idCartaConsulta$;
   }
 
+  private _idCartaConsultaDetalhes$: BehaviorSubject<number> =
+    new BehaviorSubject<number>(0);
+
+  public get idCartaConsultaDetalhes$(): BehaviorSubject<number> {
+    return this._idCartaConsultaDetalhes$;
+  }
+
   constructor(private _http: HttpClient) {}
 
   public getAllPaged(
