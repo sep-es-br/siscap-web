@@ -147,7 +147,7 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
       );
 
     this._getOrganizacaoProspectadaOpcoes$ = this._opcoesDropdownService
-      .getOpcoesOrganizacoes()
+      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Instituicao_Financeira)
       .pipe(
         tap(
           (response) =>
