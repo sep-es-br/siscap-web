@@ -33,3 +33,9 @@ export interface IProjetoTableData
   // valor: number;
   // nomesLocalidadesRateio: Array<string>;
 }
+
+export interface IProjetoFiltroPesquisa
+  extends Pick<IProjeto, 'sigla' | 'titulo' | 'idOrganizacao' | 'status'> {
+  dataPeriodoInicio: string;
+  dataPeriodoFim: string;
+}

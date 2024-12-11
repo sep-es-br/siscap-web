@@ -17,10 +17,11 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
 export class CartasConsultaComponent {
   private _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    search: '',
     size: 15,
     sort: '',
   };
+
+  private termoPesquisaSimples: string = '';
 
   private _cartasConsultaList$: BehaviorSubject<
     Array<ICartaConsultaTableData>
@@ -50,7 +51,7 @@ export class CartasConsultaComponent {
   }
 
   public filtroPesquisaOutputEvent(filtro: string): void {
-    this._pageConfig.search = filtro;
+    this.termoPesquisaSimples = filtro;
 
     if (!filtro) {
       this._pageConfig.sort = '';
@@ -74,8 +75,10 @@ export class CartasConsultaComponent {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
+    const searchFilter = { search: this.termoPesquisaSimples };
+
     this._cartasConsultaService
-      .getAllPaged(tempPageConfig)
+      .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
           this._cartasConsultaList$.next(response.content);

@@ -5,7 +5,10 @@ import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 import { ProjetosService } from '../../core/services/projetos/projetos.service';
 
 import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
-import { IProjetoTableData } from '../../core/interfaces/projeto.interface';
+import {
+  IProjetoFiltroPesquisa,
+  IProjetoTableData,
+} from '../../core/interfaces/projeto.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
 
 @Component({
@@ -17,9 +20,17 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
 export class ProjetosComponent implements OnInit {
   private _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    search: '',
     size: 15,
     sort: '',
+  };
+
+  private projetoFiltroPesquisa: IProjetoFiltroPesquisa = {
+    sigla: '',
+    titulo: '',
+    idOrganizacao: 0,
+    status: 'Todos',
+    dataPeriodoInicio: '',
+    dataPeriodoFim: '',
   };
 
   private _projetosList$: BehaviorSubject<Array<IProjetoTableData>> =
@@ -48,13 +59,11 @@ export class ProjetosComponent implements OnInit {
     this.fetchPage();
   }
 
-  public filtroPesquisaOutputEvent(filtro: string): void {
-    this._pageConfig.search = filtro;
+  // FUNCIONOU ESSA BUDEGA
+  // ALTERAR METODO NO BACKEND
 
-    if (!filtro) {
-      this._pageConfig.sort = '';
-      this.limparSortColumn();
-    }
+  public redefinirFiltroPesquisa(event: IProjetoFiltroPesquisa): void {
+    this.projetoFiltroPesquisa = event;
 
     this.fetchPage();
   }
@@ -73,8 +82,10 @@ export class ProjetosComponent implements OnInit {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
+    const searchFilter = this.projetoFiltroPesquisa;
+
     this._projetosService
-      .getAllPaged(tempPageConfig)
+      .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
           this._projetosList$.next(response.content);

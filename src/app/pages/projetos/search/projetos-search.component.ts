@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
 import { debounceTime, Observable, tap } from 'rxjs';
@@ -9,6 +9,7 @@ import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interf
 
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { TEMPO_INPUT_USUARIO } from '../../../core/utils/constants';
+import { IProjetoFiltroPesquisa } from '../../../core/interfaces/projeto.interface';
 
 @Component({
   selector: 'siscap-projetos-pesquisa',
@@ -23,6 +24,9 @@ export class ProjetosPesquisaComponent implements OnInit {
   public organizacoesOpcoes: Array<IOpcoesDropdown> = [];
 
   public projetosPesquisaForm: FormGroup;
+
+  @Output() public pesquisarProjetos: EventEmitter<IProjetoFiltroPesquisa> =
+    new EventEmitter<IProjetoFiltroPesquisa>();
 
   // CRIAR OUTPUT DE FORM.VALUE (JÁ PREPARAR A QUERY PARAMS STRING?)
 
@@ -39,12 +43,15 @@ export class ProjetosPesquisaComponent implements OnInit {
         })
       );
 
+    // CRIAR DOIS FORMCONTROLS DE DATA, UM PRO INICIO E UM PRO FIM
+
     this.projetosPesquisaForm = new FormGroup({
       sigla: new FormControl(''),
       titulo: new FormControl(''),
       status: new FormControl('Todos'),
       organizacao: new FormControl(0),
-      data: new FormControl(''),
+      dataPeriodoInicio: new FormControl(''),
+      dataPeriodoFim: new FormControl(''),
     });
 
     this.projetoPesquisaFormValueChanges();
@@ -57,8 +64,9 @@ export class ProjetosPesquisaComponent implements OnInit {
   private projetoPesquisaFormValueChanges(): void {
     this.projetosPesquisaForm.valueChanges
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
-      .subscribe((value) => {
-        console.log(value);
+      .subscribe((projetoPesquisaFormValue) => {
+        // console.log(projetoPesquisaFormValue);
+        this.pesquisarProjetos.emit(projetoPesquisaFormValue);
       });
   }
 }

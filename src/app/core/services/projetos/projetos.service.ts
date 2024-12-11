@@ -38,11 +38,14 @@ export class ProjetosService {
   constructor(private _http: HttpClient) {}
 
   public getAllPaged(
-    pageConfig: IHttpGetRequestBody
+    pageConfig: IHttpGetRequestBody,
+    ...searchFilter: { [key: string]: any }[]
   ): Observable<IHttpGetResponseBody<IProjetoTableData>> {
     return this._http.get<IHttpGetResponseBody<IProjetoTableData>>(this._url, {
-      params:
-        PageableQueryStringParametersHelper.buildQueryStringParams(pageConfig),
+      params: PageableQueryStringParametersHelper.buildQueryStringParams(
+        pageConfig,
+        ...searchFilter
+      ),
     });
   }
 

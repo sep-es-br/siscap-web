@@ -7,27 +7,24 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class SiscapNgbDateParserFormatter extends NgbDateParserFormatter {
-  protected readonly FORMATO_DATA = 'dd/MM/yyyy';
+  private readonly DELIMITER = '/';
 
   override parse(value: string): NgbDateStruct | null {
-    const [day, month, year] = value.split('/');
+    if (value) {
+      const [day, month, year] = value.split(this.DELIMITER);
 
-    return {
-      year: parseInt(year, 10),
-      month: parseInt(month, 10),
-      day: parseInt(day, 10),
-    };
+      return {
+        year: parseInt(year, 10),
+        month: parseInt(month, 10),
+        day: parseInt(day, 10),
+      };
+    }
+    return null;
   }
 
   override format(date: NgbDateStruct | null): string {
-    if (date === null) {
-      return '';
-    }
-
-    const day = date.day.toString().padStart(2, '0');
-    const month = date.month.toString().padStart(2, '0');
-    const year = date.year;
-
-    return `${day}/${month}/${year}`;
+    return date
+      ? date.day + this.DELIMITER + date.month + this.DELIMITER + date.year
+      : '';
   }
 }

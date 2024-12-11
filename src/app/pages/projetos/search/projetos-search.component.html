@@ -1,27 +1,37 @@
 <form [formGroup]="projetosPesquisaForm">
-  <div class="col-12 d-inline-flex justify-content-between align-items-end">
-    <div class="col px-2">
-      <label for="sigla" class="form-label">Sigla</label>
-      <input
-        type="text"
-        name="sigla"
-        id="sigla"
-        class="form-control"
-        formControlName="sigla"
-      />
-      <label for="titulo" class="form-label">Titulo</label>
-      <input
-        type="text"
-        name="titulo"
-        id="titulo"
-        class="form-control"
-        formControlName="titulo"
-      />
+  <div class="col-12 d-inline-flex justify-content-between align-items-stretch">
+    <div class="col-4 px-2">
+      <div>
+        <label for="sigla" class="form-label">Sigla</label>
+        <input
+          type="text"
+          name="sigla"
+          id="sigla"
+          class="form-control"
+          formControlName="sigla"
+        />
+      </div>
+
+      <div>
+        <label for="titulo" class="form-label">Titulo</label>
+        <input
+          type="text"
+          name="titulo"
+          id="titulo"
+          class="form-control"
+          formControlName="titulo"
+        />
+      </div>
     </div>
 
-    <div class="col px-2">
+    <div class="col-4 px-2">
       <label for="status" class="form-label">Status</label>
-      <ng-select id="status" name="status" formControlName="status">
+      <ng-select
+        id="status"
+        name="status"
+        formControlName="status"
+        [clearable]="false"
+      >
         <ng-option
           *ngFor="let statusProjeto of statusProjetoOpcoes"
           [value]="statusProjeto"
@@ -33,6 +43,7 @@
         id="organizacao"
         name="organizacao"
         formControlName="organizacao"
+        [clearable]="false"
       >
         <ng-option
           *ngFor="let organizacao of organizacoesOpcoes"
@@ -43,18 +54,40 @@
       </ng-select>
     </div>
 
-    <div class="col px-2">
-      <label for="">Data</label>
+    <div class="col-4 px-2">
+      <label for="dataPeriodoInicio" class="form-label">Entre</label>
       <div class="input-group">
         <input
-          name="data"
-          id="data"
+          name="dataPeriodoInicio"
+          id="dataPeriodoInicio"
           class="form-control"
+          placeholder="Período Inicial"
           ngbDatepicker
-          #dp="ngbDatepicker"
-          formControlName="data"
+          #datePickerInicio="ngbDatepicker"
+          formControlName="dataPeriodoInicio"
         />
-        <button class="btn btn-outline-secondary" (click)="dp.toggle()">
+        <button
+          class="btn btn-outline-secondary"
+          (click)="datePickerInicio.toggle()"
+        >
+          <i class="fa-solid fa-calendar-days"></i>
+        </button>
+      </div>
+      <label for="dataPeriodoFim" class="form-label"></label>
+      <div class="input-group">
+        <input
+          name="dataPeriodoFim"
+          id="dataPeriodoFim"
+          class="form-control"
+          placeholder="Período Final"
+          ngbDatepicker
+          #datePickerFim="ngbDatepicker"
+          formControlName="dataPeriodoFim"
+        />
+        <button
+          class="btn btn-outline-secondary"
+          (click)="datePickerFim.toggle()"
+        >
           <i class="fa-solid fa-calendar-days"></i>
         </button>
       </div>

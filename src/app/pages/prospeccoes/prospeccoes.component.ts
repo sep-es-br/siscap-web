@@ -17,10 +17,11 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
 export class ProspeccoesComponent {
   private _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    search: '',
     size: 15,
     sort: '',
   };
+
+  private termoPesquisaSimples: string = '';
 
   private _prospeccoesList$: BehaviorSubject<Array<IProspeccaoTableData>> =
     new BehaviorSubject<Array<IProspeccaoTableData>>([]);
@@ -49,7 +50,7 @@ export class ProspeccoesComponent {
   }
 
   public filtroPesquisaOutputEvent(filtro: string): void {
-    this._pageConfig.search = filtro;
+    this.termoPesquisaSimples = filtro;
 
     if (!filtro) {
       this._pageConfig.sort = '';
@@ -73,8 +74,10 @@ export class ProspeccoesComponent {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
+    const searchFilter = { search: this.termoPesquisaSimples };
+
     this._prospeccoesService
-      .getAllPaged(tempPageConfig)
+      .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
           this._prospeccoesList$.next(response.content);

@@ -17,10 +17,11 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
 export class OrganizacoesComponent implements OnInit {
   private _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    search: '',
     size: 15,
     sort: '',
   };
+
+  private termoPesquisaSimples: string = '';
 
   private _organizacoesList$: BehaviorSubject<Array<IOrganizacaoTableData>> =
     new BehaviorSubject<Array<IOrganizacaoTableData>>([]);
@@ -49,7 +50,7 @@ export class OrganizacoesComponent implements OnInit {
   }
 
   public filtroPesquisaOutputEvent(filtro: string): void {
-    this._pageConfig.search = filtro;
+    this.termoPesquisaSimples = filtro;
 
     if (!filtro) {
       this._pageConfig.sort = '';
@@ -73,8 +74,10 @@ export class OrganizacoesComponent implements OnInit {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
+    const searchFilter = { search: this.termoPesquisaSimples };
+
     this._organizacoesService
-      .getAllPaged(tempPageConfig)
+      .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
           this._organizacoesList$.next(response.content);

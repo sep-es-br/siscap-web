@@ -35,15 +35,16 @@ export class CartasConsultaService
   constructor(private _http: HttpClient) {}
 
   public getAllPaged(
-    pageConfig: IHttpGetRequestBody
+    pageConfig: IHttpGetRequestBody,
+    ...searchFilter: { [key: string]: any }[]
   ): Observable<IHttpGetResponseBody<ICartaConsultaTableData>> {
     return this._http.get<IHttpGetResponseBody<ICartaConsultaTableData>>(
       this._url,
       {
-        params:
-          PageableQueryStringParametersHelper.buildQueryStringParams(
-            pageConfig
-          ),
+        params: PageableQueryStringParametersHelper.buildQueryStringParams(
+          pageConfig,
+          ...searchFilter
+        ),
       }
     );
   }
