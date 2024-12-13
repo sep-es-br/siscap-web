@@ -6,6 +6,7 @@
       <!-- <col class="microrregioes-col" /> -->
       <col class="status-col" />
       <col class="valorEstimado-col" />
+      <col class="rascunho-col" />
       <col class="acoes-col" />
     </colgroup>
     <thead>
@@ -18,13 +19,8 @@
         </th>
         <!-- <th>Microrregiões Atendidas</th> -->
         <th>Status</th>
-        <th
-          [sortable]="'valorEstimado'"
-          (sort)="sortColumn($event)"
-          class="pointer"
-        >
-          Valor Estimado
-        </th>
+        <th>Valor Estimado</th>
+        <th></th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -49,6 +45,13 @@
                     decimalMarker: ","
                   }
           }}
+        </td>
+        <td>
+          <span
+            class="badge rounded-pill text-bg-info"
+            *ngIf="projeto.isRascunho"
+            >Rascunho</span
+          >
         </td>
         <td (click)="$event.stopPropagation()">
           <table-actions-dropdown

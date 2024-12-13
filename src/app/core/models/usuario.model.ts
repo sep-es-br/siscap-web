@@ -14,8 +14,9 @@ export class UsuarioPerfilModel implements IUsuarioPerfil {
     this.subNovo = usuario?.subNovo ?? '';
     this.imagemPerfil = usuario?.imagemPerfil ?? null;
     this.permissoes = usuario?.permissoes ?? [];
+
     // this.isProponente = usuario?.isProponente ?? false; // VAI VIR DO BACKEND
 
-    this.isProponente = true;
+    this.isProponente = false;
   }
 }

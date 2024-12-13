@@ -1,27 +1,15 @@
 <form [formGroup]="projetosPesquisaForm">
   <div class="col-12 d-inline-flex justify-content-between align-items-stretch">
     <div class="col-4 px-2">
-      <div>
-        <label for="sigla" class="form-label">Sigla</label>
-        <input
-          type="text"
-          name="sigla"
-          id="sigla"
-          class="form-control"
-          formControlName="sigla"
-        />
-      </div>
-
-      <div>
-        <label for="titulo" class="form-label">Titulo</label>
-        <input
-          type="text"
-          name="titulo"
-          id="titulo"
-          class="form-control"
-          formControlName="titulo"
-        />
-      </div>
+      <label for="sigla_titulo" class="form-label">Sigla / Título</label>
+      <input
+        type="text"
+        name="sigla_titulo"
+        id="sigla_titulo"
+        class="form-control"
+        formControlName="siglaOuTitulo"
+        (keydown.enter)="$event.preventDefault()"
+      />
     </div>
 
     <div class="col-4 px-2">
@@ -38,11 +26,11 @@
           >{{ statusProjeto }}</ng-option
         >
       </ng-select>
-      <label for="organizacao" class="form-label">Organização</label>
+      <label for="idOrganizacao" class="form-label">Organização</label>
       <ng-select
-        id="organizacao"
-        name="organizacao"
-        formControlName="organizacao"
+        id="idOrganizacao"
+        name="idOrganizacao"
+        formControlName="idOrganizacao"
         [clearable]="false"
       >
         <ng-option
@@ -56,41 +44,16 @@
 
     <div class="col-4 px-2">
       <label for="dataPeriodoInicio" class="form-label">Entre</label>
-      <div class="input-group">
-        <input
-          name="dataPeriodoInicio"
-          id="dataPeriodoInicio"
-          class="form-control"
-          placeholder="Período Inicial"
-          ngbDatepicker
-          #datePickerInicio="ngbDatepicker"
-          formControlName="dataPeriodoInicio"
-        />
-        <button
-          class="btn btn-outline-secondary"
-          (click)="datePickerInicio.toggle()"
-        >
-          <i class="fa-solid fa-calendar-days"></i>
-        </button>
-      </div>
+      <siscap-datepicker
+        [placeholderText]="'Período Inicial'"
+        (dateValueChange)="atualizarDataPeriodoInicio($event)"
+      ></siscap-datepicker>
+
       <label for="dataPeriodoFim" class="form-label"></label>
-      <div class="input-group">
-        <input
-          name="dataPeriodoFim"
-          id="dataPeriodoFim"
-          class="form-control"
-          placeholder="Período Final"
-          ngbDatepicker
-          #datePickerFim="ngbDatepicker"
-          formControlName="dataPeriodoFim"
-        />
-        <button
-          class="btn btn-outline-secondary"
-          (click)="datePickerFim.toggle()"
-        >
-          <i class="fa-solid fa-calendar-days"></i>
-        </button>
-      </div>
+      <siscap-datepicker
+        [placeholderText]="'Período Final'"
+        (dateValueChange)="atualizarDataPeriodoFim($event)"
+      ></siscap-datepicker>
     </div>
   </div>
 </form>

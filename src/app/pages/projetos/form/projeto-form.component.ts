@@ -44,18 +44,21 @@ import {
   IProjetoForm,
 } from '../../../core/interfaces/projeto.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
+import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
 
 import { ValorFormType } from '../../../core/types/form/valor-form.type';
+import { RateioLocalidadeFormType } from '../../../core/types/form/rateio-form.type';
+
+import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
+import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
-import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
-import {
-  RateioLocalidadeFormType,
-  RateioLocalidadeFormTypeValue,
-} from '../../../core/types/form/rateio-form.type';
-import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -140,10 +143,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this.mostrarBotaoGerarDic = true;
 
-        if (projetoModel.status == StatusProjetoEnum.Em_Analise)
+        if (
+          this.isProponente &&
+          projetoModel.status == StatusProjetoEnum.Em_Analise
+        ) {
+          this.montarBotoesAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
           this.trocarModo(false);
-
-        // this.trocarModo(false);
+        } else {
+          this.montarBotoesAcaoBreadcrumb(
+            BreadcrumbAcoesEnum.Enviar,
+            BreadcrumbAcoesEnum.Salvar,
+            BreadcrumbAcoesEnum.Cancelar
+          );
+        }
 
         this.loading = false;
       })
@@ -152,6 +164,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._cadastrarProjeto$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this.montarBotoesAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Enviar,
+          BreadcrumbAcoesEnum.Salvar,
+          BreadcrumbAcoesEnum.Cancelar
+        );
 
         this.mostrarBotaoGerarDic = false;
 
@@ -456,23 +474,31 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         },
       });
   }
+  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: acoes,
+      contexto: BreadcrumbContextoEnum.Projetos,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
 
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
-      case 'editar':
+      case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
         break;
 
-      case 'cancelar':
+      case BreadcrumbAcoesEnum.Cancelar:
         this.cancelar();
         break;
 
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         if (this.isProponente) this.validarProjetoForm();
         this.submitProjetoForm(this.projetoForm, true);
         break;
 
-      case 'enviar':
+      case BreadcrumbAcoesEnum.Enviar:
         // ENVIAR SEM SER RASCUNHO
         if (this.isProponente) this.validarProjetoForm();
         this.submitProjetoForm(this.projetoForm, false);
@@ -593,5 +619,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._subscription.unsubscribe();
     this._rateioService.resetarRateio();
     this._projetosService.idProjeto$.next(0);
+    this._breadcrumbService.limparBotoesAcao();
   }
 }

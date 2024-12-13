@@ -15,7 +15,6 @@ import {
   finalize,
   map,
   Observable,
-  pairwise,
   partition,
   Subscription,
   switchMap,
@@ -43,8 +42,14 @@ import {
   IOpcoesDropdown,
   IProspeccaoInteressadoOpcoesDropdown,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
+import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
 
-import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
+
+// import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
 
 @Component({
   selector: 'siscap-prospeccao-form',
@@ -111,7 +116,10 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
 
         this._idProspeccaoEdicao = prospeccaoModel.id;
 
-        this.trocarModo(false);
+        this.montarBotoesAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Salvar,
+          BreadcrumbAcoesEnum.Cancelar
+        );
 
         this.loading = false;
       })
@@ -120,6 +128,11 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
     this._cadastrarProspeccao$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this.montarBotoesAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Salvar,
+          BreadcrumbAcoesEnum.Cancelar
+        );
 
         this.loading = false;
       })
@@ -362,29 +375,38 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
     this.interessadosList.clear();
   }
 
+  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: acoes,
+      contexto: BreadcrumbContextoEnum.Prospeccao,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
+
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
-      case 'editar':
-        this.trocarModo(true);
-        break;
+      // case BreadcrumbAcoesEnum.Editar:
+      //   this.trocarModo(true);
+      //   break;
 
-      case 'cancelar':
+      case BreadcrumbAcoesEnum.Cancelar:
         this.cancelar();
         break;
 
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         this.submitProspeccaoForm(this.prospeccaoForm);
         break;
     }
   }
 
-  private trocarModo(permitir: boolean): void {
-    this.isModoEdicao = permitir;
+  // private trocarModo(permitir: boolean): void {
+  //   this.isModoEdicao = permitir;
 
-    const prospeccaoFormControls = this.prospeccaoForm.controls;
+  //   const prospeccaoFormControls = this.prospeccaoForm.controls;
 
-    alterarEstadoControlesFormulario(permitir, prospeccaoFormControls);
-  }
+  //   alterarEstadoControlesFormulario(permitir, prospeccaoFormControls);
+  // }
 
   private cancelar(): void {
     this._router.navigate(['main', 'prospeccao']);
@@ -442,5 +464,6 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._prospeccoesService.idProspeccao$.next(0);
+    this._breadcrumbService.limparBotoesAcao();
   }
 }

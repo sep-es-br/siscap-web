@@ -65,7 +65,25 @@ export class BreadcrumbService {
 
   constructor(private _router: Router) {
     this.montarBreadcrumb().subscribe();
-    this.montarBotoesAcao().subscribe();
+    // this.montarBotoesAcao().subscribe();
+  }
+
+  public montarBotoesAcao(botoes: Array<string>, contexto: string): void {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: botoes,
+      contexto: contexto,
+    };
+
+    this.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
+
+  public limparBotoesAcao(): void {
+    const botoesAcaoVazio: IBreadcrumbBotaoAcao = {
+      botoes: [],
+      contexto: '',
+    };
+
+    this.breadcrumbBotoesAcao$.next(botoesAcaoVazio);
   }
 
   private montarBreadcrumb(): Observable<Array<IBreadcrumbItem>> {
@@ -170,24 +188,24 @@ export class BreadcrumbService {
     });
   }
 
-  private montarBotoesAcao(): Observable<IBreadcrumbBotaoAcao> {
-    return this._router.events.pipe(
-      filter((event): event is ActivationEnd => event instanceof ActivationEnd),
-      throttle(() =>
-        this._router.events.pipe(
-          filter(
-            (event): event is NavigationEnd => event instanceof NavigationEnd
-          )
-        )
-      ),
-      map<ActivationEnd, IBreadcrumbBotaoAcao>(
-        (activationEndEvent) =>
-          activationEndEvent.snapshot.data['botoesAcao'] ??
-          this._breadcrumbBotoesAcaoVazio
-      ),
-      tap((breadcrumbBotoesAcaoObj) => {
-        this.breadcrumbBotoesAcao$.next(breadcrumbBotoesAcaoObj);
-      })
-    );
-  }
+  // private montarBotoesAcao(): Observable<IBreadcrumbBotaoAcao> {
+  //   return this._router.events.pipe(
+  //     filter((event): event is ActivationEnd => event instanceof ActivationEnd),
+  //     throttle(() =>
+  //       this._router.events.pipe(
+  //         filter(
+  //           (event): event is NavigationEnd => event instanceof NavigationEnd
+  //         )
+  //       )
+  //     ),
+  //     map<ActivationEnd, IBreadcrumbBotaoAcao>(
+  //       (activationEndEvent) =>
+  //         activationEndEvent.snapshot.data['botoesAcao'] ??
+  //         this._breadcrumbBotoesAcaoVazio
+  //     ),
+  //     tap((breadcrumbBotoesAcaoObj) => {
+  //       this.breadcrumbBotoesAcao$.next(breadcrumbBotoesAcaoObj);
+  //     })
+  //   );
+  // }
 }

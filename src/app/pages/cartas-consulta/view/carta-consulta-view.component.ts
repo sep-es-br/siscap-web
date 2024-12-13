@@ -8,8 +8,14 @@ import { ProjetosService } from '../../../core/services/projetos/projetos.servic
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 
 import { ICartaConsultaDetalhes } from '../../../core/interfaces/carta-consulta.interface';
+import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
 
 import { CartaConsultaDetalhesModel } from '../../../core/models/carta-consulta.model';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import { getSimboloMoeda } from '../../../core/utils/functions';
 
@@ -20,9 +26,9 @@ import { getSimboloMoeda } from '../../../core/utils/functions';
   styleUrl: './carta-consulta-view.component.scss',
 })
 export class CartaConsultaViewComponent implements OnInit, OnDestroy {
-  private _getCartaConsultaDetalhes$: Observable<ICartaConsultaDetalhes>;
+  private readonly _getCartaConsultaDetalhes$: Observable<ICartaConsultaDetalhes>;
 
-  private _subscription: Subscription = new Subscription();
+  private readonly _subscription: Subscription = new Subscription();
 
   public cartaConsultaDetalhes: CartaConsultaDetalhesModel =
     new CartaConsultaDetalhesModel();
@@ -45,10 +51,14 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
           (response: ICartaConsultaDetalhes) =>
             new CartaConsultaDetalhesModel(response)
         ),
-        tap(
-          (cartaConsultaDetalhesModel: CartaConsultaDetalhesModel) =>
-            (this.cartaConsultaDetalhes = cartaConsultaDetalhesModel)
-        )
+        tap((cartaConsultaDetalhesModel: CartaConsultaDetalhesModel) => {
+          this.cartaConsultaDetalhes = cartaConsultaDetalhesModel;
+
+          this.montarBotoesAcaoBreadcrumb(
+            BreadcrumbAcoesEnum.Editar,
+            BreadcrumbAcoesEnum.Cancelar
+          );
+        })
       );
 
     this._subscription.add(
@@ -72,10 +82,23 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
     this._projetosService.baixarDIC(idProjetoProposto);
   }
 
+  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: acoes,
+      contexto: BreadcrumbContextoEnum.CartasConsulta,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
+
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
-      case 'editar':
+      case BreadcrumbAcoesEnum.Editar:
         this._router.navigate(['main', 'cartasconsulta', 'editar']);
+        break;
+
+      case BreadcrumbAcoesEnum.Cancelar:
+        this._router.navigate(['main', 'cartasconsulta']);
         break;
 
       default:
@@ -85,5 +108,6 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
+    this._breadcrumbService.limparBotoesAcao();
   }
 }

@@ -14,6 +14,7 @@ import { EquipeFormComponent } from './equipe-form/equipe-form.component';
 import { ValorFormComponent } from './valor-form/valor-form.component';
 import { RateioFormComponent } from './rateio-form/rateio-form.component';
 import { CropperComponent } from './cropper/cropper.component';
+import { DatepickerComponent } from './datepicker/datepicker.component';
 
 @NgModule({
   declarations: [],
@@ -25,6 +26,7 @@ import { CropperComponent } from './cropper/cropper.component';
     UserProfileComponent,
     BreadcrumbComponent,
     TableSearchComponent,
+    DatepickerComponent,
     PaginationComponent,
     TextEditorComponent,
     TextPreviewComponent,
@@ -40,6 +42,7 @@ import { CropperComponent } from './cropper/cropper.component';
     UserProfileComponent,
     BreadcrumbComponent,
     TableSearchComponent,
+    DatepickerComponent,
     PaginationComponent,
     TextEditorComponent,
     TextPreviewComponent,

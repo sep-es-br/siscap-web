@@ -37,8 +37,14 @@ import {
   IObjetoOpcoesDropdown,
   IOpcoesDropdown,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
+import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
 
-import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
+
+// import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
 
 @Component({
   selector: 'siscap-carta-consulta-form',
@@ -91,7 +97,10 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
         this._idCartaConsultaEdicao = cartaConsultaModel.id;
 
-        this.trocarModo(false);
+        this.montarBotoesAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Salvar,
+          BreadcrumbAcoesEnum.Cancelar
+        );
 
         this.loading = false;
       })
@@ -100,6 +109,11 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
     this._cadastrarCartaConsulta$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this.montarBotoesAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Salvar,
+          BreadcrumbAcoesEnum.Cancelar
+        );
 
         this.loading = false;
       })
@@ -158,29 +172,38 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
   private cartaConsultaFormValueChanges(): void {}
 
+  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: acoes,
+      contexto: BreadcrumbContextoEnum.CartasConsulta,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
+
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
-      case 'editar':
-        this.trocarModo(true);
-        break;
+      // case BreadcrumbAcoesEnum.Editar:
+      //   this.trocarModo(true);
+      //   break;
 
-      case 'cancelar':
+      case BreadcrumbAcoesEnum.Cancelar:
         this.cancelar();
         break;
 
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         this.submitCartaConsultaForm(this.cartaConsultaForm);
         break;
     }
   }
 
-  private trocarModo(permitir: boolean): void {
-    this.isModoEdicao = permitir;
+  // private trocarModo(permitir: boolean): void {
+  //   this.isModoEdicao = permitir;
 
-    const cartaConsultaFormControls = this.cartaConsultaForm.controls;
+  //   const cartaConsultaFormControls = this.cartaConsultaForm.controls;
 
-    alterarEstadoControlesFormulario(permitir, cartaConsultaFormControls);
-  }
+  //   alterarEstadoControlesFormulario(permitir, cartaConsultaFormControls);
+  // }
 
   private cancelar(): void {
     this._router.navigate(['main', 'cartasconsulta']);
@@ -242,5 +265,6 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._cartasConsultaService.idCartaConsulta$.next(0);
+    this._breadcrumbService.limparBotoesAcao();
   }
 }

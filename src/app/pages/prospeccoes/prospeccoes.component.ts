@@ -1,12 +1,19 @@
-import { Component, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
 import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 
+import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
 import { ProspeccoesService } from '../../core/services/prospeccoes/prospeccoes.service';
 
 import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import { IProspeccaoTableData } from '../../core/interfaces/prospeccao.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
+import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-prospeccoes',
@@ -14,8 +21,8 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
   templateUrl: './prospeccoes.component.html',
   styleUrl: './prospeccoes.component.scss',
 })
-export class ProspeccoesComponent {
-  private _pageConfig: IHttpGetRequestBody = {
+export class ProspeccoesComponent implements OnInit, OnDestroy {
+  private readonly _pageConfig: IHttpGetRequestBody = {
     page: 0,
     size: 15,
     sort: '',
@@ -23,8 +30,9 @@ export class ProspeccoesComponent {
 
   private termoPesquisaSimples: string = '';
 
-  private _prospeccoesList$: BehaviorSubject<Array<IProspeccaoTableData>> =
-    new BehaviorSubject<Array<IProspeccaoTableData>>([]);
+  private readonly _prospeccoesList$: BehaviorSubject<
+    Array<IProspeccaoTableData>
+  > = new BehaviorSubject<Array<IProspeccaoTableData>>([]);
 
   public get prospeccoesList$(): Observable<Array<IProspeccaoTableData>> {
     return this._prospeccoesList$;
@@ -41,9 +49,17 @@ export class ProspeccoesComponent {
   };
 
   constructor(
-    private _prospeccoesService: ProspeccoesService,
-    private _r2: Renderer2
-  ) {}
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _prospeccoesService: ProspeccoesService,
+    private readonly _r2: Renderer2
+  ) {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: [BreadcrumbAcoesEnum.Criar],
+      contexto: BreadcrumbContextoEnum.Prospeccao,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
 
   ngOnInit(): void {
     this.fetchPage();
@@ -101,5 +117,9 @@ export class ProspeccoesComponent {
       this._r2.removeClass(el, 'asc');
       this._r2.removeClass(el, 'desc');
     });
+  }
+
+  ngOnDestroy(): void {
+    this._breadcrumbService.limparBotoesAcao();
   }
 }

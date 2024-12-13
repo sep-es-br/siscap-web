@@ -2,11 +2,18 @@ import { Component, Renderer2 } from '@angular/core';
 
 import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 
+import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
 import { CartasConsultaService } from '../../core/services/cartas-consulta/cartas-consulta.service';
 
 import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import { ICartaConsultaTableData } from '../../core/interfaces/carta-consulta.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
+import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-cartas-consulta',
@@ -42,9 +49,17 @@ export class CartasConsultaComponent {
   };
 
   constructor(
-    private _cartasConsultaService: CartasConsultaService,
-    private _r2: Renderer2
-  ) {}
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _cartasConsultaService: CartasConsultaService,
+    private readonly _r2: Renderer2
+  ) {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: [BreadcrumbAcoesEnum.Criar],
+      contexto: BreadcrumbContextoEnum.CartasConsulta,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
 
   ngOnInit(): void {
     this.fetchPage();

@@ -28,6 +28,7 @@ export interface IProjetoTableData
   extends Pick<IProjeto, 'id' | 'sigla' | 'titulo'> {
   status: string;
   valorEstimado: number;
+  isRascunho: boolean;
 
   // moeda: string;
   // valor: number;
@@ -35,7 +36,8 @@ export interface IProjetoTableData
 }
 
 export interface IProjetoFiltroPesquisa
-  extends Pick<IProjeto, 'sigla' | 'titulo' | 'idOrganizacao' | 'status'> {
+  extends Pick<IProjeto, 'idOrganizacao' | 'status'> {
+  siglaOuTitulo: string;
   dataPeriodoInicio: string;
   dataPeriodoFim: string;
 }

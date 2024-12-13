@@ -6,10 +6,10 @@ import { debounceTime, Observable, tap } from 'rxjs';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 
 import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
+import { IProjetoFiltroPesquisa } from '../../../core/interfaces/projeto.interface';
 
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { TEMPO_INPUT_USUARIO } from '../../../core/utils/constants';
-import { IProjetoFiltroPesquisa } from '../../../core/interfaces/projeto.interface';
 
 @Component({
   selector: 'siscap-projetos-pesquisa',
@@ -28,8 +28,6 @@ export class ProjetosPesquisaComponent implements OnInit {
   @Output() public pesquisarProjetos: EventEmitter<IProjetoFiltroPesquisa> =
     new EventEmitter<IProjetoFiltroPesquisa>();
 
-  // CRIAR OUTPUT DE FORM.VALUE (JÁ PREPARAR A QUERY PARAMS STRING?)
-
   constructor(private readonly _opcoesDropdownService: OpcoesDropdownService) {
     this.statusProjetoOpcoes = ['Todos', ...Object.values(StatusProjetoEnum)];
 
@@ -43,13 +41,11 @@ export class ProjetosPesquisaComponent implements OnInit {
         })
       );
 
-    // CRIAR DOIS FORMCONTROLS DE DATA, UM PRO INICIO E UM PRO FIM
-
     this.projetosPesquisaForm = new FormGroup({
-      sigla: new FormControl(''),
+      siglaOuTitulo: new FormControl(''),
       titulo: new FormControl(''),
       status: new FormControl('Todos'),
-      organizacao: new FormControl(0),
+      idOrganizacao: new FormControl(0),
       dataPeriodoInicio: new FormControl(''),
       dataPeriodoFim: new FormControl(''),
     });
@@ -61,11 +57,18 @@ export class ProjetosPesquisaComponent implements OnInit {
     this._getOrganizacoesOpcoes$.subscribe();
   }
 
+  public atualizarDataPeriodoInicio(dataPeriodoInicio: string): void {
+    this.projetosPesquisaForm.patchValue({ dataPeriodoInicio });
+  }
+
+  public atualizarDataPeriodoFim(dataPeriodoFim: string): void {
+    this.projetosPesquisaForm.patchValue({ dataPeriodoFim });
+  }
+
   private projetoPesquisaFormValueChanges(): void {
     this.projetosPesquisaForm.valueChanges
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
       .subscribe((projetoPesquisaFormValue) => {
-        // console.log(projetoPesquisaFormValue);
         this.pesquisarProjetos.emit(projetoPesquisaFormValue);
       });
   }

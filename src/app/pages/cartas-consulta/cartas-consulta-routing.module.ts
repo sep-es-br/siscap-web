@@ -7,40 +7,28 @@ import { CartaConsultaViewComponent } from './view/carta-consulta-view.component
 
 import { cartasConsulta_NoIdEditarGuard } from '../../core/guards/cartas-consulta/no-id-editar.guard';
 
-import { breadcrumbBotoesAcao_ListResolver } from '../../core/resolvers/breadcrumb-botoesacao/list.resolver';
-import { breadcrumbBotoesAcao_FormResolver } from '../../core/resolvers/breadcrumb-botoesacao/form.resolver';
-
 const CARTAS_CONSULTA_ROUTES: Routes = [
   {
     title: 'Cartas Consulta',
     path: '',
     component: CartasConsultaComponent,
-    resolve: { botoesAcao: breadcrumbBotoesAcao_ListResolver },
   },
   {
     title: 'Cadastrar Carta Consulta',
     path: 'criar',
     component: CartaConsultaFormComponent,
-    resolve: { botoesAcao: breadcrumbBotoesAcao_FormResolver },
   },
   {
     title: 'Editar Carta Consulta',
     path: 'editar',
     component: CartaConsultaFormComponent,
     canActivate: [cartasConsulta_NoIdEditarGuard],
-    resolve: { botoesAcao: breadcrumbBotoesAcao_FormResolver },
   },
   {
     title: 'Visualizar Carta Consulta',
     path: 'visualizar',
     component: CartaConsultaViewComponent,
     canActivate: [cartasConsulta_NoIdEditarGuard],
-    data: {
-      botoesAcao: {
-        botoes: ['editar'],
-        contexto: 'cartasconsulta',
-      },
-    },
   },
 ];
 

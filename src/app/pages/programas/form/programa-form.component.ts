@@ -42,11 +42,18 @@ import {
   IOpcoesDropdown,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
+import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
+
+import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
-import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
-import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
+
+// import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -55,22 +62,22 @@ import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
   styleUrl: './programa-form.component.scss',
 })
 export class ProgramaFormComponent implements OnInit, OnDestroy {
-  private _atualizarPrograma$: Observable<IPrograma>;
-  private _cadastrarPrograma$: Observable<number>;
+  private readonly _atualizarPrograma$: Observable<IPrograma>;
+  private readonly _cadastrarPrograma$: Observable<number>;
 
-  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getProjetosPropostosOpcoes$: Observable<
+  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getProjetosPropostosOpcoes$: Observable<
     IProjetoPropostoOpcoesDropdown[]
   >;
-  private _getProgramasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getProgramasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idProgramaEdicao: number = 0;
 
-  private _subscription: Subscription = new Subscription();
+  private readonly _subscription: Subscription = new Subscription();
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -116,7 +123,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
         this._idProgramaEdicao = programaModel.id;
 
-        this.trocarModo(false);
+        this.montarBotoesAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Salvar,
+          BreadcrumbAcoesEnum.Cancelar
+        );
 
         this.loading = false;
       })
@@ -125,6 +135,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this._cadastrarPrograma$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this.montarBotoesAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Salvar,
+          BreadcrumbAcoesEnum.Cancelar
+        );
 
         this.loading = false;
       })
@@ -338,29 +353,38 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.nomePrograma = nomePrograma;
   }
 
+  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: acoes,
+      contexto: BreadcrumbContextoEnum.Programas,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
+
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
-      case 'editar':
-        this.trocarModo(true);
-        break;
+      // case BreadcrumbAcoesEnum.Editar:
+      //   this.trocarModo(true);
+      //   break;
 
-      case 'cancelar':
+      case BreadcrumbAcoesEnum.Cancelar:
         this.cancelar();
         break;
 
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         this.submitProgramaForm(this.programaForm);
         break;
     }
   }
 
-  private trocarModo(permitir: boolean): void {
-    this.isModoEdicao = permitir;
+  // private trocarModo(permitir: boolean): void {
+  //   this.isModoEdicao = permitir;
 
-    const programaFormControls = this.programaForm.controls;
+  //   const programaFormControls = this.programaForm.controls;
 
-    alterarEstadoControlesFormulario(permitir, programaFormControls);
-  }
+  //   alterarEstadoControlesFormulario(permitir, programaFormControls);
+  // }
 
   private cancelar(): void {
     this._router.navigate(['main', 'programas']);
@@ -414,5 +438,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._programasService.idPrograma$.next(0);
+    this._breadcrumbService.limparBotoesAcao();
   }
 }
