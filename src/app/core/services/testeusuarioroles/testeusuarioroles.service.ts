@@ -11,6 +11,10 @@ export class TesteUsuarioRolesService {
 
   constructor(private _http: HttpClient) {}
 
+  public buscarSubAgentePublicoPorCpf(cpf: string): Observable<any> {
+    return this._http.get<any>(`${this._url}/sub/${cpf}`);
+  }
+
   public listarPapeisAgentePublicoPorSub(sub: string): Observable<any> {
     return this._http.get<any>(`${this._url}/papeis/${sub}`);
   }
