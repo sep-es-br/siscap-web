@@ -4,8 +4,9 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { ProjetoFormModel } from '../../models/projeto.model';
+import { RateioModel } from '../../models/rateio.model';
+import { ValorModel } from '../../models/valor.model';
 
-import { IHttpBase } from '../../interfaces/http/http-base.interface';
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
@@ -15,6 +16,8 @@ import {
   IProjetoTableData,
 } from '../../interfaces/projeto.interface';
 
+import { TipoValorEnum } from '../../enums/tipo-valor.enum';
+
 import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
 
 import { environment } from '../../../../environments/environment';
@@ -22,9 +25,7 @@ import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class ProjetosService
-  implements IHttpBase<IProjeto, IProjetoTableData, ProjetoFormModel>
-{
+export class ProjetosService {
   private _url = `${environment.apiUrl}/projetos`;
 
   private _idProjeto$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -36,11 +37,14 @@ export class ProjetosService
   constructor(private _http: HttpClient) {}
 
   public getAllPaged(
-    pageConfig: IHttpGetRequestBody
+    pageConfig: IHttpGetRequestBody,
+    ...searchFilter: { [key: string]: any }[]
   ): Observable<IHttpGetResponseBody<IProjetoTableData>> {
     return this._http.get<IHttpGetResponseBody<IProjetoTableData>>(this._url, {
-      params:
-        PageableQueryStringParametersHelper.buildQueryStringParams(pageConfig),
+      params: PageableQueryStringParametersHelper.buildQueryStringParams(
+        pageConfig,
+        ...searchFilter
+      ),
     });
   }
 
@@ -48,12 +52,25 @@ export class ProjetosService
     return this._http.get<IProjeto>(`${this._url}/${id}`);
   }
 
-  public post(body: ProjetoFormModel): Observable<IProjeto> {
-    return this._http.post<IProjeto>(this._url, body);
+  public post(
+    body: ProjetoFormModel,
+    isRascunho: boolean
+  ): Observable<IProjeto> {
+    return this._http.post<IProjeto>(
+      `${this._url}?rascunho=${isRascunho}`,
+      body
+    );
   }
 
-  public put(id: number, body: ProjetoFormModel): Observable<IProjeto> {
-    return this._http.put<IProjeto>(`${this._url}/${id}`, body);
+  public put(
+    id: number,
+    body: ProjetoFormModel,
+    isRascunho: boolean
+  ): Observable<IProjeto> {
+    return this._http.put<IProjeto>(
+      `${this._url}/${id}?rascunho=${isRascunho}`,
+      body
+    );
   }
 
   public delete(id: number): Observable<string> {
@@ -93,5 +110,48 @@ export class ProjetosService
           }
         }
       });
+  }
+
+  public construirProjetoModelRateio(
+    idMicrorregioesList: Array<number>,
+    valorEstimado: number
+  ): Array<RateioModel> {
+    const percentualPorLocalidade = 100 / idMicrorregioesList.length;
+    const quantiaPorLocalidade = valorEstimado / idMicrorregioesList.length;
+
+    return idMicrorregioesList.map((idLocalidade) => {
+      return new RateioModel({
+        idLocalidade,
+        percentual: percentualPorLocalidade,
+        quantia: quantiaPorLocalidade,
+      });
+    });
+  }
+
+  public construirValorControleIdMicrorregioesList(
+    rateioModelArray?: Array<RateioModel>
+  ): Array<number> | null {
+    if (!rateioModelArray) return null;
+
+    return rateioModelArray.map((rateio) => rateio.idLocalidade);
+  }
+
+  public construirProjetoModelValor(valorEstimado: number): ValorModel {
+    const tipoValor = TipoValorEnum.Estimado;
+    const moedaValor = 'BRL';
+
+    return new ValorModel({
+      tipo: tipoValor,
+      moeda: moedaValor,
+      quantia: valorEstimado,
+    });
+  }
+
+  public construirValorControleValorEstimado(
+    valorModel?: ValorModel
+  ): number | null {
+    if (!valorModel) return null;
+
+    return valorModel.quantia;
   }
 }

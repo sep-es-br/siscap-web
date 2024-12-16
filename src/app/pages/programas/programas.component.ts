@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
 import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 
@@ -7,6 +7,12 @@ import { ProgramasService } from '../../core/services/programas/programas.servic
 import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import { IProgramaTableData } from '../../core/interfaces/programa.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
+import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
+import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-programas',
@@ -14,13 +20,14 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
   templateUrl: './programas.component.html',
   styleUrl: './programas.component.scss',
 })
-export class ProgramasComponent implements OnInit {
+export class ProgramasComponent implements OnInit, OnDestroy {
   private _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    search: '',
     size: 15,
     sort: '',
   };
+
+  private termoPesquisaSimples: string = '';
 
   private _programasList$: BehaviorSubject<Array<IProgramaTableData>> =
     new BehaviorSubject<Array<IProgramaTableData>>([]);
@@ -40,16 +47,24 @@ export class ProgramasComponent implements OnInit {
   };
 
   constructor(
-    private _programasService: ProgramasService,
-    private _r2: Renderer2
-  ) {}
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _programasService: ProgramasService,
+    private readonly _r2: Renderer2
+  ) {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: [BreadcrumbAcoesEnum.Criar],
+      contexto: BreadcrumbContextoEnum.Programas,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
 
   ngOnInit(): void {
     this.fetchPage();
   }
 
   public filtroPesquisaOutputEvent(filtro: string): void {
-    this._pageConfig.search = filtro;
+    this.termoPesquisaSimples = filtro;
 
     if (!filtro) {
       this._pageConfig.sort = '';
@@ -73,8 +88,10 @@ export class ProgramasComponent implements OnInit {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
+    const searchFilter = { search: this.termoPesquisaSimples };
+
     this._programasService
-      .getAllPaged(tempPageConfig)
+      .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
           this._programasList$.next(response.content);
@@ -98,5 +115,9 @@ export class ProgramasComponent implements OnInit {
       this._r2.removeClass(el, 'asc');
       this._r2.removeClass(el, 'desc');
     });
+  }
+
+  ngOnDestroy(): void {
+    this._breadcrumbService.limparBotoesAcao();
   }
 }
