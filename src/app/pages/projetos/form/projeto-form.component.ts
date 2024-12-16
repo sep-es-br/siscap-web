@@ -140,18 +140,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this.mostrarBotaoGerarDic = true;
 
+        this.trocarModo(false);
+
         if (
           this.isProponente &&
           projetoModel.status == StatusProjetoEnum.Em_Analise
         ) {
           this.montarBotoesAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
-          this.trocarModo(false);
         } else {
           this.montarBotoesAcaoBreadcrumb(
             BreadcrumbAcoesEnum.Enviar,
             BreadcrumbAcoesEnum.Salvar,
             BreadcrumbAcoesEnum.Cancelar
           );
+
+          // Workaround para carregar o componente de rateio quando modo de edição
+          setTimeout(() => {
+            this.trocarModo(true);
+          }, 2000);
         }
 
         this.loading = false;
@@ -297,6 +303,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
+    const valorInicialControleValorEstimado = this.isProponente
+      ? this._projetosService.construirValorControleValorEstimado(
+          projetoFormModel?.valor
+        )
+      : null;
+
+    const valorInicialControleIdMicrorregioesList = this.isProponente
+      ? this._projetosService.construirValorControleIdMicrorregioesList(
+          projetoFormModel?.rateio
+        )
+      : null;
+
     this.projetoForm = this._nnfb.group({
       sigla: this._nnfb.control(projetoFormModel?.sigla ?? null, [
         Validators.required,
@@ -313,8 +331,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       valor: this._valorService.construirValorFormGroup(
         projetoFormModel?.valor
       ),
+      valorEstimado: this._nnfb.control(valorInicialControleValorEstimado, [
+        Validators.required,
+        Validators.min(1),
+      ]),
       rateio: this._rateioService.construirRateioFormArray(
         projetoFormModel?.rateio
+      ),
+      idMicrorregioesList: this._nnfb.control(
+        valorInicialControleIdMicrorregioesList,
+        [Validators.required, Validators.minLength(1)]
       ),
       objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
         Validators.required,
@@ -351,6 +377,25 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.projetoFormValueChanges();
     this.valorFormValueChanges();
+
+    if (this.isProponente && !projetoFormModel)
+      this.usuarioProponenteValoresIniciaisProjetoForm();
+  }
+
+  private usuarioProponenteValoresIniciaisProjetoForm(): void {
+    const idOrganizacaoFormControl = this.projetoForm.get(
+      'idOrganizacao'
+    ) as FormControl<number | null>;
+
+    const usuario_IdOrganizacoes =
+      this._usuarioService.usuarioPerfil.idOrganizacoes;
+
+    if (usuario_IdOrganizacoes.length > 0)
+      idOrganizacaoFormControl.patchValue(usuario_IdOrganizacoes[0]);
+
+    this.equipeService.usuarioProponenteValoresIniciaisEquipeFormArray(
+      this._usuarioService.usuarioPerfil.idPessoa
+    );
   }
 
   private projetoFormValueChanges(): void {

@@ -7,6 +7,7 @@ export class UsuarioPerfilModel implements IUsuarioPerfil {
   public imagemPerfil: ArrayBuffer | null;
   public permissoes: string[];
   public idOrganizacoes: number[];
+  public idPessoa: number;
   public isProponente: boolean;
 
   constructor(usuario?: IUsuario) {
@@ -16,6 +17,7 @@ export class UsuarioPerfilModel implements IUsuarioPerfil {
     this.imagemPerfil = usuario?.imagemPerfil ?? null;
     this.permissoes = usuario?.permissoes ?? [];
     this.idOrganizacoes = usuario?.idOrganizacoes ?? [];
+    this.idPessoa = usuario?.idPessoa ?? 0;
     this.isProponente = usuario?.isProponente ?? false;
   }
 }

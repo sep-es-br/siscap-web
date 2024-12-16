@@ -10,6 +10,7 @@ import { IProjetoFiltroPesquisa } from '../../../core/interfaces/projeto.interfa
 
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { TEMPO_INPUT_USUARIO } from '../../../core/utils/constants';
+import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 
 @Component({
   selector: 'siscap-projetos-pesquisa',
@@ -19,25 +20,43 @@ import { TEMPO_INPUT_USUARIO } from '../../../core/utils/constants';
 })
 export class ProjetosPesquisaComponent implements OnInit {
   private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private usuario_IdOrganizacoes: number[] = [];
 
   public statusProjetoOpcoes: Array<string> = [];
   public organizacoesOpcoes: Array<IOpcoesDropdown> = [];
+
+  public isProponente: boolean = false;
 
   public projetosPesquisaForm: FormGroup;
 
   @Output() public pesquisarProjetos: EventEmitter<IProjetoFiltroPesquisa> =
     new EventEmitter<IProjetoFiltroPesquisa>();
 
-  constructor(private readonly _opcoesDropdownService: OpcoesDropdownService) {
+  constructor(
+    private readonly _opcoesDropdownService: OpcoesDropdownService,
+    private readonly _usuarioService: UsuarioService
+  ) {
+    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+    this.usuario_IdOrganizacoes =
+      this._usuarioService.usuarioPerfil.idOrganizacoes;
+
     this.statusProjetoOpcoes = ['Todos', ...Object.values(StatusProjetoEnum)];
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes()
       .pipe(
         tap((response) => {
-          this.organizacoesOpcoes = [{ id: 0, nome: 'Todos' }];
+          if (this.isProponente && this.usuario_IdOrganizacoes.length > 0) {
+            const organizacoesOpcoesFiltradas = response.filter((organizacao) =>
+              this.usuario_IdOrganizacoes.includes(organizacao.id)
+            );
 
-          this.organizacoesOpcoes = this.organizacoesOpcoes.concat(response);
+            this.organizacoesOpcoes = organizacoesOpcoesFiltradas;
+          } else {
+            this.organizacoesOpcoes = [{ id: 0, nome: 'Todos' }];
+
+            this.organizacoesOpcoes = this.organizacoesOpcoes.concat(response);
+          }
         })
       );
 
@@ -45,7 +64,9 @@ export class ProjetosPesquisaComponent implements OnInit {
       siglaOuTitulo: new FormControl(''),
       titulo: new FormControl(''),
       status: new FormControl('Todos'),
-      idOrganizacao: new FormControl(0),
+      idOrganizacao: new FormControl(
+        this.isProponente ? this.usuario_IdOrganizacoes[0] : 0
+      ),
       dataPeriodoInicio: new FormControl(''),
       dataPeriodoFim: new FormControl(''),
     });
@@ -55,6 +76,8 @@ export class ProjetosPesquisaComponent implements OnInit {
 
   ngOnInit(): void {
     this._getOrganizacoesOpcoes$.subscribe();
+
+    this.pesquisarProjetos.emit(this.projetosPesquisaForm.value);
   }
 
   public atualizarDataPeriodoInicio(dataPeriodoInicio: string): void {

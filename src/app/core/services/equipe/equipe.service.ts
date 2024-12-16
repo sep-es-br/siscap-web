@@ -16,6 +16,7 @@ import { EquipeFormType } from '../../types/form/equipe-form.type';
 
 import { TipoStatusEnum } from '../../enums/tipo-status.enum';
 import { equipeValidator } from '../../validators/equipe.validator';
+import { TipoPapelEnum } from '../../enums/tipo-papel.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -106,6 +107,23 @@ export class EquipeService {
     const membroFormGroup = this.construirMembroFormGroup();
     membroFormGroup.patchValue({ idPessoa: ngSelectValue });
     return membroFormGroup;
+  }
+
+  public usuarioProponenteValoresIniciaisEquipeFormArray(
+    usuarioProponente_IdPessoa: number
+  ): void {
+    const usuarioProponente_IEquipe: IEquipe = {
+      idPessoa: usuarioProponente_IdPessoa,
+      idPapel: TipoPapelEnum.Proponente,
+      idStatus: TipoStatusEnum.Ativo,
+      justificativa: null,
+    };
+
+    const usuarioProponente_MembroFormGroup = this.construirMembroFormGroup(
+      usuarioProponente_IEquipe
+    );
+
+    this.incluirMembroNaEquipe(usuarioProponente_MembroFormGroup);
   }
 
   public incluirMembroNaEquipe(

@@ -59,6 +59,7 @@
               id="idOrganizacao"
               placeholder="-- Selecione um orgão da lista abaixo --"
               formControlName="idOrganizacao"
+              [readonly]="isProponente"
             >
               <ng-option
                 *ngFor="let organizacao of organizacoesOpcoes"
