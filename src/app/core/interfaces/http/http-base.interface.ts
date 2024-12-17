@@ -7,7 +7,8 @@ import {
 
 export interface IHttpBase<T, TTableData, TFormModel> {
   getAllPaged(
-    pageConfig: IHttpGetRequestBody
+    pageConfig: IHttpGetRequestBody,
+    ...searchFilter: { [key: string]: any }[]
   ): Observable<IHttpGetResponseBody<TTableData>>;
 
   getById(id: number): Observable<T>;

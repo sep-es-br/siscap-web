@@ -47,11 +47,17 @@ import {
   IPessoaAcessoCidadao,
   IPessoaForm,
 } from '../../../core/interfaces/pessoa.interface';
+import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
 
 import {
   EnderecoFormType,
   EnderecoFormTypeValue,
 } from '../../../core/types/form/endereco-form.type';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import {
   LISTA_GENEROS,
@@ -71,20 +77,20 @@ import { CPFValidator } from '../../../core/validators/cpf.validator';
 })
 export class PessoaFormComponent implements OnInit, OnDestroy {
   @ViewChild('importarPessoaCPFModal')
-  private importarPessoaCPFModal!: TemplateRef<NgbModal>;
+  private readonly _importarPessoaCPFModal!: TemplateRef<NgbModal>;
 
-  private _atualizarPessoa$: Observable<IPessoa>;
-  private _cadastrarPessoa$: Observable<number>;
+  private readonly _atualizarPessoa$: Observable<IPessoa>;
+  private readonly _cadastrarPessoa$: Observable<number>;
 
-  private _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getAreasAtuacaoOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAreasAtuacaoOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idPessoaEdicao: number = 0;
   private _idOrganizacaoResponsavel: number | null = null;
 
-  private _subscription: Subscription = new Subscription();
+  private readonly _subscription: Subscription = new Subscription();
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -106,13 +112,13 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
   public arquivoImagemPessoa: File | undefined;
 
   constructor(
-    private _nnfb: NonNullableFormBuilder,
-    private _router: Router,
-    private _pessoasService: PessoasService,
-    private _opcoesDropdownService: OpcoesDropdownService,
-    private _breadcrumbService: BreadcrumbService,
-    private _toastService: ToastService,
-    private _ngbModalService: NgbModal
+    private readonly _nnfb: NonNullableFormBuilder,
+    private readonly _router: Router,
+    private readonly _pessoasService: PessoasService,
+    private readonly _opcoesDropdownService: OpcoesDropdownService,
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _toastService: ToastService,
+    private readonly _ngbModalService: NgbModal
   ) {
     const [editar$, criar$] = partition(
       this._pessoasService.idPessoa$,
@@ -133,6 +139,8 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
           pessoaModel.imagemPerfil
         );
 
+        this.montarBotoesAcaoBreadcrumb(BreadcrumbAcoesEnum.Editar);
+
         this.trocarModo(false);
 
         this.loading = false;
@@ -142,6 +150,11 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
     this._cadastrarPessoa$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this.montarBotoesAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Salvar,
+          BreadcrumbAcoesEnum.Cancelar
+        );
 
         this.loading = false;
       }),
@@ -340,7 +353,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
       }),
     });
 
-    const modalRef = this._ngbModalService.open(this.importarPessoaCPFModal, {
+    const modalRef = this._ngbModalService.open(this._importarPessoaCPFModal, {
       backdrop: 'static',
       centered: true,
       keyboard: false,
@@ -381,17 +394,26 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.conteudo = nomeOrganizacao;
   }
 
+  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: acoes,
+      contexto: BreadcrumbContextoEnum.Pessoas,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
+
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
-      case 'editar':
+      case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
         break;
 
-      case 'cancelar':
+      case BreadcrumbAcoesEnum.Cancelar:
         this.cancelar();
         break;
 
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         this.submitPessoaForm(this.pessoaForm);
         break;
     }
@@ -472,5 +494,6 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._pessoasService.idPessoa$.next(0);
+    this._breadcrumbService.limparBotoesAcao();
   }
 }

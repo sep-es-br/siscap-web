@@ -59,6 +59,7 @@
               id="idOrganizacao"
               placeholder="-- Selecione um orgão da lista abaixo --"
               formControlName="idOrganizacao"
+              [readonly]="isProponente"
             >
               <ng-option
                 *ngFor="let organizacao of organizacoesOpcoes"
@@ -127,14 +128,35 @@
             ></siscap-equipe-form>
           </div>
 
-          <div class="col-12">
+          <div class="col-12" *ngIf="!isProponente">
             <siscap-valor-form
               [moedasList]="moedasList"
               [tiposValorOpcoes]="tiposValorOpcoes"
             ></siscap-valor-form>
           </div>
 
-          <div class="col-12 mt-2">
+          <div class="col-12" *ngIf="isProponente">
+            <label for="valorEstimado" class="col-12 form-label">
+              <validation-message [control]="getControl('valorEstimado')">
+                Valor Estimado
+              </validation-message>
+            </label>
+            <input
+              mask="separator.2"
+              prefix="R$"
+              thousandSeparator="."
+              decimalMarker=","
+              [inputTransformFn]="rtlCurrencyInputTransformFn"
+              [outputTransformFn]="rtlCurrencyOutputTransformFn"
+              type="text"
+              id="valor-quantia"
+              class="form-control"
+              formControlName="valorEstimado"
+              min="1"
+            />
+          </div>
+
+          <div class="col-12 mt-2" *ngIf="!isProponente">
             <label for="rateio" class="form-label col-12">
               <validation-message [control]="getControl('rateio')">
                 Rateio
@@ -143,6 +165,28 @@
             <siscap-rateio-form
               [isModoEdicao]="isModoEdicao"
             ></siscap-rateio-form>
+          </div>
+
+          <div class="col-12" *ngIf="isProponente">
+            <label for="microrregioesAtendidas" class="col-12 form-label">
+              <validation-message [control]="getControl('idMicrorregioesList')">
+                Microrregiões Atendidas
+              </validation-message>
+            </label>
+            <ng-select
+              id="microrregioesAtendidas"
+              placeholder="-- Selecione uma ou mais microrregiões --"
+              formControlName="idMicrorregioesList"
+              [multiple]="true"
+              (add)="microrregioesNgSelectAddEvent($event)"
+            >
+              <ng-option
+                *ngFor="let microrregiao of microrregioesOpcoes"
+                [value]="microrregiao.id"
+                [disabled]="travarMicrorregiaoOpcao(microrregiao.id)"
+                >{{ microrregiao.nome }}</ng-option
+              >
+            </ng-select>
           </div>
 
           <div class="col-12">

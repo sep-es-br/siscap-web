@@ -10,6 +10,7 @@
 
     <div
       class="d-none d-md-block mx-3 flex-grow-1 overflow-x-scroll overflow-y-hidden"
+      [ngClass]="{ invisible: isProponente }"
     >
       <siscap-nav-menu
         [menuCategoriaAtiva]="menuCategoriaAtiva"

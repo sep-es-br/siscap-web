@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { NgbOffcanvas, NgbOffcanvasRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -6,6 +7,7 @@ import { SideMenuComponent } from '../offcanvas/side-menu/side-menu.component';
 import { NavMenuComponent } from '../nav-menu/nav-menu.component';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 
+import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 
 import { IBreadcrumbItem } from '../../../core/interfaces/breadcrumb.interface';
@@ -18,7 +20,7 @@ import {
 @Component({
   selector: 'siscap-header',
   standalone: true,
-  imports: [NavMenuComponent, UserProfileComponent],
+  imports: [CommonModule, NavMenuComponent, UserProfileComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
@@ -26,13 +28,17 @@ export class HeaderComponent {
   public menuLinks: Array<IMenuLink> = MenuLinksHelper.menuLinks;
   public menuCategoriaAtiva: string = '';
   public subMenuCategoriaAtiva: string = '';
+  public isProponente: boolean = false;
 
   private _sideMenuOffcanvasRef: NgbOffcanvasRef | null = null;
 
   constructor(
+    private readonly _usuarioService: UsuarioService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _ngbOffcanvasService: NgbOffcanvas
   ) {
+    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
     this._breadcrumbService.listaBreadcrumbItems$.subscribe(
       (breadcrumbItemsArray: Array<IBreadcrumbItem>) => {
         const paginaAtual =

@@ -1,12 +1,19 @@
-import { Component, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
 import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 
 import { ProspeccoesService } from '../../core/services/prospeccoes/prospeccoes.service';
+import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
 
 import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import { IProspeccaoTableData } from '../../core/interfaces/prospeccao.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
+import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-prospeccoes',
@@ -14,13 +21,14 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
   templateUrl: './prospeccoes.component.html',
   styleUrl: './prospeccoes.component.scss',
 })
-export class ProspeccoesComponent {
+export class ProspeccoesComponent implements OnInit, OnDestroy {
   private _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    search: '',
     size: 15,
     sort: '',
   };
+
+  private termoPesquisaSimples: string = '';
 
   private _prospeccoesList$: BehaviorSubject<Array<IProspeccaoTableData>> =
     new BehaviorSubject<Array<IProspeccaoTableData>>([]);
@@ -40,16 +48,24 @@ export class ProspeccoesComponent {
   };
 
   constructor(
-    private _prospeccoesService: ProspeccoesService,
-    private _r2: Renderer2
-  ) {}
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _prospeccoesService: ProspeccoesService,
+    private readonly _r2: Renderer2
+  ) {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: [BreadcrumbAcoesEnum.Criar],
+      contexto: BreadcrumbContextoEnum.Prospeccao,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
 
   ngOnInit(): void {
     this.fetchPage();
   }
 
   public filtroPesquisaOutputEvent(filtro: string): void {
-    this._pageConfig.search = filtro;
+    this.termoPesquisaSimples = filtro;
 
     if (!filtro) {
       this._pageConfig.sort = '';
@@ -73,8 +89,10 @@ export class ProspeccoesComponent {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
+    const searchFilter = { search: this.termoPesquisaSimples };
+
     this._prospeccoesService
-      .getAllPaged(tempPageConfig)
+      .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
           this._prospeccoesList$.next(response.content);
@@ -98,5 +116,9 @@ export class ProspeccoesComponent {
       this._r2.removeClass(el, 'asc');
       this._r2.removeClass(el, 'desc');
     });
+  }
+
+  ngOnDestroy(): void {
+    this._breadcrumbService.limparBotoesAcao();
   }
 }

@@ -1,0 +1,22 @@
+<div class="input-group">
+  <input
+    name="datepickercmp"
+    id="datepickercmp"
+    class="form-control"
+    [placeholder]="placeholderText"
+    ngbDatepicker
+    #datepicker="ngbDatepicker"
+    [(ngModel)]="dateValue"
+    (ngModelChange)="dateValueChange.emit($event)"
+    [footerTemplate]="datepickerFooterTemplate"
+  />
+  <button class="btn btn-outline-secondary" (click)="datepicker.toggle()">
+    <i class="fa-solid fa-calendar-days"></i>
+  </button>
+</div>
+
+<ng-template #datepickerFooterTemplate>
+  <div class="d-flex justify-content-center py-2">
+    <button class="btn btn-secondary" (click)="resetarData()">Limpar</button>
+  </div>
+</ng-template>

@@ -1,0 +1,60 @@
+<form [formGroup]="projetosPesquisaForm">
+  <div class="col-12 d-inline-flex justify-content-between align-items-stretch">
+    <div class="col-4 px-2">
+      <label for="sigla_titulo" class="form-label">Sigla / Título</label>
+      <input
+        type="text"
+        name="sigla_titulo"
+        id="sigla_titulo"
+        class="form-control"
+        formControlName="siglaOuTitulo"
+        (keydown.enter)="$event.preventDefault()"
+      />
+    </div>
+
+    <div class="col-4 px-2">
+      <label for="status" class="form-label">Status</label>
+      <ng-select
+        id="status"
+        name="status"
+        formControlName="status"
+        [clearable]="false"
+      >
+        <ng-option
+          *ngFor="let statusProjeto of statusProjetoOpcoes"
+          [value]="statusProjeto"
+          >{{ statusProjeto }}</ng-option
+        >
+      </ng-select>
+      <label for="idOrganizacao" class="form-label">Organização</label>
+      <ng-select
+        id="idOrganizacao"
+        name="idOrganizacao"
+        formControlName="idOrganizacao"
+        [readonly]="isProponente"
+        [clearable]="false"
+      >
+        <ng-option
+          *ngFor="let organizacao of organizacoesOpcoes"
+          [value]="organizacao.id"
+        >
+          {{ organizacao.nome }}
+        </ng-option>
+      </ng-select>
+    </div>
+
+    <div class="col-4 px-2">
+      <label for="dataPeriodoInicio" class="form-label">Entre</label>
+      <siscap-datepicker
+        [placeholderText]="'Período Inicial'"
+        (dateValueChange)="atualizarDataPeriodoInicio($event)"
+      ></siscap-datepicker>
+
+      <label for="dataPeriodoFim" class="form-label"></label>
+      <siscap-datepicker
+        [placeholderText]="'Período Final'"
+        (dateValueChange)="atualizarDataPeriodoFim($event)"
+      ></siscap-datepicker>
+    </div>
+  </div>
+</form>

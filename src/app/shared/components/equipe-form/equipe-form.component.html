@@ -27,7 +27,7 @@
                     id="papelSelect"
                     class="papel-select"
                     placeholder="-- Papel do membro --"
-                    [readonly]="isMembroRemovido(i)"
+                    [readonly]="isMembroRemovido(i) || isProponente"
                     [clearable]="false"
                     formControlName="idPapel"
                   >

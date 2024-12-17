@@ -6,6 +6,7 @@ export interface IUsuario {
   imagemPerfil: ArrayBuffer | null;
   permissoes: Array<string>;
   idOrganizacoes: Array<number>;
+  idPessoa: number;
   isProponente: boolean;
 }
 
