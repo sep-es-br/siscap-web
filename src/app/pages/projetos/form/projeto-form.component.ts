@@ -89,6 +89,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public isModoEdicao: boolean = true;
   public mostrarBotaoGerarDic: boolean = false;
   public isProponente: boolean = false;
+  public usuario_IdOrganizacoes: Array<number> = [];
 
   public projetoForm: FormGroup = new FormGroup({});
 
@@ -119,6 +120,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private readonly _breadcrumbService: BreadcrumbService
   ) {
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+    this.usuario_IdOrganizacoes =
+      this._usuarioService.usuarioPerfil.idOrganizacoes;
 
     const [editar$, criar$] = partition(
       this._projetosService.idProjeto$,
@@ -136,8 +139,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           )
       ),
       tap((projetoModel: ProjetoModel) => {
-        console.log(this.isProponente);
-
         this.isProponente
           ? this.iniciarFormProponente(projetoModel)
           : this.iniciarForm(projetoModel);
@@ -443,11 +444,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'idOrganizacao'
     ) as FormControl<number | null>;
 
-    const usuario_IdOrganizacoes =
-      this._usuarioService.usuarioPerfil.idOrganizacoes;
-
-    if (usuario_IdOrganizacoes.length > 0)
-      idOrganizacaoFormControl.patchValue(usuario_IdOrganizacoes[0]);
+    if (this.usuario_IdOrganizacoes.length > 0)
+      idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
 
     this.equipeService.usuarioProponenteValoresIniciaisEquipeFormArray(
       this._usuarioService.usuarioPerfil.idPessoa
