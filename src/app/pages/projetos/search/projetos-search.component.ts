@@ -60,12 +60,17 @@ export class ProjetosPesquisaComponent implements OnInit {
         })
       );
 
+    const idOrganizacaoValorInicial =
+      this.usuario_IdOrganizacoes.length > 0
+        ? this.usuario_IdOrganizacoes[0]
+        : 0;
+
     this.projetosPesquisaForm = new FormGroup({
       siglaOuTitulo: new FormControl(''),
       titulo: new FormControl(''),
       status: new FormControl('Todos'),
       idOrganizacao: new FormControl(
-        this.isProponente ? this.usuario_IdOrganizacoes[0] : 0
+        this.isProponente ? idOrganizacaoValorInicial : 0
       ),
       dataPeriodoInicio: new FormControl(''),
       dataPeriodoFim: new FormControl(''),
