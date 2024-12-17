@@ -1,12 +1,21 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
 import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 
 import { ProjetosService } from '../../core/services/projetos/projetos.service';
 
 import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
-import { IProjetoTableData } from '../../core/interfaces/projeto.interface';
+import {
+  IProjetoFiltroPesquisa,
+  IProjetoTableData,
+} from '../../core/interfaces/projeto.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
+import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
+import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-projetos',
@@ -14,12 +23,19 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
   templateUrl: './projetos.component.html',
   styleUrl: './projetos.component.scss',
 })
-export class ProjetosComponent implements OnInit {
+export class ProjetosComponent implements OnInit, OnDestroy {
   private _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    search: '',
     size: 15,
     sort: '',
+  };
+
+  private projetoFiltroPesquisa: IProjetoFiltroPesquisa = {
+    siglaOuTitulo: '',
+    idOrganizacao: 0,
+    status: 'Todos',
+    dataPeriodoInicio: '',
+    dataPeriodoFim: '',
   };
 
   private _projetosList$: BehaviorSubject<Array<IProjetoTableData>> =
@@ -40,21 +56,24 @@ export class ProjetosComponent implements OnInit {
   };
 
   constructor(
-    private _projetosService: ProjetosService,
-    private _r2: Renderer2
-  ) {}
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _projetosService: ProjetosService,
+    private readonly _r2: Renderer2
+  ) {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: [BreadcrumbAcoesEnum.Criar],
+      contexto: BreadcrumbContextoEnum.Projetos,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
 
   ngOnInit(): void {
     this.fetchPage();
   }
 
-  public filtroPesquisaOutputEvent(filtro: string): void {
-    this._pageConfig.search = filtro;
-
-    if (!filtro) {
-      this._pageConfig.sort = '';
-      this.limparSortColumn();
-    }
+  public redefinirFiltroPesquisa(event: IProjetoFiltroPesquisa): void {
+    this.projetoFiltroPesquisa = event;
 
     this.fetchPage();
   }
@@ -73,8 +92,10 @@ export class ProjetosComponent implements OnInit {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
+    const searchFilter = this.projetoFiltroPesquisa;
+
     this._projetosService
-      .getAllPaged(tempPageConfig)
+      .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
           this._projetosList$.next(response.content);
@@ -98,5 +119,9 @@ export class ProjetosComponent implements OnInit {
       this._r2.removeClass(el, 'asc');
       this._r2.removeClass(el, 'desc');
     });
+  }
+
+  ngOnDestroy(): void {
+    this._breadcrumbService.limparBotoesAcao();
   }
 }

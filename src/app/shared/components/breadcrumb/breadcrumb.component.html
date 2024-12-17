@@ -8,7 +8,7 @@
     >
       <h1 class="current-page-title mb-0">{{ paginaAtual.titulo }}</h1>
 
-      <nav>
+      <nav [ngClass]="{ invisible: isProponente }">
         <ol class="breadcrumb fw-semibold mb-0">
           <ng-container *ngFor="let breadcrumbItem of listaBreadcrumbItems">
             <li class="breadcrumb-item">
@@ -51,6 +51,10 @@
           <ng-container
             *ngSwitchCase="'prospectar'"
             [ngTemplateOutlet]="botaoProspectar"
+          ></ng-container>
+          <ng-container
+            *ngSwitchCase="'enviar'"
+            [ngTemplateOutlet]="botaoEnviar"
           ></ng-container>
         </ng-container>
       </ng-container>
@@ -105,5 +109,15 @@
   >
     <i class="fa-solid fa-paper-plane"></i>
     <span>Prospectar</span>
+  </button>
+</ng-template>
+
+<ng-template #botaoEnviar>
+  <button
+    class="btn btn-primary icon-text-btn text-nowrap"
+    (click)="emitirAcaoBreadcrumb('enviar')"
+  >
+    <i class="fa-solid fa-download"></i>
+    <span>Enviar</span>
   </button>
 </ng-template>

@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
+import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 
 import {
   IBreadcrumbBotaoAcao,
   IBreadcrumbItem,
 } from '../../../core/interfaces/breadcrumb.interface';
+
+import { BreadcrumbContextoEnum } from '../../../core/enums/breadcrumb.enum';
 
 import { BREADCRUMB_COLECAO_CAMINHO_TITULO } from '../../../core/utils/constants';
 
@@ -22,10 +25,17 @@ export class BreadcrumbComponent {
   public paginaAtual: IBreadcrumbItem = { titulo: '', caminho: '' };
   public listaBreadcrumbItems: Array<IBreadcrumbItem> = [];
 
+  public isProponente: boolean = false;
+
   public listaBotoesAcao: Array<string> = [];
   public contextoBotoesAcao: string = '';
 
-  constructor(private readonly _breadcrumbService: BreadcrumbService) {
+  constructor(
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _usuarioService: UsuarioService
+  ) {
+    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
     this._breadcrumbService.listaBreadcrumbItems$.subscribe(
       (breadcrumbItemArray: Array<IBreadcrumbItem>) => {
         this.paginaAtual = breadcrumbItemArray[breadcrumbItemArray.length - 1];
@@ -48,6 +58,10 @@ export class BreadcrumbComponent {
   }
 
   public buscarTextoBotaoCriar(contexto: string): string {
+    if (contexto === BreadcrumbContextoEnum.Projetos && this.isProponente) {
+      return 'Novo DIC';
+    }
+
     return BREADCRUMB_COLECAO_CAMINHO_TITULO[contexto + 'criar'];
   }
 

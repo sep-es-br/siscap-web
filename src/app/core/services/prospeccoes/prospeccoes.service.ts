@@ -45,15 +45,16 @@ export class ProspeccoesService
   constructor(private readonly _http: HttpClient) {}
 
   public getAllPaged(
-    pageConfig: IHttpGetRequestBody
+    pageConfig: IHttpGetRequestBody,
+    ...searchFilter: { [key: string]: any }[]
   ): Observable<IHttpGetResponseBody<IProspeccaoTableData>> {
     return this._http.get<IHttpGetResponseBody<IProspeccaoTableData>>(
       this._url,
       {
-        params:
-          PageableQueryStringParametersHelper.buildQueryStringParams(
-            pageConfig
-          ),
+        params: PageableQueryStringParametersHelper.buildQueryStringParams(
+          pageConfig,
+          ...searchFilter
+        ),
       }
     );
   }

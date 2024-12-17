@@ -33,6 +33,12 @@ import {
   IOrganizacaoForm,
 } from '../../../core/interfaces/organizacao.interface';
 import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
+import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import {
@@ -47,18 +53,18 @@ import {
   styleUrl: './organizacao-form.component.scss',
 })
 export class OrganizacaoFormComponent implements OnInit, OnDestroy {
-  private _atualizarOrganizacao$: Observable<IOrganizacao>;
-  private _cadastrarOrganizacao$: Observable<number>;
+  private readonly _atualizarOrganizacao$: Observable<IOrganizacao>;
+  private readonly _cadastrarOrganizacao$: Observable<number>;
 
-  private _getTiposOrganizacaoOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getTiposOrganizacaoOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idOrganizacaoEdicao: number = 0;
 
-  private _subscription: Subscription = new Subscription();
+  private readonly _subscription: Subscription = new Subscription();
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -76,12 +82,12 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   public arquivoImagemOrganizacao: File | undefined;
 
   constructor(
-    private _nnfb: NonNullableFormBuilder,
-    private _router: Router,
-    private _organizacoesService: OrganizacoesService,
-    private _opcoesDropdownService: OpcoesDropdownService,
-    private _breadcrumbService: BreadcrumbService,
-    private _toastService: ToastService
+    private readonly _nnfb: NonNullableFormBuilder,
+    private readonly _router: Router,
+    private readonly _organizacoesService: OrganizacoesService,
+    private readonly _opcoesDropdownService: OpcoesDropdownService,
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _toastService: ToastService
   ) {
     const [editar$, criar$] = partition(
       this._organizacoesService.idOrganizacao$,
@@ -105,6 +111,8 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
 
         this.trocarModo(false);
 
+        this.montarBotoesAcaoBreadcrumb(BreadcrumbAcoesEnum.Editar);
+
         this.loading = false;
       })
     );
@@ -112,6 +120,11 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     this._cadastrarOrganizacao$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this.montarBotoesAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Salvar,
+          BreadcrumbAcoesEnum.Cancelar
+        );
 
         this.loading = false;
       })
@@ -274,17 +287,26 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: acoes,
+      contexto: BreadcrumbContextoEnum.Organizacoes,
+    };
+
+    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
+
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
-      case 'editar':
+      case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
         break;
 
-      case 'cancelar':
+      case BreadcrumbAcoesEnum.Cancelar:
         this.cancelar();
         break;
 
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         this.submitOrganizationForm(this.organizacaoForm);
         break;
     }
@@ -358,5 +380,6 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._organizacoesService.idOrganizacao$.next(0);
+    this._breadcrumbService.limparBotoesAcao();
   }
 }
