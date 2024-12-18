@@ -34,6 +34,4 @@ export interface IProjetoTableData
 export interface IProjetoFiltroPesquisa
   extends Pick<IProjeto, 'idOrganizacao' | 'status'> {
   siglaOuTitulo: string;
-  dataPeriodoInicio: string;
-  dataPeriodoFim: string;
 }
