@@ -33,9 +33,7 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   private projetoFiltroPesquisa: IProjetoFiltroPesquisa = {
     siglaOuTitulo: '',
     idOrganizacao: 0,
-    status: 'Todos',
-    dataPeriodoInicio: '',
-    dataPeriodoFim: '',
+    status: 'Status',
   };
 
   private _projetosList$: BehaviorSubject<Array<IProjetoTableData>> =

@@ -3,9 +3,9 @@
     <colgroup>
       <col class="sigla-col" />
       <col class="titulo-col" />
+      <col class="rascunho-col" />
       <col class="status-col" />
       <col class="valorEstimado-col" />
-      <col class="rascunho-col" />
       <col class="acoes-col" />
     </colgroup>
     <thead>
@@ -16,9 +16,9 @@
         <th [sortable]="'titulo'" (sort)="sortColumn($event)" class="pointer">
           Titulo
         </th>
+        <th></th>
         <th>Status</th>
         <th>Valor Estimado</th>
-        <th></th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -29,6 +29,13 @@
       >
         <td>{{ projeto.sigla }}</td>
         <td>{{ projeto.titulo }}</td>
+        <td>
+          <span
+            class="badge rounded-pill text-bg-info"
+            *ngIf="projeto.isRascunho"
+            >Rascunho</span
+          >
+        </td>
         <td>{{ projeto.status }}</td>
         <td>
           {{
@@ -42,13 +49,6 @@
                     decimalMarker: ","
                   }
           }}
-        </td>
-        <td>
-          <span
-            class="badge rounded-pill text-bg-info"
-            *ngIf="projeto.isRascunho"
-            >Rascunho</span
-          >
         </td>
         <td (click)="$event.stopPropagation()">
           <table-actions-dropdown

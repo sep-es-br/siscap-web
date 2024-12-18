@@ -1,60 +1,49 @@
 <form [formGroup]="projetosPesquisaForm">
-  <div class="col-12 d-inline-flex justify-content-between align-items-stretch">
-    <div class="col-4 px-2">
-      <label for="sigla_titulo" class="form-label">Sigla / Título</label>
+  <div
+    class="col-12 d-inline-flex flex-row-reverse justify-content-start align-items-start"
+  >
+    <div class="col-3">
       <input
         type="text"
         name="sigla_titulo"
         id="sigla_titulo"
         class="form-control"
+        placeholder="Pesquisar"
         formControlName="siglaOuTitulo"
-        (keydown.enter)="$event.preventDefault()"
       />
     </div>
 
-    <div class="col-4 px-2">
-      <label for="status" class="form-label">Status</label>
-      <ng-select
-        id="status"
+    <div class="col-1 px-2">
+      <select
         name="status"
+        id="status"
         formControlName="status"
-        [clearable]="false"
+        class="select-filtro-pesquisa"
       >
-        <ng-option
-          *ngFor="let statusProjeto of statusProjetoOpcoes"
+        <option
           [value]="statusProjeto"
-          >{{ statusProjeto }}</ng-option
+          *ngFor="let statusProjeto of statusProjetoOpcoes"
         >
-      </ng-select>
-      <label for="idOrganizacao" class="form-label">Organização</label>
-      <ng-select
-        id="idOrganizacao"
-        name="idOrganizacao"
-        formControlName="idOrganizacao"
-        [readonly]="isProponente"
-        [clearable]="false"
-      >
-        <ng-option
-          *ngFor="let organizacao of organizacoesOpcoes"
-          [value]="organizacao.id"
-        >
-          {{ organizacao.nome }}
-        </ng-option>
-      </ng-select>
+          {{ statusProjeto }}
+        </option>
+      </select>
     </div>
 
-    <div class="col-4 px-2">
-      <label for="dataPeriodoInicio" class="form-label">Entre</label>
-      <siscap-datepicker
-        [placeholderText]="'Período Inicial'"
-        (dateValueChange)="atualizarDataPeriodoInicio($event)"
-      ></siscap-datepicker>
-
-      <label for="dataPeriodoFim" class="form-label"></label>
-      <siscap-datepicker
-        [placeholderText]="'Período Final'"
-        (dateValueChange)="atualizarDataPeriodoFim($event)"
-      ></siscap-datepicker>
+    <div class="col-3 px-2">
+      <select
+        name="idOrganizacao"
+        id="idOrganizacao"
+        formControlName="idOrganizacao"
+        class="select-filtro-pesquisa"
+        [ngClass]="{ 'pe-none': isProponente }"
+      >
+        <option
+          [value]="organizacao.id"
+          *ngFor="let organizacao of organizacoesOpcoes"
+        >
+          {{ organizacao.nome }}
+        </option>
+      </select>
     </div>
   </div>
 </form>
