@@ -40,7 +40,7 @@ export class ProjetosPesquisaComponent implements OnInit {
     this.usuario_IdOrganizacoes =
       this._usuarioService.usuarioPerfil.idOrganizacoes;
 
-    this.statusProjetoOpcoes = ['Todos', ...Object.values(StatusProjetoEnum)];
+    this.statusProjetoOpcoes = ['Status', ...Object.values(StatusProjetoEnum)];
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes()
@@ -53,7 +53,7 @@ export class ProjetosPesquisaComponent implements OnInit {
 
             this.organizacoesOpcoes = organizacoesOpcoesFiltradas;
           } else {
-            this.organizacoesOpcoes = [{ id: 0, nome: 'Todos' }];
+            this.organizacoesOpcoes = [{ id: 0, nome: 'Organização' }];
 
             this.organizacoesOpcoes = this.organizacoesOpcoes.concat(response);
           }
@@ -67,13 +67,10 @@ export class ProjetosPesquisaComponent implements OnInit {
 
     this.projetosPesquisaForm = new FormGroup({
       siglaOuTitulo: new FormControl(''),
-      titulo: new FormControl(''),
-      status: new FormControl('Todos'),
+      status: new FormControl('Status'),
       idOrganizacao: new FormControl(
         this.isProponente ? idOrganizacaoValorInicial : 0
       ),
-      dataPeriodoInicio: new FormControl(''),
-      dataPeriodoFim: new FormControl(''),
     });
 
     this.projetoPesquisaFormValueChanges();
@@ -83,14 +80,6 @@ export class ProjetosPesquisaComponent implements OnInit {
     this._getOrganizacoesOpcoes$.subscribe();
 
     this.pesquisarProjetos.emit(this.projetosPesquisaForm.value);
-  }
-
-  public atualizarDataPeriodoInicio(dataPeriodoInicio: string): void {
-    this.projetosPesquisaForm.patchValue({ dataPeriodoInicio });
-  }
-
-  public atualizarDataPeriodoFim(dataPeriodoFim: string): void {
-    this.projetosPesquisaForm.patchValue({ dataPeriodoFim });
   }
 
   private projetoPesquisaFormValueChanges(): void {
