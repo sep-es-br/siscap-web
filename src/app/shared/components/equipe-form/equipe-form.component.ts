@@ -17,6 +17,9 @@ import { ToastService } from '../../../core/services/toast/toast.service';
 import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
+import { EquipeModel } from '../../../core/models/equipe.model';
+import { IEquipe } from '../../../core/interfaces/equipe.interface';
+import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 
 @Component({
   selector: 'siscap-equipe-form',
@@ -40,6 +43,7 @@ export class EquipeFormComponent implements OnDestroy {
 
   public TipoStatusEnum = TipoStatusEnum;
 
+  public isProponente: boolean = false;
   public permissaoRemoverMembro: boolean = false;
 
   constructor(
@@ -48,6 +52,8 @@ export class EquipeFormComponent implements OnDestroy {
     private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService
   ) {
+    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
     this.permissaoRemoverMembro =
       this._usuarioService.verificarPermissao('adminAuth');
   }

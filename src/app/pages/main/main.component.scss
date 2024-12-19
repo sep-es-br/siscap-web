@@ -11,9 +11,15 @@
   elemento(s) acima.
 */
 $main-content-margin-top: 225px;
+$main-content-margin-top-proponente: 185px;
 
-section#main-content {
+section.main-content-wrapper {
   margin-top: $main-content-margin-top;
+  margin-bottom: 4rem;
+}
+
+section.main-content-wrapper-proponente {
+  margin-top: $main-content-margin-top-proponente;
   margin-bottom: 4rem;
 }
 
@@ -37,7 +43,11 @@ section#footer-content {
   Leva em consideração a redução do padding de <siscap-breadcrumb>.
 */
 @media (max-width: 767px) {
-  section#main-content {
+  section.main-content-wrapper {
     margin-top: calc($main-content-margin-top - 4vw);
+  }
+
+  section.main-content-wrapper-proponente {
+    margin-top: calc($main-content-margin-top-proponente - 4vw);
   }
 }

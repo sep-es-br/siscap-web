@@ -1,16 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ActivationEnd, NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 
-import {
-  filter,
-  first,
-  map,
-  Observable,
-  repeat,
-  Subject,
-  tap,
-  throttle,
-} from 'rxjs';
+import { filter, first, map, Observable, repeat, Subject, tap } from 'rxjs';
 
 import {
   IBreadcrumbBotaoAcao,
@@ -65,7 +56,24 @@ export class BreadcrumbService {
 
   constructor(private _router: Router) {
     this.montarBreadcrumb().subscribe();
-    this.montarBotoesAcao().subscribe();
+  }
+
+  public montarBotoesAcao(botoes: Array<string>, contexto: string): void {
+    const botoesAcao: IBreadcrumbBotaoAcao = {
+      botoes: botoes,
+      contexto: contexto,
+    };
+
+    this.breadcrumbBotoesAcao$.next(botoesAcao);
+  }
+
+  public limparBotoesAcao(): void {
+    const botoesAcaoVazio: IBreadcrumbBotaoAcao = {
+      botoes: [],
+      contexto: '',
+    };
+
+    this.breadcrumbBotoesAcao$.next(botoesAcaoVazio);
   }
 
   private montarBreadcrumb(): Observable<Array<IBreadcrumbItem>> {
@@ -168,26 +176,5 @@ export class BreadcrumbService {
         breadcrumbItem.caminho === this._breadcrumbItemPaginaPrincipal.caminho
       );
     });
-  }
-
-  private montarBotoesAcao(): Observable<IBreadcrumbBotaoAcao> {
-    return this._router.events.pipe(
-      filter((event): event is ActivationEnd => event instanceof ActivationEnd),
-      throttle(() =>
-        this._router.events.pipe(
-          filter(
-            (event): event is NavigationEnd => event instanceof NavigationEnd
-          )
-        )
-      ),
-      map<ActivationEnd, IBreadcrumbBotaoAcao>(
-        (activationEndEvent) =>
-          activationEndEvent.snapshot.data['botoesAcao'] ??
-          this._breadcrumbBotoesAcaoVazio
-      ),
-      tap((breadcrumbBotoesAcaoObj) => {
-        this.breadcrumbBotoesAcao$.next(breadcrumbBotoesAcaoObj);
-      })
-    );
   }
 }

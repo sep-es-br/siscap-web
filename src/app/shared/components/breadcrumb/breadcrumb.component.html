@@ -1,4 +1,10 @@
-<div class="breadcrumb-wrapper bg-light pb-3">
+<div
+  class="bg-light pb-3"
+  [ngClass]="{
+    'breadcrumb-wrapper': !isProponente,
+    'breadcrumb-wrapper-proponente': isProponente
+  }"
+>
   <div
     class="col-10 col-xl-8 mx-auto d-flex flex-wrap justify-content-between align-items-center"
   >
@@ -6,9 +12,17 @@
       id="current-page-title-breadcrumb"
       class="col-12 col-md-8 d-inline-flex flex-column"
     >
-      <h1 class="current-page-title mb-0">{{ paginaAtual.titulo }}</h1>
+      <h1 class="current-page-title mb-0">
+        {{ paginaAtual.titulo }}
+        <span
+          *ngIf="isProponente && paginaAtual.caminho == 'projetos'"
+          class="titulo-projetos-proponente"
+        >
+          (Documento Inicial de Captação)
+        </span>
+      </h1>
 
-      <nav>
+      <nav [ngClass]="{ invisible: isProponente }">
         <ol class="breadcrumb fw-semibold mb-0">
           <ng-container *ngFor="let breadcrumbItem of listaBreadcrumbItems">
             <li class="breadcrumb-item">
@@ -51,6 +65,10 @@
           <ng-container
             *ngSwitchCase="'prospectar'"
             [ngTemplateOutlet]="botaoProspectar"
+          ></ng-container>
+          <ng-container
+            *ngSwitchCase="'enviar'"
+            [ngTemplateOutlet]="botaoEnviar"
           ></ng-container>
         </ng-container>
       </ng-container>
@@ -105,5 +123,15 @@
   >
     <i class="fa-solid fa-paper-plane"></i>
     <span>Prospectar</span>
+  </button>
+</ng-template>
+
+<ng-template #botaoEnviar>
+  <button
+    class="btn btn-primary icon-text-btn text-nowrap"
+    (click)="emitirAcaoBreadcrumb('enviar')"
+  >
+    <i class="fa-solid fa-upload"></i>
+    <span>Enviar</span>
   </button>
 </ng-template>

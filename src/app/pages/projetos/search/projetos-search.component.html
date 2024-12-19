@@ -1,0 +1,49 @@
+<form [formGroup]="projetosPesquisaForm">
+  <div
+    class="col-12 d-inline-flex flex-row-reverse justify-content-start align-items-start"
+  >
+    <div class="col-3">
+      <input
+        type="text"
+        name="sigla_titulo"
+        id="sigla_titulo"
+        class="form-control"
+        placeholder="Pesquisar"
+        formControlName="siglaOuTitulo"
+      />
+    </div>
+
+    <div class="col-1 px-2">
+      <select
+        name="status"
+        id="status"
+        formControlName="status"
+        class="select-filtro-pesquisa"
+      >
+        <option
+          [value]="statusProjeto"
+          *ngFor="let statusProjeto of statusProjetoOpcoes"
+        >
+          {{ statusProjeto }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-3 px-2">
+      <select
+        name="idOrganizacao"
+        id="idOrganizacao"
+        formControlName="idOrganizacao"
+        class="select-filtro-pesquisa"
+        [ngClass]="{ 'pe-none': isProponente }"
+      >
+        <option
+          [value]="organizacao.id"
+          *ngFor="let organizacao of organizacoesOpcoes"
+        >
+          {{ organizacao.nome }}
+        </option>
+      </select>
+    </div>
+  </div>
+</form>

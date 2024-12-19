@@ -38,11 +38,14 @@ export class ProgramasService
   constructor(private _http: HttpClient) {}
 
   public getAllPaged(
-    pageConfig: IHttpGetRequestBody
+    pageConfig: IHttpGetRequestBody,
+    ...searchFilter: { [key: string]: any }[]
   ): Observable<IHttpGetResponseBody<IProgramaTableData>> {
     return this._http.get<IHttpGetResponseBody<IProgramaTableData>>(this._url, {
-      params:
-        PageableQueryStringParametersHelper.buildQueryStringParams(pageConfig),
+      params: PageableQueryStringParametersHelper.buildQueryStringParams(
+        pageConfig,
+        ...searchFilter
+      ),
     });
   }
 

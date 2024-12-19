@@ -40,15 +40,16 @@ export class OrganizacoesService
   constructor(private _http: HttpClient) {}
 
   public getAllPaged(
-    pageConfig: IHttpGetRequestBody
+    pageConfig: IHttpGetRequestBody,
+    ...searchFilter: { [key: string]: any }[]
   ): Observable<IHttpGetResponseBody<IOrganizacaoTableData>> {
     return this._http.get<IHttpGetResponseBody<IOrganizacaoTableData>>(
       this._url,
       {
-        params:
-          PageableQueryStringParametersHelper.buildQueryStringParams(
-            pageConfig
-          ),
+        params: PageableQueryStringParametersHelper.buildQueryStringParams(
+          pageConfig,
+          ...searchFilter
+        ),
       }
     );
   }

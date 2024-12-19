@@ -1,19 +1,23 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-import { environment } from '../../../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
+
+import { CartaConsultaFormModel } from '../../models/carta-consulta.model';
+
 import { IHttpBase } from '../../interfaces/http/http-base.interface';
 import {
   ICartaConsulta,
   ICartaConsultaDetalhes,
   ICartaConsultaTableData,
 } from '../../interfaces/carta-consulta.interface';
-import { CartaConsultaFormModel } from '../../models/carta-consulta.model';
 import {
   IHttpGetRequestBody,
   IHttpGetResponseBody,
 } from '../../interfaces/http/http-get.interface';
-import { HttpClient } from '@angular/common/http';
+
+import { environment } from '../../../../environments/environment';
+
 import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
 
 @Injectable({
@@ -42,15 +46,16 @@ export class CartasConsultaService
   constructor(private _http: HttpClient) {}
 
   public getAllPaged(
-    pageConfig: IHttpGetRequestBody
+    pageConfig: IHttpGetRequestBody,
+    ...searchFilter: { [key: string]: any }[]
   ): Observable<IHttpGetResponseBody<ICartaConsultaTableData>> {
     return this._http.get<IHttpGetResponseBody<ICartaConsultaTableData>>(
       this._url,
       {
-        params:
-          PageableQueryStringParametersHelper.buildQueryStringParams(
-            pageConfig
-          ),
+        params: PageableQueryStringParametersHelper.buildQueryStringParams(
+          pageConfig,
+          ...searchFilter
+        ),
       }
     );
   }
