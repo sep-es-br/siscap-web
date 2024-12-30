@@ -22,6 +22,7 @@
               [ngClass]="{
                 'd-none': route.hidden,
               }"
+              (click)="avaliarNavegacaoMesmaRota(route.path)"
               [routerLink]="route.path"
               routerLinkActive="active"
             >
