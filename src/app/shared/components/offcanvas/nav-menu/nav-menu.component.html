@@ -30,9 +30,7 @@
                   active: route.path === subMenuCategoriaAtiva
                 }"
                 [routerLink]="['main', route.path]"
-                (click)="
-                  navegacaoSideMenu.emit(route.path != subMenuCategoriaAtiva)
-                "
+                (click)="avaliarNavegacaoMesmaRota(route.path)"
               >
                 {{ route.title }}
               </a>
