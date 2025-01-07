@@ -1,7 +1,6 @@
 import { ApplicationConfig } from '@angular/core';
 import {
   PreloadAllModules,
-  RouteReuseStrategy,
   TitleStrategy,
   provideRouter,
   withPreloading,
@@ -18,7 +17,6 @@ import {
 import { APP_ROUTES } from './app.routes';
 
 import { SiscapTitleStrategy } from './core/providers/angular/SiscapTitleStrategy';
-import { SiscapRouteReuseStrategy } from './core/providers/angular/SiscapRouteReuseStrategy';
 
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
@@ -47,7 +45,6 @@ export const appConfig: ApplicationConfig = {
       placeholder: '-- Insira o texto aqui --',
     }),
     { provide: TitleStrategy, useClass: SiscapTitleStrategy },
-    { provide: RouteReuseStrategy, useClass: SiscapRouteReuseStrategy },
     { provide: NgbDateParserFormatter, useClass: SiscapNgbDateParserFormatter },
     { provide: NgbDateAdapter, useClass: SiscapNgbDateAdapter },
     { provide: NgbDatepickerI18n, useClass: SiscapNgbDatepickerI18n },

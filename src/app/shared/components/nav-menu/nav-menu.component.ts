@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -21,4 +21,28 @@ export class NavMenuComponent {
   @Input() public subMenuCategoriaAtiva: string = '';
 
   public menuLinks: Array<IMenuLink> = MenuLinksHelper.menuLinks;
+
+  constructor(private readonly _router: Router) {}
+
+  public avaliarNavegacaoMesmaRota(rota: string): void {
+    const caminhoAtual = this.getCaminhoAtual();
+
+    rota === caminhoAtual
+      ? this.executarNavegacaoComRecarregamento(rota)
+      : this.executarNavegacaoSimples(rota);
+  }
+
+  private getCaminhoAtual(): string | undefined {
+    return this._router.url.split('/').pop();
+  }
+
+  private executarNavegacaoSimples(rota: string): void {
+    this._router.navigateByUrl(`/main/${rota}`);
+  }
+
+  private executarNavegacaoComRecarregamento(rota: string): void {
+    this._router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this._router.navigateByUrl(`/main/${rota}`);
+    });
+  }
 }
