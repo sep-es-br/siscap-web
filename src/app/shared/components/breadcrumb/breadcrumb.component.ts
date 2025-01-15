@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
+import { LoadingService } from '../../../core/services/loading/loading.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 
@@ -31,6 +32,7 @@ export class BreadcrumbComponent {
   public contextoBotoesAcao: string = '';
 
   constructor(
+    public loadingService: LoadingService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _usuarioService: UsuarioService
   ) {

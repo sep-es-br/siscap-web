@@ -4,6 +4,8 @@ import { Router, RouterModule } from '@angular/router';
 
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { LoadingService } from '../../../core/services/loading/loading.service';
+
 import {
   IMenuLink,
   MenuLinksHelper,
@@ -22,7 +24,10 @@ export class NavMenuComponent {
 
   public menuLinks: Array<IMenuLink> = MenuLinksHelper.menuLinks;
 
-  constructor(private readonly _router: Router) {}
+  constructor(
+    public loadingService: LoadingService,
+    private readonly _router: Router
+  ) {}
 
   public avaliarNavegacaoMesmaRota(rota: string): void {
     const caminhoAtual = this.getCaminhoAtual();

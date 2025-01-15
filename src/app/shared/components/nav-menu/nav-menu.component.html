@@ -7,7 +7,10 @@
   <ng-container *ngFor="let menuItem of menuLinks">
     <li
       [ngbNavItem]="menuItem.slug"
-      [ngClass]="{ 'd-none': menuItem.hidden }"
+      [ngClass]="{
+        'd-none': menuItem.hidden,
+        'pe-none': loadingService.isProcessando$ | async
+      }"
       class="nav-item lh-1"
     >
       <a ngbNavLink [routerLink]="menuItem.routes[0].path">{{
@@ -21,6 +24,7 @@
               class="btn sub-menu-nav-link p-2 mx-2"
               [ngClass]="{
                 'd-none': route.hidden,
+                'pe-none': loadingService.isProcessando$ | async
               }"
               (click)="avaliarNavegacaoMesmaRota(route.path)"
               [routerLink]="route.path"

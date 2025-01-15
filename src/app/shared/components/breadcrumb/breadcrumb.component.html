@@ -29,7 +29,10 @@
               <a
                 [routerLink]="[breadcrumbItem.caminho]"
                 class="breadcrumb-link text-decoration-none text-black"
-                [ngClass]="{ active: breadcrumbItem == paginaAtual }"
+                [ngClass]="{
+                  active: breadcrumbItem == paginaAtual,
+                  'pe-none': loadingService.isProcessando$ | async
+                }"
               >
                 {{ breadcrumbItem.titulo }}
               </a>
@@ -80,6 +83,7 @@
   <button
     class="btn btn-outline-primary icon-text-btn text-nowrap"
     [routerLink]="[contexto, 'criar']"
+    [disabled]="loadingService.isProcessando$ | async"
   >
     <i class="fa-solid fa-plus"></i>
     <span> {{ buscarTextoBotaoCriar(contexto) }} </span>
@@ -90,6 +94,7 @@
   <button
     class="btn btn-success icon-text-btn text-nowrap"
     (click)="emitirAcaoBreadcrumb('salvar')"
+    [disabled]="loadingService.isProcessando$ | async"
   >
     <i class="fa-solid fa-save"></i>
     <span>Salvar</span>
@@ -100,6 +105,7 @@
   <button
     class="btn btn-outline-danger icon-text-btn text-nowrap"
     (click)="emitirAcaoBreadcrumb('cancelar')"
+    [disabled]="loadingService.isProcessando$ | async"
   >
     <i class="fa-solid fa-close"></i>
     <span>Cancelar</span>
@@ -110,6 +116,7 @@
   <button
     class="btn btn-primary icon-text-btn text-nowrap"
     (click)="emitirAcaoBreadcrumb('editar')"
+    [disabled]="loadingService.isProcessando$ | async"
   >
     <i class="fa-solid fa-edit"></i>
     <span>Editar</span>
@@ -120,6 +127,7 @@
   <button
     class="btn btn-outline-success icon-text-btn text-nowrap"
     (click)="emitirAcaoBreadcrumb('prospectar')"
+    [disabled]="loadingService.isProcessando$ | async"
   >
     <i class="fa-solid fa-paper-plane"></i>
     <span>Prospectar</span>
@@ -130,6 +138,7 @@
   <button
     class="btn btn-primary icon-text-btn text-nowrap"
     (click)="emitirAcaoBreadcrumb('enviar')"
+    [disabled]="loadingService.isProcessando$ | async"
   >
     <i class="fa-solid fa-upload"></i>
     <span>Enviar</span>
