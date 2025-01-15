@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import { finalize, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 
+import { LoadingService } from '../../../core/services/loading/loading.service';
 import { ProspeccoesService } from '../../../core/services/prospeccoes/prospeccoes.service';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
+import { ToastService } from '../../../core/services/toast/toast.service';
 
 import { IProspeccaoDetalhes } from '../../../core/interfaces/prospeccao.interface';
 import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
@@ -46,9 +48,11 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
     getSimboloMoeda;
 
   constructor(
+    public loadingService: LoadingService,
     private readonly _prospeccoesService: ProspeccoesService,
     private readonly _projetosService: ProjetosService,
     private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _toastService: ToastService,
     private readonly _router: Router
   ) {
     this._getProspeccaoDetalhes$ =
@@ -125,12 +129,27 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
         break;
 
       case BreadcrumbAcoesEnum.Prospectar:
-        console.log('INICIAR PROCESSO DE PROSPECCAO');
+        this.enviarEmailProspeccao();
         break;
 
       default:
         break;
     }
+  }
+
+  private enviarEmailProspeccao(): void {
+    this.loadingService.iniciarProcessamento();
+
+    this._prospeccoesService
+      .enviarEmailProspeccao(this.prospeccaoDetalhes.id)
+      .pipe(
+        tap((response) => {
+          this._toastService.showToast('success', response);
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+        }),
+        finalize(() => this.loadingService.finalizarProcessamento())
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {

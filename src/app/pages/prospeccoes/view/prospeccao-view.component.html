@@ -1,4 +1,8 @@
-<div class="card">
+<div class="h-100" *ngIf="loadingService.isProcessando$ | async">
+  <loading-spinner textoProcessando="Enviando e-mail de prospecção..."></loading-spinner>
+</div>
+
+<div class="card" *ngIf="!(loadingService.isProcessando$ | async)">
   <div class="card-body">
     <div class="row px-3">
       <div class="col-12 d-inline-flex border-bottom pb-2">
