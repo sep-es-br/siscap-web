@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
 
 import { OrganizacoesService } from '../../core/services/organizacoes/organizacoes.service';
 import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
+import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
-import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import { IOrganizacaoTableData } from '../../core/interfaces/organizacao.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
-import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+import { IHttpGetRequestBody } from '../../core/interfaces/http-get-all-paged.interface';
 
 import {
   BreadcrumbAcoesEnum,
@@ -22,7 +22,9 @@ import {
   styleUrl: './organizacoes.component.scss',
 })
 export class OrganizacoesComponent implements OnInit, OnDestroy {
-  private _pageConfig: IHttpGetRequestBody = {
+  private readonly _subscription: Subscription = new Subscription();
+
+  private readonly _pageConfig: IHttpGetRequestBody = {
     page: 0,
     size: 15,
     sort: '',
@@ -30,8 +32,9 @@ export class OrganizacoesComponent implements OnInit, OnDestroy {
 
   private termoPesquisaSimples: string = '';
 
-  private _organizacoesList$: BehaviorSubject<Array<IOrganizacaoTableData>> =
-    new BehaviorSubject<Array<IOrganizacaoTableData>>([]);
+  private readonly _organizacoesList$: BehaviorSubject<
+    Array<IOrganizacaoTableData>
+  > = new BehaviorSubject<Array<IOrganizacaoTableData>>([]);
 
   public get organizacoesList$(): Observable<Array<IOrganizacaoTableData>> {
     return this._organizacoesList$;
@@ -50,14 +53,23 @@ export class OrganizacoesComponent implements OnInit, OnDestroy {
   constructor(
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _organizacoesService: OrganizacoesService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _r2: Renderer2
   ) {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: [BreadcrumbAcoesEnum.Criar],
-      contexto: BreadcrumbContextoEnum.Organizacoes,
-    };
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      this._organizacoesService.gerarBotoesAcaoListagem()
+    );
 
-    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+    this._subscription.add(
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) => {
+        if (acao === BreadcrumbAcoesEnum.Criar) {
+          this._navegacaoService.navegacaoSimples(
+            BreadcrumbContextoEnum.Organizacoes,
+            BreadcrumbAcoesEnum.Criar
+          );
+        }
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -119,6 +131,7 @@ export class OrganizacoesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._breadcrumbService.limparBotoesAcao();
+    this._subscription.unsubscribe();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

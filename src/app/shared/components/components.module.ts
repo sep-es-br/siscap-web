@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { BotaoComponent } from './botao/botao.component';
 import { HeaderComponent } from './header/header.component';
 import { ToastComponent } from './toast/toast.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -20,6 +21,7 @@ import { DatepickerComponent } from './datepicker/datepicker.component';
   declarations: [],
   imports: [
     CommonModule,
+    BotaoComponent,
     HeaderComponent,
     ToastComponent,
     NavMenuComponent,
@@ -36,6 +38,7 @@ import { DatepickerComponent } from './datepicker/datepicker.component';
     CropperComponent,
   ],
   exports: [
+    BotaoComponent,
     HeaderComponent,
     ToastComponent,
     NavMenuComponent,

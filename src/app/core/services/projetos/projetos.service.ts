@@ -3,14 +3,15 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 
+import { BaseHttpService } from '../http/base-http.service';
+
 import { ProjetoFormModel } from '../../models/projeto.model';
 import { RateioModel } from '../../models/rateio.model';
 import { ValorModel } from '../../models/valor.model';
+import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.model';
 
-import {
-  IHttpGetRequestBody,
-  IHttpGetResponseBody,
-} from '../../interfaces/http/http-get.interface';
+import { BotoesConfig } from '../../../shared/components/botao/botao.config';
+
 import {
   IProjeto,
   IProjetoTableData,
@@ -18,98 +19,56 @@ import {
 
 import { TipoValorEnum } from '../../enums/tipo-valor.enum';
 
-import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
-
 import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ProjetosService {
-  private _url = `${environment.apiUrl}/projetos`;
+export class ProjetosService extends BaseHttpService<
+  IProjeto,
+  IProjetoTableData
+> {
+  private readonly _url = `${environment.apiUrl}/projetos`;
 
-  private _idProjeto$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private readonly _idProjeto$: BehaviorSubject<number> =
+    new BehaviorSubject<number>(0);
 
   public get idProjeto$(): BehaviorSubject<number> {
     return this._idProjeto$;
   }
 
-  constructor(private _http: HttpClient) {}
+  constructor(private readonly _http: HttpClient) {
+    super(_http, 'projetos');
+  }
 
-  public getAllPaged(
-    pageConfig: IHttpGetRequestBody,
-    ...searchFilter: { [key: string]: any }[]
-  ): Observable<IHttpGetResponseBody<IProjetoTableData>> {
-    return this._http.get<IHttpGetResponseBody<IProjetoTableData>>(this._url, {
-      params: PageableQueryStringParametersHelper.buildQueryStringParams(
-        pageConfig,
-        ...searchFilter
-      ),
+  public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
+    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
+      texto: 'Novo Projeto',
     });
+
+    return [botaoCriar];
   }
 
-  public getById(id: number): Observable<IProjeto> {
-    return this._http.get<IProjeto>(`${this._url}/${id}`);
+  public gerarBotoesAcaoListagemProponente(): Array<BotaoPropriedadesModel> {
+    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
+      texto: 'Novo DIC',
+    });
+
+    return [botaoCriar];
   }
 
-  public post(
-    body: ProjetoFormModel,
-    isRascunho: boolean
-  ): Observable<IProjeto> {
-    return this._http.post<IProjeto>(
-      `${this._url}?rascunho=${isRascunho}`,
-      body
-    );
+  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+
+    return [botaoEnviar, botaoSalvar, botaoCancelar];
   }
 
-  public put(
-    id: number,
-    body: ProjetoFormModel,
-    isRascunho: boolean
-  ): Observable<IProjeto> {
-    return this._http.put<IProjeto>(
-      `${this._url}/${id}?rascunho=${isRascunho}`,
-      body
-    );
-  }
+  public gerarBotoesAcaoFormularioProponente(): Array<BotaoPropriedadesModel> {
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
 
-  public delete(id: number): Observable<string> {
-    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
-  }
-
-  public baixarDIC(id: number): void {
-    const userHttpOptions: Object = {
-      responseType: 'arraybuffer',
-      observe: 'response',
-    };
-    this._http
-      .get<Blob>(`${this._url}/dic/${id}`, userHttpOptions)
-      .subscribe((response) => {
-        if (response instanceof HttpResponse) {
-          const httpResponse = response as HttpResponse<Blob>;
-          const contentDisposition = httpResponse.headers.get(
-            'Content-Disposition'
-          );
-          if (httpResponse.body && contentDisposition) {
-            const filename = contentDisposition
-              .split('filename=')[1]
-              .split(';')[0]
-              .replace(/["']/g, '');
-            const pdfBlob = new Blob([httpResponse.body], {
-              type: 'application/pdf',
-            });
-            let url = window.URL.createObjectURL(pdfBlob);
-            let a = document.createElement('a');
-            document.body.appendChild(a);
-            a.setAttribute('style', 'display: none');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            window.URL.revokeObjectURL(url);
-            a.remove();
-          }
-        }
-      });
+    return [botaoCancelar];
   }
 
   public construirProjetoModelRateio(
@@ -153,5 +112,61 @@ export class ProjetosService {
     if (!valorModel) return null;
 
     return valorModel.quantia;
+  }
+
+  public post(
+    body: ProjetoFormModel,
+    isRascunho: boolean
+  ): Observable<IProjeto> {
+    return this._http.post<IProjeto>(
+      `${this._url}?rascunho=${isRascunho}`,
+      body
+    );
+  }
+
+  public put(
+    id: number,
+    body: ProjetoFormModel,
+    isRascunho: boolean
+  ): Observable<IProjeto> {
+    return this._http.put<IProjeto>(
+      `${this._url}/${id}?rascunho=${isRascunho}`,
+      body
+    );
+  }
+
+  public baixarDIC(id: number): void {
+    const userHttpOptions: Object = {
+      responseType: 'arraybuffer',
+      observe: 'response',
+    };
+    this._http
+      .get<Blob>(`${this._url}/dic/${id}`, userHttpOptions)
+      .subscribe((response) => {
+        if (response instanceof HttpResponse) {
+          const httpResponse = response as HttpResponse<Blob>;
+          const contentDisposition = httpResponse.headers.get(
+            'Content-Disposition'
+          );
+          if (httpResponse.body && contentDisposition) {
+            const filename = contentDisposition
+              .split('filename=')[1]
+              .split(';')[0]
+              .replace(/["']/g, '');
+            const pdfBlob = new Blob([httpResponse.body], {
+              type: 'application/pdf',
+            });
+            let url = window.URL.createObjectURL(pdfBlob);
+            let a = document.createElement('a');
+            document.body.appendChild(a);
+            a.setAttribute('style', 'display: none');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+          }
+        }
+      });
   }
 }

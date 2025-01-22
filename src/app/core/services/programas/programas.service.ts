@@ -3,19 +3,19 @@ import { Injectable } from '@angular/core';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { ProgramaFormModel } from '../../models/programa.model';
+import { BaseHttpService } from '../http/base-http.service';
 
-import { IHttpBase } from '../../interfaces/http/http-base.interface';
-import {
-  IHttpGetRequestBody,
-  IHttpGetResponseBody,
-} from '../../interfaces/http/http-get.interface';
+import { ProgramaFormModel } from '../../models/programa.model';
+import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.model';
+
+import { BotoesConfig } from '../../../shared/components/botao/botao.config';
+
 import {
   IPrograma,
   IProgramaTableData,
 } from '../../interfaces/programa.interface';
-
-import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
+import { Post } from '../../interfaces/http-post.interface';
+import { Put } from '../../interfaces/http-put.interface';
 
 import { environment } from '../../../../environments/environment';
 
@@ -23,34 +23,37 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root',
 })
 export class ProgramasService
-  implements IHttpBase<IPrograma, IProgramaTableData, ProgramaFormModel>
+  extends BaseHttpService<IPrograma, IProgramaTableData>
+  implements
+    Post<IPrograma, ProgramaFormModel>,
+    Put<IPrograma, ProgramaFormModel>
 {
-  private _url = `${environment.apiUrl}/programas`;
+  private readonly _url = `${environment.apiUrl}/programas`;
 
-  private _idPrograma$: BehaviorSubject<number> = new BehaviorSubject<number>(
-    0
-  );
+  private readonly _idPrograma$: BehaviorSubject<number> =
+    new BehaviorSubject<number>(0);
 
   public get idPrograma$(): BehaviorSubject<number> {
     return this._idPrograma$;
   }
 
-  constructor(private _http: HttpClient) {}
-
-  public getAllPaged(
-    pageConfig: IHttpGetRequestBody,
-    ...searchFilter: { [key: string]: any }[]
-  ): Observable<IHttpGetResponseBody<IProgramaTableData>> {
-    return this._http.get<IHttpGetResponseBody<IProgramaTableData>>(this._url, {
-      params: PageableQueryStringParametersHelper.buildQueryStringParams(
-        pageConfig,
-        ...searchFilter
-      ),
-    });
+  constructor(private readonly _http: HttpClient) {
+    super(_http, 'programas');
   }
 
-  public getById(id: number): Observable<IPrograma> {
-    return this._http.get<IPrograma>(`${this._url}/${id}`);
+  public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
+    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
+      texto: 'Novo Programa',
+    });
+
+    return [botaoCriar];
+  }
+
+  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+
+    return [botaoSalvar, botaoCancelar];
   }
 
   public post(body: ProgramaFormModel): Observable<IPrograma> {
@@ -59,9 +62,5 @@ export class ProgramasService
 
   public put(id: number, body: ProgramaFormModel): Observable<IPrograma> {
     return this._http.put<IPrograma>(`${this._url}/${id}`, body);
-  }
-
-  public delete(id: number): Observable<string> {
-    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
   }
 }

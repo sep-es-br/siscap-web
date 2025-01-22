@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { finalize, tap } from 'rxjs';
 
 import { UsuarioService } from '../../core/services/usuario/usuario.service';
+import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
 import { UsuarioPerfilModel } from '../../core/models/usuario.model';
 
@@ -17,9 +18,9 @@ import { IUsuario } from '../../core/interfaces/usuario.interface';
 })
 export class AuthRedirectComponent {
   constructor(
-    private _router: Router,
-    private _route: ActivatedRoute,
-    private _usuarioService: UsuarioService
+    private readonly _route: ActivatedRoute,
+    private readonly _usuarioService: UsuarioService,
+    private readonly _navegacaoService: NavegacaoService
   ) {
     sessionStorage.setItem(
       'token',
@@ -39,7 +40,7 @@ export class AuthRedirectComponent {
             ? 'projetos'
             : 'home';
 
-          this._router.navigate(['main', destino]);
+          this._navegacaoService.navegacaoSimples(destino);
         })
       )
       .subscribe();

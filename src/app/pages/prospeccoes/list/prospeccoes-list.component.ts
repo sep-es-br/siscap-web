@@ -1,5 +1,4 @@
 import { Component, input, output } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -10,8 +9,14 @@ import { SuccessModalComponent } from '../../../shared/templates/success-modal/s
 import { SortColumn } from '../../../shared/directives/sortable/sortable.directive';
 
 import { ProspeccoesService } from '../../../core/services/prospeccoes/prospeccoes.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { IProspeccaoTableData } from '../../../core/interfaces/prospeccao.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-prospeccoes-list',
@@ -24,8 +29,8 @@ export class ProspeccoesListComponent {
   public sortableDirectiveOutput = output<string>();
 
   constructor(
-    private readonly _router: Router,
     private readonly _prospeccoesService: ProspeccoesService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _ngbModalService: NgbModal
   ) {}
 
@@ -61,13 +66,19 @@ export class ProspeccoesListComponent {
   public visualizarProspeccao(id: number): void {
     this._prospeccoesService.idProspeccaoDetalhes$.next(id);
 
-    this._router.navigate(['main', 'prospeccao', 'visualizar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.Prospeccao,
+      BreadcrumbAcoesEnum.Visualizar
+    );
   }
 
   public editarProspeccao(id: number): void {
     this._prospeccoesService.idProspeccao$.next(id);
 
-    this._router.navigate(['main', 'prospeccao', 'editar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.Prospeccao,
+      BreadcrumbAcoesEnum.Editar
+    );
   }
 
   public deletarProspeccao(id: number): void {
@@ -91,7 +102,7 @@ export class ProspeccoesListComponent {
     modalRef.result.then(
       (resolve) => {
         this._prospeccoesService
-          .delete(prospeccaoTableData.id)
+          .deleteById(prospeccaoTableData.id)
           .pipe(tap((response) => this.dispararModalSucesso(response)))
           .subscribe();
       },
@@ -109,9 +120,9 @@ export class ProspeccoesListComponent {
     modalRef.result.then(
       (resolve) => {},
       (reject) => {
-        this._router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => this._router.navigateByUrl('main/prospeccao'));
+        this._navegacaoService.navegacaoComRecarregamento(
+          BreadcrumbContextoEnum.Prospeccao
+        );
       }
     );
   }

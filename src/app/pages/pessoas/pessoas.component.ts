@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
 
 import { PessoasService } from '../../core/services/pessoas/pessoas.service';
 import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
+import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
-import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import { IPessoaTableData } from '../../core/interfaces/pessoa.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
-import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+import { IHttpGetRequestBody } from '../../core/interfaces/http-get-all-paged.interface';
 
 import {
   BreadcrumbAcoesEnum,
@@ -22,7 +22,9 @@ import {
   styleUrl: './pessoas.component.scss',
 })
 export class PessoasComponent implements OnInit, OnDestroy {
-  private _pageConfig: IHttpGetRequestBody = {
+  private readonly _subscription: Subscription = new Subscription();
+
+  private readonly _pageConfig: IHttpGetRequestBody = {
     page: 0,
     size: 15,
     sort: '',
@@ -30,7 +32,7 @@ export class PessoasComponent implements OnInit, OnDestroy {
 
   private termoPesquisaSimples: string = '';
 
-  private _pessoasList$: BehaviorSubject<Array<IPessoaTableData>> =
+  private readonly _pessoasList$: BehaviorSubject<Array<IPessoaTableData>> =
     new BehaviorSubject<Array<IPessoaTableData>>([]);
 
   public get pessoasList$(): Observable<Array<IPessoaTableData>> {
@@ -50,14 +52,22 @@ export class PessoasComponent implements OnInit, OnDestroy {
   constructor(
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _pessoasService: PessoasService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _r2: Renderer2
   ) {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: [BreadcrumbAcoesEnum.Criar],
-      contexto: BreadcrumbContextoEnum.Pessoas,
-    };
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      this._pessoasService.gerarBotoesAcaoListagem()
+    );
 
-    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+    this._subscription.add(
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) => {
+        if (acao === BreadcrumbAcoesEnum.Criar)
+          this._navegacaoService.navegacaoSimples(
+            BreadcrumbContextoEnum.Pessoas,
+            BreadcrumbAcoesEnum.Criar
+          );
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -119,6 +129,7 @@ export class PessoasComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._breadcrumbService.limparBotoesAcao();
+    this._subscription.unsubscribe();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }
