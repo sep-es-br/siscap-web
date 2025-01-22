@@ -1,0 +1,9 @@
+<button
+  class="btn icon-text-btn text-nowrap"
+  [ngClass]="propriedades().classeBackground"
+  [disabled]="isDisabled()"
+  (click)="acao.emit(propriedades().acao)"
+>
+  <i [ngClass]="propriedades().icone"></i>
+  <span>{{ propriedades().texto }}</span>
+</button>
