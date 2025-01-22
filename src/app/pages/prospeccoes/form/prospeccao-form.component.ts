@@ -177,11 +177,16 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
     this._getInteressadosOpcoes$ = this._opcoesDropdownService
       .getOpcoesInteressados()
       .pipe(
-        tap(
-          (response) =>
-            (this.interessadosOpcoesFiltradas = this.interessadosOpcoes =
-              response)
-        )
+        tap((response) => (this.interessadosOpcoes = response)),
+        finalize(() => {
+          const idOrganizacaoProspectadaValue = this.getControl(
+            'idOrganizacaoProspectada'
+          ).value;
+
+          this.interessadosOpcoesFiltradas = this.filtrarInteressadosOpcoes(
+            idOrganizacaoProspectadaValue
+          );
+        })
       );
 
     this._getAllOpcoes$ = concat(
