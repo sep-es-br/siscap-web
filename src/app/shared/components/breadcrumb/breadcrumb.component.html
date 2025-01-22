@@ -24,17 +24,17 @@
 
       <nav [ngClass]="{ invisible: isProponente }">
         <ol class="breadcrumb fw-semibold mb-0">
-          <ng-container *ngFor="let breadcrumbItem of listaBreadcrumbItems">
+          <ng-container *ngFor="let itemBreadcrumb of itemsBreadcrumb">
             <li class="breadcrumb-item">
               <a
-                [routerLink]="[breadcrumbItem.caminho]"
+                [routerLink]="[itemBreadcrumb.caminho]"
                 class="breadcrumb-link text-decoration-none text-black"
                 [ngClass]="{
-                  active: breadcrumbItem == paginaAtual,
+                  active: itemBreadcrumb == paginaAtual,
                   'pe-none': loadingService.isProcessando$ | async
                 }"
               >
-                {{ breadcrumbItem.titulo }}
+                {{ itemBreadcrumb.titulo }}
               </a>
             </li>
           </ng-container>
@@ -46,101 +46,13 @@
       id="action-buttons"
       class="col-12 col-md-4 mt-2 mt-md-0 d-inline-flex flex-row-reverse justify-content-end justify-content-md-start align-self-end"
     >
-      <ng-container *ngFor="let botaoAcao of listaBotoesAcao">
-        <ng-container [ngSwitch]="botaoAcao">
-          <ng-container
-            *ngSwitchCase="'criar'"
-            [ngTemplateOutlet]="botaoCriar"
-            [ngTemplateOutletContext]="{ contexto: contextoBotoesAcao }"
-          ></ng-container>
-          <ng-container
-            *ngSwitchCase="'editar'"
-            [ngTemplateOutlet]="botaoEditar"
-          ></ng-container>
-          <ng-container
-            *ngSwitchCase="'salvar'"
-            [ngTemplateOutlet]="botaoSalvar"
-          ></ng-container>
-          <ng-container
-            *ngSwitchCase="'cancelar'"
-            [ngTemplateOutlet]="botaoCancelar"
-          ></ng-container>
-          <ng-container
-            *ngSwitchCase="'prospectar'"
-            [ngTemplateOutlet]="botaoProspectar"
-          ></ng-container>
-          <ng-container
-            *ngSwitchCase="'enviar'"
-            [ngTemplateOutlet]="botaoEnviar"
-          ></ng-container>
-        </ng-container>
+      <ng-container *ngFor="let propriedades of botoesAcaoPropriedades">
+        <siscap-botao
+          [propriedades]="propriedades"
+          [isDisabled]="loadingService.isProcessando$ | async"
+          (acao)="emitirAcaoBreadcrumb($event)"
+        ></siscap-botao>
       </ng-container>
     </div>
   </div>
 </div>
-
-<ng-template #botaoCriar let-contexto="contexto">
-  <button
-    class="btn btn-outline-primary icon-text-btn text-nowrap"
-    [routerLink]="[contexto, 'criar']"
-    [disabled]="loadingService.isProcessando$ | async"
-  >
-    <i class="fa-solid fa-plus"></i>
-    <span> {{ buscarTextoBotaoCriar(contexto) }} </span>
-  </button>
-</ng-template>
-
-<ng-template #botaoSalvar>
-  <button
-    class="btn btn-success icon-text-btn text-nowrap"
-    (click)="emitirAcaoBreadcrumb('salvar')"
-    [disabled]="loadingService.isProcessando$ | async"
-  >
-    <i class="fa-solid fa-save"></i>
-    <span>Salvar</span>
-  </button>
-</ng-template>
-
-<ng-template #botaoCancelar>
-  <button
-    class="btn btn-outline-danger icon-text-btn text-nowrap"
-    (click)="emitirAcaoBreadcrumb('cancelar')"
-    [disabled]="loadingService.isProcessando$ | async"
-  >
-    <i class="fa-solid fa-close"></i>
-    <span>Cancelar</span>
-  </button>
-</ng-template>
-
-<ng-template #botaoEditar>
-  <button
-    class="btn btn-primary icon-text-btn text-nowrap"
-    (click)="emitirAcaoBreadcrumb('editar')"
-    [disabled]="loadingService.isProcessando$ | async"
-  >
-    <i class="fa-solid fa-edit"></i>
-    <span>Editar</span>
-  </button>
-</ng-template>
-
-<ng-template #botaoProspectar>
-  <button
-    class="btn btn-outline-success icon-text-btn text-nowrap"
-    (click)="emitirAcaoBreadcrumb('prospectar')"
-    [disabled]="loadingService.isProcessando$ | async"
-  >
-    <i class="fa-solid fa-paper-plane"></i>
-    <span>Prospectar</span>
-  </button>
-</ng-template>
-
-<ng-template #botaoEnviar>
-  <button
-    class="btn btn-primary icon-text-btn text-nowrap"
-    (click)="emitirAcaoBreadcrumb('enviar')"
-    [disabled]="loadingService.isProcessando$ | async"
-  >
-    <i class="fa-solid fa-upload"></i>
-    <span>Enviar</span>
-  </button>
-</ng-template>

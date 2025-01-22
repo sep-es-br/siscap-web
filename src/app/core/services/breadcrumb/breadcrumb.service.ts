@@ -3,10 +3,11 @@ import { NavigationEnd, Router } from '@angular/router';
 
 import { filter, first, map, Observable, repeat, Subject, tap } from 'rxjs';
 
-import {
-  IBreadcrumbBotaoAcao,
-  IBreadcrumbItem,
-} from '../../interfaces/breadcrumb.interface';
+import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.model';
+
+import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
+
+import { IBreadcrumbItem } from '../../interfaces/breadcrumb.interface';
 
 import {
   BREADCRUMB_COLECAO_CAMINHO_TITULO,
@@ -20,60 +21,40 @@ import {
   providedIn: 'root',
 })
 export class BreadcrumbService {
-  private _mapCaminhoTitulo: Record<string, string> =
+  private readonly _mapCaminhoTitulo: Record<string, string> =
     BREADCRUMB_COLECAO_CAMINHO_TITULO;
 
-  private _breadcrumbItemPaginaPrincipal: IBreadcrumbItem = {
+  private readonly _breadcrumbItemPaginaPrincipal: IBreadcrumbItem = {
     titulo: this._mapCaminhoTitulo['home'],
     caminho: 'home',
   };
 
-  private _breadcrumbBotoesAcaoVazio: IBreadcrumbBotaoAcao = {
-    botoes: [],
-    contexto: '',
-  };
+  private readonly _listaItemsBreadcrumb$: Subject<Array<IBreadcrumbItem>> =
+    new Subject<Array<IBreadcrumbItem>>();
 
-  private _listaBreadcrumbItems$: Subject<Array<IBreadcrumbItem>> = new Subject<
-    Array<IBreadcrumbItem>
-  >();
-
-  public get listaBreadcrumbItems$(): Subject<Array<IBreadcrumbItem>> {
-    return this._listaBreadcrumbItems$;
+  public get listaItemsBreadcrumb$(): Subject<Array<IBreadcrumbItem>> {
+    return this._listaItemsBreadcrumb$;
   }
 
-  private _breadcrumbBotoesAcao$: Subject<IBreadcrumbBotaoAcao> =
-    new Subject<IBreadcrumbBotaoAcao>();
+  private readonly _listaBotaoAcaoPropriedades$: Subject<
+    Array<BotaoPropriedadesModel>
+  > = new Subject<Array<BotaoPropriedadesModel>>();
 
-  public get breadcrumbBotoesAcao$(): Subject<IBreadcrumbBotaoAcao> {
-    return this._breadcrumbBotoesAcao$;
+  public get listaBotaoAcaoPropriedades$(): Subject<
+    Array<BotaoPropriedadesModel>
+  > {
+    return this._listaBotaoAcaoPropriedades$;
   }
 
-  private _acaoBreadcrumb$: Subject<string> = new Subject<string>();
+  private readonly _executarAcaoBotao$: Subject<TBotaoAcao> =
+    new Subject<TBotaoAcao>();
 
-  public get acaoBreadcrumb$(): Subject<string> {
-    return this._acaoBreadcrumb$;
+  public get executarAcaoBotao$(): Subject<TBotaoAcao> {
+    return this._executarAcaoBotao$;
   }
 
-  constructor(private _router: Router) {
+  constructor(private readonly _router: Router) {
     this.montarBreadcrumb().subscribe();
-  }
-
-  public montarBotoesAcao(botoes: Array<string>, contexto: string): void {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: botoes,
-      contexto: contexto,
-    };
-
-    this.breadcrumbBotoesAcao$.next(botoesAcao);
-  }
-
-  public limparBotoesAcao(): void {
-    const botoesAcaoVazio: IBreadcrumbBotaoAcao = {
-      botoes: [],
-      contexto: '',
-    };
-
-    this.breadcrumbBotoesAcao$.next(botoesAcaoVazio);
   }
 
   private montarBreadcrumb(): Observable<Array<IBreadcrumbItem>> {
@@ -85,7 +66,7 @@ export class BreadcrumbService {
       ),
       repeat({ delay: () => this.montarBreadcrumb() }),
       tap((breadcrumbItemArray) =>
-        this.listaBreadcrumbItems$.next(breadcrumbItemArray)
+        this.listaItemsBreadcrumb$.next(breadcrumbItemArray)
       )
     );
   }

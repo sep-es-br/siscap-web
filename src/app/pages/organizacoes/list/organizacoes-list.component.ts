@@ -1,5 +1,4 @@
 import { Component, input, output } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -10,8 +9,14 @@ import { SuccessModalComponent } from '../../../shared/templates/success-modal/s
 import { SortColumn } from '../../../shared/directives/sortable/sortable.directive';
 
 import { OrganizacoesService } from '../../../core/services/organizacoes/organizacoes.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { IOrganizacaoTableData } from '../../../core/interfaces/organizacao.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import { converterArrayBufferEmImgSrc } from '../../../core/utils/functions';
 
@@ -30,9 +35,9 @@ export class OrganizacoesListComponent {
   ) => string = converterArrayBufferEmImgSrc;
 
   constructor(
-    private _router: Router,
-    private _organizacoesService: OrganizacoesService,
-    private _ngbModalService: NgbModal
+    private readonly _organizacoesService: OrganizacoesService,
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _ngbModalService: NgbModal
   ) {}
 
   public sortColumn(event: SortColumn): void {
@@ -57,7 +62,10 @@ export class OrganizacoesListComponent {
   public editarOrganizacao(id: number): void {
     this._organizacoesService.idOrganizacao$.next(id);
 
-    this._router.navigate(['main', 'organizacoes', 'editar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.Organizacoes,
+      BreadcrumbAcoesEnum.Editar
+    );
   }
 
   private deletarOrganizacao(id: number): void {
@@ -80,7 +88,7 @@ export class OrganizacoesListComponent {
     modalRef.result.then(
       (resolve) => {
         this._organizacoesService
-          .delete(organizacaoTableData.id)
+          .deleteById(organizacaoTableData.id)
           .pipe(tap((response) => this.dispararModalSucesso(response)))
           .subscribe();
       },
@@ -98,9 +106,9 @@ export class OrganizacoesListComponent {
     modalRef.result.then(
       (resolve) => {},
       (reject) => {
-        this._router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => this._router.navigateByUrl('main/organizacoes'));
+        this._navegacaoService.navegacaoComRecarregamento(
+          BreadcrumbContextoEnum.Organizacoes
+        );
       }
     );
   }

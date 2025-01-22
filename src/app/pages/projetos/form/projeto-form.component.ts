@@ -1,13 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
-  FormArray,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import {
   concat,
@@ -29,6 +27,7 @@ import { RateioService } from '../../../core/services/rateio/rateio.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import {
   ProjetoFormModel,
@@ -46,9 +45,9 @@ import {
   IProjetoForm,
 } from '../../../core/interfaces/projeto.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
-import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
 
 import { ValorFormType } from '../../../core/types/form/valor-form.type';
+import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
 
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
@@ -68,6 +67,8 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
   styleUrl: './projeto-form.component.scss',
 })
 export class ProjetoFormComponent implements OnInit, OnDestroy {
+  private readonly _subscription: Subscription = new Subscription();
+
   private readonly _atualizarProjeto$: Observable<IProjeto>;
   private readonly _cadastrarProjeto$: Observable<number>;
 
@@ -82,8 +83,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idProjetoEdicao: number = 0;
-
-  private readonly _subscription: Subscription = new Subscription();
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -107,7 +106,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public idMembroEquipeElaboracao: number | null = null;
 
   constructor(
-    private readonly _router: Router,
     private readonly _nnfb: NonNullableFormBuilder,
     private readonly _usuarioService: UsuarioService,
     private readonly _projetosService: ProjetosService,
@@ -117,7 +115,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private readonly _valorService: ValorService,
     private readonly _rateioService: RateioService,
     private readonly _toastService: ToastService,
-    private readonly _breadcrumbService: BreadcrumbService
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _navegacaoService: NavegacaoService
   ) {
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
     this.usuario_IdOrganizacoes =
@@ -153,12 +152,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.isProponente &&
           projetoModel.status == StatusProjetoEnum.Em_Analise
         ) {
-          this.montarBotoesAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+            this._projetosService.gerarBotoesAcaoFormularioProponente()
+          );
         } else {
-          this.montarBotoesAcaoBreadcrumb(
-            BreadcrumbAcoesEnum.Enviar,
-            BreadcrumbAcoesEnum.Salvar,
-            BreadcrumbAcoesEnum.Cancelar
+          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+            this._projetosService.gerarBotoesAcaoFormulario()
           );
 
           // Workaround para carregar o componente de rateio quando modo de edição
@@ -175,10 +174,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       tap(() => {
         this.isProponente ? this.iniciarFormProponente() : this.iniciarForm();
 
-        this.montarBotoesAcaoBreadcrumb(
-          BreadcrumbAcoesEnum.Enviar,
-          BreadcrumbAcoesEnum.Salvar,
-          BreadcrumbAcoesEnum.Cancelar
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._projetosService.gerarBotoesAcaoFormulario()
         );
 
         this.mostrarBotaoGerarDic = false;
@@ -242,7 +239,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     );
 
     this._subscription.add(
-      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
@@ -551,23 +548,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       });
   }
 
-  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: acoes,
-      contexto: BreadcrumbContextoEnum.Projetos,
-    };
-
-    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
-  }
-
-  private executarAcaoBreadcrumb(acao: string): void {
+  private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
     switch (acao) {
       case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
         break;
 
       case BreadcrumbAcoesEnum.Cancelar:
-        this.cancelar();
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Projetos
+        );
         break;
 
       case BreadcrumbAcoesEnum.Salvar:
@@ -589,10 +579,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
     this.projetoForm.get('valor.tipo')?.disable();
-  }
-
-  private cancelar(): void {
-    this._router.navigate(['main', 'projetos']);
   }
 
   private validarProjetoFormProponenteRateio(): Array<RateioModel> {
@@ -660,7 +646,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           'Projeto cadastrado com sucesso.'
         );
       }),
-      finalize(() => this.cancelar())
+      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
     );
   }
 
@@ -677,7 +663,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'Projeto alterado com sucesso.'
           );
         }),
-        finalize(() => this.cancelar())
+        finalize(() =>
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+        )
       );
   }
 
@@ -685,6 +673,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._subscription.unsubscribe();
     this._rateioService.resetarRateio();
     this._projetosService.idProjeto$.next(0);
-    this._breadcrumbService.limparBotoesAcao();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

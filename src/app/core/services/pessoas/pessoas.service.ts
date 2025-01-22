@@ -3,13 +3,13 @@ import { HttpClient } from '@angular/common/http';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { PessoaFormModel } from '../../models/pessoa.model';
+import { BaseHttpService } from '../http/base-http.service';
 
-import { IHttpBase } from '../../interfaces/http/http-base.interface';
-import {
-  IHttpGetRequestBody,
-  IHttpGetResponseBody,
-} from '../../interfaces/http/http-get.interface';
+import { PessoaFormModel } from '../../models/pessoa.model';
+import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.model';
+
+import { BotoesConfig } from '../../../shared/components/botao/botao.config';
+
 import {
   IPessoa,
   IPessoaAcessoCidadao,
@@ -17,7 +17,6 @@ import {
 } from '../../interfaces/pessoa.interface';
 import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
 
-import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
 import { FormDataHelper } from '../../helpers/form-data.helper';
 
 import { environment } from '../../../../environments/environment';
@@ -25,14 +24,13 @@ import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class PessoasService
-  implements IHttpBase<IPessoa, IPessoaTableData, PessoaFormModel>
-{
-  private _url = `${environment.apiUrl}/pessoas`;
+export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
+  private readonly _url = `${environment.apiUrl}/pessoas`;
 
-  private _idPessoa$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private readonly _idPessoa$: BehaviorSubject<number> =
+    new BehaviorSubject<number>(0);
 
-  private _subNovoPessoa$: BehaviorSubject<string> =
+  private readonly _subNovoPessoa$: BehaviorSubject<string> =
     new BehaviorSubject<string>('');
 
   public get idPessoa$(): BehaviorSubject<number> {
@@ -43,22 +41,23 @@ export class PessoasService
     return this._subNovoPessoa$;
   }
 
-  constructor(private _http: HttpClient) {}
-
-  public getAllPaged(
-    pageConfig: IHttpGetRequestBody,
-    ...searchFilter: { [key: string]: any }[]
-  ): Observable<IHttpGetResponseBody<IPessoaTableData>> {
-    return this._http.get<IHttpGetResponseBody<IPessoaTableData>>(this._url, {
-      params: PageableQueryStringParametersHelper.buildQueryStringParams(
-        pageConfig,
-        ...searchFilter
-      ),
-    });
+  constructor(private readonly _http: HttpClient) {
+    super(_http, 'pessoas');
   }
 
-  public getById(id: number): Observable<IPessoa> {
-    return this._http.get<IPessoa>(`${this._url}/${id}`);
+  public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
+    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
+      texto: 'Nova Pessoa',
+    });
+
+    return [botaoCriar];
+  }
+
+  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+
+    return [botaoSalvar, botaoCancelar];
   }
 
   public post(body: PessoaFormModel, imagemPerfil?: File): Observable<IPessoa> {
@@ -77,10 +76,6 @@ export class PessoasService
       `${this._url}/${id}`,
       this.construirFormData(body, imagemPerfil)
     );
-  }
-
-  public delete(id: number): Observable<string> {
-    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
   }
 
   public buscarPessoaNoAcessoCidadaoPorCpf(

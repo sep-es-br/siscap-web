@@ -1,5 +1,6 @@
 import { HttpParams } from '@angular/common/http';
-import { IHttpGetRequestBody } from '../interfaces/http/http-get.interface';
+
+import { IHttpGetRequestBody } from '../interfaces/http-get-all-paged.interface';
 
 export abstract class PageableQueryStringParametersHelper {
   public static buildQueryStringParams(

@@ -1,5 +1,4 @@
 import { Component, input, output } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -10,8 +9,14 @@ import { SuccessModalComponent } from '../../../shared/templates/success-modal/s
 import { SortColumn } from '../../../shared/directives/sortable/sortable.directive';
 
 import { CartasConsultaService } from '../../../core/services/cartas-consulta/cartas-consulta.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { ICartaConsultaTableData } from '../../../core/interfaces/carta-consulta.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-cartas-consulta-list',
@@ -24,8 +29,8 @@ export class CartasConsultaListComponent {
   public sortableDirectiveOutput = output<string>();
 
   constructor(
-    private readonly _router: Router,
     private readonly _cartasConsultaService: CartasConsultaService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _ngbModalService: NgbModal
   ) {}
 
@@ -57,13 +62,19 @@ export class CartasConsultaListComponent {
   public visualizarCartaConsulta(id: number): void {
     this._cartasConsultaService.idCartaConsultaDetalhes$.next(id);
 
-    this._router.navigate(['main', 'cartasconsulta', 'visualizar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.CartasConsulta,
+      BreadcrumbAcoesEnum.Visualizar
+    );
   }
 
   public editarCartaConsulta(id: number): void {
     this._cartasConsultaService.idCartaConsulta$.next(id);
 
-    this._router.navigate(['main', 'cartasconsulta', 'editar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.CartasConsulta,
+      BreadcrumbAcoesEnum.Editar
+    );
   }
 
   public deletarCartaConsulta(id: number): void {
@@ -87,7 +98,7 @@ export class CartasConsultaListComponent {
     modalRef.result.then(
       (resolve) => {
         this._cartasConsultaService
-          .delete(cartaConsultaTableData.id)
+          .deleteById(cartaConsultaTableData.id)
           .pipe(tap((response) => this.dispararModalSucesso(response)))
           .subscribe();
       },
@@ -105,9 +116,9 @@ export class CartasConsultaListComponent {
     modalRef.result.then(
       (resolve) => {},
       (reject) => {
-        this._router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => this._router.navigateByUrl('main/cartasconsulta'));
+        this._navegacaoService.navegacaoComRecarregamento(
+          BreadcrumbContextoEnum.CartasConsulta
+        );
       }
     );
   }

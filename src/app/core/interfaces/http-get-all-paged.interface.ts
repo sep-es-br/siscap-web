@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+
 interface GetSort {
   ascending: boolean;
   descending: boolean;
@@ -32,4 +34,11 @@ export interface IHttpGetResponseBody<T> {
     pageNumber: number;
   };
   empty: boolean;
+}
+
+export interface GetAllPaged<T> {
+  getAllPaged(
+    pageConfig: IHttpGetRequestBody,
+    ...searchFilter: { [key: string]: any }[]
+  ): Observable<IHttpGetResponseBody<T>>;
 }

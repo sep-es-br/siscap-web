@@ -19,7 +19,7 @@ import { TBotaoAcao } from './botao.config';
 export class BotaoComponent {
   public propriedades: InputSignal<IBotaoPropriedades> =
     input.required<IBotaoPropriedades>();
-  public isDisabled: InputSignal<boolean> = input<boolean>(false);
+  public isDisabled: InputSignal<boolean | null> = input<boolean | null>(false);
 
   public acao: OutputEmitterRef<TBotaoAcao> = output<TBotaoAcao>();
 }

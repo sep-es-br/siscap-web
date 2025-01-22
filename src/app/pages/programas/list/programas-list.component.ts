@@ -1,5 +1,4 @@
 import { Component, input, output } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -10,8 +9,14 @@ import { SuccessModalComponent } from '../../../shared/templates/success-modal/s
 import { SortColumn } from '../../../shared/directives/sortable/sortable.directive';
 
 import { ProgramasService } from '../../../core/services/programas/programas.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { IProgramaTableData } from '../../../core/interfaces/programa.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import { getSimboloMoeda } from '../../../core/utils/functions';
 
@@ -29,9 +34,9 @@ export class ProgramasListComponent {
     getSimboloMoeda;
 
   constructor(
-    private _router: Router,
-    private _programasService: ProgramasService,
-    private _ngbModalService: NgbModal
+    private readonly _programasService: ProgramasService,
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _ngbModalService: NgbModal
   ) {}
 
   public sortColumn(event: SortColumn): void {
@@ -56,7 +61,10 @@ export class ProgramasListComponent {
   public editarPrograma(id: number): void {
     this._programasService.idPrograma$.next(id);
 
-    this._router.navigate(['main', 'programas', 'editar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.Programas,
+      BreadcrumbAcoesEnum.Editar
+    );
   }
 
   public deletarPrograma(id: number): void {
@@ -78,7 +86,7 @@ export class ProgramasListComponent {
     modalRef.result.then(
       (resolve) => {
         this._programasService
-          .delete(programaTableData.id)
+          .deleteById(programaTableData.id)
           .pipe(tap((response) => this.dispararModalSucesso(response)))
           .subscribe();
       },
@@ -96,9 +104,9 @@ export class ProgramasListComponent {
     modalRef.result.then(
       (resolve) => {},
       (reject) => {
-        this._router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => this._router.navigateByUrl('main/programas'));
+        this._navegacaoService.navegacaoComRecarregamento(
+          BreadcrumbContextoEnum.Programas
+        );
       }
     );
   }

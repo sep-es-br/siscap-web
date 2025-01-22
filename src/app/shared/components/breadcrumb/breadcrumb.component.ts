@@ -2,34 +2,32 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
+import { BotaoComponent } from '../botao/botao.component';
+
 import { LoadingService } from '../../../core/services/loading/loading.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 
-import {
-  IBreadcrumbBotaoAcao,
-  IBreadcrumbItem,
-} from '../../../core/interfaces/breadcrumb.interface';
+import { BotaoPropriedadesModel } from '../botao/botao.model';
 
-import { BreadcrumbContextoEnum } from '../../../core/enums/breadcrumb.enum';
+import { TBotaoAcao } from '../botao/botao.config';
 
-import { BREADCRUMB_COLECAO_CAMINHO_TITULO } from '../../../core/utils/constants';
+import { IBreadcrumbItem } from '../../../core/interfaces/breadcrumb.interface';
 
 @Component({
   selector: 'siscap-breadcrumb',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, BotaoComponent],
   templateUrl: './breadcrumb.component.html',
   styleUrl: './breadcrumb.component.scss',
 })
 export class BreadcrumbComponent {
   public paginaAtual: IBreadcrumbItem = { titulo: '', caminho: '' };
-  public listaBreadcrumbItems: Array<IBreadcrumbItem> = [];
+  public itemsBreadcrumb: Array<IBreadcrumbItem> = [];
 
   public isProponente: boolean = false;
 
-  public listaBotoesAcao: Array<string> = [];
-  public contextoBotoesAcao: string = '';
+  public botoesAcaoPropriedades: Array<BotaoPropriedadesModel> = [];
 
   constructor(
     public loadingService: LoadingService,
@@ -38,40 +36,21 @@ export class BreadcrumbComponent {
   ) {
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
-    this._breadcrumbService.listaBreadcrumbItems$.subscribe(
-      (breadcrumbItemArray: Array<IBreadcrumbItem>) => {
-        this.paginaAtual = breadcrumbItemArray[breadcrumbItemArray.length - 1];
-        this.listaBreadcrumbItems = breadcrumbItemArray;
+    this._breadcrumbService.listaItemsBreadcrumb$.subscribe(
+      (itemsBreadcrumb: Array<IBreadcrumbItem>) => {
+        this.paginaAtual = itemsBreadcrumb[itemsBreadcrumb.length - 1];
+        this.itemsBreadcrumb = itemsBreadcrumb;
       }
     );
 
-    this._breadcrumbService.breadcrumbBotoesAcao$.subscribe(
-      (breadcrumbBotoesAcaoObj: IBreadcrumbBotaoAcao) => {
-        this.listaBotoesAcao = breadcrumbBotoesAcaoObj.botoes;
-        this.contextoBotoesAcao = breadcrumbBotoesAcaoObj.contexto;
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.subscribe(
+      (botoesAcaoPropriedades) => {
+        this.botoesAcaoPropriedades = botoesAcaoPropriedades;
       }
     );
-
-    this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) => {
-      if (acao == 'editar') {
-        this.exibirBotoesSalvarCancelar();
-      }
-    });
   }
 
-  public buscarTextoBotaoCriar(contexto: string): string {
-    if (contexto === BreadcrumbContextoEnum.Projetos && this.isProponente) {
-      return 'Novo DIC';
-    }
-
-    return BREADCRUMB_COLECAO_CAMINHO_TITULO[contexto + 'criar'];
-  }
-
-  public emitirAcaoBreadcrumb(acao: string): void {
-    this._breadcrumbService.acaoBreadcrumb$.next(acao);
-  }
-
-  private exibirBotoesSalvarCancelar(): void {
-    this.listaBotoesAcao = ['salvar', 'cancelar'];
+  public emitirAcaoBreadcrumb(acao: TBotaoAcao): void {
+    this._breadcrumbService.executarAcaoBotao$.next(acao);
   }
 }
