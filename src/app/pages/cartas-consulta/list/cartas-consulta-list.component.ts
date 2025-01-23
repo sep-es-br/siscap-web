@@ -3,6 +3,7 @@ import { Component, input, output } from '@angular/core';
 import { tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
+import { PreventActionModalComponent } from '../../../shared/templates/prevent-action-modal/prevent-action-modal.component';
 import { DeleteModalComponent } from '../../../shared/templates/delete-modal/delete-modal.component';
 import { SuccessModalComponent } from '../../../shared/templates/success-modal/success-modal.component';
 
@@ -12,6 +13,10 @@ import { CartasConsultaService } from '../../../core/services/cartas-consulta/ca
 import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { ICartaConsultaTableData } from '../../../core/interfaces/carta-consulta.interface';
+import {
+  ITableActionOutput,
+  TTableActions,
+} from '../../../shared/templates/table-actions-dropdown/table-actions-dropdown.interface';
 
 import {
   BreadcrumbAcoesEnum,
@@ -25,6 +30,15 @@ import {
   styleUrl: './cartas-consulta-list.component.scss',
 })
 export class CartasConsultaListComponent {
+  private readonly _textoConteudoPrevinirAcaoModal: Partial<
+    Record<TTableActions, string>
+  > = {
+    editar:
+      'Não é possível alterar os dados de uma carta consulta pertencente á uma prospecção que já foi prospectada.',
+    deletar:
+      'Não é possível excluir uma carta consulta pertencente á uma prospecção que já foi prospectada.',
+  };
+
   public cartasConsultaList = input<Array<ICartaConsultaTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();
 
@@ -34,24 +48,30 @@ export class CartasConsultaListComponent {
     private readonly _ngbModalService: NgbModal
   ) {}
 
-  public preencherIdAteQuatroDigitos(id: number): string {
-    const idAsString = id.toString();
-
-    return idAsString.length < 4 ? idAsString.padStart(4, '0') : idAsString;
-  }
-
   public sortColumn(event: SortColumn): void {
     this.sortableDirectiveOutput.emit(`${event.column},${event.direction}`);
   }
 
-  public tableActionOutputEvent(event: { acao: string; id: number }): void {
+  public tableActionOutputEvent(event: ITableActionOutput): void {
+    const cartaConsultaTableData = this.buscarCartaConsultaTableDataPorId(
+      event.id
+    );
+
     switch (event.acao) {
       case 'editar':
-        this.editarCartaConsulta(event.id);
+        if (cartaConsultaTableData.prospectado) {
+          this.dispararModalPrevinirAcao('editar');
+        } else {
+          this.editarCartaConsulta(event.id);
+        }
         break;
 
       case 'deletar':
-        this.deletarCartaConsulta(event.id);
+        if (cartaConsultaTableData.prospectado) {
+          this.dispararModalPrevinirAcao('deletar');
+        } else {
+          this.dispararModalDeletar(cartaConsultaTableData);
+        }
         break;
 
       default:
@@ -68,7 +88,7 @@ export class CartasConsultaListComponent {
     );
   }
 
-  public editarCartaConsulta(id: number): void {
+  private editarCartaConsulta(id: number): void {
     this._cartasConsultaService.idCartaConsulta$.next(id);
 
     this._navegacaoService.navegacaoSimples(
@@ -77,12 +97,18 @@ export class CartasConsultaListComponent {
     );
   }
 
-  public deletarCartaConsulta(id: number): void {
-    const cartaConsultaTableData = this.cartasConsultaList()?.find(
-      (cartaConsulta) => cartaConsulta.id === id
-    );
+  private dispararModalPrevinirAcao(acao: TTableActions): void {
+    const modalRef = this._ngbModalService.open(PreventActionModalComponent, {
+      centered: true,
+    });
 
-    this.dispararModalDeletar(cartaConsultaTableData!);
+    modalRef.componentInstance.conteudo =
+      this._textoConteudoPrevinirAcaoModal[acao];
+
+    modalRef.result.then(
+      (resolve) => {},
+      (reject) => {}
+    );
   }
 
   private dispararModalDeletar(
@@ -121,5 +147,13 @@ export class CartasConsultaListComponent {
         );
       }
     );
+  }
+
+  private buscarCartaConsultaTableDataPorId(
+    id: number
+  ): ICartaConsultaTableData {
+    return this.cartasConsultaList()?.find(
+      (cartaConsulta) => cartaConsulta.id === id
+    )!;
   }
 }

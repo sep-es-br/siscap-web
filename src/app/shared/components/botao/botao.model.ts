@@ -3,20 +3,23 @@ import { TBotaoAcao } from './botao.config';
 import { IBotaoPropriedades } from './botao.interface';
 
 export class BotaoPropriedadesModel implements IBotaoPropriedades {
-  public classeBackground: Array<string>;
+  public classesCSS: Array<string>;
   public icone: Array<string>;
   public texto: string;
   public acao: TBotaoAcao;
+  public desabilitado?: boolean;
 
   constructor(
-    classeBackground: Array<string>,
+    classesCSS: Array<string>,
     icone: Array<string>,
     texto: string,
-    acao: TBotaoAcao
+    acao: TBotaoAcao,
+    desabilitado?: boolean
   ) {
-    this.classeBackground = classeBackground;
+    this.classesCSS = classesCSS;
     this.icone = icone;
     this.texto = texto;
     this.acao = acao;
+    this.desabilitado = desabilitado;
   }
 }

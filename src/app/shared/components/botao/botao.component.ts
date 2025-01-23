@@ -6,8 +6,10 @@ import {
   output,
   OutputEmitterRef,
 } from '@angular/core';
-import { IBotaoPropriedades } from './botao.interface';
+
 import { TBotaoAcao } from './botao.config';
+
+import { IBotaoPropriedades } from './botao.interface';
 
 @Component({
   selector: 'siscap-botao',
@@ -19,7 +21,6 @@ import { TBotaoAcao } from './botao.config';
 export class BotaoComponent {
   public propriedades: InputSignal<IBotaoPropriedades> =
     input.required<IBotaoPropriedades>();
-  public isDisabled: InputSignal<boolean | null> = input<boolean | null>(false);
 
   public acao: OutputEmitterRef<TBotaoAcao> = output<TBotaoAcao>();
 }

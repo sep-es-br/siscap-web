@@ -49,7 +49,6 @@
       <ng-container *ngFor="let propriedades of botoesAcaoPropriedades">
         <siscap-botao
           [propriedades]="propriedades"
-          [isDisabled]="loadingService.isProcessando$ | async"
           (acao)="emitirAcaoBreadcrumb($event)"
         ></siscap-botao>
       </ng-container>
