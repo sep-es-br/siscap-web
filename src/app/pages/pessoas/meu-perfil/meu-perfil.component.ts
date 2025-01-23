@@ -6,7 +6,6 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import {
   concat,
@@ -27,6 +26,7 @@ import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 
 import {
@@ -40,12 +40,16 @@ import {
   IPessoa,
   IPessoaForm,
 } from '../../../core/interfaces/pessoa.interface';
-import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
 
 import {
   EnderecoFormType,
   EnderecoFormTypeValue,
 } from '../../../core/types/form/endereco-form.type';
+
+import {
+  BotoesConfig,
+  TBotaoAcao,
+} from '../../../shared/components/botao/botao.config';
 
 import {
   BreadcrumbAcoesEnum,
@@ -69,6 +73,8 @@ import { CPFValidator } from '../../../core/validators/cpf.validator';
   styleUrl: './meu-perfil.component.scss',
 })
 export class MeuPerfilComponent implements OnInit, OnDestroy {
+  private readonly _subscription: Subscription = new Subscription();
+
   private readonly _atualizarMeuPerfil$: Observable<IPessoa>;
 
   private readonly _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
@@ -78,8 +84,6 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
 
   private _idPessoaEdicao: number = 0;
   private _idOrganizacaoResponsavel: number | null = null;
-
-  private readonly _subscription: Subscription = new Subscription();
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -101,12 +105,12 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
-    private readonly _router: Router,
     private readonly _pessoasService: PessoasService,
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _usuarioService: UsuarioService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _toastService: ToastService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _ngbModalService: NgbModal
   ) {
     this._atualizarMeuPerfil$ = this._pessoasService.subNovoPessoa$.pipe(
@@ -126,7 +130,9 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
           pessoaModel.imagemPerfil
         );
 
-        this.montarBotoesAcaoBreadcrumb(BreadcrumbAcoesEnum.Editar);
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next([
+          BotoesConfig.gerarBotaoPropriedades(BreadcrumbAcoesEnum.Editar),
+        ]);
 
         this.trocarModo(false);
 
@@ -153,7 +159,7 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
     );
 
     this._subscription.add(
-      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
@@ -315,23 +321,17 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.conteudo = nomeOrganizacao;
   }
 
-  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: acoes,
-      contexto: BreadcrumbContextoEnum.Pessoas,
-    };
-
-    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
-  }
-
-  private executarAcaoBreadcrumb(acao: string): void {
+  private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
     switch (acao) {
       case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._pessoasService.gerarBotoesAcaoFormulario()
+        );
         break;
 
       case BreadcrumbAcoesEnum.Cancelar:
-        this.cancelar();
+        this._navegacaoService.navegacaoSimples(BreadcrumbContextoEnum.Pessoas);
         break;
 
       case BreadcrumbAcoesEnum.Salvar:
@@ -355,10 +355,6 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
 
     // Caso específico de email:
     this.meuPerfilForm.get('email')?.disable();
-  }
-
-  private cancelar(): void {
-    this._router.navigate(['main', 'pessoas']);
   }
 
   private submitMeuPerfilForm(form: FormGroup) {
@@ -397,7 +393,9 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
           this._usuarioService.usuarioPerfil = usuarioPerfilAtual;
           this._usuarioService.atualizarDadosUsuarioPerfil$.next(true);
         }),
-        finalize(() => this.cancelar())
+        finalize(() =>
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+        )
       )
       .subscribe();
   }
@@ -405,6 +403,6 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._pessoasService.subNovoPessoa$.next('');
-    this._breadcrumbService.limparBotoesAcao();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

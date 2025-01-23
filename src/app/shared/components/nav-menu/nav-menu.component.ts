@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { LoadingService } from '../../../core/services/loading/loading.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import {
   IMenuLink,
@@ -26,28 +27,12 @@ export class NavMenuComponent {
 
   constructor(
     public loadingService: LoadingService,
-    private readonly _router: Router
+    private readonly _navegacaoService: NavegacaoService
   ) {}
 
   public avaliarNavegacaoMesmaRota(rota: string): void {
-    const caminhoAtual = this.getCaminhoAtual();
-
-    rota === caminhoAtual
-      ? this.executarNavegacaoComRecarregamento(rota)
-      : this.executarNavegacaoSimples(rota);
-  }
-
-  private getCaminhoAtual(): string | undefined {
-    return this._router.url.split('/').pop();
-  }
-
-  private executarNavegacaoSimples(rota: string): void {
-    this._router.navigateByUrl(`/main/${rota}`);
-  }
-
-  private executarNavegacaoComRecarregamento(rota: string): void {
-    this._router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this._router.navigateByUrl(`/main/${rota}`);
-    });
+    rota === this._navegacaoService.buscarRotaCaminhoAtual()
+      ? this._navegacaoService.navegacaoComRecarregamento(rota)
+      : this._navegacaoService.navegacaoSimples(rota);
   }
 }

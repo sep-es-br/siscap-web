@@ -39,10 +39,9 @@ export class HeaderComponent {
   ) {
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
-    this._breadcrumbService.listaBreadcrumbItems$.subscribe(
-      (breadcrumbItemsArray: Array<IBreadcrumbItem>) => {
-        const paginaAtual =
-          breadcrumbItemsArray[breadcrumbItemsArray.length - 1].caminho;
+    this._breadcrumbService.listaItemsBreadcrumb$.subscribe(
+      (itemsBreadcrumb: Array<IBreadcrumbItem>) => {
+        const paginaAtual = itemsBreadcrumb[itemsBreadcrumb.length - 1].caminho;
 
         this.subMenuCategoriaAtiva =
           this.atualizarSubMenuCategoriaAtiva(paginaAtual);

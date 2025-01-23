@@ -1,17 +1,28 @@
 import { Component, input, output } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
+import { PreventActionModalComponent } from '../../../shared/templates/prevent-action-modal/prevent-action-modal.component';
 import { DeleteModalComponent } from '../../../shared/templates/delete-modal/delete-modal.component';
 import { SuccessModalComponent } from '../../../shared/templates/success-modal/success-modal.component';
 
 import { SortColumn } from '../../../shared/directives/sortable/sortable.directive';
 
 import { ProspeccoesService } from '../../../core/services/prospeccoes/prospeccoes.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { IProspeccaoTableData } from '../../../core/interfaces/prospeccao.interface';
+import {
+  ITableActionOutput,
+  TTableActions,
+} from '../../../shared/templates/table-actions-dropdown/table-actions-dropdown.interface';
+
+import { StatusProspeccaoEnum } from '../../../core/enums/status-prospeccao.enum';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-prospeccoes-list',
@@ -20,20 +31,22 @@ import { IProspeccaoTableData } from '../../../core/interfaces/prospeccao.interf
   styleUrl: './prospeccoes-list.component.scss',
 })
 export class ProspeccoesListComponent {
+  private readonly _textoConteudoPrevinirAcaoModal: Partial<
+    Record<TTableActions, string>
+  > = {
+    editar:
+      'Não é possível alterar os dados de uma prospecção que já foi prospectada.',
+    deletar: 'Não é possível excluir uma prospecção que já foi prospectada.',
+  };
+
   public prospeccoesList = input<Array<IProspeccaoTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();
 
   constructor(
-    private readonly _router: Router,
     private readonly _prospeccoesService: ProspeccoesService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _ngbModalService: NgbModal
   ) {}
-
-  public preencherIdAteQuatroDigitos(id: number): string {
-    const idAsString = id.toString();
-
-    return idAsString.length < 4 ? idAsString.padStart(4, '0') : idAsString;
-  }
 
   public formatarSiglaObjetoCartaConsulta(objetoCartaConsulta: string): string {
     return objetoCartaConsulta.split(' ')[0];
@@ -43,14 +56,26 @@ export class ProspeccoesListComponent {
     this.sortableDirectiveOutput.emit(`${event.column},${event.direction}`);
   }
 
-  public tableActionOutputEvent(event: { acao: string; id: number }): void {
+  public tableActionOutputEvent(event: ITableActionOutput): void {
+    const prospeccaoTableData = this.buscarProspeccaoTableDataPorId(event.id);
+    const checkStatusProspeccao =
+      prospeccaoTableData.statusProspeccao === StatusProspeccaoEnum.Prospectado;
+
     switch (event.acao) {
       case 'editar':
-        this.editarProspeccao(event.id);
+        if (checkStatusProspeccao) {
+          this.dispararModalPrevinirAcao('editar');
+        } else {
+          this.editarProspeccao(event.id);
+        }
         break;
 
       case 'deletar':
-        this.deletarProspeccao(event.id);
+        if (checkStatusProspeccao) {
+          this.dispararModalPrevinirAcao('deletar');
+        } else {
+          this.dispararModalDeletar(prospeccaoTableData);
+        }
         break;
 
       default:
@@ -61,21 +86,33 @@ export class ProspeccoesListComponent {
   public visualizarProspeccao(id: number): void {
     this._prospeccoesService.idProspeccaoDetalhes$.next(id);
 
-    this._router.navigate(['main', 'prospeccao', 'visualizar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.Prospeccao,
+      BreadcrumbAcoesEnum.Visualizar
+    );
   }
 
-  public editarProspeccao(id: number): void {
+  private editarProspeccao(id: number): void {
     this._prospeccoesService.idProspeccao$.next(id);
 
-    this._router.navigate(['main', 'prospeccao', 'editar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.Prospeccao,
+      BreadcrumbAcoesEnum.Editar
+    );
   }
 
-  public deletarProspeccao(id: number): void {
-    const prospeccaoTableData = this.prospeccoesList()?.find(
-      (prospeccao) => prospeccao.id === id
-    );
+  private dispararModalPrevinirAcao(acao: TTableActions): void {
+    const modalRef = this._ngbModalService.open(PreventActionModalComponent, {
+      centered: true,
+    });
 
-    this.dispararModalDeletar(prospeccaoTableData!);
+    modalRef.componentInstance.conteudo =
+      this._textoConteudoPrevinirAcaoModal[acao];
+
+    modalRef.result.then(
+      (resolve) => {},
+      (reject) => {}
+    );
   }
 
   private dispararModalDeletar(
@@ -91,7 +128,7 @@ export class ProspeccoesListComponent {
     modalRef.result.then(
       (resolve) => {
         this._prospeccoesService
-          .delete(prospeccaoTableData.id)
+          .deleteById(prospeccaoTableData.id)
           .pipe(tap((response) => this.dispararModalSucesso(response)))
           .subscribe();
       },
@@ -109,10 +146,14 @@ export class ProspeccoesListComponent {
     modalRef.result.then(
       (resolve) => {},
       (reject) => {
-        this._router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => this._router.navigateByUrl('main/prospeccao'));
+        this._navegacaoService.navegacaoComRecarregamento(
+          BreadcrumbContextoEnum.Prospeccao
+        );
       }
     );
+  }
+
+  private buscarProspeccaoTableDataPorId(id: number): IProspeccaoTableData {
+    return this.prospeccoesList()?.find((prospeccao) => prospeccao.id === id)!;
   }
 }

@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { finalize, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 
@@ -8,15 +7,16 @@ import { ProspeccoesService } from '../../../core/services/prospeccoes/prospecco
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { IProspeccaoDetalhes } from '../../../core/interfaces/prospeccao.interface';
-import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
 
 import {
   ProspeccaoDetalhesModel,
   ProspeccaoOrganizacaoDetalhesModel,
 } from '../../../core/models/prospeccao.model';
 
+import { StatusProspeccaoEnum } from '../../../core/enums/status-prospeccao.enum';
 import {
   BreadcrumbAcoesEnum,
   BreadcrumbContextoEnum,
@@ -31,9 +31,9 @@ import { getSimboloMoeda } from '../../../core/utils/functions';
   styleUrl: './prospeccao-view.component.scss',
 })
 export class ProspeccaoViewComponent implements OnInit, OnDestroy {
-  private readonly _getProspeccaoDetalhes$: Observable<IProspeccaoDetalhes>;
-
   private readonly _subscription: Subscription = new Subscription();
+
+  private readonly _getProspeccaoDetalhes$: Observable<IProspeccaoDetalhes>;
 
   public prospeccaoDetalhes: ProspeccaoDetalhesModel =
     new ProspeccaoDetalhesModel();
@@ -53,12 +53,12 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
     private readonly _projetosService: ProjetosService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _toastService: ToastService,
-    private readonly _router: Router
+    private readonly _navegacaoService: NavegacaoService
   ) {
     this._getProspeccaoDetalhes$ =
       this._prospeccoesService.idProspeccaoDetalhes$.pipe(
         switchMap((idProspeccao: number) =>
-          this._prospeccoesService.getProspeccaoDetalhes(idProspeccao)
+          this._prospeccoesService.buscarDetalhesProspeccao(idProspeccao)
         ),
         map<IProspeccaoDetalhes, ProspeccaoDetalhesModel>(
           (response: IProspeccaoDetalhes) =>
@@ -71,16 +71,20 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
           this.organizacaoProspectadaDetalhes =
             prospeccaoDetalhesModel.organizacaoProspectadaDetalhes;
 
-          this.montarBotoesAcaoBreadcrumb(
-            BreadcrumbAcoesEnum.Prospectar,
-            BreadcrumbAcoesEnum.Editar,
-            BreadcrumbAcoesEnum.Cancelar
+          const botoesAcaoPropriedades =
+            this.prospeccaoDetalhes.statusProspeccao ===
+            StatusProspeccaoEnum.Prospectado
+              ? this._prospeccoesService.gerarBotoesAcaoVizualizarDetalhesProspeccaoRealizada()
+              : this._prospeccoesService.gerarBotoesAcaoVizualizarDetalhes();
+
+          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+            botoesAcaoPropriedades
           );
         })
       );
 
     this._subscription.add(
-      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
@@ -88,12 +92,6 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._subscription.add(this._getProspeccaoDetalhes$.subscribe());
-  }
-
-  public preencherIdAteQuatroDigitos(id: number): string {
-    const idAsString = id.toString();
-
-    return idAsString.length < 4 ? idAsString.padStart(4, '0') : idAsString;
   }
 
   public formatarEndereco(
@@ -108,24 +106,21 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
     this._projetosService.baixarDIC(idProjetoProposto);
   }
 
-  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: acoes,
-      contexto: BreadcrumbContextoEnum.Prospeccao,
-    };
-
-    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
-  }
-
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
       case BreadcrumbAcoesEnum.Editar:
         this._prospeccoesService.idProspeccao$.next(this.prospeccaoDetalhes.id);
-        this._router.navigate(['main', 'prospeccao', 'editar']);
+
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Prospeccao,
+          BreadcrumbAcoesEnum.Editar
+        );
         break;
 
       case BreadcrumbAcoesEnum.Cancelar:
-        this._router.navigate(['main', 'prospeccao']);
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Prospeccao
+        );
         break;
 
       case BreadcrumbAcoesEnum.Prospectar:
@@ -150,11 +145,15 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
         finalize(() => this.loadingService.finalizarProcessamento())
       )
       .subscribe();
+
+    // setTimeout(() => {
+    //   this.loadingService.finalizarProcessamento();
+    // }, 5000);
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._prospeccoesService.idProspeccaoDetalhes$.next(0);
-    this._breadcrumbService.limparBotoesAcao();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

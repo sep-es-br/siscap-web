@@ -2,6 +2,10 @@ import { Component, Input } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
+import { BotaoPropriedadesModel } from '../../components/botao/botao.model';
+
+import { BotoesConfig } from '../../components/botao/botao.config';
+
 @Component({
   selector: 'organization-responsible-change-warning-modal',
   standalone: false,
@@ -11,5 +15,11 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class OrganizationResponsibleChangeWarningModalComponent {
   @Input() public conteudo: string = 'placeholder';
 
-  constructor(public activeModal: NgbActiveModal) {}
+  public botaoEntendi: BotaoPropriedadesModel;
+
+  constructor(public activeModal: NgbActiveModal) {
+    this.botaoEntendi = BotoesConfig.gerarBotaoPropriedades('confirmar', {
+      texto: 'Entendi',
+    });
+  }
 }

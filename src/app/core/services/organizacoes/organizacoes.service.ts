@@ -3,20 +3,18 @@ import { HttpClient } from '@angular/common/http';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 
+import { BaseHttpService } from '../http/base-http.service';
+
 import { OrganizacaoFormModel } from '../../models/organizacao.model';
+import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.model';
 
-import { IHttpBase } from '../../interfaces/http/http-base.interface';
+import { BotoesConfig } from '../../../shared/components/botao/botao.config';
 
-import {
-  IHttpGetRequestBody,
-  IHttpGetResponseBody,
-} from '../../interfaces/http/http-get.interface';
 import {
   IOrganizacao,
   IOrganizacaoTableData,
 } from '../../interfaces/organizacao.interface';
 
-import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
 import { FormDataHelper } from '../../helpers/form-data.helper';
 
 import { environment } from '../../../../environments/environment';
@@ -24,38 +22,36 @@ import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class OrganizacoesService
-  implements
-    IHttpBase<IOrganizacao, IOrganizacaoTableData, OrganizacaoFormModel>
-{
-  private _url = `${environment.apiUrl}/organizacoes`;
+export class OrganizacoesService extends BaseHttpService<
+  IOrganizacao,
+  IOrganizacaoTableData
+> {
+  private readonly _url = `${environment.apiUrl}/organizacoes`;
 
-  private _idOrganizacao$: BehaviorSubject<number> =
+  private readonly _idOrganizacao$: BehaviorSubject<number> =
     new BehaviorSubject<number>(0);
 
   public get idOrganizacao$(): BehaviorSubject<number> {
     return this._idOrganizacao$;
   }
 
-  constructor(private _http: HttpClient) {}
-
-  public getAllPaged(
-    pageConfig: IHttpGetRequestBody,
-    ...searchFilter: { [key: string]: any }[]
-  ): Observable<IHttpGetResponseBody<IOrganizacaoTableData>> {
-    return this._http.get<IHttpGetResponseBody<IOrganizacaoTableData>>(
-      this._url,
-      {
-        params: PageableQueryStringParametersHelper.buildQueryStringParams(
-          pageConfig,
-          ...searchFilter
-        ),
-      }
-    );
+  constructor(private readonly _http: HttpClient) {
+    super(_http, 'organizacoes');
   }
 
-  public getById(id: number): Observable<IOrganizacao> {
-    return this._http.get<IOrganizacao>(`${this._url}/${id}`);
+  public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
+    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
+      texto: 'Nova Organização',
+    });
+
+    return [botaoCriar];
+  }
+
+  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+
+    return [botaoSalvar, botaoCancelar];
   }
 
   public post(
@@ -77,10 +73,6 @@ export class OrganizacoesService
       `${this._url}/${id}`,
       this.construirFormData(body, imagemPerfil)
     );
-  }
-
-  public delete(id: number): Observable<string> {
-    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
   }
 
   private construirFormData(

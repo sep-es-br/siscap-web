@@ -7,7 +7,6 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import {
   concat,
@@ -24,6 +23,7 @@ import {
 import { ProspeccoesService } from '../../../core/services/prospeccoes/prospeccoes.service';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 
 import {
@@ -34,6 +34,8 @@ import {
 
 import { ProspeccaoInteressadoFormType } from '../../../core/types/form/interessado-form.type';
 
+import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
+
 import {
   IProspeccao,
   IProspeccaoForm,
@@ -42,7 +44,6 @@ import {
   IOpcoesDropdown,
   IProspeccaoInteressadoOpcoesDropdown,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
-import { IBreadcrumbBotaoAcao } from '../../../core/interfaces/breadcrumb.interface';
 
 import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 import {
@@ -59,6 +60,8 @@ import { alterarEstadoControlesFormulario } from '../../../core/utils/functions'
   styleUrl: './prospeccao-form.component.scss',
 })
 export class ProspeccaoFormComponent implements OnInit, OnDestroy {
+  private readonly _subscription: Subscription = new Subscription();
+
   private readonly _atualizarProspeccao$: Observable<IProspeccao>;
   private readonly _cadastrarProspeccao$: Observable<number>;
 
@@ -74,8 +77,6 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
     IProspeccaoInteressadoOpcoesDropdown[]
   >;
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
-
-  private readonly _subscription: Subscription = new Subscription();
 
   private _idProspeccaoEdicao: number = 0;
 
@@ -100,10 +101,10 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
-    private readonly _router: Router,
     private readonly _prospeccoesService: ProspeccoesService,
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _toastService: ToastService
   ) {
     const [editar$, criar$] = partition(
@@ -123,11 +124,8 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
 
         this._idProspeccaoEdicao = prospeccaoModel.id;
 
-        // this.trocarModo(false);
-
-        this.montarBotoesAcaoBreadcrumb(
-          BreadcrumbAcoesEnum.Salvar,
-          BreadcrumbAcoesEnum.Cancelar
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._prospeccoesService.gerarBotoesAcaoFormulario()
         );
 
         this.loading = false;
@@ -138,9 +136,8 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
       tap(() => {
         this.iniciarForm();
 
-        this.montarBotoesAcaoBreadcrumb(
-          BreadcrumbAcoesEnum.Salvar,
-          BreadcrumbAcoesEnum.Cancelar
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._prospeccoesService.gerarBotoesAcaoFormulario()
         );
 
         this.loading = false;
@@ -180,11 +177,16 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
     this._getInteressadosOpcoes$ = this._opcoesDropdownService
       .getOpcoesInteressados()
       .pipe(
-        tap(
-          (response) =>
-            (this.interessadosOpcoesFiltradas = this.interessadosOpcoes =
-              response)
-        )
+        tap((response) => (this.interessadosOpcoes = response)),
+        finalize(() => {
+          const idOrganizacaoProspectadaValue = this.getControl(
+            'idOrganizacaoProspectada'
+          ).value;
+
+          this.interessadosOpcoesFiltradas = this.filtrarInteressadosOpcoes(
+            idOrganizacaoProspectadaValue
+          );
+        })
       );
 
     this._getAllOpcoes$ = concat(
@@ -196,7 +198,7 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
     );
 
     this._subscription.add(
-      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
@@ -402,23 +404,16 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
     this.interessadosList.clear();
   }
 
-  private montarBotoesAcaoBreadcrumb(...acoes: Array<string>): void {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: acoes,
-      contexto: BreadcrumbContextoEnum.Prospeccao,
-    };
-
-    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
-  }
-
-  private executarAcaoBreadcrumb(acao: string): void {
+  private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
     switch (acao) {
       case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
         break;
 
       case BreadcrumbAcoesEnum.Cancelar:
-        this.cancelar();
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Prospeccao
+        );
         break;
 
       case BreadcrumbAcoesEnum.Salvar:
@@ -441,10 +436,6 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
     this.interessadosOpcoesFiltradas = this.filtrarInteressadosOpcoes(
       idOrganizacaoProspectadaValue
     );
-  }
-
-  private cancelar(): void {
-    this._router.navigate(['main', 'prospeccao']);
   }
 
   private submitProspeccaoForm(form: FormGroup): void {
@@ -478,7 +469,7 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
           'Prospecção cadastrada com sucesso.'
         );
       }),
-      finalize(() => this.cancelar())
+      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
     );
   }
 
@@ -492,13 +483,13 @@ export class ProspeccaoFormComponent implements OnInit, OnDestroy {
           'Prospecção alterada com sucesso.'
         );
       }),
-      finalize(() => this.cancelar())
+      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
     );
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._prospeccoesService.idProspeccao$.next(0);
-    this._breadcrumbService.limparBotoesAcao();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

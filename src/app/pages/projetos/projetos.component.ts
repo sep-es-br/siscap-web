@@ -1,17 +1,19 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
 
+import { UsuarioService } from '../../core/services/usuario/usuario.service';
+import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
 import { ProjetosService } from '../../core/services/projetos/projetos.service';
+import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
-import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import {
   IProjetoFiltroPesquisa,
   IProjetoTableData,
 } from '../../core/interfaces/projeto.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
-import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
-import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+import { IHttpGetRequestBody } from '../../core/interfaces/http-get-all-paged.interface';
+
 import {
   BreadcrumbAcoesEnum,
   BreadcrumbContextoEnum,
@@ -24,7 +26,9 @@ import {
   styleUrl: './projetos.component.scss',
 })
 export class ProjetosComponent implements OnInit, OnDestroy {
-  private _pageConfig: IHttpGetRequestBody = {
+  private readonly _subscription: Subscription = new Subscription();
+
+  private readonly _pageConfig: IHttpGetRequestBody = {
     page: 0,
     size: 15,
     sort: '',
@@ -36,7 +40,7 @@ export class ProjetosComponent implements OnInit, OnDestroy {
     status: 'Status',
   };
 
-  private _projetosList$: BehaviorSubject<Array<IProjetoTableData>> =
+  private readonly _projetosList$: BehaviorSubject<Array<IProjetoTableData>> =
     new BehaviorSubject<Array<IProjetoTableData>>([]);
 
   public get projetosList$(): Observable<Array<IProjetoTableData>> {
@@ -54,16 +58,31 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   };
 
   constructor(
+    private readonly _usuarioService: UsuarioService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _projetosService: ProjetosService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _r2: Renderer2
   ) {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: [BreadcrumbAcoesEnum.Criar],
-      contexto: BreadcrumbContextoEnum.Projetos,
-    };
+    const isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
-    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+    const botoesAcaoPropriedades = isProponente
+      ? this._projetosService.gerarBotoesAcaoListagemProponente()
+      : this._projetosService.gerarBotoesAcaoListagem();
+
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      botoesAcaoPropriedades
+    );
+
+    this._subscription.add(
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) => {
+        if (acao === BreadcrumbAcoesEnum.Criar)
+          this._navegacaoService.navegacaoSimples(
+            BreadcrumbContextoEnum.Projetos,
+            BreadcrumbAcoesEnum.Criar
+          );
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -120,6 +139,7 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._breadcrumbService.limparBotoesAcao();
+    this._subscription.unsubscribe();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

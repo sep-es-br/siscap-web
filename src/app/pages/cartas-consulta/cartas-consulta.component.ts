@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
 
-import { CartasConsultaService } from '../../core/services/cartas-consulta/cartas-consulta.service';
 import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
+import { CartasConsultaService } from '../../core/services/cartas-consulta/cartas-consulta.service';
+import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
-import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import { ICartaConsultaTableData } from '../../core/interfaces/carta-consulta.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
-import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+import { IHttpGetRequestBody } from '../../core/interfaces/http-get-all-paged.interface';
 
 import {
   BreadcrumbAcoesEnum,
@@ -22,7 +22,9 @@ import {
   styleUrl: './cartas-consulta.component.scss',
 })
 export class CartasConsultaComponent implements OnInit, OnDestroy {
-  private _pageConfig: IHttpGetRequestBody = {
+  private readonly _subscription: Subscription = new Subscription();
+
+  private readonly _pageConfig: IHttpGetRequestBody = {
     page: 0,
     size: 15,
     sort: '',
@@ -30,7 +32,7 @@ export class CartasConsultaComponent implements OnInit, OnDestroy {
 
   private termoPesquisaSimples: string = '';
 
-  private _cartasConsultaList$: BehaviorSubject<
+  private readonly _cartasConsultaList$: BehaviorSubject<
     Array<ICartaConsultaTableData>
   > = new BehaviorSubject<Array<ICartaConsultaTableData>>([]);
 
@@ -51,14 +53,22 @@ export class CartasConsultaComponent implements OnInit, OnDestroy {
   constructor(
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _cartasConsultaService: CartasConsultaService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _r2: Renderer2
   ) {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: [BreadcrumbAcoesEnum.Criar],
-      contexto: BreadcrumbContextoEnum.CartasConsulta,
-    };
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      this._cartasConsultaService.gerarBotoesAcaoListagem()
+    );
 
-    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+    this._subscription.add(
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) => {
+        if (acao === BreadcrumbAcoesEnum.Criar)
+          this._navegacaoService.navegacaoSimples(
+            BreadcrumbContextoEnum.CartasConsulta,
+            BreadcrumbAcoesEnum.Criar
+          );
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -120,6 +130,7 @@ export class CartasConsultaComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._breadcrumbService.limparBotoesAcao();
+    this._subscription.unsubscribe();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+
+import { NavegacaoService } from '../../../../core/services/navegacao/navegacao.service';
 
 import {
   IMenuLink,
@@ -25,29 +27,13 @@ export class OffcanvasNavMenuComponent {
 
   public menuLinks: Array<IMenuLink> = MenuLinksHelper.menuLinks;
 
-  constructor(private readonly _router: Router) {}
+  constructor(private readonly _navegacaoService: NavegacaoService) {}
 
   public avaliarNavegacaoMesmaRota(rota: string): void {
-    const caminhoAtual = this.getCaminhoAtual();
-
-    rota === caminhoAtual
-      ? this.executarNavegacaoComRecarregamento(rota)
-      : this.executarNavegacaoSimples(rota);
+    rota === this._navegacaoService.buscarRotaCaminhoAtual()
+      ? this._navegacaoService.navegacaoComRecarregamento(rota)
+      : this._navegacaoService.navegacaoSimples(rota);
 
     this.navegacaoSideMenu.emit();
-  }
-
-  private getCaminhoAtual(): string | undefined {
-    return this._router.url.split('/').pop();
-  }
-
-  private executarNavegacaoSimples(rota: string): void {
-    this._router.navigateByUrl(`/main/${rota}`);
-  }
-
-  private executarNavegacaoComRecarregamento(rota: string): void {
-    this._router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this._router.navigateByUrl(`/main/${rota}`);
-    });
   }
 }

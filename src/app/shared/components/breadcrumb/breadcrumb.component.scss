@@ -24,7 +24,7 @@ li.breadcrumb-item a.breadcrumb-link {
   }
 }
 
-div#action-buttons button.icon-text-btn {
+div#action-buttons * {
   &:first-child:nth-last-child(2) {
     margin-left: 0.25rem;
   }

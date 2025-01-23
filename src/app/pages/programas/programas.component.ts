@@ -1,14 +1,15 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
 
+import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
 import { ProgramasService } from '../../core/services/programas/programas.service';
+import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
-import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import { IProgramaTableData } from '../../core/interfaces/programa.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
-import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
-import { IBreadcrumbBotaoAcao } from '../../core/interfaces/breadcrumb.interface';
+import { IHttpGetRequestBody } from '../../core/interfaces/http-get-all-paged.interface';
+
 import {
   BreadcrumbAcoesEnum,
   BreadcrumbContextoEnum,
@@ -21,7 +22,9 @@ import {
   styleUrl: './programas.component.scss',
 })
 export class ProgramasComponent implements OnInit, OnDestroy {
-  private _pageConfig: IHttpGetRequestBody = {
+  private readonly _subscription: Subscription = new Subscription();
+
+  private readonly _pageConfig: IHttpGetRequestBody = {
     page: 0,
     size: 15,
     sort: '',
@@ -29,7 +32,7 @@ export class ProgramasComponent implements OnInit, OnDestroy {
 
   private termoPesquisaSimples: string = '';
 
-  private _programasList$: BehaviorSubject<Array<IProgramaTableData>> =
+  private readonly _programasList$: BehaviorSubject<Array<IProgramaTableData>> =
     new BehaviorSubject<Array<IProgramaTableData>>([]);
 
   public get programasList$(): Observable<Array<IProgramaTableData>> {
@@ -49,14 +52,22 @@ export class ProgramasComponent implements OnInit, OnDestroy {
   constructor(
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _programasService: ProgramasService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _r2: Renderer2
   ) {
-    const botoesAcao: IBreadcrumbBotaoAcao = {
-      botoes: [BreadcrumbAcoesEnum.Criar],
-      contexto: BreadcrumbContextoEnum.Programas,
-    };
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      this._programasService.gerarBotoesAcaoListagem()
+    );
 
-    this._breadcrumbService.breadcrumbBotoesAcao$.next(botoesAcao);
+    this._subscription.add(
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) => {
+        if (acao === BreadcrumbAcoesEnum.Criar)
+          this._navegacaoService.navegacaoSimples(
+            BreadcrumbContextoEnum.Programas,
+            BreadcrumbAcoesEnum.Criar
+          );
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -118,6 +129,7 @@ export class ProgramasComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._breadcrumbService.limparBotoesAcao();
+    this._subscription.unsubscribe();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }
