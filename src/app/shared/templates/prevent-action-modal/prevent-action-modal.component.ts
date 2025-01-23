@@ -1,23 +1,23 @@
 import { Component, Input } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
 import { BotaoPropriedadesModel } from '../../components/botao/botao.model';
+
 import { BotoesConfig } from '../../components/botao/botao.config';
 
 @Component({
-  selector: 'success-modal',
+  selector: 'prevent-action-modal',
   standalone: false,
-  templateUrl: './success-modal.component.html',
-  styleUrls: ['./success-modal.component.scss'],
+  templateUrl: './prevent-action-modal.component.html',
+  styleUrls: ['./prevent-action-modal.component.scss'],
 })
-export class SuccessModalComponent {
+export class PreventActionModalComponent {
   @Input() public conteudo: string = 'placeholder';
 
-  public botaoOK: BotaoPropriedadesModel;
+  public botaoVoltar: BotaoPropriedadesModel;
 
   constructor(public activeModal: NgbActiveModal) {
-    this.botaoOK = BotoesConfig.gerarBotaoPropriedades('confirmar', {
-      texto: 'OK',
-    });
+    this.botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
   }
 }
