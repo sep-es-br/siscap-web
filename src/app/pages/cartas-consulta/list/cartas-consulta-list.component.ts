@@ -60,7 +60,6 @@ export class CartasConsultaListComponent {
     switch (event.acao) {
       case 'editar':
         if (cartaConsultaTableData.prospectado) {
-          console.log('MODAL DE PREVINIR AÇÃO COM VALOR -editar-');
           this.dispararModalPrevinirAcao('editar');
         } else {
           this.editarCartaConsulta(event.id);
@@ -69,7 +68,6 @@ export class CartasConsultaListComponent {
 
       case 'deletar':
         if (cartaConsultaTableData.prospectado) {
-          console.log('MODAL DE PREVINIR AÇÃO COM VALOR -deletar-');
           this.dispararModalPrevinirAcao('deletar');
         } else {
           this.dispararModalDeletar(cartaConsultaTableData);
