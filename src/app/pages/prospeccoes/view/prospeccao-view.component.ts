@@ -16,6 +16,7 @@ import {
   ProspeccaoOrganizacaoDetalhesModel,
 } from '../../../core/models/prospeccao.model';
 
+import { StatusProspeccaoEnum } from '../../../core/enums/status-prospeccao.enum';
 import {
   BreadcrumbAcoesEnum,
   BreadcrumbContextoEnum,
@@ -70,8 +71,14 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
           this.organizacaoProspectadaDetalhes =
             prospeccaoDetalhesModel.organizacaoProspectadaDetalhes;
 
+          const botoesAcaoPropriedades =
+            this.prospeccaoDetalhes.statusProspeccao ===
+            StatusProspeccaoEnum.Prospectado
+              ? this._prospeccoesService.gerarBotoesAcaoVizualizarDetalhesProspeccaoRealizada()
+              : this._prospeccoesService.gerarBotoesAcaoVizualizarDetalhes();
+
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            this._prospeccoesService.gerarBotoesAcaoVizualizarDetalhes()
+            botoesAcaoPropriedades
           );
         })
       );
@@ -85,12 +92,6 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._subscription.add(this._getProspeccaoDetalhes$.subscribe());
-  }
-
-  public preencherIdAteQuatroDigitos(id: number): string {
-    const idAsString = id.toString();
-
-    return idAsString.length < 4 ? idAsString.padStart(4, '0') : idAsString;
   }
 
   public formatarEndereco(
@@ -144,6 +145,10 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
         finalize(() => this.loadingService.finalizarProcessamento())
       )
       .subscribe();
+
+    // setTimeout(() => {
+    //   this.loadingService.finalizarProcessamento();
+    // }, 5000);
   }
 
   ngOnDestroy(): void {

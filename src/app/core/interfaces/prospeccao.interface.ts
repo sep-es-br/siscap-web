@@ -27,6 +27,7 @@ export interface IProspeccao {
 export interface IProspeccaoForm extends Omit<IProspeccao, 'id'> {}
 
 export interface IProspeccaoTableData extends Pick<IProspeccao, 'id'> {
+  codigoProspeccao: string;
   nomeOrganizacaoProspectada: string;
   tipoOperacao: string;
   objetoCartaConsulta: string;
@@ -36,6 +37,8 @@ export interface IProspeccaoTableData extends Pick<IProspeccao, 'id'> {
 }
 
 export interface IProspeccaoDetalhes extends Pick<IProspeccao, 'id'> {
+  codigoProspeccao: string;
+  statusProspeccao: string;
   organizacaoProspectoraDetalhes: IProspeccaoOrganizacaoDetalhes;
   organizacaoProspectadaDetalhes: IProspeccaoOrganizacaoDetalhes;
   nomesInteressados: Array<string>;

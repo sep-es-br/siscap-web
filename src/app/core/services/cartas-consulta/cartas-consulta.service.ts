@@ -66,6 +66,14 @@ export class CartasConsultaService
     return [botaoEditar, botaoVoltar];
   }
 
+  public gerarBotoesAcaoVizualizarDetalhesProspeccaoRealizada(): Array<BotaoPropriedadesModel> {
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('cancelar', {
+      texto: 'Voltar',
+    });
+
+    return [botaoVoltar];
+  }
+
   public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');

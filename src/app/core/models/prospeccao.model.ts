@@ -84,6 +84,8 @@ export class ProspeccaoModel
 
 export class ProspeccaoDetalhesModel implements IProspeccaoDetalhes {
   public readonly id: number;
+  public codigoProspeccao: string;
+  public statusProspeccao: string;
   public organizacaoProspectoraDetalhes: ProspeccaoOrganizacaoDetalhesModel;
   public organizacaoProspectadaDetalhes: ProspeccaoOrganizacaoDetalhesModel;
   public nomesInteressados: string[];
@@ -92,6 +94,8 @@ export class ProspeccaoDetalhesModel implements IProspeccaoDetalhes {
 
   constructor(prospeccaoDetalhes?: IProspeccaoDetalhes) {
     this.id = prospeccaoDetalhes?.id ?? 0;
+    this.codigoProspeccao = prospeccaoDetalhes?.codigoProspeccao ?? '';
+    this.statusProspeccao = prospeccaoDetalhes?.statusProspeccao ?? '';
     this.organizacaoProspectoraDetalhes =
       new ProspeccaoOrganizacaoDetalhesModel(
         prospeccaoDetalhes?.organizacaoProspectoraDetalhes

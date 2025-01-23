@@ -57,8 +57,12 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
         tap((cartaConsultaDetalhesModel: CartaConsultaDetalhesModel) => {
           this.cartaConsultaDetalhes = cartaConsultaDetalhesModel;
 
+          const botoesAcaoPropriedades = this.cartaConsultaDetalhes.prospectado
+            ? this._cartasConsultaService.gerarBotoesAcaoVizualizarDetalhesProspeccaoRealizada()
+            : this._cartasConsultaService.gerarBotoesAcaoVizualizarDetalhes();
+
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            this._cartasConsultaService.gerarBotoesAcaoVizualizarDetalhes()
+            botoesAcaoPropriedades
           );
         })
       );
@@ -72,12 +76,6 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._subscription.add(this._getCartaConsultaDetalhes$.subscribe());
-  }
-
-  public preencherIdAteQuatroDigitos(id: number): string {
-    const idAsString = id.toString();
-
-    return idAsString.length < 4 ? idAsString.padStart(4, '0') : idAsString;
   }
 
   public baixarDIC(idProjetoProposto: number): void {

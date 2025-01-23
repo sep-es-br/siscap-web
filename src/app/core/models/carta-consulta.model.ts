@@ -36,6 +36,8 @@ export class CartaConsultaModel
 
 export class CartaConsultaDetalhesModel implements ICartaConsultaDetalhes {
   public readonly id: number;
+  public readonly prospectado: boolean;
+  public codigoCartaConsulta: string;
   public objeto: IObjetoOpcoesDropdown;
   public corpo: string;
   public projetosPropostos: IOpcoesDropdown[];
@@ -43,6 +45,8 @@ export class CartaConsultaDetalhesModel implements ICartaConsultaDetalhes {
 
   constructor(cartaConsultaDetalhes?: ICartaConsultaDetalhes) {
     this.id = cartaConsultaDetalhes?.id ?? 0;
+    this.prospectado = cartaConsultaDetalhes?.prospectado ?? false;
+    this.codigoCartaConsulta = cartaConsultaDetalhes?.codigoCartaConsulta ?? '';
     this.objeto = cartaConsultaDetalhes?.objeto ?? {
       id: 0,
       nome: '',

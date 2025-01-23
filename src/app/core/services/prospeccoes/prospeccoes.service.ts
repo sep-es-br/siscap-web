@@ -67,6 +67,17 @@ export class ProspeccoesService
     return [botaoProspectar, botaoEditar, botaoVoltar];
   }
 
+  public gerarBotoesAcaoVizualizarDetalhesProspeccaoRealizada(): Array<BotaoPropriedadesModel> {
+    const botaoProspectar = BotoesConfig.gerarBotaoPropriedades('prospectar', {
+      desabilitado: true,
+    });
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('cancelar', {
+      texto: 'Voltar',
+    });
+
+    return [botaoProspectar, botaoVoltar];
+  }
+
   public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');

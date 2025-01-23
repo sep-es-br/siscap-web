@@ -14,6 +14,8 @@ export interface ICartaConsulta {
 export interface ICartaConsultaForm extends Omit<ICartaConsulta, 'id'> {}
 
 export interface ICartaConsultaTableData extends Pick<ICartaConsulta, 'id'> {
+  readonly prospectado: boolean;
+  codigoCartaConsulta: string;
   nomeTipoOperacao: string;
   nomeObjeto: string;
   data: string;
@@ -21,6 +23,8 @@ export interface ICartaConsultaTableData extends Pick<ICartaConsulta, 'id'> {
 
 export interface ICartaConsultaDetalhes
   extends Pick<ICartaConsulta, 'id' | 'objeto' | 'corpo'> {
+  readonly prospectado: boolean;
+  codigoCartaConsulta: string;
   projetosPropostos: Array<IOpcoesDropdown>;
   valor: IValor;
 }
