@@ -48,6 +48,12 @@ export class BreadcrumbComponent {
         this.botoesAcaoPropriedades = botoesAcaoPropriedades;
       }
     );
+
+    this.loadingService.isProcessando$.subscribe((isProcessando) => {
+      this.botoesAcaoPropriedades.forEach(
+        (botaoAcao) => (botaoAcao.desabilitado = isProcessando)
+      );
+    });
   }
 
   public emitirAcaoBreadcrumb(acao: TBotaoAcao): void {

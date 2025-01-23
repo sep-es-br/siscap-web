@@ -1,7 +1,7 @@
 <button
   class="btn icon-text-btn text-nowrap"
-  [ngClass]="propriedades().classeBackground"
-  [disabled]="isDisabled()"
+  [ngClass]="propriedades().classesCSS"
+  [disabled]="propriedades().desabilitado"
   (click)="acao.emit(propriedades().acao)"
 >
   <i [ngClass]="propriedades().icone"></i>

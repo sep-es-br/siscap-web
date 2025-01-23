@@ -1,8 +1,9 @@
 import { TBotaoAcao } from './botao.config';
 
 export interface IBotaoPropriedades {
-  classeBackground: Array<string>;
+  classesCSS: Array<string>;
   icone: Array<string>;
   texto: string;
   acao: TBotaoAcao;
+  desabilitado?: boolean;
 }
