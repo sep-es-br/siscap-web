@@ -58,8 +58,8 @@ export class CartaConsultaViewComponent implements OnInit, OnDestroy {
           this.cartaConsultaDetalhes = cartaConsultaDetalhesModel;
 
           const botoesAcaoPropriedades = this.cartaConsultaDetalhes.prospectado
-            ? this._cartasConsultaService.gerarBotoesAcaoVizualizarDetalhesProspeccaoRealizada()
-            : this._cartasConsultaService.gerarBotoesAcaoVizualizarDetalhes();
+            ? this._cartasConsultaService.gerarBotoesAcaoVisualizarDetalhesProspeccaoRealizada()
+            : this._cartasConsultaService.gerarBotoesAcaoVisualizarDetalhes();
 
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             botoesAcaoPropriedades

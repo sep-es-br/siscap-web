@@ -57,7 +57,7 @@ export class CartasConsultaService
     return [botaoCriar];
   }
 
-  public gerarBotoesAcaoVizualizarDetalhes(): Array<BotaoPropriedadesModel> {
+  public gerarBotoesAcaoVisualizarDetalhes(): Array<BotaoPropriedadesModel> {
     const botaoEditar = BotoesConfig.gerarBotaoPropriedades('editar');
     const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
       acao: 'cancelar',
@@ -66,7 +66,7 @@ export class CartasConsultaService
     return [botaoEditar, botaoVoltar];
   }
 
-  public gerarBotoesAcaoVizualizarDetalhesProspeccaoRealizada(): Array<BotaoPropriedadesModel> {
+  public gerarBotoesAcaoVisualizarDetalhesProspeccaoRealizada(): Array<BotaoPropriedadesModel> {
     const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
       acao: 'cancelar',
     });
