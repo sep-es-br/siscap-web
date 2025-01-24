@@ -59,16 +59,16 @@ export class CartasConsultaService
 
   public gerarBotoesAcaoVizualizarDetalhes(): Array<BotaoPropriedadesModel> {
     const botaoEditar = BotoesConfig.gerarBotaoPropriedades('editar');
-    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('cancelar', {
-      texto: 'Voltar',
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
+      acao: 'cancelar',
     });
 
     return [botaoEditar, botaoVoltar];
   }
 
   public gerarBotoesAcaoVizualizarDetalhesProspeccaoRealizada(): Array<BotaoPropriedadesModel> {
-    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('cancelar', {
-      texto: 'Voltar',
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
+      acao: 'cancelar',
     });
 
     return [botaoVoltar];

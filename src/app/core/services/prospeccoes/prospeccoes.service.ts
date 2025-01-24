@@ -60,8 +60,8 @@ export class ProspeccoesService
   public gerarBotoesAcaoVizualizarDetalhes(): Array<BotaoPropriedadesModel> {
     const botaoProspectar = BotoesConfig.gerarBotaoPropriedades('prospectar');
     const botaoEditar = BotoesConfig.gerarBotaoPropriedades('editar');
-    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('cancelar', {
-      texto: 'Voltar',
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
+      acao: 'cancelar',
     });
 
     return [botaoProspectar, botaoEditar, botaoVoltar];
@@ -71,8 +71,8 @@ export class ProspeccoesService
     const botaoProspectar = BotoesConfig.gerarBotaoPropriedades('prospectar', {
       desabilitado: true,
     });
-    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('cancelar', {
-      texto: 'Voltar',
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
+      acao: 'cancelar',
     });
 
     return [botaoProspectar, botaoVoltar];
