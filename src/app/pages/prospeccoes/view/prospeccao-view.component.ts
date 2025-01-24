@@ -74,8 +74,8 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
           const botoesAcaoPropriedades =
             this.prospeccaoDetalhes.statusProspeccao ===
             StatusProspeccaoEnum.Prospectado
-              ? this._prospeccoesService.gerarBotoesAcaoVizualizarDetalhesProspeccaoRealizada()
-              : this._prospeccoesService.gerarBotoesAcaoVizualizarDetalhes();
+              ? this._prospeccoesService.gerarBotoesAcaoVisualizarDetalhesProspeccaoRealizada()
+              : this._prospeccoesService.gerarBotoesAcaoVisualizarDetalhes();
 
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             botoesAcaoPropriedades
