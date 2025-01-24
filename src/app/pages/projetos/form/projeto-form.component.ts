@@ -59,6 +59,7 @@ import {
 } from '../../../core/enums/breadcrumb.enum';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
+import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -185,7 +186,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     );
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
-      .getOpcoesOrganizacoes()
+      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
       .pipe(tap((response) => (this.organizacoesOpcoes = response)));
 
     this._getPessoasOpcoes$ = this._opcoesDropdownService
@@ -459,8 +460,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     ) as FormControl<number | null>;
 
     idOrganizacaoFormControl.valueChanges.subscribe((idOrganizacaoValue) => {
-      if (this.isModoEdicao && !idResponsavelProponenteFormControl.value)
-        this.idOrganizacaoChange(idOrganizacaoValue);
+      if (this.isModoEdicao) this.idOrganizacaoChange(idOrganizacaoValue);
     });
 
     idResponsavelProponenteFormControl.valueChanges.subscribe(
@@ -532,6 +532,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     if (!idOrganizacaoValue) {
       idResponsavelProponenteFormControl.patchValue(null);
+      idResponsavelProponenteFormControl.markAsTouched();
       return;
     }
 
