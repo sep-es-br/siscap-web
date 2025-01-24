@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  NonNullableFormBuilder,
-  Validators,
-} from '@angular/forms';
+import { FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
 
 import { IValor } from '../../interfaces/valor.interface';
 
@@ -17,14 +12,14 @@ export class ValorService {
   public valorFormGroup: FormGroup<ValorFormType> =
     this.construirValorFormGroup();
 
-  constructor(private _nnfb: NonNullableFormBuilder) {}
+  constructor(private readonly _nnfb: NonNullableFormBuilder) {}
 
   public construirValorFormGroup(valor?: IValor): FormGroup<ValorFormType> {
     const valorFormGroup = this._nnfb.group<ValorFormType>({
       tipo: this._nnfb.control(valor?.tipo ?? null, {
         validators: Validators.required,
       }),
-      moeda: this._nnfb.control(valor?.moeda ?? null, {
+      moeda: this._nnfb.control(valor?.moeda ?? 'BRL', {
         validators: Validators.required,
       }),
       quantia: this._nnfb.control(valor?.quantia ?? null, {
