@@ -2,9 +2,21 @@
   <loading-spinner></loading-spinner>
 </div>
 
-<div class="row" *ngIf="!loading && mostrarBotaoGerarDic">
+<div class="row" *ngIf="!loading">
   <div class="mb-2 d-inline-flex justify-content-end">
-    <button class="btn btn-outline-primary icon-text-btn" (click)="baixarDIC()">
+    <button
+      *ngIf="mostrarBotaoStatusProjeto"
+      class="btn btn-outline-success icon-text-btn me-2"
+      (click)="abrirModalStatusProjeto(projetoStatusModal)"
+    >
+      <i class="fa-solid fa-check"></i>
+      <span>Status</span>
+    </button>
+    <button
+      *ngIf="mostrarBotaoGerarDic"
+      class="btn btn-outline-primary icon-text-btn"
+      (click)="baixarDIC()"
+    >
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Gerar DIC</span>
     </button>
@@ -287,3 +299,43 @@
     </div>
   </div>
 </div>
+
+<ng-template #projetoStatusModal let-modal>
+  <div class="modal-body">
+    <p>Status do Projeto: {{ statusProjeto }}</p>
+
+    <label for="status-projeto">Novo Status</label>
+    <ng-select
+      id="status-projeto"
+      name="status-projeto"
+      [clearable]="false"
+      [(ngModel)]="statusProjetoNovo"
+    >
+      <ng-option
+        *ngFor="let statusProjetoOpcao of statusProjetoOpcoes"
+        [value]="statusProjetoOpcao"
+      >
+        {{ statusProjetoOpcao }}
+      </ng-option>
+    </ng-select>
+  </div>
+  <div class="modal-footer">
+    <div class="d-inline-flex flex-row-reverse">
+      <button
+        class="btn btn-success icon-text-btn"
+        [disabled]="statusProjetoNovo == null"
+        (click)="modal.close(statusProjetoNovo)"
+      >
+        <i class="fa-solid fa-check"></i>
+        <span>Alterar</span>
+      </button>
+      <button
+        class="btn btn-outline-primary icon-text-btn me-2"
+        (click)="modal.dismiss()"
+      >
+        <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
+        <span>Voltar</span>
+      </button>
+    </div>
+  </div>
+</ng-template>

@@ -1,25 +1,25 @@
-export interface IEndereco {
-  rua?: string;
-  numero?: string;
-  bairro?: string;
-  complemento?: string;
-  codigoPostal?: string;
-  idCidade?: number;
-  idEstado?: number;
-  idPais?: number;
-}
+// export interface IEndereco {
+//   rua?: string;
+//   numero?: string;
+//   bairro?: string;
+//   complemento?: string;
+//   codigoPostal?: string;
+//   idCidade?: number;
+//   idEstado?: number;
+//   idPais?: number;
+// }
 
 export interface IPessoa {
   readonly id: number;
   nome: string;
   nomeSocial: string;
   nacionalidade: string;
-  genero: string;
-  cpf: string;
+  // genero: string;
+  // cpf: string;
   email: string;
   telefoneComercial: string;
   telefonePessoal: string;
-  endereco: IEndereco;
+  // endereco: IEndereco;
   idOrganizacoes: Array<number>;
   idOrganizacaoResponsavel: number | null;
   idAreasAtuacao: Array<number>;
