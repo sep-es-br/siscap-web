@@ -6,14 +6,11 @@
   <form [formGroup]="pessoaForm">
     <div class="row">
       <div class="col-12 col-md-8">
-        <div class="card shadow border-light h-100">
+        <div id="info-pessoal-card" class="card shadow border-light h-100">
           <div class="card-header bg-white">
             <h5 class="card-title">Informações Pessoais</h5>
           </div>
-          <div
-            class="card-body d-inline-flex flex-column justify-content-center"
-          >
-            <!-- <div class="personal-info"> -->
+          <div class="card-body">
             <div class="row h-100">
               <div class="col-12 col-md-12 mb-2 mb-md-0">
                 <label for="nome" class="form-label col-12">
@@ -41,7 +38,7 @@
                   formControlName="nomeSocial"
                 />
               </div>
-              <div class="col-12 col-md-6 mb-2 mb-md-0 invisible">
+              <!-- <div class="col-12 col-md-6 mb-2 mb-md-0">
                 <label for="cpf" class="form-label col-12">
                   <validation-message [control]="getControl('cpf')">
                     CPF
@@ -54,7 +51,7 @@
                   id="cpf"
                   formControlName="cpf"
                 />
-              </div>
+              </div> -->
 
               <div class="col-12 col-md-6 mb-2 mb-md-0">
                 <label for="nacionalidade" class="form-label col-12">
@@ -74,7 +71,7 @@
                   </ng-option>
                 </ng-select>
               </div>
-              <div class="col-12 col-md-6 mb-2 mb-md-0">
+              <!-- <div class="col-12 col-md-6 mb-2 mb-md-0">
                 <label for="genero" class="form-label col-12">
                   <validation-message [control]="getControl('genero')">
                     Gênero
@@ -89,7 +86,7 @@
                     >{{ genero }}
                   </ng-option>
                 </ng-select>
-              </div>
+              </div> -->
 
               <div class="col-12 col-md-6 mb-2 mb-md-0">
                 <label for="email" class="form-label col-12">
@@ -136,13 +133,15 @@
                 />
               </div>
             </div>
-            <!-- </div> -->
           </div>
         </div>
       </div>
 
       <div class="col-12 col-md-4">
-        <div class="card shadow border-light mb-md-5">
+        <div
+          id="foto-perfil-card"
+          class="card shadow border-light mt-4 mt-md-0"
+        >
           <div class="card-header bg-white">
             <h5 class="card-title">Foto de Perfil</h5>
           </div>
@@ -155,7 +154,7 @@
           </div>
         </div>
 
-        <div class="card shadow border-light">
+        <div id="info-profissional-card" class="card shadow border-light">
           <div class="card-header bg-white">
             <h5 class="card-title">Informações Profissionais</h5>
           </div>
@@ -216,25 +215,7 @@
         </div>
       </div>
 
-      <!-- 
-          - REMOVER CAMPO "GENERO" - 
-
-          COM "OCULTAÇÃO" DO CAMPO 'CPF', LAYOUT FICOU QUEBRADO
-          REMOÇÃO COMPLETA VAI QUEBRAR O CÓDIGO!
-
-          REMOÇÃO DO CAMPO "GENERO" PADRONIZA LAYOUT DE CONTROLES 
-          EM COMPORTAMENTO SIMILAR A ~GRID DE 2 COLUNAS~
-      -->
-
-      <!-- 
-          - PADRONIZAR ESPAÇAMENTO HORIZONTAL E VERTICAL - 
-          
-            EXEMPLO DIEGO:
-              ESPAÇO H: 0,5cm (ENTRE [<col 'Informações Pessoais'>] E [<col 'Foto de Perfil' + 'Informações Profissionais'>])
-              ESPAÇO v; 1,5cm (ENTRE [<div ~card~ 'Foto de Perfil'>] E [<div ~card~ 'Informações Profissionais'>]) 
-      -->
-
-      <div class="col-12 col-md-12 invisible">
+      <!-- <div class="col-12 col-md-12">
         <div class="card shadow border-light">
           <div class="card-header bg-white">
             <h5 class="card-title">Informações de Endereço</h5>
@@ -395,7 +376,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </form>
 </div>
