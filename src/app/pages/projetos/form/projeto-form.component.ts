@@ -17,6 +17,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
@@ -88,6 +89,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
   public mostrarBotaoGerarDic: boolean = false;
+  public mostrarBotaoStatusProjeto: boolean = false;
   public isProponente: boolean = false;
   public usuario_IdOrganizacoes: Array<number> = [];
 
@@ -102,6 +104,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public microrregioesOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
 
+  public statusProjeto: string = '';
+  public statusProjetoNovo: string | null = null;
+  public statusProjetoOpcoes: Array<string> = [];
+
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
 
   public idMembroEquipeElaboracao: number | null = null;
@@ -115,6 +121,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     public equipeService: EquipeService,
     private readonly _valorService: ValorService,
     private readonly _rateioService: RateioService,
+    private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _navegacaoService: NavegacaoService
@@ -139,6 +146,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           )
       ),
       tap((projetoModel: ProjetoModel) => {
+        this.statusProjeto = projetoModel.status;
+        this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
+          (status) => status != this.statusProjeto
+        );
+
         this.isProponente
           ? this.iniciarFormProponente(projetoModel)
           : this.iniciarForm(projetoModel);
@@ -165,6 +177,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.trocarModo(true);
           }, 2000);
+        }
+
+        if (!this.isProponente) {
+          this.mostrarBotaoStatusProjeto = true;
         }
 
         this.loading = false;
@@ -267,6 +283,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public getControl(controlName: string): AbstractControl<any, any> {
     return this.projetoForm.get(controlName) as AbstractControl<any, any>;
+  }
+
+  public abrirModalStatusProjeto(modalTemplateRef: any): void {
+    const modalRef = this._ngbModalService.open(modalTemplateRef, {
+      centered: true,
+    });
+
+    modalRef.result.then(
+      (result) => {
+        this.alterarStatusProjeto(result);
+      },
+      (reject) => {}
+    );
   }
 
   public filtrarResponsavelProponente(
@@ -668,6 +697,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
         )
       );
+  }
+
+  private alterarStatusProjeto(status: string): void {
+    this._projetosService
+      .alterarStatusProjeto(this._idProjetoEdicao, status)
+      .pipe(
+        tap((response: string) => {
+          this._toastService.showToast('success', response);
+        }),
+        finalize(() =>
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+        )
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {

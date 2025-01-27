@@ -135,6 +135,14 @@ export class ProjetosService extends BaseHttpService<
     );
   }
 
+  public alterarStatusProjeto(id: number, status: string): Observable<string> {
+    return this._http.put(
+      `${this._url}/${id}/status`,
+      { status },
+      { responseType: 'text' }
+    );
+  }
+
   public baixarDIC(id: number): void {
     const userHttpOptions: Object = {
       responseType: 'arraybuffer',
