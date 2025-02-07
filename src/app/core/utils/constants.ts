@@ -245,3 +245,36 @@ export const COLECAO_ERRO_MENSAGEM: Record<string, string> = {
   membroEquipeSemPapel: ERRO_MENSAGEM_MEMBRO_EQUIPE_SEM_PAPEL,
   limiteRateio: ERRO_MENSAGEM_LIMITE_RATEIO,
 };
+
+/**
+ * Objeto de coleção de mensagens de tooltip do formulário de projeto.
+ *
+ * Utilizado para alimentar propriedade de input `texto` de
+ * um componente <form-helper-tooltip>.
+ */
+export const COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO: Record<string, string> =
+  {
+    sigla: 'Indicar o nome fantasia do projeto.',
+    titulo:
+      'Informar o nome do projeto. O nome deverá refletir o objetivo maior do projeto.',
+    idOrganizacao:
+      'Identifique a instituição (Secretaria de Estado, Autarquia, Órgão de outros poderes do Estado, etc.) que será o tomador dos recursos, gestor do projeto.',
+    valorEstimado:
+      'Indicar o valor total necessário para a execução do projeto proposto em R$.',
+    idMicrorregioesList:
+      '(i) Informar as instituições envolvidas na implementação do projeto e suas respectivas responsabilidades na execução. (ii) Informar a capacidade das insituições para a implementação das ações do projeto (equipe técnica, estrutura, experiência).',
+    objetivo:
+      'Deverá refletir o que se deseja alcançar com as ações do projeto.',
+    objetivoEspecifico:
+      'Deverão refletir as ações a serem implementadas no âmbito do projeto, tendo como referência os problemas identificados e as soluções propostas. Deverão corresponder aos resultados que o projeto pretende atingir, contribuindo para o alcance do objetivo geral. Também deverão ter vínculo com os Objetivos de Desenvolvimento Sustentável da ONU.',
+    situacaoProblema:
+      'Identificar o(s) problema(s) que as ações do projeto candidato a financiamento se propõem solucionar ou minorar. Descrever clara e sucintamente a situação-problema atual, apresentando informações e dados que a caracterizem e demonstrem o(s) problema(s). Trata-se da situação inicial que se deseja mudar.',
+    solucoesPropostas:
+      'Descrever as ações escolhidas para o enfrentamento ou solução do(s) problema(s) descrito(s) no item anterior.',
+    impactos:
+      'Informar (i) as medidas de sustentabilidade a serem adotadas e os custos adicionais estimados decorrentes da implementação do projeto, referentes aos gastos incrementais de pessoa, de operacionalização e de manutenção de obras e bens; (ii) os principais impactos ambientais decorrentes da implementação do projeto; (iii) possíveis interferências em populações decorrentes da implementação do projeto. Especificar se há interferência em populações indígenas, quilombolas e outras; (iv) os riscos e ações mitigadoras.',
+    arranjosInstitucionais:
+      '(i) Informar as instituições envolvidas na implementação do projeto e suas respectivas responsabilidades na execução. (ii) Informar a capacidade das instituições para a implementação das ações do projeto (equipe técnica, estrutura, experiência).',
+    idResponsavelProponente: 'Pessoa que responde pelo órgão de origem.',
+    equipeElaboracao: 'Pessoas responsáveis pela elaboração do projeto.',
+  };

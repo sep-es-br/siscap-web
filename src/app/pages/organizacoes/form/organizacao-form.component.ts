@@ -40,6 +40,7 @@ import {
   BreadcrumbAcoesEnum,
   BreadcrumbContextoEnum,
 } from '../../../core/enums/breadcrumb.enum';
+import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import {
@@ -66,6 +67,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idOrganizacaoEdicao: number = 0;
+  private _guidOrganizacao: string = '';
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -101,6 +103,8 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       ),
       tap((response: IOrganizacao) => {
         const organizacaoModel = new OrganizacaoModel(response);
+
+        this._guidOrganizacao = organizacaoModel.guid;
 
         this.iniciarForm(organizacaoModel);
 
@@ -316,6 +320,42 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     const organizacaoFormControls = this.organizacaoForm.controls;
 
     alterarEstadoControlesFormulario(permitir, organizacaoFormControls);
+
+    this.alterarEstadoControlesFormularioOrganizacao(
+      this._guidOrganizacao,
+      organizacaoFormControls
+    );
+  }
+
+  private alterarEstadoControlesFormularioOrganizacao(
+    guidOrganizacao: string,
+    controles: { [key: string]: AbstractControl<any, any> }
+  ): void {
+    const nomeFormControl = controles['nome'];
+    const abreviaturaFormControl = controles['abreviatura'];
+    const cnpjFormControl = controles['cnpj'];
+    const idPaisFormControl = controles['idPais'];
+    const idTipoOrganizacaoFormControl = controles['idTipoOrganizacao'];
+    const idPessoaResponsavelFormControl = controles['idPessoaResponsavel'];
+
+    const checkPossuiGuidOrganizacao = !!guidOrganizacao;
+    const checkPossuiTipoOrganizacaoETipoOrganizacaoSecretaria =
+      idTipoOrganizacaoFormControl.value != null &&
+      idTipoOrganizacaoFormControl.value === TipoOrganizacaoEnum.Secretaria;
+    const checkPossuiResponsavel = idPessoaResponsavelFormControl.value != null;
+
+    if (checkPossuiGuidOrganizacao) {
+      nomeFormControl.disable();
+      abreviaturaFormControl.disable();
+      cnpjFormControl.disable();
+      idPaisFormControl.disable();
+
+      if (checkPossuiTipoOrganizacaoETipoOrganizacaoSecretaria) {
+        idTipoOrganizacaoFormControl.disable();
+
+        if (checkPossuiResponsavel) idPessoaResponsavelFormControl.disable();
+      }
+    }
   }
 
   private submitOrganizationForm(form: FormGroup) {
@@ -329,6 +369,14 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       ]);
       return;
     }
+
+    // Habilitar controles para envio do formulário
+    form.controls['nome'].enable();
+    form.controls['abreviatura'].enable();
+    form.controls['cnpj'].enable();
+    form.controls['idPais'].enable();
+    form.controls['idTipoOrganizacao'].enable();
+    form.controls['idPessoaResponsavel'].enable();
 
     const payload = new OrganizacaoFormModel(form.value as IOrganizacaoForm);
 
