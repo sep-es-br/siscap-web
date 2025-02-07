@@ -1,5 +1,6 @@
 export interface IOrganizacao {
   readonly id: number;
+  readonly guid: string;
   readonly idStatus: number;
   nome: string;
   abreviatura: string;
@@ -18,7 +19,7 @@ export interface IOrganizacao {
 }
 
 export interface IOrganizacaoForm
-  extends Omit<IOrganizacao, 'id' | 'idStatus' | 'imagemPerfil'> {}
+  extends Omit<IOrganizacao, 'id' | 'guid' | 'idStatus' | 'imagemPerfil'> {}
 
 export interface IOrganizacaoTableData
   extends Pick<

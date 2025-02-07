@@ -40,12 +40,14 @@ export class OrganizacaoModel
   implements IOrganizacao
 {
   public readonly id: number;
+  public readonly guid: string;
   public readonly idStatus: number;
   public imagemPerfil: ArrayBuffer | null;
 
   constructor(organizacao?: IOrganizacao) {
     super(organizacao);
     this.id = organizacao?.id ?? 0;
+    this.guid = organizacao?.guid ?? '';
     this.idStatus = organizacao?.idStatus ?? 0;
     this.imagemPerfil = organizacao?.imagemPerfil ?? null;
   }
