@@ -32,6 +32,9 @@
             <label for="sigla" class="form-label col-12">
               <validation-message [control]="getControl('sigla')">
                 Sigla do Projeto
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['sigla']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <input
@@ -50,6 +53,9 @@
             <label for="titulo" class="form-label col-12">
               <validation-message [control]="getControl('titulo')">
                 Titulo do Projeto
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['titulo']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <input
@@ -65,6 +71,9 @@
             <label for="idOrganizacao" class="form-label col-12">
               <validation-message [control]="getControl('idOrganizacao')">
                 Orgão de Origem
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['idOrganizacao']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <ng-select
@@ -87,6 +96,9 @@
                 [control]="getControl('idResponsavelProponente')"
               >
                 Responsavel Proponente
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['idResponsavelProponente']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <ng-select
@@ -109,6 +121,9 @@
             <label for="membroEquipeElaboracao" class="form-label col-12">
               <validation-message [control]="getControl('equipeElaboracao')">
                 Equipe de Elaboração
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['equipeElaboracao']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
 
@@ -151,6 +166,9 @@
             <label for="valorEstimado" class="col-12 form-label">
               <validation-message [control]="getControl('valorEstimado')">
                 Valor Estimado
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['valorEstimado']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <input
@@ -183,6 +201,9 @@
             <label for="microrregioesAtendidas" class="col-12 form-label">
               <validation-message [control]="getControl('idMicrorregioesList')">
                 Microrregiões Atendidas
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['idMicrorregioesList']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <ng-select
@@ -205,6 +226,9 @@
             <label for="objetivo" class="form-label col-12">
               <validation-message [control]="getControl('objetivo')">
                 Objetivo
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['objetivo']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
@@ -220,6 +244,9 @@
             <label for="objetivoEspecifico" class="form-label col-12">
               <validation-message [control]="getControl('objetivoEspecifico')">
                 Objetivo Específico
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['objetivoEspecifico']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
@@ -235,6 +262,9 @@
             <label for="situacaoProblema" class="form-label col-12">
               <validation-message [control]="getControl('situacaoProblema')">
                 Situação Problema
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['situacaoProblema']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
 
@@ -251,6 +281,9 @@
             <label for="solucoesPropostas" class="form-label col-12">
               <validation-message [control]="getControl('solucoesPropostas')">
                 Soluções Propostas/Resultados Esperados
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['solucoesPropostas']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
@@ -267,6 +300,9 @@
               <validation-message [control]="getControl('impactos')">
                 Impactos do Projeto no Âmbito Ambiental, Social e de Governança
                 (ESG)
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['impactos']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
@@ -284,6 +320,9 @@
                 [control]="getControl('arranjosInstitucionais')"
               >
                 Arranjo Institucional
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['arranjosInstitucionais']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
