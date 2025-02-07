@@ -61,6 +61,7 @@ import {
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -94,6 +95,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public usuario_IdOrganizacoes: Array<number> = [];
 
   public projetoForm: FormGroup = new FormGroup({});
+  public projetoTooltip: Record<string, string> =
+    COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   public organizacoesOpcoes: IOpcoesDropdown[] = [];
   public pessoasOpcoes: IOpcoesDropdown[] = [];
