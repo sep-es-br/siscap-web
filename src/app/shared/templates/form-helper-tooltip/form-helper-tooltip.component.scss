@@ -1,0 +1,36 @@
+@import "bootstrap-utilities";
+
+button {
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.form-helper-tooltip {
+  .tooltip-inner {
+    max-width: 600px;
+    width: fit-content;
+    text-align: left;
+  }
+}
+
+@include media-breakpoint-between(md, xl) {
+  .form-helper-tooltip {
+    .tooltip-inner {
+      max-width: 400px;
+    }
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .form-helper-tooltip {
+    .tooltip-inner {
+      max-width: 200px;
+    }
+  }
+}
