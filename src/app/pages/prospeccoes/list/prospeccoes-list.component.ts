@@ -49,7 +49,7 @@ export class ProspeccoesListComponent {
   ) {}
 
   public formatarSiglaObjetoCartaConsulta(objetoCartaConsulta: string): string {
-    return objetoCartaConsulta.split(' ')[0];
+    return objetoCartaConsulta.split(' - ')[0];
   }
 
   public sortColumn(event: SortColumn): void {
