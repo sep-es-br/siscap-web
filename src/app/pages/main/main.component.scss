@@ -6,35 +6,33 @@
     |-> <siscap-user-profile>
   * <siscap-breadcrumb>
 
-  Utilizado para ajustar o valor da propriedade margin-top da seção que encapsula conteúdo 
+  Utilizado para ajustar o valor da propriedade padding-top da seção que encapsula conteúdo 
   principal da aplicação (<router-outlet>), devido á propriedade position: absolute de algum(ns) 
   elemento(s) acima.
 */
-$main-content-margin-top: 225px;
-$main-content-margin-top-proponente: 185px;
+$main-content-padding-top: 225px;
+$main-content-padding-top-proponente: 185px;
+
+section#main-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
 
 section.main-content-wrapper {
-  margin-top: $main-content-margin-top;
-  margin-bottom: 4rem;
+  padding-top: $main-content-padding-top;
 }
 
 section.main-content-wrapper-proponente {
-  margin-top: $main-content-margin-top-proponente;
-  margin-bottom: 4rem;
+  padding-top: $main-content-padding-top-proponente;
 }
 
-section#footer-content {
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-  z-index: -1 !important;
+div.footer {
+  padding: 1rem 0;
 
-  div.footer {
-    height: 3rem;
-
-    span {
-      font-size: 0.875rem;
-    }
+  span {
+    font-size: 0.875rem;
   }
 }
 
@@ -44,10 +42,10 @@ section#footer-content {
 */
 @media (max-width: 767px) {
   section.main-content-wrapper {
-    margin-top: calc($main-content-margin-top - 4vw);
+    padding-top: calc($main-content-padding-top - 4vw);
   }
 
   section.main-content-wrapper-proponente {
-    margin-top: calc($main-content-margin-top-proponente - 4vw);
+    padding-top: calc($main-content-padding-top-proponente - 4vw);
   }
 }
