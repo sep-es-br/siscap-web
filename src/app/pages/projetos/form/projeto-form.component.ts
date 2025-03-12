@@ -160,7 +160,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this._idProjetoEdicao = projetoModel.id;
 
-        this.mostrarBotaoGerarDic = true;
+        this.mostrarBotaoGerarDic = !projetoModel.rascunho && this.statusProjeto != StatusProjetoEnum.Em_Elaboracao ;
 
         this.trocarModo(false);
 
