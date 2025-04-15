@@ -119,6 +119,7 @@ export class RateioMunicipioFormCardComponent
       fromEvent(municipioPercentualRateioInput, 'beforeinput').subscribe(
         (beforeInputEvent) => {
           if (!this.rateioService.quantiaFormControlReferencia) {
+            console.log("rateio-municipio-from-card-component - ngAfterViewInit")
             beforeInputEvent.preventDefault();
             document
               .querySelector('div#nullQuantiaFormControlValueCol')
@@ -142,6 +143,7 @@ export class RateioMunicipioFormCardComponent
       fromEvent(municipioQuantiaRateioInput, 'beforeinput').subscribe(
         (beforeInputEvent) => {
           if (!this.rateioService.quantiaFormControlReferencia) {
+            console.log("rateio-municipio-from-card-component - ngAfterViewInit")
             beforeInputEvent.preventDefault();
             document
               .querySelector('div#nullQuantiaFormControlValueCol')

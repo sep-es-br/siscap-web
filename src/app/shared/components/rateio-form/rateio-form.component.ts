@@ -61,6 +61,7 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
     if (estadoCheckboxDiv) {
       fromEvent(estadoCheckboxDiv, 'click').subscribe((clickEvent) => {
         if (!this.rateioService.quantiaFormControlReferencia) {
+          console.log("rateio-from-component - ngAfterViewInit " + this.rateioService.quantiaFormControlReferencia )
           clickEvent.preventDefault();
           document
             .querySelector('div#nullQuantiaFormControlValueCol')

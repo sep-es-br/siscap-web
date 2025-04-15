@@ -154,9 +154,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           (status) => status != this.statusProjeto
         );
 
+        /*
         this.isProponente
           ? this.iniciarFormProponente(projetoModel)
           : this.iniciarForm(projetoModel);
+        */
+
+        this.iniciarForm(projetoModel);
 
         this._idProjetoEdicao = projetoModel.id;
 
@@ -168,6 +172,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.isProponente &&
           projetoModel.status == StatusProjetoEnum.Em_Analise
         ) {
+          
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             this._projetosService.gerarBotoesAcaoFormularioProponente()
           );
@@ -175,7 +180,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             this._projetosService.gerarBotoesAcaoFormulario()
           );
-
+          
           // Workaround para carregar o componente de rateio quando modo de edição
           setTimeout(() => {
             this.trocarModo(true);
@@ -185,22 +190,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         if (!this.isProponente) {
           this.mostrarBotaoStatusProjeto = true;
         }
-
         this.loading = false;
       })
     );
 
     this._cadastrarProjeto$ = criar$.pipe(
       tap(() => {
+                
         this.isProponente ? this.iniciarFormProponente() : this.iniciarForm();
-
+        
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._projetosService.gerarBotoesAcaoFormulario()
+          this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
         );
 
         this.mostrarBotaoGerarDic = false;
 
         this.loading = false;
+
       })
     );
 
@@ -267,7 +273,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._subscription.add(this._getAllOpcoes$.subscribe());
-
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
   }
@@ -340,13 +345,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarFormProponente(projetoFormModel?: ProjetoFormModel): void {
+    
     const valorInicialControleValorEstimado = this.isProponente
       ? this._projetosService.construirValorControleValorEstimado(
           projetoFormModel?.valor
         )
       : null;
-
-    const valorInicialControleIdMicrorregioesList = this.isProponente
+      
+      const valorInicialControleIdMicrorregioesList = this.isProponente
       ? this._projetosService.construirValorControleIdMicrorregioesList(
           projetoFormModel?.rateio
         )
@@ -372,62 +378,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       idMicrorregioesList: this._nnfb.control(
         valorInicialControleIdMicrorregioesList,
         [Validators.required, Validators.minLength(1)]
-      ),
-      objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
-        Validators.required,
-        Validators.maxLength(2000),
-      ]),
-      objetivoEspecifico: this._nnfb.control(
-        projetoFormModel?.objetivoEspecifico ?? null,
-        [Validators.required, Validators.maxLength(2000)]
-      ),
-      situacaoProblema: this._nnfb.control(
-        projetoFormModel?.situacaoProblema ?? null,
-        [Validators.required, Validators.maxLength(2000)]
-      ),
-      solucoesPropostas: this._nnfb.control(
-        projetoFormModel?.solucoesPropostas ?? null,
-        [Validators.required, Validators.maxLength(2000)]
-      ),
-      impactos: this._nnfb.control(projetoFormModel?.impactos ?? null, [
-        Validators.required,
-        Validators.maxLength(2000),
-      ]),
-      arranjosInstitucionais: this._nnfb.control(
-        projetoFormModel?.arranjosInstitucionais ?? null,
-        [Validators.required, Validators.maxLength(2000)]
-      ),
-      idResponsavelProponente: this._nnfb.control(
-        projetoFormModel?.idResponsavelProponente ?? null,
-        Validators.required
-      ),
-      equipeElaboracao: this.equipeService.construirEquipeFormArray(
-        projetoFormModel?.equipeElaboracao
-      ),
-    });
-
-    this.projetoFormValueChanges();
-
-    if (this.isProponente && !projetoFormModel)
-      this.usuarioProponenteValoresIniciaisProjetoForm();
-  }
-
-  private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
-    this.projetoForm = this._nnfb.group({
-      sigla: this._nnfb.control(projetoFormModel?.sigla ?? null, [
-        Validators.required,
-        Validators.maxLength(12),
-      ]),
-      titulo: this._nnfb.control(projetoFormModel?.titulo ?? null, [
-        Validators.required,
-        Validators.maxLength(150),
-      ]),
-      idOrganizacao: this._nnfb.control(
-        projetoFormModel?.idOrganizacao ?? null,
-        Validators.required
-      ),
-      valor: this._valorService.construirValorFormGroup(
-        projetoFormModel?.valor
       ),
       rateio: this._rateioService.construirRateioFormArray(
         projetoFormModel?.rateio
@@ -466,7 +416,86 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
 
     this.projetoFormValueChanges();
+
+    if ( this.isProponente && !projetoFormModel )
+      this.usuarioProponenteValoresIniciaisProjetoForm();
+
+  }
+
+  private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
+    const valorInicialControleValorEstimado = projetoFormModel?.valor
+      ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
+      : null;
+    const valorInicialControleIdMicrorregioesList = projetoFormModel?.rateio
+        ? this._projetosService.construirValorControleIdMicrorregioesList(projetoFormModel.rateio)
+        : [];
+    this.projetoForm = this._nnfb.group({
+      sigla: this._nnfb.control(projetoFormModel?.sigla ?? null, [
+        Validators.required,
+        Validators.maxLength(12),
+      ]),
+      titulo: this._nnfb.control(projetoFormModel?.titulo ?? null, [
+        Validators.required,
+        Validators.maxLength(150),
+      ]),
+      idOrganizacao: this._nnfb.control(
+        projetoFormModel?.idOrganizacao ?? null,
+        Validators.required
+      ),
+      valorEstimado: this._nnfb.control(valorInicialControleValorEstimado, [
+        Validators.required,
+        Validators.min(1),
+      ]),
+      idMicrorregioesList: this._nnfb.control(
+        valorInicialControleIdMicrorregioesList,
+        [Validators.required, Validators.minLength(1)]
+      ),
+      rateio: this._rateioService.construirRateioFormArray(
+        projetoFormModel?.rateio
+      ),
+      valor: this._valorService.construirValorFormGroup(
+        projetoFormModel?.valor
+      ),
+      objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
+        Validators.required,
+        Validators.maxLength(2000),
+      ]),
+      objetivoEspecifico: this._nnfb.control(
+        projetoFormModel?.objetivoEspecifico ?? null,
+        [Validators.required, Validators.maxLength(2000)]
+      ),
+      situacaoProblema: this._nnfb.control(
+        projetoFormModel?.situacaoProblema ?? null,
+        [Validators.required, Validators.maxLength(2000)]
+      ),
+      solucoesPropostas: this._nnfb.control(
+        projetoFormModel?.solucoesPropostas ?? null,
+        [Validators.required, Validators.maxLength(2000)]
+      ),
+      impactos: this._nnfb.control(projetoFormModel?.impactos ?? null, [
+        Validators.required,
+        Validators.maxLength(2000),
+      ]),
+      arranjosInstitucionais: this._nnfb.control(
+        projetoFormModel?.arranjosInstitucionais ?? null,
+        [Validators.required, Validators.maxLength(2000)]
+      ),
+      idResponsavelProponente: this._nnfb.control(
+        projetoFormModel?.idResponsavelProponente ?? null,
+        Validators.required
+      ),
+      equipeElaboracao: this.equipeService.construirEquipeFormArray(
+        projetoFormModel?.equipeElaboracao
+      ),
+    });
+
+    this.projetoFormValueChanges();
+    
     this.valorFormValueChanges();
+
+    if ( this.isProponente && !projetoFormModel )
+      this.usuarioProponenteValoresIniciaisProjetoForm();
+
   }
 
   private usuarioProponenteValoresIniciaisProjetoForm(): void {
@@ -553,6 +582,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
 
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
+      console.log("quantiaFormControl.valueChanges.subscribe((quantiaValue) " + quantiaValue )
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
     });
   }
@@ -604,6 +634,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private trocarModo(permitir: boolean): void {
+
     this.isModoEdicao = permitir;
 
     const projetoFormControls = this.projetoForm.controls;
@@ -615,6 +646,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private validarProjetoFormProponenteRateio(): Array<RateioModel> {
+    
     const idMicrorregioesListFormControl = this.projetoForm.get(
       'idMicrorregioesList'
     ) as FormControl<Array<number>>;
@@ -622,11 +654,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const valorEstimadoFormControl = this.projetoForm.get(
       'valorEstimado'
     ) as FormControl<number>;
-
+    
     return this._projetosService.construirProjetoModelRateio(
       idMicrorregioesListFormControl.value,
       valorEstimadoFormControl.value
     );
+
   }
 
   private validarProjetoFormProponenteValor(): ValorModel {
@@ -655,7 +688,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.get('valor.tipo')?.enable();
 
     const payload = new ProjetoFormModel(form.value as IProjetoForm);
-
+   
     if (this.isProponente) {
       payload.rateio = this.validarProjetoFormProponenteRateio();
       payload.valor = this.validarProjetoFormProponenteValor();

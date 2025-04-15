@@ -101,6 +101,7 @@ export class RateioMicrorregiaoFormCardComponent
       fromEvent(microrregiaoPercentualRateioInput, 'beforeinput').subscribe(
         (beforeInputEvent) => {
           if (!this.rateioService.quantiaFormControlReferencia) {
+            console.log("rateio-microregiao-from-component - ngAfterViewInit")
             beforeInputEvent.preventDefault();
             document
               .querySelector('div#nullQuantiaFormControlValueCol')
@@ -125,6 +126,7 @@ export class RateioMicrorregiaoFormCardComponent
       fromEvent(microrregiaoQuantiaRateioInput, 'beforeinput').subscribe(
         (beforeInputEvent) => {
           if (!this.rateioService.quantiaFormControlReferencia) {
+            console.log("rateio-microregiao-from-card-component - ngAfterViewInit")
             beforeInputEvent.preventDefault();
             document
               .querySelector('div#nullQuantiaFormControlValueCol')

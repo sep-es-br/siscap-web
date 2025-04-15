@@ -155,14 +155,14 @@
             ></siscap-equipe-form>
           </div>
 
-          <div class="col-12" *ngIf="!isProponente">
+          <div class="col-12">
             <siscap-valor-form
               [moedasList]="moedasList"
               [tiposValorOpcoes]="tiposValorOpcoes"
             ></siscap-valor-form>
           </div>
 
-          <div class="col-12" *ngIf="isProponente">
+          <div class="col-12">
             <label for="valorEstimado" class="col-12 form-label">
               <validation-message [control]="getControl('valorEstimado')">
                 Valor Estimado
@@ -186,7 +186,7 @@
             />
           </div>
 
-          <div class="col-12 mt-2" *ngIf="!isProponente">
+          <div class="col-12 mt-2" >
             <label for="rateio" class="form-label col-12">
               <validation-message [control]="getControl('rateio')">
                 Rateio
@@ -197,7 +197,7 @@
             ></siscap-rateio-form>
           </div>
 
-          <div class="col-12" *ngIf="isProponente">
+          <div class="col-12" >
             <label for="microrregioesAtendidas" class="col-12 form-label">
               <validation-message [control]="getControl('idMicrorregioesList')">
                 Microrregiões Atendidas

@@ -68,9 +68,10 @@ export class ProjetosPesquisaComponent implements OnInit {
     this.projetosPesquisaForm = new FormGroup({
       siglaOuTitulo: new FormControl(''),
       status: new FormControl('Status'),
-      idOrganizacao: new FormControl(
+      idOrganizacao: new FormControl(idOrganizacaoValorInicial),
+      /*idOrganizacao: new FormControl(
         this.isProponente ? idOrganizacaoValorInicial : 0
-      ),
+      ),*/
     });
 
     this.projetoPesquisaFormValueChanges();
