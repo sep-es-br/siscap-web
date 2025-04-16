@@ -172,7 +172,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.isProponente &&
           projetoModel.status == StatusProjetoEnum.Em_Analise
         ) {
-          
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             this._projetosService.gerarBotoesAcaoFormularioProponente()
           );
@@ -180,13 +179,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             this._projetosService.gerarBotoesAcaoFormulario()
           );
-          
           // Workaround para carregar o componente de rateio quando modo de edição
           setTimeout(() => {
             this.trocarModo(true);
           }, 2000);
         }
-
         if (!this.isProponente) {
           this.mostrarBotaoStatusProjeto = true;
         }
@@ -197,8 +194,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._cadastrarProjeto$ = criar$.pipe(
       tap(() => {
                 
-        this.isProponente ? this.iniciarFormProponente() : this.iniciarForm();
+        //this.isProponente ? this.iniciarFormProponente() : this.iniciarForm();
         
+        this.iniciarForm();
+
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
           this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
         );
@@ -297,7 +296,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const modalRef = this._ngbModalService.open(modalTemplateRef, {
       centered: true,
     });
-
     modalRef.result.then(
       (result) => {
         this.alterarStatusProjeto(result);
@@ -582,7 +580,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
 
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
-      console.log("quantiaFormControl.valueChanges.subscribe((quantiaValue) " + quantiaValue )
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
     });
   }
