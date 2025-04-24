@@ -15,7 +15,7 @@ import {
   IPessoaAcessoCidadao,
   IPessoaTableData,
 } from '../../interfaces/pessoa.interface';
-import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
+import { IOpcoesDropdown, IOpcoesDropdownResponsavelProponente } from '../../interfaces/opcoes-dropdown.interface';
 
 import { FormDataHelper } from '../../helpers/form-data.helper';
 
@@ -91,6 +91,14 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
   ): Observable<IOpcoesDropdown> {
     return this._http.get<IOpcoesDropdown>(
       `${this._url}/responsavel/${idOrganizacao}`
+    );
+  }
+
+  public buscarResponsavelPorIdOrganizacaoAC(
+    idOrganizacao: number
+  ): Observable<IOpcoesDropdownResponsavelProponente[]> {
+    return this._http.get<IOpcoesDropdownResponsavelProponente[]>(
+      `${this._url}/opcoes/${idOrganizacao}`
     );
   }
 

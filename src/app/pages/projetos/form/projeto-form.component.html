@@ -79,7 +79,7 @@
             <ng-select
               id="idOrganizacao"
               placeholder="-- Selecione um orgão da lista abaixo --"
-              formControlName="idOrganizacao"
+              formControlName="idOrganizacao">
               [readonly]="isProponente && usuario_IdOrganizacoes.length > 0"
             >
               <ng-option
@@ -93,27 +93,33 @@
           <div class="col-12 col-md-6" id="responsavel-proponente">
             <label for="responsavelProponente" class="form-label col-12">
               <validation-message
-                [control]="getControl('idResponsavelProponente')"
-              >
+                [control]="getControl('idResponsavelProponente')">
                 Responsavel Proponente
                 <form-helper-tooltip
                   [texto]="projetoTooltip['idResponsavelProponente']"
                 ></form-helper-tooltip>
               </validation-message>
             </label>
-            <ng-select
-              id="responsavelProponente"
-              placeholder="-- Selecione o responsável proponente --"
-              formControlName="idResponsavelProponente"
-            >
-              <ng-option
-                *ngFor="let pessoa of pessoasOpcoes"
-                [value]="pessoa.id"
-                >{{ pessoa.nome }}</ng-option
-              >
-            </ng-select>
+            <ng-container *ngIf="!isLoadingPessoas; else carregandoResponsaveis">
+              <ng-select
+                id="responsavelProponente"
+                placeholder="-- Selecione o responsável proponente --"
+                formControlName="idResponsavelProponente"
+                [items]="pessoasOpcoes"
+                bindLabel="nome"
+                bindValue="id" >
+                <ng-template ng-option-tmp let-item="item">
+                  <div style="display: flex; flex-direction: column; line-height: 1.2;">
+                    <span>{{ item.nome }}</span>
+                    <span style="font-size: 0.65em; color: gray;">{{ item.papelPrioritario }}</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </ng-container>
+            <ng-template #carregandoResponsaveis>
+              <p>Carregando responsáveis...</p>
+            </ng-template>
           </div>
-
           <div
             class="col-12"
             *ngIf="getControl('idResponsavelProponente')?.value"

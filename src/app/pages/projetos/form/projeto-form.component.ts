@@ -40,6 +40,7 @@ import { ValorModel } from '../../../core/models/valor.model';
 import {
   ILocalidadeOpcoesDropdown,
   IOpcoesDropdown,
+  IOpcoesDropdownResponsavelProponente,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 import {
   IProjeto,
@@ -76,7 +77,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _cadastrarProjeto$: Observable<number>;
 
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
+  //private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getLocalidadesOpcoes$: Observable<
@@ -99,8 +100,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   public organizacoesOpcoes: IOpcoesDropdown[] = [];
-  public pessoasOpcoes: IOpcoesDropdown[] = [];
-  public pessoasOpcoesFilrada: IOpcoesDropdown[] = [];
+  public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
+  public pessoasOpcoesFiltrada: IOpcoesDropdownResponsavelProponente[] = [];
   public planosOpcoes: IOpcoesDropdown[] = [];
   public tiposValorOpcoes: IOpcoesDropdown[] = [];
   public localidadesOpcoes: ILocalidadeOpcoesDropdown[] = [];
@@ -114,6 +115,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
 
   public idMembroEquipeElaboracao: number | null = null;
+
+  public isLoadingPessoas = true;
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
@@ -129,6 +132,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _navegacaoService: NavegacaoService
   ) {
+
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
     this.usuario_IdOrganizacoes =
       this._usuarioService.usuarioPerfil.idOrganizacoes;
@@ -153,12 +157,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
           (status) => status != this.statusProjeto
         );
-
-        /*
-        this.isProponente
-          ? this.iniciarFormProponente(projetoModel)
-          : this.iniciarForm(projetoModel);
-        */
 
         this.iniciarForm(projetoModel);
 
@@ -193,9 +191,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._cadastrarProjeto$ = criar$.pipe(
       tap(() => {
-                
-        //this.isProponente ? this.iniciarFormProponente() : this.iniciarForm();
-        
+       
         this.iniciarForm();
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
@@ -213,14 +209,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
       .pipe(tap((response) => (this.organizacoesOpcoes = response)));
 
-    this._getPessoasOpcoes$ = this._opcoesDropdownService
-      .getOpcoesPessoas()
+    /*this._getPessoasOpcoes$ = this._opcoesDropdownService
+      .getOpcoesPessoasOrganizacao(0)
       .pipe(
         tap(
           (response) =>
-            (this.pessoasOpcoesFilrada = this.pessoasOpcoes = response)
+            (this.pessoasOpcoesFiltrada = this.pessoasOpcoes = response)
         )
-      );
+      );*/
 
     this._getPlanosOpcoes$ = this._opcoesDropdownService
       .getOpcoesPlanos()
@@ -252,7 +248,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._getAllOpcoes$ = concat(
       this._getOrganizacoesOpcoes$,
-      this._getPessoasOpcoes$,
+      //this._getPessoasOpcoes$,
       this._getPlanosOpcoes$,
       this._getTiposValorOpcoes$,
       this._getTiposPapelOpcoes$,
@@ -268,6 +264,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.executarAcaoBreadcrumb(acao)
       )
     );
+
   }
 
   ngOnInit(): void {
@@ -421,6 +418,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
+
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
       : null;
@@ -494,8 +492,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     if ( this.isProponente && !projetoFormModel )
       this.usuarioProponenteValoresIniciaisProjetoForm();
 
+    this.getControl('idResponsavelProponente')?.valueChanges.subscribe( selectedId => {
+      this.verificaOuCriaResponsavel(selectedId);
+    });
+
   }
 
+  private verificaOuCriaResponsavel(selectedId : number ): void {
+    console.log( "Id Responsavel selecionado : " + selectedId );
+  }
+  
   private usuarioProponenteValoresIniciaisProjetoForm(): void {
     const idOrganizacaoFormControl = this.projetoForm.get(
       'idOrganizacao'
@@ -510,6 +516,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private projetoFormValueChanges(): void {
+
     const idOrganizacaoFormControl = this.projetoForm.get(
       'idOrganizacao'
     ) as FormControl<number | null>;
@@ -528,7 +535,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.equipeService.equipeFormArray.value.some(
             (membro) => membro.idPessoa === idResponsavelProponenteValue
           );
-
         if (
           this.equipeService.equipeFormArray.length > 0 &&
           idResponsavelProponenteFormControl.dirty &&
@@ -539,7 +545,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'Responsável proponente já incluso na equipe',
             ['Limpando membros da equipe.']
           );
-
           this.equipeService.equipeFormArray.clear();
         }
       }
@@ -585,6 +590,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private idOrganizacaoChange(idOrganizacaoValue: number | null): void {
+
     const idResponsavelProponenteFormControl = this.projetoForm.get(
       'idResponsavelProponente'
     ) as FormControl<number | null>;
@@ -594,18 +600,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       idResponsavelProponenteFormControl.markAsTouched();
       return;
     }
-
-    this._pessoasService
-      .buscarResponsavelPorIdOrganizacao(idOrganizacaoValue)
+    
+    this.isLoadingPessoas = true;
+    this.pessoasOpcoes = [];
+  
+      this._pessoasService
+      .buscarResponsavelPorIdOrganizacaoAC(idOrganizacaoValue)
       .subscribe({
-        next: (response: IOpcoesDropdown) => {
-          idResponsavelProponenteFormControl.patchValue(response.id);
+        next: (response) => {
+          this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
+          this.isLoadingPessoas = false;
         },
-        error: (err) => {
-          idResponsavelProponenteFormControl.patchValue(null);
-          idResponsavelProponenteFormControl.markAsTouched();
+        error: () => {
+          this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
+          this.isLoadingPessoas = false;
         },
-      });
+      });  
+
   }
 
   private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
@@ -752,4 +763,5 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._projetosService.idProjeto$.next(0);
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
+
 }
