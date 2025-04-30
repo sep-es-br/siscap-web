@@ -26,4 +26,5 @@ export interface IOpcoesDropdownResponsavelProponente {
   id: number;
   nome: string;
   papelPrioritario: string;
+  agentePublicoSub: string;
 }

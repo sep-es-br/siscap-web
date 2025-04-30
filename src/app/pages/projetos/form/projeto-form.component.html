@@ -80,7 +80,6 @@
               id="idOrganizacao"
               placeholder="-- Selecione um orgão da lista abaixo --"
               formControlName="idOrganizacao">
-              [readonly]="isProponente && usuario_IdOrganizacoes.length > 0"
             >
               <ng-option
                 *ngFor="let organizacao of organizacoesOpcoes"
@@ -104,10 +103,12 @@
               <ng-select
                 id="responsavelProponente"
                 placeholder="-- Selecione o responsável proponente --"
-                formControlName="idResponsavelProponente"
+                formControlName="subResponsavelProponente"
                 [items]="pessoasOpcoes"
                 bindLabel="nome"
-                bindValue="id" >
+                bindValue="agentePublicoSub" 
+                [clearable]="true"
+                (change)="onSelecionarPessoa($event)" > 
                 <ng-template ng-option-tmp let-item="item">
                   <div style="display: flex; flex-direction: column; line-height: 1.2;">
                     <span>{{ item.nome }}</span>
@@ -120,9 +121,7 @@
               <p>Carregando responsáveis...</p>
             </ng-template>
           </div>
-          <div
-            class="col-12"
-            *ngIf="getControl('idResponsavelProponente')?.value"
+          <div class="col-12"
           >
             <label for="membroEquipeElaboracao" class="form-label col-12">
               <validation-message [control]="getControl('equipeElaboracao')">
@@ -132,13 +131,11 @@
                 ></form-helper-tooltip>
               </validation-message>
             </label>
-
             <ng-select
               id="idMembroEquipeElaboracao"
               placeholder="-- Selecione uma pessoa para incluir na equipe de elaboração --"
               [(ngModel)]="idMembroEquipeElaboracao"
               [ngModelOptions]="{ standalone: true }"
-              [disabled]="!isModoEdicao"
               (change)="idMembroNgSelectChangeEvent($event)"
             >
               <ng-option
@@ -147,7 +144,7 @@
                     filtrarResponsavelProponente(pessoasOpcoes)
                   )
                 "
-                [value]="pessoa.id"
+                [value]="pessoa.agentePublicoSub"
               >
                 {{ pessoa.nome }}
               </ng-option>

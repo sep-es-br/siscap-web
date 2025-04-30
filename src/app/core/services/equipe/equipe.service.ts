@@ -9,7 +9,7 @@ import {
 
 import { Subject } from 'rxjs';
 
-import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
+import { IOpcoesDropdownResponsavelProponente } from '../../interfaces/opcoes-dropdown.interface';
 import { IEquipe } from '../../interfaces/equipe.interface';
 
 import { EquipeFormType } from '../../types/form/equipe-form.type';
@@ -36,7 +36,7 @@ export class EquipeService {
     this._equipeFormArraySnapshot = equipeFormArrayValue;
   }
 
-  private _idMembroNgSelectValue$: Subject<number> = new Subject<number>();
+  private readonly _idMembroNgSelectValue$: Subject<number> = new Subject<number>();
 
   public get idMembroNgSelectValue$(): Subject<number> {
     return this._idMembroNgSelectValue$;
@@ -151,8 +151,8 @@ export class EquipeService {
   }
 
   public filtrarPessoasOpcoes(
-    pessoasOpcoes: IOpcoesDropdown[]
-  ): IOpcoesDropdown[] {
+    pessoasOpcoes: IOpcoesDropdownResponsavelProponente[]
+  ): IOpcoesDropdownResponsavelProponente[] {
     return pessoasOpcoes.filter(
       (pessoa) =>
         !this.equipeFormArray.value.some(

@@ -77,7 +77,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _cadastrarProjeto$: Observable<number>;
 
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  //private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getLocalidadesOpcoes$: Observable<
@@ -157,7 +156,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
           (status) => status != this.statusProjeto
         );
-
+              
         this.iniciarForm(projetoModel);
 
         this._idProjetoEdicao = projetoModel.id;
@@ -209,15 +208,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
       .pipe(tap((response) => (this.organizacoesOpcoes = response)));
 
-    /*this._getPessoasOpcoes$ = this._opcoesDropdownService
-      .getOpcoesPessoasOrganizacao(0)
-      .pipe(
-        tap(
-          (response) =>
-            (this.pessoasOpcoesFiltrada = this.pessoasOpcoes = response)
-        )
-      );*/
-
     this._getPlanosOpcoes$ = this._opcoesDropdownService
       .getOpcoesPlanos()
       .pipe(tap((response) => (this.planosOpcoes = response)));
@@ -248,7 +238,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._getAllOpcoes$ = concat(
       this._getOrganizacoesOpcoes$,
-      //this._getPessoasOpcoes$,
       this._getPlanosOpcoes$,
       this._getTiposValorOpcoes$,
       this._getTiposPapelOpcoes$,
@@ -302,16 +291,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public filtrarResponsavelProponente(
-    pessoasOpcoes: IOpcoesDropdown[]
-  ): IOpcoesDropdown[] {
+    pessoasOpcoes: IOpcoesDropdownResponsavelProponente[]
+  ): IOpcoesDropdownResponsavelProponente[] {
     return pessoasOpcoes.filter(
-      (pessoa) => pessoa.id != this.getControl('idResponsavelProponente').value
+        (pessoa) => pessoa.agentePublicoSub != this.getControl('subResponsavelProponente').value
     );
   }
 
   public idMembroNgSelectChangeEvent(event: number): void {
     this.equipeService.idMembroNgSelectValue$.next(event);
-
     setTimeout(() => (this.idMembroEquipeElaboracao = null), 0);
   }
 
@@ -338,85 +326,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public baixarDIC(): void {
     this._projetosService.baixarDIC(this._idProjetoEdicao);
   }
-
-  private iniciarFormProponente(projetoFormModel?: ProjetoFormModel): void {
-    
-    const valorInicialControleValorEstimado = this.isProponente
-      ? this._projetosService.construirValorControleValorEstimado(
-          projetoFormModel?.valor
-        )
-      : null;
-      
-      const valorInicialControleIdMicrorregioesList = this.isProponente
-      ? this._projetosService.construirValorControleIdMicrorregioesList(
-          projetoFormModel?.rateio
-        )
-      : null;
-
-    this.projetoForm = this._nnfb.group({
-      sigla: this._nnfb.control(projetoFormModel?.sigla ?? null, [
-        Validators.required,
-        Validators.maxLength(12),
-      ]),
-      titulo: this._nnfb.control(projetoFormModel?.titulo ?? null, [
-        Validators.required,
-        Validators.maxLength(150),
-      ]),
-      idOrganizacao: this._nnfb.control(
-        projetoFormModel?.idOrganizacao ?? null,
-        Validators.required
-      ),
-      valorEstimado: this._nnfb.control(valorInicialControleValorEstimado, [
-        Validators.required,
-        Validators.min(1),
-      ]),
-      idMicrorregioesList: this._nnfb.control(
-        valorInicialControleIdMicrorregioesList,
-        [Validators.required, Validators.minLength(1)]
-      ),
-      rateio: this._rateioService.construirRateioFormArray(
-        projetoFormModel?.rateio
-      ),
-      objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
-        Validators.required,
-        Validators.maxLength(2000),
-      ]),
-      objetivoEspecifico: this._nnfb.control(
-        projetoFormModel?.objetivoEspecifico ?? null,
-        [Validators.required, Validators.maxLength(2000)]
-      ),
-      situacaoProblema: this._nnfb.control(
-        projetoFormModel?.situacaoProblema ?? null,
-        [Validators.required, Validators.maxLength(2000)]
-      ),
-      solucoesPropostas: this._nnfb.control(
-        projetoFormModel?.solucoesPropostas ?? null,
-        [Validators.required, Validators.maxLength(2000)]
-      ),
-      impactos: this._nnfb.control(projetoFormModel?.impactos ?? null, [
-        Validators.required,
-        Validators.maxLength(2000),
-      ]),
-      arranjosInstitucionais: this._nnfb.control(
-        projetoFormModel?.arranjosInstitucionais ?? null,
-        [Validators.required, Validators.maxLength(2000)]
-      ),
-      idResponsavelProponente: this._nnfb.control(
-        projetoFormModel?.idResponsavelProponente ?? null,
-        Validators.required
-      ),
-      equipeElaboracao: this.equipeService.construirEquipeFormArray(
-        projetoFormModel?.equipeElaboracao
-      ),
-    });
-
-    this.projetoFormValueChanges();
-
-    if ( this.isProponente && !projetoFormModel )
-      this.usuarioProponenteValoresIniciaisProjetoForm();
-
-  }
-
+ 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
 
     const valorInicialControleValorEstimado = projetoFormModel?.valor
@@ -483,6 +393,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       equipeElaboracao: this.equipeService.construirEquipeFormArray(
         projetoFormModel?.equipeElaboracao
       ),
+      nomeResponsavelProponente: this._nnfb.control(
+        projetoFormModel?.nomeResponsavelProponente ?? null
+      ),
+      papelResponsavelProponente: this._nnfb.control(
+        projetoFormModel?.papelResponsavelProponente ?? null,
+      ),
+      subResponsavelProponente: this._nnfb.control(
+        projetoFormModel?.subResponsavelProponente ?? null
+      ),
     });
 
     this.projetoFormValueChanges();
@@ -491,28 +410,27 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     if ( this.isProponente && !projetoFormModel )
       this.usuarioProponenteValoresIniciaisProjetoForm();
-
-    this.getControl('idResponsavelProponente')?.valueChanges.subscribe( selectedId => {
-      this.verificaOuCriaResponsavel(selectedId);
-    });
-
-  }
-
-  private verificaOuCriaResponsavel(selectedId : number ): void {
-    console.log( "Id Responsavel selecionado : " + selectedId );
+    
   }
   
   private usuarioProponenteValoresIniciaisProjetoForm(): void {
     const idOrganizacaoFormControl = this.projetoForm.get(
       'idOrganizacao'
     ) as FormControl<number | null>;
-
+   
     if (this.usuario_IdOrganizacoes.length > 0)
       idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
+   
+    if ( this.isProponente ){
+      setTimeout(() => {
+        idOrganizacaoFormControl.disable({ emitEvent: false });
+      });
+    }
 
     this.equipeService.usuarioProponenteValoresIniciaisEquipeFormArray(
       this._usuarioService.usuarioPerfil.idPessoa
     );
+
   }
 
   private projetoFormValueChanges(): void {
@@ -526,7 +444,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     ) as FormControl<number | null>;
 
     idOrganizacaoFormControl.valueChanges.subscribe((idOrganizacaoValue) => {
-      if (this.isModoEdicao) this.idOrganizacaoChange(idOrganizacaoValue);
+      if (this.isModoEdicao) {
+        this.idOrganizacaoChange(idOrganizacaoValue);
+        if (this.isProponente) {
+          setTimeout(() => {
+            idOrganizacaoFormControl.disable({ emitEvent: false });
+          });
+        } 
+      }
+
     });
 
     idResponsavelProponenteFormControl.valueChanges.subscribe(
@@ -549,9 +475,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }
       }
     );
+      
   }
 
   private valorFormValueChanges(): void {
+    
     const valorFormGroup = this.projetoForm.get(
       'valor'
     ) as FormGroup<ValorFormType>;
@@ -581,12 +509,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     moedaFormControl.valueChanges.subscribe((moedaValue) => {
-      this._rateioService.moedaFormControlReferencia$.next(moedaValue);
+      setTimeout(() => {
+        this._rateioService.moedaFormControlReferencia$.next(moedaValue);
+      });
     });
 
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
     });
+    
+
   }
 
   private idOrganizacaoChange(idOrganizacaoValue: number | null): void {
@@ -600,11 +532,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       idResponsavelProponenteFormControl.markAsTouched();
       return;
     }
-    
+
     this.isLoadingPessoas = true;
     this.pessoasOpcoes = [];
-  
-      this._pessoasService
+
+    this._pessoasService
       .buscarResponsavelPorIdOrganizacaoAC(idOrganizacaoValue)
       .subscribe({
         next: (response) => {
@@ -615,7 +547,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
           this.isLoadingPessoas = false;
         },
-      });  
+      });
 
   }
 
@@ -681,11 +613,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
+    
     for (const key in form.controls) {
       form.controls[key].markAllAsTouched();
     }
 
     if (form.invalid) {
+
+      Object.keys(form.controls).forEach((key) => {
+        const control = form.get(key);
+        if (control && control.invalid) {
+          console.warn(`Campo inválido: ${key}`, control.errors);
+        }
+      });
+
       this._toastService.showToast('warning', 'O formulário contém erros.', [
         'Por favor, verifique os campos.',
       ]);
@@ -700,6 +641,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     if (this.isProponente) {
       payload.rateio = this.validarProjetoFormProponenteRateio();
       payload.valor = this.validarProjetoFormProponenteValor();
+      payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
     }
 
     const requisicao = this._idProjetoEdicao
@@ -709,10 +651,42 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     requisicao.subscribe();
   }
 
+  onSelecionarPessoa(pessoa: any) {
+    if (pessoa) {
+      this.projetoForm.patchValue({
+        idResponsavelProponente: pessoa.id,
+        nomeResponsavelProponente: pessoa.nome,
+        papelResponsavelProponente: pessoa.papelPrioritario,
+        subResponsavelProponente: pessoa.agentePublicoSub
+      });
+    } else {
+      this.projetoForm.patchValue({
+        idResponsavelProponente: null,
+        nomeResponsavelProponente: '',
+        papelResponsavelProponente: '',
+        subResponsavelProponente: ''
+      });
+    }
+  }
+
   private cadastrarProjeto(
     payload: ProjetoFormModel,
     isRascunho: boolean
   ): Observable<IProjeto> {
+      if (payload.idResponsavelProponente === 0) {
+        const dados = this.projetoForm.value;
+        return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
+          switchMap((idPessoa: number) => {
+            payload.idResponsavelProponente = idPessoa;
+            return this._projetosService.post(payload, isRascunho);
+          }),
+          tap(() => {
+            this._toastService.showToast('success', 
+            'Projeto cadastrado com sucesso.');
+          }),
+          finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
+        );
+      }
     return this._projetosService.post(payload, isRascunho).pipe(
       tap((response: IProjeto) => {
         this._toastService.showToast(
@@ -728,19 +702,31 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload: ProjetoFormModel,
     isRascunho: boolean
   ): Observable<IProjeto> {
-    return this._projetosService
-      .put(this._idProjetoEdicao, payload, isRascunho)
-      .pipe(
-        tap((response: IProjeto) => {
-          this._toastService.showToast(
-            'success',
-            'Projeto alterado com sucesso.'
-          );
+    
+    if (payload.idResponsavelProponente === 0) {
+      const dados = this.projetoForm.value;
+      return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
+        switchMap((idPessoa: number) => {
+          payload.idResponsavelProponente = idPessoa;
+          return this._projetosService.put(this._idProjetoEdicao, payload, isRascunho)
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
-        )
+        tap(() => {
+          this._toastService.showToast('success', 
+          'Projeto alterado com sucesso.');
+        }),
+        finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
       );
+    }
+    return this._projetosService.post(payload, isRascunho).pipe(
+      tap((response: IProjeto) => {
+        this._toastService.showToast(
+          'success',
+          'Projeto alterado com sucesso.'
+        );
+      }),
+      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
+    );
+
   }
 
   private alterarStatusProjeto(status: string): void {

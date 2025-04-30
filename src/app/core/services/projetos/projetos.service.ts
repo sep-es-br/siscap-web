@@ -127,7 +127,6 @@ export class ProjetosService extends BaseHttpService<
     body: ProjetoFormModel,
     isRascunho: boolean
   ): Observable<IProjeto> {
-    
     return this._http.put<IProjeto>(
       `${this._url}/${id}?rascunho=${isRascunho}`,
       body

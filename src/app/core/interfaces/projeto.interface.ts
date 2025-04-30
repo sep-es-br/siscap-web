@@ -19,6 +19,9 @@ export interface IProjeto {
   arranjosInstitucionais: string;
   idResponsavelProponente: number;
   equipeElaboracao: Array<IEquipe>;
+  nomeResponsavelProponente: string;
+  papelResponsavelProponente: string;
+  subResponsavelProponente: string;
 }
 
 export interface IProjetoForm

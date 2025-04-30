@@ -44,6 +44,10 @@ export abstract class BaseHttpService<T, TTableData>
     return this._httpClientRef.get<T>(`${this._targetUrl}/${id}`);
   }
 
+  public getBySub(sub: string): Observable<number> {
+    return this._httpClientRef.post<number>(`${this._targetUrl}/syncPorSub/${sub}`,null);
+  }
+
   public deleteById(id: number): Observable<string> {
     return this._httpClientRef.delete(`${this._targetUrl}/${id}`, {
       responseType: 'text',

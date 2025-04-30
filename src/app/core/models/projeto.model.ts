@@ -21,6 +21,9 @@ export class ProjetoFormModel implements IProjetoForm {
   public idResponsavelProponente: number;
   public equipeElaboracao: Array<EquipeModel>;
   public rascunho: boolean;
+  public nomeResponsavelProponente: string;
+  public papelResponsavelProponente: string;
+  public subResponsavelProponente: string;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -39,6 +42,9 @@ export class ProjetoFormModel implements IProjetoForm {
       projetoForm?.equipeElaboracao
     );
     this.rascunho = false;
+    this.nomeResponsavelProponente = projetoForm?.nomeResponsavelProponente ?? '';
+    this.papelResponsavelProponente = projetoForm?.papelResponsavelProponente ?? '';
+    this.subResponsavelProponente = projetoForm?.subResponsavelProponente ?? '';
   }
 
   private construirRateioModelArray(

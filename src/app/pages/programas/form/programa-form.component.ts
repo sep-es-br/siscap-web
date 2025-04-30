@@ -42,6 +42,7 @@ import {
 import {
   IProjetoPropostoOpcoesDropdown,
   IOpcoesDropdown,
+  IOpcoesDropdownResponsavelProponente,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
 
@@ -84,7 +85,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public programaForm: FormGroup = new FormGroup({});
 
   public organizacoesOpcoes: IOpcoesDropdown[] = [];
-  public pessoasOpcoes: IOpcoesDropdown[] = [];
+  public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   public projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[] = [];
   public programasOpcoes: IOpcoesDropdown[] = [];
@@ -153,7 +154,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this._getPessoasOpcoes$ = this._opcoesDropdownService
       .getOpcoesPessoas()
       .pipe(
-        tap((response: IOpcoesDropdown[]) => (this.pessoasOpcoes = response))
+        tap((response: IOpcoesDropdownResponsavelProponente[]) => (this.pessoasOpcoes = response))
       );
 
     this._getTiposPapelOpcoes$ = this._opcoesDropdownService
