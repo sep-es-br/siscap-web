@@ -113,7 +113,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
 
-  public idMembroEquipeElaboracao: number | null = null;
+  public idMembroEquipeElaboracao:  | null = null;
 
   public isLoadingPessoas = true;
 
@@ -298,7 +298,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  public idMembroNgSelectChangeEvent(event: number): void {
+  public idMembroNgSelectChangeEvent(event: string): void {
     this.equipeService.idMembroNgSelectValue$.next(event);
     setTimeout(() => (this.idMembroEquipeElaboracao = null), 0);
   }
@@ -673,6 +673,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload: ProjetoFormModel,
     isRascunho: boolean
   ): Observable<IProjeto> {
+    console.log("private cadastrarProjeto(");
       if (payload.idResponsavelProponente === 0) {
         const dados = this.projetoForm.value;
         return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
@@ -702,7 +703,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload: ProjetoFormModel,
     isRascunho: boolean
   ): Observable<IProjeto> {
-    
+    console.log("private atualizarProjeto(");
     if (payload.idResponsavelProponente === 0) {
       const dados = this.projetoForm.value;
       return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
@@ -717,7 +718,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
       );
     }
-    return this._projetosService.post(payload, isRascunho).pipe(
+    return this._projetosService.put(this._idProjetoEdicao, payload, isRascunho)
+      .pipe(
       tap((response: IProjeto) => {
         this._toastService.showToast(
           'success',

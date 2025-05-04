@@ -36,9 +36,9 @@ export class EquipeService {
     this._equipeFormArraySnapshot = equipeFormArrayValue;
   }
 
-  private readonly _idMembroNgSelectValue$: Subject<number> = new Subject<number>();
+  private readonly _idMembroNgSelectValue$: Subject<string> = new Subject<string>();
 
-  public get idMembroNgSelectValue$(): Subject<number> {
+  public get idMembroNgSelectValue$(): Subject<string> {
     return this._idMembroNgSelectValue$;
   }
 
@@ -61,7 +61,7 @@ export class EquipeService {
   }
 
   constructor(private _nnfb: NonNullableFormBuilder) {
-    this.idMembroNgSelectValue$.subscribe((idMembroNgSelectValue: number) => {
+    this.idMembroNgSelectValue$.subscribe((idMembroNgSelectValue: string) => {
       this.incluirMembroNaEquipe(
         this.construirMembroFormGroupNgSelectValue(idMembroNgSelectValue)
       );
@@ -91,6 +91,7 @@ export class EquipeService {
 
   public construirMembroFormGroup(membro?: IEquipe): FormGroup<EquipeFormType> {
     return this._nnfb.group<EquipeFormType>({
+      subPessoa: this._nnfb.control(membro?.subPessoa ?? null),
       idPessoa: this._nnfb.control(membro?.idPessoa ?? 0, Validators.required),
       idPapel: this._nnfb.control(membro?.idPapel ?? null, Validators.required),
       idStatus: this._nnfb.control(
@@ -102,10 +103,10 @@ export class EquipeService {
   }
 
   public construirMembroFormGroupNgSelectValue(
-    ngSelectValue: number
+    ngSelectValue: string
   ): FormGroup<EquipeFormType> {
     const membroFormGroup = this.construirMembroFormGroup();
-    membroFormGroup.patchValue({ idPessoa: ngSelectValue });
+    membroFormGroup.patchValue({ subPessoa: ngSelectValue });
     return membroFormGroup;
   }
 
@@ -113,6 +114,7 @@ export class EquipeService {
     usuarioProponente_IdPessoa: number
   ): void {
     const usuarioProponente_IEquipe: IEquipe = {
+      subPessoa: null,
       idPessoa: usuarioProponente_IdPessoa,
       idPapel: TipoPapelEnum.Proponente,
       idStatus: TipoStatusEnum.Ativo,
@@ -156,7 +158,7 @@ export class EquipeService {
     return pessoasOpcoes.filter(
       (pessoa) =>
         !this.equipeFormArray.value.some(
-          (membro) => membro.idPessoa === pessoa.id
+          (membro) => membro.subPessoa === pessoa.agentePublicoSub
         )
     );
   }

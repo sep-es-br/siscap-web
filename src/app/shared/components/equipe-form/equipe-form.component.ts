@@ -14,7 +14,7 @@ import { EquipeService } from '../../../core/services/equipe/equipe.service';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 
-import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
+import { IOpcoesDropdown, IOpcoesDropdownResponsavelProponente } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { EquipeModel } from '../../../core/models/equipe.model';
@@ -37,7 +37,7 @@ import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
   styleUrl: './equipe-form.component.scss',
 })
 export class EquipeFormComponent implements OnDestroy {
-  @Input() public pessoasOpcoes: IOpcoesDropdown[] = [];
+  @Input() public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
   @Input() public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   @Input() public isModoEdicao: boolean = false;
 
@@ -58,9 +58,9 @@ export class EquipeFormComponent implements OnDestroy {
       this._usuarioService.verificarPermissao('adminAuth');
   }
 
-  public getMembroNome(idPessoa: number | null | undefined): string {
+  public getMembroNome(subPessoa: string | null | undefined): string {
     return (
-      this.pessoasOpcoes.find((pessoa) => pessoa.id === idPessoa)?.nome ?? ''
+      this.pessoasOpcoes.find((pessoa) => pessoa.agentePublicoSub === subPessoa)?.nome ?? ''
     );
   }
 
@@ -80,8 +80,8 @@ export class EquipeFormComponent implements OnDestroy {
   public isNovoMembro(index: number): boolean {
     return !this.equipeService.equipeFormArraySnapshot.some(
       (membro) =>
-        membro.idPessoa ===
-        this.equipeService.equipeFormArray.at(index).value.idPessoa
+        membro.subPessoa ===
+        this.equipeService.equipeFormArray.at(index).value.subPessoa
     );
   }
 
@@ -123,7 +123,7 @@ export class EquipeFormComponent implements OnDestroy {
             : 'Membro excluído da equipe.',
           [
             `${this.getMembroNome(
-              membroFormGroup.value.idPessoa
+              membroFormGroup.value.subPessoa
             )} - ${this.getPapelNome(membroFormGroup.value.idPapel)}`,
             `Motivo: ${this.equipeService.excluirMembroFormJustificativaFormControl.value}`,
           ]

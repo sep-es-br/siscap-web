@@ -235,7 +235,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public toUppercaseOutputTransformFn =
     NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
 
-  public idMembroNgSelectChangeEvent(event: number): void {
+  public idMembroNgSelectChangeEvent(event: string): void {
     this.equipeService.idMembroNgSelectValue$.next(event);
 
     setTimeout(() => (this.idMembroEquipeCaptacao = null), 0);
