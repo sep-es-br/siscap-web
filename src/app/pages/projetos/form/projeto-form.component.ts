@@ -673,7 +673,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload: ProjetoFormModel,
     isRascunho: boolean
   ): Observable<IProjeto> {
-    console.log("private cadastrarProjeto(");
       if (payload.idResponsavelProponente === 0) {
         const dados = this.projetoForm.value;
         return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
@@ -703,7 +702,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload: ProjetoFormModel,
     isRascunho: boolean
   ): Observable<IProjeto> {
-    console.log("private atualizarProjeto(");
     if (payload.idResponsavelProponente === 0) {
       const dados = this.projetoForm.value;
       return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
