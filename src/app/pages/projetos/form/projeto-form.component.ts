@@ -156,7 +156,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
           (status) => status != this.statusProjeto
         );
-              
+        
         this.iniciarForm(projetoModel);
 
         this._idProjetoEdicao = projetoModel.id;
@@ -185,6 +185,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.mostrarBotaoStatusProjeto = true;
         }
         this.loading = false;
+        this.isLoadingPessoas = false;
       })
     );
 
@@ -200,6 +201,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.mostrarBotaoGerarDic = false;
 
         this.loading = false;
+        this.isLoadingPessoas = false;
 
       })
     );
@@ -414,13 +416,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
   
   private usuarioProponenteValoresIniciaisProjetoForm(): void {
+    
     const idOrganizacaoFormControl = this.projetoForm.get(
       'idOrganizacao'
     ) as FormControl<number | null>;
-   
-    if (this.usuario_IdOrganizacoes.length > 0)
-      idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
-   
+    
+    idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
+    
     if ( this.isProponente ){
       setTimeout(() => {
         idOrganizacaoFormControl.disable({ emitEvent: false });
@@ -527,13 +529,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'idResponsavelProponente'
     ) as FormControl<number | null>;
 
+    this.isLoadingPessoas = true;
+
     if (!idOrganizacaoValue) {
       idResponsavelProponenteFormControl.patchValue(null);
       idResponsavelProponenteFormControl.markAsTouched();
+      this.isLoadingPessoas = false;
       return;
     }
-
-    this.isLoadingPessoas = true;
+    
     this.pessoasOpcoes = [];
 
     this._pessoasService
