@@ -16,6 +16,8 @@ import {
   Subscription,
   switchMap,
   tap,
+  EMPTY,
+  catchError
 } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -63,6 +65,7 @@ import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -79,11 +82,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getLocalidadesOpcoes$: Observable<
-    ILocalidadeOpcoesDropdown[]
-  >;
+  private readonly _getLocalidadesOpcoes$: Observable<ILocalidadeOpcoesDropdown[]>;
   private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getTiposIndicadoresOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idProjetoEdicao: number = 0;
 
@@ -107,6 +109,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public microrregioesOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
 
+  public indicadoresOpcoes: IOpcoesDropdown[] = [];
+
   public statusProjeto: string = '';
   public statusProjetoNovo: string | null = null;
   public statusProjetoOpcoes: Array<string> = [];
@@ -114,6 +118,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
 
   public idMembroEquipeElaboracao:  | null = null;
+
+  public idIndicadorIndicadores:  | null = null;
 
   public isLoadingPessoas = true;
 
@@ -129,7 +135,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
     private readonly _breadcrumbService: BreadcrumbService,
-    private readonly _navegacaoService: NavegacaoService
+    private readonly _navegacaoService: NavegacaoService,
+    public indicadoresService: IndicadoresService
   ) {
 
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
@@ -148,7 +155,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           .pipe(
             map<IProjeto, ProjetoModel>(
               (response: IProjeto) => new ProjetoModel(response)
-            )
+            ),
+            catchError((error) => {
+              // Exibe mensagem de erro para o usuário
+              this._toastService.showToast(
+                'error',
+                'Erro ao carregar projeto',
+                ['Verifique se o projeto está válido.']
+              );
+              // Finaliza os spinners
+              this.loading = false;
+              this.isLoadingPessoas = false;
+              // Retorna um Observable vazio para não quebrar o fluxo
+              return EMPTY;
+            })
           )
       ),
       tap((projetoModel: ProjetoModel) => {
@@ -218,6 +238,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getOpcoesTiposValor()
       .pipe(tap((response) => (this.tiposValorOpcoes = response)));
 
+      this._getTiposIndicadoresOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposIndicadores()
+      .pipe(tap((response) => (this.indicadoresOpcoes = response)));
+
+      
+
     this._getLocalidadesOpcoes$ = this._opcoesDropdownService
       .getOpcoesLocalidades()
       .pipe(
@@ -243,7 +269,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._getPlanosOpcoes$,
       this._getTiposValorOpcoes$,
       this._getTiposPapelOpcoes$,
-      this._getLocalidadesOpcoes$
+      this._getLocalidadesOpcoes$,
+      this._getTiposIndicadoresOpcoes$
     ).pipe(
       finalize(
         () => (this._rateioService.localidadesOpcoes = this.localidadesOpcoes)
@@ -303,6 +330,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public idMembroNgSelectChangeEvent(event: string): void {
     this.equipeService.idMembroNgSelectValue$.next(event);
     setTimeout(() => (this.idMembroEquipeElaboracao = null), 0);
+  }
+
+  public idIndicadorNgSelectChangeEvent(event: number): void {
+    console.log( "indicador selecionado : " + event )
+    this.indicadoresService.idIndicadorIndicadoresValue$.next(event);
+    setTimeout(() => (this.idIndicadorIndicadores = null), 0);
   }
 
   public microrregioesNgSelectAddEvent(event: number): void {
@@ -403,6 +436,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       subResponsavelProponente: this._nnfb.control(
         projetoFormModel?.subResponsavelProponente ?? null
+      ),
+      indicadoresProjeto: this.indicadoresService.construirindicadoresFormArray(
+        projetoFormModel?.indicadoresProjeto
       ),
     });
 

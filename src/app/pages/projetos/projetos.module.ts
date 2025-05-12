@@ -17,6 +17,7 @@ import { ProjetoFormComponent } from './form/projeto-form.component';
 import { SharedModule } from '../../shared/shared.module';
 import { ProjetosRoutingModule } from './projetos-routing.module';
 import { ProjetosPesquisaComponent } from './search/projetos-search.component';
+import { IndicadoresFormComponent } from "../../shared/components/indicadores-form/indicadores-form.component";
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { ProjetosPesquisaComponent } from './search/projetos-search.component';
     NgbAlertModule,
     NgbDatepickerModule,
     ProjetosRoutingModule,
-  ],
+    IndicadoresFormComponent
+],
   exports: [
     ProjetosComponent,
     ProjetosListComponent,

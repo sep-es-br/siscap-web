@@ -142,4 +142,9 @@ export class OpcoesDropdownService {
       IProspeccaoInteressadoOpcoesDropdown[]
     >;
   }
+
+  public getOpcoesTiposIndicadores() {
+    return this.getOpcoesDropdown('tipos-indicador');
+  }
+
 }

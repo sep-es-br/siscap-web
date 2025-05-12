@@ -16,6 +16,8 @@ import { ValorFormComponent } from './valor-form/valor-form.component';
 import { RateioFormComponent } from './rateio-form/rateio-form.component';
 import { CropperComponent } from './cropper/cropper.component';
 import { DatepickerComponent } from './datepicker/datepicker.component';
+import { IndicadoresFormComponent } from './indicadores-form/indicadores-form.component';
+
 
 @NgModule({
   declarations: [],
@@ -36,6 +38,7 @@ import { DatepickerComponent } from './datepicker/datepicker.component';
     ValorFormComponent,
     RateioFormComponent,
     CropperComponent,
+    IndicadoresFormComponent,
   ],
   exports: [
     BotaoComponent,

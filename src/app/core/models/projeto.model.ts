@@ -5,6 +5,8 @@ import { ValorModel } from './valor.model';
 import { IProjeto, IProjetoForm } from '../interfaces/projeto.interface';
 import { IEquipe } from '../interfaces/equipe.interface';
 import { IRateio } from '../interfaces/rateio.interface';
+import { IIndicadores } from '../interfaces/indicadores.interface';
+import { IndicadorModel } from './indicador.model';
 
 export class ProjetoFormModel implements IProjetoForm {
   public sigla: string;
@@ -24,6 +26,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public nomeResponsavelProponente: string;
   public papelResponsavelProponente: string;
   public subResponsavelProponente: string;
+  public indicadoresProjeto: IIndicadores[];
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -45,6 +48,9 @@ export class ProjetoFormModel implements IProjetoForm {
     this.nomeResponsavelProponente = projetoForm?.nomeResponsavelProponente ?? '';
     this.papelResponsavelProponente = projetoForm?.papelResponsavelProponente ?? '';
     this.subResponsavelProponente = projetoForm?.subResponsavelProponente ?? '';
+    this.indicadoresProjeto = this.construirIndicadoresProjeto(
+      projetoForm?.indicadoresProjeto
+    );
   }
 
   private construirRateioModelArray(
@@ -53,7 +59,6 @@ export class ProjetoFormModel implements IProjetoForm {
     if (!rateioArray) {
       return [];
     }
-
     return rateioArray.map((rateio) => new RateioModel(rateio));
   }
 
@@ -63,9 +68,18 @@ export class ProjetoFormModel implements IProjetoForm {
     if (!equipeElaboracao) {
       return [];
     }
-
     return equipeElaboracao.map((equipe) => new EquipeModel(equipe));
   }
+
+  private construirIndicadoresProjeto(
+    indicadoresProjeto?: Array<IIndicadores>
+  ): Array<IndicadorModel> {
+    if (!indicadoresProjeto) {
+      return [];
+    }
+    return indicadoresProjeto.map((indicadores) => new IndicadorModel(indicadores));
+  }
+
 }
 
 export class ProjetoModel extends ProjetoFormModel implements IProjeto {

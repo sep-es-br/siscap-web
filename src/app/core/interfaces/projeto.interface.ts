@@ -1,4 +1,5 @@
 import { IEquipe } from './equipe.interface';
+import { IIndicadores } from './indicadores.interface';
 import { IRateio } from './rateio.interface';
 import { IValor } from './valor.interface';
 
@@ -22,6 +23,7 @@ export interface IProjeto {
   nomeResponsavelProponente: string;
   papelResponsavelProponente: string;
   subResponsavelProponente: string;
+  indicadoresProjeto: Array<IIndicadores>;
 }
 
 export interface IProjetoForm
