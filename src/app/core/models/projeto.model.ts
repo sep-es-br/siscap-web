@@ -7,6 +7,8 @@ import { IEquipe } from '../interfaces/equipe.interface';
 import { IRateio } from '../interfaces/rateio.interface';
 import { IIndicadores } from '../interfaces/indicadores.interface';
 import { IndicadorModel } from './indicador.model';
+import { IAcao } from '../interfaces/acoes.interface';
+import { AcaoModel } from './acao.model';
 
 export class ProjetoFormModel implements IProjetoForm {
   public sigla: string;
@@ -26,7 +28,8 @@ export class ProjetoFormModel implements IProjetoForm {
   public nomeResponsavelProponente: string;
   public papelResponsavelProponente: string;
   public subResponsavelProponente: string;
-  public indicadoresProjeto: IIndicadores[];
+  public indicadoresProjeto: Array<IIndicadores>; 
+  public acoesProjeto: Array<IAcao>;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -50,6 +53,9 @@ export class ProjetoFormModel implements IProjetoForm {
     this.subResponsavelProponente = projetoForm?.subResponsavelProponente ?? '';
     this.indicadoresProjeto = this.construirIndicadoresProjeto(
       projetoForm?.indicadoresProjeto
+    );
+    this.acoesProjeto = this.construirAcoesProjeto(
+      projetoForm?.acoesProjeto
     );
   }
 
@@ -78,6 +84,15 @@ export class ProjetoFormModel implements IProjetoForm {
       return [];
     }
     return indicadoresProjeto.map((indicadores) => new IndicadorModel(indicadores));
+  }
+
+  private construirAcoesProjeto(
+    acoesProjeto?: Array<IAcao>
+  ): Array<AcaoModel> {
+    if (!acoesProjeto) {
+      return [];
+    }
+    return acoesProjeto.map((acoes) => new AcaoModel(acoes));
   }
 
 }

@@ -1,6 +1,7 @@
 export interface IIndicadores {
   idIndicador: number;
-  descricao: string | null;
-  meta: string | null;
+  tipoIndicador: number;
+  descricaoIndicador: string | null;
+  metaIndicador: string | null;
   idStatus: number;
 }

@@ -66,6 +66,7 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
+import { AcoesService } from '../../../core/services/acoes/acoes.service';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -74,6 +75,7 @@ import { IndicadoresService } from '../../../core/services/indicadores/indicador
   styleUrl: './projeto-form.component.scss',
 })
 export class ProjetoFormComponent implements OnInit, OnDestroy {
+
   private readonly _subscription: Subscription = new Subscription();
 
   private readonly _atualizarProjeto$: Observable<IProjeto>;
@@ -136,7 +138,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private readonly _toastService: ToastService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _navegacaoService: NavegacaoService,
-    public indicadoresService: IndicadoresService
+    public indicadoresService: IndicadoresService,
+    public acoesService: AcoesService,
   ) {
 
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
@@ -153,6 +156,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this._projetosService
           .getById(idProjeto)
           .pipe(
+            tap((response: IProjeto) => {
+              console.log('(debug) Response do getById:', response);
+            }),
             map<IProjeto, ProjetoModel>(
               (response: IProjeto) => new ProjetoModel(response)
             ),
@@ -177,6 +183,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           (status) => status != this.statusProjeto
         );
         
+        console.log('Projeto carregado do backend:', projetoModel);
+        console.log('Indicadores recebidos:', projetoModel.indicadoresProjeto); // 👈 verifique isso
+
         this.iniciarForm(projetoModel);
 
         this._idProjetoEdicao = projetoModel.id;
@@ -333,7 +342,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public idIndicadorNgSelectChangeEvent(event: number): void {
-    console.log( "indicador selecionado : " + event )
     this.indicadoresService.idIndicadorIndicadoresValue$.next(event);
     setTimeout(() => (this.idIndicadorIndicadores = null), 0);
   }
@@ -440,7 +448,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       indicadoresProjeto: this.indicadoresService.construirindicadoresFormArray(
         projetoFormModel?.indicadoresProjeto
       ),
+      acoesProjeto: this.acoesService.construirAcoesFormArray(
+        projetoFormModel?.acoesProjeto
+      ),
     });
+
+    const indicadoresProjeto = this.projetoForm.get('indicadoresProjeto')?.value;
+    console.log("indicadoresProjeto - vindo do backend:", indicadoresProjeto);
 
     this.projetoFormValueChanges();
     

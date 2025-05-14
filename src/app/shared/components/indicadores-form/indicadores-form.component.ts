@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 
 @Component({
   selector: 'siscap-indicadores-form',
@@ -21,24 +22,14 @@ import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstra
 export class IndicadoresFormComponent {
   @Input() tiposIndicadorOpcoes: { id: number; nome: string }[] = [];
   @Input() public isModoEdicao: boolean = false;
+  @Input() descricaoIndicador: string;
+  @Input() descricaoMeta: string;
 
-  indicadoresFormArray: FormArray<FormGroup>;
-
-  constructor(private fb: FormBuilder) {
-    this.indicadoresFormArray = this.fb.array<FormGroup>([]);
-  }
-
-  onSelecionarTipoIndicador(idTipo: number): void {
-    const tipoSelecionado = this.tiposIndicadorOpcoes.find(t => t.id === idTipo);
-    if (!tipoSelecionado) return;
-
-    const novoIndicador = this.fb.group({
-      idTipoIndicador: [idTipo, Validators.required],
-      descricao: ['', Validators.required],
-      meta: ['', Validators.required]
-    });
-
-    this.indicadoresFormArray.push(novoIndicador);
+  constructor(
+    public indicadoresService: IndicadoresService,
+    private fb: FormBuilder) {
+    this.descricaoIndicador = '';
+    this.descricaoMeta = '';
   }
 
   removerIndicador(index: number): void {
@@ -49,8 +40,12 @@ export class IndicadoresFormComponent {
     return this.tiposIndicadorOpcoes.find((t) => t.id === id)?.nome ?? '';
   }
 
-  // 👇 Aqui está o getter para facilitar no HTML
   get indicadoresFormGroups(): FormGroup[] {
     return this.indicadoresFormArray.controls as FormGroup[];
   }
+
+  get indicadoresFormArray(): FormArray {
+    return this.indicadoresService.indicadoresFormArray;
+  }
+
 }

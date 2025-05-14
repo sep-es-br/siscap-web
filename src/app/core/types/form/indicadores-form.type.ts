@@ -1,17 +1,17 @@
 import { FormControl } from '@angular/forms';
 
 export type IndicadoresFormType = {
-  idIndicador: FormControl<number>;
-  descricao: FormControl<string | null>;
-  meta: FormControl<string | null>;
+  tipoIndicador: FormControl<number | 0>;
+  descricaoIndicador: FormControl<string | null>;
+  metaIndicador: FormControl<string | null>;
   idStatus: FormControl<number>;
 };
 
 export type IndicadoresFormTypeValue = Array<
   Partial<{
-    idIndicador: number;
-    descricao: string | null;
-    meta: string | null;
+    tipoIndicador: number | 0;
+    descricaoIndicador: string | null;
+    metaIndicador: string | null;
     idStatus: number;
   }>
 >;

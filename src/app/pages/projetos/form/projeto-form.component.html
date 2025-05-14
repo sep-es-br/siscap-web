@@ -187,6 +187,34 @@
               min="1"
             />
           </div>
+
+          <div class="col-12">
+            <label for="membroIndicadorElaboracao" class="form-label col-12">
+                Indicadores
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['nomeIndicador']"
+                ></form-helper-tooltip>
+            </label>
+            <ng-select
+              id="idIndicadorIndicadores"
+              placeholder="-- Selecione um indicador para incluir na lista de indicadores --"
+              [(ngModel)]="idIndicadorIndicadores"
+              [ngModelOptions]="{ standalone: true }"
+              (change)="idIndicadorNgSelectChangeEvent($event)" >
+              <ng-option
+                *ngFor="let indicador of indicadoresService.filtrarIndicadoresOpcoes( indicadoresOpcoes )"
+                [value]="indicador.id" >
+                {{ indicador.nome }}
+              </ng-option>
+            </ng-select>
+          </div>
+          <div class="col-12 mt-2">
+            <siscap-indicadores-form
+              [tiposIndicadorOpcoes]="indicadoresOpcoes"
+              [isModoEdicao] = "isModoEdicao" >
+            </siscap-indicadores-form>
+          </div>
+
           <div class="col-12 mt-2" >
             <label for="rateio" class="form-label col-12">
               <validation-message [control]="getControl('rateio')">
@@ -196,6 +224,15 @@
             <siscap-rateio-form
               [isModoEdicao]="isModoEdicao"
             ></siscap-rateio-form>
+          </div>
+
+          <div class="col-12">
+            <label for="rateio" class="form-label col-12">
+                Ações
+            </label>
+            <siscap-acoes-form 
+              [isModoEdicao]="isModoEdicao">
+            </siscap-acoes-form>
           </div>
 
           <div class="col-12" >
@@ -258,34 +295,6 @@
               maxLength="2000"
             ></textarea>
           </div>
-
-          <div class="col-12">
-            <label for="membroIndicadorElaboracao" class="form-label col-12">
-                Indicadores
-                <form-helper-tooltip
-                  [texto]="projetoTooltip['nomeIndicador']"
-                ></form-helper-tooltip>
-            </label>
-            <ng-select
-              id="idIndicadorIndicadores"
-              placeholder="-- Selecione um indicador para incluir na lista de indicadores --"
-              [(ngModel)]="idIndicadorIndicadores"
-              [ngModelOptions]="{ standalone: true }"
-              (change)="idIndicadorNgSelectChangeEvent($event)" >
-              <ng-option
-                *ngFor="let indicador of indicadoresOpcoes"
-                [value]="indicador.id" >
-                {{ indicador.nome }}
-              </ng-option>
-            </ng-select>
-          </div>
-          <div class="col-12 mt-2">
-            <siscap-indicadores-form>
-              [tiposIndicadorOpcoes]="tiposIndicadorOpcoes"
-              [isModoEdicao] = "isModoEdicao"
-            </siscap-indicadores-form>
-          </div>
-
 
           <div class="col-12">
             <label for="situacaoProblema" class="form-label col-12">
@@ -362,6 +371,7 @@
               maxLength="2000"
             ></textarea>
           </div>
+
         </div>
       </form>
     </div>

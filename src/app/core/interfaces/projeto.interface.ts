@@ -1,3 +1,4 @@
+import { IAcao } from './acoes.interface';
 import { IEquipe } from './equipe.interface';
 import { IIndicadores } from './indicadores.interface';
 import { IRateio } from './rateio.interface';
@@ -24,6 +25,7 @@ export interface IProjeto {
   papelResponsavelProponente: string;
   subResponsavelProponente: string;
   indicadoresProjeto: Array<IIndicadores>;
+  acoesProjeto: Array<IAcao>;
 }
 
 export interface IProjetoForm

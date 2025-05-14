@@ -8,13 +8,12 @@ import {
 } from '@angular/forms';
 
 import { Subject } from 'rxjs';
-
-import { IOpcoesDropdownResponsavelProponente } from '../../interfaces/opcoes-dropdown.interface';
 import { IIndicadores } from '../../interfaces/indicadores.interface';
-
 import { IndicadoresFormType } from '../../types/form/indicadores-form.type';
-
 import { TipoStatusEnum } from '../../enums/tipo-status.enum';
+import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
+import { IAcao } from '../../interfaces/acoes.interface';
+import { AcaoFormType } from '../../types/form/acao-form.type';
 
 @Injectable({
   providedIn: 'root',
@@ -60,35 +59,30 @@ export class IndicadoresService {
 
   constructor(private _nnfb: NonNullableFormBuilder) {
     this.idIndicadorIndicadoresValue$.subscribe((idIndicadorIndicadoresValue: number) => {
-      this.incluirMembroNaEquipe(
-        this.construirIndicadorFormGroupNgSelectValue(idIndicadorIndicadoresValue)
-      );
+      const indicadorMontado = this.construirIndicadorFormGroupNgSelectValue(idIndicadorIndicadoresValue);
+      this.incluirIndicador( indicadorMontado );
     });
   }
 
   public construirindicadoresFormArray(
-    equipe?: Array<IIndicadores>
+    indicadores?: Array<IIndicadores>
   ): FormArray<FormGroup<IndicadoresFormType>> {
-
     const indicadoresFormArray = this._nnfb.array<FormGroup<IndicadoresFormType>>([], [Validators.required, Validators.minLength(1)] );
-
-    if (equipe) {
-      equipe.forEach((membro) => {
-        indicadoresFormArray.push(this.construirIndicadorFormGroup(membro));
+    if (indicadores) {
+      indicadores.forEach((indicador) => {
+        indicadoresFormArray.push(this.construirIndicadorFormGroup(indicador));
       });
     }
-
     this.indicadoresFormArray = indicadoresFormArray;
     this.indicadoresFormArraySnapshot = this.indicadoresFormArray.value as Array<IIndicadores>;
-
     return this.indicadoresFormArray;
   }
-
+  
   public construirIndicadorFormGroup(membro?: IIndicadores): FormGroup<IndicadoresFormType> {
     return this._nnfb.group<IndicadoresFormType>({
-      idIndicador: this._nnfb.control(membro?.idIndicador ?? 0, Validators.required),
-      descricao: this._nnfb.control(membro?.descricao ??null, Validators.required),
-      meta: this._nnfb.control(membro?.meta ?? null, Validators.required),
+      tipoIndicador: this._nnfb.control(membro?.tipoIndicador ?? 0, Validators.required),
+      descricaoIndicador: this._nnfb.control(membro?.descricaoIndicador ??null, Validators.required),
+      metaIndicador: this._nnfb.control(membro?.metaIndicador ?? null, Validators.required),
       idStatus: this._nnfb.control(
         membro?.idStatus ?? TipoStatusEnum.Ativo,
         Validators.required
@@ -100,49 +94,41 @@ export class IndicadoresService {
     ngSelectValue: number
   ): FormGroup<IndicadoresFormType> {
     const membroFormGroup = this.construirIndicadorFormGroup();
-    membroFormGroup.patchValue({ idIndicador: ngSelectValue });
+    membroFormGroup.patchValue({ tipoIndicador: ngSelectValue });
     return membroFormGroup;
   }
-
-  /*
-  public usuarioProponenteValoresIniciaisindicadoresFormArray(
-    usuarioProponente_IdPessoa: number
+  
+  public incluirIndicador(
+    indicadorFormGroup: FormGroup<IndicadoresFormType>
   ): void {
-    const usuarioProponente_IIndicadores: IIndicadores = {
-      subPessoa: null,
-      idPessoa: usuarioProponente_IdPessoa,
-      idPapel: TipoPapelEnum.Proponente,
-      idStatus: TipoStatusEnum.Ativo,
-      justificativa: null,
-    };
-    const usuarioProponente_MembroFormGroup = this.construirIndicadorFormGroup(
-      usuarioProponente_IIndicadores
-    );
-    this.incluirMembroNaEquipe(usuarioProponente_MembroFormGroup);
-  } */
-
-  public incluirMembroNaEquipe(
-    membroFormGroup: FormGroup<IndicadoresFormType>
-  ): void {
-    this.indicadoresFormArray.push(membroFormGroup);
+    this.indicadoresFormArray.push(indicadorFormGroup);
   }
 
-  public removerMembroDaEquipe(index: number): void {
+  public removerIndicador(index: number): void {
     this.indicadoresFormArray.removeAt(index);
   }
 
-  public construirExcluirMembroForm(): FormGroup {
-    const excluirMembroForm = this._nnfb.group({
+  public construirExcluirIndicadorForm(): FormGroup {
+    const excluirIndicadorForm = this._nnfb.group({
       membroStatus: this._nnfb.control(null, Validators.required),
       justificativa: this._nnfb.control(null, [
         Validators.required,
         Validators.maxLength(255),
       ]),
     });
-
-    this.excluirMembroForm = excluirMembroForm;
-
+    this.excluirMembroForm = excluirIndicadorForm;
     return this.excluirMembroForm;
   }
+
+  public filtrarIndicadoresOpcoes(
+      tiposIndicadorOpcoes: IOpcoesDropdown[]
+    ): IOpcoesDropdown[] {
+      return tiposIndicadorOpcoes.filter(
+        (tipoindicador) =>
+          !this.indicadoresFormArray.value.some(
+            (tipoIndicador) => tipoIndicador.tipoIndicador === tipoindicador.id
+          )
+      );
+    }
 
 }
