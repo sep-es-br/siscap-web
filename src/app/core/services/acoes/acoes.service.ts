@@ -74,7 +74,7 @@ export class AcoesService {
   public construirAcoesFormArray(
     acoes?: Array<IAcao>
   ): FormArray<FormGroup<AcaoFormType>> {
-    const acoesFormArray = this._nnfb.array<FormGroup<AcaoFormType>>([], [Validators.required, Validators.minLength(1)] );
+    const acoesFormArray = this._nnfb.array<FormGroup<AcaoFormType>>([],[]);
     if (acoes) {
         acoes.forEach((acao) => {
           acoesFormArray.push(this.construirAcaoFormGroup(acao));

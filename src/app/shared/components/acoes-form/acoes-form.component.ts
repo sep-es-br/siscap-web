@@ -35,9 +35,9 @@ export class AcoesFormComponent {
   
   adicionarAcao(): void {
     const novaAcao = this.fb.group({
-      descricaoAcaoPrincipal: ['', Validators.maxLength(2000)],
-      descricaoAcoesSecundarias: ['', Validators.maxLength(2000)],
-      valorEstimadoAcaoPrincipal: ['', [Validators.required, Validators.min(0.01)]]
+      descricaoAcaoPrincipal: [''],
+      descricaoAcoesSecundarias: [''],
+      valorEstimadoAcaoPrincipal: ['']
     });
     this.acoesFormArray.push(novaAcao);
   }

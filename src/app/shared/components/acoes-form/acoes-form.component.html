@@ -5,8 +5,9 @@
 			<form [formGroup]="acoesFormGroup" >
 				<div class="d-flex justify-content-between align-items-center mb-2">
 					<h6 class="mb-0">Ação #{{i + 1}}</h6>
-					<button type="button" class="btn btn-sm btn-outline-danger" (click)="removerAcao(i)">
-						<i class="fas fa-trash"></i> Remover
+					<button type="button" class="btn btn-sm btn-outline-danger" 
+            (click)="removerAcao(i)">
+						<i class="fas fa-trash"></i>
 					</button>
 				</div>
 				<div class="row g-2">

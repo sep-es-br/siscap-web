@@ -271,7 +271,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._getTiposPapelOpcoes$ = this._opcoesDropdownService
       .getOpcoesTiposPapel()
-      .pipe(tap((response) => (this.tiposPapelOpcoes = response)));
+      .pipe(tap((response) =>  { 
+          const idsPermitidos = [1, 5];
+          this.tiposPapelOpcoes = response.filter( papel => idsPermitidos.includes(papel.id) ); 
+        } 
+      ));
 
     this._getAllOpcoes$ = concat(
       this._getOrganizacoesOpcoes$,
