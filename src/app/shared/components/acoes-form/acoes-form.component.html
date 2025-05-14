@@ -23,7 +23,14 @@
           </div>
           <div class="col-12 col-md-4">
             <label [for]="'acaoValor_' + i" class="form-label">Valor Estimado (R$)</label>
+            
             <input
+              mask="separator.2"
+              prefix="R$"
+              thousandSeparator="."
+              decimalMarker=","
+              [inputTransformFn]="rtlCurrencyInputTransformFn"
+              [outputTransformFn]="rtlCurrencyOutputTransformFn"
               type="text"
               class="form-control"
               [id]="'acaoValor_' + i"

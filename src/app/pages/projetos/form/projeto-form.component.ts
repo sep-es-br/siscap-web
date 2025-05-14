@@ -459,7 +459,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const indicadoresProjeto = this.projetoForm.get('indicadoresProjeto')?.value;
     console.log("indicadoresProjeto - vindo do backend:", indicadoresProjeto);
-
+    
     this.projetoFormValueChanges();
     
     this.valorFormValueChanges();
@@ -531,7 +531,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }
       }
     );
-      
+
   }
 
   private valorFormValueChanges(): void {
@@ -573,7 +573,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
     });
-    
 
   }
 
@@ -671,6 +670,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
+
+    const acoesProjeto = this.projetoForm.get('acoesProjeto')?.value;
+    console.log("submitProjetoForm - acoesProjeto :", acoesProjeto);
     
     for (const key in form.controls) {
       form.controls[key].markAllAsTouched();

@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Va
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
+import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'siscap-acoes-form',
@@ -16,6 +18,7 @@ import { AcoesService } from '../../../core/services/acoes/acoes.service';
     NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
+    NgxMaskDirective
   ],
   templateUrl: './acoes-form.component.html',
 })
@@ -32,6 +35,12 @@ export class AcoesFormComponent {
     this.descricaoAcoesSecundarias = '';
 	  this.valorEstimadoAcaoPrincipal = 0;
   }
+
+  public rtlCurrencyInputTransformFn =
+      NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
+  
+    public rtlCurrencyOutputTransformFn =
+      NgxMaskTransformFunctionHelper.rtlCurrencyOutputTransformFn;
   
   adicionarAcao(): void {
     const novaAcao = this.fb.group({
