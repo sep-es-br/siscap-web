@@ -67,7 +67,6 @@ export class AcoesService {
       ngSelectValue: number
     ): FormGroup<AcaoFormType> {
       const membroFormGroup = this.construirAcaoFormGroup();
-      // membroFormGroup.patchValue({ tipoIndicador: ngSelectValue });
       return membroFormGroup;
     }
 
@@ -90,9 +89,7 @@ export class AcoesService {
       descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null, Validators.required ),
       descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null, Validators.required ),
       valorEstimadoAcaoPrincipal: this._nnfb.control(membro?.valorEstimadoAcaoPrincipal ?? 0, Validators.required ),
-      idStatus: this._nnfb.control(
-        membro?.idStatus ?? TipoStatusEnum.Ativo,
-        Validators.required 
+      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required 
       ),
     });
   }

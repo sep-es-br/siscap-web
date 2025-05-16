@@ -110,6 +110,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public localidadesOpcoes: ILocalidadeOpcoesDropdown[] = [];
   public microrregioesOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
+  public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
 
   public indicadoresOpcoes: IOpcoesDropdown[] = [];
 
@@ -157,7 +158,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           .getById(idProjeto)
           .pipe(
             tap((response: IProjeto) => {
-              console.log('(debug) Response do getById:', response);
             }),
             map<IProjeto, ProjetoModel>(
               (response: IProjeto) => new ProjetoModel(response)
@@ -183,9 +183,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           (status) => status != this.statusProjeto
         );
         
-        console.log('Projeto carregado do backend:', projetoModel);
-        console.log('Indicadores recebidos:', projetoModel.indicadoresProjeto); // 👈 verifique isso
-
         this.iniciarForm(projetoModel);
 
         this._idProjetoEdicao = projetoModel.id;
@@ -271,9 +268,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._getTiposPapelOpcoes$ = this._opcoesDropdownService
       .getOpcoesTiposPapel()
-      .pipe(tap((response) =>  { 
+      .pipe(tap((response) =>  {
+        this.tiposPapelOpcoes = response;
           const idsPermitidos = [1, 5];
-          this.tiposPapelOpcoes = response.filter( papel => idsPermitidos.includes(papel.id) ); 
+          this.tiposPapelOpcoesVisiveis = response.filter( papel => idsPermitidos.includes(papel.id) ); 
         } 
       ));
 
@@ -336,8 +334,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     pessoasOpcoes: IOpcoesDropdownResponsavelProponente[]
   ): IOpcoesDropdownResponsavelProponente[] {
     return pessoasOpcoes.filter(
-        (pessoa) => pessoa.agentePublicoSub != this.getControl('subResponsavelProponente').value
-    );
+      (pessoa) => pessoa.agentePublicoSub != this.getControl('subResponsavelProponente').value
+    ) || [pessoasOpcoes[0]]; 
   }
 
   public idMembroNgSelectChangeEvent(event: string): void {
@@ -456,10 +454,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.acoesProjeto
       ),
     });
-
-    const indicadoresProjeto = this.projetoForm.get('indicadoresProjeto')?.value;
-    console.log("indicadoresProjeto - vindo do backend:", indicadoresProjeto);
-    
+       
     this.projetoFormValueChanges();
     
     this.valorFormValueChanges();
@@ -484,7 +479,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     this.equipeService.usuarioProponenteValoresIniciaisEquipeFormArray(
-      this._usuarioService.usuarioPerfil.idPessoa
+      this._usuarioService.usuarioPerfil.idPessoa, 
+      this._usuarioService.usuarioPerfil.subNovo,
+      this._usuarioService.usuarioPerfil.nome
     );
 
   }
@@ -508,7 +505,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           });
         } 
       }
-
     });
 
     idResponsavelProponenteFormControl.valueChanges.subscribe(
@@ -672,7 +668,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
     const acoesProjeto = this.projetoForm.get('acoesProjeto')?.value;
-    console.log("submitProjetoForm - acoesProjeto :", acoesProjeto);
     
     for (const key in form.controls) {
       form.controls[key].markAllAsTouched();

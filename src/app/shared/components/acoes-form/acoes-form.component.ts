@@ -6,6 +6,9 @@ import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstra
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import { NgxMaskDirective } from 'ngx-mask';
+import { TemplatesModule } from '../../templates/templates.module';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+
 
 @Component({
   selector: 'siscap-acoes-form',
@@ -18,7 +21,8 @@ import { NgxMaskDirective } from 'ngx-mask';
     NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
-    NgxMaskDirective
+    NgxMaskDirective,
+    TemplatesModule
   ],
   templateUrl: './acoes-form.component.html',
 })
@@ -35,6 +39,9 @@ export class AcoesFormComponent {
     this.descricaoAcoesSecundarias = '';
 	  this.valorEstimadoAcaoPrincipal = 0;
   }
+
+  public projetoTooltip: Record<string, string> =
+      COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   public rtlCurrencyInputTransformFn =
       NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;

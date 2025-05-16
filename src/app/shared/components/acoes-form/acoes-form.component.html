@@ -12,19 +12,27 @@
 				</div>
 				<div class="row g-2">
           <div class="col-12 col-md-8">
-            <label [for]="'acaoNome_' + i" class="form-label">Ação Principal</label>
+            <label [for]="'acaoNome_' + i" class="form-label">
+              Ação Principal
+                <form-helper-tooltip 
+                  [texto]="projetoTooltip['descricaoAcaoPrincipal']"> 
+                </form-helper-tooltip>
+            </label>
             <input
               type="text"
               class="form-control"
               [id]="'acaoNome_' + i"
               formControlName="descricaoAcaoPrincipal"
-              placeholder="Descreva a ação principal"
               maxlength="2000" />
           </div>
           <div class="col-12 col-md-4">
-            <label [for]="'acaoValor_' + i" class="form-label">Valor Estimado (R$)</label>
-            
-            <input
+            <label [for]="'acaoValor_' + i" class="form-label">
+              Valor Estimado (R$)
+                <form-helper-tooltip 
+                  [texto]="projetoTooltip['valorEstimadoAcaoPrincipal']"> 
+                </form-helper-tooltip>
+            </label>
+           <input
               mask="separator.2"
               prefix="R$"
               thousandSeparator="."
@@ -38,13 +46,17 @@
               placeholder="0,00"/>
           </div>
           <div class="col-12">
-            <label [for]="'acaoDescricao_' + i" class="form-label">Descrição e Produtos</label>
+            <label [for]="'acaoDescricao_' + i" class="form-label">
+              Descrição de ações secundárias e produtos
+                <form-helper-tooltip 
+                  [texto]="projetoTooltip['descricaoAcoesSecudariasProdutos']"> 
+                </form-helper-tooltip>
+            </label>
             <textarea
               class="form-control"
               [id]="'acaoDescricao_' + i"
-              formControlName="descricaoAcoesSecundarias"
+              formControlName="descricaoAcaoSecundaria"
               rows="3"
-              placeholder="Descreva ações secundárias e produtos relacionados"
               maxlength="2000"></textarea>
           </div>
 				</div>

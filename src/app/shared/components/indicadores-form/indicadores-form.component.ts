@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Va
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
+import { TemplatesModule } from '../../templates/templates.module';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 
 @Component({
   selector: 'siscap-indicadores-form',
@@ -16,6 +18,7 @@ import { IndicadoresService } from '../../../core/services/indicadores/indicador
     NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
+    TemplatesModule,
   ],
   templateUrl: './indicadores-form.component.html',
 })
@@ -31,6 +34,9 @@ export class IndicadoresFormComponent {
     this.descricaoIndicador = '';
     this.descricaoMeta = '';
   }
+
+  public projetoTooltip: Record<string, string> =
+      COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   removerIndicador(index: number): void {
     this.indicadoresFormArray.removeAt(index);

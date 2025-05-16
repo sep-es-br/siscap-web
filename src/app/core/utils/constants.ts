@@ -264,23 +264,26 @@ export const COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO: Record<string, string> =
     idMicrorregioesList:
       '(i) Informar as instituições envolvidas na implementação do projeto e suas respectivas responsabilidades na execução. (ii) Informar a capacidade das insituições para a implementação das ações do projeto (equipe técnica, estrutura, experiência).',
     objetivo:
-      'Deverá refletir o que se deseja alcançar com as ações do projeto, abrangendo a visão ampla e o seu propósito geral. Deve estar explicitamente relacionado aos problemas e necessidades apontados. Limite XX caracteres',
+      'Deverá refletir o que se deseja alcançar com as ações do projeto, abrangendo a visão ampla e o seu propósito geral. Deve estar explicitamente relacionado aos problemas e necessidades apontados.',
     objetivoEspecifico:
-      'Deverão corresponder aos resultados que o projeto pretende atingir, contribuindo para o alcance do objetivo geral. Deverão ser apresentados de maneira específica, mensurável, atingível e realista e relacionados aos indicadores propostos. Também deverão ter vínculo com os Objetivos de Desenvolvimento Sustentável da ONU. Limite XX caracteres',
+      'Deverão corresponder aos resultados que o projeto pretende atingir, contribuindo para o alcance do objetivo geral. Deverão ser apresentados de maneira específica, mensurável, atingível e realista e relacionados aos indicadores propostos. Também deverão ter vínculo com os Objetivos de Desenvolvimento Sustentável da ONU.',
     situacaoProblema:
       'Identificar o(s) problema(s) que as ações do projeto candidato a financiamento se propõem solucionar ou minorar. Descrever clara e sucintamente a situação-problema atual, apresentando informações e dados que a caracterizem e demonstrem o(s) problema(s). Trata-se da situação inicial que se deseja mudar.',
     solucoesPropostas:
       'Descrever as ações escolhidas para o enfrentamento ou solução do(s) problema(s) descrito(s) no item anterior.',
     impactos:
-      'Informar (i) as medidas de sustentabilidade a serem adotadas e os custos adicionais estimados decorrentes da implementação do programa/projeto, referentes aos gastos incrementais de pessoal, de operacionalização e de manutenção de obras e bens; (ii) os principais impactos ambientais decorrentes da implementação do projeto; (iii) possíveis interferências em populações decorrentes da implementação do programa/projeto. Especificar se há interferência em populações indígenas, quilombolas e outras; e (iv) os riscos e ações mitigadoras. Limite XX caracteres',
+      'Informar (i) as medidas de sustentabilidade a serem adotadas e os custos adicionais estimados decorrentes da implementação do programa/projeto, referentes aos gastos incrementais de pessoal, de operacionalização e de manutenção de obras e bens; (ii) os principais impactos ambientais decorrentes da implementação do projeto; (iii) possíveis interferências em populações decorrentes da implementação do programa/projeto. Especificar se há interferência em populações indígenas, quilombolas e outras; e (iv) os riscos e ações mitigadoras.',
     arranjosInstitucionais:
-      '(i) Informar o órgão executor principal do programa ou projeto e demais órgãos participantes, se existentes. (ii) informar a capacidade das instituições proponentes, em particular do órgão executor, para a implementação das ações do programa ou projeto, como qualificação e experiência da equipe técnica e recursos e estruturas disponíveis. (iii) Apontar se haverá repasse de recursos entre os órgãos participantes. Limite XX caracteres',
+      '(i) Informar o órgão executor principal do programa ou projeto e demais órgãos participantes, se existentes. (ii) informar a capacidade das instituições proponentes, em particular do órgão executor, para a implementação das ações do programa ou projeto, como qualificação e experiência da equipe técnica e recursos e estruturas disponíveis. (iii) Apontar se haverá repasse de recursos entre os órgãos participantes.',
     nomeIndicador:
-      'Preferencialmente deverão ser considerados os indicadores-chave nacionais constantes do Plano Plurianual 2024-2027 (Anexo I da Lei nº 14.820, de 2024), além de outros indicadores relacionados ao projeto. Limite XX caracteres',
+      'Preferencialmente deverão ser considerados os indicadores-chave nacionais constantes do Plano Plurianual 2024-2027 (Anexo I da Lei nº 14.820, de 2024), além de outros indicadores relacionados ao projeto.',
     descricaoIndicador:
-      'Descrever cada indicador de forma específica e estabelecer as fórmulas de cálculo adequadas. Fazer referência aos objetivos específicos pertinentes ao indicador e às áreas estratégicas relacionadas no Anexo II da Lei 14.820/2024. Empregar preferencialmente o modelo SMART para a definição de indicadores. Limite XX caracteres',
+      'Descrever cada indicador de forma específica e estabelecer as fórmulas de cálculo adequadas. Fazer referência aos objetivos específicos pertinentes ao indicador e às áreas estratégicas relacionadas no Anexo II da Lei 14.820/2024. Empregar preferencialmente o modelo SMART para a definição de indicadores.',
     metaIndicador:
-      'Apontar o resultado específico e determinado a ser alcançado, cuja implementação será medida por meio do indicador. A meta deverá estar relacionada aos objetivos e aos resultados esperados e sua consecução relacionada ao tempo de implantação do projeto. Limite XX caracteres',
+      'Apontar o resultado específico e determinado a ser alcançado, cuja implementação será medida por meio do indicador. A meta deverá estar relacionada aos objetivos e aos resultados esperados e sua consecução relacionada ao tempo de implantação do projeto.',
     idResponsavelProponente: 'Pessoa que responde pelo órgão de origem.',
     equipeElaboracao: 'Pessoas responsáveis pela elaboração do projeto.',
+    descricaoAcaoPrincipal: 'Inserir o nome da ação.',
+    valorEstimadoAcaoPrincipal: 'Preencher o valor estimado total a ser destinado à implantação das ações principais. O valor deverá ser compatível com o objeto.',
+    descricaoAcoesSecudariasProdutos: 'Inserir as ações secundárias, se houver, e os produtos. Os produtos deverão compreender os bens ou serviços oferecidos pelo projeto e estar associados à etapa ou sub etapa, conforme o caso.'
   };

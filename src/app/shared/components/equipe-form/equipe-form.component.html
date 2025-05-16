@@ -12,14 +12,9 @@
             <div
               class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center"
             >
-              <div
-                class="col-12 col-lg pb-2 pb-lg-0 d-inline-flex justify-content-center justify-content-md-start"
-              >
-                <span class="nome-membro">{{
-                  getMembroNome(membroFormGroup.value.subPessoa)
-                }}</span>
+              <div class="col-12 col-lg pb-2 pb-lg-0 d-inline-flex justify-content-center justify-content-md-start" >
+                <span class="nome-membro">{{getMembroNome(membroFormGroup.value.subPessoa)}}</span>
               </div>
-
               <div class="col-12 col-lg d-inline-flex flex-wrap flex-lg-nowrap">
                 <div class="col-12 col-md-9">
                   <ng-select
@@ -29,17 +24,17 @@
                     placeholder="-- Papel do membro --"
                     [readonly]="isMembroRemovido(i)"
                     [clearable]="false"
-                    formControlName="idPapel"
-                  >
+                    formControlName="idPapel" >
                     <ng-option
                       *ngFor="let tipoPapel of tiposPapelOpcoes"
-                      [value]="tipoPapel.id"
-                    >
+                      [value]="tipoPapel.id" >
                       {{ tipoPapel.nome }}
                     </ng-option>
+                    <ng-template ng-label-tmp let-item="item">
+                      {{ getPapelNome(item) }}
+                    </ng-template>
                   </ng-select>
                 </div>
-
                 <div
                   class="col-12 col-md-3 ps-0 ps-md-2 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-between align-items-center"
                 >

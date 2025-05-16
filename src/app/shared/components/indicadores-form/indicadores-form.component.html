@@ -8,19 +8,29 @@
               <strong>{{ getTipoIndicadorNome(indicadorFormGroup.value.tipoIndicador ?? 0) }}</strong>
             </div>
             <div class="col-md-4 mb-2 mb-md-0">
+              <label for="descricaoMeta" class="form-label">
+                Descrição do indicador
+                  <form-helper-tooltip 
+                    [texto]="projetoTooltip['descricaoIndicador']"> 
+                  </form-helper-tooltip>
+              </label>
               <textarea
                 class="form-control"
                 formControlName="descricaoIndicador"
-                placeholder="Descrição do indicador"
                 rows="4"
                 maxlength="2000"
               ></textarea>
             </div>
             <div class="col-md-4 mb-2 mb-md-0">
+              <label for="descricaoMeta" class="form-label">
+                Descrição da Meta
+                  <form-helper-tooltip 
+                    [texto]="projetoTooltip['metaIndicador']"> 
+                  </form-helper-tooltip>
+              </label>
               <textarea
                 class="form-control"
                 formControlName="metaIndicador"
-                placeholder="Descrição da Meta"
                 rows="4"
                 maxlength="2000"
               ></textarea>

@@ -94,10 +94,7 @@ export class EquipeService {
       subPessoa: this._nnfb.control(membro?.subPessoa ?? null),
       idPessoa: this._nnfb.control(membro?.idPessoa ?? 0, Validators.required),
       idPapel: this._nnfb.control(membro?.idPapel ?? null, Validators.required),
-      idStatus: this._nnfb.control(
-        membro?.idStatus ?? TipoStatusEnum.Ativo,
-        Validators.required
-      ),
+      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required),
       justificativa: this._nnfb.control(membro?.justificativa ?? null),
     });
   }
@@ -111,21 +108,41 @@ export class EquipeService {
   }
 
   public usuarioProponenteValoresIniciaisEquipeFormArray(
-    usuarioProponente_IdPessoa: number
+    usuarioProponente_IdPessoa: number,
+    usuarioProponente_SubNovo: string,
+    nomeUsuario: string
+    // pessoasOpcoes?: IOpcoesDropdownResponsavelProponente[]
   ): void {
+    /*const usuarioNaoEhResponsavel = pessoasOpcoes && !pessoasOpcoes.some(p => p.id === usuarioProponente_IdPessoa);
+    var nomeUsuarioProponente = "";
+    if (usuarioNaoEhResponsavel && pessoasOpcoes?.length > 0) {
+      usuarioProponente_IdPessoa = pessoasOpcoes[0].id;
+      usuarioProponente_SubNovo = pessoasOpcoes[0].agentePublicoSub;
+      nomeUsuarioProponente = pessoasOpcoes[0].nome;
+    }*/
+    /*
     const usuarioProponente_IEquipe: IEquipe = {
-      subPessoa: null,
+      subPessoa: usuarioProponente_SubNovo,
       idPessoa: usuarioProponente_IdPessoa,
       idPapel: TipoPapelEnum.Proponente,
       idStatus: TipoStatusEnum.Ativo,
       justificativa: null,
     };
+    */
+    const usuarioProponente_IEquipe: IEquipe = {
+      subPessoa: usuarioProponente_SubNovo,
+      idPessoa: usuarioProponente_IdPessoa,
+      idPapel: TipoPapelEnum.Proponente,
+      idStatus: TipoStatusEnum.Ativo,
+      justificativa: null,
+      nomePessoa: nomeUsuario, 
+      papelNome: 'Proponente'
+    };
+    
+    //const usuarioProponente_MembroFormGroup = this.construirMembroFormGroup(usuarioProponente_IEquipe);
+    //this.incluirMembroNaEquipe(usuarioProponente_MembroFormGroup);
+    this.incluirMembroNaEquipe(this.construirMembroFormGroup(usuarioProponente_IEquipe));
 
-    const usuarioProponente_MembroFormGroup = this.construirMembroFormGroup(
-      usuarioProponente_IEquipe
-    );
-
-    this.incluirMembroNaEquipe(usuarioProponente_MembroFormGroup);
   }
 
   public incluirMembroNaEquipe(

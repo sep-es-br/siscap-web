@@ -52,6 +52,7 @@ export class EquipeFormComponent implements OnDestroy {
     private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService
   ) {
+
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
     this.permissaoRemoverMembro =
@@ -59,15 +60,16 @@ export class EquipeFormComponent implements OnDestroy {
   }
 
   public getMembroNome(subPessoa: string | null | undefined): string {
-    return (
-      this.pessoasOpcoes.find((pessoa) => pessoa.agentePublicoSub === subPessoa)?.nome ?? ''
-    );
+    const nomePadrao = this.pessoasOpcoes.find(p => p.agentePublicoSub === subPessoa)?.nome;
+    if (!nomePadrao && subPessoa === this._usuarioService.usuarioPerfil.subNovo) {
+      return this._usuarioService.usuarioPerfil.nome.toUpperCase() || 'Proponente';
+    }
+    return nomePadrao ?? subPessoa ?? ' ';
   }
 
   public getPapelNome(idPapel: number | null | undefined): string {
-    return (
-      this.tiposPapelOpcoes.find((papel) => papel.id === idPapel)?.nome ?? ''
-    );
+    if (idPapel === 3) return 'Proponente';
+    return this.tiposPapelOpcoes.find((papel) => papel.id === idPapel)?.nome ?? '';
   }
 
   public isMembroRemovido(index: number): boolean {
