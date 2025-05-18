@@ -95,13 +95,6 @@ export class IndicadoresService {
     return membroFormGroup;
   }
   
-  /*
-  public incluirIndicador(
-    indicadorFormGroup: FormGroup<IndicadoresFormType>
-  ): void {
-    this.indicadoresFormArray.push(indicadorFormGroup);
-  } */
-
   public removerIndicador(index: number): void {
     this.indicadoresFormArray.removeAt(index);
   }
@@ -117,18 +110,5 @@ export class IndicadoresService {
     this.excluirMembroForm = excluirIndicadorForm;
     return this.excluirMembroForm;
   }
-
-  /*
-  public filtrarIndicadoresOpcoes(
-      tiposIndicadorOpcoes: IOpcoesDropdown[]
-    ): IOpcoesDropdown[] {
-      return tiposIndicadorOpcoes.filter(
-        (tipoindicador) =>
-          !this.indicadoresFormArray.value.some(
-            (tipoIndicador) => tipoIndicador.tipoIndicador === tipoindicador.id
-          )
-      );
-    }
-      */
 
 }

@@ -92,8 +92,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _getLocalidadesOpcoes$: Observable<ILocalidadeOpcoesDropdown[]>;
   private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getTiposIndicadoresOpcoes$: Observable<IOpcoesDropdown[]>;
- 
+   
   private _idProjetoEdicao: number = 0;
 
   public loading: boolean = true;
@@ -255,10 +254,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getOpcoesTiposValor()
       .pipe(tap((response) => (this.tiposValorOpcoes = response)));
 
-      this._getTiposIndicadoresOpcoes$ = this._opcoesDropdownService
-      .getOpcoesTiposIndicadores()
-      .pipe(tap((response) => (this.indicadoresOpcoes = response)));
-
     this._getLocalidadesOpcoes$ = this._opcoesDropdownService
       .getOpcoesLocalidades()
       .pipe(
@@ -289,8 +284,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._getPlanosOpcoes$,
       this._getTiposValorOpcoes$,
       this._getTiposPapelOpcoes$,
-      this._getLocalidadesOpcoes$,
-      this._getTiposIndicadoresOpcoes$
+      this._getLocalidadesOpcoes$
     ).pipe(
       finalize(
         () => (this._rateioService.localidadesOpcoes = this.localidadesOpcoes)

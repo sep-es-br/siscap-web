@@ -143,8 +143,4 @@ export class OpcoesDropdownService {
     >;
   }
 
-  public getOpcoesTiposIndicadores() {
-    return this.getOpcoesDropdown('tipos-indicador');
-  }
-
 }
