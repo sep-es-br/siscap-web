@@ -23,7 +23,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
   templateUrl: './indicadores-form.component.html',
 })
 export class IndicadoresFormComponent {
-  @Input() tiposIndicadorOpcoes: { id: number; nome: string }[] = [];
+  @Input() tipoIndicador: string;
   @Input() public isModoEdicao: boolean = false;
   @Input() descricaoIndicador: string;
   @Input() descricaoMeta: string;
@@ -31,8 +31,18 @@ export class IndicadoresFormComponent {
   constructor(
     public indicadoresService: IndicadoresService,
     private fb: FormBuilder) {
+    this.tipoIndicador = '';
     this.descricaoIndicador = '';
     this.descricaoMeta = '';
+  }
+
+  adicionarIndicador(): void {
+    const novoIndicador = this.fb.group({
+      tipoIndicador: [''],
+      descricaoIndicador: [''],
+      descricaoMeta: ['']
+    });
+    this.indicadoresFormArray.push(novoIndicador);
   }
 
   public projetoTooltip: Record<string, string> =
@@ -40,10 +50,6 @@ export class IndicadoresFormComponent {
 
   removerIndicador(index: number): void {
     this.indicadoresFormArray.removeAt(index);
-  }
-
-  getTipoIndicadorNome(id: number): string {
-    return this.tiposIndicadorOpcoes.find((t) => t.id === id)?.nome ?? '';
   }
 
   get indicadoresFormGroups(): FormGroup[] {

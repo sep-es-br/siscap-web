@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, Observable, of, shareReplay, tap } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -32,6 +32,10 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
 
   private readonly _subNovoPessoa$: BehaviorSubject<string> =
     new BehaviorSubject<string>('');
+
+   // 
+   private cache$: Observable<IOpcoesDropdownResponsavelProponente[]> | null = null;
+   private cacheLoaded = false;
 
   public get idPessoa$(): BehaviorSubject<number> {
     return this._idPessoa$;
@@ -102,6 +106,48 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
     );
   }
 
+  /*
+  public buscarTodosAgentesPublicosGoves(): 
+
+    Observable<IOpcoesDropdownResponsavelProponente[]> {
+
+      if ( !this.cache$ || this.cache$ === of([]) ) {
+
+        this.cache$ = this._http.get<IOpcoesDropdownResponsavelProponente[]>(
+          `${this._url}/opcoes/agentesGoves` 
+          ).pipe(shareReplay(1)); // Cache em memória
+
+      }
+
+      return this.cache$;
+
+  }
+  */
+
+  public buscarTodosAgentesPublicosGoves(): Observable<IOpcoesDropdownResponsavelProponente[]> {
+    
+    console.log("Método chamado");
+    
+    if (!this.cacheLoaded) { // 👈 Usamos a flag em vez de comparar Observables
+        
+      console.log("Fazendo requisição ao backend...");
+
+      this.cache$ = this._http.get<IOpcoesDropdownResponsavelProponente[]>(
+            `${this._url}/opcoes/agentesGoves`
+        ).pipe(
+            tap(data => console.log('Dados recebidos:', data)), // 👈 Debug dos dados
+            catchError(err => {
+                console.error('Erro na requisição:', err);
+                return of([]); // Fallback
+            }),
+            shareReplay(1),
+            finalize(() => this.cacheLoaded = true) // 👈 Marca como carregado
+        );
+    }
+    return this.cache$!; // 👈 Non-null assertion (só use se tiver certeza)
+  }
+
+
   public buscarMeuPerfil(subNovo: string): Observable<IPessoa> {
     const params = {
       subNovo: subNovo,
@@ -135,4 +181,16 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
 
     return formData;
   }
+
+  // pessoas.service.ts
+  filtrarAgentesPublicos(termo: string): Observable<IOpcoesDropdownResponsavelProponente[]> {
+    return this._http.get<IOpcoesDropdownResponsavelProponente[]>(
+      `${this._url}/opcoes/agentesGoves?filter=${termo}`
+      );
+  }
+
+  ngOnDestroy() {
+    this.cache$ = null;
+  }
+
 }

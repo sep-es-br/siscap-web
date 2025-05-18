@@ -135,21 +135,16 @@
               id="idMembroEquipeElaboracao"
               placeholder="-- Selecione uma pessoa para incluir na equipe de elaboração --"
               [(ngModel)]="idMembroEquipeElaboracao"
-              [ngModelOptions]="{ standalone: true }"
-              (change)="idMembroNgSelectChangeEvent($event)"
-            >
+              [items]="pessoas$ | async"
+              [ngModelOptions]="{ standalone: true }">
               <ng-option
-                *ngFor="
-                  let pessoa of equipeService.filtrarPessoasOpcoes(
-                    filtrarResponsavelProponente(pessoasOpcoes)
-                  )
-                "
-                [value]="pessoa.agentePublicoSub"
-              >
+                *ngFor="let pessoa of pessoasOpcoesGoves"
+                [value]="pessoa.agentePublicoSub">
                 {{ pessoa.nome }}
               </ng-option>
             </ng-select>
           </div>
+
           <div class="col-12 mt-2">
             <siscap-equipe-form
               [pessoasOpcoes]="pessoasOpcoes"
@@ -164,53 +159,14 @@
             ></siscap-valor-form>
           </div>
 
-          <div class="col-12">
-            <label for="valorEstimado" class="col-12 form-label">
-              <validation-message [control]="getControl('valorEstimado')">
-                Valor Estimado
-                <form-helper-tooltip
-                  [texto]="projetoTooltip['valorEstimado']"
-                ></form-helper-tooltip>
-              </validation-message>
-            </label>
-            <input
-              mask="separator.2"
-              prefix="R$"
-              thousandSeparator="."
-              decimalMarker=","
-              [inputTransformFn]="rtlCurrencyInputTransformFn"
-              [outputTransformFn]="rtlCurrencyOutputTransformFn"
-              type="text"
-              id="valor-quantia"
-              class="form-control"
-              formControlName="valorEstimado"
-              min="1"
-            />
-          </div>
-
-          <div class="col-12">
-            <label for="membroIndicadorElaboracao" class="form-label col-12">
-                Indicadores
-                <form-helper-tooltip
-                  [texto]="projetoTooltip['nomeIndicador']"
-                ></form-helper-tooltip>
-            </label>
-            <ng-select
-              id="idIndicadorIndicadores"
-              placeholder="-- Selecione um indicador para incluir na lista de indicadores --"
-              [(ngModel)]="idIndicadorIndicadores"
-              [ngModelOptions]="{ standalone: true }"
-              (change)="idIndicadorNgSelectChangeEvent($event)" >
-              <ng-option
-                *ngFor="let indicador of indicadoresService.filtrarIndicadoresOpcoes( indicadoresOpcoes )"
-                [value]="indicador.id" >
-                {{ indicador.nome }}
-              </ng-option>
-            </ng-select>
-          </div>
           <div class="col-12 mt-2">
+            <label for="membroIndicadorElaboracao" class="form-label col-12">
+              Indicadores
+              <form-helper-tooltip
+                [texto]="projetoTooltip['nomeIndicador']"
+              ></form-helper-tooltip>
+            </label>
             <siscap-indicadores-form
-              [tiposIndicadorOpcoes]="indicadoresOpcoes"
               [isModoEdicao] = "isModoEdicao" >
             </siscap-indicadores-form>
           </div>

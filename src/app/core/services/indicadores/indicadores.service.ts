@@ -58,10 +58,7 @@ export class IndicadoresService {
   }
 
   constructor(private _nnfb: NonNullableFormBuilder) {
-    this.idIndicadorIndicadoresValue$.subscribe((idIndicadorIndicadoresValue: number) => {
-      const indicadorMontado = this.construirIndicadorFormGroupNgSelectValue(idIndicadorIndicadoresValue);
-      this.incluirIndicador( indicadorMontado );
-    });
+    
   }
 
   public construirindicadoresFormArray(
@@ -80,7 +77,7 @@ export class IndicadoresService {
   
   public construirIndicadorFormGroup(membro?: IIndicadores): FormGroup<IndicadoresFormType> {
     return this._nnfb.group<IndicadoresFormType>({
-      tipoIndicador: this._nnfb.control(membro?.tipoIndicador ?? 0, Validators.required),
+      tipoIndicador: this._nnfb.control(membro?.tipoIndicador ?? null, Validators.required),
       descricaoIndicador: this._nnfb.control(membro?.descricaoIndicador ??null, Validators.required),
       metaIndicador: this._nnfb.control(membro?.metaIndicador ?? null, Validators.required),
       idStatus: this._nnfb.control(
@@ -91,18 +88,19 @@ export class IndicadoresService {
   }
 
   public construirIndicadorFormGroupNgSelectValue(
-    ngSelectValue: number
+    ngSelectValue: string
   ): FormGroup<IndicadoresFormType> {
     const membroFormGroup = this.construirIndicadorFormGroup();
     membroFormGroup.patchValue({ tipoIndicador: ngSelectValue });
     return membroFormGroup;
   }
   
+  /*
   public incluirIndicador(
     indicadorFormGroup: FormGroup<IndicadoresFormType>
   ): void {
     this.indicadoresFormArray.push(indicadorFormGroup);
-  }
+  } */
 
   public removerIndicador(index: number): void {
     this.indicadoresFormArray.removeAt(index);
@@ -120,6 +118,7 @@ export class IndicadoresService {
     return this.excluirMembroForm;
   }
 
+  /*
   public filtrarIndicadoresOpcoes(
       tiposIndicadorOpcoes: IOpcoesDropdown[]
     ): IOpcoesDropdown[] {
@@ -130,5 +129,6 @@ export class IndicadoresService {
           )
       );
     }
+      */
 
 }

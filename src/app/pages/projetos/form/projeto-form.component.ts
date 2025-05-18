@@ -17,7 +17,12 @@ import {
   switchMap,
   tap,
   EMPTY,
-  catchError
+  catchError,
+  Subject,
+  merge,
+  debounceTime,
+  distinctUntilChanged,
+  of
 } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -88,7 +93,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getTiposIndicadoresOpcoes$: Observable<IOpcoesDropdown[]>;
-
+ 
   private _idProjetoEdicao: number = 0;
 
   public loading: boolean = true;
@@ -105,6 +110,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public organizacoesOpcoes: IOpcoesDropdown[] = [];
   public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
   public pessoasOpcoesFiltrada: IOpcoesDropdownResponsavelProponente[] = [];
+  public pessoasOpcoesGoves: IOpcoesDropdownResponsavelProponente[] = [];
+
   public planosOpcoes: IOpcoesDropdown[] = [];
   public tiposValorOpcoes: IOpcoesDropdown[] = [];
   public localidadesOpcoes: ILocalidadeOpcoesDropdown[] = [];
@@ -125,6 +132,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public idIndicadorIndicadores:  | null = null;
 
   public isLoadingPessoas = true;
+
+  // otimizacao carga agentes goves.. 
+  pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
+  input$ = new Subject<string>();
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
@@ -248,8 +259,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getOpcoesTiposIndicadores()
       .pipe(tap((response) => (this.indicadoresOpcoes = response)));
 
-      
-
     this._getLocalidadesOpcoes$ = this._opcoesDropdownService
       .getOpcoesLocalidades()
       .pipe(
@@ -297,9 +306,35 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
     this._subscription.add(this._getAllOpcoes$.subscribe());
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
+
+    this.pessoas$ = merge(
+      this._pessoasService.buscarTodosAgentesPublicosGoves(),
+      this.input$.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap(term => this._pessoasService.filtrarAgentesPublicos(term) ) 
+      )
+    );
+
+    /*
+    this._pessoasService
+      .buscarTodosAgentesPublicosGoves()
+      .subscribe({
+        next: (response) => {
+          this.pessoasOpcoesGoves = response;
+          this.isLoadingPessoas = false;
+        },
+        error: () => {
+          this.pessoasOpcoesGoves = [];
+          this.isLoadingPessoas = false;
+        },
+      });
+    */
+
   }
 
   public rtlCurrencyInputTransformFn =
@@ -394,8 +429,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         Validators.required
       ),
       valorEstimado: this._nnfb.control(valorInicialControleValorEstimado, [
-        Validators.required,
-        Validators.min(1),
+       
       ]),
       idMicrorregioesList: this._nnfb.control(
         valorInicialControleIdMicrorregioesList,
@@ -601,6 +635,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.isLoadingPessoas = false;
         },
       });
+      
+      
 
   }
 

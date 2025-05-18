@@ -1,54 +1,147 @@
 <div class="card mt-3" *ngIf="indicadoresService.indicadoresFormArray.length > 0">
-  <div class="card-body row gy-2 mb-0">
-    <ng-container *ngFor="let indicadorFormGroup of indicadoresService.indicadoresFormArray.controls; index as i">
-      <form [formGroup]="indicadorFormGroup" >
-        <div class="card mb-2">
-          <div class="card-body row align-items-start">
-            <div class="col-md-3 mb-2 mb-md-0">
-              <strong>{{ getTipoIndicadorNome(indicadorFormGroup.value.tipoIndicador ?? 0) }}</strong>
-            </div>
-            <div class="col-md-4 mb-2 mb-md-0">
-              <label for="descricaoMeta" class="form-label">
-                Descrição do indicador
-                  <form-helper-tooltip 
-                    [texto]="projetoTooltip['descricaoIndicador']"> 
-                  </form-helper-tooltip>
-              </label>
-              <textarea
-                class="form-control"
-                formControlName="descricaoIndicador"
-                rows="4"
-                maxlength="2000"
-              ></textarea>
-            </div>
-            <div class="col-md-4 mb-2 mb-md-0">
-              <label for="descricaoMeta" class="form-label">
-                Descrição da Meta
-                  <form-helper-tooltip 
-                    [texto]="projetoTooltip['metaIndicador']"> 
-                  </form-helper-tooltip>
-              </label>
-              <textarea
-                class="form-control"
-                formControlName="metaIndicador"
-                rows="4"
-                maxlength="2000"
-              ></textarea>
-            </div>
-            <div class="col-md-auto text-end">
-              <button
-                type="button"
-                class="btn btn-outline-danger btn-sm"
-                (click)="removerIndicador(i)"
-                *ngIf="isModoEdicao"
-              >
-                <i class="fa-solid fa-trash"></i>
+  <div class="col-12">
+    <div class="card mb-3">
+      <div class="card-body">
+        <ng-container *ngFor="let acoesFormGroup of acoesService.acoesFormArray.controls; index as i">
+          <form [formGroup]="acoesFormGroup" >
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0">Ação #{{i + 1}}</h6>
+              <button type="button" class="btn btn-sm btn-outline-danger" 
+                (click)="removerAcao(i)">
+                <i class="fas fa-trash"></i>
               </button>
             </div>
-          </div>
+            <div class="row g-2">
+              <div class="col-12 col-md-8">
+                <label [for]="'acaoNome_' + i" class="form-label">
+                  Ação Principal
+                    <form-helper-tooltip 
+                      [texto]="projetoTooltip['descricaoAcaoPrincipal']"> 
+                    </form-helper-tooltip>
+                </label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [id]="'acaoNome_' + i"
+                  formControlName="descricaoAcaoPrincipal"
+                  maxlength="2000" />
+              </div>
+              <div class="col-12 col-md-4">
+                <label [for]="'acaoValor_' + i" class="form-label">
+                  Valor Estimado (R$)
+                    <form-helper-tooltip 
+                      [texto]="projetoTooltip['valorEstimadoAcaoPrincipal']"> 
+                    </form-helper-tooltip>
+                </label>
+              <input
+                  mask="separator.2"
+                  prefix="R$"
+                  thousandSeparator="."
+                  decimalMarker=","
+                  [inputTransformFn]="rtlCurrencyInputTransformFn"
+                  [outputTransformFn]="rtlCurrencyOutputTransformFn"
+                  type="text"
+                  class="form-control"
+                  [id]="'acaoValor_' + i"
+                  formControlName="valorEstimadoAcaoPrincipal"
+                  placeholder="0,00"/>
+              </div>
+              <div class="col-12">
+                <label [for]="'acaoDescricao_' + i" class="form-label">
+                  Descrição de ações secundárias e produtos
+                    <form-helper-tooltip 
+                      [texto]="projetoTooltip['descricaoAcoesSecudariasProdutos']"> 
+                    </form-helper-tooltip>
+                </label>
+                <textarea
+                  class="form-control"
+                  [id]="'acaoDescricao_' + i"
+                  formControlName="descricaoAcaoSecundaria"
+                  rows="3"
+                  maxlength="2000"></textarea>
+              </div>
+            </div>
+          </form>
+        </ng-container>
+        <div class="d-grid mt-3">
+          <button type="button" class="btn btn-outline-primary" 
+            (click)="adicionarAcao()">
+            <i class="fas fa-plus me-2"></i>Adicionar Nova Ação
+          </button>
         </div>
-        
-      </form>
-    </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="card-body row gy-2 mb-0">
+        <ng-container *ngFor="let indicadorFormGroup of indicadoresService.indicadoresFormArray.controls; index as i">
+          <form [formGroup]="indicadorFormGroup" >
+            <div class="card mb-2">
+              <div class="card-body row align-items-start">
+                
+                <div class="col-md-4 mb-2 mb-md-0">
+                  <label for="tipoIndicador" class="form-label">
+                    Tipo do indicador
+                      <form-helper-tooltip 
+                        [texto]="projetoTooltip['tipoIndicador']"> 
+                      </form-helper-tooltip>
+                  </label>
+                  <textarea
+                    class="form-control"
+                    formControlName="tipoIndicador"
+                    rows="4"
+                    maxlength="80"
+                  ></textarea>
+                </div>
+
+                <div class="col-md-4 mb-2 mb-md-0">
+                  <label for="descricaoMeta" class="form-label">
+                    Descrição do indicador
+                      <form-helper-tooltip 
+                        [texto]="projetoTooltip['descricaoIndicador']"> 
+                      </form-helper-tooltip>
+                  </label>
+                  <textarea
+                    class="form-control"
+                    formControlName="descricaoIndicador"
+                    rows="4"
+                    maxlength="2000"
+                  ></textarea>
+                </div>
+                <div class="col-md-4 mb-2 mb-md-0">
+                  <label for="descricaoMeta" class="form-label">
+                    Descrição da Meta
+                      <form-helper-tooltip 
+                        [texto]="projetoTooltip['metaIndicador']"> 
+                      </form-helper-tooltip>
+                  </label>
+                  <textarea
+                    class="form-control"
+                    formControlName="metaIndicador"
+                    rows="4"
+                    maxlength="2000"
+                  ></textarea>
+                </div>
+                <div class="col-md-auto text-end">
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    (click)="removerIndicador(i)"
+                    *ngIf="isModoEdicao"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+          </form>
+        </ng-container>
+
   </div>
+</div>
+<div class="d-grid mt-3">
+  <button type="button" class="btn btn-outline-primary" 
+    (click)="adicionarIndicador()">
+    <i class="fas fa-plus me-2"></i>Adicionar Novo Indicador
+  </button>
 </div>
