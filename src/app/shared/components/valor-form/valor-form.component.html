@@ -21,7 +21,10 @@
     <div id="valor-col" class="col-12 col-md-4 col-lg-7">
       <label for="valor-quantia" class="col-12 form-label">
         <validation-message [control]="getControl('quantia')">
-          Valor
+          Valor Estimado
+          <form-helper-tooltip
+            [texto]="projetoTooltip['valorEstimado']"
+          ></form-helper-tooltip>
         </validation-message>
       </label>
       <input

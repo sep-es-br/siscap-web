@@ -26,6 +26,7 @@ export interface IProjeto {
   subResponsavelProponente: string;
   indicadoresProjeto: Array<IIndicadores>;
   acoesProjeto: Array<IAcao>;
+  nomeagente: string;
 }
 
 export interface IProjetoForm

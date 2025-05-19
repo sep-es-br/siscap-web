@@ -124,41 +124,35 @@
 
           <div class="col-12">
             <label for="membroEquipeElaboracao" class="form-label col-12">
-              <validation-message [control]="getControl('equipeElaboracao')">
+              <validation-message 
+                [control]="getControl('equipeElaboracao')">
                 Equipe de Elaboração
                 <form-helper-tooltip
                   [texto]="projetoTooltip['equipeElaboracao']"
                 ></form-helper-tooltip>
               </validation-message>
             </label>
-            <ng-select
-              id="idMembroEquipeElaboracao"
-              placeholder="-- Selecione uma pessoa para incluir na equipe de elaboração --"
-              [(ngModel)]="idMembroEquipeElaboracao"
-              [items]="pessoas$ | async"
-              [ngModelOptions]="{ standalone: true }">
-              <ng-option
-                *ngFor="let pessoa of pessoasOpcoesGoves"
-                [value]="pessoa.agentePublicoSub">
-                {{ pessoa.nome }}
-              </ng-option>
-            </ng-select>
+            <div class="input-group"> 
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Digite o nome"
+                id="nomeagente"
+                formControlName="nomeagente"
+                maxLength="150"
+                (keyup.enter)="buscarAgentesPorTermo()"
+              />
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button"
+                (click)="buscarAgentesPorTermo()"
+                [disabled]="isLoadingPessoas">
+                <i class="fas fa-search" *ngIf="!isLoadingPessoas"></i>
+                <span class="spinner-border spinner-border-sm" *ngIf="isLoadingPessoas"></span>
+              </button>
+            </div>
           </div>
-
-          <div class="col-12 mt-2">
-            <siscap-equipe-form
-              [pessoasOpcoes]="pessoasOpcoes"
-              [tiposPapelOpcoes]="tiposPapelOpcoesVisiveis"
-              [isModoEdicao]="isModoEdicao"
-            ></siscap-equipe-form>
-          </div>
-          <div class="col-12">
-            <siscap-valor-form
-              [moedasList]="moedasList"
-              [tiposValorOpcoes]="tiposValorOpcoes"
-            ></siscap-valor-form>
-          </div>
-
+                   
           <div class="col-12 mt-2">
             <label for="membroIndicadorElaboracao" class="form-label col-12">
               Indicadores
@@ -169,6 +163,13 @@
             <siscap-indicadores-form
               [isModoEdicao] = "isModoEdicao" >
             </siscap-indicadores-form>
+          </div>
+
+          <div class="col-12">
+            <siscap-valor-form
+              [moedasList]="moedasList"
+              [tiposValorOpcoes]="tiposValorOpcoes"
+            ></siscap-valor-form>
           </div>
 
           <div class="col-12 mt-2" >

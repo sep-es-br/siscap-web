@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { BehaviorSubject, catchError, finalize, Observable, of, shareReplay, tap } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, map, Observable, of, shareReplay, tap } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -105,46 +105,53 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
       `${this._url}/opcoes/${idOrganizacao}`
     );
   }
-
-  /*
-  public buscarTodosAgentesPublicosGoves(): 
-
-    Observable<IOpcoesDropdownResponsavelProponente[]> {
-
-      if ( !this.cache$ || this.cache$ === of([]) ) {
-
-        this.cache$ = this._http.get<IOpcoesDropdownResponsavelProponente[]>(
-          `${this._url}/opcoes/agentesGoves` 
-          ).pipe(shareReplay(1)); // Cache em memória
-
-      }
-
-      return this.cache$;
-
-  }
-  */
-
-  public buscarTodosAgentesPublicosGoves(): Observable<IOpcoesDropdownResponsavelProponente[]> {
     
-    console.log("Método chamado");
+  public buscarTodosAgentesPublicosGoves(): Observable<void> {
     
+    console.log("passou aqui..." + this.cacheLoaded )
+
     if (!this.cacheLoaded) { // 👈 Usamos a flag em vez de comparar Observables
-        
-      console.log("Fazendo requisição ao backend...");
 
+      return this._http.post<void>( `${this._url}/opcoes/agentesGoves`, {})
+      .pipe(
+        catchError(err => {
+          console.error('Erro na requisição:', err);
+          return of(undefined); 
+        }),
+        finalize(() => this.cacheLoaded = true) 
+      );
+      
+      /*
       this.cache$ = this._http.get<IOpcoesDropdownResponsavelProponente[]>(
             `${this._url}/opcoes/agentesGoves`
         ).pipe(
-            tap(data => console.log('Dados recebidos:', data)), // 👈 Debug dos dados
+            tap(data => console.log('Dados recebidos:', data)), 
             catchError(err => {
                 console.error('Erro na requisição:', err);
-                return of([]); // Fallback
+                return of([]); 
             }),
             shareReplay(1),
-            finalize(() => this.cacheLoaded = true) // 👈 Marca como carregado
+            finalize(() => this.cacheLoaded = true) 
         );
+      */
     }
-    return this.cache$!; // 👈 Non-null assertion (só use se tiver certeza)
+    return of(undefined).pipe(tap(() => console.log("Cache já carregado, ignorando requisição")));
+  }
+
+  public buscarAgentesPorTermo(termo: string): Observable<IOpcoesDropdownResponsavelProponente[]> {
+    if (!termo) return of([]); // 👈 Validação segura
+  
+    const termoEncoded = encodeURIComponent(termo); // 👈 Trata caracteres especiais
+    const url = `${this._url}/opcoes/agentesGoves/filtrar/${termo}`;
+    
+    console.log('URL final:', url); // 👈 Verifique no console
+    
+    return this._http.get<IOpcoesDropdownResponsavelProponente[]>(url).pipe(
+      catchError(err => {
+        console.error('Erro na requisição:', err);
+        return of([]); // 👈 Fallback seguro
+      })
+    );
   }
 
 
@@ -182,11 +189,15 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
     return formData;
   }
 
-  // pessoas.service.ts
   filtrarAgentesPublicos(termo: string): Observable<IOpcoesDropdownResponsavelProponente[]> {
     return this._http.get<IOpcoesDropdownResponsavelProponente[]>(
       `${this._url}/opcoes/agentesGoves?filter=${termo}`
-      );
+    ).pipe(
+      tap({
+        next: (dados) => console.log('Resposta da API:', dados),
+        error: (erro) => console.error('Erro na requisição:', erro)
+      })
+    );
   }
 
   ngOnDestroy() {

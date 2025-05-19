@@ -305,28 +305,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
 
-    this.pessoas$ = merge(
-      this._pessoasService.buscarTodosAgentesPublicosGoves(),
-      this.input$.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap(term => this._pessoasService.filtrarAgentesPublicos(term) ) 
-      )
-    );
-
+    this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
+      next: (dados) => console.log('Dados carregados:', dados),
+      error: (err) => console.error('Erro ao carregar:', err)
+    });
+    
     /*
-    this._pessoasService
-      .buscarTodosAgentesPublicosGoves()
-      .subscribe({
-        next: (response) => {
-          this.pessoasOpcoesGoves = response;
-          this.isLoadingPessoas = false;
-        },
-        error: () => {
-          this.pessoasOpcoesGoves = [];
-          this.isLoadingPessoas = false;
-        },
-      });
+    this.pessoas$.subscribe({
+      next: (lista) => {
+        this.pessoasOpcoesGoves = lista;
+        this.isLoadingPessoas = false;
+      },
+      error: () => {
+        this.pessoasOpcoesGoves = [];
+        this.isLoadingPessoas = false;
+      }
+    });
     */
 
   }
@@ -434,6 +428,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       valor: this._valorService.construirValorFormGroup(
         projetoFormModel?.valor
+      ),
+      nomeagente: this._nnfb.control(projetoFormModel?.nomeagente ?? null, 
+
       ),
       objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
         Validators.required,
@@ -826,6 +823,25 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         )
       )
       .subscribe();
+  }
+
+  public buscarAgentesPorTermo(): IOpcoesDropdownResponsavelProponente[] {
+    
+    const termo = this.projetoForm.get('nomeagente')?.value;
+
+    this._pessoasService.buscarAgentesPorTermo(termo).subscribe({
+      next: (lista) => {
+        this.pessoasOpcoesGoves = lista;
+        this.isLoadingPessoas = false;
+      },
+      error: () => {
+        this.pessoasOpcoesGoves = [];
+        this.isLoadingPessoas = false;
+      }
+    });
+    
+    return this.pessoasOpcoesGoves;
+
   }
 
   ngOnDestroy(): void {

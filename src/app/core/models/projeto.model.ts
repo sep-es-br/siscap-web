@@ -30,6 +30,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public subResponsavelProponente: string;
   public indicadoresProjeto: Array<IIndicadores>; 
   public acoesProjeto: Array<IAcao>;
+  public nomeagente: string;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -57,6 +58,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.acoesProjeto = this.construirAcoesProjeto(
       projetoForm?.acoesProjeto
     );
+    this.nomeagente = projetoForm?.nomeagente ?? '';
   }
 
   private construirRateioModelArray(
