@@ -4,6 +4,6 @@ export interface IEquipe {
   idPapel: number;
   idStatus: number;
   justificativa: string | null;
-  nomePessoa: string | null;
+  nome: string | null;
   papelNome: string | null;
 }

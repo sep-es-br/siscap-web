@@ -86,6 +86,7 @@ export class AcoesService {
 
   public construirAcaoFormGroup( membro?: IAcao): FormGroup<AcaoFormType> {
     return this._nnfb.group<AcaoFormType>({
+      idAcao: this._nnfb.control(membro?.idAcao ?? 0 ),
       descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null, Validators.required ),
       descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null, Validators.required ),
       valorEstimadoAcaoPrincipal: this._nnfb.control(membro?.valorEstimadoAcaoPrincipal ?? 0, Validators.required ),

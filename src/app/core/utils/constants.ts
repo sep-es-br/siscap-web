@@ -279,7 +279,7 @@ export const COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO: Record<string, string> =
       'Preferencialmente deverão ser considerados os indicadores-chave nacionais constantes do Plano Plurianual 2024-2027 (Anexo I da Lei nº 14.820, de 2024), além de outros indicadores relacionados ao projeto.',
     descricaoIndicador:
       'Descrever cada indicador de forma específica e estabelecer as fórmulas de cálculo adequadas. Fazer referência aos objetivos específicos pertinentes ao indicador e às áreas estratégicas relacionadas no Anexo II da Lei 14.820/2024. Empregar preferencialmente o modelo SMART para a definição de indicadores.',
-    metaIndicador:
+    descricaoMeta:
       'Apontar o resultado específico e determinado a ser alcançado, cuja implementação será medida por meio do indicador. A meta deverá estar relacionada aos objetivos e aos resultados esperados e sua consecução relacionada ao tempo de implantação do projeto.',
     idResponsavelProponente: 'Pessoa que responde pelo órgão de origem.',
     equipeElaboracao: 'Pessoas responsáveis pela elaboração do projeto.',

@@ -28,7 +28,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
 })
 export class AcoesFormComponent {
   @Input() descricaoAcaoPrincipal: string;
-  @Input() descricaoAcoesSecundarias: string;
+  @Input() descricaoAcaoSecundaria: string;
   @Input() valorEstimadoAcaoPrincipal: number;
   @Input() public isModoEdicao: boolean = false;
 
@@ -36,7 +36,7 @@ export class AcoesFormComponent {
     public acoesService: AcoesService,
     private fb: FormBuilder) {
     this.descricaoAcaoPrincipal = '';
-    this.descricaoAcoesSecundarias = '';
+    this.descricaoAcaoSecundaria = '';
 	  this.valorEstimadoAcaoPrincipal = 0;
   }
 
@@ -52,7 +52,7 @@ export class AcoesFormComponent {
   adicionarAcao(): void {
     const novaAcao = this.fb.group({
       descricaoAcaoPrincipal: [''],
-      descricaoAcoesSecundarias: [''],
+      descricaoAcaoSecundaria: [''],
       valorEstimadoAcaoPrincipal: ['']
     });
     this.acoesFormArray.push(novaAcao);

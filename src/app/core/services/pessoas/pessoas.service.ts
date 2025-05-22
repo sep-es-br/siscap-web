@@ -107,11 +107,6 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
   }
     
   public buscarTodosAgentesPublicosGoves(): Observable<void> {
-    
-    console.log("passou aqui..." + this.cacheLoaded )
-
-    if (!this.cacheLoaded) { // 👈 Usamos a flag em vez de comparar Observables
-
       return this._http.post<void>( `${this._url}/opcoes/agentesGoves`, {})
       .pipe(
         catchError(err => {
@@ -120,22 +115,6 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
         }),
         finalize(() => this.cacheLoaded = true) 
       );
-      
-      /*
-      this.cache$ = this._http.get<IOpcoesDropdownResponsavelProponente[]>(
-            `${this._url}/opcoes/agentesGoves`
-        ).pipe(
-            tap(data => console.log('Dados recebidos:', data)), 
-            catchError(err => {
-                console.error('Erro na requisição:', err);
-                return of([]); 
-            }),
-            shareReplay(1),
-            finalize(() => this.cacheLoaded = true) 
-        );
-      */
-    }
-    return of(undefined).pipe(tap(() => console.log("Cache já carregado, ignorando requisição")));
   }
 
   public buscarAgentesPorTermo(termo: string): Observable<IOpcoesDropdownResponsavelProponente[]> {
@@ -143,17 +122,26 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
   
     const termoEncoded = encodeURIComponent(termo); // 👈 Trata caracteres especiais
     const url = `${this._url}/opcoes/agentesGoves/filtrar/${termo}`;
-    
-    console.log('URL final:', url); // 👈 Verifique no console
-    
+        
     return this._http.get<IOpcoesDropdownResponsavelProponente[]>(url).pipe(
       catchError(err => {
         console.error('Erro na requisição:', err);
         return of([]); // 👈 Fallback seguro
       })
     );
+
   }
 
+  public buscarAgenteGovesPorSub(sub: string): Observable<IOpcoesDropdownResponsavelProponente> {
+    if (!sub) return of(); 
+    const url = `${this._url}/opcoes/agentesGoves/sub/${sub}`;  
+    return this._http.get<IOpcoesDropdownResponsavelProponente>(url).pipe(
+      catchError(err => {
+        console.error('Erro na requisição:', err);
+        return of(); 
+      })
+    );
+  }
 
   public buscarMeuPerfil(subNovo: string): Observable<IPessoa> {
     const params = {

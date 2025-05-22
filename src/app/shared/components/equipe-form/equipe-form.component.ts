@@ -20,6 +20,9 @@ import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { EquipeModel } from '../../../core/models/equipe.model';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
+import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
+import { catchError, map, Observable, of, tap } from 'rxjs';
+import { IProjeto } from '../../../core/interfaces/projeto.interface';
 
 @Component({
   selector: 'siscap-equipe-form',
@@ -37,9 +40,10 @@ import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
   styleUrl: './equipe-form.component.scss',
 })
 export class EquipeFormComponent implements OnDestroy {
-  @Input() public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
   @Input() public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   @Input() public isModoEdicao: boolean = false;
+  @Input() public pessoasOpcoesGoves: IOpcoesDropdownResponsavelProponente[] = [];
+  @Input() public equipeProjeto: IEquipe[] = [];
 
   public TipoStatusEnum = TipoStatusEnum;
 
@@ -50,7 +54,8 @@ export class EquipeFormComponent implements OnDestroy {
     public equipeService: EquipeService,
     private readonly _usuarioService: UsuarioService,
     private readonly _ngbModalService: NgbModal,
-    private readonly _toastService: ToastService
+    private readonly _toastService: ToastService,
+    private readonly _pessoasService: PessoasService,
   ) {
 
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
@@ -58,13 +63,13 @@ export class EquipeFormComponent implements OnDestroy {
     this.permissaoRemoverMembro =
       this._usuarioService.verificarPermissao('adminAuth');
   }
-
+  
   public getMembroNome(subPessoa: string | null | undefined): string {
-    const nomePadrao = this.pessoasOpcoes.find(p => p.agentePublicoSub === subPessoa)?.nome;
-    if (!nomePadrao && subPessoa === this._usuarioService.usuarioPerfil.subNovo) {
-      return this._usuarioService.usuarioPerfil.nome.toUpperCase() || 'Proponente';
+    const nomePadrao = this.pessoasOpcoesGoves.find(p => p.agentePublicoSub === subPessoa)?.nome;
+    if (!nomePadrao) {
+      return this.equipeProjeto.find( p => p.subPessoa === subPessoa)?.nome ?? '';
     }
-    return nomePadrao ?? subPessoa ?? ' ';
+    return nomePadrao ?? '';
   }
 
   public getPapelNome(idPapel: number | null | undefined): string {

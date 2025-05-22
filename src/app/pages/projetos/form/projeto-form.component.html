@@ -88,7 +88,6 @@
               >
             </ng-select>
           </div>
-
           <div class="col-12 col-md-6" id="responsavel-proponente">
             <label for="responsavelProponente" class="form-label col-12">
               <validation-message
@@ -141,18 +140,46 @@
                 formControlName="nomeagente"
                 maxLength="150"
                 (keyup.enter)="buscarAgentesPorTermo()"
-              />
+                (click)="exibirLista = false" />
               <button 
                 class="btn btn-outline-secondary" 
                 type="button"
                 (click)="buscarAgentesPorTermo()"
-                [disabled]="isLoadingPessoas">
-                <i class="fas fa-search" *ngIf="!isLoadingPessoas"></i>
-                <span class="spinner-border spinner-border-sm" *ngIf="isLoadingPessoas"></span>
+                [disabled]="isLoadingPessoasFiltroTermo">
+                <span *ngIf="!isLoadingPessoasFiltroTermo" class="icon-container">
+                  <i class="fas fa-search"></i> <!-- Mostra lupa quando NÃO está carregando -->
+                </span>
+                <span *ngIf="isLoadingPessoasFiltroTermo" class="icon-container">
+                  <span class="spinner-border spinner-border-sm"></span> <!-- Mostra spinner quando carregando -->
+                </span>
               </button>
             </div>
+            <div class="card resultados-container" 
+              *ngIf="exibirLista && pessoasOpcoesGoves.length > 0"
+              style="max-height: 300px; margin-top: 6px; margin-bottom: 6px;">
+              <div class="card-body p-0">
+                <ul class="list-group list-group-flush lista-rolavel"
+                    style="max-height: 300px; overflow-y: auto;" >
+                  <li class="list-group-item list-group-item-action cursor-pointer"
+                      *ngFor="let agente of pessoasOpcoesGoves"
+                      (click)="idMembroNgSelectChangeEvent(agente)">
+                    <div class="d-flex flex-column">
+                      <span>{{ agente.nome }}</span>
+                      <small class="text-muted">{{ agente.papelPrioritario }}</small>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-                   
+          <div class="col-12 mt-2">
+            <siscap-equipe-form
+              [tiposPapelOpcoes]="tiposPapelOpcoesVisiveis"
+              [isModoEdicao]="isModoEdicao"
+              [pessoasOpcoesGoves]="pessoasOpcoesGoves"
+              [equipeProjeto]="equipeProjeto"
+            ></siscap-equipe-form>
+          </div>
           <div class="col-12 mt-2">
             <label for="membroIndicadorElaboracao" class="form-label col-12">
               Indicadores

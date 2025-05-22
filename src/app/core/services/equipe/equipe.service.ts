@@ -36,9 +36,9 @@ export class EquipeService {
     this._equipeFormArraySnapshot = equipeFormArrayValue;
   }
 
-  private readonly _idMembroNgSelectValue$: Subject<string> = new Subject<string>();
+  private readonly _idMembroNgSelectValue$: Subject<IOpcoesDropdownResponsavelProponente> = new Subject<IOpcoesDropdownResponsavelProponente>();
 
-  public get idMembroNgSelectValue$(): Subject<string> {
+  public get idMembroNgSelectValue$(): Subject<IOpcoesDropdownResponsavelProponente> {
     return this._idMembroNgSelectValue$;
   }
 
@@ -61,7 +61,7 @@ export class EquipeService {
   }
 
   constructor(private _nnfb: NonNullableFormBuilder) {
-    this.idMembroNgSelectValue$.subscribe((idMembroNgSelectValue: string) => {
+    this.idMembroNgSelectValue$.subscribe((idMembroNgSelectValue: IOpcoesDropdownResponsavelProponente) => {
       this.incluirMembroNaEquipe(
         this.construirMembroFormGroupNgSelectValue(idMembroNgSelectValue)
       );
@@ -71,6 +71,9 @@ export class EquipeService {
   public construirEquipeFormArray(
     equipe?: Array<IEquipe>
   ): FormArray<FormGroup<EquipeFormType>> {
+
+    console.log ( "construir Equipe form .. " )
+
     const equipeFormArray = this._nnfb.array<FormGroup<EquipeFormType>>(
       [],
       [Validators.required, Validators.minLength(1), equipeValidator()]
@@ -96,14 +99,15 @@ export class EquipeService {
       idPapel: this._nnfb.control(membro?.idPapel ?? null, Validators.required),
       idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required),
       justificativa: this._nnfb.control(membro?.justificativa ?? null),
+      nome: this._nnfb.control(membro?.nome ?? '')
     });
   }
 
   public construirMembroFormGroupNgSelectValue(
-    ngSelectValue: string
+    ngSelectValue: IOpcoesDropdownResponsavelProponente
   ): FormGroup<EquipeFormType> {
     const membroFormGroup = this.construirMembroFormGroup();
-    membroFormGroup.patchValue({ subPessoa: ngSelectValue });
+    membroFormGroup.patchValue({ subPessoa: ngSelectValue.agentePublicoSub , nome: ngSelectValue.nome });
     return membroFormGroup;
   }
 
@@ -111,8 +115,8 @@ export class EquipeService {
     usuarioProponente_IdPessoa: number,
     usuarioProponente_SubNovo: string,
     nomeUsuario: string
-    // pessoasOpcoes?: IOpcoesDropdownResponsavelProponente[]
   ): void {
+    
     /*const usuarioNaoEhResponsavel = pessoasOpcoes && !pessoasOpcoes.some(p => p.id === usuarioProponente_IdPessoa);
     var nomeUsuarioProponente = "";
     if (usuarioNaoEhResponsavel && pessoasOpcoes?.length > 0) {
@@ -120,27 +124,17 @@ export class EquipeService {
       usuarioProponente_SubNovo = pessoasOpcoes[0].agentePublicoSub;
       nomeUsuarioProponente = pessoasOpcoes[0].nome;
     }*/
-    /*
+ 
     const usuarioProponente_IEquipe: IEquipe = {
       subPessoa: usuarioProponente_SubNovo,
       idPessoa: usuarioProponente_IdPessoa,
       idPapel: TipoPapelEnum.Proponente,
       idStatus: TipoStatusEnum.Ativo,
       justificativa: null,
-    };
-    */
-    const usuarioProponente_IEquipe: IEquipe = {
-      subPessoa: usuarioProponente_SubNovo,
-      idPessoa: usuarioProponente_IdPessoa,
-      idPapel: TipoPapelEnum.Proponente,
-      idStatus: TipoStatusEnum.Ativo,
-      justificativa: null,
-      nomePessoa: nomeUsuario, 
+      nome: nomeUsuario, 
       papelNome: 'Proponente'
     };
     
-    //const usuarioProponente_MembroFormGroup = this.construirMembroFormGroup(usuarioProponente_IEquipe);
-    //this.incluirMembroNaEquipe(usuarioProponente_MembroFormGroup);
     this.incluirMembroNaEquipe(this.construirMembroFormGroup(usuarioProponente_IEquipe));
 
   }

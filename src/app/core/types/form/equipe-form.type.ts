@@ -6,6 +6,7 @@ export type EquipeFormType = {
   idPapel: FormControl<number | null>;
   idStatus: FormControl<number>;
   justificativa: FormControl<string | null>;
+  nome: FormControl<string | null>;
 };
 
 export type EquipeFormTypeValue = Array<
@@ -15,5 +16,6 @@ export type EquipeFormTypeValue = Array<
     idPapel: number | null;
     idStatus: number;
     justificativa: string | null;
+    nome: string | null;
   }>
 >;

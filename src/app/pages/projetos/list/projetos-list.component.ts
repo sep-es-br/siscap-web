@@ -19,6 +19,7 @@ import {
 } from '../../../core/enums/breadcrumb.enum';
 
 import { getSimboloMoeda } from '../../../core/utils/functions';
+import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 
 @Component({
   selector: 'siscap-projetos-list',

@@ -72,6 +72,7 @@ import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
+import { IEquipe } from '../../../core/interfaces/equipe.interface';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -110,6 +111,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
   public pessoasOpcoesFiltrada: IOpcoesDropdownResponsavelProponente[] = [];
   public pessoasOpcoesGoves: IOpcoesDropdownResponsavelProponente[] = [];
+  public equipeProjeto: IEquipe[] = [];
 
   public planosOpcoes: IOpcoesDropdown[] = [];
   public tiposValorOpcoes: IOpcoesDropdown[] = [];
@@ -131,6 +133,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public idIndicadorIndicadores:  | null = null;
 
   public isLoadingPessoas = true;
+
+  public isLoadingPessoasFiltroTermo = false;
+
+  public exibirLista = true;
 
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
@@ -179,15 +185,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 'Erro ao carregar projeto',
                 ['Verifique se o projeto está válido.']
               );
-              // Finaliza os spinners
               this.loading = false;
-              this.isLoadingPessoas = false;
-              // Retorna um Observable vazio para não quebrar o fluxo
+              this.isLoadingPessoasFiltroTermo = false;
               return EMPTY;
             })
           )
       ),
       tap((projetoModel: ProjetoModel) => {
+        
         this.statusProjeto = projetoModel.status;
         this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
           (status) => status != this.statusProjeto
@@ -198,6 +203,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this._idProjetoEdicao = projetoModel.id;
 
         this.mostrarBotaoGerarDic = !projetoModel.rascunho && this.statusProjeto != StatusProjetoEnum.Em_Elaboracao ;
+
+        this.equipeProjeto = projetoModel.equipeElaboracao; 
 
         this.trocarModo(false);
 
@@ -300,29 +307,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this._subscription.add(this._getAllOpcoes$.subscribe());
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
-
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       next: (dados) => console.log('Dados carregados:', dados),
       error: (err) => console.error('Erro ao carregar:', err)
     });
-    
-    /*
-    this.pessoas$.subscribe({
-      next: (lista) => {
-        this.pessoasOpcoesGoves = lista;
-        this.isLoadingPessoas = false;
-      },
-      error: () => {
-        this.pessoasOpcoesGoves = [];
-        this.isLoadingPessoas = false;
-      }
-    });
-    */
-
   }
 
   public rtlCurrencyInputTransformFn =
@@ -361,9 +352,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     ) || [pessoasOpcoes[0]]; 
   }
 
-  public idMembroNgSelectChangeEvent(event: string): void {
-    this.equipeService.idMembroNgSelectValue$.next(event);
-    setTimeout(() => (this.idMembroEquipeElaboracao = null), 0);
+  public async idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): Promise<void> {
+    await this.equipeService.idMembroNgSelectValue$.next(event);
+    this.exibirLista = false;
   }
 
   public idIndicadorNgSelectChangeEvent(event: number): void {
@@ -375,7 +366,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const idMicrorregioesListFormControl = this.getControl(
       'idMicrorregioesList'
     ) as FormControl<Array<number>>;
-
     if (event == 1) {
       idMicrorregioesListFormControl.patchValue([1]);
     }
@@ -417,7 +407,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         Validators.required
       ),
       valorEstimado: this._nnfb.control(valorInicialControleValorEstimado, [
-       
       ]),
       idMicrorregioesList: this._nnfb.control(
         valorInicialControleIdMicrorregioesList,
@@ -430,7 +419,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.valor
       ),
       nomeagente: this._nnfb.control(projetoFormModel?.nomeagente ?? null, 
-
       ),
       objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
         Validators.required,
@@ -749,6 +737,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         subResponsavelProponente: ''
       });
     }
+
   }
 
   private cadastrarProjeto(
@@ -826,22 +815,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public buscarAgentesPorTermo(): IOpcoesDropdownResponsavelProponente[] {
-    
+    this.isLoadingPessoasFiltroTermo = true;
     const termo = this.projetoForm.get('nomeagente')?.value;
-
     this._pessoasService.buscarAgentesPorTermo(termo).subscribe({
       next: (lista) => {
         this.pessoasOpcoesGoves = lista;
-        this.isLoadingPessoas = false;
+        this.isLoadingPessoasFiltroTermo = false;
+        this.exibirLista = true;
       },
       error: () => {
         this.pessoasOpcoesGoves = [];
-        this.isLoadingPessoas = false;
+        this.isLoadingPessoasFiltroTermo = false;
       }
     });
-    
     return this.pessoasOpcoesGoves;
-
   }
 
   ngOnDestroy(): void {

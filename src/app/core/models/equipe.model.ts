@@ -6,7 +6,7 @@ export class EquipeModel implements IEquipe {
   public idPapel: number = 0;
   public idStatus: number = 0;
   public justificativa: string | null = null;
-  public nomePessoa: string | null;
+  public nome: string | null;
   public papelNome: string | null;
 
   constructor(equipe?: IEquipe) {
@@ -15,7 +15,7 @@ export class EquipeModel implements IEquipe {
     this.idPapel = equipe?.idPapel ?? 0;
     this.idStatus = equipe?.idStatus ?? 0;
     this.justificativa = equipe?.justificativa ?? null;
-    this.nomePessoa = equipe?.nomePessoa ?? null;
+    this.nome = equipe?.nome ?? null;
     this.papelNome = equipe?.papelNome ?? null;
   }
 }

@@ -130,8 +130,7 @@ export class ProjetosService extends BaseHttpService<
     isRascunho: boolean
   ): Observable<IProjeto> {
     return this._http.put<IProjeto>(
-      `${this._url}/${id}?rascunho=${isRascunho}`,
-      body
+      `${this._url}/${id}?rascunho=${isRascunho}`, body
     );
   }
 

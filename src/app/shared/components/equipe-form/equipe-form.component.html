@@ -10,10 +10,9 @@
         <div class="card">
           <form [formGroup]="membroFormGroup">
             <div
-              class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center"
-            >
+              class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center">
               <div class="col-12 col-lg pb-2 pb-lg-0 d-inline-flex justify-content-center justify-content-md-start" >
-                <span class="nome-membro">{{getMembroNome(membroFormGroup.value.subPessoa)}}</span>
+                <span class="nome-membro">{{ membroFormGroup.value.nome }}</span>
               </div>
               <div class="col-12 col-lg d-inline-flex flex-wrap flex-lg-nowrap">
                 <div class="col-12 col-md-9">
@@ -48,15 +47,10 @@
                     <i class="fa-solid fa-close delete-btn-icon"></i>
                   </button>
                   <button
-                    *ngIf="
-                      isModoEdicao && !isNovoMembro(i)
-                    "
+                    *ngIf="isModoEdicao && !isNovoMembro(i)"
                     type="button"
                     ngbTooltip="Remover membro da equipe"
-                    [disabled]="
-                      !isModoEdicao ||
-                      membroFormGroup.value.idStatus != TipoStatusEnum.Ativo
-                    "
+                    [disabled]="!isModoEdicao || membroFormGroup.value.idStatus != TipoStatusEnum.Ativo"
                     class="btn btn-outline-secondary rounded-circle"
                     (click)="abrirExcluirMembroModal(excluirMembroModal, i)"
                   >
