@@ -8,6 +8,8 @@ import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-t
 import { NgxMaskDirective } from 'ngx-mask';
 import { TemplatesModule } from '../../templates/templates.module';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+import { ToastService } from '../../../core/services/toast/toast.service';
+import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 
 
 @Component({
@@ -34,11 +36,14 @@ export class AcoesFormComponent {
 
   constructor(
     public acoesService: AcoesService,
+    private readonly _toastService: ToastService,
     private fb: FormBuilder) {
     this.descricaoAcaoPrincipal = '';
     this.descricaoAcaoSecundaria = '';
 	  this.valorEstimadoAcaoPrincipal = 0;
   }
+
+  public TipoStatusEnum = TipoStatusEnum;
 
   public projetoTooltip: Record<string, string> =
       COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
@@ -60,6 +65,40 @@ export class AcoesFormComponent {
 
   removerAcao(index: number): void {
     this.acoesFormArray.removeAt(index);
+  }
+
+  public marcarAcaoExcluida(
+    index: number ) {
+
+    const acaoFormGroup = this.acoesService.acoesFormArray.at(index) as FormGroup;
+
+    acaoFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Inativo);
+
+    const acaoPrincipal = acaoFormGroup.get('descricaoAcao')?.value || 'Ação';
+    const acaoSecundaria = acaoFormGroup.get('descricaoAcaoSecundaria')?.value || '';
+
+    this._toastService.showToast(
+        'info',
+        'Indicador removido do projeto.',
+        [
+            `${acaoPrincipal}`,
+            `${acaoSecundaria.substring(0, 50)}${acaoSecundaria.length > 50 ? '...' : ''}`
+        ]
+    );
+          
+  }
+
+  public isNovaAcao(index: number): boolean {
+    return !this.acoesService.acoesFormArraySnapshot.some(
+      (membro) => 
+        membro.idAcao ===
+        this.acoesService.acoesFormArray.at(index).value.idAcao
+    );
+  }
+
+  public isAcaoAtiva(index: number): boolean {
+    const acaoFormGroup = this.acoesService.acoesFormArray.at(index);
+    return acaoFormGroup.get('idStatus')?.value !== 2;
   }
   
   get acoesFormGroups(): FormGroup[] {

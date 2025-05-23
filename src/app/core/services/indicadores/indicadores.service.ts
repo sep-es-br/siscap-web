@@ -19,6 +19,7 @@ import { AcaoFormType } from '../../types/form/acao-form.type';
   providedIn: 'root',
 })
 export class IndicadoresService {
+
   public indicadoresFormArray: FormArray<FormGroup<IndicadoresFormType>> = new FormArray<
     FormGroup<IndicadoresFormType>
   >([]);
@@ -103,10 +104,6 @@ export class IndicadoresService {
   public construirExcluirIndicadorForm(): FormGroup {
     const excluirIndicadorForm = this._nnfb.group({
       membroStatus: this._nnfb.control(null, Validators.required),
-      justificativa: this._nnfb.control(null, [
-        Validators.required,
-        Validators.maxLength(255),
-      ]),
     });
     this.excluirMembroForm = excluirIndicadorForm;
     return this.excluirMembroForm;

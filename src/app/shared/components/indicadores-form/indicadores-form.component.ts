@@ -6,6 +6,8 @@ import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstra
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 import { TemplatesModule } from '../../templates/templates.module';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
+import { ToastService } from '../../../core/services/toast/toast.service';
 
 @Component({
   selector: 'siscap-indicadores-form',
@@ -28,8 +30,11 @@ export class IndicadoresFormComponent {
   @Input() descricaoIndicador: string;
   @Input() descricaoMeta: string;
 
+  public TipoStatusEnum = TipoStatusEnum;
+
   constructor(
     public indicadoresService: IndicadoresService,
+    private readonly _toastService: ToastService,
     private fb: FormBuilder) {
     this.tipoIndicador = '';
     this.descricaoIndicador = '';
@@ -50,6 +55,41 @@ export class IndicadoresFormComponent {
 
   removerIndicador(index: number): void {
     this.indicadoresFormArray.removeAt(index);
+  }
+
+  public marcarIndicadorExcluido(
+      index: number
+  ) {
+
+    const indicadorFormGroup = this.indicadoresService.indicadoresFormArray.at(index) as FormGroup;
+    
+    indicadorFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Inativo);
+    
+    const tipoIndicador = indicadorFormGroup.get('tipoIndicador')?.value || 'Indicador';
+    const descricaoIndicador = indicadorFormGroup.get('descricaoIndicador')?.value || '';
+    
+    this._toastService.showToast(
+        'info',
+        'Indicador removido do projeto.',
+        [
+            `${tipoIndicador}`,
+            `${descricaoIndicador.substring(0, 50)}${descricaoIndicador.length > 50 ? '...' : ''}`
+        ]
+    );
+            
+  }
+
+  public isNovoMembro(index: number): boolean {
+    return !this.indicadoresService.indicadoresFormArraySnapshot.some(
+      (membro) => 
+        membro.idIndicador ===
+        this.indicadoresService.indicadoresFormArray.at(index).value.idIndicador
+    );
+  }
+
+  public isIndicadorAtivo(index: number): boolean {
+    const indicadorFormGroup = this.indicadoresService.indicadoresFormArray.at(index);
+    return indicadorFormGroup.get('idStatus')?.value !== 2;
   }
 
   get indicadoresFormGroups(): FormGroup[] {
