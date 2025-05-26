@@ -390,9 +390,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
       : null;
+
     const valorInicialControleIdMicrorregioesList = projetoFormModel?.rateio
         ? this._projetosService.construirValorControleIdMicrorregioesList(projetoFormModel.rateio)
         : [];
+
     this.projetoForm = this._nnfb.group({
       sigla: this._nnfb.control(projetoFormModel?.sigla ?? null, [
         Validators.required,
@@ -709,8 +711,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const payload = new ProjetoFormModel(form.value as IProjetoForm);
    
     if (this.isProponente) {
-      payload.rateio = this.validarProjetoFormProponenteRateio();
-      payload.valor = this.validarProjetoFormProponenteValor();
+      //payload.rateio = this.validarProjetoFormProponenteRateio();
+      //payload.valor = this.validarProjetoFormProponenteValor();
       payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
     }
 
