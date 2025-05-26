@@ -34,7 +34,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
   templateUrl: './valor-form.component.html',
   styleUrl: './valor-form.component.scss',
 })
-export class ValorFormComponent {
+export class  ValorFormComponent {
   public moedasList = input<Array<IMoeda>>();
   public tiposValorOpcoes = input<Array<IOpcoesDropdown>>();
 

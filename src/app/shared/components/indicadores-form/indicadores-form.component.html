@@ -3,7 +3,7 @@
     <div class="card-body">
         <ng-container *ngFor="let indicadorFormGroup of indicadoresService.indicadoresFormArray.controls; index as i">
           <form [formGroup]="indicadorFormGroup" >
-            <div *ngIf="isModoEdicao && isIndicadorAtivo(i)" class="card mb-2">
+            <div *ngIf="isModoEdicao || isIndicadorAtivo(i)" class="card mb-2">
               <div class="card-body row align-items-start">
                 <div class="col-md-4 mb-2 mb-md-0">
                   <label for="tipoIndicador" class="form-label">
@@ -50,17 +50,22 @@
                 </div>
               </div>
           </div>
-
           <button
-            *ngIf="isModoEdicao && isIndicadorAtivo(i)"
+            *ngIf= "( isModoEdicao || isIndicadorAtivo(i) ) && !isNovoMembro(i)"
             type="button"
             ngbTooltip="Remover indicador do projeto"
-            [disabled]="!isModoEdicao || indicadorFormGroup.value.idStatus != TipoStatusEnum.Ativo"
             class="btn btn-outline-danger rounded-circle"
             (click)="marcarIndicadorExcluido(i)">
             <i class="fa-solid fa-minus remove-btn-icon"></i>
           </button>
-
+          <button
+            *ngIf="isModoEdicao && isNovoMembro(i)"
+            type="button"
+            ngbTooltip="Remover indicador do projeto"
+            class="btn btn-outline-danger rounded-circle"
+            (click)="removerIndicador(i)">
+            <i class="fa-solid fa-minus remove-btn-icon"></i>
+          </button>
         </form>
 
         </ng-container>

@@ -79,9 +79,9 @@ export class IndicadoresService {
   public construirIndicadorFormGroup(membro?: IIndicadores): FormGroup<IndicadoresFormType> {
     return this._nnfb.group<IndicadoresFormType>({
       idIndicador: this._nnfb.control(membro?.idIndicador ?? 0, Validators.required),
-      tipoIndicador: this._nnfb.control(membro?.tipoIndicador ?? null, Validators.required),
-      descricaoIndicador: this._nnfb.control(membro?.descricaoIndicador ??null, Validators.required),
-      descricaoMeta: this._nnfb.control(membro?.descricaoMeta ?? null, Validators.required),
+      tipoIndicador: this._nnfb.control(membro?.tipoIndicador ?? '', Validators.required),
+      descricaoIndicador: this._nnfb.control(membro?.descricaoIndicador ?? '', Validators.required),
+      descricaoMeta: this._nnfb.control(membro?.descricaoMeta ?? '', Validators.required),
       idStatus: this._nnfb.control(
         membro?.idStatus ?? TipoStatusEnum.Ativo,
         Validators.required

@@ -72,8 +72,6 @@ export class EquipeService {
     equipe?: Array<IEquipe>
   ): FormArray<FormGroup<EquipeFormType>> {
 
-    console.log ( "construir Equipe form .. " )
-
     const equipeFormArray = this._nnfb.array<FormGroup<EquipeFormType>>(
       [],
       [Validators.required, Validators.minLength(1), equipeValidator()]
