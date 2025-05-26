@@ -182,7 +182,6 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
       `${this._url}/opcoes/agentesGoves?filter=${termo}`
     ).pipe(
       tap({
-        next: (dados) => console.log('Resposta da API:', dados),
         error: (erro) => console.error('Erro na requisição:', erro)
       })
     );

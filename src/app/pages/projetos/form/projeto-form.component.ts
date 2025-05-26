@@ -311,7 +311,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
-      next: (dados) => console.log('Dados carregados:', dados),
       error: (err) => console.error('Erro ao carregar:', err)
     });
   }
