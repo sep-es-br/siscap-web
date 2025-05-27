@@ -1,8 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'placeholder',
-  supersetUrl: 'placeholder',
-  supersetDashboardId: 'placeholder',
-  supersetUser: 'placeholder',
-  supersetPass: 'placeholder',
+  apiUrl: 'http://localhost:8080/siscap',
 };

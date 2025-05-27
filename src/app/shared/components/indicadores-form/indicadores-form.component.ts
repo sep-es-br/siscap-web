@@ -64,6 +64,12 @@ export class IndicadoresFormComponent {
     const indicadorFormGroup = this.indicadoresService.indicadoresFormArray.at(index) as FormGroup;
     
     indicadorFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Inativo);
+
+    // Força atualização
+    indicadorFormGroup.markAsDirty();
+    indicadorFormGroup.updateValueAndValidity();
+
+    console.log( "Passando aqui.." )
     
     const tipoIndicador = indicadorFormGroup.get('tipoIndicador')?.value || 'Indicador';
     const descricaoIndicador = indicadorFormGroup.get('descricaoIndicador')?.value || '';
@@ -89,7 +95,7 @@ export class IndicadoresFormComponent {
 
   public isIndicadorAtivo(index: number): boolean {
     const indicadorFormGroup = this.indicadoresService.indicadoresFormArray.at(index);
-    return indicadorFormGroup.get('idStatus')?.value !== 2;
+    return indicadorFormGroup.get('idStatus')?.value !== TipoStatusEnum.Inativo;
   }
 
   get indicadoresFormGroups(): FormGroup[] {
