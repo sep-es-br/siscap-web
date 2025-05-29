@@ -27,6 +27,7 @@ export interface IProjeto {
   indicadoresProjeto: Array<IIndicadores>;
   acoesProjeto: Array<IAcao>;
   nomeagente: string;
+  pecasPlanejamento: string;
 }
 
 export interface IProjetoForm

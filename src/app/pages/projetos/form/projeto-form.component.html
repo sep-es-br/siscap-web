@@ -211,39 +211,14 @@
           </div>
 
           <div class="col-12">
-            <label for="rateio" class="form-label col-12">
+            <label for="acoes" class="form-label col-12">
                 Ações
             </label>
             <siscap-acoes-form 
               [isModoEdicao]="isModoEdicao">
             </siscap-acoes-form>
           </div>
-
-          <div class="col-12" >
-            <label for="microrregioesAtendidas" class="col-12 form-label">
-              <validation-message [control]="getControl('idMicrorregioesList')">
-                Microrregiões Atendidas
-                <form-helper-tooltip
-                  [texto]="projetoTooltip['idMicrorregioesList']"
-                ></form-helper-tooltip>
-              </validation-message>
-            </label>
-            <ng-select
-              id="microrregioesAtendidas"
-              placeholder="-- Selecione uma ou mais microrregiões --"
-              formControlName="idMicrorregioesList"
-              [multiple]="true"
-              (add)="microrregioesNgSelectAddEvent($event)"
-            >
-              <ng-option
-                *ngFor="let microrregiao of microrregioesOpcoes"
-                [value]="microrregiao.id"
-                [disabled]="travarMicrorregiaoOpcao(microrregiao.id)"
-                >{{ microrregiao.nome }}</ng-option
-              >
-            </ng-select>
-          </div>
-
+       
           <div class="col-12">
             <label for="objetivo" class="form-label col-12">
               <validation-message [control]="getControl('objetivo')">
@@ -352,6 +327,26 @@
               class="form-control"
               id="arranjosInstitucionais"
               formControlName="arranjosInstitucionais"
+              maxLength="2000"
+            ></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="pecasPlanejamento" class="form-label col-12">
+              <validation-message
+                [control]="getControl('pecasPlanejamento')"
+              >
+                Peças do Planejamento
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['pecasPlanejamento']"
+                ></form-helper-tooltip>
+              </validation-message>
+            </label>
+            <textarea
+              rows="5"
+              class="form-control"
+              id="pecasPlanejamento"
+              formControlName="pecasPlanejamento"
               maxLength="2000"
             ></textarea>
           </div>

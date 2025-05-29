@@ -3,8 +3,8 @@
     <div class="card-body">
 		<ng-container *ngFor="let acoesFormGroup of acoesService.acoesFormArray.controls; index as i">
 			<form [formGroup]="acoesFormGroup" >
-        <h6 class="mb-0">Ação #{{i + 1}}</h6>
-				<div *ngIf="isModoEdicao && isAcaoAtiva(i)" class="row g-2">
+        <h6 *ngIf="isAcaoAtiva(i)" class="mb-0">Ação #{{i + 1}}</h6>
+				<div *ngIf="isAcaoAtiva(i)" class="row g-2">
           <div class="col-12 col-md-8">
             <label [for]="'acaoNome_' + i" class="form-label">
               Ação Principal
@@ -54,7 +54,7 @@
               maxlength="2000"></textarea>
           </div>
 				</div>
-        <div *ngIf="isModoEdicao && isAcaoAtiva(i)" class="d-flex justify-content-between align-items-center mb-2">
+        <div *ngIf="isModoEdicao" class="d-flex justify-content-between align-items-center mb-2">
           <button
             *ngIf="isModoEdicao || !isAcaoAtiva(i)"
             type="button"
@@ -66,7 +66,7 @@
 				</div>
 			</form>
 		</ng-container>
-		<div class="d-grid mt-3">
+		<div *ngIf="isModoEdicao" class="d-grid mt-3">
 			<button type="button" class="btn btn-outline-primary" 
 				(click)="adicionarAcao()">
 				<i class="fas fa-plus me-2"></i>Adicionar Nova Ação

@@ -73,6 +73,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
+import { IAcao } from '../../../core/interfaces/acoes.interface';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -311,7 +312,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
-      error: (err) => console.error('Erro ao carregar:', err)
+      error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
     });
   }
 
@@ -360,26 +361,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.indicadoresService.idIndicadorIndicadoresValue$.next(event);
     setTimeout(() => (this.idIndicadorIndicadores = null), 0);
   }
-
-  public microrregioesNgSelectAddEvent(event: number): void {
-    const idMicrorregioesListFormControl = this.getControl(
-      'idMicrorregioesList'
-    ) as FormControl<Array<number>>;
-    if (event == 1) {
-      idMicrorregioesListFormControl.patchValue([1]);
-    }
-  }
-
-  public travarMicrorregiaoOpcao(idMicrorregiao: number): boolean {
-    const idMicrorregioesListFormControl = this.getControl(
-      'idMicrorregioesList'
-    ) as FormControl<Array<number>>;
-
-    return (
-      idMicrorregioesListFormControl.value?.includes(1) && idMicrorregiao != 1
-    );
-  }
-
+    
   public baixarDIC(): void {
     this._projetosService.baixarDIC(this._idProjetoEdicao);
   }
@@ -389,10 +371,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
       : null;
-
-    const valorInicialControleIdMicrorregioesList = projetoFormModel?.rateio
-        ? this._projetosService.construirValorControleIdMicrorregioesList(projetoFormModel.rateio)
-        : [];
 
     this.projetoForm = this._nnfb.group({
       sigla: this._nnfb.control(projetoFormModel?.sigla ?? null, [
@@ -409,10 +387,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       valorEstimado: this._nnfb.control(valorInicialControleValorEstimado, [
       ]),
-      idMicrorregioesList: this._nnfb.control(
-        valorInicialControleIdMicrorregioesList,
-        [Validators.required, Validators.minLength(1)]
-      ),
       rateio: this._rateioService.construirRateioFormArray(
         projetoFormModel?.rateio
       ),
@@ -467,6 +441,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       acoesProjeto: this.acoesService.construirAcoesFormArray(
         projetoFormModel?.acoesProjeto
       ),
+      pecasPlanejamento: this._nnfb.control(
+        projetoFormModel?.pecasPlanejamento ?? null,
+        [Validators.required, Validators.maxLength(2000)]
+      ),
     });
        
     this.projetoFormValueChanges();
@@ -491,12 +469,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         idOrganizacaoFormControl.disable({ emitEvent: false });
       });
     }
-
-    this.equipeService.usuarioProponenteValoresIniciaisEquipeFormArray(
-      this._usuarioService.usuarioPerfil.idPessoa, 
-      this._usuarioService.usuarioPerfil.subNovo,
-      this._usuarioService.usuarioPerfil.nome
-    );
 
   }
 
@@ -616,8 +588,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         },
       });
       
-      
-
   }
 
   private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
@@ -637,11 +607,42 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         break;
 
       case BreadcrumbAcoesEnum.Enviar:
-        this.submitProjetoForm(this.projetoForm, false);
+        this.validacaoSomaValoresAcoesEnviar(this.projetoForm, false);
         break;
     }
   }
 
+  private validacaoSomaValoresAcoesEnviar(form: FormGroup, isRascunho: boolean): void {
+    if (this.compararValorEstimadoValorAcoes()) {
+      this.submitProjetoForm(form, false);
+    }else{
+      this._toastService.showToast('error', 'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.', 
+        ['A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',]);
+    }
+  }
+
+  private compararValorEstimadoValorAcoes(): boolean {
+    
+    const valorEstimadoProjeto = this.projetoForm.get(
+      'valorEstimado'
+    ) as FormControl<number>;
+
+    const acoesProjetoValues = this.projetoForm.get('acoesProjeto')?.value;
+
+    if (!acoesProjetoValues) return false;
+
+    const totalValorAcoesInformadas = acoesProjetoValues.reduce((sum: number, acao: { valorEstimadoAcaoPrincipal: any; }) => {
+      const valor = Number(acao.valorEstimadoAcaoPrincipal) || 0;
+      return sum + valor;
+    }, 0);
+
+    const valorA = Number(totalValorAcoesInformadas) || 0;
+    const valorB = Number(valorEstimadoProjeto.value) || 0;
+
+    return Math.abs(valorA - valorB) < 0.001;
+
+  }
+  
   private trocarModo(permitir: boolean): void {
 
     this.isModoEdicao = permitir;
@@ -683,7 +684,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
-    const acoesProjeto = this.projetoForm.get('acoesProjeto')?.value;
+    // const acoesProjeto = this.projetoForm.get('acoesProjeto')?.value;
     
     for (const key in form.controls) {
       form.controls[key].markAllAsTouched();
@@ -710,8 +711,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const payload = new ProjetoFormModel(form.value as IProjetoForm);
    
     if (this.isProponente) {
-      //payload.rateio = this.validarProjetoFormProponenteRateio();
-      //payload.valor = this.validarProjetoFormProponenteValor();
       payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
     }
 
@@ -720,6 +719,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       : this.cadastrarProjeto(payload, isRascunho);
 
     requisicao.subscribe();
+
   }
 
   onSelecionarPessoa(pessoa: any) {
@@ -816,8 +816,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public buscarAgentesPorTermo(): IOpcoesDropdownResponsavelProponente[] {
+    
     this.isLoadingPessoasFiltroTermo = true;
+    
     const termo = this.projetoForm.get('nomeagente')?.value;
+
+    if ( termo.length < 3 ) {
+      this._toastService.showToast(
+        'info',
+        'Informe pelo menos um nome com no mínimo 3 caracteres.'
+      );
+      this.pessoasOpcoesGoves = [];
+      this.isLoadingPessoasFiltroTermo = false;
+      return this.pessoasOpcoesGoves;
+    }
+
     this._pessoasService.buscarAgentesPorTermo(termo).subscribe({
       next: (lista) => {
         this.pessoasOpcoesGoves = lista;
@@ -829,7 +842,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.isLoadingPessoasFiltroTermo = false;
       }
     });
+    
     return this.pessoasOpcoesGoves;
+
   }
 
   ngOnDestroy(): void {

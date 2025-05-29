@@ -118,15 +118,15 @@ export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
   }
 
   public buscarAgentesPorTermo(termo: string): Observable<IOpcoesDropdownResponsavelProponente[]> {
-    if (!termo) return of([]); // 👈 Validação segura
+    if (!termo) return of([]); 
   
-    const termoEncoded = encodeURIComponent(termo); // 👈 Trata caracteres especiais
+    const termoEncoded = encodeURIComponent(termo); 
     const url = `${this._url}/opcoes/agentesGoves/filtrar/${termo}`;
         
     return this._http.get<IOpcoesDropdownResponsavelProponente[]>(url).pipe(
       catchError(err => {
         console.error('Erro na requisição:', err);
-        return of([]); // 👈 Fallback seguro
+        return of([]); 
       })
     );
 

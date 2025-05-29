@@ -88,6 +88,7 @@ export class EquipeService {
     this.equipeFormArraySnapshot = this.equipeFormArray.value as Array<IEquipe>;
 
     return this.equipeFormArray;
+
   }
 
   public construirMembroFormGroup(membro?: IEquipe): FormGroup<EquipeFormType> {
@@ -107,34 +108,6 @@ export class EquipeService {
     const membroFormGroup = this.construirMembroFormGroup();
     membroFormGroup.patchValue({ subPessoa: ngSelectValue.agentePublicoSub , nome: ngSelectValue.nome });
     return membroFormGroup;
-  }
-
-  public usuarioProponenteValoresIniciaisEquipeFormArray(
-    usuarioProponente_IdPessoa: number,
-    usuarioProponente_SubNovo: string,
-    nomeUsuario: string
-  ): void {
-    
-    /*const usuarioNaoEhResponsavel = pessoasOpcoes && !pessoasOpcoes.some(p => p.id === usuarioProponente_IdPessoa);
-    var nomeUsuarioProponente = "";
-    if (usuarioNaoEhResponsavel && pessoasOpcoes?.length > 0) {
-      usuarioProponente_IdPessoa = pessoasOpcoes[0].id;
-      usuarioProponente_SubNovo = pessoasOpcoes[0].agentePublicoSub;
-      nomeUsuarioProponente = pessoasOpcoes[0].nome;
-    }*/
- 
-    const usuarioProponente_IEquipe: IEquipe = {
-      subPessoa: usuarioProponente_SubNovo,
-      idPessoa: usuarioProponente_IdPessoa,
-      idPapel: TipoPapelEnum.Proponente,
-      idStatus: TipoStatusEnum.Ativo,
-      justificativa: null,
-      nome: nomeUsuario, 
-      papelNome: 'Proponente'
-    };
-    
-    this.incluirMembroNaEquipe(this.construirMembroFormGroup(usuarioProponente_IEquipe));
-
   }
 
   public incluirMembroNaEquipe(
@@ -159,6 +132,7 @@ export class EquipeService {
     this.excluirMembroForm = excluirMembroForm;
 
     return this.excluirMembroForm;
+
   }
 
   public filtrarPessoasOpcoes(
