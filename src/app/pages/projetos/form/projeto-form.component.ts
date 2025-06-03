@@ -458,19 +458,45 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   
   private usuarioProponenteValoresIniciaisProjetoForm(): void {
     
-    const idOrganizacaoFormControl = this.projetoForm.get(
-      'idOrganizacao'
-    ) as FormControl<number | null>;
+    const idOrganizacaoFormControl = this.projetoForm.get('idOrganizacao') as FormControl<number | null>;
     
     idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
-    
-    if ( this.isProponente ){
-      setTimeout(() => {
-        idOrganizacaoFormControl.disable({ emitEvent: false });
+  
+    const subResponsavelProponenteForm = this.projetoForm.get('subResponsavelProponente') as FormControl<string | null>;
+  
+    this.pessoasOpcoes = [];
+    this.isLoadingPessoas = true;
+  
+    this._pessoasService
+      .buscarResponsavelPorIdOrganizacaoAC(this.usuario_IdOrganizacoes[0])
+      .subscribe({
+        next: (response) => {
+          this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
+          this.isLoadingPessoas = false;
+          if (this.pessoasOpcoes.length > 0) {
+            this.projetoForm.patchValue({
+              idResponsavelProponente: this.pessoasOpcoes[0].id,
+              nomeResponsavelProponente: this.pessoasOpcoes[0].nome,
+              papelResponsavelProponente: this.pessoasOpcoes[0].papelPrioritario,
+              subResponsavelProponente: this.pessoasOpcoes[0].agentePublicoSub
+            });
+            subResponsavelProponenteForm.markAsTouched();
+            subResponsavelProponenteForm.markAsDirty();
+            subResponsavelProponenteForm.updateValueAndValidity();
+            if (this.isProponente) {
+              setTimeout(() => {
+                idOrganizacaoFormControl.disable({ emitEvent: false });
+              });
+            }
+          }
+        },
+        error: () => {
+          this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
+          this.isLoadingPessoas = false;
+        },
       });
-    }
-
   }
+ 
 
   private projetoFormValueChanges(): void {
 
@@ -566,12 +592,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.isLoadingPessoas = true;
 
+    
     if (!idOrganizacaoValue) {
       idResponsavelProponenteFormControl.patchValue(null);
       idResponsavelProponenteFormControl.markAsTouched();
       this.isLoadingPessoas = false;
       return;
-    }
+    } 
     
     this.pessoasOpcoes = [];
 
@@ -579,8 +606,37 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .buscarResponsavelPorIdOrganizacaoAC(idOrganizacaoValue)
       .subscribe({
         next: (response) => {
+          
+          const subResponsavelProponenteForm = this.projetoForm.get('subResponsavelProponente') as FormControl<string | null>;
+  
           this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
           this.isLoadingPessoas = false;
+          
+          if (this.pessoasOpcoes.length === 1) {
+            this.projetoForm.patchValue({
+              idResponsavelProponente: this.pessoasOpcoes[0].id,
+              nomeResponsavelProponente: this.pessoasOpcoes[0].nome,
+              papelResponsavelProponente: this.pessoasOpcoes[0].papelPrioritario,
+              subResponsavelProponente: this.pessoasOpcoes[0].agentePublicoSub
+            });
+            setTimeout(() => {
+              subResponsavelProponenteForm.disable({ emitEvent: false });
+            });
+          } else {
+            if (this.pessoasOpcoes.length > 0){
+              this.projetoForm.patchValue({
+                idResponsavelProponente: null,
+                nomeResponsavelProponente: '',
+                papelResponsavelProponente: '',
+                subResponsavelProponente: ''
+              });
+              setTimeout(() => {
+                subResponsavelProponenteForm.enable({ emitEvent: false });
+                this.isLoadingPessoas = false;
+              });
+            }
+          }
+
         },
         error: () => {
           this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
@@ -704,6 +760,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ]);
       return;
     }
+
+    console.log(this.projetoForm.value);
 
     // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
     form.get('valor.tipo')?.enable();
