@@ -760,6 +760,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.projetoForm.get('valor.tipo')?.disable();
   }
 
+  /*
   private validarProjetoFormProponenteRateio(): Array<RateioModel> {
     
     const idMicrorregioesListFormControl = this.projetoForm.get(
@@ -786,6 +787,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       valorEstimadoFormControl.value
     );
   }
+  */
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
