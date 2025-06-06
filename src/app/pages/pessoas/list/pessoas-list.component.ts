@@ -1,5 +1,4 @@
 import { Component, input, output } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -10,8 +9,14 @@ import { SuccessModalComponent } from '../../../shared/templates/success-modal/s
 import { SortColumn } from '../../../shared/directives/sortable/sortable.directive';
 
 import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { IPessoaTableData } from '../../../core/interfaces/pessoa.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import { converterArrayBufferEmImgSrc } from '../../../core/utils/functions';
 
@@ -30,9 +35,9 @@ export class PessoasListComponent {
   ) => string = converterArrayBufferEmImgSrc;
 
   constructor(
-    private _router: Router,
-    private _pessoasService: PessoasService,
-    private _ngbModalService: NgbModal
+    private readonly _pessoasService: PessoasService,
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _ngbModalService: NgbModal
   ) {}
 
   public sortColumn(event: SortColumn): void {
@@ -57,7 +62,10 @@ export class PessoasListComponent {
   public editarPessoa(id: number): void {
     this._pessoasService.idPessoa$.next(id);
 
-    this._router.navigate(['main', 'pessoas', 'editar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.Pessoas,
+      BreadcrumbAcoesEnum.Editar
+    );
   }
 
   private deletarPessoa(id: number): void {
@@ -78,7 +86,7 @@ export class PessoasListComponent {
     modalRef.result.then(
       (resolve) => {
         this._pessoasService
-          .delete(pessoaTableData.id)
+          .deleteById(pessoaTableData.id)
           .pipe(tap((response) => this.dispararModalSucesso(response)))
           .subscribe();
       },
@@ -96,9 +104,9 @@ export class PessoasListComponent {
     modalRef.result.then(
       (resolve) => {},
       (reject) => {
-        this._router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => this._router.navigateByUrl('main/pessoas'));
+        this._navegacaoService.navegacaoComRecarregamento(
+          BreadcrumbContextoEnum.Pessoas
+        );
       }
     );
   }

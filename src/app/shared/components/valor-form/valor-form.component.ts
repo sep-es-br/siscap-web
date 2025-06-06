@@ -18,6 +18,7 @@ import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interf
 
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import { getSimboloMoeda } from '../../../core/utils/functions';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 
 @Component({
   selector: 'siscap-valor-form',
@@ -33,7 +34,7 @@ import { getSimboloMoeda } from '../../../core/utils/functions';
   templateUrl: './valor-form.component.html',
   styleUrl: './valor-form.component.scss',
 })
-export class ValorFormComponent {
+export class  ValorFormComponent {
   public moedasList = input<Array<IMoeda>>();
   public tiposValorOpcoes = input<Array<IOpcoesDropdown>>();
 
@@ -54,4 +55,8 @@ export class ValorFormComponent {
 
   public rtlCurrencyOutputTransformFn =
     NgxMaskTransformFunctionHelper.rtlCurrencyOutputTransformFn;
+
+  public projetoTooltip: Record<string, string> =
+      COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
+      
 }

@@ -25,7 +25,6 @@ export class ValidationMessageComponent {
     if (!errors) {
       return '';
     }
-
     return Object.keys(errors)
       .map((errorKey) => this._errorMessageMap[errorKey])
       .join(' | ');

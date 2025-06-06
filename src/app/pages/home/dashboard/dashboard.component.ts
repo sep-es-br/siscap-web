@@ -1,12 +1,13 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import { Subscription } from 'rxjs';
+import { tap } from 'rxjs';
 
 import { DashboardService } from '../../../core/services/dashboard/dashboard.service';
 
-import { IDashboardProjeto } from '../../../core/interfaces/dashboard.interface';
-
 import { abbreviateNumber } from 'js-abbreviation-number';
+
+// 12/02/2025
+// ALTERACOES PROVISORIAS APENAS PARA APRESENTACAO; A SEREM REMOVIDAS POSTERIORMENTE
 
 @Component({
   selector: 'siscap-dashboard',
@@ -14,29 +15,35 @@ import { abbreviateNumber } from 'js-abbreviation-number';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-  private _subscription: Subscription = new Subscription();
-
-  dados?: IDashboardProjeto;
-  valorEstimadoTotal?: string;
-  simbolos: { symbols: string[] } = {
+export class DashboardComponent implements OnInit {
+  private readonly _simbolos: { symbols: Array<string> } = {
     symbols: ['', ' mil', ' mi', ' bi', ' tri', ' qua', ' qui'],
   };
 
-  constructor(private _dashboardService: DashboardService) {}
+  public projetosQuantidade: number = 0;
+  public projetosValorEstimadoTotal: string = '';
+
+  public programasQuantidade: number = 0;
+
+  public cartasConsultaQuantidade: number = 0;
+
+  constructor(private readonly _dashboardService: DashboardService) {}
 
   ngOnInit() {
-    this._dashboardService.getQuantidadeProjetos().subscribe((response) => {
-      this.dados = response;
-      this.valorEstimadoTotal = abbreviateNumber(
-        this.dados.valorTotal,
-        1,
-        this.simbolos
-      );
-    });
-  }
-
-  ngOnDestroy() {
-    this._subscription.unsubscribe();
+    this._dashboardService
+      .buscarDadosDashboard()
+      .pipe(
+        tap((response) => {
+          this.projetosQuantidade = response.projetosQuantidade;
+          this.projetosValorEstimadoTotal = abbreviateNumber(
+            response.projetosValorTotal,
+            1,
+            this._simbolos
+          );
+          this.programasQuantidade = response.programasQuantidade;
+          this.cartasConsultaQuantidade = response.cartasConsultaQuantidade;
+        })
+      )
+      .subscribe();
   }
 }

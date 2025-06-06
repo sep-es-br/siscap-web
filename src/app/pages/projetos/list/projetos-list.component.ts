@@ -1,5 +1,4 @@
 import { Component, input, output } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -10,10 +9,17 @@ import { SuccessModalComponent } from '../../../shared/templates/success-modal/s
 import { SortColumn } from '../../../shared/directives/sortable/sortable.directive';
 
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { IProjetoTableData } from '../../../core/interfaces/projeto.interface';
 
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
+
 import { getSimboloMoeda } from '../../../core/utils/functions';
+import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 
 @Component({
   selector: 'siscap-projetos-list',
@@ -29,9 +35,9 @@ export class ProjetosListComponent {
     getSimboloMoeda;
 
   constructor(
-    private _router: Router,
-    private _projetosService: ProjetosService,
-    private _ngbModalService: NgbModal
+    private readonly _projetosService: ProjetosService,
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _ngbModalService: NgbModal
   ) {}
 
   public sortColumn(event: SortColumn): void {
@@ -56,7 +62,10 @@ export class ProjetosListComponent {
   public editarProjeto(id: number): void {
     this._projetosService.idProjeto$.next(id);
 
-    this._router.navigate(['main', 'projetos', 'editar']);
+    this._navegacaoService.navegacaoSimples(
+      BreadcrumbContextoEnum.Projetos,
+      BreadcrumbAcoesEnum.Editar
+    );
   }
 
   private deletarProjeto(id: number): void {
@@ -77,7 +86,7 @@ export class ProjetosListComponent {
     modalRef.result.then(
       (resolve) => {
         this._projetosService
-          .delete(projetoTableData.id)
+          .deleteById(projetoTableData.id)
           .pipe(tap((response) => this.dispararModalSucesso(response)))
           .subscribe();
       },
@@ -95,9 +104,9 @@ export class ProjetosListComponent {
     modalRef.result.then(
       (resolve) => {},
       (reject) => {
-        this._router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => this._router.navigateByUrl('main/projetos'));
+        this._navegacaoService.navegacaoComRecarregamento(
+          BreadcrumbContextoEnum.Projetos
+        );
       }
     );
   }

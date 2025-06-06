@@ -1,12 +1,19 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
 
 import { PessoasService } from '../../core/services/pessoas/pessoas.service';
+import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
+import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
-import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
 import { IPessoaTableData } from '../../core/interfaces/pessoa.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
+import { IHttpGetRequestBody } from '../../core/interfaces/http-get-all-paged.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-pessoas',
@@ -14,15 +21,18 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
   templateUrl: './pessoas.component.html',
   styleUrl: './pessoas.component.scss',
 })
-export class PessoasComponent implements OnInit {
-  private _pageConfig: IHttpGetRequestBody = {
+export class PessoasComponent implements OnInit, OnDestroy {
+  private readonly _subscription: Subscription = new Subscription();
+
+  private readonly _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    search: '',
     size: 15,
     sort: '',
   };
 
-  private _pessoasList$: BehaviorSubject<Array<IPessoaTableData>> =
+  private termoPesquisaSimples: string = '';
+
+  private readonly _pessoasList$: BehaviorSubject<Array<IPessoaTableData>> =
     new BehaviorSubject<Array<IPessoaTableData>>([]);
 
   public get pessoasList$(): Observable<Array<IPessoaTableData>> {
@@ -40,16 +50,32 @@ export class PessoasComponent implements OnInit {
   };
 
   constructor(
-    private _pessoasService: PessoasService,
-    private _r2: Renderer2
-  ) {}
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _pessoasService: PessoasService,
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _r2: Renderer2
+  ) {
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      this._pessoasService.gerarBotoesAcaoListagem()
+    );
+
+    this._subscription.add(
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) => {
+        if (acao === BreadcrumbAcoesEnum.Criar)
+          this._navegacaoService.navegacaoSimples(
+            BreadcrumbContextoEnum.Pessoas,
+            BreadcrumbAcoesEnum.Criar
+          );
+      })
+    );
+  }
 
   ngOnInit(): void {
     this.fetchPage();
   }
 
   public filtroPesquisaOutputEvent(filtro: string): void {
-    this._pageConfig.search = filtro;
+    this.termoPesquisaSimples = filtro;
 
     if (!filtro) {
       this._pageConfig.sort = '';
@@ -73,8 +99,10 @@ export class PessoasComponent implements OnInit {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
+    const searchFilter = { search: this.termoPesquisaSimples };
+
     this._pessoasService
-      .getAllPaged(tempPageConfig)
+      .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
           this._pessoasList$.next(response.content);
@@ -98,5 +126,10 @@ export class PessoasComponent implements OnInit {
       this._r2.removeClass(el, 'asc');
       this._r2.removeClass(el, 'desc');
     });
+  }
+
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

@@ -1,9 +1,9 @@
 <div class="mx-3">
   <div id="header" class="row mb-2 flex-nowrap">
-    <div class="col-1 ms-4 ms-md-2 ms-lg-4 text-truncate">
+    <div class="col-1 mx-2 mx-md-1 mx-lg-2 text-truncate">
       <span class="fs-small-4">Prospecção</span>
     </div>
-    <div class="col-3 text-truncate">
+    <div class="col-3 ms-4 ms-md-5 ms-lg-4 text-truncate">
       <span class="fs-small-4">Organização</span>
     </div>
     <div class="col-2 text-truncate">
@@ -30,13 +30,13 @@
       class="row border-top border-bottom flex-nowrap align-items-center mb-3 py-2"
       (click)="visualizarProspeccao(prospeccao.id)"
     >
-      <div class="col-1 ms-4 ms-md-2 ms-lg-4">
+      <div class="col-1 mx-2 mx-md-1 mx-lg-2">
         <span
-          class="fs-small-3 text-primary text-decoration-underline pointer"
-          >{{ preencherIdAteQuatroDigitos(prospeccao.id) }}</span
+          class="fs-small-3 text-primary text-nowrap text-decoration-underline pointer"
+          >{{ prospeccao.codigoProspeccao }}</span
         >
       </div>
-      <div class="col-3">
+      <div class="col-3 ms-4 ms-md-5 ms-lg-4">
         <span class="fs-small-3 fw-semibold">{{
           prospeccao.nomeOrganizacaoProspectada
         }}</span>

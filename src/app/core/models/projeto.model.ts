@@ -1,10 +1,14 @@
 import { EquipeModel } from './equipe.model';
 import { RateioModel } from './rateio.model';
+import { ValorModel } from './valor.model';
 
 import { IProjeto, IProjetoForm } from '../interfaces/projeto.interface';
 import { IEquipe } from '../interfaces/equipe.interface';
-import { ValorModel } from './valor.model';
 import { IRateio } from '../interfaces/rateio.interface';
+import { IIndicadores } from '../interfaces/indicadores.interface';
+import { IndicadorModel } from './indicador.model';
+import { IAcao } from '../interfaces/acoes.interface';
+import { AcaoModel } from './acao.model';
 
 export class ProjetoFormModel implements IProjetoForm {
   public sigla: string;
@@ -20,6 +24,14 @@ export class ProjetoFormModel implements IProjetoForm {
   public arranjosInstitucionais: string;
   public idResponsavelProponente: number;
   public equipeElaboracao: Array<EquipeModel>;
+  public rascunho: boolean;
+  public nomeResponsavelProponente: string;
+  public papelResponsavelProponente: string;
+  public subResponsavelProponente: string;
+  public indicadoresProjeto: Array<IIndicadores>; 
+  public acoesProjeto: Array<IAcao>;
+  public nomeagente: string;
+  public pecasPlanejamento: string;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -37,13 +49,26 @@ export class ProjetoFormModel implements IProjetoForm {
     this.equipeElaboracao = this.construirEquipeElaboracao(
       projetoForm?.equipeElaboracao
     );
+    this.rascunho = false;
+    this.nomeResponsavelProponente = projetoForm?.nomeResponsavelProponente ?? '';
+    this.papelResponsavelProponente = projetoForm?.papelResponsavelProponente ?? '';
+    this.subResponsavelProponente = projetoForm?.subResponsavelProponente ?? '';
+    this.indicadoresProjeto = this.construirIndicadoresProjeto(
+      projetoForm?.indicadoresProjeto
+    );
+    this.acoesProjeto = this.construirAcoesProjeto(
+      projetoForm?.acoesProjeto
+    );
+    this.nomeagente = projetoForm?.nomeagente ?? '';
+    this.pecasPlanejamento = projetoForm?.pecasPlanejamento ?? '';
   }
 
-  private construirRateioModelArray(rateioArray?: Array<IRateio>): Array<RateioModel> {
+  private construirRateioModelArray(
+    rateioArray?: Array<IRateio>
+  ): Array<RateioModel> {
     if (!rateioArray) {
       return [];
     }
-
     return rateioArray.map((rateio) => new RateioModel(rateio));
   }
 
@@ -53,18 +78,38 @@ export class ProjetoFormModel implements IProjetoForm {
     if (!equipeElaboracao) {
       return [];
     }
-
     return equipeElaboracao.map((equipe) => new EquipeModel(equipe));
   }
+
+  private construirIndicadoresProjeto(
+    indicadoresProjeto?: Array<IIndicadores>
+  ): Array<IndicadorModel> {
+    if (!indicadoresProjeto) {
+      return [];
+    }
+    return indicadoresProjeto.map((indicadores) => new IndicadorModel(indicadores));
+  }
+
+  private construirAcoesProjeto(
+    acoesProjeto?: Array<IAcao>
+  ): Array<AcaoModel> {
+    if (!acoesProjeto) {
+      return [];
+    }
+    return acoesProjeto.map((acoes) => new AcaoModel(acoes));
+  }
+
 }
 
 export class ProjetoModel extends ProjetoFormModel implements IProjeto {
   public readonly id: number;
   public readonly idStatus: number;
+  public readonly status: string;
 
   constructor(projeto?: IProjeto) {
     super(projeto);
     this.id = projeto?.id ?? 0;
     this.idStatus = projeto?.idStatus ?? 0;
+    this.status = projeto?.status ?? '';
   }
 }

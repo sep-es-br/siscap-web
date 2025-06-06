@@ -9,13 +9,14 @@ import {
 
 import { Subject } from 'rxjs';
 
-import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
+import { IOpcoesDropdownResponsavelProponente } from '../../interfaces/opcoes-dropdown.interface';
 import { IEquipe } from '../../interfaces/equipe.interface';
 
 import { EquipeFormType } from '../../types/form/equipe-form.type';
 
 import { TipoStatusEnum } from '../../enums/tipo-status.enum';
 import { equipeValidator } from '../../validators/equipe.validator';
+import { TipoPapelEnum } from '../../enums/tipo-papel.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -35,9 +36,9 @@ export class EquipeService {
     this._equipeFormArraySnapshot = equipeFormArrayValue;
   }
 
-  private _idMembroNgSelectValue$: Subject<number> = new Subject<number>();
+  private readonly _idMembroNgSelectValue$: Subject<IOpcoesDropdownResponsavelProponente> = new Subject<IOpcoesDropdownResponsavelProponente>();
 
-  public get idMembroNgSelectValue$(): Subject<number> {
+  public get idMembroNgSelectValue$(): Subject<IOpcoesDropdownResponsavelProponente> {
     return this._idMembroNgSelectValue$;
   }
 
@@ -60,7 +61,7 @@ export class EquipeService {
   }
 
   constructor(private _nnfb: NonNullableFormBuilder) {
-    this.idMembroNgSelectValue$.subscribe((idMembroNgSelectValue: number) => {
+    this.idMembroNgSelectValue$.subscribe((idMembroNgSelectValue: IOpcoesDropdownResponsavelProponente) => {
       this.incluirMembroNaEquipe(
         this.construirMembroFormGroupNgSelectValue(idMembroNgSelectValue)
       );
@@ -70,6 +71,7 @@ export class EquipeService {
   public construirEquipeFormArray(
     equipe?: Array<IEquipe>
   ): FormArray<FormGroup<EquipeFormType>> {
+
     const equipeFormArray = this._nnfb.array<FormGroup<EquipeFormType>>(
       [],
       [Validators.required, Validators.minLength(1), equipeValidator()]
@@ -86,25 +88,25 @@ export class EquipeService {
     this.equipeFormArraySnapshot = this.equipeFormArray.value as Array<IEquipe>;
 
     return this.equipeFormArray;
+
   }
 
   public construirMembroFormGroup(membro?: IEquipe): FormGroup<EquipeFormType> {
     return this._nnfb.group<EquipeFormType>({
+      subPessoa: this._nnfb.control(membro?.subPessoa ?? null),
       idPessoa: this._nnfb.control(membro?.idPessoa ?? 0, Validators.required),
       idPapel: this._nnfb.control(membro?.idPapel ?? null, Validators.required),
-      idStatus: this._nnfb.control(
-        membro?.idStatus ?? TipoStatusEnum.Ativo,
-        Validators.required
-      ),
+      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required),
       justificativa: this._nnfb.control(membro?.justificativa ?? null),
+      nome: this._nnfb.control(membro?.nome ?? '')
     });
   }
 
   public construirMembroFormGroupNgSelectValue(
-    ngSelectValue: number
+    ngSelectValue: IOpcoesDropdownResponsavelProponente
   ): FormGroup<EquipeFormType> {
     const membroFormGroup = this.construirMembroFormGroup();
-    membroFormGroup.patchValue({ idPessoa: ngSelectValue });
+    membroFormGroup.patchValue({ subPessoa: ngSelectValue.agentePublicoSub , nome: ngSelectValue.nome });
     return membroFormGroup;
   }
 
@@ -130,15 +132,16 @@ export class EquipeService {
     this.excluirMembroForm = excluirMembroForm;
 
     return this.excluirMembroForm;
+
   }
 
   public filtrarPessoasOpcoes(
-    pessoasOpcoes: IOpcoesDropdown[]
-  ): IOpcoesDropdown[] {
+    pessoasOpcoes: IOpcoesDropdownResponsavelProponente[]
+  ): IOpcoesDropdownResponsavelProponente[] {
     return pessoasOpcoes.filter(
       (pessoa) =>
         !this.equipeFormArray.value.some(
-          (membro) => membro.idPessoa === pessoa.id
+          (membro) => membro.subPessoa === pessoa.agentePublicoSub
         )
     );
   }

@@ -1,7 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { NgbAlertModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbAlertModule,
+  NgbDropdownModule,
+  NgbTooltipModule,
+} from '@ng-bootstrap/ng-bootstrap';
 
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
@@ -11,6 +15,9 @@ import { SuccessModalComponent } from './success-modal/success-modal.component';
 import { TableActionsDropdownComponent } from './table-actions-dropdown/table-actions-dropdown.component';
 import { ValidationMessageComponent } from './validation-message/validation-message.component';
 import { ProgramaProjetoPropostoVinculadoWarningModalComponent } from './programa-projeto-proposto-vinculado-warning-modal/programa-projeto-proposto-vinculado-warning-modal.component';
+import { BotaoComponent } from '../components/botao/botao.component';
+import { PreventActionModalComponent } from './prevent-action-modal/prevent-action-modal.component';
+import { FormHelperTooltipComponent } from './form-helper-tooltip/form-helper-tooltip.component';
 
 @NgModule({
   declarations: [
@@ -21,9 +28,17 @@ import { ProgramaProjetoPropostoVinculadoWarningModalComponent } from './program
     QueryNoResultsComponent,
     SuccessModalComponent,
     TableActionsDropdownComponent,
+    PreventActionModalComponent,
     ValidationMessageComponent,
+    FormHelperTooltipComponent,
   ],
-  imports: [CommonModule, NgbDropdownModule, NgbAlertModule],
+  imports: [
+    CommonModule,
+    BotaoComponent,
+    NgbDropdownModule,
+    NgbAlertModule,
+    NgbTooltipModule,
+  ],
   exports: [
     DeleteModalComponent,
     LoadingSpinnerComponent,
@@ -31,8 +46,10 @@ import { ProgramaProjetoPropostoVinculadoWarningModalComponent } from './program
     ProgramaProjetoPropostoVinculadoWarningModalComponent,
     QueryNoResultsComponent,
     SuccessModalComponent,
+    PreventActionModalComponent,
     TableActionsDropdownComponent,
     ValidationMessageComponent,
+    FormHelperTooltipComponent,
   ],
 })
 export class TemplatesModule {}

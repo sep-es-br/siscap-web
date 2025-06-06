@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { BotaoComponent } from './botao/botao.component';
 import { HeaderComponent } from './header/header.component';
 import { ToastComponent } from './toast/toast.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -14,17 +15,22 @@ import { EquipeFormComponent } from './equipe-form/equipe-form.component';
 import { ValorFormComponent } from './valor-form/valor-form.component';
 import { RateioFormComponent } from './rateio-form/rateio-form.component';
 import { CropperComponent } from './cropper/cropper.component';
+import { DatepickerComponent } from './datepicker/datepicker.component';
+import { IndicadoresFormComponent } from './indicadores-form/indicadores-form.component';
+
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
+    BotaoComponent,
     HeaderComponent,
     ToastComponent,
     NavMenuComponent,
     UserProfileComponent,
     BreadcrumbComponent,
     TableSearchComponent,
+    DatepickerComponent,
     PaginationComponent,
     TextEditorComponent,
     TextPreviewComponent,
@@ -32,14 +38,17 @@ import { CropperComponent } from './cropper/cropper.component';
     ValorFormComponent,
     RateioFormComponent,
     CropperComponent,
+    IndicadoresFormComponent,
   ],
   exports: [
+    BotaoComponent,
     HeaderComponent,
     ToastComponent,
     NavMenuComponent,
     UserProfileComponent,
     BreadcrumbComponent,
     TableSearchComponent,
+    DatepickerComponent,
     PaginationComponent,
     TextEditorComponent,
     TextPreviewComponent,

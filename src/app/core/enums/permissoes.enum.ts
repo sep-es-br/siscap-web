@@ -11,5 +11,11 @@ export enum PermissoesEnum {
   programascriar = 'PROGRAMA_CADASTRAR',
   programaseditar = 'PROGRAMA_ATUALIZAR',
 
+  cartasconsultacriar = 'CARTA_CONSULTA_CADASTRAR',
+  cartasconsultaeditar = 'CARTA_CONSULTA_ATUALIZAR',
+
+  prospeccaocriar = 'PROSPECCAO_CADASTRAR',
+  prospeccaoeditar = 'PROSPECCAO_ATUALIZAR',
+
   adminAuth = 'ADMIN_AUTH',
 }

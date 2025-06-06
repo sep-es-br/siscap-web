@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { ToastService } from '../toast/toast.service';
 
-import { IHttpBackEndErrorResponse } from '../../interfaces/http/http-backend-error-response.interface';
+import { IHttpBackEndErrorResponse } from '../../interfaces/http-backend-error-response.interface';
 
 /**
  * @service

@@ -3,20 +3,20 @@ import { HttpClient } from '@angular/common/http';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { ProspeccaoFormModel } from '../../models/prospeccao.model';
+import { BaseHttpService } from '../http/base-http.service';
 
-import { IHttpBase } from '../../interfaces/http/http-base.interface';
-import {
-  IHttpGetRequestBody,
-  IHttpGetResponseBody,
-} from '../../interfaces/http/http-get.interface';
+import { ProspeccaoFormModel } from '../../models/prospeccao.model';
+import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.model';
+
+import { BotoesConfig } from '../../../shared/components/botao/botao.config';
+
 import {
   IProspeccao,
   IProspeccaoDetalhes,
   IProspeccaoTableData,
 } from '../../interfaces/prospeccao.interface';
-
-import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
+import { Post } from '../../interfaces/http-post.interface';
+import { Put } from '../../interfaces/http-put.interface';
 
 import { environment } from '../../../../environments/environment';
 
@@ -24,7 +24,10 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root',
 })
 export class ProspeccoesService
-  implements IHttpBase<IProspeccao, IProspeccaoTableData, ProspeccaoFormModel>
+  extends BaseHttpService<IProspeccao, IProspeccaoTableData>
+  implements
+    Post<IProspeccao, ProspeccaoFormModel>,
+    Put<IProspeccao, ProspeccaoFormModel>
 {
   private readonly _url = `${environment.apiUrl}/prospeccoes`;
 
@@ -42,24 +45,44 @@ export class ProspeccoesService
     return this._idProspeccaoDetalhes$;
   }
 
-  constructor(private readonly _http: HttpClient) {}
-
-  public getAllPaged(
-    pageConfig: IHttpGetRequestBody
-  ): Observable<IHttpGetResponseBody<IProspeccaoTableData>> {
-    return this._http.get<IHttpGetResponseBody<IProspeccaoTableData>>(
-      this._url,
-      {
-        params:
-          PageableQueryStringParametersHelper.buildQueryStringParams(
-            pageConfig
-          ),
-      }
-    );
+  constructor(private readonly _http: HttpClient) {
+    super(_http, 'prospeccoes');
   }
 
-  public getById(id: number): Observable<IProspeccao> {
-    return this._http.get<IProspeccao>(`${this._url}/${id}`);
+  public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
+    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
+      texto: 'Nova Prospecção',
+    });
+
+    return [botaoCriar];
+  }
+
+  public gerarBotoesAcaoVisualizarDetalhes(): Array<BotaoPropriedadesModel> {
+    const botaoProspectar = BotoesConfig.gerarBotaoPropriedades('prospectar');
+    const botaoEditar = BotoesConfig.gerarBotaoPropriedades('editar');
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
+      acao: 'cancelar',
+    });
+
+    return [botaoProspectar, botaoEditar, botaoVoltar];
+  }
+
+  public gerarBotoesAcaoVisualizarDetalhesProspeccaoRealizada(): Array<BotaoPropriedadesModel> {
+    const botaoProspectar = BotoesConfig.gerarBotaoPropriedades('prospectar', {
+      desabilitado: true,
+    });
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
+      acao: 'cancelar',
+    });
+
+    return [botaoProspectar, botaoVoltar];
+  }
+
+  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+
+    return [botaoSalvar, botaoCancelar];
   }
 
   public post(body: ProspeccaoFormModel): Observable<IProspeccao> {
@@ -70,11 +93,13 @@ export class ProspeccoesService
     return this._http.put<IProspeccao>(`${this._url}/${id}`, body);
   }
 
-  public delete(id: number): Observable<string> {
-    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
+  public buscarDetalhesProspeccao(id: number): Observable<IProspeccaoDetalhes> {
+    return this._http.get<IProspeccaoDetalhes>(`${this._url}/${id}/detalhes`);
   }
 
-  public getProspeccaoDetalhes(id: number): Observable<IProspeccaoDetalhes> {
-    return this._http.get<IProspeccaoDetalhes>(`${this._url}/${id}/detalhes`);
+  public enviarEmailProspeccao(id: number): Observable<string> {
+    return this._http.post(`${this._url}/${id}/prospectar`, null, {
+      responseType: 'text',
+    });
   }
 }

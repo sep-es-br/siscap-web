@@ -14,9 +14,15 @@ import { EquipeService } from '../../../core/services/equipe/equipe.service';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 
-import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
+import { IOpcoesDropdown, IOpcoesDropdownResponsavelProponente } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
+import { EquipeModel } from '../../../core/models/equipe.model';
+import { IEquipe } from '../../../core/interfaces/equipe.interface';
+import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
+import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
+import { catchError, map, Observable, of, tap } from 'rxjs';
+import { IProjeto } from '../../../core/interfaces/projeto.interface';
 
 @Component({
   selector: 'siscap-equipe-form',
@@ -34,34 +40,41 @@ import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
   styleUrl: './equipe-form.component.scss',
 })
 export class EquipeFormComponent implements OnDestroy {
-  @Input() public pessoasOpcoes: IOpcoesDropdown[] = [];
   @Input() public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   @Input() public isModoEdicao: boolean = false;
+  @Input() public pessoasOpcoesGoves: IOpcoesDropdownResponsavelProponente[] = [];
+  @Input() public equipeProjeto: IEquipe[] = [];
 
   public TipoStatusEnum = TipoStatusEnum;
 
+  public isProponente: boolean = false;
   public permissaoRemoverMembro: boolean = false;
 
   constructor(
     public equipeService: EquipeService,
     private readonly _usuarioService: UsuarioService,
     private readonly _ngbModalService: NgbModal,
-    private readonly _toastService: ToastService
+    private readonly _toastService: ToastService,
+    private readonly _pessoasService: PessoasService,
   ) {
+
+    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
     this.permissaoRemoverMembro =
       this._usuarioService.verificarPermissao('adminAuth');
   }
-
-  public getMembroNome(idPessoa: number | null | undefined): string {
-    return (
-      this.pessoasOpcoes.find((pessoa) => pessoa.id === idPessoa)?.nome ?? ''
-    );
+  
+  public getMembroNome(subPessoa: string | null | undefined): string {
+    const nomePadrao = this.pessoasOpcoesGoves.find(p => p.agentePublicoSub === subPessoa)?.nome;
+    if (!nomePadrao) {
+      return this.equipeProjeto.find( p => p.subPessoa === subPessoa)?.nome ?? '';
+    }
+    return nomePadrao ?? '';
   }
 
   public getPapelNome(idPapel: number | null | undefined): string {
-    return (
-      this.tiposPapelOpcoes.find((papel) => papel.id === idPapel)?.nome ?? ''
-    );
+    if (idPapel === 3) return 'Proponente';
+    return this.tiposPapelOpcoes.find((papel) => papel.id === idPapel)?.nome ?? '';
   }
 
   public isMembroRemovido(index: number): boolean {
@@ -74,8 +87,8 @@ export class EquipeFormComponent implements OnDestroy {
   public isNovoMembro(index: number): boolean {
     return !this.equipeService.equipeFormArraySnapshot.some(
       (membro) =>
-        membro.idPessoa ===
-        this.equipeService.equipeFormArray.at(index).value.idPessoa
+        membro.subPessoa ===
+        this.equipeService.equipeFormArray.at(index).value.subPessoa
     );
   }
 
@@ -117,7 +130,7 @@ export class EquipeFormComponent implements OnDestroy {
             : 'Membro excluído da equipe.',
           [
             `${this.getMembroNome(
-              membroFormGroup.value.idPessoa
+              membroFormGroup.value.subPessoa
             )} - ${this.getPapelNome(membroFormGroup.value.idPapel)}`,
             `Motivo: ${this.equipeService.excluirMembroFormJustificativaFormControl.value}`,
           ]

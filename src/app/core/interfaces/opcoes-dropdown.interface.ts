@@ -21,3 +21,11 @@ export interface IProspeccaoInteressadoOpcoesDropdown extends IOpcoesDropdown {
   email: string;
   idsOrganizacoesList: Array<number>;
 }
+
+export interface IOpcoesDropdownResponsavelProponente {
+  id: number;
+  nome: string;
+  papelPrioritario: string;
+  agentePublicoSub: string;
+  gestorOrganizacao: boolean;
+}

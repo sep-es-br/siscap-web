@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 
 import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { NavegacaoService } from '../../../../core/services/navegacao/navegacao.service';
+
 import {
   IMenuLink,
   MenuLinksHelper,
@@ -20,8 +22,18 @@ export class OffcanvasNavMenuComponent {
   @Input() public menuCategoriaAtiva: string = '';
   @Input() public subMenuCategoriaAtiva: string = '';
 
-  @Output() public navegacaoSideMenu: EventEmitter<boolean> =
-    new EventEmitter<boolean>();
+  @Output() public navegacaoSideMenu: EventEmitter<void> =
+    new EventEmitter<void>();
 
   public menuLinks: Array<IMenuLink> = MenuLinksHelper.menuLinks;
+
+  constructor(private readonly _navegacaoService: NavegacaoService) {}
+
+  public avaliarNavegacaoMesmaRota(rota: string): void {
+    rota === this._navegacaoService.buscarRotaCaminhoAtual()
+      ? this._navegacaoService.navegacaoComRecarregamento(rota)
+      : this._navegacaoService.navegacaoSimples(rota);
+
+    this.navegacaoSideMenu.emit();
+  }
 }

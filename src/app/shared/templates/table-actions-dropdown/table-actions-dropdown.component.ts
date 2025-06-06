@@ -2,6 +2,11 @@ import { Component, input, output } from '@angular/core';
 
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 
+import {
+  ITableActionOutput,
+  TTableActions,
+} from './table-actions-dropdown.interface';
+
 @Component({
   selector: 'table-actions-dropdown',
   standalone: false,
@@ -9,17 +14,22 @@ import { UsuarioService } from '../../../core/services/usuario/usuario.service';
   styleUrls: ['./table-actions-dropdown.component.scss'],
 })
 export class TableActionsDropdownComponent {
-  public tableActionInput = input<number>(0);
-  public tableActionOutput = output<{ acao: string; id: number }>();
+  public tableActionInput = input.required<number>();
+  public tableActionOutput = output<ITableActionOutput>();
 
-  public permissaoDeletar: boolean = false;
+  public permissaoDeletarAdminAuth: boolean = false;
 
-  constructor(private _usuarioService: UsuarioService) {
-    this.permissaoDeletar =
+  constructor(private readonly _usuarioService: UsuarioService) {
+    this.permissaoDeletarAdminAuth =
       this._usuarioService.verificarPermissao('adminAuth');
   }
 
-  public emitirAcao(acao: string): void {
-    this.tableActionOutput.emit({ acao: acao, id: this.tableActionInput() });
+  public emitirAcao(acao: TTableActions): void {
+    const tableActionOutputObj: ITableActionOutput = {
+      id: this.tableActionInput(),
+      acao: acao,
+    };
+
+    this.tableActionOutput.emit(tableActionOutputObj);
   }
 }

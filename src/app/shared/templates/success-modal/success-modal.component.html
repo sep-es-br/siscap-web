@@ -5,8 +5,8 @@
   <p>{{ conteudo }}</p>
 </div>
 <div class="modal-footer d-flex justify-content-center">
-  <button class="btn btn-success icon-text-btn" (click)="activeModal.dismiss()">
-    <i class="fa-solid fa-thumbs-up"></i>
-    <span>OK</span>
-  </button>
+  <siscap-botao
+    [propriedades]="botaoOK"
+    (acao)="activeModal.dismiss()"
+  ></siscap-botao>
 </div>

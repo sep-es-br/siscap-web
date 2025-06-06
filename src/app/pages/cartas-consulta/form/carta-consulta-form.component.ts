@@ -6,7 +6,6 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import {
   concat,
@@ -22,12 +21,15 @@ import {
 import { CartasConsultaService } from '../../../core/services/cartas-consulta/cartas-consulta.service';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 
 import {
   CartaConsultaFormModel,
   CartaConsultaModel,
 } from '../../../core/models/carta-consulta.model';
+
+import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
 
 import {
   ICartaConsulta,
@@ -38,7 +40,10 @@ import {
   IOpcoesDropdown,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 
-import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-carta-consulta-form',
@@ -47,14 +52,14 @@ import { alterarEstadoControlesFormulario } from '../../../core/utils/functions'
   styleUrl: './carta-consulta-form.component.scss',
 })
 export class CartaConsultaFormComponent implements OnInit, OnDestroy {
+  private readonly _subscription: Subscription = new Subscription();
+
   private readonly _atualizarCartaConsulta$: Observable<ICartaConsulta>;
   private readonly _cadastrarCartaConsulta$: Observable<number>;
 
   private readonly _getObjetosOpcoes$: Observable<IObjetoOpcoesDropdown[]>;
   private readonly _getTiposOperacaoOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
-
-  private readonly _subscription: Subscription = new Subscription();
 
   private _idCartaConsultaEdicao: number = 0;
 
@@ -68,10 +73,10 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
-    private readonly _router: Router,
     private readonly _cartasConsultaService: CartasConsultaService,
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _navegacaoService: NavegacaoService,
     private readonly _toastService: ToastService
   ) {
     const [editar$, criar$] = partition(
@@ -91,7 +96,9 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
         this._idCartaConsultaEdicao = cartaConsultaModel.id;
 
-        this.trocarModo(false);
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._cartasConsultaService.gerarBotoesAcaoFormulario()
+        );
 
         this.loading = false;
       })
@@ -100,6 +107,10 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
     this._cadastrarCartaConsulta$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._cartasConsultaService.gerarBotoesAcaoFormulario()
+        );
 
         this.loading = false;
       })
@@ -119,7 +130,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
     );
 
     this._subscription.add(
-      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
@@ -158,32 +169,18 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
   private cartaConsultaFormValueChanges(): void {}
 
-  private executarAcaoBreadcrumb(acao: string): void {
+  private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
     switch (acao) {
-      case 'editar':
-        this.trocarModo(true);
+      case BreadcrumbAcoesEnum.Cancelar:
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.CartasConsulta
+        );
         break;
 
-      case 'cancelar':
-        this.cancelar();
-        break;
-
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         this.submitCartaConsultaForm(this.cartaConsultaForm);
         break;
     }
-  }
-
-  private trocarModo(permitir: boolean): void {
-    this.isModoEdicao = permitir;
-
-    const cartaConsultaFormControls = this.cartaConsultaForm.controls;
-
-    alterarEstadoControlesFormulario(permitir, cartaConsultaFormControls);
-  }
-
-  private cancelar(): void {
-    this._router.navigate(['main', 'cartasconsulta']);
   }
 
   private submitCartaConsultaForm(form: FormGroup): void {
@@ -219,7 +216,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
           'Organização cadastrada com sucesso.'
         );
       }),
-      finalize(() => this.cancelar())
+      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
     );
   }
 
@@ -235,12 +232,15 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
             'Organização alterada com sucesso.'
           );
         }),
-        finalize(() => this.cancelar())
+        finalize(() =>
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+        )
       );
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._cartasConsultaService.idCartaConsulta$.next(0);
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

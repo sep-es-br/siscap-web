@@ -1,10 +1,22 @@
-<div class="h-100" *ngIf="loading">
+<div class="h-100" *ngIf="loading || isLoadingPessoas">
   <loading-spinner></loading-spinner>
 </div>
 
-<div class="row" *ngIf="!loading && mostrarBotaoGerarDic">
+<div class="row" *ngIf="!loading">
   <div class="mb-2 d-inline-flex justify-content-end">
-    <button class="btn btn-outline-primary icon-text-btn" (click)="baixarDIC()">
+    <button
+      *ngIf="mostrarBotaoStatusProjeto"
+      class="btn btn-outline-success icon-text-btn me-2"
+      (click)="abrirModalStatusProjeto(projetoStatusModal)"
+    >
+      <i class="fa-solid fa-check"></i>
+      <span>Status</span>
+    </button>
+    <button
+      *ngIf="mostrarBotaoGerarDic"
+      class="btn btn-outline-primary icon-text-btn"
+      (click)="baixarDIC()"
+    >
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Gerar DIC</span>
     </button>
@@ -20,6 +32,9 @@
             <label for="sigla" class="form-label col-12">
               <validation-message [control]="getControl('sigla')">
                 Sigla do Projeto
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['sigla']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <input
@@ -38,6 +53,9 @@
             <label for="titulo" class="form-label col-12">
               <validation-message [control]="getControl('titulo')">
                 Titulo do Projeto
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['titulo']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <input
@@ -53,13 +71,15 @@
             <label for="idOrganizacao" class="form-label col-12">
               <validation-message [control]="getControl('idOrganizacao')">
                 Orgão de Origem
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['idOrganizacao']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <ng-select
               id="idOrganizacao"
               placeholder="-- Selecione um orgão da lista abaixo --"
-              formControlName="idOrganizacao"
-            >
+              formControlName="idOrganizacao">
               <ng-option
                 *ngFor="let organizacao of organizacoesOpcoes"
                 [value]="organizacao.id"
@@ -67,64 +87,108 @@
               >
             </ng-select>
           </div>
-
           <div class="col-12 col-md-6" id="responsavel-proponente">
             <label for="responsavelProponente" class="form-label col-12">
               <validation-message
-                [control]="getControl('idResponsavelProponente')"
-              >
+                [control]="getControl('idResponsavelProponente')">
                 Responsavel Proponente
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['idResponsavelProponente']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
-            <ng-select
-              id="responsavelProponente"
-              placeholder="-- Selecione o responsável proponente --"
-              formControlName="idResponsavelProponente"
-            >
-              <ng-option
-                *ngFor="let pessoa of pessoasOpcoes"
-                [value]="pessoa.id"
-                >{{ pessoa.nome }}</ng-option
-              >
-            </ng-select>
+            <ng-container *ngIf="!isLoadingPessoas; else carregandoResponsaveis">
+              <ng-select
+                id="responsavelProponente"
+                placeholder="-- Selecione o responsável proponente --"
+                formControlName="subResponsavelProponente"
+                [items]="pessoasOpcoes"
+                bindLabel="nome"
+                bindValue="agentePublicoSub" 
+                (change)="onSelecionarPessoa($event)"
+                [virtualScroll]="true" > 
+                <ng-template ng-option-tmp let-item="item">
+                  <div style="display: flex; flex-direction: column; line-height: 1.2;">
+                    <span>{{ item.nome }}</span>
+                    <span style="font-size: 0.65em; color: gray;">{{ item.papelPrioritario }}</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </ng-container>
+            <ng-template #carregandoResponsaveis>
+              <p>Carregando responsáveis...</p>
+            </ng-template>
           </div>
 
-          <div
-            class="col-12"
-            *ngIf="getControl('idResponsavelProponente')?.value"
-          >
+          <div class="col-12">
             <label for="membroEquipeElaboracao" class="form-label col-12">
-              <validation-message [control]="getControl('equipeElaboracao')">
+              <validation-message 
+                [control]="getControl('equipeElaboracao')">
                 Equipe de Elaboração
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['equipeElaboracao']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
-
-            <ng-select
-              id="idMembroEquipeElaboracao"
-              placeholder="-- Selecione uma pessoa para incluir na equipe de elaboração --"
-              [(ngModel)]="idMembroEquipeElaboracao"
-              [ngModelOptions]="{ standalone: true }"
-              [disabled]="!isModoEdicao"
-              (change)="idMembroNgSelectChangeEvent($event)"
-            >
-              <ng-option
-                *ngFor="
-                  let pessoa of equipeService.filtrarPessoasOpcoes(
-                    filtrarResponsavelProponente(pessoasOpcoes)
-                  )
-                "
-                [value]="pessoa.id"
-              >
-                {{ pessoa.nome }}
-              </ng-option>
-            </ng-select>
+            <div class="input-group"> 
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Digite o nome"
+                id="nomeagente"
+                formControlName="nomeagente"
+                maxLength="150"
+                (keyup.enter)="buscarAgentesPorTermo()"
+                (click)="exibirLista = false" />
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button"
+                (click)="buscarAgentesPorTermo()"
+                [disabled]="isLoadingPessoasFiltroTermo">
+                <span *ngIf="!isLoadingPessoasFiltroTermo" class="icon-container">
+                  <i class="fas fa-search"></i> <!-- Mostra lupa quando NÃO está carregando -->
+                </span>
+                <span *ngIf="isLoadingPessoasFiltroTermo" class="icon-container">
+                  <span class="spinner-border spinner-border-sm"></span> <!-- Mostra spinner quando carregando -->
+                </span>
+              </button>
+            </div>
+            <div class="card resultados-container" 
+              *ngIf="exibirLista && pessoasOpcoesGoves.length > 0"
+              style="max-height: 300px; margin-top: 6px; margin-bottom: 6px;">
+              <div class="card-body p-0">
+                <ul class="list-group list-group-flush lista-rolavel"
+                    style="max-height: 300px; overflow-y: auto;" >
+                  <li class="list-group-item list-group-item-action cursor-pointer"
+                      *ngFor="let agente of pessoasOpcoesGoves"
+                      (click)="idMembroNgSelectChangeEvent(agente)">
+                    <div class="d-flex flex-column">
+                      <span>{{ agente.nome }}</span>
+                      <small class="text-muted">{{ agente.papelPrioritario }}</small>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
           <div class="col-12 mt-2">
             <siscap-equipe-form
-              [pessoasOpcoes]="pessoasOpcoes"
-              [tiposPapelOpcoes]="tiposPapelOpcoes"
+              [tiposPapelOpcoes]="tiposPapelOpcoesVisiveis"
               [isModoEdicao]="isModoEdicao"
+              [pessoasOpcoesGoves]="pessoasOpcoesGoves"
+              [equipeProjeto]="equipeProjeto"
             ></siscap-equipe-form>
+          </div>
+          <div class="col-12 mt-2">
+            <label for="membroIndicadorElaboracao" class="form-label col-12">
+              Indicadores
+              <form-helper-tooltip
+                [texto]="projetoTooltip['nomeIndicador']"
+              ></form-helper-tooltip>
+            </label>
+            <siscap-indicadores-form
+              [isModoEdicao] = "isModoEdicao" >
+            </siscap-indicadores-form>
           </div>
 
           <div class="col-12">
@@ -134,10 +198,10 @@
             ></siscap-valor-form>
           </div>
 
-          <div class="col-12 mt-2">
+          <div class="col-12 mt-2" >
             <label for="rateio" class="form-label col-12">
               <validation-message [control]="getControl('rateio')">
-                Rateio
+                Regiões Geográficas Atendidas
               </validation-message>
             </label>
             <siscap-rateio-form
@@ -146,9 +210,21 @@
           </div>
 
           <div class="col-12">
+            <label for="acoes" class="form-label col-12">
+                Ações
+            </label>
+            <siscap-acoes-form 
+              [isModoEdicao]="isModoEdicao">
+            </siscap-acoes-form>
+          </div>
+       
+          <div class="col-12">
             <label for="objetivo" class="form-label col-12">
               <validation-message [control]="getControl('objetivo')">
                 Objetivo
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['objetivo']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
@@ -164,6 +240,9 @@
             <label for="objetivoEspecifico" class="form-label col-12">
               <validation-message [control]="getControl('objetivoEspecifico')">
                 Objetivo Específico
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['objetivoEspecifico']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
@@ -179,6 +258,9 @@
             <label for="situacaoProblema" class="form-label col-12">
               <validation-message [control]="getControl('situacaoProblema')">
                 Situação Problema
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['situacaoProblema']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
 
@@ -195,6 +277,9 @@
             <label for="solucoesPropostas" class="form-label col-12">
               <validation-message [control]="getControl('solucoesPropostas')">
                 Soluções Propostas/Resultados Esperados
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['solucoesPropostas']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
@@ -211,6 +296,9 @@
               <validation-message [control]="getControl('impactos')">
                 Impactos do Projeto no Âmbito Ambiental, Social e de Governança
                 (ESG)
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['impactos']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
@@ -228,6 +316,9 @@
                 [control]="getControl('arranjosInstitucionais')"
               >
                 Arranjo Institucional
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['arranjosInstitucionais']"
+                ></form-helper-tooltip>
               </validation-message>
             </label>
             <textarea
@@ -238,8 +329,69 @@
               maxLength="2000"
             ></textarea>
           </div>
+
+          <div class="col-12">
+            <label for="pecasPlanejamento" class="form-label col-12">
+              <validation-message
+                [control]="getControl('pecasPlanejamento')"
+              >
+                Peças do Planejamento
+                <form-helper-tooltip
+                  [texto]="projetoTooltip['pecasPlanejamento']"
+                ></form-helper-tooltip>
+              </validation-message>
+            </label>
+            <textarea
+              rows="5"
+              class="form-control"
+              id="pecasPlanejamento"
+              formControlName="pecasPlanejamento"
+              maxLength="2000"
+            ></textarea>
+          </div>
+
         </div>
       </form>
     </div>
   </div>
 </div>
+
+<ng-template #projetoStatusModal let-modal>
+  <div class="modal-body">
+    <p>Status do Projeto: {{ statusProjeto }}</p>
+
+    <label for="status-projeto">Novo Status</label>
+    <ng-select
+      id="status-projeto"
+      name="status-projeto"
+      [clearable]="false"
+      [(ngModel)]="statusProjetoNovo"
+    >
+      <ng-option
+        *ngFor="let statusProjetoOpcao of statusProjetoOpcoes"
+        [value]="statusProjetoOpcao"
+      >
+        {{ statusProjetoOpcao }}
+      </ng-option>
+    </ng-select>
+  </div>
+  <div class="modal-footer">
+    <div class="d-inline-flex flex-row-reverse">
+      <button
+        class="btn btn-success icon-text-btn"
+        [disabled]="statusProjetoNovo == null"
+        (click)="modal.close(statusProjetoNovo)"
+      >
+        <i class="fa-solid fa-check"></i>
+        <span>Alterar</span>
+      </button>
+      <button
+        class="btn btn-outline-primary icon-text-btn me-2"
+        (click)="modal.dismiss()"
+      >
+        <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
+        <span>Voltar</span>
+      </button>
+    </div>
+  </div>
+</ng-template>

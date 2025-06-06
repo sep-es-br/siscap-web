@@ -2,6 +2,10 @@ div.breadcrumb-wrapper {
   padding-top: 4.2rem;
 }
 
+div.breadcrumb-wrapper-proponente {
+  padding-top: 1rem;
+}
+
 h1.current-page-title {
   font-size: clamp(1.3rem, 3vw, 1.6rem);
 }
@@ -20,7 +24,7 @@ li.breadcrumb-item a.breadcrumb-link {
   }
 }
 
-div#action-buttons button.icon-text-btn {
+div#action-buttons * {
   &:first-child:nth-last-child(2) {
     margin-left: 0.25rem;
   }
@@ -46,4 +50,9 @@ div#action-buttons button.icon-text-btn {
   ol.breadcrumb {
     min-width: 425px;
   }
+}
+
+span.titulo-projetos-proponente {
+  font-weight: normal;
+  font-size: 90%;
 }

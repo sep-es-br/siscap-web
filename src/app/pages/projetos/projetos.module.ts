@@ -6,6 +6,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
   NgbAlertModule,
+  NgbDatepickerModule,
   NgbPaginationModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
@@ -15,12 +16,16 @@ import { ProjetoFormComponent } from './form/projeto-form.component';
 
 import { SharedModule } from '../../shared/shared.module';
 import { ProjetosRoutingModule } from './projetos-routing.module';
+import { ProjetosPesquisaComponent } from './search/projetos-search.component';
+import { IndicadoresFormComponent } from "../../shared/components/indicadores-form/indicadores-form.component";
+import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-form.component';
 
 @NgModule({
   declarations: [
     ProjetosComponent,
     ProjetosListComponent,
     ProjetoFormComponent,
+    ProjetosPesquisaComponent,
   ],
   imports: [
     CommonModule,
@@ -32,8 +37,16 @@ import { ProjetosRoutingModule } from './projetos-routing.module';
     NgxMaskPipe,
     NgbPaginationModule,
     NgbAlertModule,
+    NgbDatepickerModule,
     ProjetosRoutingModule,
+    IndicadoresFormComponent,
+    AcoesFormComponent
+],
+  exports: [
+    ProjetosComponent,
+    ProjetosListComponent,
+    ProjetoFormComponent,
+    ProjetosPesquisaComponent,
   ],
-  exports: [ProjetosComponent, ProjetosListComponent, ProjetoFormComponent],
 })
 export class ProjetosModule {}

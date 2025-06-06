@@ -7,6 +7,7 @@ import {
   ILocalidadeOpcoesDropdown,
   IObjetoOpcoesDropdown,
   IOpcoesDropdown,
+  IOpcoesDropdownResponsavelProponente,
   IProjetoPropostoOpcoesDropdown,
   IProspeccaoInteressadoOpcoesDropdown,
 } from '../../interfaces/opcoes-dropdown.interface';
@@ -17,23 +18,40 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root',
 })
 export class OpcoesDropdownService {
-  private _url = `${environment.apiUrl}/destino/opcoes`;
+  
+  private readonly _url = `${environment.apiUrl}/destino/opcoes`;
 
-  constructor(private _http: HttpClient) {}
+  constructor(private readonly _http: HttpClient) {}
 
   private getOpcoesDropdown(
     destino: string,
     params?: any
   ): Observable<IOpcoesDropdown[]> {
     const urlDestino = this._url.replace('destino', destino);
-
     return this._http.get<IOpcoesDropdown[]>(urlDestino, {
       params: params,
     });
   }
-
+  
+  private getOpcoesDropdownResponsaveisProponente(
+    destino: string,
+    params?: any
+  ): Observable<IOpcoesDropdownResponsavelProponente[]> {
+    const urlDestino = this._url.replace('destino', destino);
+    return this._http.get<IOpcoesDropdownResponsavelProponente[]>(urlDestino, {
+      params: params,
+    });
+  }
+ 
   public getOpcoesPessoas() {
-    return this.getOpcoesDropdown('pessoas');
+    return this.getOpcoesDropdownResponsaveisProponente('pessoas');
+  }
+
+  public getOpcoesPessoasOrganizacao(idOrganizacao: number) {
+    const params = {
+      idOrganizacao: idOrganizacao,
+    };
+    return this.getOpcoesDropdownResponsaveisProponente('pessoas', params);
   }
 
   public getOpcoesPlanos() {
@@ -124,4 +142,5 @@ export class OpcoesDropdownService {
       IProspeccaoInteressadoOpcoesDropdown[]
     >;
   }
+
 }

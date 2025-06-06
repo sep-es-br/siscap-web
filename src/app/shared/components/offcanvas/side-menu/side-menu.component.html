@@ -16,7 +16,7 @@
     style="height: 80%"
     [menuCategoriaAtiva]="menuCategoriaAtiva"
     [subMenuCategoriaAtiva]="subMenuCategoriaAtiva"
-    (navegacaoSideMenu)="$event ? fecharSideMenuOffcanvas() : null"
+    (navegacaoSideMenu)="fecharSideMenuOffcanvas()"
   ></siscap-offcanvas-nav-menu>
 
   <siscap-offcanvas-user-profile></siscap-offcanvas-user-profile>

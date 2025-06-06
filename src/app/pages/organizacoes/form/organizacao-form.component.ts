@@ -6,7 +6,6 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import {
   concat,
@@ -22,6 +21,7 @@ import { OrganizacoesService } from '../../../core/services/organizacoes/organiz
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import {
   OrganizacaoFormModel,
@@ -33,6 +33,14 @@ import {
   IOrganizacaoForm,
 } from '../../../core/interfaces/organizacao.interface';
 import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
+
+import { BotoesConfig } from '../../../shared/components/botao/botao.config';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
+import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import {
@@ -47,18 +55,19 @@ import {
   styleUrl: './organizacao-form.component.scss',
 })
 export class OrganizacaoFormComponent implements OnInit, OnDestroy {
-  private _atualizarOrganizacao$: Observable<IOrganizacao>;
-  private _cadastrarOrganizacao$: Observable<number>;
+  private readonly _subscription: Subscription = new Subscription();
 
-  private _getTiposOrganizacaoOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _atualizarOrganizacao$: Observable<IOrganizacao>;
+  private readonly _cadastrarOrganizacao$: Observable<number>;
+
+  private readonly _getTiposOrganizacaoOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idOrganizacaoEdicao: number = 0;
-
-  private _subscription: Subscription = new Subscription();
+  private _guidOrganizacao: string = '';
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -76,12 +85,12 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   public arquivoImagemOrganizacao: File | undefined;
 
   constructor(
-    private _nnfb: NonNullableFormBuilder,
-    private _router: Router,
-    private _organizacoesService: OrganizacoesService,
-    private _opcoesDropdownService: OpcoesDropdownService,
-    private _breadcrumbService: BreadcrumbService,
-    private _toastService: ToastService
+    private readonly _nnfb: NonNullableFormBuilder,
+    private readonly _organizacoesService: OrganizacoesService,
+    private readonly _opcoesDropdownService: OpcoesDropdownService,
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _toastService: ToastService,
+    private readonly _navegacaoService: NavegacaoService
   ) {
     const [editar$, criar$] = partition(
       this._organizacoesService.idOrganizacao$,
@@ -95,6 +104,8 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       tap((response: IOrganizacao) => {
         const organizacaoModel = new OrganizacaoModel(response);
 
+        this._guidOrganizacao = organizacaoModel.guid;
+
         this.iniciarForm(organizacaoModel);
 
         this._idOrganizacaoEdicao = organizacaoModel.id;
@@ -105,6 +116,10 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
 
         this.trocarModo(false);
 
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next([
+          BotoesConfig.gerarBotaoPropriedades(BreadcrumbAcoesEnum.Editar),
+        ]);
+
         this.loading = false;
       })
     );
@@ -112,6 +127,10 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     this._cadastrarOrganizacao$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._organizacoesService.gerarBotoesAcaoFormulario()
+        );
 
         this.loading = false;
       })
@@ -151,7 +170,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     );
 
     this._subscription.add(
-      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
@@ -276,15 +295,20 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
 
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
-      case 'editar':
+      case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._organizacoesService.gerarBotoesAcaoFormulario()
+        );
         break;
 
-      case 'cancelar':
-        this.cancelar();
+      case BreadcrumbAcoesEnum.Cancelar:
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Organizacoes
+        );
         break;
 
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         this.submitOrganizationForm(this.organizacaoForm);
         break;
     }
@@ -296,10 +320,42 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     const organizacaoFormControls = this.organizacaoForm.controls;
 
     alterarEstadoControlesFormulario(permitir, organizacaoFormControls);
+
+    this.alterarEstadoControlesFormularioOrganizacao(
+      this._guidOrganizacao,
+      organizacaoFormControls
+    );
   }
 
-  private cancelar(): void {
-    this._router.navigate(['main', 'organizacoes']);
+  private alterarEstadoControlesFormularioOrganizacao(
+    guidOrganizacao: string,
+    controles: { [key: string]: AbstractControl<any, any> }
+  ): void {
+    const nomeFormControl = controles['nome'];
+    const abreviaturaFormControl = controles['abreviatura'];
+    const cnpjFormControl = controles['cnpj'];
+    const idPaisFormControl = controles['idPais'];
+    const idTipoOrganizacaoFormControl = controles['idTipoOrganizacao'];
+    const idPessoaResponsavelFormControl = controles['idPessoaResponsavel'];
+
+    const checkPossuiGuidOrganizacao = !!guidOrganizacao;
+    const checkPossuiTipoOrganizacaoETipoOrganizacaoSecretaria =
+      idTipoOrganizacaoFormControl.value != null &&
+      idTipoOrganizacaoFormControl.value === TipoOrganizacaoEnum.Secretaria;
+    const checkPossuiResponsavel = idPessoaResponsavelFormControl.value != null;
+
+    if (checkPossuiGuidOrganizacao) {
+      nomeFormControl.disable();
+      abreviaturaFormControl.disable();
+      cnpjFormControl.disable();
+      idPaisFormControl.disable();
+
+      if (checkPossuiTipoOrganizacaoETipoOrganizacaoSecretaria) {
+        idTipoOrganizacaoFormControl.disable();
+
+        if (checkPossuiResponsavel) idPessoaResponsavelFormControl.disable();
+      }
+    }
   }
 
   private submitOrganizationForm(form: FormGroup) {
@@ -313,6 +369,14 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       ]);
       return;
     }
+
+    // Habilitar controles para envio do formulário
+    form.controls['nome'].enable();
+    form.controls['abreviatura'].enable();
+    form.controls['cnpj'].enable();
+    form.controls['idPais'].enable();
+    form.controls['idTipoOrganizacao'].enable();
+    form.controls['idPessoaResponsavel'].enable();
 
     const payload = new OrganizacaoFormModel(form.value as IOrganizacaoForm);
 
@@ -335,7 +399,9 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
             'Organização cadastrada com sucesso.'
           );
         }),
-        finalize(() => this.cancelar())
+        finalize(() =>
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+        )
       );
   }
 
@@ -351,12 +417,15 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
             'Organização alterada com sucesso.'
           );
         }),
-        finalize(() => this.cancelar())
+        finalize(() =>
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+        )
       );
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._organizacoesService.idOrganizacao$.next(0);
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

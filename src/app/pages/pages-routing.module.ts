@@ -4,12 +4,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 
 import { authGuard } from '../core/guards/auth/auth.guard';
+import { isProponenteGuard } from '../core/guards/is-proponente/is-proponente.guard';
 
 const PAGES_ROUTES: Routes = [
   {
     title: 'Página Principal',
     path: 'home',
     component: HomeComponent,
+    canActivate: [authGuard, isProponenteGuard],
   },
   {
     path: 'projetos',
@@ -21,7 +23,7 @@ const PAGES_ROUTES: Routes = [
     path: 'pessoas',
     loadChildren: () =>
       import('./pessoas/pessoas.module').then((m) => m.PessoasModule),
-    canActivateChild: [authGuard],
+    canActivateChild: [authGuard, isProponenteGuard],
   },
   {
     path: 'organizacoes',
@@ -29,13 +31,13 @@ const PAGES_ROUTES: Routes = [
       import('./organizacoes/organizacoes.module').then(
         (m) => m.OrganizacoesModule
       ),
-    canActivateChild: [authGuard],
+    canActivateChild: [authGuard, isProponenteGuard],
   },
   {
     path: 'programas',
     loadChildren: () =>
       import('./programas/programas.module').then((m) => m.ProgramasModule),
-    canActivateChild: [authGuard],
+    canActivateChild: [authGuard, isProponenteGuard],
   },
   {
     path: 'cartasconsulta',
@@ -43,7 +45,7 @@ const PAGES_ROUTES: Routes = [
       import('./cartas-consulta/cartas-consulta.module').then(
         (m) => m.CartasConsultaModule
       ),
-    canActivateChild: [authGuard],
+    canActivateChild: [authGuard, isProponenteGuard],
   },
   {
     path: 'prospeccao',
@@ -51,6 +53,7 @@ const PAGES_ROUTES: Routes = [
       import('./prospeccoes/prospeccoes.module').then(
         (m) => m.ProspeccoesModule
       ),
+    canActivateChild: [authGuard, isProponenteGuard],
   },
   {
     path: '**',

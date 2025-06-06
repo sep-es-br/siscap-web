@@ -3,7 +3,8 @@
     <colgroup>
       <col class="sigla-col" />
       <col class="titulo-col" />
-      <col class="microrregioes-col" />
+      <col class="rascunho-col" />
+      <col class="status-col" />
       <col class="valorEstimado-col" />
       <col class="acoes-col" />
     </colgroup>
@@ -13,16 +14,11 @@
           Sigla
         </th>
         <th [sortable]="'titulo'" (sort)="sortColumn($event)" class="pointer">
-          Titulo
+          Título
         </th>
-        <th>Microrregiões Atendidas</th>
-        <th
-          [sortable]="'valorEstimado'"
-          (sort)="sortColumn($event)"
-          class="pointer"
-        >
-          Valor Estimado
-        </th>
+        <th></th>
+        <th>Status</th>
+        <th>Valor Estimado</th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -33,14 +29,21 @@
       >
         <td>{{ projeto.sigla }}</td>
         <td>{{ projeto.titulo }}</td>
-        <td>{{ projeto.nomesLocalidadesRateio | texttrunc : 2 }}</td>
+        <td>
+          <span
+            class="badge rounded-pill text-bg-info"
+            *ngIf="projeto.isRascunho"
+            >Rascunho</span
+          >
+        </td>
+        <td>{{ projeto.status }}</td>
         <td>
           {{
-            projeto.valor
+            projeto.valorEstimado
               | mask
                 : "separator.2"
                 : {
-                    prefix: getSimboloMoeda(projeto.moeda) + " ",
+                    prefix: "R$ ",
                     leadZero: true,
                     thousandSeparator: ".",
                     decimalMarker: ","

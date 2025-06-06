@@ -9,7 +9,7 @@
       <span>Editar</span>
     </button>
     <button
-      *ngIf="permissaoDeletar"
+      *ngIf="permissaoDeletarAdminAuth"
       ngbDropdownItem
       (click)="emitirAcao('deletar')"
     >

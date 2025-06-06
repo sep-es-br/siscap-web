@@ -1,12 +1,23 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
 
+import { UsuarioService } from '../../core/services/usuario/usuario.service';
+import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
 import { ProjetosService } from '../../core/services/projetos/projetos.service';
+import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
-import { IHttpGetRequestBody } from '../../core/interfaces/http/http-get.interface';
-import { IProjetoTableData } from '../../core/interfaces/projeto.interface';
+import {
+  IProjetoFiltroPesquisa,
+  IProjetoTableData,
+} from '../../core/interfaces/projeto.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
+import { IHttpGetRequestBody } from '../../core/interfaces/http-get-all-paged.interface';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../core/enums/breadcrumb.enum';
 
 @Component({
   selector: 'siscap-projetos',
@@ -14,15 +25,22 @@ import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface
   templateUrl: './projetos.component.html',
   styleUrl: './projetos.component.scss',
 })
-export class ProjetosComponent implements OnInit {
-  private _pageConfig: IHttpGetRequestBody = {
+export class ProjetosComponent implements OnInit, OnDestroy {
+  private readonly _subscription: Subscription = new Subscription();
+
+  private readonly _pageConfig: IHttpGetRequestBody = {
     page: 0,
-    search: '',
     size: 15,
     sort: '',
   };
 
-  private _projetosList$: BehaviorSubject<Array<IProjetoTableData>> =
+  private projetoFiltroPesquisa: IProjetoFiltroPesquisa = {
+    siglaOuTitulo: '',
+    idOrganizacao: 0,
+    status: 'Status',
+  };
+
+  private readonly _projetosList$: BehaviorSubject<Array<IProjetoTableData>> =
     new BehaviorSubject<Array<IProjetoTableData>>([]);
 
   public get projetosList$(): Observable<Array<IProjetoTableData>> {
@@ -40,21 +58,39 @@ export class ProjetosComponent implements OnInit {
   };
 
   constructor(
-    private _projetosService: ProjetosService,
-    private _r2: Renderer2
-  ) {}
+    private readonly _usuarioService: UsuarioService,
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _projetosService: ProjetosService,
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _r2: Renderer2
+  ) {
+    const isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
+    const botoesAcaoPropriedades = isProponente
+      ? this._projetosService.gerarBotoesAcaoListagemProponente()
+      : this._projetosService.gerarBotoesAcaoListagem();
+
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      botoesAcaoPropriedades
+    );
+
+    this._subscription.add(
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) => {
+        if (acao === BreadcrumbAcoesEnum.Criar)
+          this._navegacaoService.navegacaoSimples(
+            BreadcrumbContextoEnum.Projetos,
+            BreadcrumbAcoesEnum.Criar
+          );
+      })
+    );
+  }
 
   ngOnInit(): void {
     this.fetchPage();
   }
 
-  public filtroPesquisaOutputEvent(filtro: string): void {
-    this._pageConfig.search = filtro;
-
-    if (!filtro) {
-      this._pageConfig.sort = '';
-      this.limparSortColumn();
-    }
+  public redefinirFiltroPesquisa(event: IProjetoFiltroPesquisa): void {
+    this.projetoFiltroPesquisa = event;
 
     this.fetchPage();
   }
@@ -73,8 +109,10 @@ export class ProjetosComponent implements OnInit {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
+    const searchFilter = this.projetoFiltroPesquisa;
+
     this._projetosService
-      .getAllPaged(tempPageConfig)
+      .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
           this._projetosList$.next(response.content);
@@ -98,5 +136,10 @@ export class ProjetosComponent implements OnInit {
       this._r2.removeClass(el, 'asc');
       this._r2.removeClass(el, 'desc');
     });
+  }
+
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

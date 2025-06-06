@@ -1,23 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, map, Observable, of, shareReplay, tap } from 'rxjs';
+
+import { BaseHttpService } from '../http/base-http.service';
 
 import { PessoaFormModel } from '../../models/pessoa.model';
+import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.model';
 
-import { IHttpBase } from '../../interfaces/http/http-base.interface';
-import {
-  IHttpGetRequestBody,
-  IHttpGetResponseBody,
-} from '../../interfaces/http/http-get.interface';
+import { BotoesConfig } from '../../../shared/components/botao/botao.config';
+
 import {
   IPessoa,
   IPessoaAcessoCidadao,
   IPessoaTableData,
 } from '../../interfaces/pessoa.interface';
-import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
+import { IOpcoesDropdown, IOpcoesDropdownResponsavelProponente } from '../../interfaces/opcoes-dropdown.interface';
 
-import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
 import { FormDataHelper } from '../../helpers/form-data.helper';
 
 import { environment } from '../../../../environments/environment';
@@ -25,15 +24,18 @@ import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class PessoasService
-  implements IHttpBase<IPessoa, IPessoaTableData, PessoaFormModel>
-{
-  private _url = `${environment.apiUrl}/pessoas`;
+export class PessoasService extends BaseHttpService<IPessoa, IPessoaTableData> {
+  private readonly _url = `${environment.apiUrl}/pessoas`;
 
-  private _idPessoa$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private readonly _idPessoa$: BehaviorSubject<number> =
+    new BehaviorSubject<number>(0);
 
-  private _subNovoPessoa$: BehaviorSubject<string> =
+  private readonly _subNovoPessoa$: BehaviorSubject<string> =
     new BehaviorSubject<string>('');
+
+   // 
+   private cache$: Observable<IOpcoesDropdownResponsavelProponente[]> | null = null;
+   private cacheLoaded = false;
 
   public get idPessoa$(): BehaviorSubject<number> {
     return this._idPessoa$;
@@ -43,19 +45,23 @@ export class PessoasService
     return this._subNovoPessoa$;
   }
 
-  constructor(private _http: HttpClient) {}
-
-  public getAllPaged(
-    pageConfig: IHttpGetRequestBody
-  ): Observable<IHttpGetResponseBody<IPessoaTableData>> {
-    return this._http.get<IHttpGetResponseBody<IPessoaTableData>>(this._url, {
-      params:
-        PageableQueryStringParametersHelper.buildQueryStringParams(pageConfig),
-    });
+  constructor(private readonly _http: HttpClient) {
+    super(_http, 'pessoas');
   }
 
-  public getById(id: number): Observable<IPessoa> {
-    return this._http.get<IPessoa>(`${this._url}/${id}`);
+  public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
+    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
+      texto: 'Nova Pessoa',
+    });
+
+    return [botaoCriar];
+  }
+
+  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+
+    return [botaoSalvar, botaoCancelar];
   }
 
   public post(body: PessoaFormModel, imagemPerfil?: File): Observable<IPessoa> {
@@ -76,10 +82,6 @@ export class PessoasService
     );
   }
 
-  public delete(id: number): Observable<string> {
-    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
-  }
-
   public buscarPessoaNoAcessoCidadaoPorCpf(
     cpf: string
   ): Observable<IPessoaAcessoCidadao> {
@@ -93,6 +95,51 @@ export class PessoasService
   ): Observable<IOpcoesDropdown> {
     return this._http.get<IOpcoesDropdown>(
       `${this._url}/responsavel/${idOrganizacao}`
+    );
+  }
+
+  public buscarResponsavelPorIdOrganizacaoAC(
+    idOrganizacao: number
+  ): Observable<IOpcoesDropdownResponsavelProponente[]> {
+    return this._http.get<IOpcoesDropdownResponsavelProponente[]>(
+      `${this._url}/opcoes/${idOrganizacao}`
+    );
+  }
+    
+  public buscarTodosAgentesPublicosGoves(): Observable<void> {
+      return this._http.post<void>( `${this._url}/opcoes/agentesGoves`, {})
+      .pipe(
+        catchError(err => {
+          console.error('Erro na requisição:', err);
+          return of(undefined); 
+        }),
+        finalize(() => this.cacheLoaded = true) 
+      );
+  }
+
+  public buscarAgentesPorTermo(termo: string): Observable<IOpcoesDropdownResponsavelProponente[]> {
+    if (!termo) return of([]); 
+  
+    const termoEncoded = encodeURIComponent(termo); 
+    const url = `${this._url}/opcoes/agentesGoves/filtrar/${termo}`;
+        
+    return this._http.get<IOpcoesDropdownResponsavelProponente[]>(url).pipe(
+      catchError(err => {
+        console.error('Erro na requisição:', err);
+        return of([]); 
+      })
+    );
+
+  }
+
+  public buscarAgenteGovesPorSub(sub: string): Observable<IOpcoesDropdownResponsavelProponente> {
+    if (!sub) return of(); 
+    const url = `${this._url}/opcoes/agentesGoves/sub/${sub}`;  
+    return this._http.get<IOpcoesDropdownResponsavelProponente>(url).pipe(
+      catchError(err => {
+        console.error('Erro na requisição:', err);
+        return of(); 
+      })
     );
   }
 
@@ -129,4 +176,19 @@ export class PessoasService
 
     return formData;
   }
+
+  filtrarAgentesPublicos(termo: string): Observable<IOpcoesDropdownResponsavelProponente[]> {
+    return this._http.get<IOpcoesDropdownResponsavelProponente[]>(
+      `${this._url}/opcoes/agentesGoves?filter=${termo}`
+    ).pipe(
+      tap({
+        error: (erro) => console.error('Erro na requisição:', erro)
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.cache$ = null;
+  }
+
 }

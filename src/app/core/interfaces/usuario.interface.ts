@@ -5,6 +5,9 @@ export interface IUsuario {
   subNovo: string;
   imagemPerfil: ArrayBuffer | null;
   permissoes: Array<string>;
+  idOrganizacoes: Array<number>;
+  idPessoa: number;
+  isProponente: boolean;
 }
 
 export interface IUsuarioPerfil extends Omit<IUsuario, 'token'> {}

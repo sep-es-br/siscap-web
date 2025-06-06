@@ -12,7 +12,6 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import {
   concat,
@@ -34,9 +33,10 @@ import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import {
-  EnderecoModel,
+  // EnderecoModel,
   PessoaFormModel,
   PessoaModel,
 } from '../../../core/models/pessoa.model';
@@ -49,9 +49,19 @@ import {
 } from '../../../core/interfaces/pessoa.interface';
 
 import {
-  EnderecoFormType,
-  EnderecoFormTypeValue,
-} from '../../../core/types/form/endereco-form.type';
+  BotoesConfig,
+  TBotaoAcao,
+} from '../../../shared/components/botao/botao.config';
+
+// import {
+//   EnderecoFormType,
+//   EnderecoFormTypeValue,
+// } from '../../../core/types/form/endereco-form.type';
+
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import {
   LISTA_GENEROS,
@@ -71,20 +81,20 @@ import { CPFValidator } from '../../../core/validators/cpf.validator';
 })
 export class PessoaFormComponent implements OnInit, OnDestroy {
   @ViewChild('importarPessoaCPFModal')
-  private importarPessoaCPFModal!: TemplateRef<NgbModal>;
+  private readonly _importarPessoaCPFModal!: TemplateRef<NgbModal>;
 
-  private _atualizarPessoa$: Observable<IPessoa>;
-  private _cadastrarPessoa$: Observable<number>;
+  private readonly _subscription: Subscription = new Subscription();
 
-  private _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getAreasAtuacaoOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _atualizarPessoa$: Observable<IPessoa>;
+  private readonly _cadastrarPessoa$: Observable<number>;
+
+  private readonly _getPaisesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAreasAtuacaoOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idPessoaEdicao: number = 0;
   private _idOrganizacaoResponsavel: number | null = null;
-
-  private _subscription: Subscription = new Subscription();
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -100,19 +110,19 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
 
   // Por hora, lista de valores hard-coded
   public nacionalidadesList: Array<string> = LISTA_NACIONALIDADES;
-  public generosList: Array<string> = LISTA_GENEROS;
+  // public generosList: Array<string> = LISTA_GENEROS;
 
   public srcImagemPessoa: string = '';
   public arquivoImagemPessoa: File | undefined;
 
   constructor(
-    private _nnfb: NonNullableFormBuilder,
-    private _router: Router,
-    private _pessoasService: PessoasService,
-    private _opcoesDropdownService: OpcoesDropdownService,
-    private _breadcrumbService: BreadcrumbService,
-    private _toastService: ToastService,
-    private _ngbModalService: NgbModal
+    private readonly _nnfb: NonNullableFormBuilder,
+    private readonly _pessoasService: PessoasService,
+    private readonly _opcoesDropdownService: OpcoesDropdownService,
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _toastService: ToastService,
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _ngbModalService: NgbModal
   ) {
     const [editar$, criar$] = partition(
       this._pessoasService.idPessoa$,
@@ -133,6 +143,10 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
           pessoaModel.imagemPerfil
         );
 
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next([
+          BotoesConfig.gerarBotaoPropriedades(BreadcrumbAcoesEnum.Editar),
+        ]);
+
         this.trocarModo(false);
 
         this.loading = false;
@@ -142,6 +156,10 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
     this._cadastrarPessoa$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._pessoasService.gerarBotoesAcaoFormulario()
+        );
 
         this.loading = false;
       }),
@@ -168,7 +186,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
     );
 
     this._subscription.add(
-      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
@@ -215,16 +233,16 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
           validators: Validators.required,
         }
       ),
-      genero: this._nnfb.control(pessoaFormModel?.genero ?? null, {
-        validators: Validators.required,
-      }),
-      cpf: this._nnfb.control(pessoaFormModel?.cpf ?? null, {
-        validators: [
-          Validators.minLength(11),
-          Validators.maxLength(11),
-          CPFValidator,
-        ],
-      }),
+      // genero: this._nnfb.control(pessoaFormModel?.genero ?? null, {
+      //   validators: Validators.required,
+      // }),
+      // cpf: this._nnfb.control(pessoaFormModel?.cpf ?? null, {
+      //   validators: [
+      //     Validators.minLength(11),
+      //     Validators.maxLength(11),
+      //     CPFValidator,
+      //   ],
+      // }),
       email: this._nnfb.control(pessoaFormModel?.email ?? null, {
         validators: [Validators.required, Validators.email],
       }),
@@ -236,97 +254,93 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
       ),
       idOrganizacoes: this._nnfb.control(pessoaFormModel?.idOrganizacoes ?? []),
       idAreasAtuacao: this._nnfb.control(pessoaFormModel?.idAreasAtuacao ?? []),
-      endereco: this.iniciarEnderecoForm(pessoaFormModel?.endereco),
+      // endereco: this.iniciarEnderecoForm(pessoaFormModel?.endereco),
     });
 
     this.pessoaFormValueChanges();
-    this.enderecoFormValueChanges();
+    // this.enderecoFormValueChanges();
   }
 
-  private iniciarEnderecoForm(
-    enderecoModel?: EnderecoModel
-  ): FormGroup<EnderecoFormType> {
-    return this._nnfb.group({
-      rua: this._nnfb.control(enderecoModel?.rua ?? null),
-      numero: this._nnfb.control(enderecoModel?.numero ?? null),
-      bairro: this._nnfb.control(enderecoModel?.bairro ?? null),
-      complemento: this._nnfb.control(enderecoModel?.complemento ?? null),
-      codigoPostal: this._nnfb.control(enderecoModel?.codigoPostal ?? null),
-      idPais: this._nnfb.control(enderecoModel?.idPais ?? null),
-      idEstado: this._nnfb.control(enderecoModel?.idEstado ?? null),
-      idCidade: this._nnfb.control(enderecoModel?.idCidade ?? null),
-    });
-  }
+  // private iniciarEnderecoForm(
+  //   enderecoModel?: EnderecoModel
+  // ): FormGroup<EnderecoFormType> {
+  //   return this._nnfb.group({
+  //     rua: this._nnfb.control(enderecoModel?.rua ?? null),
+  //     numero: this._nnfb.control(enderecoModel?.numero ?? null),
+  //     bairro: this._nnfb.control(enderecoModel?.bairro ?? null),
+  //     complemento: this._nnfb.control(enderecoModel?.complemento ?? null),
+  //     codigoPostal: this._nnfb.control(enderecoModel?.codigoPostal ?? null),
+  //     idPais: this._nnfb.control(enderecoModel?.idPais ?? null),
+  //     idEstado: this._nnfb.control(enderecoModel?.idEstado ?? null),
+  //     idCidade: this._nnfb.control(enderecoModel?.idCidade ?? null),
+  //   });
+  // }
 
   private pessoaFormValueChanges(): void {
-    const endereco_idPaisFormControl = this.pessoaForm.get(
-      'endereco.idPais'
-    ) as FormControl<number | null>;
-
-    const endereco_idEstadoFormControl = this.pessoaForm.get(
-      'endereco.idEstado'
-    ) as FormControl<number | null>;
-
-    const endereco_idCidadeFormControl = this.pessoaForm.get(
-      'endereco.idCidade'
-    ) as FormControl<number | null>;
-
-    endereco_idPaisFormControl.valueChanges.subscribe((idPaisValue) => {
-      if (!idPaisValue) {
-        endereco_idEstadoFormControl.patchValue(null);
-        endereco_idCidadeFormControl.patchValue(null);
-        this.estadosOpcoes = [];
-        this.cidadesOpcoes = [];
-      } else {
-        this._opcoesDropdownService
-          .getOpcoesEstados(idPaisValue)
-          .pipe(tap((response) => (this.estadosOpcoes = response)))
-          .subscribe();
-      }
-    });
-
-    endereco_idEstadoFormControl.valueChanges.subscribe((idEstadoValue) => {
-      if (!idEstadoValue) {
-        endereco_idCidadeFormControl.patchValue(null);
-        this.cidadesOpcoes = [];
-      } else {
-        this._opcoesDropdownService
-          .getOpcoesCidades('ESTADO', idEstadoValue)
-          .pipe(tap((response) => (this.cidadesOpcoes = response)))
-          .subscribe();
-      }
-    });
+    // const endereco_idPaisFormControl = this.pessoaForm.get(
+    //   'endereco.idPais'
+    // ) as FormControl<number | null>;
+    // const endereco_idEstadoFormControl = this.pessoaForm.get(
+    //   'endereco.idEstado'
+    // ) as FormControl<number | null>;
+    // const endereco_idCidadeFormControl = this.pessoaForm.get(
+    //   'endereco.idCidade'
+    // ) as FormControl<number | null>;
+    // endereco_idPaisFormControl.valueChanges.subscribe((idPaisValue) => {
+    //   if (!idPaisValue) {
+    //     endereco_idEstadoFormControl.patchValue(null);
+    //     endereco_idCidadeFormControl.patchValue(null);
+    //     this.estadosOpcoes = [];
+    //     this.cidadesOpcoes = [];
+    //   } else {
+    //     this._opcoesDropdownService
+    //       .getOpcoesEstados(idPaisValue)
+    //       .pipe(tap((response) => (this.estadosOpcoes = response)))
+    //       .subscribe();
+    //   }
+    // });
+    // endereco_idEstadoFormControl.valueChanges.subscribe((idEstadoValue) => {
+    //   if (!idEstadoValue) {
+    //     endereco_idCidadeFormControl.patchValue(null);
+    //     this.cidadesOpcoes = [];
+    //   } else {
+    //     this._opcoesDropdownService
+    //       .getOpcoesCidades('ESTADO', idEstadoValue)
+    //       .pipe(tap((response) => (this.cidadesOpcoes = response)))
+    //       .subscribe();
+    //   }
+    // });
   }
 
-  private enderecoFormValueChanges(): void {
-    const enderecoForm = this.pessoaForm.get(
-      'endereco'
-    ) as FormGroup<EnderecoFormType>;
+  // private enderecoFormValueChanges(): void {
+  //   const enderecoForm = this.pessoaForm.get(
+  //     'endereco'
+  //   ) as FormGroup<EnderecoFormType>;
 
-    enderecoForm.markAllAsTouched();
+  //   enderecoForm.markAllAsTouched();
 
-    enderecoForm.valueChanges
-      .pipe(
-        distinctUntilChanged(
-          (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
-        ),
-        map<EnderecoFormTypeValue, boolean>((enderecoFormValue) =>
-          Object.values(enderecoFormValue).some((value) => !!value)
-        ),
-        tap((resultado) => {
-          for (const key in enderecoForm.controls) {
-            const control = enderecoForm.get(key);
+  //   enderecoForm.valueChanges
+  //     .pipe(
+  //       distinctUntilChanged(
+  //         (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
+  //       ),
+  //       map<EnderecoFormTypeValue, boolean>((enderecoFormValue) =>
+  //         Object.values(enderecoFormValue).some((value) => !!value)
+  //       ),
+  //       tap((resultado) => {
+  //         for (const key in enderecoForm.controls) {
+  //           const control = enderecoForm.get(key);
 
-            resultado
-              ? control?.setValidators(Validators.required)
-              : control?.clearValidators();
+  //           resultado
+  //             ? control?.setValidators(Validators.required)
+  //             : control?.clearValidators();
 
-            control?.updateValueAndValidity({ emitEvent: false });
-          }
-        })
-      )
-      .subscribe();
-  }
+  //           control?.updateValueAndValidity({ emitEvent: false });
+  //         }
+  //       })
+  //     )
+  //     .subscribe();
+  // }
 
   private dispararModalImportarPessoaCPF(): void {
     this.importarPessoaCPFForm = this._nnfb.group({
@@ -340,7 +354,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
       }),
     });
 
-    const modalRef = this._ngbModalService.open(this.importarPessoaCPFModal, {
+    const modalRef = this._ngbModalService.open(this._importarPessoaCPFModal, {
       backdrop: 'static',
       centered: true,
       keyboard: false,
@@ -381,17 +395,20 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.conteudo = nomeOrganizacao;
   }
 
-  private executarAcaoBreadcrumb(acao: string): void {
+  private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
     switch (acao) {
-      case 'editar':
+      case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._pessoasService.gerarBotoesAcaoFormulario()
+        );
         break;
 
-      case 'cancelar':
-        this.cancelar();
+      case BreadcrumbAcoesEnum.Cancelar:
+        this._navegacaoService.navegacaoSimples(BreadcrumbContextoEnum.Pessoas);
         break;
 
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         this.submitPessoaForm(this.pessoaForm);
         break;
     }
@@ -404,18 +421,14 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
 
     alterarEstadoControlesFormulario(permitir, pessoaFormControls);
 
-    const enderecoFormControls = (
-      this.pessoaForm.get('endereco') as FormGroup<EnderecoFormType>
-    ).controls;
+    // const enderecoFormControls = (
+    //   this.pessoaForm.get('endereco') as FormGroup<EnderecoFormType>
+    // ).controls;
 
-    alterarEstadoControlesFormulario(permitir, enderecoFormControls);
+    // alterarEstadoControlesFormulario(permitir, enderecoFormControls);
 
     // Caso específico de email:
     this.pessoaForm.get('email')?.disable();
-  }
-
-  private cancelar(): void {
-    this._router.navigate(['main', 'pessoas']);
   }
 
   private submitPessoaForm(form: FormGroup): void {
@@ -450,7 +463,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
           'Pessoa cadastrada com sucesso.'
         );
       }),
-      finalize(() => this.cancelar())
+      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
     );
   }
 
@@ -463,14 +476,16 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
             'success',
             'Pessoa alterada com sucesso.'
           );
-          this._router.navigateByUrl('main/pessoas');
         }),
-        finalize(() => this.cancelar())
+        finalize(() =>
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+        )
       );
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._pessoasService.idPessoa$.next(0);
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

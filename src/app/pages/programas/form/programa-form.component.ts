@@ -6,7 +6,6 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import {
   concat,
@@ -27,11 +26,14 @@ import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/op
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import {
   ProgramaFormModel,
   ProgramaModel,
 } from '../../../core/models/programa.model';
+
+import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
 
 import {
   IPrograma,
@@ -40,13 +42,18 @@ import {
 import {
   IProjetoPropostoOpcoesDropdown,
   IOpcoesDropdown,
+  IOpcoesDropdownResponsavelProponente,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
 
+import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
+
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
-import { alterarEstadoControlesFormulario } from '../../../core/utils/functions';
-import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -55,22 +62,22 @@ import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
   styleUrl: './programa-form.component.scss',
 })
 export class ProgramaFormComponent implements OnInit, OnDestroy {
-  private _atualizarPrograma$: Observable<IPrograma>;
-  private _cadastrarPrograma$: Observable<number>;
+  private readonly _subscription: Subscription = new Subscription();
 
-  private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getProjetosPropostosOpcoes$: Observable<
+  private readonly _atualizarPrograma$: Observable<IPrograma>;
+  private readonly _cadastrarPrograma$: Observable<number>;
+
+  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getProjetosPropostosOpcoes$: Observable<
     IProjetoPropostoOpcoesDropdown[]
   >;
-  private _getProgramasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
-  private _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getProgramasOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
   private _idProgramaEdicao: number = 0;
-
-  private _subscription: Subscription = new Subscription();
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
@@ -78,7 +85,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public programaForm: FormGroup = new FormGroup({});
 
   public organizacoesOpcoes: IOpcoesDropdown[] = [];
-  public pessoasOpcoes: IOpcoesDropdown[] = [];
+  public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   public projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[] = [];
   public programasOpcoes: IOpcoesDropdown[] = [];
@@ -90,7 +97,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public idProjetoProposto: number | null = null;
 
   constructor(
-    private readonly _router: Router,
     private readonly _nnfb: NonNullableFormBuilder,
     public equipeService: EquipeService,
     private readonly _programasService: ProgramasService,
@@ -98,7 +104,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _ngbModalService: NgbModal,
-    private readonly _toastService: ToastService
+    private readonly _toastService: ToastService,
+    private readonly _navegacaoService: NavegacaoService
   ) {
     const [editar$, criar$] = partition(
       this._programasService.idPrograma$,
@@ -116,7 +123,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
         this._idProgramaEdicao = programaModel.id;
 
-        this.trocarModo(false);
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._programasService.gerarBotoesAcaoFormulario()
+        );
 
         this.loading = false;
       })
@@ -125,6 +134,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this._cadastrarPrograma$ = criar$.pipe(
       tap(() => {
         this.iniciarForm();
+
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._programasService.gerarBotoesAcaoFormulario()
+        );
 
         this.loading = false;
       })
@@ -141,7 +154,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this._getPessoasOpcoes$ = this._opcoesDropdownService
       .getOpcoesPessoas()
       .pipe(
-        tap((response: IOpcoesDropdown[]) => (this.pessoasOpcoes = response))
+        tap((response: IOpcoesDropdownResponsavelProponente[]) => (this.pessoasOpcoes = response))
       );
 
     this._getTiposPapelOpcoes$ = this._opcoesDropdownService
@@ -187,7 +200,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
 
     this._subscription.add(
-      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
@@ -222,7 +235,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public toUppercaseOutputTransformFn =
     NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
 
-  public idMembroNgSelectChangeEvent(event: number): void {
+  public idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): void {
     this.equipeService.idMembroNgSelectValue$.next(event);
 
     setTimeout(() => (this.idMembroEquipeCaptacao = null), 0);
@@ -338,32 +351,18 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.nomePrograma = nomePrograma;
   }
 
-  private executarAcaoBreadcrumb(acao: string): void {
+  private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
     switch (acao) {
-      case 'editar':
-        this.trocarModo(true);
+      case BreadcrumbAcoesEnum.Cancelar:
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Programas
+        );
         break;
 
-      case 'cancelar':
-        this.cancelar();
-        break;
-
-      case 'salvar':
+      case BreadcrumbAcoesEnum.Salvar:
         this.submitProgramaForm(this.programaForm);
         break;
     }
-  }
-
-  private trocarModo(permitir: boolean): void {
-    this.isModoEdicao = permitir;
-
-    const programaFormControls = this.programaForm.controls;
-
-    alterarEstadoControlesFormulario(permitir, programaFormControls);
-  }
-
-  private cancelar(): void {
-    this._router.navigate(['main', 'programas']);
   }
 
   private submitProgramaForm(form: FormGroup): void {
@@ -395,7 +394,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           'Programa cadastrado com sucesso.'
         );
       }),
-      finalize(() => this.cancelar())
+      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
     );
   }
 
@@ -407,12 +406,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           'Programa alterado com sucesso.'
         );
       }),
-      finalize(() => this.cancelar())
+      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
     );
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._programasService.idPrograma$.next(0);
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

@@ -1,19 +1,23 @@
-<div class="card">
+<div class="h-100" *ngIf="loadingService.isProcessando$ | async">
+  <loading-spinner
+    textoProcessando="Enviando e-mail de prospecção..."
+  ></loading-spinner>
+</div>
+
+<div class="card" *ngIf="!(loadingService.isProcessando$ | async)">
   <div class="card-body">
     <div class="row px-3">
       <div class="col-12 d-inline-flex border-bottom pb-2">
         <div class="me-3">
           <span class="fs-small-4 fw-semibold">Carta Consulta: </span>
           <span class="fs-small-4 text-primary">{{
-            preencherIdAteQuatroDigitos(
-              prospeccaoDetalhes.cartaConsultaDetalhes.id
-            )
+            prospeccaoDetalhes.cartaConsultaDetalhes.codigoCartaConsulta
           }}</span>
         </div>
         <div class="ms-3">
           <span class="fs-small-4 fw-semibold">Prospecção: </span>
           <span class="fs-small-4 text-primary">{{
-            preencherIdAteQuatroDigitos(prospeccaoDetalhes.id)
+            prospeccaoDetalhes.codigoProspeccao
           }}</span>
         </div>
       </div>
@@ -43,11 +47,12 @@
       <div class="col-12 py-2">
         <span class="fs-small-4 fw-semibold">Interessado(a)(s):</span>
         <br />
-        <span
-          class="fs-small-4"
-          *ngFor="let nome of prospeccaoDetalhes.nomesInteressados"
-          >{{ nome }}</span
-        >
+        <ng-container *ngFor="let nome of prospeccaoDetalhes.nomesInteressados">
+          <span class="fs-small-4">
+            {{ nome }}
+          </span>
+          <br />
+        </ng-container>
       </div>
 
       <div class="col-12 py-2">

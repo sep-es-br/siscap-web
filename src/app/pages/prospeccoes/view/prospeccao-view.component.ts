@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
-import { map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import { finalize, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 
+import { LoadingService } from '../../../core/services/loading/loading.service';
 import { ProspeccoesService } from '../../../core/services/prospeccoes/prospeccoes.service';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
+import { ToastService } from '../../../core/services/toast/toast.service';
+import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
 import { IProspeccaoDetalhes } from '../../../core/interfaces/prospeccao.interface';
 
@@ -13,6 +15,12 @@ import {
   ProspeccaoDetalhesModel,
   ProspeccaoOrganizacaoDetalhesModel,
 } from '../../../core/models/prospeccao.model';
+
+import { StatusProspeccaoEnum } from '../../../core/enums/status-prospeccao.enum';
+import {
+  BreadcrumbAcoesEnum,
+  BreadcrumbContextoEnum,
+} from '../../../core/enums/breadcrumb.enum';
 
 import { getSimboloMoeda } from '../../../core/utils/functions';
 
@@ -23,9 +31,9 @@ import { getSimboloMoeda } from '../../../core/utils/functions';
   styleUrl: './prospeccao-view.component.scss',
 })
 export class ProspeccaoViewComponent implements OnInit, OnDestroy {
-  private _getProspeccaoDetalhes$: Observable<IProspeccaoDetalhes>;
+  private readonly _subscription: Subscription = new Subscription();
 
-  private _subscription: Subscription = new Subscription();
+  private readonly _getProspeccaoDetalhes$: Observable<IProspeccaoDetalhes>;
 
   public prospeccaoDetalhes: ProspeccaoDetalhesModel =
     new ProspeccaoDetalhesModel();
@@ -40,15 +48,17 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
     getSimboloMoeda;
 
   constructor(
-    private _prospeccoesService: ProspeccoesService,
-    private _projetosService: ProjetosService,
-    private _breadcrumbService: BreadcrumbService,
-    private _router: Router
+    public loadingService: LoadingService,
+    private readonly _prospeccoesService: ProspeccoesService,
+    private readonly _projetosService: ProjetosService,
+    private readonly _breadcrumbService: BreadcrumbService,
+    private readonly _toastService: ToastService,
+    private readonly _navegacaoService: NavegacaoService
   ) {
     this._getProspeccaoDetalhes$ =
       this._prospeccoesService.idProspeccaoDetalhes$.pipe(
         switchMap((idProspeccao: number) =>
-          this._prospeccoesService.getProspeccaoDetalhes(idProspeccao)
+          this._prospeccoesService.buscarDetalhesProspeccao(idProspeccao)
         ),
         map<IProspeccaoDetalhes, ProspeccaoDetalhesModel>(
           (response: IProspeccaoDetalhes) =>
@@ -60,11 +70,21 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
             prospeccaoDetalhesModel.organizacaoProspectoraDetalhes;
           this.organizacaoProspectadaDetalhes =
             prospeccaoDetalhesModel.organizacaoProspectadaDetalhes;
+
+          const botoesAcaoPropriedades =
+            this.prospeccaoDetalhes.statusProspeccao ===
+            StatusProspeccaoEnum.Prospectado
+              ? this._prospeccoesService.gerarBotoesAcaoVisualizarDetalhesProspeccaoRealizada()
+              : this._prospeccoesService.gerarBotoesAcaoVisualizarDetalhes();
+
+          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+            botoesAcaoPropriedades
+          );
         })
       );
 
     this._subscription.add(
-      this._breadcrumbService.acaoBreadcrumb$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
@@ -72,12 +92,6 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._subscription.add(this._getProspeccaoDetalhes$.subscribe());
-  }
-
-  public preencherIdAteQuatroDigitos(id: number): string {
-    const idAsString = id.toString();
-
-    return idAsString.length < 4 ? idAsString.padStart(4, '0') : idAsString;
   }
 
   public formatarEndereco(
@@ -94,13 +108,23 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
 
   private executarAcaoBreadcrumb(acao: string): void {
     switch (acao) {
-      case 'editar':
+      case BreadcrumbAcoesEnum.Editar:
         this._prospeccoesService.idProspeccao$.next(this.prospeccaoDetalhes.id);
-        this._router.navigate(['main', 'prospeccao', 'editar']);
+
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Prospeccao,
+          BreadcrumbAcoesEnum.Editar
+        );
         break;
 
-      case 'prospectar':
-        console.log('INICIAR PROCESSO DE PROSPECCAO');
+      case BreadcrumbAcoesEnum.Cancelar:
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Prospeccao
+        );
+        break;
+
+      case BreadcrumbAcoesEnum.Prospectar:
+        this.enviarEmailProspeccao();
         break;
 
       default:
@@ -108,8 +132,28 @@ export class ProspeccaoViewComponent implements OnInit, OnDestroy {
     }
   }
 
+  private enviarEmailProspeccao(): void {
+    this.loadingService.iniciarProcessamento();
+
+    this._prospeccoesService
+      .enviarEmailProspeccao(this.prospeccaoDetalhes.id)
+      .pipe(
+        tap((response) => {
+          this._toastService.showToast('success', response);
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+        }),
+        finalize(() => this.loadingService.finalizarProcessamento())
+      )
+      .subscribe();
+
+    // setTimeout(() => {
+    //   this.loadingService.finalizarProcessamento();
+    // }, 5000);
+  }
+
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._prospeccoesService.idProspeccaoDetalhes$.next(0);
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

@@ -9,8 +9,8 @@
 </div>
 
 <div class="modal-footer d-flex justify-content-center">
-  <button class="btn btn-success icon-text-btn" (click)="activeModal.dismiss()">
-    <i class="fa-solid fa-thumbs-up"></i>
-    <span>Entendi</span>
-  </button>
+  <siscap-botao
+    [propriedades]="botaoEntendi"
+    (acao)="activeModal.dismiss()"
+  ></siscap-botao>
 </div>

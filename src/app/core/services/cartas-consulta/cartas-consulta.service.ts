@@ -1,62 +1,84 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-import { environment } from '../../../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { IHttpBase } from '../../interfaces/http/http-base.interface';
+
+import { BaseHttpService } from '../http/base-http.service';
+
+import { CartaConsultaFormModel } from '../../models/carta-consulta.model';
+import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.model';
+
+import { BotoesConfig } from '../../../shared/components/botao/botao.config';
+
 import {
   ICartaConsulta,
   ICartaConsultaDetalhes,
   ICartaConsultaTableData,
 } from '../../interfaces/carta-consulta.interface';
-import { CartaConsultaFormModel } from '../../models/carta-consulta.model';
-import {
-  IHttpGetRequestBody,
-  IHttpGetResponseBody,
-} from '../../interfaces/http/http-get.interface';
-import { HttpClient } from '@angular/common/http';
-import { PageableQueryStringParametersHelper } from '../../helpers/pageable-query-string-parameters.helper';
+import { Post } from '../../interfaces/http-post.interface';
+import { Put } from '../../interfaces/http-put.interface';
+
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartasConsultaService
+  extends BaseHttpService<ICartaConsulta, ICartaConsultaTableData>
   implements
-    IHttpBase<ICartaConsulta, ICartaConsultaTableData, CartaConsultaFormModel>
+    Post<ICartaConsulta, CartaConsultaFormModel>,
+    Put<ICartaConsulta, CartaConsultaFormModel>
 {
-  private _url = `${environment.apiUrl}/cartas-consulta`;
+  private readonly _url = `${environment.apiUrl}/cartas-consulta`;
 
-  private _idCartaConsulta$: BehaviorSubject<number> =
+  private readonly _idCartaConsulta$: BehaviorSubject<number> =
     new BehaviorSubject<number>(0);
 
   public get idCartaConsulta$(): BehaviorSubject<number> {
     return this._idCartaConsulta$;
   }
 
-  private _idCartaConsultaDetalhes$: BehaviorSubject<number> =
+  private readonly _idCartaConsultaDetalhes$: BehaviorSubject<number> =
     new BehaviorSubject<number>(0);
 
   public get idCartaConsultaDetalhes$(): BehaviorSubject<number> {
     return this._idCartaConsultaDetalhes$;
   }
 
-  constructor(private _http: HttpClient) {}
-
-  public getAllPaged(
-    pageConfig: IHttpGetRequestBody
-  ): Observable<IHttpGetResponseBody<ICartaConsultaTableData>> {
-    return this._http.get<IHttpGetResponseBody<ICartaConsultaTableData>>(
-      this._url,
-      {
-        params:
-          PageableQueryStringParametersHelper.buildQueryStringParams(
-            pageConfig
-          ),
-      }
-    );
+  constructor(private readonly _http: HttpClient) {
+    super(_http, 'cartas-consulta');
   }
 
-  public getById(id: number): Observable<ICartaConsulta> {
-    return this._http.get<ICartaConsulta>(`${this._url}/${id}`);
+  public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
+    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
+      texto: 'Nova Carta Consulta',
+    });
+
+    return [botaoCriar];
+  }
+
+  public gerarBotoesAcaoVisualizarDetalhes(): Array<BotaoPropriedadesModel> {
+    const botaoEditar = BotoesConfig.gerarBotaoPropriedades('editar');
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
+      acao: 'cancelar',
+    });
+
+    return [botaoEditar, botaoVoltar];
+  }
+
+  public gerarBotoesAcaoVisualizarDetalhesProspeccaoRealizada(): Array<BotaoPropriedadesModel> {
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar', {
+      acao: 'cancelar',
+    });
+
+    return [botaoVoltar];
+  }
+
+  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+
+    return [botaoSalvar, botaoCancelar];
   }
 
   public post(body: CartaConsultaFormModel): Observable<ICartaConsulta> {
@@ -70,11 +92,7 @@ export class CartasConsultaService
     return this._http.put<ICartaConsulta>(`${this._url}/${id}`, body);
   }
 
-  public delete(id: number): Observable<string> {
-    return this._http.delete(`${this._url}/${id}`, { responseType: 'text' });
-  }
-
-  public getCartaConsultaDetalhes(
+  public buscarDetalhesCartaConsulta(
     id: number
   ): Observable<ICartaConsultaDetalhes> {
     return this._http.get<ICartaConsultaDetalhes>(
