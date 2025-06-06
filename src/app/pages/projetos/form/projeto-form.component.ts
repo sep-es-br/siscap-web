@@ -158,7 +158,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private readonly _navegacaoService: NavegacaoService,
     public indicadoresService: IndicadoresService,
     public acoesService: AcoesService,
-  ) {
+    ) {
 
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
     this.usuario_IdOrganizacoes =
@@ -198,7 +198,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
           (status) => status != this.statusProjeto
         );
-        
+
         this.iniciarForm(projetoModel);
 
         this._idProjetoEdicao = projetoModel.id;
@@ -209,10 +209,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this.trocarModo(false);
 
-        if (
-          this.isProponente &&
-          projetoModel.status == StatusProjetoEnum.Em_Analise
-        ) {
+        if ( this.isProponente && projetoModel.status == StatusProjetoEnum.Em_Analise ) {
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             this._projetosService.gerarBotoesAcaoFormularioProponente()
           );
@@ -221,21 +218,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this._projetosService.gerarBotoesAcaoFormulario()
           );
           // Workaround para carregar o componente de rateio quando modo de edição
-          setTimeout(() => {
-            this.trocarModo(true);
-          }, 2000);
+          setTimeout( () => {this.trocarModo(true);}, 2000 );
         }
+
         if (!this.isProponente) {
           this.mostrarBotaoStatusProjeto = true;
         }
+
         this.loading = false;
         this.isLoadingPessoas = false;
+
       })
+
     );
 
     this._cadastrarProjeto$ = criar$.pipe(
       tap(() => {
-       
+
         this.iniciarForm();
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
@@ -446,7 +445,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.maxLength(2000)]
       ),
     });
-       
+
     this.projetoFormValueChanges();
     
     this.valorFormValueChanges();
@@ -457,55 +456,57 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
   
   private usuarioProponenteValoresIniciaisProjetoForm(): void {
-    
+
     const idOrganizacaoFormControl = this.projetoForm.get('idOrganizacao') as FormControl<number | null>;
     
     idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
   
-    const subResponsavelProponenteForm = this.projetoForm.get('subResponsavelProponente') as FormControl<string | null>;
-  
-    this.pessoasOpcoes = [];
-    this.isLoadingPessoas = true;
-  
-    this._pessoasService
-      .buscarResponsavelPorIdOrganizacaoAC(this.usuario_IdOrganizacoes[0])
-      .subscribe({
-        next: (response) => {
-          
-          this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
-          this.isLoadingPessoas = false;
+    const idResponsavelProponenteFormControl = this.projetoForm.get(
+      'idResponsavelProponente'
+    ) as FormControl<number | null>;
 
-          const indexGestor = this.pessoasOpcoes.findIndex(
-            pessoa => pessoa.gestorOrganizacao === true
-          );
-
-          if( indexGestor > 0 ){
-            this.projetoForm.patchValue({
-              idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
-              nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toLowerCase,
-              papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
-              subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
-            });
-          } else {
-            if (this.pessoasOpcoes.length > 0){
+    if ( idResponsavelProponenteFormControl.value === 0 ) {
+  
+      this.pessoasOpcoes = [];
+      this.isLoadingPessoas = true;
+    
+      this._pessoasService
+        .buscarResponsavelPorIdOrganizacaoAC(this.usuario_IdOrganizacoes[0])
+        .subscribe({
+          next: (response) => {
+            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
+            this.isLoadingPessoas = false;
+            const indexGestor = this.pessoasOpcoes.findIndex(
+              pessoa => pessoa.gestorOrganizacao === true
+            );
+            if( indexGestor > 0 ){
               this.projetoForm.patchValue({
-                idResponsavelProponente: null,
-                nomeResponsavelProponente: '',
-                papelResponsavelProponente: '',
-                subResponsavelProponente: ''
+                idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
+                nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toLowerCase,
+                papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
+                subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
               });
+            } else {
+              if (this.pessoasOpcoes.length > 0){
+                this.projetoForm.patchValue({
+                  idResponsavelProponente: null,
+                  nomeResponsavelProponente: '',
+                  papelResponsavelProponente: '',
+                  subResponsavelProponente: ''
+                });
+              }
             }
-          }
+          },
+          error: () => {
+            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
+            this.isLoadingPessoas = false;
+          },
+        });
 
-        },
-        error: () => {
-          this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
-          this.isLoadingPessoas = false;
-        },
-      });
+    }
+
   }
  
-
   private projetoFormValueChanges(): void {
 
     const idOrganizacaoFormControl = this.projetoForm.get(
@@ -515,10 +516,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const idResponsavelProponenteFormControl = this.projetoForm.get(
       'idResponsavelProponente'
     ) as FormControl<number | null>;
-
+    
     idOrganizacaoFormControl.valueChanges.subscribe((idOrganizacaoValue) => {
+      this.idOrganizacaoChange(idOrganizacaoValue);
       if (this.isModoEdicao) {
-        this.idOrganizacaoChange(idOrganizacaoValue);
         if (this.isProponente) {
           setTimeout(() => {
             idOrganizacaoFormControl.disable({ emitEvent: false });
@@ -551,7 +552,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private valorFormValueChanges(): void {
-    
+
     const valorFormGroup = this.projetoForm.get(
       'valor'
     ) as FormGroup<ValorFormType>;
@@ -572,6 +573,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._rateioService.moedaFormControlReferencia$.next(
         moedaFormControl.value
       );
+
+
     }
 
     if (!tipoFormControl.value) {
@@ -598,56 +601,98 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'idResponsavelProponente'
     ) as FormControl<number | null>;
 
-    this.isLoadingPessoas = true;
-
-    
+    const subResponsavelProponente = this.projetoForm.get( 
+      'subResponsavelProponente'
+    ) as FormControl<string | null>
+        
     if (!idOrganizacaoValue) {
       idResponsavelProponenteFormControl.patchValue(null);
       idResponsavelProponenteFormControl.markAsTouched();
       this.isLoadingPessoas = false;
       return;
-    } 
-    
+    }
+
+    this.isLoadingPessoas = true;
     this.pessoasOpcoes = [];
 
-    this._pessoasService
-      .buscarResponsavelPorIdOrganizacaoAC(idOrganizacaoValue)
-      .subscribe({
-        next: (response) => {
-          
-          const subResponsavelProponenteForm = this.projetoForm.get('subResponsavelProponente') as FormControl<string | null>;
-          this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
-          this.isLoadingPessoas = false;
-          
-          const indexGestor = this.pessoasOpcoes.findIndex(
-            pessoa => pessoa.gestorOrganizacao === true
-          );
+    const subResponsavelProponenteValor = subResponsavelProponente.value;
+    
+    if(!subResponsavelProponenteValor) {
 
-          if( indexGestor > 0 ){
-            this.projetoForm.patchValue({
-              idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
-              nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toUpperCase,
-              papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
-              subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
-            });
-          } else {
-            if (this.pessoasOpcoes.length > 0){
+      this._pessoasService
+        .buscarResponsavelPorIdOrganizacaoAC(idOrganizacaoValue)
+        .subscribe({
+          next: (response) => {
+            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
+            this.isLoadingPessoas = false;
+            
+            const indexGestor = this.pessoasOpcoes.findIndex(
+                pessoa => pessoa.gestorOrganizacao === true
+              );
+                        
+            if( indexGestor > 0 ){
               this.projetoForm.patchValue({
-                idResponsavelProponente: null,
-                nomeResponsavelProponente: '',
-                papelResponsavelProponente: '',
-                subResponsavelProponente: ''
+                idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
+                nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toUpperCase,
+                papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
+                subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
               });
+            } else {
+              if (this.pessoasOpcoes.length > 0){
+                this.projetoForm.patchValue({
+                  idResponsavelProponente: null,
+                  nomeResponsavelProponente: '',
+                  papelResponsavelProponente: '',
+                  subResponsavelProponente: ''
+                });
+              }
             }
-          }
+          },
+          error: () => {
+            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
+            this.isLoadingPessoas = false;
+          },
+        });
 
-        },
-        error: () => {
-          this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
-          this.isLoadingPessoas = false;
-        },
-      });
-      
+    } else {
+
+      this._pessoasService
+        .buscarResponsavelPorIdOrganizacaoAC(idOrganizacaoValue)
+        .subscribe({
+          next: (response) => {
+            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
+            this.isLoadingPessoas = false;
+            
+            const  indexGestor = this.pessoasOpcoes.findIndex(
+                pessoa => pessoa.agentePublicoSub === subResponsavelProponente.value
+              );
+            
+            if( indexGestor > 0 ){
+              this.projetoForm.patchValue({
+                idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
+                nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toUpperCase,
+                papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
+                subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
+              });
+            } else {
+              if (this.pessoasOpcoes.length > 0){
+                this.projetoForm.patchValue({
+                  idResponsavelProponente: null,
+                  nomeResponsavelProponente: '',
+                  papelResponsavelProponente: '',
+                  subResponsavelProponente: ''
+                });
+              }
+            }
+          },
+          error: () => {
+            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
+            this.isLoadingPessoas = false;
+          },
+        });
+
+    }
+
   }
 
   private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
