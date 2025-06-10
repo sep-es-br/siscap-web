@@ -100,6 +100,7 @@ export class EquipeFormComponent implements OnDestroy {
     modalTemplate: TemplateRef<any>,
     index: number
   ) {
+    
     this.equipeService.construirExcluirMembroForm();
 
     const membroFormGroup = this.equipeService.equipeFormArray.at(index);

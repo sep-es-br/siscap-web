@@ -6,10 +6,10 @@
         index as i
       "
     >
-      <div class="col-12 col-sm-6">
+      <div [hidden]= "isMembroRemovido(i)" class="col-12 col-sm-6">
         <div class="card">
           <form [formGroup]="membroFormGroup">
-            <div
+            <div 
               class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center">
               <div class="col-12 col-lg pb-2 pb-lg-0 d-inline-flex justify-content-center justify-content-md-start" >
                 <span class="nome-membro">{{ membroFormGroup.value.nome }}</span>
