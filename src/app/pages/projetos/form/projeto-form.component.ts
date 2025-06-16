@@ -209,10 +209,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this.trocarModo(false);
 
-        if ( this.isProponente && projetoModel.status == StatusProjetoEnum.Em_Analise ) {
-          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            this._projetosService.gerarBotoesAcaoFormularioProponente()
-          );
+        if ( this.isProponente ) {
+
+          if ( projetoModel.status == StatusProjetoEnum.Em_Analise ) 
+            this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+              this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
+            );
+          else {
+
+            this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+              this._projetosService.gerarBotoesAcaoFormularioProponente()
+            );
+
+            this.trocarModo(true); //permite editar
+
+          }
+
         } else {
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             this._projetosService.gerarBotoesAcaoFormulario()
@@ -574,7 +586,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         moedaFormControl.value
       );
 
-
     }
 
     if (!tipoFormControl.value) {
@@ -759,35 +770,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
     this.projetoForm.get('valor.tipo')?.disable();
   }
-
-  /*
-  private validarProjetoFormProponenteRateio(): Array<RateioModel> {
-    
-    const idMicrorregioesListFormControl = this.projetoForm.get(
-      'idMicrorregioesList'
-    ) as FormControl<Array<number>>;
-
-    const valorEstimadoFormControl = this.projetoForm.get(
-      'valorEstimado'
-    ) as FormControl<number>;
-    
-    return this._projetosService.construirProjetoModelRateio(
-      idMicrorregioesListFormControl.value,
-      valorEstimadoFormControl.value
-    );
-
-  }
-
-  private validarProjetoFormProponenteValor(): ValorModel {
-    const valorEstimadoFormControl = this.projetoForm.get(
-      'valorEstimado'
-    ) as FormControl<number>;
-
-    return this._projetosService.construirProjetoModelValor(
-      valorEstimadoFormControl.value
-    );
-  }
-  */
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
