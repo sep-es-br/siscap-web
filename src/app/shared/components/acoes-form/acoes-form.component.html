@@ -21,14 +21,14 @@
           </div>
           <div class="col-12 col-md-4">
             <label [for]="'acaoValor_' + i" class="form-label">
-              Valor Estimado (R$)
+              Valor Estimado
                 <form-helper-tooltip 
                   [texto]="projetoTooltip['valorEstimadoAcaoPrincipal']"> 
                 </form-helper-tooltip>
             </label>
            <input
               mask="separator.2"
-              prefix="R$"
+              [prefix]="getSimboloMoeda(moedaProjeto)"
               thousandSeparator="."
               decimalMarker=","
               [inputTransformFn]="rtlCurrencyInputTransformFn"

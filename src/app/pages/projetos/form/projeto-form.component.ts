@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -99,6 +99,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
+  public moedaProjeto: string = '';
   public mostrarBotaoGerarDic: boolean = false;
   public mostrarBotaoStatusProjeto: boolean = false;
   public isProponente: boolean = false;
@@ -138,6 +139,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public isLoadingPessoasFiltroTermo = false;
 
   public exibirLista = true;
+
+  public nomeGestorProjeto: string = '';
+
+  @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
 
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
@@ -327,6 +332,30 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  private carregarPessoasPorOrganizacao(): void {
+    
+    const idOrganizacaoFormControl = this.projetoForm.get('idOrganizacao') as FormControl<number | null>;
+    idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
+
+    this.isLoadingPessoas = true;
+    this._pessoasService.buscarResponsavelPorIdOrganizacaoAC(this.usuario_IdOrganizacoes[0])
+      .subscribe({
+      next: (response) => {
+        this.pessoasOpcoes = response;
+        this.isLoadingPessoas = false;
+      },
+      error: () => {
+        this.pessoasOpcoes = [];
+        this.isLoadingPessoas = false;
+      }
+    });
+
+  }
+
+  public getRateioService(): RateioService {
+    return this._rateioService;
+  }
+
   public rtlCurrencyInputTransformFn =
     NgxMaskTransformFunctionHelper.rtlCurrencyInputTransformFn;
 
@@ -458,13 +487,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
     });
 
+    this.carregarPessoasPorOrganizacao();
+        
     this.projetoFormValueChanges();
     
     this.valorFormValueChanges();
 
     if ( this.isProponente && !projetoFormModel )
       this.usuarioProponenteValoresIniciaisProjetoForm();
-    
+
   }
   
   private usuarioProponenteValoresIniciaisProjetoForm(): void {
@@ -473,49 +504,51 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
     idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
   
-    const idResponsavelProponenteFormControl = this.projetoForm.get(
-      'idResponsavelProponente'
-    ) as FormControl<number | null>;
+    const idResponsavelProponenteFormControl = this.projetoForm.get('idResponsavelProponente' ) as FormControl<number | null>;
 
-    if ( idResponsavelProponenteFormControl.value === 0 ) {
+    const indexGestor = this.pessoasOpcoes.findIndex( pessoa => pessoa.gestorOrganizacao === true );
+
+    if( indexGestor > 0 ){
+      this.projetoForm.patchValue({
+        idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
+        nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toLowerCase,
+        papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
+        subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
+      });
+    } else {
+      if (this.pessoasOpcoes.length > 0){
+        this.projetoForm.patchValue({
+          idResponsavelProponente: null,
+          nomeResponsavelProponente: '',
+          papelResponsavelProponente: '',
+          subResponsavelProponente: ''
+        });
+      }
+    }
+
+    //if ( idResponsavelProponenteFormControl.value === 0 ) {
   
-      this.pessoasOpcoes = [];
-      this.isLoadingPessoas = true;
+      //this.pessoasOpcoes = [];
+      //this.isLoadingPessoas = true;
     
+      /*
       this._pessoasService
         .buscarResponsavelPorIdOrganizacaoAC(this.usuario_IdOrganizacoes[0])
         .subscribe({
           next: (response) => {
             this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
             this.isLoadingPessoas = false;
-            const indexGestor = this.pessoasOpcoes.findIndex(
-              pessoa => pessoa.gestorOrganizacao === true
-            );
-            if( indexGestor > 0 ){
-              this.projetoForm.patchValue({
-                idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
-                nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toLowerCase,
-                papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
-                subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
-              });
-            } else {
-              if (this.pessoasOpcoes.length > 0){
-                this.projetoForm.patchValue({
-                  idResponsavelProponente: null,
-                  nomeResponsavelProponente: '',
-                  papelResponsavelProponente: '',
-                  subResponsavelProponente: ''
-                });
-              }
-            }
+            
+            
           },
           error: () => {
             this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
             this.isLoadingPessoas = false;
           },
         });
+      */
 
-    }
+    //}
 
   }
  
@@ -588,6 +621,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     }
 
+    this.moedaProjeto = moedaFormControl.value ?? '';
+
     if (!tipoFormControl.value) {
       // Caso específico de Projetos; tipo do valor somente pode ser 'Estimado'
       tipoFormControl.patchValue(TipoValorEnum.Estimado);
@@ -624,7 +659,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     this.isLoadingPessoas = true;
-    this.pessoasOpcoes = [];
+    //this.pessoasOpcoes = [];
 
     const subResponsavelProponenteValor = subResponsavelProponente.value;
     
@@ -644,7 +679,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             if( indexGestor > 0 ){
               this.projetoForm.patchValue({
                 idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
-                nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toUpperCase,
+                nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toUpperCase(),
                 papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
                 subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
               });
@@ -658,6 +693,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 });
               }
             }
+            
           },
           error: () => {
             this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
@@ -681,7 +717,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             if( indexGestor > 0 ){
               this.projetoForm.patchValue({
                 idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
-                nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toUpperCase,
+                nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toUpperCase(),
                 papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
                 subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
               });
@@ -730,7 +766,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validacaoSomaValoresAcoesEnviar(form: FormGroup, isRascunho: boolean): void {
     if (this.compararValorEstimadoValorAcoes()) {
-      this.submitProjetoForm(form, false);
+      this.abrirConfirmarEnvioMembroModal(form)
     }else{
       this._toastService.showToast('error', 'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.', 
         ['A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',]);
@@ -813,7 +849,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
-        nomeResponsavelProponente: pessoa.nome.toUpperCase,
+        nomeResponsavelProponente: pessoa.nome.toUpperCase(),
         papelResponsavelProponente: pessoa.papelPrioritario,
         subResponsavelProponente: pessoa.agentePublicoSub
       });
@@ -947,6 +983,29 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
     
     return this.pessoasOpcoesGoves;
+
+  }
+
+  public abrirConfirmarEnvioMembroModal( form: FormGroup
+  ) {
+
+    this.nomeGestorProjeto = this.projetoForm.get('nomeResponsavelProponente')?.value || 'Valor padrão caso vazio';
+    
+    const modalRef = this._ngbModalService.open( this.enviarProjetoModalTemplate , {
+        centered: true,
+        size: 'lg',
+      });
+
+      modalRef.result.then(
+        (result) => {
+          if (result === 'confirmado') {
+             this.submitProjetoForm(form, false);
+          }
+        },
+        (reason) => {
+          console.log('Usuário cancelou:', reason);
+        }
+      );
 
   }
 

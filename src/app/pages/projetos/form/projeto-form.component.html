@@ -214,8 +214,9 @@
                 Ações
             </label>
             <siscap-acoes-form 
-              [isModoEdicao]="isModoEdicao">
-            </siscap-acoes-form>
+              [isModoEdicao]="isModoEdicao"
+              [moedaProjeto]="moedaProjeto"
+            ></siscap-acoes-form>
           </div>
        
           <div class="col-12">
@@ -391,6 +392,34 @@
       >
         <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
         <span>Voltar</span>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #enviarProjetoModal let-modal>
+  <div class="modal-header py-3 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+      Confirmação de Envio
+    </h4>
+  </div>
+  <div class="modal-body">
+    <h6>Deseja fazer o envio do DIC para o gestor do orgão de origem ?</h6>
+    <h6>Sistema fará o envio de email informando ao gestor {{ nomeGestorProjeto }} o pedido de análise para posterior envio a SUBCAP.</h6>
+  </div>
+  <div class="modal-footer">
+    <div class="d-inline-flex flex-row-reverse">
+      <button
+        class="btn btn-success icon-text-btn"
+        (click)="modal.close('confirmado')">
+        <i class="fa-solid fa-thumbs-up"></i>
+        <span>Confirmar</span>
+      </button>
+      <button
+        class="btn btn-outline-danger  icon-text-btn me-2"
+        (click)="modal.dismiss('cancelado')">
+        <span>Cancelar</span>
+        <i class="fa-solid fa-close me-2"></i>
       </button>
     </div>
   </div>
