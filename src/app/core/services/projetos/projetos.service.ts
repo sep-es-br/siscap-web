@@ -68,12 +68,21 @@ export class ProjetosService extends BaseHttpService<
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
-    return [botaoSalvar, botaoCancelar, botaoEnviar];
+
+    const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
+    const botaoRevisar = BotoesConfig.gerarBotaoPropriedades('revisar');
+    const botaoRecusar = BotoesConfig.gerarBotaoPropriedades('recusar');
+    const botaoArquivar = BotoesConfig.gerarBotaoPropriedades('arquivar');
+
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+
+    return [botaoSalvar, botaoCancelar, botaoEnviar, botaoAutuar, botaoRevisar, botaoRecusar, botaoArquivar, botaoVoltar];
   }
 
   public gerarBotoesAcaoFormularioProponenteEmAnalise(): Array<BotaoPropriedadesModel> {
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    return [botaoCancelar];
+    const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
+    return [botaoCancelar,botaoAutuar];
   }
 
   public construirProjetoModelRateio(

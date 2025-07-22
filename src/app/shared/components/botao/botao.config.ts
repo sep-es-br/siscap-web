@@ -11,7 +11,11 @@ export type TBotaoAcao =
   | 'editar'
   | 'deletar'
   | 'enviar'
-  | 'prospectar';
+  | 'prospectar'
+  | 'autuarEdocs'
+  | 'revisar'
+  | 'recusar'
+  | 'arquivar';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -71,6 +75,32 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-paper-plane'],
       texto: 'Prospectar',
       acao: 'prospectar',
+    },
+    autuarEdocs: {
+      classesCSS: ['btn-success'],
+      icone: ['fa-solid', 'fa-paper-plane'],
+      texto: 'Assinar e Autuar',
+      acao: 'autuarEdocs',
+    },
+    revisar: {
+      classesCSS: ['btn-outline-warning'],
+      icone: ['fa-solid', 'fa-pen-to-square'],
+      texto: 'Revisar',
+      acao: 'revisar',
+      desabilitado: true
+    },
+    recusar: {
+      classesCSS: ['btn-danger'],
+      icone: ['fa-solid', 'fa-ban'],
+      texto: 'Recusar',
+      acao: 'recusar',
+    },
+    arquivar: {
+      classesCSS: ['btn-outline-danger'],
+      icone: ['fa-solid', 'fa-box-archive'],
+      texto: 'Arquivar',
+      acao: 'arquivar',
+      desabilitado: true
     },
   };
 

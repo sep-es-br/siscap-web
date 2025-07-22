@@ -28,6 +28,7 @@ export interface IProjeto {
   acoesProjeto: Array<IAcao>;
   nomeagente: string;
   pecasPlanejamento: string;
+  enviarProjetoGestor: boolean;
 }
 
 export interface IProjetoForm

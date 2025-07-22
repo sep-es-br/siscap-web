@@ -5,6 +5,8 @@ import { AuthRedirectComponent } from './pages/auth-redirect/auth-redirect.compo
 import { MainComponent } from './pages/main/main.component';
 
 import { authGuard } from './core/guards/auth/auth.guard';
+import { authExternalUrlGuard } from './core/guards/auth/auth.externalUrl.guard';
+import { ProjetoFormComponent } from './pages/projetos/form/projeto-form.component';
 
 export const APP_ROUTES: Routes = [
   {
@@ -23,6 +25,11 @@ export const APP_ROUTES: Routes = [
     loadChildren: () =>
       import('./pages/pages.module').then((m) => m.PagesModule),
     canActivateChild: [authGuard],
+  },
+  {
+    path: 'projetos/editar/:id',  // :id é um parâmetro dinâmico
+    component: ProjetoFormComponent,  // Ou carrega um módulo
+    canActivate: [authExternalUrlGuard]  // Guard personalizado para links externos
   },
   {
     path: '**',

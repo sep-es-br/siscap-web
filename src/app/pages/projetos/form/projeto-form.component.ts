@@ -74,6 +74,7 @@ import { IndicadoresService } from '../../../core/services/indicadores/indicador
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { IAcao } from '../../../core/interfaces/acoes.interface';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -163,6 +164,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private readonly _navegacaoService: NavegacaoService,
     public indicadoresService: IndicadoresService,
     public acoesService: AcoesService,
+    private route: ActivatedRoute,
+    private router: Router
     ) {
 
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
@@ -216,7 +219,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         if ( this.isProponente ) {
 
-          if ( projetoModel.status == StatusProjetoEnum.Em_Analise ) 
+          if ( projetoModel.status == StatusProjetoEnum.Em_Analise )
             this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
               this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
             );
@@ -324,6 +327,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const idPelaUrl = this.route.snapshot.paramMap.get('id');
+    if (idPelaUrl) {
+      this._projetosService.idProjeto$.next(+idPelaUrl);
+    }
     this._subscription.add(this._getAllOpcoes$.subscribe());
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
@@ -484,6 +491,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       pecasPlanejamento: this._nnfb.control(
         projetoFormModel?.pecasPlanejamento ?? null,
         [Validators.required, Validators.maxLength(2000)]
+      ),
+      enviarProjetoGestor: this._nnfb.control(projetoFormModel?.enviarProjetoGestor ?? false, 
       ),
     });
 
@@ -759,6 +768,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         break;
 
       case BreadcrumbAcoesEnum.Enviar:
+        this.projetoForm.patchValue({
+          enviarProjetoGestor : true
+        });
         this.validacaoSomaValoresAcoesEnviar(this.projetoForm, false);
         break;
     }
@@ -989,7 +1001,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public abrirConfirmarEnvioMembroModal( form: FormGroup
   ) {
 
-    this.nomeGestorProjeto = this.projetoForm.get('nomeResponsavelProponente')?.value || 'Valor padrão caso vazio';
+    this.nomeGestorProjeto = this.projetoForm.get('nomeResponsavelProponente')?.value || '-';
     
     const modalRef = this._ngbModalService.open( this.enviarProjetoModalTemplate , {
         centered: true,
