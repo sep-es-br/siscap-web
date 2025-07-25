@@ -41,6 +41,9 @@ export class AuthRedirectComponent {
           const externalUrl = sessionStorage.getItem('externalRedirectUrl');
           if (externalUrl) {
             sessionStorage.removeItem('externalRedirectUrl');
+            const separator = externalUrl.includes('?') ? '&' : '?';
+            const tokenGravado = sessionStorage.getItem('token') || '';
+            const urlComToken = `${externalUrl}${separator}token=${encodeURIComponent(tokenGravado)}`;
             window.location.href = externalUrl; // Redireciona para a URL original
           } else {
             const destino = this._usuarioService.usuarioPerfil.isProponente

@@ -68,21 +68,16 @@ export class ProjetosService extends BaseHttpService<
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
-
-    const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
-    const botaoRevisar = BotoesConfig.gerarBotaoPropriedades('revisar');
-    const botaoRecusar = BotoesConfig.gerarBotaoPropriedades('recusar');
-    const botaoArquivar = BotoesConfig.gerarBotaoPropriedades('arquivar');
-
-    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
-
-    return [botaoSalvar, botaoCancelar, botaoEnviar, botaoAutuar, botaoRevisar, botaoRecusar, botaoArquivar, botaoVoltar];
+    return [botaoSalvar, botaoCancelar, botaoEnviar ];
   }
 
   public gerarBotoesAcaoFormularioProponenteEmAnalise(): Array<BotaoPropriedadesModel> {
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
-    return [botaoCancelar,botaoAutuar];
+    const botaoArquivar = BotoesConfig.gerarBotaoPropriedades('arquivar');
+    const botaoRevisar = BotoesConfig.gerarBotaoPropriedades('revisar');
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    return [botaoCancelar,botaoAutuar,botaoRevisar,botaoArquivar,botaoVoltar];
   }
 
   public construirProjetoModelRateio(
@@ -156,6 +151,15 @@ export class ProjetosService extends BaseHttpService<
     );
   }
 
+  public enviarEmailRevisarProjeto(id: number, 
+    justificativa: string ): Observable<string> {
+    return this._http.post(
+      `${this._url}/${id}/revisar?justificativa=${justificativa}`,
+      { justificativa },
+      { responseType: 'text' }
+    );
+  }
+
   public baixarDIC(id: number): void {
     const userHttpOptions: Object = {
       responseType: 'arraybuffer',
@@ -190,4 +194,14 @@ export class ProjetosService extends BaseHttpService<
         }
       });
   }
+
+  public autuarProjetoEdocs(
+    id: number,
+    body: ProjetoFormModel
+  ): Observable<IProjeto> {
+    return this._http.put<IProjeto>(
+      `${this._url}/dic/edocs/autuar/${id}`, body
+    );
+  }
+
 }

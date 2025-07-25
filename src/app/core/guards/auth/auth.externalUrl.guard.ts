@@ -13,10 +13,9 @@ export const authExternalUrlGuard: CanActivateFn = (route, state) => {
   const isAuthenticated = !!sessionStorage.getItem('token');
 
   if (!isAuthenticated) {
-    // Guarda a URL COMPLETA (incluindo parâmetros) no sessionStorage
     sessionStorage.setItem('externalRedirectUrl', state.url);
     return router.createUrlTree(['/login']); // Redireciona para o login
   }
 
-  return true; // Permite o acesso se já estiver autenticado
+  return true; 
 };

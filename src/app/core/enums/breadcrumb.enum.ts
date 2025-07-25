@@ -6,6 +6,10 @@ export enum BreadcrumbAcoesEnum {
   Salvar = 'salvar',
   Enviar = 'enviar',
   Prospectar = 'prospectar',
+  Autuar = 'autuarEdocs',
+  Voltar = 'voltar',
+  Revisar = 'revisar',
+  Arquivar = 'arquivar',
 }
 
 export enum BreadcrumbContextoEnum {

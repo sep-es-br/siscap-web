@@ -22,7 +22,9 @@ import {
   merge,
   debounceTime,
   distinctUntilChanged,
-  of
+  of,
+  shareReplay,
+  take
 } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -74,7 +76,7 @@ import { IndicadoresService } from '../../../core/services/indicadores/indicador
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { IAcao } from '../../../core/interfaces/acoes.interface';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -86,8 +88,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private readonly _subscription: Subscription = new Subscription();
 
-  private readonly _atualizarProjeto$: Observable<IProjeto>;
-  private readonly _cadastrarProjeto$: Observable<number>;
+  private _atualizarProjeto$: Observable<IProjeto> = EMPTY; 
+  private _cadastrarProjeto$: Observable<number> = EMPTY;
 
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
@@ -142,9 +144,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public exibirLista = true;
 
   public nomeGestorProjeto: string = '';
-
+  
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
-
+  @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('confirmarRevisarProjetoModal') confirmarArquivarProjetoModalTemplate: TemplateRef<any> | undefined;
+  
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
   input$ = new Subject<string>();
@@ -167,107 +172,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router
     ) {
-
-    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
-    this.usuario_IdOrganizacoes =
-      this._usuarioService.usuarioPerfil.idOrganizacoes;
-
-    const [editar$, criar$] = partition(
-      this._projetosService.idProjeto$,
-      (idProjeto: number) => idProjeto > 0
-    );
-
-    this._atualizarProjeto$ = editar$.pipe(
-      switchMap((idProjeto: number) =>
-        this._projetosService
-          .getById(idProjeto)
-          .pipe(
-            tap((response: IProjeto) => {
-            }),
-            map<IProjeto, ProjetoModel>(
-              (response: IProjeto) => new ProjetoModel(response)
-            ),
-            catchError((error) => {
-              // Exibe mensagem de erro para o usuário
-              this._toastService.showToast(
-                'error',
-                'Erro ao carregar projeto',
-                ['Verifique se o projeto está válido.']
-              );
-              this.loading = false;
-              this.isLoadingPessoasFiltroTermo = false;
-              return EMPTY;
-            })
-          )
-      ),
-      tap((projetoModel: ProjetoModel) => {
-        
-        this.statusProjeto = projetoModel.status;
-        this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
-          (status) => status != this.statusProjeto
-        );
-
-        this.iniciarForm(projetoModel);
-
-        this._idProjetoEdicao = projetoModel.id;
-
-        this.mostrarBotaoGerarDic = !projetoModel.rascunho && this.statusProjeto != StatusProjetoEnum.Em_Elaboracao ;
-
-        this.equipeProjeto = projetoModel.equipeElaboracao; 
-
-        this.trocarModo(false);
-
-        if ( this.isProponente ) {
-
-          if ( projetoModel.status == StatusProjetoEnum.Em_Analise )
-            this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-              this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
-            );
-          else {
-
-            this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-              this._projetosService.gerarBotoesAcaoFormularioProponente()
-            );
-
-            this.trocarModo(true); //permite editar
-
-          }
-
-        } else {
-          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            this._projetosService.gerarBotoesAcaoFormulario()
-          );
-          // Workaround para carregar o componente de rateio quando modo de edição
-          setTimeout( () => {this.trocarModo(true);}, 2000 );
-        }
-
-        if (!this.isProponente) {
-          this.mostrarBotaoStatusProjeto = true;
-        }
-
-        this.loading = false;
-        this.isLoadingPessoas = false;
-
-      })
-
-    );
-
-    this._cadastrarProjeto$ = criar$.pipe(
-      tap(() => {
-
-        this.iniciarForm();
-
-        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
-        );
-
-        this.mostrarBotaoGerarDic = false;
-
-        this.loading = false;
-        this.isLoadingPessoas = false;
-
-      })
-    );
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
@@ -326,17 +230,114 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  private carregarProjetoEditar(idProjeto: number): void {
+      this._atualizarProjeto$ = this._projetosService
+        .getById(idProjeto)
+        .pipe(
+          tap((response: IProjeto) => {
+            // Você pode deixar vazio ou logar algo
+          }),
+          map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
+          catchError((error) => {
+            this._toastService.showToast(
+              'error',
+              'Erro ao carregar projeto',
+              ['Verifique se o projeto está válido.']
+            );
+            this.loading = false;
+            this.isLoadingPessoasFiltroTermo = false;
+            return EMPTY;
+          }),
+          tap((projetoModel: ProjetoModel) => {
+            this.statusProjeto = projetoModel.status;
+            this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
+              (status) => status != this.statusProjeto
+            );
+    
+            this.iniciarForm(projetoModel);
+            this._idProjetoEdicao = projetoModel.id;
+    
+            this.mostrarBotaoGerarDic =
+              !projetoModel.rascunho &&
+              this.statusProjeto !== StatusProjetoEnum.Em_Elaboracao;
+    
+            this.equipeProjeto = projetoModel.equipeElaboracao;
+            this.trocarModo(false);
+    
+            if (this.isProponente) {
+              if (projetoModel.status === StatusProjetoEnum.Em_Analise) {
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
+                );
+              } else {
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioProponente()
+                );
+                this.trocarModo(true);
+              }
+            } else {
+              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                this._projetosService.gerarBotoesAcaoFormulario()
+              );
+              setTimeout(() => {
+                this.trocarModo(true);
+              }, 2000);
+            }
+    
+            if (!this.isProponente) {
+              this.mostrarBotaoStatusProjeto = true;
+            }
+    
+            this.loading = false;
+            this.isLoadingPessoas = false;
+          })
+        );
+  }
+
   ngOnInit(): void {
+    
+    const rotaAtual = this.route.snapshot.routeConfig?.path;
+    if (rotaAtual === 'criar') {
+      this._projetosService.idProjeto$.next(0);
+    }
+
     const idPelaUrl = this.route.snapshot.paramMap.get('id');
     if (idPelaUrl) {
       this._projetosService.idProjeto$.next(+idPelaUrl);
+      this._navegacaoService.navegacaoSimples(
+        BreadcrumbContextoEnum.Projetos,
+        BreadcrumbAcoesEnum.Editar
+      );
     }
+
+    this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+    this.usuario_IdOrganizacoes =
+    this._usuarioService.usuarioPerfil.idOrganizacoes;
+           
+    this._projetosService.idProjeto$.pipe(take(1)).subscribe(idProjeto => {
+
+      if (idProjeto > 0) {
+        this.carregarProjetoEditar(idProjeto);
+      } else {
+        this.iniciarForm();
+    
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
+        );
+    
+        this.mostrarBotaoGerarDic = false;
+        this.loading = false;
+        this.isLoadingPessoas = false;
+      }
+    });
+
     this._subscription.add(this._getAllOpcoes$.subscribe());
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
     });
+
   }
 
   private carregarPessoasPorOrganizacao(): void {
@@ -492,10 +493,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.pecasPlanejamento ?? null,
         [Validators.required, Validators.maxLength(2000)]
       ),
-      enviarProjetoGestor: this._nnfb.control(projetoFormModel?.enviarProjetoGestor ?? false, 
+      enviarProjetoGestor: this._nnfb.control(
+        projetoFormModel?.enviarProjetoGestor ?? false, 
+      ),
+      justificativaRevisao: this._nnfb.control(
+        projetoFormModel?.justificativaRevisao ?? null,
+        [Validators.required, Validators.maxLength(200)]
+      ),
+      justificativaArquivamento: this._nnfb.control(
+        projetoFormModel?.justificativaArquivamento ?? null,
+        [Validators.required, Validators.maxLength(200)]
       ),
     });
-
+    
     this.carregarPessoasPorOrganizacao();
         
     this.projetoFormValueChanges();
@@ -773,6 +783,28 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         });
         this.validacaoSomaValoresAcoesEnviar(this.projetoForm, false);
         break;
+
+      case BreadcrumbAcoesEnum.Autuar:
+        this.projetoForm.patchValue({
+          autuarConfirmacaoProjetoModal : true
+        });
+        this.abrirConfirmarIntegracapEdocsModal(this.projetoForm)
+        break;
+
+      case BreadcrumbAcoesEnum.Voltar:
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Projetos
+        );
+        break;
+
+      case BreadcrumbAcoesEnum.Revisar:
+          this.abrirRevisarModal(this.projetoForm)
+        break;
+
+      case BreadcrumbAcoesEnum.Arquivar:
+          this.abrirArquivarModal(this.projetoForm)
+        break;
+
     }
   }
 
@@ -817,6 +849,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
     this.projetoForm.get('valor.tipo')?.disable();
+
+    // Caso especifico para os campos de justificativa (revisao e arquivamento ) na autuacao de projeto..
+    this.projetoForm.get('justificativaRevisao')?.enable();
+    this.projetoForm.get('justificativaArquivamento')?.enable();
+
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
@@ -1021,10 +1058,143 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  public abrirRevisarModal( form: FormGroup
+  ) {
+    
+    const modalRef = this._ngbModalService.open( this.confirmarRevisarProjetoModalTemplate , {
+      centered: true,
+      size: 'lg',
+    });
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'confirmado') {
+           this.enviarProjetoRevisaoForm(this.projetoForm);
+        }
+      },
+      (reason) => {
+        console.log('Usuário cancelou:', reason);
+      }
+    );
+
+  }
+
+  public abrirArquivarModal( form: FormGroup
+  ) {
+    
+    const modalRef = this._ngbModalService.open( this.confirmarArquivarProjetoModalTemplate , {
+      centered: true,
+      size: 'lg',
+    });
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'confirmado') {
+           this.enviarProjetoArquivamentoForm (this.projetoForm);
+        }
+      },
+      (reason) => {
+        console.log('Usuário cancelou:', reason);
+      }
+    );
+
+  }
+
+  public abrirConfirmarIntegracapEdocsModal( form: FormGroup
+  ) {
+
+    this.nomeGestorProjeto = this.projetoForm.get('nomeResponsavelProponente')?.value || '-';
+    
+    const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
+        centered: true,
+        size: 'lg',
+      });
+
+      modalRef.result.then(
+        (result) => {
+          if (result === 'confirmado') {
+             this.autuarProjetoForm(this.projetoForm);
+          }
+        },
+        (reason) => {
+          console.log('Usuário cancelou:', reason);
+        }
+      );
+
+  }
+
+  private autuarProjetoForm(form: FormGroup): void {
+        
+    const payload = new ProjetoFormModel(form.value as IProjetoForm);
+   
+    this.autuarProjetoAsync(payload);
+
+  }
+
+  private enviarProjetoRevisaoForm(form: FormGroup): void {
+    
+    this._projetosService
+    .enviarEmailRevisarProjeto( this._idProjetoEdicao, this.projetoForm.get('justificativaRevisao')?.value )
+    .subscribe({
+      next: (response: string) => {
+        this._toastService.showToast('success', response);
+        this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+      },
+      error: (err) => {
+        this._toastService.showToast('error', 'Erro ao enviar revisão: ' + err);
+      }
+    });
+
+  }
+
+  private enviarProjetoArquivamentoForm(form: FormGroup): void {
+    
+    console.log("Faz envio de email informando o arquivamento do projeto e a justificativa informada na modal...")
+
+  }
+
+  private autuarProjeto(
+    payload: ProjetoFormModel
+  ): Observable<IProjeto> {
+    return this._projetosService.autuarProjetoEdocs(this._idProjetoEdicao, payload )
+      .pipe(
+      tap((response: IProjeto) => {
+        this._toastService.showToast(
+          'success',
+          'Projeto encaminhado para autuacao no E-Docs.'
+        );
+      }),
+      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
+    );
+  }
+
+  private autuarProjetoAsync(payload: ProjetoFormModel): void {
+    this._projetosService.autuarProjetoEdocs(this._idProjetoEdicao, payload)
+      .pipe(
+        tap(() => {
+          this._toastService.showToast(
+            'info',
+            'Processo de autuação iniciado no E-Docs.'
+          );
+        }),
+        catchError(error => {
+          this._toastService.showToast(
+            'error',
+            'Erro ao iniciar autuação no E-Docs.'
+          );
+          return of(null); // evita quebra
+        }),
+        finalize(() => {
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          // Redireciona ou fecha formulário
+        })
+      )
+      .subscribe();
+  }
+
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._rateioService.resetarRateio();
-    this._projetosService.idProjeto$.next(0);
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 

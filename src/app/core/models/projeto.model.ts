@@ -33,6 +33,8 @@ export class ProjetoFormModel implements IProjetoForm {
   public nomeagente: string;
   public pecasPlanejamento: string;
   public enviarProjetoGestor: boolean;
+  public justificativaRevisao: string;
+  public justificativaArquivamento: string;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -63,6 +65,9 @@ export class ProjetoFormModel implements IProjetoForm {
     this.nomeagente = projetoForm?.nomeagente ?? '';
     this.pecasPlanejamento = projetoForm?.pecasPlanejamento ?? '';
     this.enviarProjetoGestor = projetoForm?.enviarProjetoGestor ?? false;
+    this.justificativaRevisao = projetoForm?.justificativaRevisao ?? '';
+    this.justificativaArquivamento = projetoForm?.justificativaArquivamento ?? '';
+    
   }
 
   private construirRateioModelArray(

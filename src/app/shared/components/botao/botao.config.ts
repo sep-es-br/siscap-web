@@ -87,7 +87,6 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-pen-to-square'],
       texto: 'Revisar',
       acao: 'revisar',
-      desabilitado: true
     },
     recusar: {
       classesCSS: ['btn-danger'],
@@ -100,7 +99,6 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-box-archive'],
       texto: 'Arquivar',
       acao: 'arquivar',
-      desabilitado: true
     },
   };
 

@@ -29,6 +29,8 @@ export interface IProjeto {
   nomeagente: string;
   pecasPlanejamento: string;
   enviarProjetoGestor: boolean;
+  justificativaRevisao: string;
+  justificativaArquivamento: string;
 }
 
 export interface IProjetoForm
