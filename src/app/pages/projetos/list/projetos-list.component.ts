@@ -20,6 +20,9 @@ import {
 
 import { getSimboloMoeda } from '../../../core/utils/functions';
 import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
+import { UsuarioService } from '../../../core/services/usuario/usuario.service';
+import { ITableActionOutput, TTableActions } from '../../../shared/templates/table-actions-dropdown/table-actions-dropdown.interface';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'siscap-projetos-list',
@@ -30,15 +33,25 @@ import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 export class ProjetosListComponent {
   public projetosList = input<Array<IProjetoTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();
+  public permissaoDeletarAdminAuth: boolean = false;
 
+  //public tableActionInput = input.required<number>();
+  public tableActionOutput = output<ITableActionOutput>();
+      
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
+  urlEdocsBase = environment.edocsUrl;
+  
   constructor(
     private readonly _projetosService: ProjetosService,
     private readonly _navegacaoService: NavegacaoService,
-    private readonly _ngbModalService: NgbModal
-  ) {}
+    private readonly _ngbModalService: NgbModal,
+    private readonly _usuarioService: UsuarioService
+  ) {
+    this.permissaoDeletarAdminAuth =
+        this._usuarioService.verificarPermissao('adminAuth');
+  }
 
   public sortColumn(event: SortColumn): void {
     this.sortableDirectiveOutput.emit(`${event.column},${event.direction}`);
@@ -68,14 +81,14 @@ export class ProjetosListComponent {
     );
   }
 
-  private deletarProjeto(id: number): void {
+  public deletarProjeto(id: number): void {
     const projetoTableData = this.projetosList()?.find(
       (projeto) => projeto.id === id
     );
 
     this.dispararModalDeletar(projetoTableData!);
   }
-
+  
   private dispararModalDeletar(projetoTableData: IProjetoTableData): void {
     const modalRef = this._ngbModalService.open(DeleteModalComponent, {
       centered: true,

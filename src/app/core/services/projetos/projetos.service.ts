@@ -80,6 +80,11 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCancelar,botaoAutuar,botaoRevisar,botaoArquivar,botaoVoltar];
   }
 
+  public gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(): Array<BotaoPropriedadesModel> {
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar];
+  }
+
   public construirProjetoModelRateio(
     idMicrorregioesList: Array<number>,
     valorEstimado: number
@@ -155,6 +160,15 @@ export class ProjetosService extends BaseHttpService<
     justificativa: string ): Observable<string> {
     return this._http.post(
       `${this._url}/${id}/revisar?justificativa=${justificativa}`,
+      { justificativa },
+      { responseType: 'text' }
+    );
+  }
+
+  public enviarEmailArquivarProjeto(id: number, 
+    justificativa: string ): Observable<string> {
+    return this._http.post(
+      `${this._url}/${id}/arquivar?justificativa=${justificativa}`,
       { justificativa },
       { responseType: 'text' }
     );

@@ -26,7 +26,7 @@ import {
   shareReplay,
   take
 } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
@@ -77,6 +77,9 @@ import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { IAcao } from '../../../core/interfaces/acoes.interface';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
+import { EquipeModel } from '../../../core/models/equipe.model';
+import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -148,7 +151,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
-  @ViewChild('confirmarRevisarProjetoModal') confirmarArquivarProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('confirmarArquivarProjetoModal') confirmarArquivarProjetoModalTemplate: TemplateRef<any> | undefined;
   
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
@@ -235,7 +238,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
-            // Você pode deixar vazio ou logar algo
+            
+            console.log( "Equipe vinda ada API : ", JSON.stringify(response, null, 2) )
+
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {
@@ -249,12 +254,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             return EMPTY;
           }),
           tap((projetoModel: ProjetoModel) => {
+
             this.statusProjeto = projetoModel.status;
+
             this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
               (status) => status != this.statusProjeto
             );
     
             this.iniciarForm(projetoModel);
+
             this._idProjetoEdicao = projetoModel.id;
     
             this.mostrarBotaoGerarDic =
@@ -265,16 +273,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.trocarModo(false);
     
             if (this.isProponente) {
-              if (projetoModel.status === StatusProjetoEnum.Em_Analise) {
+              if (projetoModel.status === StatusProjetoEnum.Em_Analise && !projetoModel.protocoloEdocs ) {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
                 );
               } else {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponente()
-                );
-                this.trocarModo(true);
+                if( projetoModel.protocoloEdocs ){
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao()
+                  );
+                }else{
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponente()
+                  );
+                  this.trocarModo(true);
+                }
               }
+              
             } else {
               this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                 this._projetosService.gerarBotoesAcaoFormulario()
@@ -343,14 +358,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private carregarPessoasPorOrganizacao(): void {
     
     const idOrganizacaoFormControl = this.projetoForm.get('idOrganizacao') as FormControl<number | null>;
+
     idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
 
     this.isLoadingPessoas = true;
     this._pessoasService.buscarResponsavelPorIdOrganizacaoAC(this.usuario_IdOrganizacoes[0])
       .subscribe({
       next: (response) => {
+
         this.pessoasOpcoes = response;
         this.isLoadingPessoas = false;
+
+        const subResponsavelProponente = this.projetoForm.get('subResponsavelProponente')?.value
+        const pessoa = this.pessoasOpcoes.find( p => p.agentePublicoSub === subResponsavelProponente );
+        this.projetoForm.patchValue({ nomeResponsavelProponente: pessoa?.nome || subResponsavelProponente });
+        
       },
       error: () => {
         this.pessoasOpcoes = [];
@@ -497,15 +519,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.enviarProjetoGestor ?? false, 
       ),
       justificativaRevisao: this._nnfb.control(
-        projetoFormModel?.justificativaRevisao ?? null,
-        [Validators.required, Validators.maxLength(200)]
+        projetoFormModel?.justificativaRevisao ?? null
       ),
       justificativaArquivamento: this._nnfb.control(
-        projetoFormModel?.justificativaArquivamento ?? null,
-        [Validators.required, Validators.maxLength(200)]
+        projetoFormModel?.justificativaArquivamento ?? null
       ),
+      protocoloEdocs: this._nnfb.control(projetoFormModel?.protocoloEdocs ?? '', []),
     });
-    
+
+        
     this.carregarPessoasPorOrganizacao();
         
     this.projetoFormValueChanges();
@@ -523,8 +545,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
     idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
   
-    const idResponsavelProponenteFormControl = this.projetoForm.get('idResponsavelProponente' ) as FormControl<number | null>;
-
     const indexGestor = this.pessoasOpcoes.findIndex( pessoa => pessoa.gestorOrganizacao === true );
 
     if( indexGestor > 0 ){
@@ -544,30 +564,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         });
       }
     }
-
-    //if ( idResponsavelProponenteFormControl.value === 0 ) {
-  
-      //this.pessoasOpcoes = [];
-      //this.isLoadingPessoas = true;
-    
-      /*
-      this._pessoasService
-        .buscarResponsavelPorIdOrganizacaoAC(this.usuario_IdOrganizacoes[0])
-        .subscribe({
-          next: (response) => {
-            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
-            this.isLoadingPessoas = false;
-            
-            
-          },
-          error: () => {
-            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
-            this.isLoadingPessoas = false;
-          },
-        });
-      */
-
-    //}
 
   }
  
@@ -678,7 +674,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     this.isLoadingPessoas = true;
-    //this.pessoasOpcoes = [];
 
     const subResponsavelProponenteValor = subResponsavelProponente.value;
     
@@ -720,44 +715,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           },
         });
 
-    } else {
-
-      this._pessoasService
-        .buscarResponsavelPorIdOrganizacaoAC(idOrganizacaoValue)
-        .subscribe({
-          next: (response) => {
-            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = response;
-            this.isLoadingPessoas = false;
-            
-            const  indexGestor = this.pessoasOpcoes.findIndex(
-                pessoa => pessoa.agentePublicoSub === subResponsavelProponente.value
-              );
-            
-            if( indexGestor > 0 ){
-              this.projetoForm.patchValue({
-                idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
-                nomeResponsavelProponente: this.pessoasOpcoes[indexGestor].nome.toUpperCase(),
-                papelResponsavelProponente: this.pessoasOpcoes[indexGestor].papelPrioritario,
-                subResponsavelProponente: this.pessoasOpcoes[indexGestor].agentePublicoSub
-              });
-            } else {
-              if (this.pessoasOpcoes.length > 0){
-                this.projetoForm.patchValue({
-                  idResponsavelProponente: null,
-                  nomeResponsavelProponente: '',
-                  papelResponsavelProponente: '',
-                  subResponsavelProponente: ''
-                });
-              }
-            }
-          },
-          error: () => {
-            this.pessoasOpcoes = this.pessoasOpcoesFiltrada = [];
-            this.isLoadingPessoas = false;
-          },
-        });
-
-    }
+    } 
 
   }
 
@@ -917,6 +875,27 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload: ProjetoFormModel,
     isRascunho: boolean
   ): Observable<IProjeto> {
+
+      const usuarioProponente = payload.equipeElaboracao.some(
+        membro => membro.idPessoa === this._usuarioService.usuarioPerfil.idPessoa && membro.idPapel === TipoPapelEnum.Proponente
+      );
+
+      if( !usuarioProponente ){
+        
+        const novoMembro: EquipeModel = {
+          subPessoa: this._usuarioService.usuarioPerfil.subNovo,
+          idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
+          idPapel: TipoPapelEnum.Proponente,
+          idStatus: TipoStatusEnum.Ativo,
+          justificativa: null,
+          nome: this._usuarioService.usuarioPerfil.nome,
+          papelNome: 'Elaborador'
+        };
+        
+        payload.equipeElaboracao.push(novoMembro);
+
+      }
+     
       if (payload.idResponsavelProponente === 0) {
         const dados = this.projetoForm.value;
         return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
@@ -931,6 +910,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
         );
       }
+
     return this._projetosService.post(payload, isRascunho).pipe(
       tap((response: IProjeto) => {
         this._toastService.showToast(
@@ -1060,17 +1040,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirRevisarModal( form: FormGroup
   ) {
-    
+        
     const modalRef = this._ngbModalService.open( this.confirmarRevisarProjetoModalTemplate , {
       centered: true,
       size: 'lg',
     });
-
+    
     modalRef.result.then(
       (result) => {
+
         if (result === 'confirmado') {
            this.enviarProjetoRevisaoForm(this.projetoForm);
         }
+
       },
       (reason) => {
         console.log('Usuário cancelou:', reason);
@@ -1079,8 +1061,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  public abrirArquivarModal( form: FormGroup
-  ) {
+  public abrirArquivarModal( form: FormGroup ) {
+
+    const controlJustificativaArquivamento = form.get('justificativaArquivamento');
+    controlJustificativaArquivamento?.setValidators([Validators.required, Validators.maxLength(200)]);
+    controlJustificativaArquivamento?.updateValueAndValidity();
+
+    const controlJustificativaRevisao = form.get('justificativaRevisao');
+    controlJustificativaRevisao?.setValidators([Validators.required, Validators.maxLength(200)]);
+    controlJustificativaRevisao?.updateValueAndValidity();
     
     const modalRef = this._ngbModalService.open( this.confirmarArquivarProjetoModalTemplate , {
       centered: true,
@@ -1090,13 +1079,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result) => {
         if (result === 'confirmado') {
-           this.enviarProjetoArquivamentoForm (this.projetoForm);
+          this.enviarProjetoArquivamentoForm(form);
         }
       },
       (reason) => {
         console.log('Usuário cancelou:', reason);
       }
     );
+
+  }
+
+  public validarEnvioArquivamento( modal: NgbActiveModal )  {
+    
+    if (this.projetoForm.invalid) {
+      this.projetoForm.markAllAsTouched(); 
+      return; 
+    }
+  
+    modal.close('confirmado'); 
 
   }
 
@@ -1149,25 +1149,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private enviarProjetoArquivamentoForm(form: FormGroup): void {
     
-    console.log("Faz envio de email informando o arquivamento do projeto e a justificativa informada na modal...")
+    this._projetosService
+    .enviarEmailArquivarProjeto( this._idProjetoEdicao, this.projetoForm.get('justificativaArquivamento')?.value )
+    .subscribe({
+      next: (response: string) => {
+        this._toastService.showToast('success', response);
+        this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+      },
+      error: (err) => {
+        this._toastService.showToast('error', 'Erro ao enviar aviso de arquivamento: ' + err);
+      }
+    });
 
   }
-
-  private autuarProjeto(
-    payload: ProjetoFormModel
-  ): Observable<IProjeto> {
-    return this._projetosService.autuarProjetoEdocs(this._idProjetoEdicao, payload )
-      .pipe(
-      tap((response: IProjeto) => {
-        this._toastService.showToast(
-          'success',
-          'Projeto encaminhado para autuacao no E-Docs.'
-        );
-      }),
-      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
-    );
-  }
-
+  
   private autuarProjetoAsync(payload: ProjetoFormModel): void {
     this._projetosService.autuarProjetoEdocs(this._idProjetoEdicao, payload)
       .pipe(
@@ -1186,7 +1181,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
         finalize(() => {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
-          // Redireciona ou fecha formulário
         })
       )
       .subscribe();
@@ -1196,6 +1190,28 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._subscription.unsubscribe();
     this._rateioService.resetarRateio();
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
+  }
+
+  confirmarJustificativaRevisao(modal: NgbModalRef): void {
+    const control = this.projetoForm.get('justificativaRevisao'); 
+  
+    if (!control || control.invalid || !control.value?.trim()) {
+      control?.markAsTouched(); 
+      return; 
+    }
+  
+    modal.close('confirmado'); 
+  }
+
+  confirmarJustificativaArquivamento(modal: NgbModalRef): void {
+    const control = this.projetoForm.get('justificativaArquivamento'); 
+  
+    if (!control || control.invalid || !control.value?.trim()) {
+      control?.markAsTouched(); 
+      return; 
+    }
+  
+    modal.close('confirmado'); 
   }
 
 }

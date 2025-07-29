@@ -31,16 +31,18 @@ export interface IProjeto {
   enviarProjetoGestor: boolean;
   justificativaRevisao: string;
   justificativaArquivamento: string;
+  protocoloEdocs: string;
 }
 
 export interface IProjetoForm
   extends Omit<IProjeto, 'id' | 'idStatus' | 'status'> {}
 
 export interface IProjetoTableData
-  extends Pick<IProjeto, 'id' | 'sigla' | 'titulo'> {
+  extends Pick<IProjeto, 'id' | 'sigla' | 'titulo' | 'protocoloEdocs'> {
   status: string;
   valorEstimado: number;
   isRascunho: boolean;
+  protocoloEdocs: string
 }
 
 export interface IProjetoFiltroPesquisa

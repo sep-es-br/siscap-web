@@ -35,6 +35,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public enviarProjetoGestor: boolean;
   public justificativaRevisao: string;
   public justificativaArquivamento: string;
+  public protocoloEdocs: string;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -67,6 +68,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.enviarProjetoGestor = projetoForm?.enviarProjetoGestor ?? false;
     this.justificativaRevisao = projetoForm?.justificativaRevisao ?? '';
     this.justificativaArquivamento = projetoForm?.justificativaArquivamento ?? '';
+    this.protocoloEdocs = projetoForm?.protocoloEdocs ?? '';
     
   }
 

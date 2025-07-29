@@ -459,26 +459,28 @@
       Deseja enviar o projeto para revisão ?
     </h4>
   </div>
-  <div class="modal-body">
-    <label for="justificativaRevisao" class="modal-body text-primary">
-      <validation-message
-        [control]="getControl('justificativaRevisao')"
-      >
-      Justificativa
-      </validation-message>
-    </label>
+  <div class="modal-body py-3">
     <form [formGroup]="projetoForm">
-     <textarea
-        rows="5"
-        class="form-control"
-        id="justificativaRevisao"
-        formControlName="justificativaRevisao"
-        maxLength="200"
-        placeholder="-- Informar a justificativa para revisão --"
-        required="true"
-      ></textarea>
+      <div class="mb-3">
+        <label for="justificativaRevisao" class="form-label text-primary fs-5">
+          <validation-message
+            [control]="getControl('justificativaRevisao')"
+          >
+            Justificativa
+          </validation-message>
+        </label>
+        <textarea
+          rows="5"
+          class="form-control"
+          id="justificativaRevisao"
+          formControlName="justificativaRevisao"
+          maxLength="200"
+          placeholder="-- Informar a justificativa para revisão --"
+          required
+        ></textarea>
+      </div>
     </form>
-  </div>
+  </div>  
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button
@@ -489,7 +491,7 @@
       </button>
       <button
         class="btn btn-success icon-text-btn me-2"
-        (click)="modal.close('confirmado')">
+        (click)="confirmarJustificativaRevisao(modal)">
         <i class="fa-solid fa-check me-2"></i>
         <span>Confirmar</span>
       </button>
@@ -497,30 +499,31 @@
   </div>
 </ng-template>
 
-<ng-template #confirmarArquivarProjetoModalTemplate let-modal>
+<ng-template #confirmarArquivarProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
       Deseja arquivar o projeto ?
     </h4>
   </div>
-  <div class="modal-body">
-    <label for="justificativaArquivamento" class="modal-body text-primary">
-      <validation-message
-        [control]="getControl('justificativaArquivamento')"
-      >
-      Justificativa
-      </validation-message>
-    </label>
+  <div class="modal-body py-3">
     <form [formGroup]="projetoForm">
-      <textarea 
+      <div class="mb-3">
+        <label for="justificativaArquivamento" class="form-label text-primary fs-5">
+          <validation-message
+            [control]="getControl('justificativaArquivamento')"
+          >
+            Justificativa
+          </validation-message>
+        </label>
+        <textarea 
           rows="5"
           class="form-control"
           id="justificativaArquivamento"
           formControlName="justificativaArquivamento"
           maxLength="200"
           placeholder="-- Informar a justificativa para arquivamento --"
-          required="true"
-      ></textarea>
+        ></textarea>
+      </div>
     </form>
   </div>
   <div class="modal-footer">
@@ -533,7 +536,7 @@
       </button>
       <button
         class="btn btn-success icon-text-btn me-2"
-        (click)="modal.close('confirmado')">
+        (click)="confirmarJustificativaArquivamento(modal)">
         <i class="fa-solid fa-check me-2"></i>
         <span>Confirmar</span>
       </button>
