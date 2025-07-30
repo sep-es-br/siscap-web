@@ -42,7 +42,8 @@ export interface IProjetoTableData
   status: string;
   valorEstimado: number;
   isRascunho: boolean;
-  protocoloEdocs: string
+  protocoloEdocs: string;
+  aguardandoProtocolo: boolean;
 }
 
 export interface IProjetoFiltroPesquisa

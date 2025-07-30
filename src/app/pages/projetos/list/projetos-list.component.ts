@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 
-import { tap } from 'rxjs';
+import { Subject, takeUntil, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { DeleteModalComponent } from '../../../shared/templates/delete-modal/delete-modal.component';
@@ -31,9 +31,12 @@ import { environment } from '../../../../environments/environment';
   styleUrl: './projetos-list.component.scss',
 })
 export class ProjetosListComponent {
+  
   public projetosList = input<Array<IProjetoTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();
   public permissaoDeletarAdminAuth: boolean = false;
+
+  private _destroy$ = new Subject<void>();
 
   //public tableActionInput = input.required<number>();
   public tableActionOutput = output<ITableActionOutput>();
@@ -51,6 +54,29 @@ export class ProjetosListComponent {
   ) {
     this.permissaoDeletarAdminAuth =
         this._usuarioService.verificarPermissao('adminAuth');
+  }
+
+  projetosAguardando: Set<number> = new Set();
+
+  ngOnInit(): void {
+    
+    this._projetosService.projetosAguardandoEdocs$
+    .pipe(takeUntil(this._destroy$))
+    .subscribe(set => {
+      this.projetosAguardando = set;
+    });
+
+    this._projetosService.protocoloAtualizado$
+      .pipe(
+        takeUntil(this._destroy$) // para evitar memory leak
+      )
+      .subscribe(({ idProjeto, protocolo }) => {
+        const projeto = this.projetosList()?.find(p => p.id === idProjeto);
+        if (projeto) {
+          projeto.protocoloEdocs = protocolo;
+        }
+      });
+
   }
 
   public sortColumn(event: SortColumn): void {

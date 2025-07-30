@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -30,12 +30,30 @@ export class ProjetosService extends BaseHttpService<
 > {
   private readonly _url = `${environment.apiUrl}/projetos`;
 
+  public protocoloAtualizado$ = new Subject<{ idProjeto: number; protocolo: string }>();
+  private projetosAguardandoEdocsSubject = new BehaviorSubject<Set<number>>(new Set());
+  public projetosAguardandoEdocs$ = this.projetosAguardandoEdocsSubject.asObservable();
+
+  adicionarProjetoAguardando(idProjeto: number): void {
+    const atual = this.projetosAguardandoEdocsSubject.value;
+    atual.add(idProjeto);
+    this.projetosAguardandoEdocsSubject.next(new Set(atual)); 
+  }
+  
+  removerProjetoAguardando(idProjeto: number): void {
+    const atual = this.projetosAguardandoEdocsSubject.value;
+    atual.delete(idProjeto);
+    this.projetosAguardandoEdocsSubject.next(new Set(atual));
+  }
+
   private readonly _idProjeto$: BehaviorSubject<number> =
     new BehaviorSubject<number>(0);
 
   public get idProjeto$(): BehaviorSubject<number> {
     return this._idProjeto$;
   }
+
+  private _projetosEmAutuacao: BehaviorSubject<Set<number>> = new BehaviorSubject(new Set());
 
   constructor(private readonly _http: HttpClient) {
     super(_http, 'projetos');
@@ -213,9 +231,30 @@ export class ProjetosService extends BaseHttpService<
     id: number,
     body: ProjetoFormModel
   ): Observable<IProjeto> {
+    this.iniciarAutuacao(id);
     return this._http.put<IProjeto>(
       `${this._url}/dic/edocs/autuar/${id}`, body
     );
+  }
+
+  public get projetosEmAutuacao$(): Observable<Set<number>> {
+    return this._projetosEmAutuacao.asObservable();
+  }
+  
+  public iniciarAutuacao(idProjeto: number): void {
+    const set = new Set(this._projetosEmAutuacao.value);
+    set.add(idProjeto);
+    this._projetosEmAutuacao.next(set);
+  }
+  
+  public finalizarAutuacao(idProjeto: number): void {
+    const set = new Set(this._projetosEmAutuacao.value);
+    set.delete(idProjeto);
+    this._projetosEmAutuacao.next(set);
+  }
+  
+  public estaEmAutuacao(idProjeto: number): boolean {
+    return this._projetosEmAutuacao.value.has(idProjeto);
   }
 
 }

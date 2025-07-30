@@ -46,6 +46,9 @@
             rel="noopener noreferrer">
             {{ projeto.protocoloEdocs }}
           </a>
+          <span *ngIf="!projeto.protocoloEdocs && projetosAguardando.has(projeto.id)">
+            ⏳ Aguardando Edocs...
+          </span>
         </td>
         <td>
           {{

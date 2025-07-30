@@ -24,7 +24,11 @@ import {
   distinctUntilChanged,
   of,
   shareReplay,
-  take
+  take,
+  interval,
+  takeUntil,
+  timer,
+  takeWhile
 } from 'rxjs';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -524,7 +528,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       justificativaArquivamento: this._nnfb.control(
         projetoFormModel?.justificativaArquivamento ?? null
       ),
-      protocoloEdocs: this._nnfb.control(projetoFormModel?.protocoloEdocs ?? '', []),
+      protocoloEdocs: this._nnfb.control(
+        projetoFormModel?.protocoloEdocs ?? ''),
     });
 
         
@@ -1164,6 +1169,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
   
   private autuarProjetoAsync(payload: ProjetoFormModel): void {
+
     this._projetosService.autuarProjetoEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
@@ -1183,9 +1189,56 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         })
       )
-      .subscribe();
+      .subscribe(() => {
+        this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
+        this.iniciarPollingProtocolo();
+      });
   }
+  
+  private iniciarPollingProtocolo(): void {
 
+    const intervalo = 2000; // 2 segundos
+    const timeout = 30000;  // 30 segundos
+  
+    interval(intervalo).pipe(
+      takeUntil(timer(timeout)), 
+      switchMap( () =>
+        this._projetosService
+          .getById(this._idProjetoEdicao)
+          .pipe(
+            tap((response: IProjeto) => {
+            }),
+            map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
+            catchError(() => of(null))
+          )
+      ),
+      takeWhile((projeto: ProjetoModel | null) => {
+        if (!projeto) return true;
+        return !projeto.protocoloEdocs; 
+      }, true ) 
+    ).subscribe((projetoFinal: ProjetoModel | null) => {
+      
+      if (projetoFinal && projetoFinal.protocoloEdocs) {
+        
+        const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
+        
+        protocoloEdocsFormControl.patchValue(projetoFinal.protocoloEdocs);
+        
+        this._projetosService.protocoloAtualizado$.next({
+          idProjeto: this._idProjetoEdicao,
+          protocolo: projetoFinal.protocoloEdocs
+        });
+
+        this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
+
+      } else {
+        //this._toastService.showToast('warn', 'Protocolo ainda não disponível após o tempo limite.');
+      }
+
+    });
+
+  }
+  
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._rateioService.resetarRateio();
