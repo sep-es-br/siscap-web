@@ -144,7 +144,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public idIndicadorIndicadores:  | null = null;
 
-  public isLoadingPessoas = true;
+  public isLoadingPessoas = false;
 
   public isLoadingPessoasFiltroTermo = false;
 
@@ -242,9 +242,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
-            
-            console.log( "Equipe vinda ada API : ", JSON.stringify(response, null, 2) )
-
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {
@@ -366,6 +363,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
 
     this.isLoadingPessoas = true;
+
     this._pessoasService.buscarResponsavelPorIdOrganizacaoAC(this.usuario_IdOrganizacoes[0])
       .subscribe({
       next: (response) => {
@@ -720,7 +718,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           },
         });
 
-    } 
+    }else{
+      this.isLoadingPessoas = false;
+    }
 
   }
 
@@ -1197,8 +1197,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   
   private iniciarPollingProtocolo(): void {
 
-    const intervalo = 2000; // 2 segundos
-    const timeout = 30000;  // 30 segundos
+    const intervalo = 2000; 
+    const timeout = 30000;  
   
     interval(intervalo).pipe(
       takeUntil(timer(timeout)), 
@@ -1231,8 +1231,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
 
-      } else {
-        //this._toastService.showToast('warn', 'Protocolo ainda não disponível após o tempo limite.');
       }
 
     });
