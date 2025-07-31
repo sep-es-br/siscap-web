@@ -5,6 +5,7 @@
       <col class="titulo-col" />
       <col class="rascunho-col" />
       <col class="status-col" />
+      <col class="processoEdocs-col" />
       <col class="valorEstimado-col" />
       <col class="acoes-col" />
     </colgroup>
@@ -18,6 +19,7 @@
         </th>
         <th></th>
         <th>Status</th>
+        <th>Processo<br>E-docs</th>
         <th>Valor Estimado</th>
         <th>Ações</th>
       </tr>
@@ -37,6 +39,19 @@
           >
         </td>
         <td>{{ projeto.status }}</td>
+        <td style="white-space: nowrap; word-break: keep-all;" >
+          <a *ngIf="projeto.protocoloEdocs"
+            [href]="urlEdocsBase + projeto.protocoloEdocs"
+            target="_blank"
+            rel="noopener noreferrer">
+            {{ projeto.protocoloEdocs }}
+          </a>
+          <span
+            class="badge rounded-pill text-bg-warning"
+            *ngIf="!projeto.protocoloEdocs && projetosAguardando.has(projeto.id)"
+            >Aguardando Edocs</span
+          >
+        </td>
         <td>
           {{
             projeto.valorEstimado
@@ -51,10 +66,12 @@
           }}
         </td>
         <td (click)="$event.stopPropagation()">
-          <table-actions-dropdown
-            [tableActionInput]="projeto.id"
-            (tableActionOutput)="tableActionOutputEvent($event)"
-          ></table-actions-dropdown>
+          <button class="btn border-none"
+            (click)="deletarProjeto(projeto.id)"
+            [disabled]="!permissaoDeletarAdminAuth"
+          >
+            <i class="fa-solid fa-trash-can me-2"></i>
+          </button>
         </td>
       </tr>
     </tbody>

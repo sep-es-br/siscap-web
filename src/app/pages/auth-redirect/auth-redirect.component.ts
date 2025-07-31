@@ -22,6 +22,7 @@ export class AuthRedirectComponent {
     private readonly _usuarioService: UsuarioService,
     private readonly _navegacaoService: NavegacaoService
   ) {
+
     sessionStorage.setItem(
       'token',
       window.atob(this._route.snapshot.queryParams['token'])
@@ -36,13 +37,21 @@ export class AuthRedirectComponent {
           this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
         }),
         finalize(() => {
-          const destino = this._usuarioService.usuarioPerfil.isProponente
-            ? 'projetos'
-            : 'home';
-
-          this._navegacaoService.navegacaoSimples(destino);
+          // Verifica se há uma URL original guardada antes do login
+          const externalUrl = sessionStorage.getItem('externalRedirectUrl');
+          if (externalUrl) {
+            sessionStorage.removeItem('externalRedirectUrl');
+            const separator = externalUrl.includes('?') ? '&' : '?';
+            const tokenGravado = sessionStorage.getItem('token') || '';
+            const urlComToken = `${externalUrl}${separator}token=${encodeURIComponent(tokenGravado)}`;
+            window.location.href = externalUrl; // Redireciona para a URL original
+          } else {
+            const destino = this._usuarioService.usuarioPerfil.isProponente
+              ? 'projetos'
+              : 'home';
+            this._navegacaoService.navegacaoSimples(destino);
+          }
         })
-      )
-      .subscribe();
+      ).subscribe();
   }
 }

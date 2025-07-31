@@ -31,6 +31,7 @@ export const BREADCRUMB_LISTA_CAMINHOS_PRINCIPAIS: Array<string> = [
 export const BREADCRUMB_LISTA_CAMINHOS_FILHOS: Array<string> = [
   'criar',
   'editar',
+  'editar/'
 ];
 
 export const BREADCRUMB_LISTA_CAMINHOS_ESPECIFICOS: Array<{

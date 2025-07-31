@@ -75,11 +75,11 @@ export class ProjetosPesquisaComponent implements OnInit {
     });
 
     this.projetoPesquisaFormValueChanges();
+
   }
 
   ngOnInit(): void {
     this._getOrganizacoesOpcoes$.subscribe();
-
     this.pesquisarProjetos.emit(this.projetosPesquisaForm.value);
   }
 
@@ -90,4 +90,5 @@ export class ProjetosPesquisaComponent implements OnInit {
         this.pesquisarProjetos.emit(projetoPesquisaFormValue);
       });
   }
+  
 }

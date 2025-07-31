@@ -5,6 +5,8 @@ import { ProjetosComponent } from './projetos.component';
 import { ProjetoFormComponent } from './form/projeto-form.component';
 
 import { projetos_NoIdEditarGuard } from '../../core/guards/projetos/no-id-editar.guard';
+import { authGuard } from '../../core/guards/auth/auth.guard';
+import { authExternalUrlGuard } from '../../core/guards/auth/auth.externalUrl.guard';
 
 const PROJETOS_ROUTES: Routes = [
   {
@@ -16,6 +18,12 @@ const PROJETOS_ROUTES: Routes = [
     title: 'Cadastrar Projeto',
     path: 'criar',
     component: ProjetoFormComponent,
+  },
+  {
+    title: 'Editar Projeto (via link)',
+    path: 'editar/:id', 
+    component: ProjetoFormComponent,
+    canActivate: [authExternalUrlGuard]
   },
   {
     title: 'Editar Projeto',

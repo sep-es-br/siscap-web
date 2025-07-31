@@ -214,8 +214,9 @@
                 Ações
             </label>
             <siscap-acoes-form 
-              [isModoEdicao]="isModoEdicao">
-            </siscap-acoes-form>
+              [isModoEdicao]="isModoEdicao"
+              [moedaProjeto]="moedaProjeto"
+            ></siscap-acoes-form>
           </div>
        
           <div class="col-12">
@@ -391,6 +392,153 @@
       >
         <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
         <span>Voltar</span>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #enviarProjetoModal let-modal>
+  <div class="modal-header py-3 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+      Confirmação de Envio
+    </h4>
+  </div>
+  <div class="modal-body">
+    <h6>Deseja fazer o envio do DIC para o gestor do orgão de origem ?</h6>
+    <h6>Sistema fará o envio de email informando ao gestor {{ nomeGestorProjeto }} o pedido de análise para posterior envio a SUBCAP.</h6>
+  </div>
+  <div class="modal-footer">
+    <div class="d-inline-flex flex-row-reverse">
+      <button
+        class="btn btn-success icon-text-btn"
+        (click)="modal.close('confirmado')">
+        <i class="fa-solid fa-check"></i>
+        <span>Confirmar</span>
+      </button>
+      <button
+        class="btn btn-outline-danger  icon-text-btn me-2"
+        (click)="modal.dismiss('cancelado')">
+        <span>Cancelar</span>
+        <i class="fa-solid fa-close me-2"></i>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #autuarConfirmacaoProjetoModal let-modal>
+  <div class="modal-header py-3 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+      Confirmação Integração E-Docs
+    </h4>
+  </div>
+  <div class="modal-body">
+    <h6>Ao confirmar esta ação, o sistema irá gerar o DIC em formato PDF, assiná-lo digitalmente utilizando a identidade de {{ nomeGestorProjeto }}, autuar um novo processo, entranhar o documento ao processo e encaminhá-lo à SUBCAP para análise.</h6>
+    <h6>Deseja confirmar?</h6>
+  </div>
+  <div class="modal-footer">
+    <div class="d-inline-flex flex-row-reverse">
+      <button
+        class="btn btn-outline-danger  icon-text-btn"
+        (click)="modal.dismiss('cancelado')">
+        <span>Cancelar</span>
+        <i class="fa-solid fa-close"></i>
+      </button>
+      <button
+        class="btn btn-success icon-text-btn me-2"
+        (click)="modal.close('confirmado')">
+        <i class="fa-solid fa-paper-plane me-2"></i>
+        <span>Assinar e Autuar</span>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #confirmarRevisarProjetoModal let-modal>
+  <div class="modal-header py-3 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+      Deseja enviar o projeto para revisão ?
+    </h4>
+  </div>
+  <div class="modal-body py-3">
+    <form [formGroup]="projetoForm">
+      <div class="mb-3">
+        <label for="justificativaRevisao" class="form-label text-primary fs-5">
+          <validation-message
+            [control]="getControl('justificativaRevisao')"
+          >
+            Justificativa
+          </validation-message>
+        </label>
+        <textarea
+          rows="5"
+          class="form-control"
+          id="justificativaRevisao"
+          formControlName="justificativaRevisao"
+          maxLength="200"
+          placeholder="-- Informar a justificativa para revisão --"
+          required
+        ></textarea>
+      </div>
+    </form>
+  </div>  
+  <div class="modal-footer">
+    <div class="d-inline-flex flex-row-reverse">
+      <button
+        class="btn btn-outline-danger  icon-text-btn"
+        (click)="modal.dismiss('cancelado')">
+        <span>Cancelar</span>
+        <i class="fa-solid fa-close"></i>
+      </button>
+      <button
+        class="btn btn-success icon-text-btn me-2"
+        (click)="confirmarJustificativaRevisao(modal)">
+        <i class="fa-solid fa-check me-2"></i>
+        <span>Confirmar</span>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #confirmarArquivarProjetoModal let-modal>
+  <div class="modal-header py-3 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+      Deseja arquivar o projeto ?
+    </h4>
+  </div>
+  <div class="modal-body py-3">
+    <form [formGroup]="projetoForm">
+      <div class="mb-3">
+        <label for="justificativaArquivamento" class="form-label text-primary fs-5">
+          <validation-message
+            [control]="getControl('justificativaArquivamento')"
+          >
+            Justificativa
+          </validation-message>
+        </label>
+        <textarea 
+          rows="5"
+          class="form-control"
+          id="justificativaArquivamento"
+          formControlName="justificativaArquivamento"
+          maxLength="200"
+          placeholder="-- Informar a justificativa para arquivamento --"
+        ></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="d-inline-flex flex-row-reverse">
+      <button
+        class="btn btn-outline-danger  icon-text-btn"
+        (click)="modal.dismiss('cancelado')">
+        <span>Cancelar</span>
+        <i class="fa-solid fa-close"></i>
+      </button>
+      <button
+        class="btn btn-success icon-text-btn me-2"
+        (click)="confirmarJustificativaArquivamento(modal)">
+        <i class="fa-solid fa-check me-2"></i>
+        <span>Confirmar</span>
       </button>
     </div>
   </div>

@@ -10,6 +10,9 @@ import { TemplatesModule } from '../../templates/templates.module';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
+import { RateioModel } from '../../../core/models/rateio.model';
+import { RateioService } from '../../../core/services/rateio/rateio.service';
+import { getSimboloMoeda } from '../../../core/utils/functions';
 
 
 @Component({
@@ -29,19 +32,25 @@ import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
   templateUrl: './acoes-form.component.html',
 })
 export class AcoesFormComponent {
+
   @Input() descricaoAcaoPrincipal: string;
   @Input() descricaoAcaoSecundaria: string;
   @Input() valorEstimadoAcaoPrincipal: number;
   @Input() public isModoEdicao: boolean = false;
-
+  @Input() moedaProjeto: string;
+  
   constructor(
     public acoesService: AcoesService,
     private readonly _toastService: ToastService,
     private fb: FormBuilder) {
+    this.moedaProjeto = '';
     this.descricaoAcaoPrincipal = '';
     this.descricaoAcaoSecundaria = '';
 	  this.valorEstimadoAcaoPrincipal = 0;
   }
+
+   public getSimboloMoeda: (moeda: string | undefined | null) => string =
+      getSimboloMoeda;
 
   public TipoStatusEnum = TipoStatusEnum;
 
