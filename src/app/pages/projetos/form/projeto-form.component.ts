@@ -416,6 +416,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     );
   }
 
+  /*
   public filtrarResponsavelProponente(
     pessoasOpcoes: IOpcoesDropdownResponsavelProponente[]
   ): IOpcoesDropdownResponsavelProponente[] {
@@ -423,6 +424,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       (pessoa) => pessoa.agentePublicoSub != this.getControl('subResponsavelProponente').value
     ) || [pessoasOpcoes[0]]; 
   }
+  */
 
   public async idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): Promise<void> {
     await this.equipeService.idMembroNgSelectValue$.next(event);
