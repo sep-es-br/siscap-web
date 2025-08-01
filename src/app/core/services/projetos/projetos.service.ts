@@ -185,12 +185,21 @@ export class ProjetosService extends BaseHttpService<
   }
 
   public enviarEmailArquivarProjeto(id: number, 
-    justificativa: string ): Observable<string> {
-    return this._http.post(
-      `${this._url}/${id}/arquivar?justificativa=${justificativa}`,
-      { justificativa },
-      { responseType: 'text' }
+    justificativa: string,
+    codigoMotivoArquivamento: string ): Observable<string> {
+
+      const payload = {
+        justificativa: justificativa,
+        codigoMotivoArquivamento: codigoMotivoArquivamento
+      };
+
+      return this._http.post(
+        `${this._url}/${id}/arquivar`,
+        payload ,
+        { responseType: 'text' }
+
     );
+
   }
 
   public baixarDIC(id: number): void {

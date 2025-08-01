@@ -52,6 +52,7 @@ import { ValorModel } from '../../../core/models/valor.model';
 
 import {
   ILocalidadeOpcoesDropdown,
+  IMotivoArquivamentoOpcoesDropdown,
   IOpcoesDropdown,
   IOpcoesDropdownResponsavelProponente,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
@@ -99,11 +100,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private _cadastrarProjeto$: Observable<number> = EMPTY;
 
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>; 
   private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getLocalidadesOpcoes$: Observable<ILocalidadeOpcoesDropdown[]>;
   private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getTiposMotivosArquivamentoOpcoes$: Observable<IMotivoArquivamentoOpcoesDropdown[]>;
    
   private _idProjetoEdicao: number = 0;
 
@@ -131,6 +133,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public microrregioesOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
+  public tiposMotivoArquivamentoOpcoes: IMotivoArquivamentoOpcoesDropdown[] = [];
 
   public indicadoresOpcoes: IOpcoesDropdown[] = [];
 
@@ -217,12 +220,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         } 
       ));
 
+    this._getTiposMotivosArquivamentoOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposArquivamento()
+      .pipe( tap((response) => {
+        console.log('Resposta formatada:', JSON.stringify(response, null, 2));
+        this.tiposMotivoArquivamentoOpcoes = response;
+      }) );
+
     this._getAllOpcoes$ = concat(
       this._getOrganizacoesOpcoes$,
       this._getPlanosOpcoes$,
       this._getTiposValorOpcoes$,
       this._getTiposPapelOpcoes$,
-      this._getLocalidadesOpcoes$
+      this._getLocalidadesOpcoes$,
+      this._getTiposMotivosArquivamentoOpcoes$
     ).pipe(
       finalize(
         () => (this._rateioService.localidadesOpcoes = this.localidadesOpcoes)
@@ -306,6 +317,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
             this.loading = false;
             this.isLoadingPessoas = false;
+
           })
         );
   }
@@ -530,6 +542,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       protocoloEdocs: this._nnfb.control(
         projetoFormModel?.protocoloEdocs ?? ''),
+      codigoMotivoArquivamento: this._nnfb.control( 
+        projetoFormModel?.codigoMotivoArquivamento ?? '' )
     });
 
         
@@ -817,7 +831,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // Caso especifico para os campos de justificativa (revisao e arquivamento ) na autuacao de projeto..
     this.projetoForm.get('justificativaRevisao')?.enable();
+
     this.projetoForm.get('justificativaArquivamento')?.enable();
+
+    this.projetoForm.get('codigoMotivoArquivamento')?.enable();
 
   }
 
@@ -1047,6 +1064,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirRevisarModal( form: FormGroup
   ) {
+
+    const controlJustificativaRevisao = form.get('justificativaRevisao');
+    controlJustificativaRevisao?.setValidators([Validators.required, Validators.maxLength(200)]);
+    controlJustificativaRevisao?.updateValueAndValidity();
         
     const modalRef = this._ngbModalService.open( this.confirmarRevisarProjetoModalTemplate , {
       centered: true,
@@ -1070,20 +1091,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirArquivarModal( form: FormGroup ) {
 
-    const controlJustificativaArquivamento = form.get('justificativaArquivamento');
-    controlJustificativaArquivamento?.setValidators([Validators.required, Validators.maxLength(200)]);
-    controlJustificativaArquivamento?.updateValueAndValidity();
-
-    const controlJustificativaRevisao = form.get('justificativaRevisao');
-    controlJustificativaRevisao?.setValidators([Validators.required, Validators.maxLength(200)]);
-    controlJustificativaRevisao?.updateValueAndValidity();
-    
+    const codigoMotivoArquivamento = this.projetoForm.get('codigoMotivoArquivamento');
+    codigoMotivoArquivamento?.setValidators([Validators.required, Validators.maxLength(200)]);
+    codigoMotivoArquivamento?.updateValueAndValidity();
+            
     const modalRef = this._ngbModalService.open( this.confirmarArquivarProjetoModalTemplate , {
       centered: true,
       size: 'lg',
     });
 
     modalRef.result.then(
+
       (result) => {
         if (result === 'confirmado') {
           this.enviarProjetoArquivamentoForm(form);
@@ -1092,7 +1110,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       (reason) => {
         console.log('Usuário cancelou:', reason);
       }
+
     );
+
+    this.projetoForm.reset({
+      codigoMotivoArquivamento: null,
+      justificativaArquivamento: null
+    });
 
   }
 
@@ -1114,7 +1138,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
     const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
         centered: true,
-        size: 'lg',
+        size: 'lg'
       });
 
       modalRef.result.then(
@@ -1157,7 +1181,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private enviarProjetoArquivamentoForm(form: FormGroup): void {
     
     this._projetosService
-    .enviarEmailArquivarProjeto( this._idProjetoEdicao, this.projetoForm.get('justificativaArquivamento')?.value )
+    .enviarEmailArquivarProjeto( this._idProjetoEdicao, this.projetoForm.get('justificativaArquivamento')?.value, this.projetoForm.get('codigoMotivoArquivamento')?.value )
     .subscribe({
       next: (response: string) => {
         this._toastService.showToast('success', response);
@@ -1257,14 +1281,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   confirmarJustificativaArquivamento(modal: NgbModalRef): void {
-    const control = this.projetoForm.get('justificativaArquivamento'); 
-  
-    if (!control || control.invalid || !control.value?.trim()) {
-      control?.markAsTouched(); 
-      return; 
+
+    const controlJustificativaArquivamento = this.projetoForm.get('justificativaArquivamento');
+    const codigoMotivoArquivamento = this.projetoForm.get('codigoMotivoArquivamento');
+
+    // se clicar na opcao outros obriga o preenchimento da justificativa.
+    if( codigoMotivoArquivamento?.value?.trim() === 'M11'){      
+      controlJustificativaArquivamento?.setValidators([Validators.required, Validators.maxLength(200)]);
+      controlJustificativaArquivamento?.updateValueAndValidity();
+      if ( ( !controlJustificativaArquivamento || controlJustificativaArquivamento.invalid || !controlJustificativaArquivamento.value?.trim() ) ) {
+        controlJustificativaArquivamento?.markAsTouched(); 
+        return;
+      }
     }
-  
-    modal.close('confirmado'); 
+
+    modal.close('confirmado');
+
   }
 
 }

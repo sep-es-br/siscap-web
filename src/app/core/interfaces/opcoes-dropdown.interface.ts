@@ -8,6 +8,11 @@ export interface IProjetoPropostoOpcoesDropdown extends IOpcoesDropdown {
   idPrograma: number | null;
 }
 
+export interface IMotivoArquivamentoOpcoesDropdown extends IOpcoesDropdown {
+  tipo: string;
+  codigo: string;
+}
+
 export interface IObjetoOpcoesDropdown extends IOpcoesDropdown {
   tipo: string;
 }
