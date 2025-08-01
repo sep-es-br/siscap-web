@@ -66,9 +66,7 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   ) {
     const isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
-    const botoesAcaoPropriedades = isProponente
-      ? this._projetosService.gerarBotoesAcaoListagemProponente()
-      : this._projetosService.gerarBotoesAcaoListagem();
+    const botoesAcaoPropriedades = this._projetosService.gerarBotoesAcaoListagem();
 
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
       botoesAcaoPropriedades
