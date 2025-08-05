@@ -284,7 +284,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
             this.equipeProjeto = projetoModel.equipeElaboracao;
 
-            this.isUsuarioProponenteResponsavel = this.equipeProjeto.some( (membro) => membro.subPessoa === this._usuarioService.usuarioPerfil.subNovo )
+            this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
 
             this.trocarModo(false);
     
