@@ -346,6 +346,7 @@ export class RateioService {
     rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType>,
     isModoEdicao: boolean
   ): string {
+    
     const isPercentualValueNotNull =
       !!rateioLocalidadeFormGroup.value.percentual;
 

@@ -146,10 +146,10 @@
                 (click)="buscarAgentesPorTermo()"
                 [disabled]="isLoadingPessoasFiltroTermo">
                 <span *ngIf="!isLoadingPessoasFiltroTermo" class="icon-container">
-                  <i class="fas fa-search"></i> <!-- Mostra lupa quando NÃO está carregando -->
+                  <i class="fas fa-search"></i> 
                 </span>
                 <span *ngIf="isLoadingPessoasFiltroTermo" class="icon-container">
-                  <span class="spinner-border spinner-border-sm"></span> <!-- Mostra spinner quando carregando -->
+                  <span class="spinner-border spinner-border-sm"></span> 
                 </span>
               </button>
             </div>
@@ -211,11 +211,12 @@
 
           <div class="col-12">
             <label for="acoes" class="form-label col-12">
+              <validation-message [control]="getControl('acoesProjeto')">
                 Ações
+              </validation-message>
             </label>
             <siscap-acoes-form 
               [isModoEdicao]="isModoEdicao"
-              [moedaProjeto]="moedaProjeto"
             ></siscap-acoes-form>
           </div>
        

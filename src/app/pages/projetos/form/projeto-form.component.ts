@@ -111,7 +111,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
-  public moedaProjeto: string = '';
+  //public moedaProjeto: string = '';
   public mostrarBotaoGerarDic: boolean = false;
   public mostrarBotaoStatusProjeto: boolean = false;
   public isProponente: boolean = false;
@@ -154,6 +154,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public exibirLista = true;
 
   public nomeGestorProjeto: string = '';
+
+  public isUsuarioProponenteResponsavel: boolean = false;
   
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -223,7 +225,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._getTiposMotivosArquivamentoOpcoes$ = this._opcoesDropdownService
       .getOpcoesTiposArquivamento()
       .pipe( tap((response) => {
-        console.log('Resposta formatada:', JSON.stringify(response, null, 2));
         this.tiposMotivoArquivamentoOpcoes = response;
       }) );
 
@@ -282,10 +283,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               this.statusProjeto !== StatusProjetoEnum.Em_Elaboracao;
     
             this.equipeProjeto = projetoModel.equipeElaboracao;
+
+            this.isUsuarioProponenteResponsavel = this.equipeProjeto.some( (membro) => membro.subPessoa === this._usuarioService.usuarioPerfil.subNovo )
+
             this.trocarModo(false);
     
             if (this.isProponente) {
-              if (projetoModel.status === StatusProjetoEnum.Em_Analise && !projetoModel.protocoloEdocs ) {
+
+              if ( projetoModel.status === StatusProjetoEnum.Em_Analise && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ) {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
                 );
@@ -298,17 +303,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                   this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                     this._projetosService.gerarBotoesAcaoFormularioProponente()
                   );
-                  this.trocarModo(true);
+                  setTimeout(() => { this.trocarModo(true); }, 2000);
                 }
               }
               
             } else {
-              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                this._projetosService.gerarBotoesAcaoFormulario()
-              );
-              setTimeout(() => {
-                this.trocarModo(true);
-              }, 2000);
+              if( projetoModel.status === StatusProjetoEnum.Em_Analise && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ){
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
+                );
+              }else{
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormulario()
+                );
+              }
+              setTimeout(() => { this.trocarModo(true); }, 2000);
             }
     
             if (!this.isProponente) {
@@ -545,7 +554,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       codigoMotivoArquivamento: this._nnfb.control( 
         projetoFormModel?.codigoMotivoArquivamento ?? '' )
     });
-
         
     this.carregarPessoasPorOrganizacao();
         
@@ -655,7 +663,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     }
 
-    this.moedaProjeto = moedaFormControl.value ?? '';
+    //this.moedaProjeto = moedaFormControl.value ?? '';
 
     if (!tipoFormControl.value) {
       // Caso específico de Projetos; tipo do valor somente pode ser 'Estimado'
@@ -663,11 +671,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       tipoFormControl.disable();
     }
 
+    /*
     moedaFormControl.valueChanges.subscribe((moedaValue) => {
       setTimeout(() => {
         this._rateioService.moedaFormControlReferencia$.next(moedaValue);
       });
     });
+    */
 
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
@@ -820,7 +830,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   
   private trocarModo(permitir: boolean): void {
 
+    console.log( " isModoEdicao : " + this.isModoEdicao );
+
     this.isModoEdicao = permitir;
+
+    console.log( " isModoEdicao - depois : " + this.isModoEdicao );
 
     const projetoFormControls = this.projetoForm.controls;
 
@@ -995,7 +1009,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
     this.isLoadingPessoasFiltroTermo = true;
     
-    const termo = this.projetoForm.get('nomeagente')?.value;
+    const termo = this.projetoForm.get('nomeagente')?.value ?? '';
 
     if ( termo.length < 3 ) {
       this._toastService.showToast(
@@ -1266,6 +1280,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._rateioService.resetarRateio();
+    //this._projetosService.idProjeto$.next(0);
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 
