@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
@@ -33,11 +33,18 @@ import { getSimboloMoeda } from '../../../core/utils/functions';
 })
 export class AcoesFormComponent {
 
+  /*
   @Input() descricaoAcaoPrincipal: string;
   @Input() descricaoAcaoSecundaria: string;
   @Input() valorEstimadoAcaoPrincipal: number;
+  */
+
   @Input() public isModoEdicao: boolean = false;
   @Input() moedaProjeto: string;
+
+  public descricaoAcaoPrincipal: string;
+  public descricaoAcaoSecundaria: string;
+  public valorEstimadoAcaoPrincipal: number;
   
   constructor(
     public acoesService: AcoesService,
@@ -65,13 +72,21 @@ export class AcoesFormComponent {
   
   adicionarAcao(): void {
     const novaAcao = this.fb.group({
-      descricaoAcaoPrincipal: [''],
-      descricaoAcaoSecundaria: [''],
-      valorEstimadoAcaoPrincipal: ['']
+      descricaoAcaoPrincipal: ['', [
+        Validators.required,
+        Validators.maxLength(2000),
+      ]],
+      descricaoAcaoSecundaria: ['', [
+        Validators.required,
+        Validators.maxLength(2000),
+      ]],
+      valorEstimadoAcaoPrincipal: ['', [
+        Validators.required,
+      ]]
     });
     this.acoesFormArray.push(novaAcao);
   }
-
+  
   removerAcao(index: number): void {
     this.acoesFormArray.removeAt(index);
   }
@@ -83,7 +98,7 @@ export class AcoesFormComponent {
 
     acaoFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Inativo);
 
-    const acaoPrincipal = acaoFormGroup.get('descricaoAcao')?.value || 'Ação';
+    const acaoPrincipal = acaoFormGroup.get('descricaoAcaoPrincipal')?.value || 'Ação';
     const acaoSecundaria = acaoFormGroup.get('descricaoAcaoSecundaria')?.value || '';
 
     this._toastService.showToast(

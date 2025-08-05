@@ -54,6 +54,7 @@ export class RateioMicrorregiaoFormCardComponent
   constructor(public rateioService: RateioService) {}
 
   ngOnInit(): void {
+
     this.inicializarRateioLocalidadeFormGroupMicrorregiao();
 
     this.rateioService.estadoBooleanCheckboxChange$.subscribe(

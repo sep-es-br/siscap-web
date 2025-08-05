@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 import {
   ILocalidadeOpcoesDropdown,
+  IMotivoArquivamentoOpcoesDropdown,
   IObjetoOpcoesDropdown,
   IOpcoesDropdown,
   IOpcoesDropdownResponsavelProponente,
@@ -29,6 +30,16 @@ export class OpcoesDropdownService {
   ): Observable<IOpcoesDropdown[]> {
     const urlDestino = this._url.replace('destino', destino);
     return this._http.get<IOpcoesDropdown[]>(urlDestino, {
+      params: params,
+    });
+  }
+  
+  private getOpcoesMotivoArquivamentoDropdown(
+    destino: string,
+    params?: any
+  ): Observable<IMotivoArquivamentoOpcoesDropdown[]> {
+    const urlDestino = this._url.replace('destino', destino);
+    return this._http.get<IMotivoArquivamentoOpcoesDropdown[]>(urlDestino, {
       params: params,
     });
   }
@@ -101,6 +112,11 @@ export class OpcoesDropdownService {
 
   public getOpcoesTiposPapel() {
     return this.getOpcoesDropdown('tipos-papel');
+  }
+
+  
+  public getOpcoesTiposArquivamento() {
+    return this.getOpcoesMotivoArquivamentoDropdown('tipos-arquivamento-projeto');
   }
 
   public getOpcoesProjetosPropostos() {

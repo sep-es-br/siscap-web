@@ -7,10 +7,12 @@
 				<div *ngIf="isAcaoAtiva(i)" class="row g-2">
           <div class="col-12 col-md-8">
             <label [for]="'acaoNome_' + i" class="form-label">
+              <validation-message [control]="acoesFormGroup.get('descricaoAcaoPrincipal')!">
               Ação Principal
                 <form-helper-tooltip 
                   [texto]="projetoTooltip['descricaoAcaoPrincipal']"> 
                 </form-helper-tooltip>
+              </validation-message>
             </label>
             <input
               type="text"
@@ -21,10 +23,12 @@
           </div>
           <div class="col-12 col-md-4">
             <label [for]="'acaoValor_' + i" class="form-label">
+              <validation-message [control]="acoesFormGroup.get('valorEstimadoAcaoPrincipal')!">
               Valor Estimado
                 <form-helper-tooltip 
                   [texto]="projetoTooltip['valorEstimadoAcaoPrincipal']"> 
                 </form-helper-tooltip>
+              </validation-message>
             </label>
            <input
               mask="separator.2"
@@ -41,10 +45,12 @@
           </div>
           <div class="col-12">
             <label [for]="'acaoDescricao_' + i" class="form-label">
+              <validation-message [control]="acoesFormGroup.get('descricaoAcaoSecundaria')!">
               Descrição de ações secundárias e produtos
                 <form-helper-tooltip 
                   [texto]="projetoTooltip['descricaoAcoesSecudariasProdutos']"> 
                 </form-helper-tooltip>
+              </validation-message>
             </label>
             <textarea
               class="form-control"

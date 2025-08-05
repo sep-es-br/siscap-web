@@ -36,6 +36,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public justificativaRevisao: string;
   public justificativaArquivamento: string;
   public protocoloEdocs: string;
+  public codigoMotivoArquivamento: string;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -69,7 +70,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.justificativaRevisao = projetoForm?.justificativaRevisao ?? '';
     this.justificativaArquivamento = projetoForm?.justificativaArquivamento ?? '';
     this.protocoloEdocs = projetoForm?.protocoloEdocs ?? '';
-    
+    this.codigoMotivoArquivamento = projetoForm?.codigoMotivoArquivamento ?? '';
   }
 
   private construirRateioModelArray(

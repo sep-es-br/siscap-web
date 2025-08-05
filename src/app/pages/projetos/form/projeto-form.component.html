@@ -146,10 +146,10 @@
                 (click)="buscarAgentesPorTermo()"
                 [disabled]="isLoadingPessoasFiltroTermo">
                 <span *ngIf="!isLoadingPessoasFiltroTermo" class="icon-container">
-                  <i class="fas fa-search"></i> <!-- Mostra lupa quando NÃO está carregando -->
+                  <i class="fas fa-search"></i> 
                 </span>
                 <span *ngIf="isLoadingPessoasFiltroTermo" class="icon-container">
-                  <span class="spinner-border spinner-border-sm"></span> <!-- Mostra spinner quando carregando -->
+                  <span class="spinner-border spinner-border-sm"></span> 
                 </span>
               </button>
             </div>
@@ -211,11 +211,12 @@
 
           <div class="col-12">
             <label for="acoes" class="form-label col-12">
+              <validation-message [control]="getControl('acoesProjeto')">
                 Ações
+              </validation-message>
             </label>
             <siscap-acoes-form 
               [isModoEdicao]="isModoEdicao"
-              [moedaProjeto]="moedaProjeto"
             ></siscap-acoes-form>
           </div>
        
@@ -508,21 +509,44 @@
   <div class="modal-body py-3">
     <form [formGroup]="projetoForm">
       <div class="mb-3">
-        <label for="justificativaArquivamento" class="form-label text-primary fs-5">
-          <validation-message
-            [control]="getControl('justificativaArquivamento')"
-          >
-            Justificativa
-          </validation-message>
-        </label>
-        <textarea 
-          rows="5"
-          class="form-control"
-          id="justificativaArquivamento"
-          formControlName="justificativaArquivamento"
-          maxLength="200"
-          placeholder="-- Informar a justificativa para arquivamento --"
-        ></textarea>
+        <div class="mb-3">
+          <label for="codigoMotivoArquivamento" class="form-label text-primary fs-5">
+            <validation-message
+              [control]="getControl('codigoMotivoArquivamento')" >
+              Motivo Arquivamento
+            </validation-message>
+          </label>
+          <ng-select
+            id="codigoMotivoArquivamento"
+            placeholder="-- Selecione um motivo para arquivamento--"
+            formControlName="codigoMotivoArquivamento"
+            [items]="tiposMotivoArquivamentoOpcoes"
+            bindLabel="tipo"
+            bindValue="codigo" > 
+            <ng-template ng-option-tmp let-item="item">
+              <div style="display: flex; flex-direction: column; line-height: 1.2;">
+                <span>{{ item.tipo }}</span>
+                <span style="font-size: 0.65em; color: gray;">{{ item.codigo }}</span>
+              </div>
+            </ng-template>
+          </ng-select>
+        </div>
+        <div class="mb-3">
+          <label for="justificativaArquivamento" class="form-label text-primary fs-5">
+            <validation-message
+              [control]="getControl('justificativaArquivamento')" >
+              Justificativa
+            </validation-message>
+          </label>
+          <textarea 
+            rows="5"
+            class="form-control"
+            id="justificativaArquivamento"
+            formControlName="justificativaArquivamento"
+            maxLength="200"
+            placeholder="-- Informar a justificativa para arquivamento --"
+          ></textarea>
+        </div>
       </div>
     </form>
   </div>

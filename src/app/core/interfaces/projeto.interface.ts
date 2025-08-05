@@ -32,6 +32,7 @@ export interface IProjeto {
   justificativaRevisao: string;
   justificativaArquivamento: string;
   protocoloEdocs: string;
+  codigoMotivoArquivamento: string;
 }
 
 export interface IProjetoForm

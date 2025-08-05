@@ -52,6 +52,7 @@ import { ValorModel } from '../../../core/models/valor.model';
 
 import {
   ILocalidadeOpcoesDropdown,
+  IMotivoArquivamentoOpcoesDropdown,
   IOpcoesDropdown,
   IOpcoesDropdownResponsavelProponente,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
@@ -99,17 +100,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private _cadastrarProjeto$: Observable<number> = EMPTY;
 
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>; 
   private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getLocalidadesOpcoes$: Observable<ILocalidadeOpcoesDropdown[]>;
   private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getTiposMotivosArquivamentoOpcoes$: Observable<IMotivoArquivamentoOpcoesDropdown[]>;
    
   private _idProjetoEdicao: number = 0;
 
   public loading: boolean = true;
   public isModoEdicao: boolean = true;
-  public moedaProjeto: string = '';
+  //public moedaProjeto: string = '';
   public mostrarBotaoGerarDic: boolean = false;
   public mostrarBotaoStatusProjeto: boolean = false;
   public isProponente: boolean = false;
@@ -131,6 +133,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public microrregioesOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
+  public tiposMotivoArquivamentoOpcoes: IMotivoArquivamentoOpcoesDropdown[] = [];
 
   public indicadoresOpcoes: IOpcoesDropdown[] = [];
 
@@ -151,6 +154,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public exibirLista = true;
 
   public nomeGestorProjeto: string = '';
+
+  public isUsuarioProponenteResponsavel: boolean = false;
   
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -217,12 +222,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         } 
       ));
 
+    this._getTiposMotivosArquivamentoOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposArquivamento()
+      .pipe( tap((response) => {
+        this.tiposMotivoArquivamentoOpcoes = response;
+      }) );
+
     this._getAllOpcoes$ = concat(
       this._getOrganizacoesOpcoes$,
       this._getPlanosOpcoes$,
       this._getTiposValorOpcoes$,
       this._getTiposPapelOpcoes$,
-      this._getLocalidadesOpcoes$
+      this._getLocalidadesOpcoes$,
+      this._getTiposMotivosArquivamentoOpcoes$
     ).pipe(
       finalize(
         () => (this._rateioService.localidadesOpcoes = this.localidadesOpcoes)
@@ -271,10 +283,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               this.statusProjeto !== StatusProjetoEnum.Em_Elaboracao;
     
             this.equipeProjeto = projetoModel.equipeElaboracao;
+
+            this.isUsuarioProponenteResponsavel = this.equipeProjeto.some( (membro) => membro.subPessoa === this._usuarioService.usuarioPerfil.subNovo )
+
             this.trocarModo(false);
     
             if (this.isProponente) {
-              if (projetoModel.status === StatusProjetoEnum.Em_Analise && !projetoModel.protocoloEdocs ) {
+
+              if ( projetoModel.status === StatusProjetoEnum.Em_Analise && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ) {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
                 );
@@ -287,17 +303,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                   this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                     this._projetosService.gerarBotoesAcaoFormularioProponente()
                   );
-                  this.trocarModo(true);
+                  setTimeout(() => { this.trocarModo(true); }, 2000);
                 }
               }
               
             } else {
-              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                this._projetosService.gerarBotoesAcaoFormulario()
-              );
-              setTimeout(() => {
-                this.trocarModo(true);
-              }, 2000);
+              if( projetoModel.status === StatusProjetoEnum.Em_Analise && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ){
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
+                );
+              }else{
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormulario()
+                );
+              }
+              setTimeout(() => { this.trocarModo(true); }, 2000);
             }
     
             if (!this.isProponente) {
@@ -306,6 +326,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
             this.loading = false;
             this.isLoadingPessoas = false;
+
           })
         );
   }
@@ -530,8 +551,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       protocoloEdocs: this._nnfb.control(
         projetoFormModel?.protocoloEdocs ?? ''),
+      codigoMotivoArquivamento: this._nnfb.control( 
+        projetoFormModel?.codigoMotivoArquivamento ?? '' )
     });
-
         
     this.carregarPessoasPorOrganizacao();
         
@@ -641,7 +663,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     }
 
-    this.moedaProjeto = moedaFormControl.value ?? '';
+    //this.moedaProjeto = moedaFormControl.value ?? '';
 
     if (!tipoFormControl.value) {
       // Caso específico de Projetos; tipo do valor somente pode ser 'Estimado'
@@ -649,11 +671,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       tipoFormControl.disable();
     }
 
+    /*
     moedaFormControl.valueChanges.subscribe((moedaValue) => {
       setTimeout(() => {
         this._rateioService.moedaFormControlReferencia$.next(moedaValue);
       });
     });
+    */
 
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
@@ -806,7 +830,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   
   private trocarModo(permitir: boolean): void {
 
+    console.log( " isModoEdicao : " + this.isModoEdicao );
+
     this.isModoEdicao = permitir;
+
+    console.log( " isModoEdicao - depois : " + this.isModoEdicao );
 
     const projetoFormControls = this.projetoForm.controls;
 
@@ -817,7 +845,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // Caso especifico para os campos de justificativa (revisao e arquivamento ) na autuacao de projeto..
     this.projetoForm.get('justificativaRevisao')?.enable();
+
     this.projetoForm.get('justificativaArquivamento')?.enable();
+
+    this.projetoForm.get('codigoMotivoArquivamento')?.enable();
 
   }
 
@@ -978,7 +1009,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
     this.isLoadingPessoasFiltroTermo = true;
     
-    const termo = this.projetoForm.get('nomeagente')?.value;
+    const termo = this.projetoForm.get('nomeagente')?.value ?? '';
 
     if ( termo.length < 3 ) {
       this._toastService.showToast(
@@ -1047,6 +1078,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirRevisarModal( form: FormGroup
   ) {
+
+    const controlJustificativaRevisao = form.get('justificativaRevisao');
+    controlJustificativaRevisao?.setValidators([Validators.required, Validators.maxLength(200)]);
+    controlJustificativaRevisao?.updateValueAndValidity();
         
     const modalRef = this._ngbModalService.open( this.confirmarRevisarProjetoModalTemplate , {
       centered: true,
@@ -1070,20 +1105,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirArquivarModal( form: FormGroup ) {
 
-    const controlJustificativaArquivamento = form.get('justificativaArquivamento');
-    controlJustificativaArquivamento?.setValidators([Validators.required, Validators.maxLength(200)]);
-    controlJustificativaArquivamento?.updateValueAndValidity();
-
-    const controlJustificativaRevisao = form.get('justificativaRevisao');
-    controlJustificativaRevisao?.setValidators([Validators.required, Validators.maxLength(200)]);
-    controlJustificativaRevisao?.updateValueAndValidity();
-    
+    const codigoMotivoArquivamento = this.projetoForm.get('codigoMotivoArquivamento');
+    codigoMotivoArquivamento?.setValidators([Validators.required, Validators.maxLength(200)]);
+    codigoMotivoArquivamento?.updateValueAndValidity();
+            
     const modalRef = this._ngbModalService.open( this.confirmarArquivarProjetoModalTemplate , {
       centered: true,
       size: 'lg',
     });
 
     modalRef.result.then(
+
       (result) => {
         if (result === 'confirmado') {
           this.enviarProjetoArquivamentoForm(form);
@@ -1092,7 +1124,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       (reason) => {
         console.log('Usuário cancelou:', reason);
       }
+
     );
+
+    this.projetoForm.reset({
+      codigoMotivoArquivamento: null,
+      justificativaArquivamento: null
+    });
 
   }
 
@@ -1114,7 +1152,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
     const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
         centered: true,
-        size: 'lg',
+        size: 'lg'
       });
 
       modalRef.result.then(
@@ -1157,7 +1195,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private enviarProjetoArquivamentoForm(form: FormGroup): void {
     
     this._projetosService
-    .enviarEmailArquivarProjeto( this._idProjetoEdicao, this.projetoForm.get('justificativaArquivamento')?.value )
+    .enviarEmailArquivarProjeto( this._idProjetoEdicao, this.projetoForm.get('justificativaArquivamento')?.value, this.projetoForm.get('codigoMotivoArquivamento')?.value )
     .subscribe({
       next: (response: string) => {
         this._toastService.showToast('success', response);
@@ -1242,6 +1280,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._rateioService.resetarRateio();
+    //this._projetosService.idProjeto$.next(0);
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 
@@ -1257,14 +1296,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   confirmarJustificativaArquivamento(modal: NgbModalRef): void {
-    const control = this.projetoForm.get('justificativaArquivamento'); 
-  
-    if (!control || control.invalid || !control.value?.trim()) {
-      control?.markAsTouched(); 
-      return; 
+
+    const controlJustificativaArquivamento = this.projetoForm.get('justificativaArquivamento');
+    const codigoMotivoArquivamento = this.projetoForm.get('codigoMotivoArquivamento');
+
+    // se clicar na opcao outros obriga o preenchimento da justificativa.
+    if( codigoMotivoArquivamento?.value?.trim() === 'M11'){      
+      controlJustificativaArquivamento?.setValidators([Validators.required, Validators.maxLength(200)]);
+      controlJustificativaArquivamento?.updateValueAndValidity();
+      if ( ( !controlJustificativaArquivamento || controlJustificativaArquivamento.invalid || !controlJustificativaArquivamento.value?.trim() ) ) {
+        controlJustificativaArquivamento?.markAsTouched(); 
+        return;
+      }
     }
-  
-    modal.close('confirmado'); 
+
+    modal.close('confirmado');
+
   }
 
 }

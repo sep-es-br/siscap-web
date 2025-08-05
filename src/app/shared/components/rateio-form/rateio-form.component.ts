@@ -46,6 +46,7 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
   constructor(public rateioService: RateioService) {}
 
   ngOnInit(): void {
+
     const controlIndex =
       this.rateioService.buscarIndiceControleRateioLocalidadeFormGroup(1);
 
