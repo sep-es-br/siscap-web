@@ -33,6 +33,8 @@ export interface IProjeto {
   justificativaArquivamento: string;
   protocoloEdocs: string;
   codigoMotivoArquivamento: string;
+  lotacaoProponenteResponsavel: string;
+  nomeProponenteResponsavel: string;
 }
 
 export interface IProjetoForm

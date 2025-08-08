@@ -153,7 +153,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public exibirLista = true;
 
-  public nomeGestorProjeto: string = '';
+//  public nomeGestorProjeto: string = '';
+
+  public lotacaoGestorProjeto: string = '';
+  public nomeProponenteResponsavel: string = '';
 
   public isUsuarioProponenteResponsavel: boolean = false;
   
@@ -254,6 +257,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
+            console.log( " Dados do projeto vindos da API : " + JSON.stringify(response,null,2) )
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {
@@ -269,6 +273,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           tap((projetoModel: ProjetoModel) => {
 
             this.statusProjeto = projetoModel.status;
+            this.lotacaoGestorProjeto = projetoModel.lotacaoProponenteResponsavel;  
+            this.nomeProponenteResponsavel = projetoModel.nomeProponenteResponsavel;
 
             this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
               (status) => status != this.statusProjeto
@@ -394,7 +400,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         const subResponsavelProponente = this.projetoForm.get('subResponsavelProponente')?.value
         const pessoa = this.pessoasOpcoes.find( p => p.agentePublicoSub === subResponsavelProponente );
-        this.projetoForm.patchValue({ nomeResponsavelProponente: pessoa?.nome || subResponsavelProponente });
+        this.projetoForm.patchValue({ nomeResponsavelProponente: pessoa?.nome || ' - ' });
         
       },
       error: () => {
@@ -550,9 +556,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.justificativaArquivamento ?? null
       ),
       protocoloEdocs: this._nnfb.control(
-        projetoFormModel?.protocoloEdocs ?? ''),
+        projetoFormModel?.protocoloEdocs ?? '' 
+      ),
       codigoMotivoArquivamento: this._nnfb.control( 
-        projetoFormModel?.codigoMotivoArquivamento ?? '' )
+        projetoFormModel?.codigoMotivoArquivamento ?? '' 
+      )
     });
         
     this.carregarPessoasPorOrganizacao();
@@ -1056,7 +1064,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public abrirConfirmarEnvioMembroModal( form: FormGroup
   ) {
 
-    this.nomeGestorProjeto = this.projetoForm.get('nomeResponsavelProponente')?.value || '-';
+    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value || '-';
     
     const modalRef = this._ngbModalService.open( this.enviarProjetoModalTemplate , {
         centered: true,
@@ -1070,7 +1078,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           }
         },
         (reason) => {
-          console.log('Usuário cancelou:', reason);
+          // console.log('Usuário cancelou:', reason);
         }
       );
 
@@ -1148,8 +1156,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public abrirConfirmarIntegracapEdocsModal( form: FormGroup
   ) {
 
-    this.nomeGestorProjeto = this.projetoForm.get('nomeResponsavelProponente')?.value || '-';
-    
+    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value || '-';
+
     const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
         centered: true,
         size: 'lg'
