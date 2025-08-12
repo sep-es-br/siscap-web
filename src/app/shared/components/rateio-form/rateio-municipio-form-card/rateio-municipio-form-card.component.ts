@@ -59,7 +59,6 @@ export class RateioMunicipioFormCardComponent
   constructor(public rateioService: RateioService) {}
 
   ngOnInit(): void {
-    
     this.inicializarRateioLocalidadeFormGroupMunicipio();
 
     this.rateioService.estadoBooleanCheckboxChange$.subscribe(
