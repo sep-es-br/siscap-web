@@ -110,7 +110,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private _idProjetoEdicao: number = 0;
 
   public loading: boolean = true;
-  public isModoEdicao: boolean = true;
+  public isModoEdicao: boolean = false;
   //public moedaProjeto: string = '';
   public mostrarBotaoGerarDic: boolean = false;
   public mostrarBotaoStatusProjeto: boolean = false;
@@ -257,7 +257,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
-            console.log( " Dados do projeto vindos da API : " + JSON.stringify(response,null,2) )
+            
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {
@@ -292,7 +292,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
 
-            this.trocarModo(false);
+            if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
+              this.trocarModo(false);
+            }
     
             if (this.isProponente) {
 
@@ -362,15 +364,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       if (idProjeto > 0) {
         this.carregarProjetoEditar(idProjeto);
       } else {
+
         this.iniciarForm();
     
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
           this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
         );
+
+        this.trocarModo(true);
     
         this.mostrarBotaoGerarDic = false;
         this.loading = false;
         this.isLoadingPessoas = false;
+
       }
     });
 
@@ -442,16 +448,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       (reject) => {}
     );
   }
-
-  /*
-  public filtrarResponsavelProponente(
-    pessoasOpcoes: IOpcoesDropdownResponsavelProponente[]
-  ): IOpcoesDropdownResponsavelProponente[] {
-    return pessoasOpcoes.filter(
-      (pessoa) => pessoa.agentePublicoSub != this.getControl('subResponsavelProponente').value
-    ) || [pessoasOpcoes[0]]; 
-  }
-  */
 
   public async idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): Promise<void> {
     await this.equipeService.idMembroNgSelectValue$.next(event);
@@ -820,6 +816,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'valorEstimado'
     ) as FormControl<number>;
 
+    const valorFormGroup = this.projetoForm.get(
+      'valor'
+    ) as FormGroup<ValorFormType>;
+
+    const quantiaFormControl = valorFormGroup.get('quantia') as FormControl<
+      number | null
+    >;
+
     const acoesProjetoValues = this.projetoForm.get('acoesProjeto')?.value;
 
     if (!acoesProjetoValues) return false;
@@ -829,21 +833,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return sum + valor;
     }, 0);
 
-    const valorA = Number(totalValorAcoesInformadas) || 0;
-    const valorB = Number(valorEstimadoProjeto.value) || 0;
+    const valorSomaAcoes = Number(totalValorAcoesInformadas) || 0;
+    const valorEstimadoTotal = Number(quantiaFormControl.value) || Number(valorEstimadoProjeto.value);
 
-    return Math.abs(valorA - valorB) < 0.001;
+    return Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001;
 
   }
   
   private trocarModo(permitir: boolean): void {
 
-    console.log( " isModoEdicao : " + this.isModoEdicao );
-
     this.isModoEdicao = permitir;
-
-    console.log( " isModoEdicao - depois : " + this.isModoEdicao );
-
     const projetoFormControls = this.projetoForm.controls;
 
     alterarEstadoControlesFormulario(permitir, projetoFormControls);
@@ -1086,7 +1085,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirRevisarModal( form: FormGroup
   ) {
-
+    
     const controlJustificativaRevisao = form.get('justificativaRevisao');
     controlJustificativaRevisao?.setValidators([Validators.required, Validators.maxLength(200)]);
     controlJustificativaRevisao?.updateValueAndValidity();
@@ -1105,7 +1104,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       },
       (reason) => {
-        console.log('Usuário cancelou:', reason);
+        //console.log('Usuário cancelou:', reason);
       }
     );
 
@@ -1130,7 +1129,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }
       },
       (reason) => {
-        console.log('Usuário cancelou:', reason);
+        //console.log('Usuário cancelou:', reason);
       }
 
     );
@@ -1170,7 +1169,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           }
         },
         (reason) => {
-          console.log('Usuário cancelou:', reason);
+          //console.log('Usuário cancelou:', reason);
         }
       );
 

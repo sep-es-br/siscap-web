@@ -60,11 +60,22 @@ export class RateioMicrorregiaoFormCardComponent
     this.rateioService.estadoBooleanCheckboxChange$.subscribe(
       (estadoCheckboxChange) => {
         this.bloquearMicrorregiaoBooleanCheckbox = estadoCheckboxChange;
+        if( estadoCheckboxChange ) {
+          this.microrregiaoBooleanCheckbox = false;
+          this.rateioLocalidadeFormGroupMicrorregiao.disable();
+          this.rateioService.limparCheckboxesFilhos();
+          //this.rateioService.limparTotalRateio();
+        }else{
+          if( !estadoCheckboxChange ) {
+            this.removerMicrorregiaoDoRateio();
+          }
+        }
       }
     );
 
     this.rateioService.municipioBooleanCheckboxChange$.subscribe(
       (localidadeCheckboxChange) => {
+        
         const resultadoMicrorregiaoCheckbox =
           this.rateioService.checarValorCheckboxPorMicrorregiao(
             localidadeCheckboxChange,
@@ -74,6 +85,7 @@ export class RateioMicrorregiaoFormCardComponent
         if (resultadoMicrorregiaoCheckbox != null)
           this.bloquearMicrorregiaoBooleanCheckbox =
             resultadoMicrorregiaoCheckbox;
+
       }
     );
   }
@@ -123,6 +135,7 @@ export class RateioMicrorregiaoFormCardComponent
     }
 
     if (microrregiaoQuantiaRateioInput) {
+
       fromEvent(microrregiaoQuantiaRateioInput, 'beforeinput').subscribe(
         (beforeInputEvent) => {
           if (!this.rateioService.quantiaFormControlReferencia) {
@@ -177,6 +190,9 @@ export class RateioMicrorregiaoFormCardComponent
   }
 
   private incluirMicrorregiaoNoRateio(): void {
+    this.rateioLocalidadeFormGroupMicrorregiao.reset({
+      percentual: null,
+      quantia: null }, { emitEvent: false });
     this.rateioLocalidadeFormGroupMicrorregiao.enable();
     this.rateioService.incluirLocalidadeNoRateio(
       this.rateioLocalidadeFormGroupMicrorregiao

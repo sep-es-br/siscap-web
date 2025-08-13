@@ -46,9 +46,9 @@ export const BREADCRUMB_LISTA_CAMINHOS_ESPECIFICOS: Array<{
 export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   home: 'Página Principal',
 
-  projetos: 'Projetos',
-  projetoscriar: 'Novo Projeto',
-  projetoseditar: 'Editar Projeto',
+  projetos: 'DIC',
+  projetoscriar: 'Novo DIC',
+  projetoseditar: 'Editar DIC',
 
   pessoas: 'Pessoas',
   pessoascriar: 'Nova Pessoa',
@@ -228,7 +228,7 @@ const ERRO_MENSAGEM_CPF: string = 'CPF inválido';
 const ERRO_MENSAGEM_MEMBRO_EQUIPE_SEM_PAPEL: string =
   'Algum membro da equipe não possui um papel atribuído';
 const ERRO_MENSAGEM_LIMITE_RATEIO: string =
-  'Alguns valores ultrapassam o limite do valor total fornecido.';
+  'Soma do rateio diferente do valor estimado do DIC.';
 
 /**
  * Objeto de coleção de mensagens padrão de erro para validações de formulários.
@@ -255,38 +255,38 @@ export const COLECAO_ERRO_MENSAGEM: Record<string, string> = {
  */
 export const COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO: Record<string, string> =
   {
-    sigla: 'Indicar o nome fantasia do projeto.',
+    sigla: 'Indicar o nome fantasia do DIC.',
     titulo:
-      'Informar o nome do projeto. O nome deverá refletir o objetivo maior do projeto.',
+      'Informar o nome do DIC. O nome deverá refletir o objetivo maior do DIC.',
     idOrganizacao:
-      'Identifique a instituição (Secretaria de Estado, Autarquia, Órgão de outros poderes do Estado, etc.) que será o tomador dos recursos, gestor do projeto.',
+      'Identifique a instituição (Secretaria de Estado, Autarquia, Órgão de outros poderes do Estado, etc.) que será o tomador dos recursos, gestor do DIC.',
     valorEstimado:
-      'Indicar o valor total necessário para a execução do projeto proposto em R$.',
+      'Indicar o valor total necessário para a execução do DIC proposto em R$.',
     idMicrorregioesList:
       '(i) Informar as instituições envolvidas na implementação do projeto e suas respectivas responsabilidades na execução. (ii) Informar a capacidade das insituições para a implementação das ações do projeto (equipe técnica, estrutura, experiência).',
     objetivo:
-      'Deverá refletir o que se deseja alcançar com as ações do projeto, abrangendo a visão ampla e o seu propósito geral. Deve estar explicitamente relacionado aos problemas e necessidades apontados.',
+      'Deverá refletir o que se deseja alcançar com as ações do DIC, abrangendo a visão ampla e o seu propósito geral. Deve estar explicitamente relacionado aos problemas e necessidades apontados.',
     objetivoEspecifico:
-      'Deverão corresponder aos resultados que o projeto pretende atingir, contribuindo para o alcance do objetivo geral. Deverão ser apresentados de maneira específica, mensurável, atingível e realista e relacionados aos indicadores propostos. Também deverão ter vínculo com os Objetivos de Desenvolvimento Sustentável da ONU.',
+      'Deverão corresponder aos resultados que o DIC pretende atingir, contribuindo para o alcance do objetivo geral. Deverão ser apresentados de maneira específica, mensurável, atingível e realista e relacionados aos indicadores propostos. Também deverão ter vínculo com os Objetivos de Desenvolvimento Sustentável da ONU.',
     situacaoProblema:
-      'Identificar o(s) problema(s) que as ações do projeto candidato a financiamento se propõem solucionar ou minorar. Descrever clara e sucintamente a situação-problema atual, apresentando informações e dados que a caracterizem e demonstrem o(s) problema(s). Trata-se da situação inicial que se deseja mudar.',
+      'Identificar o(s) problema(s) que as ações do DIC candidato a financiamento se propõem solucionar ou minorar. Descrever clara e sucintamente a situação-problema atual, apresentando informações e dados que a caracterizem e demonstrem o(s) problema(s). Trata-se da situação inicial que se deseja mudar.',
     solucoesPropostas:
       'Descrever as ações escolhidas para o enfrentamento ou solução do(s) problema(s) descrito(s) no item anterior.',
     impactos:
-      'Informar (i) as medidas de sustentabilidade a serem adotadas e os custos adicionais estimados decorrentes da implementação do programa/projeto, referentes aos gastos incrementais de pessoal, de operacionalização e de manutenção de obras e bens; (ii) os principais impactos ambientais decorrentes da implementação do projeto; (iii) possíveis interferências em populações decorrentes da implementação do programa/projeto. Especificar se há interferência em populações indígenas, quilombolas e outras; e (iv) os riscos e ações mitigadoras.',
+      'Informar (i) as medidas de sustentabilidade a serem adotadas e os custos adicionais estimados decorrentes da implementação do programa/DIC, referentes aos gastos incrementais de pessoal, de operacionalização e de manutenção de obras e bens; (ii) os principais impactos ambientais decorrentes da implementação do DIC; (iii) possíveis interferências em populações decorrentes da implementação do programa/DIC. Especificar se há interferência em populações indígenas, quilombolas e outras; e (iv) os riscos e ações mitigadoras.',
     arranjosInstitucionais:
-      '(i) Informar o órgão executor principal do programa ou projeto e demais órgãos participantes, se existentes. (ii) informar a capacidade das instituições proponentes, em particular do órgão executor, para a implementação das ações do programa ou projeto, como qualificação e experiência da equipe técnica e recursos e estruturas disponíveis. (iii) Apontar se haverá repasse de recursos entre os órgãos participantes.',
+      '(i) Informar o órgão executor principal do programa ou DIC e demais órgãos participantes, se existentes. (ii) informar a capacidade das instituições proponentes, em particular do órgão executor, para a implementação das ações do programa ou projeto, como qualificação e experiência da equipe técnica e recursos e estruturas disponíveis. (iii) Apontar se haverá repasse de recursos entre os órgãos participantes.',
     nomeIndicador:
-      'Preferencialmente deverão ser considerados os indicadores-chave nacionais constantes do Plano Plurianual 2024-2027 (Anexo I da Lei nº 14.820, de 2024), além de outros indicadores relacionados ao projeto.',
+      'Preferencialmente deverão ser considerados os indicadores-chave nacionais constantes do Plano Plurianual 2024-2027 (Anexo I da Lei nº 14.820, de 2024), além de outros indicadores relacionados ao DIC.',
     descricaoIndicador:
       'Descrever cada indicador de forma específica e estabelecer as fórmulas de cálculo adequadas. Fazer referência aos objetivos específicos pertinentes ao indicador e às áreas estratégicas relacionadas no Anexo II da Lei 14.820/2024. Empregar preferencialmente o modelo SMART para a definição de indicadores.',
     descricaoMeta:
       'Apontar o resultado específico e determinado a ser alcançado, cuja implementação será medida por meio do indicador. A meta deverá estar relacionada aos objetivos e aos resultados esperados e sua consecução relacionada ao tempo de implantação do projeto.',
     idResponsavelProponente: 'Pessoa que responde pelo órgão de origem.',
-    equipeElaboracao: 'Pessoas responsáveis pela elaboração do projeto.',
+    equipeElaboracao: 'Pessoas responsáveis pela elaboração do DIC.',
     descricaoAcaoPrincipal: 'Inserir o nome da ação.',
     valorEstimadoAcaoPrincipal: 'Preencher o valor estimado total a ser destinado à implantação das ações principais. O valor deverá ser compatível com o objeto.',
-    descricaoAcoesSecudariasProdutos: 'Inserir as ações secundárias, se houver, e os produtos. Os produtos deverão compreender os bens ou serviços oferecidos pelo projeto e estar associados à etapa ou sub etapa, conforme o caso.',
-    pecasPlanejamento: '(i) Apontar quais áreas estratégicas referidas no Planejamento Estratégico são atendidas pelo projeto. Apontar se o programa ou projeto é destinado ao atendimento de uma ou mais das prioridades da Administração Pública. (ii) Demonstrar a inserção do projeto no Plano Plurianual (PPA) vigente, identificando os programas e ações para os quais o projeto está previsto. (iii) Indicar a previsão orçamentária do projeto na Lei Orçamentária Anual (LOA) vigente, identificando as fontes, as ações e os valores respectivos que estão previstos para o projeto.',
+    descricaoAcoesSecudariasProdutos: 'Inserir as ações secundárias, se houver, e os produtos. Os produtos deverão compreender os bens ou serviços oferecidos pelo DIC e estar associados à etapa ou sub etapa, conforme o caso.',
+    pecasPlanejamento: '(i) Apontar quais áreas estratégicas referidas no Planejamento Estratégico são atendidas pelo DIC. Apontar se o programa ou DIC é destinado ao atendimento de uma ou mais das prioridades da Administração Pública. (ii) Demonstrar a inserção do DIC no Plano Plurianual (PPA) vigente, identificando os programas e ações para os quais o DIC está previsto. (iii) Indicar a previsão orçamentária do DIC na Lei Orçamentária Anual (LOA) vigente, identificando as fontes, as ações e os valores respectivos que estão previstos para o DIC.',
     tipoIndicadorDescricao: 'Descrever o tipo de indicador.'
   };

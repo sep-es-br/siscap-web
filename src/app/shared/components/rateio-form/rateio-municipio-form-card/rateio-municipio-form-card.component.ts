@@ -59,16 +59,27 @@ export class RateioMunicipioFormCardComponent
   constructor(public rateioService: RateioService) {}
 
   ngOnInit(): void {
-    
     this.inicializarRateioLocalidadeFormGroupMunicipio();
 
     this.rateioService.estadoBooleanCheckboxChange$.subscribe(
       (estadoCheckboxChange) => {
         this.bloquearMunicipioBooleanCheckbox = estadoCheckboxChange;
+        if( estadoCheckboxChange && this.municipioBooleanCheckbox ) {
+          this.incluirMunicipioNoRateio()
+          this.municipioBooleanCheckbox = false;
+          this.rateioLocalidadeFormGroupMunicipio.disable();
+          this.rateioService.limparCheckboxesFilhos();
+          this.rateioService.limparTotalRateio();
+        }else{
+          if( !estadoCheckboxChange ) {
+            this.removerMunicipioDoRateio();
+          }
+        }
       }
     );
 
     this.rateioService.microrregiaoBooleanCheckboxChange$.subscribe(
+      
       (localidadeCheckboxChange) => {
         const resultadoMunicipioCheckbox =
           this.rateioService.checarValorCheckboxPorMunicipio(
@@ -78,7 +89,9 @@ export class RateioMunicipioFormCardComponent
 
         if (resultadoMunicipioCheckbox != null)
           this.bloquearMunicipioBooleanCheckbox = resultadoMunicipioCheckbox;
+
       }
+      
     );
   }
 
@@ -194,6 +207,9 @@ export class RateioMunicipioFormCardComponent
   }
 
   private incluirMunicipioNoRateio(): void {
+    this.rateioLocalidadeFormGroupMunicipio.reset({
+      percentual: null,
+      quantia: null }, { emitEvent: false });
     this.rateioLocalidadeFormGroupMunicipio.enable();
     this.rateioService.incluirLocalidadeNoRateio(
       this.rateioLocalidadeFormGroupMunicipio

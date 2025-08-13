@@ -20,13 +20,13 @@ const PROJETOS_ROUTES: Routes = [
     component: ProjetoFormComponent,
   },
   {
-    title: 'Editar Projeto (via link)',
+    title: 'Editar DIC (via link)',
     path: 'editar/:id', 
     component: ProjetoFormComponent,
     canActivate: [authExternalUrlGuard]
   },
   {
-    title: 'Editar Projeto',
+    title: 'Editar DIC',
     path: 'editar',
     component: ProjetoFormComponent,
     canActivate: [projetos_NoIdEditarGuard],
