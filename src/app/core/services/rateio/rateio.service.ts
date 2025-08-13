@@ -504,4 +504,8 @@ export class RateioService {
 
   }
 
+  public limparTotalRateio(){
+    this.totalRateio = { percentual: 0, quantia: 0 };
+  }
+
 }

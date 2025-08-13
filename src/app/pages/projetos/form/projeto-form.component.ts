@@ -257,7 +257,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
-            //console.log( " Dados do projeto vindos da API : " + JSON.stringify(response,null,2) )
+            
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {
@@ -1085,7 +1085,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirRevisarModal( form: FormGroup
   ) {
-
+    
     const controlJustificativaRevisao = form.get('justificativaRevisao');
     controlJustificativaRevisao?.setValidators([Validators.required, Validators.maxLength(200)]);
     controlJustificativaRevisao?.updateValueAndValidity();
