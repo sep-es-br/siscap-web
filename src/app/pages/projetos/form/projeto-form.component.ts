@@ -298,7 +298,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     
             if (this.isProponente) {
 
-              if ( projetoModel.status === StatusProjetoEnum.Em_Analise && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ) {
+              if ( projetoModel.status === StatusProjetoEnum.Em_Elaboracao && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ) {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
                 );
@@ -316,7 +316,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
               
             } else {
-              if( projetoModel.status === StatusProjetoEnum.Em_Analise && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ){
+              if( projetoModel.status === StatusProjetoEnum.Em_Elaboracao && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ){
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
                 );
