@@ -417,7 +417,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         const subResponsavelProponente = this.projetoForm.get('subResponsavelProponente')?.value
         const pessoa = this.pessoasOpcoes.find( p => p.agentePublicoSub === subResponsavelProponente );
-        this.projetoForm.patchValue({ nomeResponsavelProponente: pessoa?.nome || ' - ' });
+        this.projetoForm.patchValue({ nomeResponsavelProponente: pessoa?.nome.toUpperCase() || ' - ' });
         
       },
       error: () => {
@@ -909,6 +909,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   onSelecionarPessoa(pessoa: any) {
+    
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
@@ -924,6 +925,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         subResponsavelProponente: ''
       });
     }
+
+    this.lotacaoGestorProjeto = '';
 
   }
 
@@ -1074,7 +1077,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public abrirConfirmarEnvioMembroModal( form: FormGroup
   ) {
 
-    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value || '-';
+    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() || '-';
     
     const modalRef = this._ngbModalService.open( this.enviarProjetoModalTemplate , {
         centered: true,
@@ -1145,10 +1148,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     );
 
-    this.projetoForm.reset({
-      codigoMotivoArquivamento: null,
-      justificativaArquivamento: null
-    });
+    this.projetoForm.get('codigoMotivoArquivamento')?.patchValue(null);
+    this.projetoForm.get('justificativaArquivamento')?.patchValue(null);
 
   }
 
@@ -1166,7 +1167,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public abrirConfirmarIntegracapEdocsModal( form: FormGroup
   ) {
 
-    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value || '-';
+    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() || '-';
 
     const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
         centered: true,
