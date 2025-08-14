@@ -127,8 +127,7 @@ export class RateioMicrorregiaoFormCardComponent
         .subscribe(() => {
           this.rateioLocalidadeFormGroupMicrorregiao.controls.quantia.patchValue(
             this.rateioService.calcularQuantiaPorPercentual(
-              this.rateioLocalidadeFormGroupMicrorregiao.controls.percentual
-                .value
+              this.rateioLocalidadeFormGroupMicrorregiao.controls.percentual.value
             )
           );
         });

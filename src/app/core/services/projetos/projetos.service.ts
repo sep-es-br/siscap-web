@@ -113,6 +113,11 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCancelar];
   }
 
+  public gerarBotoesAcaoFormularioArquivado(): Array<BotaoPropriedadesModel> {
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar];
+  }
+
   public construirProjetoModelRateio(
     idMicrorregioesList: Array<number>,
     valorEstimado: number

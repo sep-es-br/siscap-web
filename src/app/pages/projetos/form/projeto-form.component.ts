@@ -316,6 +316,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
               
             } else {
+              
               if( projetoModel.status === StatusProjetoEnum.Em_Elaboracao && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ){
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
@@ -325,7 +326,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                   this._projetosService.gerarBotoesAcaoFormulario()
                 );
               }
+
               setTimeout(() => { this.trocarModo(true); }, 2000);
+
+            }
+
+            if( projetoModel.status === StatusProjetoEnum.Arquivado ) {
+              this.mostrarBotaoGerarDic = false;
+              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                this._projetosService.gerarBotoesAcaoFormularioArquivado()
+              );
+              setTimeout(() => { this.trocarModo(false); }, 2000);
             }
     
             if (!this.isProponente) {

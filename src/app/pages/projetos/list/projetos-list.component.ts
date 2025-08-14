@@ -23,6 +23,7 @@ import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { ITableActionOutput, TTableActions } from '../../../shared/templates/table-actions-dropdown/table-actions-dropdown.interface';
 import { environment } from '../../../../environments/environment';
+import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 
 @Component({
   selector: 'siscap-projetos-list',
@@ -74,6 +75,7 @@ export class ProjetosListComponent {
         const projeto = this.projetosList()?.find(p => p.id === idProjeto);
         if (projeto) {
           projeto.protocoloEdocs = protocolo;
+          projeto.status = StatusProjetoEnum.Em_Analise;
         }
       });
 
