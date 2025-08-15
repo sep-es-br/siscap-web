@@ -144,7 +144,7 @@
                 class="btn btn-outline-secondary" 
                 type="button"
                 (click)="buscarAgentesPorTermo()"
-                [disabled]="isLoadingPessoasFiltroTermo">
+                [disabled]="isLoadingPessoasFiltroTermo || !isModoEdicao">
                 <span *ngIf="!isLoadingPessoasFiltroTermo" class="icon-container">
                   <i class="fas fa-search"></i> 
                 </span>

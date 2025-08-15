@@ -140,24 +140,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public statusProjeto: string = '';
   public statusProjetoNovo: string | null = null;
   public statusProjetoOpcoes: Array<string> = [];
-
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
-
   public idMembroEquipeElaboracao:  | null = null;
-
   public idIndicadorIndicadores:  | null = null;
-
   public isLoadingPessoas = false;
-
   public isLoadingPessoasFiltroTermo = false;
-
   public exibirLista = true;
-
-//  public nomeGestorProjeto: string = '';
-
   public lotacaoGestorProjeto: string = '';
   public nomeProponenteResponsavel: string = '';
-
   public isUsuarioProponenteResponsavel: boolean = false;
   
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
@@ -859,9 +849,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // Caso especifico para os campos de justificativa (revisao e arquivamento ) na autuacao de projeto..
     this.projetoForm.get('justificativaRevisao')?.enable();
-
     this.projetoForm.get('justificativaArquivamento')?.enable();
-
     this.projetoForm.get('codigoMotivoArquivamento')?.enable();
 
   }
