@@ -827,22 +827,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'valorEstimado'
     ) as FormControl<number>;
 
-    const valorFormGroup = this.projetoForm.get(
-      'valor'
-    ) as FormGroup<ValorFormType>;
-
-    const quantiaFormControl = valorFormGroup.get('quantia') as FormControl<
-      number | null
-    >;
-
+    const valorFormGroup = this.projetoForm.get('valor') as FormGroup<ValorFormType>;
+    const quantiaFormControl = valorFormGroup.get('quantia') as FormControl<number | null >;
     const acoesProjetoValues = this.projetoForm.get('acoesProjeto')?.value;
 
     if (!acoesProjetoValues) return false;
 
-    const totalValorAcoesInformadas = acoesProjetoValues.reduce((sum: number, acao: { valorEstimadoAcaoPrincipal: any; }) => {
-      const valor = Number(acao.valorEstimadoAcaoPrincipal) || 0;
-      return sum + valor;
-    }, 0);
+    const totalValorAcoesInformadas = acoesProjetoValues
+      .filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo)
+      .reduce((sum: number, acao: { valorEstimadoAcaoPrincipal: any; }) => {
+                const valor = Number(acao.valorEstimadoAcaoPrincipal) || 0;
+                return sum + valor;
+        }, 0);
 
     const valorSomaAcoes = Number(totalValorAcoesInformadas) || 0;
     const valorEstimadoTotal = Number(quantiaFormControl.value) || Number(valorEstimadoProjeto.value);
@@ -889,8 +885,25 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         'Por favor, verifique os campos.',
       ]);
       return;
+
     }
+
+    console.log(this.projetoForm.get('acoesProjeto')?.value);
+
+    // valida se tem pelo menos uma acao ATIVA no form
+    const acoesAtivas = this.projetoForm.get('acoesProjeto')?.value
+      .filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo);
     
+    if (acoesAtivas.length === 0) {
+
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
+        'Nenhuma ação informada.',
+      ]);
+
+      return;
+
+    }
+
     // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
     form.get('valor.tipo')?.enable();
 
@@ -917,6 +930,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         papelResponsavelProponente: pessoa.papelPrioritario,
         subResponsavelProponente: pessoa.agentePublicoSub
       });
+      this.lotacaoGestorProjeto = pessoa.papelPrioritario;
     } else {
       this.projetoForm.patchValue({
         idResponsavelProponente: null,
@@ -924,9 +938,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         papelResponsavelProponente: '',
         subResponsavelProponente: ''
       });
-    }
-
-    this.lotacaoGestorProjeto = '';
+      this.lotacaoGestorProjeto = '';
+    }    
 
   }
 

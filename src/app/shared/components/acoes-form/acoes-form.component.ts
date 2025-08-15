@@ -33,19 +33,14 @@ import { getSimboloMoeda } from '../../../core/utils/functions';
 })
 export class AcoesFormComponent {
 
-  /*
-  @Input() descricaoAcaoPrincipal: string;
-  @Input() descricaoAcaoSecundaria: string;
-  @Input() valorEstimadoAcaoPrincipal: number;
-  */
-
   @Input() public isModoEdicao: boolean = false;
   @Input() moedaProjeto: string;
 
   public descricaoAcaoPrincipal: string;
   public descricaoAcaoSecundaria: string;
   public valorEstimadoAcaoPrincipal: number;
-  
+  public idStatus: number;
+
   constructor(
     public acoesService: AcoesService,
     private readonly _toastService: ToastService,
@@ -54,6 +49,7 @@ export class AcoesFormComponent {
     this.descricaoAcaoPrincipal = '';
     this.descricaoAcaoSecundaria = '';
 	  this.valorEstimadoAcaoPrincipal = 0;
+    this.idStatus = 0;
   }
 
    public getSimboloMoeda: (moeda: string | undefined | null) => string =
@@ -82,7 +78,8 @@ export class AcoesFormComponent {
       ]],
       valorEstimadoAcaoPrincipal: ['', [
         Validators.required,
-      ]]
+      ]],
+      idStatus: [ TipoStatusEnum.Ativo , ]
     });
     this.acoesFormArray.push(novaAcao);
   }
@@ -91,8 +88,7 @@ export class AcoesFormComponent {
     this.acoesFormArray.removeAt(index);
   }
 
-  public marcarAcaoExcluida(
-    index: number ) {
+  public marcarAcaoExcluida( index: number ) {
 
     const acaoFormGroup = this.acoesService.acoesFormArray.at(index) as FormGroup;
 
