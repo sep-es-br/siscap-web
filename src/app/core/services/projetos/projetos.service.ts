@@ -67,15 +67,6 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCriar];
   }
 
-  /*
-  public gerarBotoesAcaoListagemProponente(): Array<BotaoPropriedadesModel> {
-    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
-      texto: 'Novo DIC',
-    });
-    return [botaoCriar];
-  }
-  */
-
   public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
