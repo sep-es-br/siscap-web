@@ -285,51 +285,58 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
               this.trocarModo(false);
             }
-    
-            if (this.isProponente) {
 
-              if ( projetoModel.status === StatusProjetoEnum.Em_Elaboracao && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
-                );
-              } else {
-                if( projetoModel.protocoloEdocs ){
-                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                    this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao()
-                  );
-                }else{
-                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                    this._projetosService.gerarBotoesAcaoFormularioProponente()
-                  );
-                  setTimeout(() => { this.trocarModo(true); }, 2000);
-                }
-              }
-              
-            } else {
-              
-              if( projetoModel.status === StatusProjetoEnum.Em_Elaboracao && !projetoModel.protocoloEdocs && this.isUsuarioProponenteResponsavel ){
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
-                );
-              }else{
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormulario()
-                );
-              }
-
-              setTimeout(() => { this.trocarModo(true); }, 2000);
-
-            }
-
-            if( projetoModel.status === StatusProjetoEnum.Arquivado ) {
+            // 
+            if (projetoModel.status === StatusProjetoEnum.Arquivado) {
               this.mostrarBotaoGerarDic = false;
               this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                 this._projetosService.gerarBotoesAcaoFormularioArquivado()
               );
-              setTimeout(() => { this.trocarModo(false); }, 2000);
+              setTimeout(() => this.trocarModo(false), 2000);
+              this.loading = false;
+              this.isLoadingPessoas = false;
+              return;
+            }
+
+            const emElaboracaoSemProtocolo = 
+              projetoModel.status === StatusProjetoEnum.Em_Elaboracao &&
+              !projetoModel.protocoloEdocs;
+
+            if (this.isProponente) {
+              if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
+                );
+              } else if (projetoModel.protocoloEdocs) {
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao()
+                );
+              } else {
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioProponente()
+                );
+                setTimeout(() => this.trocarModo(true), 2000);
+              }
+            } else {
+              if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
+                );
+                this.trocarModo(true);
+              } else if (projetoModel.protocoloEdocs) {
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao()
+                );
+                this.trocarModo(false);
+              } else {
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormulario()
+                );
+                setTimeout(() => this.trocarModo(true), 2000);
+              }
             }
     
-            if (!this.isProponente) {
+            if (!this.isProponente && !projetoModel.protocoloEdocs ) {
               this.mostrarBotaoStatusProjeto = true;
             }
     
@@ -780,9 +787,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       case BreadcrumbAcoesEnum.Autuar:
         this.projetoForm.patchValue({
-          autuarConfirmacaoProjetoModal : true
+          autuarConfirmacaoProjetoModal : true,
+          enviarProjetoGestor : false
         });
-        this.abrirConfirmarIntegracapEdocsModal(this.projetoForm)
+        if( this.compararValorEstimadoValorAcoes() ) {
+          this.abrirConfirmarIntegracapEdocsModal(this.projetoForm)
+        }else{
+          this._toastService.showToast('error', 'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.', 
+            ['A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',]);
+        }
         break;
 
       case BreadcrumbAcoesEnum.Voltar:
@@ -854,7 +867,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
+  private validarFormulario(form: FormGroup ) : boolean {
 
     for (const key in form.controls) {
       form.controls[key].markAllAsTouched();
@@ -872,11 +885,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
         'Por favor, verifique os campos.',
       ]);
-      return;
+      return false;
 
     }
-
-    console.log(this.projetoForm.get('acoesProjeto')?.value);
 
     // valida se tem pelo menos uma acao ATIVA no form
     const acoesAtivas = this.projetoForm.get('acoesProjeto')?.value
@@ -888,24 +899,34 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         'Nenhuma ação informada.',
       ]);
 
-      return;
+      return false;
 
     }
 
-    // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
-    form.get('valor.tipo')?.enable();
+    return true;
 
-    const payload = new ProjetoFormModel(form.value as IProjetoForm);
-   
-    if (this.isProponente) {
-      payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+  }
+
+  private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
+
+    if ( this.validarFormulario(form) ) {
+
+      // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
+      form.get('valor.tipo')?.enable();
+
+      const payload = new ProjetoFormModel(form.value as IProjetoForm);
+
+      if (this.isProponente) {
+        payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+      }
+
+      const requisicao = this._idProjetoEdicao
+        ? this.atualizarProjeto(payload, isRascunho)
+        : this.cadastrarProjeto(payload, isRascunho);
+
+      requisicao.subscribe();
+
     }
-
-    const requisicao = this._idProjetoEdicao
-      ? this.atualizarProjeto(payload, isRascunho)
-      : this.cadastrarProjeto(payload, isRascunho);
-
-    requisicao.subscribe();
 
   }
 
@@ -1063,6 +1084,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.isLoadingPessoasFiltroTermo = false;
         this.exibirLista = true;
 
+        this.projetoForm.get('nomeagente')?.reset();
+
       },
       error: () => {
         this.pessoasOpcoesGoves = [];
@@ -1168,31 +1191,46 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public abrirConfirmarIntegracapEdocsModal( form: FormGroup
   ) {
 
-    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() || '-';
+    if ( this.validarFormulario(form) ) {
 
-    const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
-        centered: true,
-        size: 'lg'
-      });
+      this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() || '-';
 
-      modalRef.result.then(
-        (result) => {
-          if (result === 'confirmado') {
-             this.autuarProjetoForm(this.projetoForm);
+      const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
+          centered: true,
+          size: 'lg'
+        });
+
+        modalRef.result.then(
+          (result) => {
+            if (result === 'confirmado') {
+              this.autuarProjetoForm(this.projetoForm);
+            }
+          },
+          (reason) => {
+            //console.log('Usuário cancelou:', reason);
           }
-        },
-        (reason) => {
-          //console.log('Usuário cancelou:', reason);
-        }
-      );
+        );
+
+    }
 
   }
 
   private autuarProjetoForm(form: FormGroup): void {
-        
-    const payload = new ProjetoFormModel(form.value as IProjetoForm);
-   
-    this.autuarProjetoAsync(payload);
+
+    if ( this.validarFormulario(form) ) {
+
+      // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
+      form.get('valor.tipo')?.enable();
+          
+      const payload = new ProjetoFormModel(form.value as IProjetoForm);
+
+      payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+
+      console.log(JSON.stringify(payload, null, 2));
+    
+      this.autuarProjetoAsync(payload);
+
+    }
 
   }
 
@@ -1214,8 +1252,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private enviarProjetoArquivamentoForm(form: FormGroup): void {
     
+    const textoJustificativa = this.projetoForm.get('justificativaArquivamento')?.value
+    const codigoMotivoArquivamento = this.projetoForm.get('codigoMotivoArquivamento')?.value
+    
     this._projetosService
-    .enviarEmailArquivarProjeto( this._idProjetoEdicao, this.projetoForm.get('justificativaArquivamento')?.value, this.projetoForm.get('codigoMotivoArquivamento')?.value )
+    .enviarEmailArquivarProjeto( this._idProjetoEdicao, textoJustificativa, codigoMotivoArquivamento )
     .subscribe({
       next: (response: string) => {
         this._toastService.showToast('success', response);
@@ -1243,7 +1284,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'error',
             'Erro ao iniciar autuação no E-Docs.'
           );
-          return of(null); // evita quebra
+          return EMPTY;
         }),
         finalize(() => {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
@@ -1253,6 +1294,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
         this.iniciarPollingProtocolo();
       });
+
   }
   
   private iniciarPollingProtocolo(): void {
@@ -1318,7 +1360,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   confirmarJustificativaArquivamento(modal: NgbModalRef): void {
 
     const controlJustificativaArquivamento = this.projetoForm.get('justificativaArquivamento');
+
     const codigoMotivoArquivamento = this.projetoForm.get('codigoMotivoArquivamento');
+
+    if( codigoMotivoArquivamento?.value == null || codigoMotivoArquivamento?.value?.trim() === '' ) {
+      this._toastService.showToast(
+        'error',
+        'Informe o motivo para arquivamento.'
+      );
+      return;
+    }
 
     // se clicar na opcao outros obriga o preenchimento da justificativa.
     if( codigoMotivoArquivamento?.value?.trim() === 'M11'){      
@@ -1328,6 +1379,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         controlJustificativaArquivamento?.markAsTouched(); 
         return;
       }
+
     }
 
     modal.close('confirmado');

@@ -471,12 +471,12 @@
     <form [formGroup]="projetoForm">
       <div class="mb-3">
         <label for="justificativaRevisao" class="form-label text-primary fs-5">
-          <validation-message
-            [control]="getControl('justificativaRevisao')"
-          >
             Justificativa
-          </validation-message>
         </label>
+        <validation-message
+            class="col-12"
+            [control]="getControl('justificativaRevisao')">
+          </validation-message>
         <textarea
           rows="5"
           class="form-control"
@@ -518,11 +518,12 @@
       <div class="mb-3">
         <div class="mb-3">
           <label for="codigoMotivoArquivamento" class="form-label text-primary fs-5">
-            <validation-message
-              [control]="getControl('codigoMotivoArquivamento')" >
               Motivo Arquivamento
-            </validation-message>
           </label>
+          <validation-message
+            class="col-12"
+            [control]="getControl('codigoMotivoArquivamento')">
+          </validation-message>
           <ng-select
             id="codigoMotivoArquivamento"
             placeholder="-- Selecione um motivo para arquivamento--"
@@ -540,11 +541,12 @@
         </div>
         <div class="mb-3">
           <label for="justificativaArquivamento" class="form-label text-primary fs-5">
-            <validation-message
-              [control]="getControl('justificativaArquivamento')" >
               Justificativa
-            </validation-message>
           </label>
+          <validation-message
+            class="col-12"
+            [control]="getControl('justificativaArquivamento')">
+          </validation-message>
           <textarea 
             rows="5"
             class="form-control"
