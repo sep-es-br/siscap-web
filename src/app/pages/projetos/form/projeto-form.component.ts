@@ -782,6 +782,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.projetoForm.patchValue({
           enviarProjetoGestor : true
         });
+        if( !this.validarFormulario(this.projetoForm) )
+          break;
         this.validacaoSomaValoresAcoesEnviar(this.projetoForm, false);
         break;
 
@@ -790,11 +792,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           autuarConfirmacaoProjetoModal : true,
           enviarProjetoGestor : false
         });
+        if( !this.validarFormulario(this.projetoForm) ) 
+          break;
         if( this.compararValorEstimadoValorAcoes() ) {
           this.abrirConfirmarIntegracapEdocsModal(this.projetoForm)
-        }else{
-          this._toastService.showToast('error', 'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.', 
-            ['A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',]);
         }
         break;
 
@@ -818,9 +819,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private validacaoSomaValoresAcoesEnviar(form: FormGroup, isRascunho: boolean): void {
     if (this.compararValorEstimadoValorAcoes()) {
       this.abrirConfirmarEnvioMembroModal(form)
-    }else{
-      this._toastService.showToast('error', 'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.', 
-        ['A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',]);
     }
   }
 
@@ -846,7 +844,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const valorSomaAcoes = Number(totalValorAcoesInformadas) || 0;
     const valorEstimadoTotal = Number(quantiaFormControl.value) || Number(valorEstimadoProjeto.value);
 
-    return Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001;
+    if( Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001 ) {
+      return true;
+    }
+
+    this._toastService.showToast('error', 'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.', 
+      ['A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',]);
+
+    return false;
 
   }
   
@@ -1188,49 +1193,35 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  public abrirConfirmarIntegracapEdocsModal( form: FormGroup
+  private abrirConfirmarIntegracapEdocsModal( form: FormGroup
   ) {
 
-    if ( this.validarFormulario(form) ) {
+    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() || '-';
 
-      this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() || '-';
-
-      const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
-          centered: true,
-          size: 'lg'
-        });
-
-        modalRef.result.then(
-          (result) => {
-            if (result === 'confirmado') {
-              this.autuarProjetoForm(this.projetoForm);
-            }
-          },
-          (reason) => {
-            //console.log('Usuário cancelou:', reason);
+    const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
+        centered: true,
+        size: 'lg'
+      });
+      modalRef.result.then(
+        (result) => {
+          if (result === 'confirmado') {
+            this.autuarProjetoForm(this.projetoForm);
           }
-        );
-
-    }
+        },
+      );
 
   }
 
   private autuarProjetoForm(form: FormGroup): void {
 
-    if ( this.validarFormulario(form) ) {
+    // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
+    form.get('valor.tipo')?.enable();
+        
+    const payload = new ProjetoFormModel(form.value as IProjetoForm);
 
-      // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
-      form.get('valor.tipo')?.enable();
-          
-      const payload = new ProjetoFormModel(form.value as IProjetoForm);
+    payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
-      payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
-
-      console.log(JSON.stringify(payload, null, 2));
-    
-      this.autuarProjetoAsync(payload);
-
-    }
+    this.autuarProjetoAsync(payload);
 
   }
 
