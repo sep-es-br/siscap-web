@@ -7,6 +7,8 @@ import {
 } from '@angular/forms';
 
 import { EquipeFormType } from '../types/form/equipe-form.type';
+import { TipoEquipeEnum } from '../enums/tipo-equipe.enum';
+import { TipoStatusEnum } from '../enums/tipo-status.enum';
 
 function equipeValidator_MembroEquipeSemPapel(
   equipeControls: Array<FormGroup<EquipeFormType>>
@@ -29,6 +31,23 @@ export function equipeValidator(): ValidatorFn {
       return { membroEquipeSemPapel: true };
     }
 
+    if (!equipeValidator_MembrosEquipeSemAtivos(equipeFormArray.controls)) {
+      return { equipeSemMembroAtivo: true };
+    }
+
     return null;
+
   };
+}
+
+function equipeValidator_MembrosEquipeSemAtivos(
+  equipeControls: Array<FormGroup<EquipeFormType>>
+): boolean {
+  if (equipeControls.length === 0) {
+    return false;
+  }
+
+  return equipeControls.some(
+    (membroFormGroup) => membroFormGroup.controls.idStatus.value == TipoStatusEnum.Ativo
+  );
 }
