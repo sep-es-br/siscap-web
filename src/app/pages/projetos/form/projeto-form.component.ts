@@ -28,7 +28,8 @@ import {
   interval,
   takeUntil,
   timer,
-  takeWhile
+  takeWhile,
+  filter
 } from 'rxjs';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -71,7 +72,7 @@ import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 
 import {
   BreadcrumbAcoesEnum,
-  BreadcrumbContextoEnum,
+  BreadcrumbContextoEnum
 } from '../../../core/enums/breadcrumb.enum';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
@@ -85,6 +86,9 @@ import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { EquipeModel } from '../../../core/models/equipe.model';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
+import { IProjetoIntegracaoEdocsFases } from '../../../core/interfaces/projeto-integracao-edcos-fases.interface';
+import { ProjetoIntegracaoEdocsFasesModel } from '../../../core/models/projeto-integracao-edocs-fases.model';
+import { FasesEdocsIntegracaoEnum, FaseStatuEnum } from '../../../core/enums/fases-edocs-integracao.enum';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -149,6 +153,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public lotacaoGestorProjeto: string = '';
   public nomeProponenteResponsavel: string = '';
   public isUsuarioProponenteResponsavel: boolean = false;
+
+  public aguardandoAssinatura: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
+  public aguardandoAutuacao: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
+  public aguardandoEntranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
+  public aguardandoDespacho: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
+  public FaseStatusEnum = FaseStatuEnum;
   
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -1208,15 +1218,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const modalRef = this._ngbModalService.open( this.confirmarIntegracaoProjetoModalTemplate , {
         centered: true,
-        size: 'lg'
+        size: 'lg',
+        backdrop: 'static', 
+        keyboard: false     
       });
-      modalRef.result.then(
-        (result) => {
-          if (result === 'confirmado') {
-            this.autuarProjetoForm(this.projetoForm);
-          }
-        },
-      );
+
+      // modalRef.result.then(
+      //   (result) => {
+      //     if (result === 'confirmado') {
+      //       //this.autuarProjetoForm(this.projetoForm);
+      //     }
+      //   },
+      // );
+
+  }
+
+  public confirmarAssinarAutuar(){
+    
+    this.autuarProjetoForm(this.projetoForm);
 
   }
 
@@ -1292,6 +1311,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
         this.iniciarPollingProtocolo();
+        this.iniciarPollingEtapasIntegracaoModal();
       });
 
   }
@@ -1334,6 +1354,76 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       }
 
+    });
+
+  }
+
+  private iniciarPollingEtapasIntegracaoModal(): void {
+
+    const intervalo = 1000;
+    const timeout = 30000; 
+  
+    interval(intervalo).pipe(
+      takeUntil(timer(timeout)), 
+      switchMap( () =>
+        this._projetosService
+          .consultarFasesIntegracaoEdcosProjeto(this._idProjetoEdicao)
+          .pipe(
+            map<IProjetoIntegracaoEdocsFases[], ProjetoIntegracaoEdocsFasesModel[]> ( 
+              ( response: IProjetoIntegracaoEdocsFases[] ) => 
+                response.map(fase => new ProjetoIntegracaoEdocsFasesModel(fase)) ),
+            catchError(err => {
+                console.error("Erro na requisição:", err);
+                return of(null);
+            }),
+          )
+      ),
+      takeUntil(
+        this._projetosService.protocoloAtualizado$.pipe(
+          filter(dados => !!dados?.protocolo),
+          tap(dados => {
+            this.aguardandoAssinatura = FaseStatuEnum.FINALIZADA;
+            this.aguardandoAutuacao  = FaseStatuEnum.FINALIZADA;
+            this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
+            this.aguardandoDespacho  = FaseStatuEnum.FINALIZADA;
+          })
+        )
+      ),
+    ).subscribe(( listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] | null ) => {
+      
+      if (listaFasesIntegracaoProjeto) {
+        
+        console.log("[" + new Date().toISOString() + "] Fases integração : {} " , listaFasesIntegracaoProjeto );
+
+        listaFasesIntegracaoProjeto.forEach( fase => {
+          switch (fase.etapa) {
+            case FasesEdocsIntegracaoEnum.captura_assinatura :
+              if ( fase.iniciada && !fase.finalizada )
+                this.aguardandoAssinatura = FaseStatuEnum.EM_ANDAMENTO;
+              if ( fase.iniciada && fase.finalizada ){
+                this.aguardandoAssinatura = FaseStatuEnum.FINALIZADA;
+              }
+              break;
+            case FasesEdocsIntegracaoEnum.autuar :
+              if ( fase.iniciada ){
+                this.aguardandoAutuacao  = FaseStatuEnum.EM_ANDAMENTO;
+                this.aguardandoEntranhamento = FaseStatuEnum.EM_ANDAMENTO;
+              }
+              if ( fase.finalizada ){
+                this.aguardandoAutuacao  = FaseStatuEnum.FINALIZADA;
+                this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
+              }
+              break;
+            case FasesEdocsIntegracaoEnum.despacharprocesso :
+              if ( fase.iniciada )
+                this.aguardandoDespacho   = FaseStatuEnum.EM_ANDAMENTO;
+              if ( fase.finalizada )
+                this.aguardandoDespacho  = FaseStatuEnum.FINALIZADA;
+              break;
+            }
+          }
+        )
+      }
     });
 
   }

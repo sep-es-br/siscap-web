@@ -125,4 +125,8 @@ export class EquipeFormComponent implements OnDestroy {
     this.equipeService.equipeFormArray.clear();
   }
 
+  public desabilitarCampo(index: number) : boolean {
+    return ( this.statusProjeto != StatusProjetoEnum.Em_Elaboracao && !this.isNovoMembro(index) );
+  }
+
 }
