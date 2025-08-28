@@ -20,6 +20,7 @@ import {
 import { TipoValorEnum } from '../../enums/tipo-valor.enum';
 
 import { environment } from '../../../../environments/environment';
+import { IProjetoIntegracaoEdocsFases } from '../../interfaces/projeto-integracao-edcos-fases.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -270,6 +271,13 @@ export class ProjetosService extends BaseHttpService<
   
   public estaEmAutuacao(idProjeto: number): boolean {
     return this._projetosEmAutuacao.value.has(idProjeto);
+  }
+
+  public consultarFasesIntegracaoEdcosProjeto(
+    idProjeto: number
+  ): Observable<IProjetoIntegracaoEdocsFases[]> {
+    return this._http.get<IProjetoIntegracaoEdocsFases[]>(
+      `${this._url}/dic/edocs/fases/${idProjeto}` );
   }
 
 }

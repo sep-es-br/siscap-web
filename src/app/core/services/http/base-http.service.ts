@@ -53,4 +53,5 @@ export abstract class BaseHttpService<T, TTableData>
       responseType: 'text',
     });
   }
+  
 }
