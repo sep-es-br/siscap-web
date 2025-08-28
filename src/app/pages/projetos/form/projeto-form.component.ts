@@ -804,6 +804,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           autuarConfirmacaoProjetoModal : true,
           enviarProjetoGestor : false
         });
+
+        const controlJustificativaRevisao = this.projetoForm.get('justificativaRevisao');
+        controlJustificativaRevisao?.clearValidators();
+        controlJustificativaRevisao?.updateValueAndValidity();
+          
+        const controlJustificativaArquivamento = this.projetoForm.get('justificativaArquivamento');
+        controlJustificativaArquivamento?.clearValidators();
+        controlJustificativaArquivamento?.updateValueAndValidity();
+
+        const codigoMotivoArquivamento = this.projetoForm.get('codigoMotivoArquivamento');
+        codigoMotivoArquivamento?.clearValidators();
+        codigoMotivoArquivamento?.updateValueAndValidity();
+
         if( !this.validarFormulario(this.projetoForm) ) 
           break;
         if( this.compararValorEstimadoValorAcoes() ) {
@@ -1445,7 +1458,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   confirmarJustificativaArquivamento(modal: NgbModalRef): void {
 
     const controlJustificativaArquivamento = this.projetoForm.get('justificativaArquivamento');
-
     const codigoMotivoArquivamento = this.projetoForm.get('codigoMotivoArquivamento');
 
     if( codigoMotivoArquivamento?.value == null || codigoMotivoArquivamento?.value?.trim() === '' ) {
@@ -1457,7 +1469,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     // se clicar na opcao outros obriga o preenchimento da justificativa.
-    if( codigoMotivoArquivamento?.value?.trim() === 'M11'){      
+    if( codigoMotivoArquivamento?.value?.trim() === 'M11'){
       controlJustificativaArquivamento?.setValidators([Validators.required, Validators.maxLength(200)]);
       controlJustificativaArquivamento?.updateValueAndValidity();
       if ( ( !controlJustificativaArquivamento || controlJustificativaArquivamento.invalid || !controlJustificativaArquivamento.value?.trim() ) ) {
