@@ -160,6 +160,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public aguardandoDespacho: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public FaseStatusEnum = FaseStatuEnum;
   
+  public autuacaoAcionada: boolean = false; 
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -1223,14 +1225,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         keyboard: false     
       });
 
-      // modalRef.result.then(
-      //   (result) => {
-      //     if (result === 'confirmado') {
-      //       //this.autuarProjetoForm(this.projetoForm);
-      //     }
-      //   },
-      // );
-
   }
 
   public confirmarAssinarAutuar(){
@@ -1292,12 +1286,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._projetosService.autuarProjetoEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
+          this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
           this._toastService.showToast(
             'info',
             'Processo de autuação iniciado no E-Docs.'
           );
         }),
         catchError(error => {
+          this.autuacaoAcionada = false;
           this._toastService.showToast(
             'error',
             'Erro ao iniciar autuação no E-Docs.'
@@ -1474,5 +1470,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     modal.close('confirmado');
 
   }
+
+  public isIntegracaoEdocsConcluido() : boolean {
+    const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
+    if ( !protocoloEdocsFormControl.value )
+      return true;
+    return false;
+  }
+
 
 }

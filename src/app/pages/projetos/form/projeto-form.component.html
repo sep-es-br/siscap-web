@@ -476,14 +476,27 @@
       <button
         class="btn btn-outline-danger  icon-text-btn"
         (click)="modal.dismiss('cancelado')">
-        <span>Cancelar</span>
+        <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
       <button
         class="btn btn-success icon-text-btn me-2"
-        (click)="confirmarAssinarAutuar()">
-        <i class="fa-solid fa-paper-plane me-2"></i>
-        <span>Assinar e Autuar</span>
+        (click)="confirmarAssinarAutuar()"
+        [disabled]="autuacaoAcionada" >                
+        <ng-container *ngIf="!autuacaoAcionada; else loading">
+          <i class="fa-solid fa-paper-plane me-2"></i>
+          <span>Assinar e Autuar</span>
+        </ng-container>
+        <ng-template #loading>
+          <ng-container *ngIf="!isIntegracaoEdocsConcluido(); else processando">
+            <i class="fa-solid fa-check text-success me-2"></i>
+            <span>Concluído</span>
+          </ng-container>
+          <ng-template #processando>
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            <span>Processando...</span>
+          </ng-template>
+        </ng-template>
       </button>
     </div>
   </div>
