@@ -10,6 +10,7 @@ export interface IProjetoIntegracaoEdocsFases {
   readonly etapa: string;
   readonly iniciada: boolean;
   readonly finalizada: boolean;
+  readonly erro: boolean;
 }
 
 

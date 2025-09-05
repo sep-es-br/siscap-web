@@ -89,6 +89,7 @@ import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { IProjetoIntegracaoEdocsFases } from '../../../core/interfaces/projeto-integracao-edcos-fases.interface';
 import { ProjetoIntegracaoEdocsFasesModel } from '../../../core/models/projeto-integracao-edocs-fases.model';
 import { FasesEdocsIntegracaoEnum, FaseStatuEnum } from '../../../core/enums/fases-edocs-integracao.enum';
+import { IEstruturaCamposComplementar } from '../../../core/interfaces/estrutura.campo.complementar.dic.interface';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -162,10 +163,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   
   public autuacaoAcionada: boolean = false; 
 
+  public podeEditarEmAnalise: boolean = false;
+  public podeSoilictarComplementacao: boolean = false;
+
+  //public projetoFormComplementar!: FormGroup;
+  public camposParaComplementacao: IEstruturaCamposComplementar[] = [];
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarArquivarProjetoModal') confirmarArquivarProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('informarComplementacoesProjetoModal') informarComplementacoesProjetoModalTemplate: TemplateRef<any> | undefined;
   
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
@@ -190,6 +198,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private router: Router
     ) {
 
+      
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
       .pipe(tap((response) => (this.organizacoesOpcoes = response)));
@@ -277,7 +286,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.statusProjeto = projetoModel.status;
             this.lotacaoGestorProjeto = projetoModel.lotacaoProponenteResponsavel;  
             this.nomeProponenteResponsavel = projetoModel.nomeProponenteResponsavel;
-
+            this.podeEditarEmAnalise = projetoModel.podeEditar;
+            this.podeSoilictarComplementacao = projetoModel.podeSolicitarComplementacao;
+                                                            
             this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
               (status) => status != this.statusProjeto
             );
@@ -295,7 +306,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
 
             if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
-              this.trocarModo(false);
+              this.trocarModo(this.podeEditarEmAnalise);
             }
 
             // 
@@ -321,7 +332,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 );
               } else if (projetoModel.protocoloEdocs) {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao()
+                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
                 );
               } else {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
@@ -337,7 +348,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 this.trocarModo(true);
               } else if (projetoModel.protocoloEdocs) {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao()
+                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
                 );
                 this.trocarModo(false);
               } else {
@@ -347,11 +358,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 setTimeout(() => this.trocarModo(true), 2000);
               }
             }
-    
-            if (!this.isProponente && !projetoModel.protocoloEdocs ) {
-              this.mostrarBotaoStatusProjeto = true;
-            }
-    
+
+            // nao exibir botao para mudanca de status - Sprint-29 
+            // if (!this.isProponente && !projetoModel.protocoloEdocs ) {
+            //   this.mostrarBotaoStatusProjeto = true;
+            // }
+
             this.loading = false;
             this.isLoadingPessoas = false;
 
@@ -360,6 +372,42 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    // Campos que devem aparecer para o usuário
+    const camposVisiveis = [
+      'sigla', 					
+      'titulo', 					
+      'Organizacao', 			
+      'ResponsavelProponente', 
+      'equipeProjeto', 			
+      'rateio', 					
+      'acoesProjeto', 			
+      'objetivo', 				
+      'objetivoEspecifico', 		
+      'situacaoProblema', 		
+      'solucoesPropostas', 		
+      'impactos',					
+      'arranjosInstitucionais', 	
+      'pecasPlanejamento', 		
+    ];
+    
+    // Monta dinamicamente os painéis do accordion
+    this.camposParaComplementacao = camposVisiveis.map( key => {
+      return {
+        name: key,
+        label: this.formatarLabel(key),
+        mensagemComplementacao:''
+      };
+    });
+
+    // // Cria dinamicamente os FormControls dentro do FormGroup
+	  // const controls = {};
+	
+    // this.formCamposComplementar.forEach( campo => {
+    //   controls[campo.name] = this._nnfb.control(campo.name  || '');
+    // });
+	
+	  // this.projetoFormComplementar = this._nnfb.group(controls);
     
     const rotaAtual = this.route.snapshot.routeConfig?.path;
     if (rotaAtual === 'criar') {
@@ -407,6 +455,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
     });
 
+  }
+
+  private formatarLabel(nome: string): string {
+    return nome
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase());
   }
 
   private carregarPessoasPorOrganizacao(): void {
@@ -470,8 +524,27 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public async idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): Promise<void> {
-    await this.equipeService.idMembroNgSelectValue$.next(event);
+
+
+    const subResponsavelProponente = this.projetoForm.get( 
+      'subResponsavelProponente'
+    ) as FormControl<string | null>
+    
+    const jaExiste = this.equipeService.equipeFormArray.value.some(
+      (membro) => ( membro.subPessoa === event.agentePublicoSub && membro.idStatus === TipoStatusEnum.Ativo )
+    ) || event.agentePublicoSub === subResponsavelProponente.value || this._usuarioService.usuarioPerfil.subNovo === event.agentePublicoSub ;
+
+    if(jaExiste){
+      this._toastService.showToast(
+        'info',
+        'Pessoa já incluso na equipe',
+      );
+    }else{
+      this.equipeService.idMembroNgSelectValue$.next(event);
+    }
+
     this.exibirLista = false;
+
   }
 
   public idIndicadorNgSelectChangeEvent(event: number): void {
@@ -578,6 +651,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.codigoMotivoArquivamento ?? '' 
       )
     });
+    
         
     this.carregarPessoasPorOrganizacao();
         
@@ -836,6 +910,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       case BreadcrumbAcoesEnum.Arquivar:
           this.abrirArquivarModal(this.projetoForm)
+        break;
+
+        case BreadcrumbAcoesEnum.complementar:
+          this.abrirComplementacaoModal()
         break;
 
     }
@@ -1108,8 +1186,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         
         this.pessoasOpcoesGoves = lista;
         
-        this.pessoasOpcoesGoves = this.pessoasOpcoesGoves.filter(pessoa =>
-          !this.equipeProjeto.some(membro => membro.subPessoa === pessoa.agentePublicoSub)
+        this.pessoasOpcoesGoves = this.pessoasOpcoesGoves.filter( pessoa =>
+          !this.equipeProjeto.some( membro => membro.idStatus === TipoStatusEnum.Inativo &&  membro.subPessoa === pessoa.agentePublicoSub )
         );
 
         if( this.pessoasOpcoesGoves.length === 0 ){
@@ -1201,7 +1279,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       (result) => {
         if (result === 'confirmado') {
-          this.enviarProjetoArquivamentoForm(form);
+          this.enviarProjetoArquivamentoForm();
         }
       },
       (reason) => {
@@ -1275,7 +1353,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  private enviarProjetoArquivamentoForm(form: FormGroup): void {
+  private enviarProjetoArquivamentoForm(): void {
     
     const textoJustificativa = this.projetoForm.get('justificativaArquivamento')?.value
     const codigoMotivoArquivamento = this.projetoForm.get('codigoMotivoArquivamento')?.value
@@ -1289,6 +1367,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this._toastService.showToast('error', 'Erro ao enviar aviso de arquivamento: ' + err);
+      }
+    });
+
+  }
+
+  private enviarProjetoComplementacao(): void {
+    
+    this._projetosService
+    .enviarEmailAvisoComplementacaoProjeto( this._idProjetoEdicao, this.camposParaComplementacao )
+    .subscribe({
+      next: (response: string) => {
+        this._toastService.showToast('success', response);
+        this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+      },
+      error: (err) => {
+        this._toastService.showToast('error', 'Erro ao enviar aviso de complementacao: ' + err);
       }
     });
 
@@ -1378,7 +1472,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this._projetosService
           .consultarFasesIntegracaoEdcosProjeto(this._idProjetoEdicao)
           .pipe(
-            map<IProjetoIntegracaoEdocsFases[], ProjetoIntegracaoEdocsFasesModel[]> ( 
+            map< IProjetoIntegracaoEdocsFases[], ProjetoIntegracaoEdocsFasesModel[] > ( 
               ( response: IProjetoIntegracaoEdocsFases[] ) => 
                 response.map(fase => new ProjetoIntegracaoEdocsFasesModel(fase)) ),
             catchError(err => {
@@ -1402,11 +1496,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       
       if (listaFasesIntegracaoProjeto) {
         
-        console.log("[" + new Date().toISOString() + "] Fases integração : {} " , listaFasesIntegracaoProjeto );
+        if ( listaFasesIntegracaoProjeto.some( fase =>fase.idProjeto == this._idProjetoEdicao && fase.erro ) ){
+          this.autuacaoAcionada = false;
+          this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
+        }
 
         listaFasesIntegracaoProjeto.forEach( fase => {
           switch (fase.etapa) {
             case FasesEdocsIntegracaoEnum.captura_assinatura :
+              if( fase.erro ){
+                this.aguardandoAssinatura = FaseStatuEnum.ERROFASE;
+                break;
+              }
               if ( fase.iniciada && !fase.finalizada )
                 this.aguardandoAssinatura = FaseStatuEnum.EM_ANDAMENTO;
               if ( fase.iniciada && fase.finalizada ){
@@ -1414,16 +1515,25 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
               break;
             case FasesEdocsIntegracaoEnum.autuar :
+              if( fase.erro ){
+                this.aguardandoAutuacao = FaseStatuEnum.ERROFASE;
+                this.aguardandoEntranhamento = FaseStatuEnum.ERROFASE;
+                break;
+              }
               if ( fase.iniciada ){
                 this.aguardandoAutuacao  = FaseStatuEnum.EM_ANDAMENTO;
                 this.aguardandoEntranhamento = FaseStatuEnum.EM_ANDAMENTO;
               }
               if ( fase.finalizada ){
-                this.aguardandoAutuacao  = FaseStatuEnum.FINALIZADA;
-                this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
+                this.aguardandoDespacho  = FaseStatuEnum.FINALIZADA;
               }
               break;
             case FasesEdocsIntegracaoEnum.despacharprocesso :
+              if( fase.erro ){
+                this.aguardandoAutuacao = FaseStatuEnum.ERROFASE;
+                this.aguardandoEntranhamento = FaseStatuEnum.ERROFASE;
+                break;
+              }
               if ( fase.iniciada )
                 this.aguardandoDespacho   = FaseStatuEnum.EM_ANDAMENTO;
               if ( fase.finalizada )
@@ -1436,6 +1546,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
 
   }
+
+  // public ocorreuErro(): boolean {
+  //   return this.erroEmAlgumaFase;
+  // }
   
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
@@ -1488,6 +1602,33 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     if ( !protocoloEdocsFormControl.value )
       return true;
     return false;
+  }
+
+
+  confirmarComplementacao(modal: NgbModalRef): void {
+
+    modal.close('confirmado');
+
+  }
+
+  public abrirComplementacaoModal( ) {
+               
+    const modalRef = this._ngbModalService.open( this.informarComplementacoesProjetoModalTemplate , {
+      centered: true,
+      size: 'lg',
+    });
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'confirmado') {
+          this.enviarProjetoComplementacao();
+        }
+      },
+      (reason) => {
+        //console.log('Usuário cancelou:', reason);
+      }
+    );
+
   }
 
 

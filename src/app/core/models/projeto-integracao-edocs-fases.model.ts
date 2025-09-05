@@ -6,12 +6,14 @@ export class ProjetoIntegracaoEdocsFasesModel implements IProjetoIntegracaoEdocs
   public etapa: string;
   public iniciada: boolean;
   public finalizada: boolean;
+  public erro: boolean;
 
     constructor(integracao?: IProjetoIntegracaoEdocsFases) {
       this.idProjeto = integracao?.idProjeto ?? 0;
       this.etapa = integracao?.etapa ?? '';
       this.iniciada = integracao?.iniciada ?? false;
       this.finalizada = integracao?.finalizada ?? false;
+      this.erro = integracao?.erro ?? false
     }
 
 }

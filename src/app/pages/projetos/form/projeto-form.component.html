@@ -7,8 +7,7 @@
     <button
       *ngIf="mostrarBotaoStatusProjeto"
       class="btn btn-outline-success icon-text-btn me-2"
-      (click)="abrirModalStatusProjeto(projetoStatusModal)"
-    >
+      (click)="abrirModalStatusProjeto(projetoStatusModal)">
       <i class="fa-solid fa-check"></i>
       <span>Status</span>
     </button>
@@ -443,6 +442,9 @@
         <span *ngIf="aguardandoAssinatura === FaseStatusEnum.FINALIZADA" class="icon-container">
           <i class="fa-solid fa-check text-success fs-6"></i>
         </span>
+        <span *ngIf="aguardandoAssinatura === FaseStatusEnum.ERROFASE" class="icon-container">
+          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
+        </span>
       </li>
       <li>Autuação de processo de Solicitação de Captação de Recursos para a sua instituição; 
         <span *ngIf="aguardandoAutuacao === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
@@ -450,6 +452,9 @@
         </span>
         <span *ngIf="aguardandoAutuacao === FaseStatusEnum.FINALIZADA" class="icon-container">
           <i class="fa-solid fa-check text-success fs-6"></i>
+        </span>
+        <span *ngIf="aguardandoAutuacao === FaseStatusEnum.ERROFASE" class="icon-container">
+          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
         </span>
       </li>
       <li>Entranhamento do DIC capturado ao processo e; 
@@ -459,6 +464,9 @@
         <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
           <i class="fa-solid fa-check text-success fs-6"></i>
         </span>
+        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
+          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
+        </span>
       </li>
       <li>Despacho com pedido de análise do processo à Subsecretaria de Captação de Recursos (SUBCAP) da Secretaria de Economia e Planejamento (SEP).
         <span *ngIf="aguardandoDespacho === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
@@ -466,6 +474,9 @@
         </span>
         <span *ngIf="aguardandoDespacho === FaseStatusEnum.FINALIZADA" class="icon-container">
           <i class="fa-solid fa-check text-success fs-6"></i>
+        </span>
+        <span *ngIf="aguardandoDespacho === FaseStatusEnum.ERROFASE" class="icon-container">
+          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
         </span>
       </li>
     </ol>
@@ -480,23 +491,25 @@
         <i class="fa-solid fa-close"></i>
       </button>
       <button
+        *ngIf="!autuacaoAcionada"
         class="btn btn-success icon-text-btn me-2"
-        (click)="confirmarAssinarAutuar()"
-        [disabled]="autuacaoAcionada" >                
-        <ng-container *ngIf="!autuacaoAcionada; else loading">
-          <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Assinar e Autuar</span>
-        </ng-container>
-        <ng-template #loading>
-          <ng-container *ngIf="!isIntegracaoEdocsConcluido(); else processando">
-            <i class="fa-solid fa-check text-success me-2"></i>
-            <span>Concluído</span>
-          </ng-container>
-          <ng-template #processando>
-            <span class="spinner-border spinner-border-sm me-2"></span>
-            <span>Processando...</span>
-          </ng-template>
-        </ng-template>
+        (click)="confirmarAssinarAutuar()">
+        <i class="fa-solid fa-paper-plane me-2"></i>
+        <span>Assinar e Autuar</span>
+      </button>
+      <button
+        *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido()"
+        class="btn btn-success icon-text-btn me-2" 
+        disabled>
+        <i class="fa-solid fa-check text-success text-white me-2"></i>
+        <span>Concluído</span>
+      </button>
+      <button
+        *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido()"
+        class="btn btn-success icon-text-btn me-2" 
+        disabled >
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        <span>Processando...</span>
       </button>
     </div>
   </div>
@@ -617,3 +630,45 @@
     </div>
   </div>
 </ng-template>
+
+<ng-template #informarComplementacoesProjetoModal let-modal> 
+  
+  <div class="modal-header py-3 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+      Deseja enviar o projeto para complementação ?
+    </h4>
+  </div>
+  <div class="modal-body py-3">
+      <div ngbAccordion [closeOthers]="true">
+        <div *ngFor="let campo of camposParaComplementacao" [ngbAccordionItem]="campo.name">
+          <h2 ngbAccordionHeader>
+            <button ngbAccordionButton class="form-label text-primary fs-5" [ngClass]="{'fw-bold': (campo.mensagemComplementacao || '').length > 0}" >{{ campo.label }}</button>
+          </h2>
+          <div ngbAccordionCollapse>
+            <div ngbAccordionBody >
+              <textarea type="text" 
+                class="form-control"
+                id="campos.mensagemComplementacao"
+                [(ngModel)]="campo.mensagemComplementacao" 
+                placeholder="Informe o motivo para complementação." ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>  
+
+  <div class="modal-footer">
+    <div class="d-inline-flex flex-row-reverse">
+      <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
+        <span>Cancelar</span>
+        <i class="fa-solid fa-close"></i>
+      </button>
+
+      <button class="btn btn-success icon-text-btn me-2" (click)="confirmarComplementacao(modal)">
+        <i class="fa-solid fa-check me-2"></i>
+        <span>Confirmar</span>
+      </button>
+    </div>
+  </div>
+</ng-template>
+

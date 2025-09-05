@@ -35,6 +35,8 @@ export interface IProjeto {
   codigoMotivoArquivamento: string;
   lotacaoProponenteResponsavel: string;
   nomeProponenteResponsavel: string;
+  podeEditar: boolean;
+  podeSolicitarComplementacao: boolean;
 }
 
 export interface IProjetoForm

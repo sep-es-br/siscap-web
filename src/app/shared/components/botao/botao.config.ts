@@ -15,7 +15,8 @@ export type TBotaoAcao =
   | 'autuarEdocs'
   | 'revisar'
   | 'recusar'
-  | 'arquivar';
+  | 'arquivar'
+  | 'complementar';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -100,6 +101,12 @@ export abstract class BotoesConfig {
       texto: 'Arquivar',
       acao: 'arquivar',
     },
+    complementar: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-edit'],
+      texto: 'Complementar',
+      acao: 'complementar',
+    }
   };
 
   public static gerarBotaoPropriedades(

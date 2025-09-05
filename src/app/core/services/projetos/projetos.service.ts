@@ -21,6 +21,7 @@ import { TipoValorEnum } from '../../enums/tipo-valor.enum';
 
 import { environment } from '../../../../environments/environment';
 import { IProjetoIntegracaoEdocsFases } from '../../interfaces/projeto-integracao-edcos-fases.interface';
+import { IEstruturaCamposComplementar } from '../../interfaces/estrutura.campo.complementar.dic.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -100,9 +101,13 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCancelar,botaoAutuar,botaoRevisar,botaoArquivar,botaoVoltar];
   }
 
-  public gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(): Array<BotaoPropriedadesModel> {
+  public gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao( podeComplementar: boolean ): Array<BotaoPropriedadesModel> {
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    return [botaoCancelar];
+    if( podeComplementar ){
+      const botaoComplementar = BotoesConfig.gerarBotaoPropriedades('complementar');
+      return [botaoCancelar,botaoComplementar]
+    }else
+      return [botaoCancelar];
   }
 
   public gerarBotoesAcaoFormularioArquivado(): Array<BotaoPropriedadesModel> {
@@ -208,6 +213,27 @@ export class ProjetosService extends BaseHttpService<
 
   }
 
+  public enviarEmailAvisoComplementacaoProjeto(id: number, formCamposComplementar: IEstruturaCamposComplementar[]
+     ): Observable<string> {
+
+      const payload: Array<{ [key: string]: string }> = []
+      
+      formCamposComplementar.forEach( campo => {
+        if( (campo.mensagemComplementacao || '').length > 0 )
+          payload.push({ [campo.name]: campo.mensagemComplementacao || '' });
+      });
+
+      console.log( payload )
+
+      return this._http.post(
+        `${this._url}/${id}/complementar`,
+        payload ,
+        { responseType: 'text' }
+
+    );
+
+  }
+
   public baixarDIC(id: number): void {
     const userHttpOptions: Object = {
       responseType: 'arraybuffer',
@@ -263,16 +289,6 @@ export class ProjetosService extends BaseHttpService<
     this._projetosEmAutuacao.next(set);
   }
   
-  public finalizarAutuacao(idProjeto: number): void {
-    const set = new Set(this._projetosEmAutuacao.value);
-    set.delete(idProjeto);
-    this._projetosEmAutuacao.next(set);
-  }
-  
-  public estaEmAutuacao(idProjeto: number): boolean {
-    return this._projetosEmAutuacao.value.has(idProjeto);
-  }
-
   public consultarFasesIntegracaoEdcosProjeto(
     idProjeto: number
   ): Observable<IProjetoIntegracaoEdocsFases[]> {
