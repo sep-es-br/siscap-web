@@ -37,6 +37,7 @@ export interface IProjeto {
   nomeProponenteResponsavel: string;
   podeEditar: boolean;
   podeSolicitarComplementacao: boolean;
+  podeResponderComplementacao: boolean; 
 }
 
 export interface IProjetoForm

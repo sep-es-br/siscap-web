@@ -30,6 +30,7 @@ export class ProjetosService extends BaseHttpService<
   IProjeto,
   IProjetoTableData
 > {
+
   private readonly _url = `${environment.apiUrl}/projetos`;
 
   public protocoloAtualizado$ = new Subject<{ idProjeto: number; protocolo: string }>();
@@ -113,6 +114,12 @@ export class ProjetosService extends BaseHttpService<
   public gerarBotoesAcaoFormularioArquivado(): Array<BotaoPropriedadesModel> {
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     return [botaoCancelar];
+  }
+
+  public gerarBotoesAcaoResponderComplementacao(): Array<BotaoPropriedadesModel> {
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
+    return [botaoCancelar, botaoAutuar];
   }
 
   public construirProjetoModelRateio(
@@ -220,10 +227,8 @@ export class ProjetosService extends BaseHttpService<
       
       formCamposComplementar.forEach( campo => {
         if( (campo.mensagemComplementacao || '').length > 0 )
-          payload.push({ [campo.name]: campo.mensagemComplementacao || '' });
+          payload.push({ [campo.label]: campo.mensagemComplementacao || '' });
       });
-
-      console.log( payload )
 
       return this._http.post(
         `${this._url}/${id}/complementar`,

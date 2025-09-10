@@ -165,6 +165,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public podeEditarEmAnalise: boolean = false;
   public podeSoilictarComplementacao: boolean = false;
+  public podeResponderComplementacao: boolean = false;
 
   //public projetoFormComplementar!: FormGroup;
   public camposParaComplementacao: IEstruturaCamposComplementar[] = [];
@@ -268,7 +269,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
-            
+            console.log( "Buscar projeto por ID: " , JSON.stringify(response,null,2) )
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {
@@ -288,6 +289,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.nomeProponenteResponsavel = projetoModel.nomeProponenteResponsavel;
             this.podeEditarEmAnalise = projetoModel.podeEditar;
             this.podeSoilictarComplementacao = projetoModel.podeSolicitarComplementacao;
+            this.podeResponderComplementacao = projetoModel.podeResponderComplementacao;
                                                             
             this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
               (status) => status != this.statusProjeto
@@ -325,39 +327,48 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               projetoModel.status === StatusProjetoEnum.Em_Elaboracao &&
               !projetoModel.protocoloEdocs;
 
-            if (this.isProponente) {
-              if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
-                );
-              } else if (projetoModel.protocoloEdocs) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
-                );
+            if (this.podeResponderComplementacao) {
+              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                this._projetosService.gerarBotoesAcaoResponderComplementacao()
+              );
+              this.trocarModo(false);
+            } else { 
+              if (this.isProponente) {
+                if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
+                  );
+                } else if (projetoModel.protocoloEdocs) {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
+                  );
+                } else {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponente()
+                  );
+                  setTimeout(() => this.trocarModo(true), 2000);
+                }
               } else {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponente()
-                );
-                setTimeout(() => this.trocarModo(true), 2000);
+                if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
+                  );
+                  this.trocarModo(true);
+                } else if (projetoModel.protocoloEdocs) {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
+                  );
+                  this.trocarModo(false);
+                } else {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormulario()
+                  );
+                  setTimeout(() => this.trocarModo(true), 2000);
+                }
               }
-            } else {
-              if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
-                );
-                this.trocarModo(true);
-              } else if (projetoModel.protocoloEdocs) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
-                );
-                this.trocarModo(false);
-              } else {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormulario()
-                );
-                setTimeout(() => this.trocarModo(true), 2000);
-              }
+
             }
+            
 
             // nao exibir botao para mudanca de status - Sprint-29 
             // if (!this.isProponente && !projetoModel.protocoloEdocs ) {

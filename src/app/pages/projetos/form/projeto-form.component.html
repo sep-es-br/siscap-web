@@ -631,33 +631,38 @@
   </div>
 </ng-template>
 
-<ng-template #informarComplementacoesProjetoModal let-modal> 
-  
-  <div class="modal-header py-3 justify-content-center">
-    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Deseja enviar o projeto para complementação ?
+<ng-template #informarComplementacoesProjetoModal let-modal>
+  <div class="modal-header py-2 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-5 text-center">
+      Deseja enviar o projeto para complementação?
     </h4>
   </div>
-  <div class="modal-body py-3">
-      <div ngbAccordion [closeOthers]="true">
-        <div *ngFor="let campo of camposParaComplementacao" [ngbAccordionItem]="campo.name">
-          <h2 ngbAccordionHeader>
-            <button ngbAccordionButton class="form-label text-primary fs-5" [ngClass]="{'fw-bold': (campo.mensagemComplementacao || '').length > 0}" >{{ campo.label }}</button>
-          </h2>
-          <div ngbAccordionCollapse>
-            <div ngbAccordionBody >
-              <textarea type="text" 
-                class="form-control"
-                id="campos.mensagemComplementacao"
-                [(ngModel)]="campo.mensagemComplementacao" 
-                placeholder="Informe o motivo para complementação." ></textarea>
-            </div>
+
+  <div class="modal-body p-3 modal-body-scroll">
+    <div ngbAccordion [closeOthers]="true">
+      <div *ngFor="let campo of camposParaComplementacao" [ngbAccordionItem]="campo.name">
+        <h2 ngbAccordionHeader>
+          <button 
+            ngbAccordionButton 
+            class="form-label text-primary accordion-btn-custom"
+            [ngClass]="{'fw-bold': (campo.mensagemComplementacao || '').length > 0}">
+            {{ campo.label }}
+          </button>
+        </h2>
+        <div ngbAccordionCollapse>
+          <div ngbAccordionBody>
+            <textarea 
+              class="form-control"
+              [(ngModel)]="campo.mensagemComplementacao"
+              placeholder="Informe o motivo para complementação.">
+            </textarea>
           </div>
         </div>
       </div>
-  </div>  
+    </div>
+  </div>
 
-  <div class="modal-footer">
+  <div class="modal-footer py-2">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>Cancelar</span>
@@ -671,4 +676,5 @@
     </div>
   </div>
 </ng-template>
+
 

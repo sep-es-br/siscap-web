@@ -1,10 +1,28 @@
 .accordion-content {
-    padding: 8px 16px; /* espaçamento interno (lados e topo) */
-  }
+padding: 8px 16px; /* espaçamento interno (lados e topo) */
+}
+
+.accordion-content textarea.form-control {
+width: 100%;
+box-sizing: border-box;
+margin-top: 4px;   /* reduz a distância do header */
+}
   
-  .accordion-content textarea.form-control {
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 4px;   /* reduz a distância do header */
-  }
+/* Reduz a largura da modal */
+.modal-dialog {
+    max-width: 600px; /* ou 500px, dependendo do que preferir */
+}
+  
+/* Limita altura da área rolável */
+.modal-body-scroll {
+max-height: 300px; /* ajusta conforme necessário */
+overflow-y: auto;
+}
+
+/* Ajusta tamanho da fonte dos botões do accordion */
+.accordion-btn-custom {
+font-size: 0.9rem; /* menor que fs-5 */
+line-height: 1.2rem;
+padding: 0.25rem 0.5rem;
+}
   

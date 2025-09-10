@@ -4,4 +4,5 @@ export enum StatusProjetoEnum {
   Arquivado = 'Arquivado',
   Parecer_SEP = 'Parecer SEP',
   Ativo = 'Ativo',
+  Em_Compensacao = 'Em Compensação',
 }
