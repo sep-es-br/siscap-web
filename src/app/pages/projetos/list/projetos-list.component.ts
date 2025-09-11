@@ -39,7 +39,6 @@ export class ProjetosListComponent {
 
   private _destroy$ = new Subject<void>();
 
-  //public tableActionInput = input.required<number>();
   public tableActionOutput = output<ITableActionOutput>();
       
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
@@ -62,10 +61,10 @@ export class ProjetosListComponent {
   ngOnInit(): void {
     
     this._projetosService.projetosAguardandoEdocs$
-    .pipe(takeUntil(this._destroy$))
-    .subscribe(set => {
-      this.projetosAguardando = set;
-    });
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(set => {
+        this.projetosAguardando = set;
+      });
 
     this._projetosService.protocoloAtualizado$
       .pipe(

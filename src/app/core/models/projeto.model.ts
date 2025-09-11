@@ -39,6 +39,9 @@ export class ProjetoFormModel implements IProjetoForm {
   public codigoMotivoArquivamento: string;
   public lotacaoProponenteResponsavel: string;
   public nomeProponenteResponsavel: string;
+  public podeEditar: boolean;
+  public podeSolicitarComplementacao: boolean;
+  public podeResponderComplementacao: boolean;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -75,6 +78,9 @@ export class ProjetoFormModel implements IProjetoForm {
     this.codigoMotivoArquivamento = projetoForm?.codigoMotivoArquivamento ?? '';
     this.lotacaoProponenteResponsavel = projetoForm?.lotacaoProponenteResponsavel ?? '';
     this.nomeProponenteResponsavel = projetoForm?.nomeProponenteResponsavel ?? '';
+    this.podeEditar = projetoForm?.podeEditar ?? false;
+    this.podeSolicitarComplementacao = projetoForm?.podeSolicitarComplementacao ?? false;
+    this.podeResponderComplementacao = projetoForm?.podeResponderComplementacao ?? false;
   }
 
   private construirRateioModelArray(

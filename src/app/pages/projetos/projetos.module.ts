@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
+  NgbAccordionModule,
   NgbAlertModule,
   NgbDatepickerModule,
   NgbPaginationModule,
@@ -40,7 +41,10 @@ import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-for
     NgbDatepickerModule,
     ProjetosRoutingModule,
     IndicadoresFormComponent,
-    AcoesFormComponent
+    AcoesFormComponent,
+    ReactiveFormsModule,
+    NgbAccordionModule,
+    ReactiveFormsModule
 ],
   exports: [
     ProjetosComponent,
