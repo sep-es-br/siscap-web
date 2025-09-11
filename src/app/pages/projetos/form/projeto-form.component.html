@@ -493,7 +493,8 @@
       <button
         *ngIf="!autuacaoAcionada"
         class="btn btn-success icon-text-btn me-2"
-        (click)="confirmarAssinarAutuar()">
+        (click)="confirmarAssinarAutuar()"
+        [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Assinar e Autuar</span>
       </button>

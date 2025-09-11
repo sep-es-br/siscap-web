@@ -29,7 +29,8 @@ import {
   takeUntil,
   timer,
   takeWhile,
-  filter
+  filter,
+  ObservableInput
 } from 'rxjs';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -167,6 +168,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public podeSoilictarComplementacao: boolean = false;
   public podeResponderComplementacao: boolean = false;
 
+  public erroEmAlgumaFaseModalAutuacao: boolean = false;
+
   //public projetoFormComplementar!: FormGroup;
   public camposParaComplementacao: IEstruturaCamposComplementar[] = [];
 
@@ -269,7 +272,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
-            console.log( "Buscar projeto por ID: " , JSON.stringify(response,null,2) )
+            // console.log( "Buscar projeto por ID: " , JSON.stringify(response,null,2) )
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {
@@ -410,16 +413,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         mensagemComplementacao:''
       };
     });
-
-    // // Cria dinamicamente os FormControls dentro do FormGroup
-	  // const controls = {};
-	
-    // this.formCamposComplementar.forEach( campo => {
-    //   controls[campo.name] = this._nnfb.control(campo.name  || '');
-    // });
-	
-	  // this.projetoFormComplementar = this._nnfb.group(controls);
-    
+        
     const rotaAtual = this.route.snapshot.routeConfig?.path;
     if (rotaAtual === 'criar') {
       this._projetosService.idProjeto$.next(0);
@@ -662,8 +656,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.codigoMotivoArquivamento ?? '' 
       )
     });
-    
-        
+            
     this.carregarPessoasPorOrganizacao();
         
     this.projetoFormValueChanges();
@@ -885,6 +878,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         break;
 
       case BreadcrumbAcoesEnum.Autuar:
+        
         this.projetoForm.patchValue({
           autuarConfirmacaoProjetoModal : true,
           enviarProjetoGestor : false
@@ -1337,9 +1331,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private autuarProjetoForm(form: FormGroup): void {
 
-    // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
-    form.get('valor.tipo')?.enable();
-        
     const payload = new ProjetoFormModel(form.value as IProjetoForm);
 
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
@@ -1472,6 +1463,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  private pararPolling$ = new Subject<void>();
+
   private iniciarPollingEtapasIntegracaoModal(): void {
 
     const intervalo = 1000;
@@ -1488,7 +1481,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 response.map(fase => new ProjetoIntegracaoEdocsFasesModel(fase)) ),
             catchError(err => {
                 console.error("Erro na requisição:", err);
-                return of(null);
+                return EMPTY;
             }),
           )
       ),
@@ -1503,13 +1496,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           })
         )
       ),
+      takeUntil(this.pararPolling$), 
     ).subscribe(( listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] | null ) => {
       
       if (listaFasesIntegracaoProjeto) {
         
         if ( listaFasesIntegracaoProjeto.some( fase =>fase.idProjeto == this._idProjetoEdicao && fase.erro ) ){
           this.autuacaoAcionada = false;
+          this.erroEmAlgumaFaseModalAutuacao = true;
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
+          this._toastService.showToast(
+            'error',
+            'Ocorreu erro na integração com E-Docs.'
+          );
+          this.pararPolling$.next();
         }
 
         listaFasesIntegracaoProjeto.forEach( fase => {
@@ -1536,13 +1536,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 this.aguardandoEntranhamento = FaseStatuEnum.EM_ANDAMENTO;
               }
               if ( fase.finalizada ){
-                this.aguardandoDespacho  = FaseStatuEnum.FINALIZADA;
+                this.aguardandoAutuacao  = FaseStatuEnum.FINALIZADA;
+                this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
               }
               break;
             case FasesEdocsIntegracaoEnum.despacharprocesso :
               if( fase.erro ){
-                this.aguardandoAutuacao = FaseStatuEnum.ERROFASE;
-                this.aguardandoEntranhamento = FaseStatuEnum.ERROFASE;
+                this.aguardandoDespacho = FaseStatuEnum.ERROFASE;
                 break;
               }
               if ( fase.iniciada )
@@ -1557,15 +1557,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
 
   }
-
-  // public ocorreuErro(): boolean {
-  //   return this.erroEmAlgumaFase;
-  // }
-  
+    
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
-    this._rateioService.resetarRateio();
-    //this._projetosService.idProjeto$.next(0);
+    //this._rateioService.resetarRateio();
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 
@@ -1614,7 +1609,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return true;
     return false;
   }
-
 
   confirmarComplementacao(modal: NgbModalRef): void {
 

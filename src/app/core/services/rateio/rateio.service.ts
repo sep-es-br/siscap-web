@@ -198,10 +198,11 @@ export class RateioService {
   public construirRateioFormArray(
     rateioModelArray?: Array<RateioModel>
   ): FormArray<FormGroup<RateioLocalidadeFormType>> {
+    
     const rateioFormArray = this._nnfb.array<
       FormGroup<RateioLocalidadeFormType>
     >([], [Validators.required, Validators.minLength(1)]);
-
+   
     if (rateioModelArray) {
       rateioModelArray.forEach((rateioModel) => {
         rateioFormArray.push(

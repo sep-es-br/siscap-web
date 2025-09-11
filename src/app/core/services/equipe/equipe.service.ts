@@ -22,6 +22,7 @@ import { TipoPapelEnum } from '../../enums/tipo-papel.enum';
   providedIn: 'root',
 })
 export class EquipeService {
+
   public equipeFormArray: FormArray<FormGroup<EquipeFormType>> = new FormArray<
     FormGroup<EquipeFormType>
   >([]);
@@ -71,7 +72,6 @@ export class EquipeService {
   public construirEquipeFormArray(
     equipe?: Array<IEquipe>
   ): FormArray<FormGroup<EquipeFormType>> {
-
     const equipeFormArray = this._nnfb.array<FormGroup<EquipeFormType>>(
       [],
       [Validators.required, Validators.minLength(1), equipeValidator()]
