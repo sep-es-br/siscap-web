@@ -160,6 +160,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public aguardandoAutuacao: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public aguardandoEntranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public aguardandoDespacho: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
+  public aguardandoAvocamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
+  public aguardandoDesentranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public FaseStatusEnum = FaseStatuEnum;
   
   public autuacaoAcionada: boolean = false; 
@@ -179,6 +181,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   @ViewChild('confirmarArquivarProjetoModal') confirmarArquivarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('informarComplementacoesProjetoModal') informarComplementacoesProjetoModalTemplate: TemplateRef<any> | undefined;
   
+  @ViewChild('autuarConfirmacaoReentramentoDicProjetoModal') confirmarIntegracaoReentranharProjetoModalTemplate: TemplateRef<any> | undefined;
+
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
   input$ = new Subject<string>();
@@ -272,7 +276,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
-            // console.log( "Buscar projeto por ID: " , JSON.stringify(response,null,2) )
+            //console.log( "Buscar projeto por ID: " , JSON.stringify(response,null,2) )
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {
@@ -290,6 +294,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.statusProjeto = projetoModel.status;
             this.lotacaoGestorProjeto = projetoModel.lotacaoProponenteResponsavel;  
             this.nomeProponenteResponsavel = projetoModel.nomeProponenteResponsavel;
+
             this.podeEditarEmAnalise = projetoModel.podeEditar;
             this.podeSoilictarComplementacao = projetoModel.podeSolicitarComplementacao;
             this.podeResponderComplementacao = projetoModel.podeResponderComplementacao;
@@ -309,11 +314,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.equipeProjeto = projetoModel.equipeElaboracao;
 
             this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
-
-            if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
-              this.trocarModo(this.podeEditarEmAnalise);
-            }
-
+            
             // 
             if (projetoModel.status === StatusProjetoEnum.Arquivado) {
               this.mostrarBotaoGerarDic = false;
@@ -334,7 +335,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                 this._projetosService.gerarBotoesAcaoResponderComplementacao()
               );
-              this.trocarModo(false);
+              setTimeout(() => this.trocarModo(false), 2000);
             } else { 
               if (this.isProponente) {
                 if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
@@ -371,8 +372,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
 
             }
-            
 
+            //if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
+              setTimeout(() => this.trocarModo(true), 2000);
+            //}
+            
             // nao exibir botao para mudanca de status - Sprint-29 
             // if (!this.isProponente && !projetoModel.protocoloEdocs ) {
             //   this.mostrarBotaoStatusProjeto = true;
@@ -562,6 +566,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
  
   private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
+
+    console.log("Passando aqui no iniciarForm.. {} " , projetoFormModel )
 
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
@@ -878,7 +884,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         break;
 
       case BreadcrumbAcoesEnum.Autuar:
-        
+
         this.projetoForm.patchValue({
           autuarConfirmacaoProjetoModal : true,
           enviarProjetoGestor : false
@@ -898,8 +904,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         if( !this.validarFormulario(this.projetoForm) ) 
           break;
+        
         if( this.compararValorEstimadoValorAcoes() ) {
-          this.abrirConfirmarIntegracapEdocsModal(this.projetoForm)
+          if( this.statusProjeto == StatusProjetoEnum.Em_Complementacao )
+            this.abrirConfirmarIntegracapEdocsModalReentranharDic(this.projetoForm)
+          else
+            this.abrirConfirmarIntegracapEdocsModal(this.projetoForm)
         }
         break;
 
@@ -1309,6 +1319,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  
+  private abrirConfirmarIntegracapEdocsModalReentranharDic( form: FormGroup
+  ) {
+
+    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() || '-';
+
+    const modalRef = this._ngbModalService.open( this.confirmarIntegracaoReentranharProjetoModalTemplate , {
+        centered: true,
+        size: 'lg',
+        backdrop: 'static', 
+        keyboard: false     
+      });
+
+  }
+
   private abrirConfirmarIntegracapEdocsModal( form: FormGroup
   ) {
 
@@ -1325,17 +1350,51 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public confirmarAssinarAutuar(){
     
-    this.autuarProjetoForm(this.projetoForm);
+      if (this.statusProjeto === StatusProjetoEnum.Em_Complementacao) {
+        this.reentranharDicProjetoForm(this.projetoForm);
+      } else {
+        this.autuarProjetoForm(this.projetoForm);
+      }
 
   }
 
-  private autuarProjetoForm(form: FormGroup): void {
+  private reentranharDicProjetoForm (form: FormGroup): void {
 
-    const payload = new ProjetoFormModel(form.value as IProjetoForm);
+    // Força atualização dos valores
+    form.updateValueAndValidity();
+    
+    // Aguarda um tick para garantir sincronização
+    setTimeout(() => {
+      form.get('valor.tipo')?.enable();
+      const payload = new ProjetoFormModel(form.value as IProjetoForm);
+      payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+      this.reentranharDicProjetoAsync(payload);
+    });
 
-    payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+    // const payload = new ProjetoFormModel(form.value as IProjetoForm);
+    // payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+    // this.reentranharDicProjetoAsync(payload);
 
-    this.autuarProjetoAsync(payload);
+  }
+
+  private autuarProjetoForm (form: FormGroup): void {
+
+    // Força atualização dos valores
+    form.updateValueAndValidity();
+
+    // Aguarda um tick para garantir sincronização
+    setTimeout(() => {
+      form.get('valor.tipo')?.enable();
+      const payload = new ProjetoFormModel(form.value as IProjetoForm);
+      payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+      this.autuarProjetoAsync(payload);
+    });
+
+    // const payload = new ProjetoFormModel(form.value as IProjetoForm);
+
+    // payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+
+    // this.autuarProjetoAsync(payload);
 
   }
 
@@ -1387,6 +1446,37 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this._toastService.showToast('error', 'Erro ao enviar aviso de complementacao: ' + err);
       }
     });
+
+  }
+  
+  private reentranharDicProjetoAsync(payload: ProjetoFormModel): void {
+
+    this._projetosService.reentranharDicEdocs(this._idProjetoEdicao, payload)
+      .pipe(
+        tap(() => {
+          this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
+          this._toastService.showToast(
+            'info',
+            'Processo reentranhar DIC com correções iniciado no E-Docs.'
+          );
+        }),
+        catchError(error => {
+          this.autuacaoAcionada = false;
+          this._toastService.showToast(
+            'error',
+            'Erro ao iniciar autuação no E-Docs.'
+          );
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+        })
+      )
+      .subscribe(() => {
+        this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
+        this.iniciarPollingProtocolo();
+        this.iniciarPollingEtapasIntegracaoModal();
+      });
 
   }
   
@@ -1550,6 +1640,29 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               if ( fase.finalizada )
                 this.aguardandoDespacho  = FaseStatuEnum.FINALIZADA;
               break;
+
+            case FasesEdocsIntegracaoEnum.desentranhamento :
+              if( fase.erro ){
+                this.aguardandoDesentranhamento = FaseStatuEnum.ERROFASE;
+                break;
+              }
+              if ( fase.iniciada )
+                this.aguardandoDesentranhamento   = FaseStatuEnum.EM_ANDAMENTO;
+              if ( fase.finalizada )
+                this.aguardandoDesentranhamento  = FaseStatuEnum.FINALIZADA;
+              break;
+
+            case FasesEdocsIntegracaoEnum.avocamento  :
+              if( fase.erro ){
+                this.aguardandoAvocamento  = FaseStatuEnum.ERROFASE;
+                break;
+              }
+              if ( fase.iniciada )
+                this.aguardandoAvocamento   = FaseStatuEnum.EM_ANDAMENTO;
+              if ( fase.finalizada )
+                this.aguardandoAvocamento  = FaseStatuEnum.FINALIZADA;
+              break;
+
             }
           }
         )
