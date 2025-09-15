@@ -284,6 +284,16 @@ export class ProjetosService extends BaseHttpService<
     );
   }
 
+  public reentranharDicEdocs(
+    id: number,
+    body: ProjetoFormModel
+  ): Observable<IProjeto> {
+    this.iniciarAutuacao(id);
+    return this._http.put<IProjeto>(
+      `${this._url}/dic/edocs/reentranharDIC/${id}`, body
+    );
+  }
+
   public get projetosEmAutuacao$(): Observable<Set<number>> {
     return this._projetosEmAutuacao.asObservable();
   }

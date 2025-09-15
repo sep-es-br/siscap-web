@@ -4,7 +4,9 @@ export enum FasesEdocsIntegracaoEnum {
   autuar = 'AUTUAR',
   entranhararquivo = 'ENTRANHARARQUIVO',
   despacharprocesso = 'DESPACHARPROCESSO',
-  erro_fase = 'ERROFASE'
+  erro_fase = 'ERROFASE',
+  desentranhamento = 'DESENTRANHAMENTO',
+  avocamento = 'AVOCAMENTO'
 }
 
 export enum FaseStatuEnum {
