@@ -91,6 +91,7 @@ import { IProjetoIntegracaoEdocsFases } from '../../../core/interfaces/projeto-i
 import { ProjetoIntegracaoEdocsFasesModel } from '../../../core/models/projeto-integracao-edocs-fases.model';
 import { FasesEdocsIntegracaoEnum, FaseStatuEnum } from '../../../core/enums/fases-edocs-integracao.enum';
 import { IEstruturaCamposComplementar } from '../../../core/interfaces/estrutura.campo.complementar.dic.interface';
+import { ContextoIntegracaoEdocsEnum } from '../../../core/enums/contexto-integracao-edocs.enum';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -1391,9 +1392,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
 
     // const payload = new ProjetoFormModel(form.value as IProjetoForm);
-
     // payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
-
     // this.autuarProjetoAsync(payload);
 
   }
@@ -1475,7 +1474,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
         this.iniciarPollingProtocolo();
-        this.iniciarPollingEtapasIntegracaoModal();
+        this.iniciarPollingEtapasIntegracaoModal( ContextoIntegracaoEdocsEnum.Complementar );
       });
 
   }
@@ -1506,7 +1505,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
         this.iniciarPollingProtocolo();
-        this.iniciarPollingEtapasIntegracaoModal();
+        this.iniciarPollingEtapasIntegracaoModal( ContextoIntegracaoEdocsEnum.Autuacao );
       });
 
   }
@@ -1555,7 +1554,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private pararPolling$ = new Subject<void>();
 
-  private iniciarPollingEtapasIntegracaoModal(): void {
+  private iniciarPollingEtapasIntegracaoModal( contexto: ContextoIntegracaoEdocsEnum ): void {
 
     const intervalo = 1000;
     const timeout = 30000; 
@@ -1566,7 +1565,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this._projetosService
           .consultarFasesIntegracaoEdcosProjeto(this._idProjetoEdicao)
           .pipe(
-            map< IProjetoIntegracaoEdocsFases[], ProjetoIntegracaoEdocsFasesModel[] > ( 
+            map< IProjetoIntegracaoEdocsFases[], ProjetoIntegracaoEdocsFasesModel[] > (
               ( response: IProjetoIntegracaoEdocsFases[] ) => 
                 response.map(fase => new ProjetoIntegracaoEdocsFasesModel(fase)) ),
             catchError(err => {
@@ -1575,23 +1574,25 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             }),
           )
       ),
-      takeUntil(
-        this._projetosService.protocoloAtualizado$.pipe(
-          filter(dados => !!dados?.protocolo),
-          tap(dados => {
-            this.aguardandoAssinatura = FaseStatuEnum.FINALIZADA;
-            this.aguardandoAutuacao  = FaseStatuEnum.FINALIZADA;
-            this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
-            this.aguardandoDespacho  = FaseStatuEnum.FINALIZADA;
-          })
-        )
+      takeUntil( 
+          this._projetosService.protocoloAtualizado$.pipe(
+            filter( dados => !!dados?.protocolo && contexto == ContextoIntegracaoEdocsEnum.Autuacao ),
+            tap(dados => {
+              this.aguardandoAvocamento = FaseStatuEnum.FINALIZADA;
+              this.aguardandoDesentranhamento = FaseStatuEnum.FINALIZADA;
+              this.aguardandoAssinatura = FaseStatuEnum.FINALIZADA;
+              this.aguardandoAutuacao  = FaseStatuEnum.FINALIZADA;
+              this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
+              this.aguardandoDespacho  = FaseStatuEnum.FINALIZADA;
+            })
+          )
       ),
-      takeUntil(this.pararPolling$), 
+      takeUntil(this.pararPolling$),
     ).subscribe(( listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] | null ) => {
       
       if (listaFasesIntegracaoProjeto) {
         
-        if ( listaFasesIntegracaoProjeto.some( fase =>fase.idProjeto == this._idProjetoEdicao && fase.erro ) ){
+        if ( listaFasesIntegracaoProjeto.some( fase => fase.idProjeto == this._idProjetoEdicao && fase.erro ) ){
           this.autuacaoAcionada = false;
           this.erroEmAlgumaFaseModalAutuacao = true;
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
@@ -1662,7 +1663,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               if ( fase.finalizada )
                 this.aguardandoAvocamento  = FaseStatuEnum.FINALIZADA;
               break;
-
             }
           }
         )

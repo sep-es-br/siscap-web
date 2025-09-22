@@ -36,6 +36,7 @@ export class ProjetosService extends BaseHttpService<
   public protocoloAtualizado$ = new Subject<{ idProjeto: number; protocolo: string }>();
   private projetosAguardandoEdocsSubject = new BehaviorSubject<Set<number>>(new Set());
   public projetosAguardandoEdocs$ = this.projetosAguardandoEdocsSubject.asObservable();
+  public complementacaoEdocsReenviado$ = new Subject<{ idProjeto: number; reenvioConcluido: boolean }>();
 
   adicionarProjetoAguardando(idProjeto: number): void {
     const atual = this.projetosAguardandoEdocsSubject.value;
