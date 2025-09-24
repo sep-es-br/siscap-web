@@ -568,8 +568,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
  
   private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
 
-    console.log("Passando aqui no iniciarForm.. {} " , projetoFormModel )
-
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
       : null;
@@ -1372,10 +1370,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.reentranharDicProjetoAsync(payload);
     });
 
-    // const payload = new ProjetoFormModel(form.value as IProjetoForm);
-    // payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
-    // this.reentranharDicProjetoAsync(payload);
-
   }
 
   private autuarProjetoForm (form: FormGroup): void {
@@ -1473,7 +1467,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        this.iniciarPollingProtocolo();
+        //this.iniciarPollingProtocolo();
         this.iniciarPollingEtapasIntegracaoModal( ContextoIntegracaoEdocsEnum.Complementar );
       });
 
@@ -1591,6 +1585,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     ).subscribe(( listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] | null ) => {
       
       if (listaFasesIntegracaoProjeto) {
+
+        console.log( 'Fases... {}', listaFasesIntegracaoProjeto )
         
         if ( listaFasesIntegracaoProjeto.some( fase => fase.idProjeto == this._idProjetoEdicao && fase.erro ) ){
           this.autuacaoAcionada = false;
@@ -1662,6 +1658,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 this.aguardandoAvocamento   = FaseStatuEnum.EM_ANDAMENTO;
               if ( fase.finalizada )
                 this.aguardandoAvocamento  = FaseStatuEnum.FINALIZADA;
+              break;
+            
+            case FasesEdocsIntegracaoEnum.entranhararquivo :
+              if( fase.erro ){
+                this.aguardandoEntranhamento = FaseStatuEnum.ERROFASE;
+                break;
+              }
+              if ( fase.iniciada ){
+                this.aguardandoEntranhamento = FaseStatuEnum.EM_ANDAMENTO;
+              }
+              if ( fase.finalizada ){
+                this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
+              }
               break;
             }
           }

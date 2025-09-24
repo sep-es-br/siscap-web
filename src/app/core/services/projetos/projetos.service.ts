@@ -291,7 +291,12 @@ export class ProjetosService extends BaseHttpService<
   ): Observable<IProjeto> {
     this.iniciarAutuacao(id);
     return this._http.put<IProjeto>(
-      `${this._url}/dic/edocs/reentranharDIC/${id}`, body
+      `${this._url}/dic/edocs/reentranharDIC/${id}`, body , 
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`
+        }
+      }
     );
   }
 
