@@ -490,7 +490,7 @@
         <i class="fa-solid fa-close"></i>
       </button>
       <button
-        *ngIf="!autuacaoAcionada"
+        *ngIf="!autuacaoAcionada && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2"
         (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
@@ -498,18 +498,27 @@
         <span>Assinar e Autuar</span>
       </button>
       <button
-        *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido()"
+        *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2" 
         disabled>
         <i class="fa-solid fa-check text-success text-white me-2"></i>
         <span>Processo concluído com sucesso!</span>
       </button>
       <button
-        *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido()"
+        *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2" 
         disabled >
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
+      </button>
+      <button
+        *ngIf="erroEmAlgumaFaseModalAutuacao"
+        class="btn btn-danger icon-text-btn me-2" 
+        disabled >
+        <span class="me-2">
+          <i class="bi bi-x-circle-fill"></i>
+        </span>
+        <span>Erro no processamento.</span>
       </button>
     </div>
   </div>
@@ -572,7 +581,7 @@
           <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
         </span>
       </li>
-      
+
     </ol>
   </div>
   <div class="modal-footer">
@@ -584,7 +593,7 @@
         <i class="fa-solid fa-close"></i>
       </button>
       <button
-        *ngIf="!autuacaoAcionada"
+        *ngIf="!autuacaoAcionada && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2"
         (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
@@ -592,19 +601,29 @@
         <span>Assinar e Autuar</span>
       </button>
       <button
-        *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido()"
+        *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2" 
         disabled>
         <i class="fa-solid fa-check text-success text-white me-2"></i>
-        <span>Concluído</span>
+        <span>Processo concluído com sucesso!</span>
       </button>
       <button
-        *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido()"
+        *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2" 
         disabled >
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
       </button>
+      <button
+        *ngIf="erroEmAlgumaFaseModalAutuacao"
+        class="btn btn-danger icon-text-btn me-2" 
+        disabled >
+        <span class="me-2">
+          <i class="bi bi-x-circle-fill"></i>
+        </span>
+        <span>Erro no processamento.</span>
+      </button>
+      
     </div>
   </div>
 </ng-template>

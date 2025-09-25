@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -173,8 +173,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public erroEmAlgumaFaseModalAutuacao: boolean = false;
 
-  //public projetoFormComplementar!: FormGroup;
   public camposParaComplementacao: IEstruturaCamposComplementar[] = [];
+
+  public reenvioDicAcionado: boolean = false; 
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -204,7 +205,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     public indicadoresService: IndicadoresService,
     public acoesService: AcoesService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
     ) {
 
       
@@ -336,7 +338,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                 this._projetosService.gerarBotoesAcaoResponderComplementacao()
               );
-              setTimeout(() => this.trocarModo(false), 2000);
+              setTimeout(() => this.trocarModo(true), 2000);
             } else { 
               if (this.isProponente) {
                 if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
@@ -374,9 +376,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             }
 
-            //if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
-              setTimeout(() => this.trocarModo(true), 2000);
-            //}
+            if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
+              setTimeout(() => this.trocarModo(this.podeEditarEmAnalise), 2000);
+            }
             
             // nao exibir botao para mudanca de status - Sprint-29 
             // if (!this.isProponente && !projetoModel.protocoloEdocs ) {
@@ -396,18 +398,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const camposVisiveis = [
       'sigla', 					
       'titulo', 					
-      'Organizacao', 			
-      'ResponsavelProponente', 
+      'Organização', 			
+      'ResponsávelProponente', 
       'equipeProjeto', 			
       'rateio', 					
-      'acoesProjeto', 			
+      'açõesProjeto', 			
       'objetivo', 				
-      'objetivoEspecifico', 		
-      'situacaoProblema', 		
-      'solucoesPropostas', 		
+      'objetivoEspecífico', 		
+      'situaçãoProblema', 		
+      'soluçõesPropostas', 		
       'impactos',					
       'arranjosInstitucionais', 	
-      'pecasPlanejamento', 		
+      'peçasPlanejamento', 		
     ];
     
     // Monta dinamicamente os painéis do accordion
@@ -1447,14 +1449,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._projetosService.reentranharDicEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
-          this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
+          this.reenvioDicAcionado = true; // usado para desabilitar o botao na modal..
           this._toastService.showToast(
             'info',
             'Processo reentranhar DIC com correções iniciado no E-Docs.'
           );
         }),
         catchError(error => {
-          this.autuacaoAcionada = false;
+          this.reenvioDicAcionado = false;
           this._toastService.showToast(
             'error',
             'Erro ao iniciar autuação no E-Docs.'
@@ -1590,6 +1592,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         
         if ( listaFasesIntegracaoProjeto.some( fase => fase.idProjeto == this._idProjetoEdicao && fase.erro ) ){
           this.autuacaoAcionada = false;
+          this.reenvioDicAcionado = false;
           this.erroEmAlgumaFaseModalAutuacao = true;
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
           this._toastService.showToast(
@@ -1597,6 +1600,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'Ocorreu erro na integração com E-Docs.'
           );
           this.pararPolling$.next();
+          this.cdr.detectChanges(); 
         }
 
         listaFasesIntegracaoProjeto.forEach( fase => {
