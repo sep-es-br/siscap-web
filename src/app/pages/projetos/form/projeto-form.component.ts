@@ -185,6 +185,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   
   @ViewChild('autuarConfirmacaoReentramentoDicProjetoModal') confirmarIntegracaoReentranharProjetoModalTemplate: TemplateRef<any> | undefined;
 
+  @ViewChild('enviarParecerProjetoModal') enviarParecerProjetoModalTemplate: TemplateRef<any> | undefined; 
+
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
   input$ = new Subject<string>();
@@ -275,6 +277,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private carregarProjetoEditar(idProjeto: number): void {
+      
       this._atualizarProjeto$ = this._projetosService
         .getById(idProjeto)
         .pipe(
@@ -378,6 +381,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
               setTimeout(() => this.trocarModo(this.podeEditarEmAnalise), 2000);
+            }
+
+            if ( projetoModel.status === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario  ){
+              setTimeout(() => this.trocarModo(false), 2000);
             }
             
             // nao exibir botao para mudanca de status - Sprint-29 
@@ -570,6 +577,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
  
   private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
 
+    console.log('=== INICIAR FORM CHAMADO ===');
+    console.log('Tipo do parâmetro:', typeof projetoFormModel);
+    console.log('ProjetoModel recebido:', projetoFormModel);
+    
+    if (projetoFormModel) {
+      console.log('Dados específicos:', {
+        sigla: projetoFormModel.sigla,
+        titulo: projetoFormModel.titulo,
+        idOrganizacao: projetoFormModel.idOrganizacao
+      });
+    }
+
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
       : null;
@@ -661,6 +680,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       codigoMotivoArquivamento: this._nnfb.control( 
         projetoFormModel?.codigoMotivoArquivamento ?? '' 
+      ),
+      enviarProjetoPedirParecer: this._nnfb.control(
+        projetoFormModel?.enviarProjetoPedirParecer ?? false, 
       )
     });
             
@@ -928,16 +950,32 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.abrirArquivarModal(this.projetoForm)
         break;
 
-        case BreadcrumbAcoesEnum.complementar:
+      case BreadcrumbAcoesEnum.Complementar:
           this.abrirComplementacaoModal()
         break;
 
+      case BreadcrumbAcoesEnum.EnviarPedindoParecerEstrategicoOrcamentario:
+        this.projetoForm.patchValue({
+          enviarProjetoPedirParecer : true
+        });
+        if( !this.validarFormulario(this.projetoForm) )
+          break;
+        this.validacaoSomaValoresAcoesEnviarParecer(this.projetoForm, false);
+        break;
+
     }
+
   }
 
   private validacaoSomaValoresAcoesEnviar(form: FormGroup, isRascunho: boolean): void {
     if (this.compararValorEstimadoValorAcoes()) {
       this.abrirConfirmarEnvioMembroModal(form)
+    }
+  }
+
+  private validacaoSomaValoresAcoesEnviarParecer(form: FormGroup, isRascunho: boolean): void {
+    if (this.compararValorEstimadoValorAcoes()) {
+      this.abrirConfirmarEnvioParecerModal(form)
     }
   }
 
@@ -1253,6 +1291,28 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  public abrirConfirmarEnvioParecerModal( form: FormGroup ) {
+
+    this.nomeProponenteResponsavel = this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() || '-';
+    
+    const modalRef = this._ngbModalService.open( this.enviarParecerProjetoModalTemplate , {
+        centered: true,
+        size: 'lg',
+      });
+
+      modalRef.result.then(
+        (result) => {
+          if (result === 'confirmado') {
+             this.submitProjetoForm(form, false);
+          }
+        },
+        (reason) => {
+          // console.log('Usuário cancelou:', reason);
+        }
+      );
+
+  }
+
   public abrirRevisarModal( form: FormGroup
   ) {
     
@@ -1372,6 +1432,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.reentranharDicProjetoAsync(payload);
     });
 
+  }
+
+  public confirmarEnvioPedidoPareceres(){
+      this.autuarProjetoForm(this.projetoForm);
   }
 
   private autuarProjetoForm (form: FormGroup): void {
@@ -1761,6 +1825,5 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     );
 
   }
-
 
 }

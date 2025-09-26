@@ -426,6 +426,32 @@
   </div>
 </ng-template>
 
+<ng-template #enviarParecerProjetoModal let-modal>
+  <div class="modal-header py-3 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+      Confirmação de Envio
+    </h4>
+  </div>
+  <div class="modal-body">
+    <h6>Deseja enviar a SUBEL e SUBEP pedido para que elaborem os pareceres Estratégico e Orçamentário?</h6>
+    <h6>O sistema enviará um e-mail automático a ambos solicitando essas informações.</h6>
+  </div>
+  <div class="modal-footer py-2">
+    <div class="d-inline-flex flex-row-reverse">
+      <button
+        class="btn btn-success icon-text-btn" (click)="modal.close('confirmado')">
+        <i class="fa-solid fa-check"></i>
+        <span>Confirmar</span>
+      </button>
+      <button
+        class="btn btn-outline-danger  icon-text-btn me-2" (click)="modal.dismiss('cancelado')">
+        <span>Cancelar</span>
+        <i class="fa-solid fa-close me-2"></i>
+      </button>
+    </div>    
+  </div>
+</ng-template>
+
 <ng-template #autuarConfirmacaoProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">

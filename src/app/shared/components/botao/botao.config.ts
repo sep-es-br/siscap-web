@@ -16,7 +16,8 @@ export type TBotaoAcao =
   | 'revisar'
   | 'recusar'
   | 'arquivar'
-  | 'complementar';
+  | 'complementar'
+  | 'parecerestrategicoorcamentario';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -106,6 +107,12 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-edit'],
       texto: 'Complementar',
       acao: 'complementar',
+    },
+    parecerestrategicoorcamentario: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Enviar Parecer',
+      acao: 'parecerestrategicoorcamentario',
     }
   };
 

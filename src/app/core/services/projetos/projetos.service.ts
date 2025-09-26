@@ -107,7 +107,8 @@ export class ProjetosService extends BaseHttpService<
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     if( podeComplementar ){
       const botaoComplementar = BotoesConfig.gerarBotaoPropriedades('complementar');
-      return [botaoCancelar,botaoComplementar]
+      const botaoSolicitarParecer = BotoesConfig.gerarBotaoPropriedades('parecerestrategicoorcamentario');
+      return [botaoCancelar,botaoSolicitarParecer,botaoComplementar]
     }else
       return [botaoCancelar];
   }

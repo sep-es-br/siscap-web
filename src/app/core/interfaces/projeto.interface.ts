@@ -38,6 +38,7 @@ export interface IProjeto {
   podeEditar: boolean;
   podeSolicitarComplementacao: boolean;
   podeResponderComplementacao: boolean; 
+  enviarProjetoPedirParecer: boolean;
 }
 
 export interface IProjetoForm
