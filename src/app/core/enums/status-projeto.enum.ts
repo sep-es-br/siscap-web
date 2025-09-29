@@ -5,4 +5,5 @@ export enum StatusProjetoEnum {
   Parecer_SEP = 'Parecer SEP',
   Ativo = 'Ativo',
   Em_Complementacao = 'Em Complementação',
+  Em_Parecer_Estrategico_Orcamentario = 'Parecer Estratégico-Orçamentário'
 }

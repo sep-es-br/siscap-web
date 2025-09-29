@@ -36,6 +36,7 @@ export class ProjetosService extends BaseHttpService<
   public protocoloAtualizado$ = new Subject<{ idProjeto: number; protocolo: string }>();
   private projetosAguardandoEdocsSubject = new BehaviorSubject<Set<number>>(new Set());
   public projetosAguardandoEdocs$ = this.projetosAguardandoEdocsSubject.asObservable();
+  public complementacaoEdocsReenviado$ = new Subject<{ idProjeto: number; reenvioConcluido: boolean }>();
 
   adicionarProjetoAguardando(idProjeto: number): void {
     const atual = this.projetosAguardandoEdocsSubject.value;
@@ -106,7 +107,8 @@ export class ProjetosService extends BaseHttpService<
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     if( podeComplementar ){
       const botaoComplementar = BotoesConfig.gerarBotaoPropriedades('complementar');
-      return [botaoCancelar,botaoComplementar]
+      const botaoSolicitarParecer = BotoesConfig.gerarBotaoPropriedades('parecerestrategicoorcamentario');
+      return [botaoCancelar,botaoSolicitarParecer,botaoComplementar]
     }else
       return [botaoCancelar];
   }
@@ -290,7 +292,12 @@ export class ProjetosService extends BaseHttpService<
   ): Observable<IProjeto> {
     this.iniciarAutuacao(id);
     return this._http.put<IProjeto>(
-      `${this._url}/dic/edocs/reentranharDIC/${id}`, body
+      `${this._url}/dic/edocs/reentranharDIC/${id}`, body , 
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`
+        }
+      }
     );
   }
 

@@ -426,6 +426,32 @@
   </div>
 </ng-template>
 
+<ng-template #enviarParecerProjetoModal let-modal>
+  <div class="modal-header py-3 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+      Confirmação de Envio
+    </h4>
+  </div>
+  <div class="modal-body">
+    <h6>Deseja enviar a SUBEL e SUBEP pedido para que elaborem os pareceres Estratégico e Orçamentário?</h6>
+    <h6>O sistema enviará um e-mail automático a ambos solicitando essas informações.</h6>
+  </div>
+  <div class="modal-footer py-2">
+    <div class="d-inline-flex flex-row-reverse">
+      <button
+        class="btn btn-success icon-text-btn" (click)="modal.close('confirmado')">
+        <i class="fa-solid fa-check"></i>
+        <span>Confirmar</span>
+      </button>
+      <button
+        class="btn btn-outline-danger  icon-text-btn me-2" (click)="modal.dismiss('cancelado')">
+        <span>Cancelar</span>
+        <i class="fa-solid fa-close me-2"></i>
+      </button>
+    </div>    
+  </div>
+</ng-template>
+
 <ng-template #autuarConfirmacaoProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
@@ -480,7 +506,6 @@
         </span>
       </li>
     </ol>
-    <h6>Deseja confirmar?</h6>
   </div>
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
@@ -491,7 +516,7 @@
         <i class="fa-solid fa-close"></i>
       </button>
       <button
-        *ngIf="!autuacaoAcionada"
+        *ngIf="!autuacaoAcionada && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2"
         (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
@@ -499,18 +524,27 @@
         <span>Assinar e Autuar</span>
       </button>
       <button
-        *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido()"
+        *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2" 
         disabled>
         <i class="fa-solid fa-check text-success text-white me-2"></i>
-        <span>Concluído</span>
+        <span>Processo concluído com sucesso!</span>
       </button>
       <button
-        *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido()"
+        *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2" 
         disabled >
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
+      </button>
+      <button
+        *ngIf="erroEmAlgumaFaseModalAutuacao"
+        class="btn btn-danger icon-text-btn me-2" 
+        disabled >
+        <span class="me-2">
+          <i class="bi bi-x-circle-fill"></i>
+        </span>
+        <span>Erro no processamento.</span>
       </button>
     </div>
   </div>
@@ -525,18 +559,6 @@
   <div class="modal-body">
     <h6>Esta ação realizará automaticamente os seguintes procedimentos no Edocs, utilizando a sua identidade - {{ nomeProponenteResponsavel }} ( {{ lotacaoGestorProjeto }} ): </h6>
     <ol class="fs-8">
-
-      <li> Avocamento do processo para sua custódia; 
-        <span *ngIf="aguardandoAvocamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm"></span>
-        </span>
-        <span *ngIf="aguardandoAvocamento === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-6"></i>
-        </span>
-        <span *ngIf="aguardandoAvocamento === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
-        </span>
-      </li>
       
       <li> Assinatura e captura do DIC - Documento Inicial de Captação corrigido, gerado em PDF a partir dos dados informados neste formulário; 
         <span *ngIf="aguardandoAssinatura === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
@@ -549,6 +571,18 @@
           <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
         </span>
       </li>
+           
+      <li>Entranhamento do DIC atual capturado ao processo e; 
+        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+          <span class="spinner-border spinner-border-sm"></span>
+        </span>
+        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
+          <i class="fa-solid fa-check text-success fs-6"></i>
+        </span>
+        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
+          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
+        </span>
+      </li>
 
       <li>Desentramento do DIC anterior do processo; 
         <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
@@ -558,18 +592,6 @@
           <i class="fa-solid fa-check text-success fs-6"></i>
         </span>
         <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
-        </span>
-      </li>
-     
-      <li>Entranhamento do DIC atual capturado ao processo e; 
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm"></span>
-        </span>
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-6"></i>
-        </span>
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
           <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
         </span>
       </li>
@@ -587,7 +609,6 @@
       </li>
 
     </ol>
-    <h6>Deseja confirmar?</h6>
   </div>
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
@@ -598,7 +619,7 @@
         <i class="fa-solid fa-close"></i>
       </button>
       <button
-        *ngIf="!autuacaoAcionada"
+        *ngIf="!autuacaoAcionada && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2"
         (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
@@ -606,19 +627,29 @@
         <span>Assinar e Autuar</span>
       </button>
       <button
-        *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido()"
+        *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2" 
         disabled>
         <i class="fa-solid fa-check text-success text-white me-2"></i>
-        <span>Concluído</span>
+        <span>Processo concluído com sucesso!</span>
       </button>
       <button
-        *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido()"
+        *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="btn btn-success icon-text-btn me-2" 
         disabled >
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
       </button>
+      <button
+        *ngIf="erroEmAlgumaFaseModalAutuacao"
+        class="btn btn-danger icon-text-btn me-2" 
+        disabled >
+        <span class="me-2">
+          <i class="bi bi-x-circle-fill"></i>
+        </span>
+        <span>Erro no processamento.</span>
+      </button>
+      
     </div>
   </div>
 </ng-template>

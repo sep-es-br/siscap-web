@@ -10,7 +10,8 @@ export enum BreadcrumbAcoesEnum {
   Voltar = 'voltar',
   Revisar = 'revisar',
   Arquivar = 'arquivar',
-  complementar = 'complementar'
+  Complementar = 'complementar',
+  EnviarPedindoParecerEstrategicoOrcamentario = 'parecerestrategicoorcamentario'
 }
 
 export enum BreadcrumbContextoEnum {
