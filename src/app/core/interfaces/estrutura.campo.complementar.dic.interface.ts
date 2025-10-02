@@ -3,3 +3,9 @@ export interface IEstruturaCamposComplementar {
   label: string;
   mensagemComplementacao?: string;
 }
+
+export interface IEstruturaCamposComplementarProjeto {
+  idComplemento: number;
+  descricaoCampo: string; 
+  descricaoComplemento: string;
+}

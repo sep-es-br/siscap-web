@@ -1,5 +1,6 @@
 import { IAcao } from './acoes.interface';
 import { IEquipe } from './equipe.interface';
+import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from './estrutura.campo.complementar.dic.interface';
 import { IIndicadores } from './indicadores.interface';
 import { IRateio } from './rateio.interface';
 import { IValor } from './valor.interface';
@@ -39,6 +40,7 @@ export interface IProjeto {
   podeSolicitarComplementacao: boolean;
   podeResponderComplementacao: boolean; 
   enviarProjetoPedirParecer: boolean;
+  camposComplementar: Array<IEstruturaCamposComplementarProjeto>;
 }
 
 export interface IProjetoForm
