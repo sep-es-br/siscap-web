@@ -40,16 +40,12 @@ export class  ValorFormComponent {
   public moedasList = input<Array<IMoeda>>();
   public tiposValorOpcoes = input<Array<IOpcoesDropdown>>();
   public camposComplementarProjeto = input<Array<IEstruturaCamposComplementarProjeto>>([]);
-  public statusProjeto = input<StatusProjetoEnum>();
+  public statusProjeto = input<string>();
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
   constructor(public valorService: ValorService) {}
-
-  ngOnInit(): void {
-    console.log( 'Complementos -> ', this.camposComplementarProjeto() )
-  }
 
   public getControl(controlName: string): AbstractControl<any, any> {
     return this.valorService.valorFormGroup.get(controlName) as AbstractControl<
@@ -68,7 +64,6 @@ export class  ValorFormComponent {
       COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   public deveComplementarCampo(nomeControle: string): boolean {
-      console.log( 'controle -> ', nomeControle );
       const deveComplementar = this.camposComplementarProjeto().some(
         campo => campo.descricaoCampo === nomeControle
       );

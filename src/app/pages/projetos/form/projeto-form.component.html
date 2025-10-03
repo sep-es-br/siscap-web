@@ -84,12 +84,12 @@
           </div>
 
           <div class="col-12 col-md-6" id="responsavel-proponente" >
-            <label for="responsavelProponente" class="form-label col-12">
+            <label for="responsavelProponente" class="form-label col-12" [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('subResponsavelProponente') }">
               <validation-message
                 [control]="getControl('idResponsavelProponente')">
                 Responsavel Proponente
                 <form-helper-tooltip [texto]="projetoTooltip['idResponsavelProponente']"></form-helper-tooltip>
-                <form-warning-tooltip *ngIf="deveComplementarCampo('idResponsavelProponente')" [texto]="mensagemComplementarCampo('idResponsavelProponente')" ></form-warning-tooltip>
+                <form-warning-tooltip *ngIf="deveComplementarCampo('subResponsavelProponente')" [texto]="mensagemComplementarCampo('subResponsavelProponente')" ></form-warning-tooltip>
               </validation-message>
             </label>
             <ng-container *ngIf="!isLoadingPessoas; else carregandoResponsaveis">
@@ -192,6 +192,7 @@
               [moedasList]="moedasList"
               [tiposValorOpcoes]="tiposValorOpcoes"
               [camposComplementarProjeto]="camposComplementarProjeto"
+              [statusProjeto]="statusProjeto"
             ></siscap-valor-form>
           </div>
 

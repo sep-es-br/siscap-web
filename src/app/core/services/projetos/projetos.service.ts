@@ -232,8 +232,6 @@ export class ProjetosService extends BaseHttpService<
           payload[item.name || '' ] = item.mensagemComplementacao || '';
       }
 
-      console.log( ' payload complementar : {}', payload );
-
       return this._http.post(
         `${this._url}/${id}/complementar`,
         payload ,

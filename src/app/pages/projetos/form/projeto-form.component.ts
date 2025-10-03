@@ -431,7 +431,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       equipeElaboracao: 'Equipe de Elaboração',
       indicadoresProjeto: 'Indicadores do Projeto',
       acoesProjeto: 'Ações do Projeto',
-      pecasPlanejamento: 'Peças de Planejamento'
+      pecasPlanejamento: 'Peças de Planejamento',
+      subResponsavelProponente: 'Responsável Proponente'
     };
 
   this.camposParaComplementacao = Object.entries(camposPedidoComplementacao)
@@ -1646,8 +1647,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       
       if (listaFasesIntegracaoProjeto) {
 
-        console.log( 'Fases... {}', listaFasesIntegracaoProjeto )
-        
         if ( listaFasesIntegracaoProjeto.some( fase => fase.idProjeto == this._idProjetoEdicao && fase.erro ) ){
           this.autuacaoAcionada = false;
           this.reenvioDicAcionado = false;
