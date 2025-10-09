@@ -65,14 +65,14 @@ export class  ValorFormComponent {
 
   public deveComplementarCampo(nomeControle: string): boolean {
       const deveComplementar = this.camposComplementarProjeto().some(
-        campo => campo.descricaoCampo === nomeControle
+        campo => campo.idCampo  === nomeControle
       );
       return ( this.statusProjeto() == StatusProjetoEnum.Em_Complementacao && deveComplementar ) || false;
     }
   
     public mensagemComplementarCampo(nomeControle: string): string {
       const campoEncontrado = this.camposComplementarProjeto().find(
-        campo => campo.descricaoCampo === nomeControle
+        campo => campo.idCampo === nomeControle
       );
       return campoEncontrado ? campoEncontrado.descricaoComplemento : '';
     }

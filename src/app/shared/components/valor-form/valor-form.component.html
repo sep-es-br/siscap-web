@@ -1,17 +1,17 @@
 <form [formGroup]="valorService.valorFormGroup">
   <div class="row">
     <div class="col-12 col-md-4 col-lg-2">
-      <label for="valor-moeda" class="col-12 form-label">
+      <label for="valor-moeda" class="col-12 form-label" [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('moeda') }" >
         <validation-message [control]="getControl('moeda')">
           Moeda
+          <form-warning-tooltip *ngIf="deveComplementarCampo('moeda')" [texto]="mensagemComplementarCampo('moeda')" ></form-warning-tooltip>
         </validation-message>
       </label>
       <ng-select
         id="valor-moeda"
         placeholder="-- Moeda --"
         [clearable]="false"
-        formControlName="moeda"
-      >
+        formControlName="moeda" >
         <ng-option *ngFor="let moeda of moedasList()" [value]="moeda.codigo">
           {{ moeda.texto }} ({{ moeda.simbolo }})
         </ng-option>
@@ -44,9 +44,10 @@
     </div>
 
     <div class="col-12 col-md-4 col-lg-3">
-      <label for="valor-tipo" class="col-12 form-label">
+      <label for="valor-tipo" class="col-12 form-label" [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('tipo') }">
         <validation-message [control]="getControl('tipo')">
           Tipo de Valor
+          <form-warning-tooltip *ngIf="deveComplementarCampo('tipo')" [texto]="mensagemComplementarCampo('tipo')" ></form-warning-tooltip>
         </validation-message>
       </label>
       <ng-select

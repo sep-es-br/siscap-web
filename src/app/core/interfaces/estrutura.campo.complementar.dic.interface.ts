@@ -6,6 +6,7 @@ export interface IEstruturaCamposComplementar {
 
 export interface IEstruturaCamposComplementarProjeto {
   idComplemento: number;
+  idCampo: string;
   descricaoCampo: string; 
   descricaoComplemento: string;
 }

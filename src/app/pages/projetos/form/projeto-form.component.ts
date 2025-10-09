@@ -164,6 +164,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public aguardandoAvocamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public aguardandoDesentranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public FaseStatusEnum = FaseStatuEnum;
+
+  public listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] = [];
   
   public autuacaoAcionada: boolean = false; 
 
@@ -401,7 +403,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public deveComplementarCampo(nomeControle: string): boolean {
     const deveComplementar = this.camposComplementarProjeto.some(
-      campo => campo.descricaoCampo === nomeControle
+      campo => campo.idCampo === nomeControle
     );
     return ( this.statusProjeto == StatusProjetoEnum.Em_Complementacao && deveComplementar ) || false;
   }
@@ -409,7 +411,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   
   public mensagemComplementarCampo(nomeControle: string): string {
     const campoEncontrado = this.camposComplementarProjeto.find(
-      campo => campo.descricaoCampo === nomeControle
+      campo => campo.idCampo === nomeControle
     );
     return campoEncontrado ? campoEncontrado.descricaoComplemento : '';
   }
@@ -421,6 +423,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       titulo: 'Título',
       idOrganizacao: 'Organização',
       quantia: 'Valor Estimado',
+      moeda: 'Moeda',
+      tipo: 'Tipo Valor',
       rateio: 'Rateio',
       objetivo: 'Objetivo',
       objetivoEspecifico: 'Objetivo Específico',
@@ -1279,9 +1283,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
              this.submitProjetoForm(form, false);
           }
         },
-        (reason) => {
-          // console.log('Usuário cancelou:', reason);
-        }
+        
       );
 
   }
@@ -1301,9 +1303,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
              this.submitProjetoForm(form, false);
           }
         },
-        (reason) => {
-          // console.log('Usuário cancelou:', reason);
-        }
+        
       );
 
   }
@@ -1328,9 +1328,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }
 
       },
-      (reason) => {
-        //console.log('Usuário cancelou:', reason);
-      }
+      
     );
 
   }
@@ -1353,10 +1351,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.enviarProjetoArquivamentoForm();
         }
       },
-      (reason) => {
-        //console.log('Usuário cancelou:', reason);
-      }
-
+      
     );
 
     this.projetoForm.get('codigoMotivoArquivamento')?.patchValue(null);
@@ -1488,7 +1483,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private enviarProjetoComplementacao(): void {
-    
+
+    if( !this.camposParaComplementacao.some( campo => campo.mensagemComplementacao?.length ?? 0 > 0 ) ){
+      this._toastService.showToast('error', 'Nenhum complemento informado.' );
+      return
+    }
+
     this._projetosService
     .enviarEmailAvisoComplementacaoProjeto( this._idProjetoEdicao, this.camposParaComplementacao )
     .subscribe({
@@ -1647,6 +1647,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       
       if (listaFasesIntegracaoProjeto) {
 
+        this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
+
         if ( listaFasesIntegracaoProjeto.some( fase => fase.idProjeto == this._idProjetoEdicao && fase.erro ) ){
           this.autuacaoAcionada = false;
           this.reenvioDicAcionado = false;
@@ -1787,8 +1789,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public isIntegracaoEdocsConcluido() : boolean {
+    console.log( " isIntegracaoEdocsConcluido() : " , this.projetoForm.get('protocoloEdocs') as FormControl<string | null> )
     const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
     if ( !protocoloEdocsFormControl.value )
+      return true;
+    return false;
+  }
+
+  public isReentramentoEdocsConcluido() : boolean {
+    // console.log( " this.reenvioDicAcionado " , this.reenvioDicAcionado )
+    // console.log( " this.listaFasesIntegracaoProjeto. " , this.listaFasesIntegracaoProjeto, this.listaFasesIntegracaoProjeto.length )
+    // console.log( " isReentramentoEdocsConcluido() : " , (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada)) )
+    // console.log( " ---------------------------- " )
+    if (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada))
       return true;
     return false;
   }
@@ -1812,9 +1825,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.enviarProjetoComplementacao();
         }
       },
-      (reason) => {
-        //console.log('Usuário cancelou:', reason);
-      }
+      
     );
 
   }
