@@ -169,7 +169,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   
   public autuacaoAcionada: boolean = false; 
 
-  public podeEditarEmAnalise: boolean = false;
+  public podeEditar: boolean = false;
   public podeSoilictarComplementacao: boolean = false;
   public podeResponderComplementacao: boolean = false;
 
@@ -302,7 +302,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.statusProjeto = projetoModel.status;
             this.lotacaoGestorProjeto = projetoModel.lotacaoProponenteResponsavel;  
             this.nomeProponenteResponsavel = projetoModel.nomeProponenteResponsavel;
-            this.podeEditarEmAnalise = projetoModel.podeEditar;
+            this.podeEditar = projetoModel.podeEditar;
             this.podeSoilictarComplementacao = projetoModel.podeSolicitarComplementacao;
             this.podeResponderComplementacao = projetoModel.podeResponderComplementacao;
             this.camposComplementarProjeto = projetoModel.camposComplementar;
@@ -381,13 +381,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             }
 
-            if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
-              setTimeout(() => this.trocarModo(this.podeEditarEmAnalise), 2000);
-            }
+           // if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
+              setTimeout(() => this.trocarModo(this.podeEditar), 2000);
+           // }
 
-            if ( projetoModel.status === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario  ){
-              setTimeout(() => this.trocarModo(false), 2000);
-            }
+            // if ( projetoModel.status === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario  ){
+            //   setTimeout(() => this.trocarModo(false), 2000);
+            // }
             
             // nao exibir botao para mudanca de status - Sprint-29 
             // if (!this.isProponente && !projetoModel.protocoloEdocs ) {
@@ -1441,10 +1441,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.autuarProjetoAsync(payload);
     });
 
-    // const payload = new ProjetoFormModel(form.value as IProjetoForm);
-    // payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
-    // this.autuarProjetoAsync(payload);
-
   }
 
   private enviarProjetoRevisaoForm(form: FormGroup): void {
@@ -1528,7 +1524,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        //this.iniciarPollingProtocolo();
         this.iniciarPollingEtapasIntegracaoModal( ContextoIntegracaoEdocsEnum.Complementar );
       });
 
@@ -1797,10 +1792,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public isReentramentoEdocsConcluido() : boolean {
-    // console.log( " this.reenvioDicAcionado " , this.reenvioDicAcionado )
-    // console.log( " this.listaFasesIntegracaoProjeto. " , this.listaFasesIntegracaoProjeto, this.listaFasesIntegracaoProjeto.length )
-    // console.log( " isReentramentoEdocsConcluido() : " , (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada)) )
-    // console.log( " ---------------------------- " )
     if (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada))
       return true;
     return false;
