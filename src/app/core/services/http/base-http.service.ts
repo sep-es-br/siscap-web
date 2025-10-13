@@ -53,5 +53,12 @@ export abstract class BaseHttpService<T, TTableData>
       responseType: 'text',
     });
   }
+
+  public deleteByIdJustificativa(id: number, justificativa: string): Observable<string> {
+    return this._httpClientRef.delete(`${this._targetUrl}/${id}`, {
+      body: { justificativa },
+      responseType: 'text',
+    });
+  }
   
 }
