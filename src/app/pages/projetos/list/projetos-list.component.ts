@@ -53,7 +53,7 @@ export class ProjetosListComponent {
     private readonly _usuarioService: UsuarioService
   ) {
     this.permissaoDeletarAdminAuth =
-        this._usuarioService.verificarPermissao('adminAuth');
+      this._usuarioService.verificarPermissao('adminAuth');
   }
 
   projetosAguardando: Set<number> = new Set();
@@ -114,15 +114,16 @@ export class ProjetosListComponent {
       (projeto) => projeto.id === id
     );
 
-    if (projetoTableData?.protocoloEdocs && projetoTableData?.protocoloEdocs.trim() != ""){
-      if (projetoTableData?.status == StatusProjetoEnum.Em_Analise || projetoTableData?.status == StatusProjetoEnum.Em_Complementacao || projetoTableData?.status == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario)
-        return true
-      else
-        return false
-    } else if (projetoTableData?.status == StatusProjetoEnum.Em_Elaboracao) {
-      return true;
+    if (this.permissaoDeletarAdminAuth) {
+      if (projetoTableData?.protocoloEdocs && projetoTableData?.protocoloEdocs.trim() != "") {
+        if (projetoTableData?.status == StatusProjetoEnum.Em_Analise || projetoTableData?.status == StatusProjetoEnum.Em_Complementacao || projetoTableData?.status == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario)
+          return true
+        else
+          return false
+      } else if (projetoTableData?.protocoloEdocs == null || projetoTableData?.protocoloEdocs.trim() == "") {
+        return true;
+      }
     }
-
     return false;
 
   }
@@ -136,14 +137,14 @@ export class ProjetosListComponent {
   }
 
   private dispararModalDeletar(projetoTableData: IProjetoTableData): void {
-    
+
     const modalRef = this._ngbModalService.open(DeleteModalComponent, {
       centered: true,
     });
 
     modalRef.componentInstance.conteudo = `${projetoTableData.sigla} - ${projetoTableData.titulo}`;
 
-    modalRef.componentInstance.exigirJustificativa = projetoTableData.status == StatusProjetoEnum.Em_Analise || projetoTableData.status == StatusProjetoEnum.Em_Complementacao || projetoTableData.status == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario   ;
+    modalRef.componentInstance.exigirJustificativa = projetoTableData.status == StatusProjetoEnum.Em_Analise || projetoTableData.status == StatusProjetoEnum.Em_Complementacao || projetoTableData.status == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario;
 
     modalRef.result.then(
       (resultado) => {
