@@ -284,7 +284,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
-            // console.log( "Buscar projeto por ID: " , JSON.stringify(response,null,2) )
+            console.log( "Buscar projeto por ID: " , JSON.stringify(response,null,2) )
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {

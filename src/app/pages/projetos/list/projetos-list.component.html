@@ -63,8 +63,7 @@
         <td (click)="$event.stopPropagation()">
           <button class="btn border-none"
             (click)="deletarProjeto(projeto.id)"
-            [disabled]="!permissaoDeletarAdminAuth"
-          >
+            [disabled]="!podeDeletarDic(projeto.id)">
             <i class="fa-solid fa-trash-can me-2"></i>
           </button>
         </td>

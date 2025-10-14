@@ -32,7 +32,7 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
   styleUrl: './projetos-list.component.scss',
 })
 export class ProjetosListComponent {
-  
+
   public projetosList = input<Array<IProjetoTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();
   public permissaoDeletarAdminAuth: boolean = false;
@@ -40,12 +40,12 @@ export class ProjetosListComponent {
   private _destroy$ = new Subject<void>();
 
   public tableActionOutput = output<ITableActionOutput>();
-      
+
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
   urlEdocsBase = environment.edocsUrl;
-  
+
   constructor(
     private readonly _projetosService: ProjetosService,
     private readonly _navegacaoService: NavegacaoService,
@@ -53,13 +53,13 @@ export class ProjetosListComponent {
     private readonly _usuarioService: UsuarioService
   ) {
     this.permissaoDeletarAdminAuth =
-        this._usuarioService.verificarPermissao('adminAuth');
+      this._usuarioService.verificarPermissao('adminAuth');
   }
 
   projetosAguardando: Set<number> = new Set();
 
   ngOnInit(): void {
-    
+
     this._projetosService.projetosAguardandoEdocs$
       .pipe(takeUntil(this._destroy$))
       .subscribe(set => {
@@ -108,6 +108,26 @@ export class ProjetosListComponent {
     );
   }
 
+  public podeDeletarDic(id: number): boolean {
+
+    const projetoTableData = this.projetosList()?.find(
+      (projeto) => projeto.id === id
+    );
+
+    if (this.permissaoDeletarAdminAuth) {
+      if (projetoTableData?.protocoloEdocs && projetoTableData?.protocoloEdocs.trim() != "") {
+        if (projetoTableData?.status == StatusProjetoEnum.Em_Analise || projetoTableData?.status == StatusProjetoEnum.Em_Complementacao || projetoTableData?.status == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario)
+          return true
+        else
+          return false
+      } else if (projetoTableData?.protocoloEdocs == null || projetoTableData?.protocoloEdocs.trim() == "") {
+        return true;
+      }
+    }
+    return false;
+
+  }
+
   public deletarProjeto(id: number): void {
     const projetoTableData = this.projetosList()?.find(
       (projeto) => projeto.id === id
@@ -115,23 +135,29 @@ export class ProjetosListComponent {
 
     this.dispararModalDeletar(projetoTableData!);
   }
-  
+
   private dispararModalDeletar(projetoTableData: IProjetoTableData): void {
+
     const modalRef = this._ngbModalService.open(DeleteModalComponent, {
       centered: true,
     });
 
     modalRef.componentInstance.conteudo = `${projetoTableData.sigla} - ${projetoTableData.titulo}`;
 
+    modalRef.componentInstance.exigirJustificativa = projetoTableData.status == StatusProjetoEnum.Em_Analise || projetoTableData.status == StatusProjetoEnum.Em_Complementacao || projetoTableData.status == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario;
+
     modalRef.result.then(
-      (resolve) => {
-        this._projetosService
-          .deleteById(projetoTableData.id)
-          .pipe(tap((response) => this.dispararModalSucesso(response)))
-          .subscribe();
+      (resultado) => {
+        if (resultado.confirmado) {
+          this._projetosService
+            .deleteByIdJustificativa(projetoTableData.id, resultado.justificativa)
+            .pipe(tap((response) => this.dispararModalSucesso(response)))
+            .subscribe();
+        }
       },
-      (reject) => {}
+      (reason) => { }
     );
+
   }
 
   private dispararModalSucesso(response: string): void {
@@ -142,7 +168,7 @@ export class ProjetosListComponent {
     modalRef.componentInstance.conteudo = response;
 
     modalRef.result.then(
-      (resolve) => {},
+      (resolve) => { },
       (reject) => {
         this._navegacaoService.navegacaoComRecarregamento(
           BreadcrumbContextoEnum.Projetos
