@@ -225,12 +225,14 @@ export class ProjetosService extends BaseHttpService<
   public enviarEmailAvisoComplementacaoProjeto(id: number, formCamposComplementar: IEstruturaCamposComplementar[]
      ): Observable<string> {
 
-      const payload: Array<{ [key: string]: string }> = []
-      
-      formCamposComplementar.forEach( campo => {
-        if( (campo.mensagemComplementacao || '').length > 0 )
-          payload.push({ [campo.label]: campo.mensagemComplementacao || '' });
-      });
+      const payload = formCamposComplementar
+        .filter(item => (item.mensagemComplementacao || '').length > 0)
+        .map(item => ({
+          idComplemento: null,
+          idCampo: item.name,
+          descricaoCampo: item.label,
+          descricaoComplemento: item.mensagemComplementacao
+        }));
 
       return this._http.post(
         `${this._url}/${id}/complementar`,

@@ -90,7 +90,7 @@ import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { IProjetoIntegracaoEdocsFases } from '../../../core/interfaces/projeto-integracao-edcos-fases.interface';
 import { ProjetoIntegracaoEdocsFasesModel } from '../../../core/models/projeto-integracao-edocs-fases.model';
 import { FasesEdocsIntegracaoEnum, FaseStatuEnum } from '../../../core/enums/fases-edocs-integracao.enum';
-import { IEstruturaCamposComplementar } from '../../../core/interfaces/estrutura.campo.complementar.dic.interface';
+import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from '../../../core/interfaces/estrutura.campo.complementar.dic.interface';
 import { ContextoIntegracaoEdocsEnum } from '../../../core/enums/contexto-integracao-edocs.enum';
 
 @Component({
@@ -164,16 +164,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public aguardandoAvocamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public aguardandoDesentranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public FaseStatusEnum = FaseStatuEnum;
+
+  public listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] = [];
   
   public autuacaoAcionada: boolean = false; 
 
-  public podeEditarEmAnalise: boolean = false;
+  public podeEditar: boolean = false;
   public podeSoilictarComplementacao: boolean = false;
   public podeResponderComplementacao: boolean = false;
 
   public erroEmAlgumaFaseModalAutuacao: boolean = false;
 
   public camposParaComplementacao: IEstruturaCamposComplementar[] = [];
+  public camposComplementarProjeto: IEstruturaCamposComplementarProjeto[] = [];
 
   public reenvioDicAcionado: boolean = false; 
 
@@ -211,7 +214,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
     ) {
 
-      
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
       .pipe(tap((response) => (this.organizacoesOpcoes = response)));
@@ -282,7 +284,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .getById(idProjeto)
         .pipe(
           tap((response: IProjeto) => {
-            //console.log( "Buscar projeto por ID: " , JSON.stringify(response,null,2) )
+            // console.log( "Buscar projeto por ID: " , JSON.stringify(response,null,2) )
           }),
           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
           catchError((error) => {
@@ -300,10 +302,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.statusProjeto = projetoModel.status;
             this.lotacaoGestorProjeto = projetoModel.lotacaoProponenteResponsavel;  
             this.nomeProponenteResponsavel = projetoModel.nomeProponenteResponsavel;
-
-            this.podeEditarEmAnalise = projetoModel.podeEditar;
+            this.podeEditar = projetoModel.podeEditar;
             this.podeSoilictarComplementacao = projetoModel.podeSolicitarComplementacao;
             this.podeResponderComplementacao = projetoModel.podeResponderComplementacao;
+            this.camposComplementarProjeto = projetoModel.camposComplementar;
                                                             
             this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
               (status) => status != this.statusProjeto
@@ -379,13 +381,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             }
 
-            if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
-              setTimeout(() => this.trocarModo(this.podeEditarEmAnalise), 2000);
-            }
+           // if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
+              setTimeout(() => this.trocarModo(this.podeEditar), 2000);
+           // }
 
-            if ( projetoModel.status === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario  ){
-              setTimeout(() => this.trocarModo(false), 2000);
-            }
+            // if ( projetoModel.status === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario  ){
+            //   setTimeout(() => this.trocarModo(false), 2000);
+            // }
             
             // nao exibir botao para mudanca de status - Sprint-29 
             // if (!this.isProponente && !projetoModel.protocoloEdocs ) {
@@ -399,34 +401,50 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         );
   }
 
+  public deveComplementarCampo(nomeControle: string): boolean {
+    const deveComplementar = this.camposComplementarProjeto.some(
+      campo => campo.idCampo === nomeControle
+    );
+    return ( this.statusProjeto == StatusProjetoEnum.Em_Complementacao && deveComplementar ) || false;
+  }
+
+  
+  public mensagemComplementarCampo(nomeControle: string): string {
+    const campoEncontrado = this.camposComplementarProjeto.find(
+      campo => campo.idCampo === nomeControle
+    );
+    return campoEncontrado ? campoEncontrado.descricaoComplemento : '';
+  }
+  
   ngOnInit(): void {
 
-    // Campos que devem aparecer para o usuário
-    const camposVisiveis = [
-      'sigla', 					
-      'titulo', 					
-      'Organização', 			
-      'ResponsávelProponente', 
-      'equipeProjeto', 			
-      'rateio', 					
-      'açõesProjeto', 			
-      'objetivo', 				
-      'objetivoEspecífico', 		
-      'situaçãoProblema', 		
-      'soluçõesPropostas', 		
-      'impactos',					
-      'arranjosInstitucionais', 	
-      'peçasPlanejamento', 		
-    ];
-    
-    // Monta dinamicamente os painéis do accordion
-    this.camposParaComplementacao = camposVisiveis.map( key => {
-      return {
-        name: key,
-        label: this.formatarLabel(key),
-        mensagemComplementacao:''
-      };
-    });
+    const camposPedidoComplementacao: Record<string, string> = {
+      sigla: 'Sigla',
+      titulo: 'Título',
+      idOrganizacao: 'Organização',
+      quantia: 'Valor Estimado',
+      moeda: 'Moeda',
+      tipo: 'Tipo Valor',
+      rateio: 'Rateio',
+      objetivo: 'Objetivo',
+      objetivoEspecifico: 'Objetivo Específico',
+      situacaoProblema: 'Situação Problema',
+      solucoesPropostas: 'Soluções Propostas',
+      impactos: 'Impactos',
+      arranjosInstitucionais: 'Arranjos Institucionais',
+      equipeElaboracao: 'Equipe de Elaboração',
+      indicadoresProjeto: 'Indicadores do Projeto',
+      acoesProjeto: 'Ações do Projeto',
+      pecasPlanejamento: 'Peças de Planejamento',
+      subResponsavelProponente: 'Responsável Proponente'
+    };
+
+  this.camposParaComplementacao = Object.entries(camposPedidoComplementacao)
+    .map(([control, label]) => ({
+      name: control,
+      label,
+      mensagemComplementacao: ''
+    })) as IEstruturaCamposComplementar[];
         
     const rotaAtual = this.route.snapshot.routeConfig?.path;
     if (rotaAtual === 'criar') {
@@ -474,12 +492,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
     });
 
-  }
-
-  private formatarLabel(nome: string): string {
-    return nome
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase());
   }
 
   private carregarPessoasPorOrganizacao(): void {
@@ -544,7 +556,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public async idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): Promise<void> {
 
-
     const subResponsavelProponente = this.projetoForm.get( 
       'subResponsavelProponente'
     ) as FormControl<string | null>
@@ -576,19 +587,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
  
   private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
-
-    console.log('=== INICIAR FORM CHAMADO ===');
-    console.log('Tipo do parâmetro:', typeof projetoFormModel);
-    console.log('ProjetoModel recebido:', projetoFormModel);
     
-    if (projetoFormModel) {
-      console.log('Dados específicos:', {
-        sigla: projetoFormModel.sigla,
-        titulo: projetoFormModel.titulo,
-        idOrganizacao: projetoFormModel.idOrganizacao
-      });
-    }
-
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
       : null;
@@ -1284,9 +1283,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
              this.submitProjetoForm(form, false);
           }
         },
-        (reason) => {
-          // console.log('Usuário cancelou:', reason);
-        }
+        
       );
 
   }
@@ -1306,9 +1303,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
              this.submitProjetoForm(form, false);
           }
         },
-        (reason) => {
-          // console.log('Usuário cancelou:', reason);
-        }
+        
       );
 
   }
@@ -1333,9 +1328,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }
 
       },
-      (reason) => {
-        //console.log('Usuário cancelou:', reason);
-      }
+      
     );
 
   }
@@ -1358,10 +1351,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.enviarProjetoArquivamentoForm();
         }
       },
-      (reason) => {
-        //console.log('Usuário cancelou:', reason);
-      }
-
+      
     );
 
     this.projetoForm.get('codigoMotivoArquivamento')?.patchValue(null);
@@ -1451,10 +1441,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.autuarProjetoAsync(payload);
     });
 
-    // const payload = new ProjetoFormModel(form.value as IProjetoForm);
-    // payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
-    // this.autuarProjetoAsync(payload);
-
   }
 
   private enviarProjetoRevisaoForm(form: FormGroup): void {
@@ -1493,7 +1479,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private enviarProjetoComplementacao(): void {
-    
+
+    if( !this.camposParaComplementacao.some( campo => campo.mensagemComplementacao?.length ?? 0 > 0 ) ){
+      this._toastService.showToast('error', 'Nenhum complemento informado.' );
+      return
+    }
+
     this._projetosService
     .enviarEmailAvisoComplementacaoProjeto( this._idProjetoEdicao, this.camposParaComplementacao )
     .subscribe({
@@ -1533,7 +1524,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        //this.iniciarPollingProtocolo();
         this.iniciarPollingEtapasIntegracaoModal( ContextoIntegracaoEdocsEnum.Complementar );
       });
 
@@ -1652,8 +1642,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       
       if (listaFasesIntegracaoProjeto) {
 
-        console.log( 'Fases... {}', listaFasesIntegracaoProjeto )
-        
+        this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
+
         if ( listaFasesIntegracaoProjeto.some( fase => fase.idProjeto == this._idProjetoEdicao && fase.erro ) ){
           this.autuacaoAcionada = false;
           this.reenvioDicAcionado = false;
@@ -1794,8 +1784,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public isIntegracaoEdocsConcluido() : boolean {
+    console.log( " isIntegracaoEdocsConcluido() : " , this.projetoForm.get('protocoloEdocs') as FormControl<string | null> )
     const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
     if ( !protocoloEdocsFormControl.value )
+      return true;
+    return false;
+  }
+
+  public isReentramentoEdocsConcluido() : boolean {
+    if (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada))
       return true;
     return false;
   }
@@ -1819,9 +1816,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.enviarProjetoComplementacao();
         }
       },
-      (reason) => {
-        //console.log('Usuário cancelou:', reason);
-      }
+      
     );
 
   }
