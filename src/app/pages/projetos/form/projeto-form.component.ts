@@ -180,6 +180,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public reenvioDicAcionado: boolean = false; 
 
+  public pareceresProjeto: IEquipe[] = [];
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined; 
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -381,18 +383,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             }
 
-           // if ( projetoModel.status === StatusProjetoEnum.Em_Analise ){
-              setTimeout(() => this.trocarModo(this.podeEditar), 2000);
-           // }
-
-            // if ( projetoModel.status === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario  ){
-            //   setTimeout(() => this.trocarModo(false), 2000);
-            // }
-            
-            // nao exibir botao para mudanca de status - Sprint-29 
-            // if (!this.isProponente && !projetoModel.protocoloEdocs ) {
-            //   this.mostrarBotaoStatusProjeto = true;
-            // }
+            // usa uma flag vinda da API informando se o DIC pode ser Editado
+            setTimeout(() => this.trocarModo(this.podeEditar), 2000);
 
             this.loading = false;
             this.isLoadingPessoas = false;

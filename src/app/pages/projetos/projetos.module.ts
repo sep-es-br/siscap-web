@@ -20,6 +20,7 @@ import { ProjetosRoutingModule } from './projetos-routing.module';
 import { ProjetosPesquisaComponent } from './search/projetos-search.component';
 import { IndicadoresFormComponent } from "../../shared/components/indicadores-form/indicadores-form.component";
 import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-form.component';
+import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-for
     AcoesFormComponent,
     ReactiveFormsModule,
     NgbAccordionModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ProjetoParecerComponent
 ],
   exports: [
     ProjetosComponent,

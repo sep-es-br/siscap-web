@@ -32,6 +32,11 @@ export const APP_ROUTES: Routes = [
     canActivate: [authExternalUrlGuard]  // Guard personalizado para links externos
   },
   {
+    path: 'projetos/parecer/:id',
+    component: ProjetoFormComponent,
+    canActivate: [authExternalUrlGuard]
+  },
+  {
     path: '**',
     redirectTo: 'main',
   },
