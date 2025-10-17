@@ -7,6 +7,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxMaskDirective } from 'ngx-mask';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
+import { IParecer } from '../../../core/interfaces/parecer.interface';
 
 @Component({
   selector: 'siscap-projeto-parecer',
@@ -26,7 +27,7 @@ import { TemplatesModule } from '../../../shared/templates/templates.module';
 })
 export class ProjetoParecerComponent implements OnInit {
 
-  @Input() public pareceresProjeto: IEquipe[] = [];
+  @Input() public parecerProjeto: IParecer = {} as IParecer;
 
   public parecerForm: FormGroup = new FormGroup({});
   isSubepp: boolean = false;

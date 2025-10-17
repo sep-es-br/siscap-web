@@ -3,7 +3,7 @@
         <div class="card-body">
             <form [formGroup]="parecerForm">
 
-                <div class="row gy-1">
+                <div class="row ">
 
                     <div class="col-12" *ngIf="isSubepp">
                         <h5 class="fw-bold text-primary mb-2">Parecer Estratégico</h5>
@@ -32,7 +32,8 @@
                 </div>
 
                 <!-- Campo de Texto do Parecer -->
-                <div class="row gy-1 mt-1">
+                <div class="row  ">
+                    
                     <div class="col-12">
 
                         <label for="textoParecer" class="form-label col-12">
@@ -42,7 +43,7 @@
                         <textarea id="textoParecer" class="form-control" formControlName="textoParecer" rows="8"
                             maxlength="2000" placeholder="Digite aqui o texto do parecer..."></textarea>
 
-                        <small class="text-muted d-block text-end mt-1">
+                        <small class="text-muted d-block text-end ">
                             {{ parecerForm.get('textoParecer')?.value?.length || 0 }}/2000 caracteres
                         </small>
 
@@ -51,7 +52,8 @@
                 </div>
 
                 <!-- Status atual do parecer -->
-                <div class="row gy-1 mt-4">
+                <div class="row  mt-1">
+
                     <div class="col-12 col-md-6">
                         <label for="statusParecer" class="form-label col-12">
                             Status do Parecer
@@ -69,6 +71,7 @@
                     </div>
 
                 </div>
+
             </form>
         </div>
     </div>

@@ -10,6 +10,7 @@ import { IndicadorModel } from './indicador.model';
 import { IAcao } from '../interfaces/acoes.interface';
 import { AcaoModel } from './acao.model';
 import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from '../interfaces/estrutura.campo.complementar.dic.interface';
+import { IParecer } from '../interfaces/parecer.interface';
 
 export class ProjetoFormModel implements IProjetoForm {
   public sigla: string;
@@ -45,6 +46,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public podeResponderComplementacao: boolean;
   public enviarProjetoPedirParecer: boolean;
   public camposComplementar: Array<IEstruturaCamposComplementarProjeto>;
+  public parecerProjeto: IParecer;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -86,6 +88,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.podeResponderComplementacao = projetoForm?.podeResponderComplementacao ?? false;
     this.enviarProjetoPedirParecer = projetoForm?.enviarProjetoPedirParecer ?? false;
     this.camposComplementar = projetoForm?.camposComplementar ?? [];
+    this.parecerProjeto = projetoForm?.parecerProjeto ?? ({} as IParecer);
   }
 
   private construirRateioModelArray(
