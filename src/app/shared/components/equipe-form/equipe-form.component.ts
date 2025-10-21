@@ -56,9 +56,7 @@ export class EquipeFormComponent implements OnDestroy {
   constructor(
     public equipeService: EquipeService,
     private readonly _usuarioService: UsuarioService,
-    private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
-    private readonly _pessoasService: PessoasService,
   ) {
 
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;

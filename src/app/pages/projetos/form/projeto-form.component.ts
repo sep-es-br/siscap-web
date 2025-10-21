@@ -94,6 +94,7 @@ import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } fro
 import { ContextoIntegracaoEdocsEnum } from '../../../core/enums/contexto-integracao-edocs.enum';
 import { IParecer } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
+import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -289,7 +290,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -311,7 +312,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.podeSoilictarComplementacao = projetoModel.podeSolicitarComplementacao;
           this.podeResponderComplementacao = projetoModel.podeResponderComplementacao;
           this.camposComplementarProjeto = projetoModel.camposComplementar;
-          // this.parecerProjeto = projetoModel.pareceresProjeto;
 
           this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
             (status) => status != this.statusProjeto
@@ -328,6 +328,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.equipeProjeto = projetoModel.equipeElaboracao;
 
           this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
+
+          this.parecerProjeto = projetoModel.parecerProjeto;
 
           // 
           if (projetoModel.status === StatusProjetoEnum.Arquivado) {
@@ -386,10 +388,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             }
 
             if (projetoModel.status === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) {
+
+              this.mostrarBotaoGerarDic = false;
+
               this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                 this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
               );
+
               setTimeout(() => this.trocarModo(true), 2000);
+
             }
 
           }
@@ -420,17 +427,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public aguardandoParecer(): boolean {
-    return ( this.statusProjeto == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario ) || false;
+    return (this.statusProjeto == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) || false;
   }
 
   ngOnInit(): void {
 
     // Apenas para debug — mostra no console tudo o que é digitado
-    this.parecerService.parecerForm
-      .get('textoParecer')
-      ?.valueChanges.subscribe(valor => {
-        console.log('PAI :: Texto do parecer atualizado:', valor);
-      });
+    // this.parecerService.parecerForm
+    //   .get('textoParecer')
+    //   ?.valueChanges.subscribe(valor => {
+    //     console.log('PAI :: Texto do parecer atualizado:', valor);
+    //   });
 
     const camposPedidoComplementacao: Record<string, string> = {
       sigla: 'Sigla',
@@ -596,10 +603,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     setTimeout(() => (this.idIndicadorIndicadores = null), 0);
   }
 
-  public idParecerNgSelectChangeEvent(event: number): void {
-    //this.parecerService. .idIndicadorIndicadoresValue$.next(event);
-    setTimeout(() => (this.idIndicadorIndicadores = null), 0);
-  }
 
   public baixarDIC(): void {
     this._projetosService.baixarDIC(this._idProjetoEdicao);
@@ -702,9 +705,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       enviarProjetoPedirParecer: this._nnfb.control(
         projetoFormModel?.enviarProjetoPedirParecer ?? false,
       ),
-      parecerProjeto: this._nnfb.control(
-        projetoFormModel?.parecerProjeto ?? ({} as IParecer),
-      ),
+      parecerProjeto: this._nnfb.group({
+        id: [projetoFormModel?.parecerProjeto?.id ?? null],
+        idProjeto: [projetoFormModel?.parecerProjeto?.idProjeto ?? null],
+        statusParecer: [projetoFormModel?.parecerProjeto?.statusParecer ?? null],
+        textoParecer: [projetoFormModel?.parecerProjeto?.textoParecer ?? ''],
+        dataEnvioParecer: [projetoFormModel?.parecerProjeto?.dataEnvio ?? null],
+        guidDocumentoEdocs: [projetoFormModel?.parecerProjeto?.guidDocumentoEdocs ?? ''],
+        guidUnidadeOrganizacao: [projetoFormModel?.parecerProjeto?.guidUnidadeOrganizacao ?? '']
+      }),
     });
 
     this.carregarPessoasPorOrganizacao();
@@ -835,7 +844,35 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
     });
 
+    this.inicializarParecer();
+
   }
+
+  private inicializarParecer(): void {
+
+    const parecerFormGroup = this.projetoForm.get('parecerProjeto') as FormGroup | null;
+
+    if (!parecerFormGroup) {
+      console.warn('parecerProjeto não encontrado no formulário principal.');
+      return;
+    }
+
+    const parecerAtual = parecerFormGroup.getRawValue();
+
+    if (!parecerAtual.id && !parecerAtual.textoParecer) {
+      parecerFormGroup.patchValue({
+        id: null,
+        idProjeto: this.projetoForm.get('id')?.value ?? null,
+        statusParecer: StatusParecerEnum.Pendente,
+        textoParecer: '',
+        dataEnvioParecer: null,
+        guidDocumentoEdocs: '',
+        guidUnidadeOrganizacao: ''
+      });
+    }
+
+  }
+
 
   private idOrganizacaoChange(idOrganizacaoValue: number | null): void {
 
@@ -1052,6 +1089,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.projetoForm.get('justificativaArquivamento')?.enable();
     this.projetoForm.get('codigoMotivoArquivamento')?.enable();
 
+    const textoParecerFormControl = this.projetoForm.get(
+      'parecerProjeto.textoParecer'
+    ) as FormControl<string | null>;
+
+    if (this.statusProjeto === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) {
+      setTimeout(() => {
+        textoParecerFormControl.enable({ emitEvent: false });
+      });
+    }
+
   }
 
   private validarFormulario(form: FormGroup): boolean {
@@ -1104,22 +1151,41 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
-    if (this.validarFormulario(form)) {
+    if (this.statusProjeto === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) {
 
-      // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
-      form.get('valor.tipo')?.enable();
+      const parecerControl = this.projetoForm.get('parecerProjeto') as FormGroup;
 
-      const payload = new ProjetoFormModel(form.value as IProjetoForm);
-
-      if (this.isProponente) {
-        payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+      if (parecerControl.invalid) {
+        parecerControl.markAllAsTouched();
+        return;
       }
 
-      const requisicao = this._idProjetoEdicao
-        ? this.atualizarProjeto(payload, isRascunho)
-        : this.cadastrarProjeto(payload, isRascunho);
+      const payload = new ProjetoFormModel(this.projetoForm.getRawValue() as IProjetoForm);
 
-      requisicao.subscribe();
+      payload.parecerProjeto = this.projetoForm.get('parecerProjeto')?.getRawValue();
+
+      this.atualizarProjeto(payload, isRascunho).subscribe();
+
+    } else {
+
+      if (this.validarFormulario(form)) {
+
+        // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
+        form.get('valor.tipo')?.enable();
+
+        const payload = new ProjetoFormModel(form.value as IProjetoForm);
+
+        if (this.isProponente) {
+          payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+        }
+
+        const requisicao = this._idProjetoEdicao
+          ? this.atualizarProjeto(payload, isRascunho)
+          : this.cadastrarProjeto(payload, isRascunho);
+
+        requisicao.subscribe();
+
+      }
 
     }
 
@@ -1475,20 +1541,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private efetivarEnvioParecerProjetoForm(form: FormGroup): void {
 
-    // Força atualização dos valores
     form.updateValueAndValidity();
 
-    // Aguarda um tick para garantir sincronização
-    setTimeout(() => {
+    form.get('valor.tipo')?.enable();
 
-      form.get('valor.tipo')?.enable();
-      const payload = new ProjetoFormModel(form.value as IProjetoForm);
-      payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
-      console.log( " payload -- > ", payload )
+    const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
-      // this.efetivarEnvioParecerProjetoAsync(payload);
+    payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
-    });
+    console.log(" payload -- > ", payload)
+
+    // this.efetivarEnvioParecerProjetoAsync(payload);
 
   }
 
@@ -1902,6 +1965,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public abrirEfetivarParecerModal() {
+
+    const parecerControl = this.projetoForm.get('parecerProjeto') as FormGroup;
+
+    if (parecerControl.invalid) {
+      parecerControl.markAllAsTouched();
+      if (!this.validarFormulario(parecerControl))
+        return;
+    }
 
     const modalRef = this._ngbModalService.open(this.efetivarParecerProjetoModalTemplate, {
       centered: true,

@@ -13,10 +13,8 @@ import { StatusParecerEnum } from '../../enums/status-parecer.enum';
 })
 export class ParecerService {
 
-  // ✅ Mantém o form principal de parecer
-  public parecerForm: FormGroup = new FormGroup({});
+  // public parecerForm: FormGroup = new FormGroup({});
 
-  // ✅ Guarda um "snapshot" do parecer atual (valor simples)
   private _parecerSnapshot: IParecer | null = null;
 
   public get parecerSnapshot(): IParecer | null {
@@ -29,40 +27,23 @@ export class ParecerService {
 
   constructor(private _nnfb: NonNullableFormBuilder) {}
 
-  public construirParecerForm( parecer?: IParecer ): FormGroup {
-
-    const form = this._nnfb.group({
-      id: this._nnfb.control(parecer?.id ?? 0),
-      idProjeto: this._nnfb.control(parecer?.idProjeto ?? 0),
-      guidUnidadeOrganizacao: this._nnfb.control(parecer?.guidUnidadeOrganizacao ?? null),
-      textoParecer: this._nnfb.control(parecer?.textoParecer ?? '', [
-        Validators.required,
-        Validators.maxLength(2000),
-      ]),
-      statusParecer: this._nnfb.control(
-        parecer?.statusParecer ?? StatusParecerEnum.Pendente
-      ),
-      dataEnvio: this._nnfb.control(parecer?.dataEnvio ?? null),
-      guidDocumentoEdocs: this._nnfb.control(parecer?.guidDocumentoEdocs ?? '')
+  public construirParecerForm(parecer?: IParecer): FormGroup {
+    return this._nnfb.group({
+      id: [parecer?.id ?? 0],
+      idProjeto: [parecer?.idProjeto ?? 0],
+      guidUnidadeOrganizacao: [parecer?.guidUnidadeOrganizacao ?? null],
+      textoParecer: [parecer?.textoParecer ?? '', [Validators.required, Validators.maxLength(2000)]],
+      statusParecer: [parecer?.statusParecer ?? null],
+      dataEnvio: [parecer?.dataEnvio ?? null],
+      guidDocumentoEdocs: [parecer?.guidDocumentoEdocs ?? null],
     });
-
-    this.parecerForm = form;
-
-    this.parecerSnapshot = this.parecerForm.value as IParecer;
-
-    this.parecerForm.valueChanges.subscribe((valor) => {
-      this._parecerSnapshot = valor as IParecer;
-    });
-
-    return this.parecerForm;
-
   }
 
-  public atualizarParecer(parecer: IParecer): void {
-    if (this.parecerForm) {
-      this.parecerForm.patchValue(parecer);
-      this._parecerSnapshot = parecer;
-    }
+  public atualizarParecer(parecer: IParecer): void { 
+    // if (this.parecerForm) {
+    //   this.parecerForm.patchValue(parecer);
+    //   this._parecerSnapshot = parecer;
+    // }
   }
 
   public getValorAtual(): IParecer | null {

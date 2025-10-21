@@ -62,69 +62,68 @@ export class IndicadoresFormComponent {
         this.descricaoMeta ?? null, [
         Validators.maxLength(2000),
         Validators.required,
-      ]),})
-   
+      ]),
+    })
+
   }
 
   public adicionarIndicador(): void {
-    
-    // const indicador = this.indicadoresService.indicadoresFormArray.at(index).value as FormGroup;
-    
+
     const novoIndicador = this._nnfb.group<IndicadoresFormType>({
-      idIndicador: this._nnfb.control( 0, [Validators.required]),
-      tipoIndicador: this._nnfb.control( null, [Validators.required]),
-      descricaoIndicador: this._nnfb.control( null, [Validators.required]),
-      descricaoMeta: this._nnfb.control( null, [Validators.required]),
-      idStatus: this._nnfb.control( TipoStatusEnum.Ativo, ),
+      idIndicador: this._nnfb.control(0, [Validators.required]),
+      tipoIndicador: this._nnfb.control(null, [Validators.required]),
+      descricaoIndicador: this._nnfb.control(null, [Validators.required]),
+      descricaoMeta: this._nnfb.control(null, [Validators.required]),
+      idStatus: this._nnfb.control(TipoStatusEnum.Ativo,),
     });
 
-    this.indicadoresFormArray.push(novoIndicador);    
+    this.indicadoresFormArray.push(novoIndicador);
 
   }
 
   public projetoTooltip: Record<string, string> =
-      COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
+    COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   removerIndicador(index: number): void {
     this.indicadoresFormArray.removeAt(index);
   }
 
   public marcarIndicadorExcluido(
-      index: number
+    index: number
   ) {
-    
+
     const indicadorFormGroup = this.indicadoresService.indicadoresFormArray.at(index) as FormGroup;
-    
+
     indicadorFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Inativo);
 
     indicadorFormGroup.get('tipoIndicador')?.clearValidators();
     indicadorFormGroup.get('tipoIndicador')?.updateValueAndValidity();
-    
+
     indicadorFormGroup.get('descricaoIndicador')?.clearValidators();
     indicadorFormGroup.get('descricaoIndicador')?.updateValueAndValidity();
-    
+
     indicadorFormGroup.get('descricaoMeta')?.clearValidators();
     indicadorFormGroup.get('descricaoMeta')?.updateValueAndValidity();
-  
+
     indicadorFormGroup.markAsDirty();
     indicadorFormGroup.updateValueAndValidity();
-    
+
     const tipoIndicador = indicadorFormGroup.get('tipoIndicador')?.value || 'Indicador';
     const descricaoIndicador = indicadorFormGroup.get('descricaoIndicador')?.value || '';
-    
+
     this._toastService.showToast(
-        'info',
-        'Indicador removido do projeto.',
-        [
-            `${tipoIndicador}`,
-            `${descricaoIndicador.substring(0, 50)}${descricaoIndicador.length > 50 ? '...' : ''}`
-        ]
+      'info',
+      'Indicador removido do projeto.',
+      [
+        `${tipoIndicador}`,
+        `${descricaoIndicador.substring(0, 50)}${descricaoIndicador.length > 50 ? '...' : ''}`
+      ]
     );
   }
 
   public isNovoMembro(index: number): boolean {
     return !this.indicadoresService.indicadoresFormArraySnapshot.some(
-      (membro) => 
+      (membro) =>
         membro.idIndicador ===
         this.indicadoresService.indicadoresFormArray.at(index).value.idIndicador
     );
@@ -135,16 +134,12 @@ export class IndicadoresFormComponent {
     return indicadorFormGroup.get('idStatus')?.value !== TipoStatusEnum.Inativo;
   }
 
-  get indicadoresFormGroups(): FormGroup[] {
-    return this.indicadoresFormArray.controls as FormGroup[];
-  }
-
   get indicadoresFormArray(): FormArray {
     return this.indicadoresService.indicadoresFormArray;
   }
 
-   public getControl(controlName: string): AbstractControl<any, any> {
-      return this.indicadorForm.get(controlName) as AbstractControl<any, any>;
-    }
+  public getControl(controlName: string): AbstractControl<any, any> {
+    return this.indicadorForm.get(controlName) as AbstractControl<any, any>;
+  }
 
 }

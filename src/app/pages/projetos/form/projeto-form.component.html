@@ -17,8 +17,10 @@
 </div>
 
 <ng-container *ngIf="aguardandoParecer()">
-  <siscap-projeto-parecer [parecerProjeto]="parecerProjeto" >
-  </siscap-projeto-parecer>
+  <div class="mb-4">
+    <siscap-projeto-parecer [projetoForm]="projetoForm" [statusProjeto]="statusProjeto" class="mb-4">
+    </siscap-projeto-parecer>
+  </div>
 </ng-container>
 
 <div class="project-form" *ngIf="!loading">
@@ -708,7 +710,7 @@
           <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
         </span>
       </li>
-            
+
     </ol>
   </div>
   <div class="modal-footer">

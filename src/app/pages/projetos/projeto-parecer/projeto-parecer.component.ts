@@ -8,6 +8,8 @@ import { NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstra
 import { NgxMaskDirective } from 'ngx-mask';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { IParecer } from '../../../core/interfaces/parecer.interface';
+import { ParecerService } from '../../../core/services/parecer/parecer.service';
+import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 
 @Component({
   selector: 'siscap-projeto-parecer',
@@ -25,11 +27,11 @@ import { IParecer } from '../../../core/interfaces/parecer.interface';
   templateUrl: './projeto-parecer.component.html',
   styleUrl: './projeto-parecer.component.scss'
 })
-export class ProjetoParecerComponent implements OnInit {
+export class ProjetoParecerComponent {
 
-  @Input() public parecerProjeto: IParecer = {} as IParecer;
+  @Input() projetoForm!: FormGroup;
+  @Input() statusProjeto!: string;
 
-  public parecerForm: FormGroup = new FormGroup({});
   isSubepp: boolean = false;
   isSubeo: boolean = true;
 
@@ -37,17 +39,26 @@ export class ProjetoParecerComponent implements OnInit {
     private fb: FormBuilder
   ) { }
 
+  get parecerFormGroup(): FormGroup {
+    return this.projetoForm.get('parecerProjeto') as FormGroup;
+  }
+
+  get statusProjetoFormGroup(): FormGroup {
+    return this.projetoForm.get('statusProjeto') as FormGroup;
+  }
+
   ngOnInit(): void {
-    this.initForm();
-  }
 
-  private initForm(): void {
-    this.parecerForm = this.fb.group({
-      textoParecer: ['', [Validators.required, Validators.maxLength(2000)]],
-      statusParecer: [{ value: 'Pendente', disabled: true }],
-      dataEnvioParecer: [{ value: '', disabled: true }]
-    });
-  }
+    const textoParecer = this.parecerFormGroup.get('textoParecer');
 
+    if (this.statusProjeto == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) {
+      textoParecer?.setValidators([Validators.required]);
+    } else {
+      textoParecer?.clearValidators();
+    }
+
+    textoParecer?.updateValueAndValidity();
+
+  }
 
 }
