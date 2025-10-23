@@ -43,6 +43,7 @@ export interface IProjeto {
   enviarProjetoPedirParecer: boolean;
   camposComplementar: Array<IEstruturaCamposComplementarProjeto>;
   parecerProjeto: IParecer;
+  lotacaoUsuario: number;
 }
 
 export interface IProjetoForm

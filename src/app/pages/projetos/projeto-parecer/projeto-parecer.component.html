@@ -5,7 +5,7 @@
 
                 <div class="row ">
 
-                    <div class="col-12" *ngIf="isSubepp">
+                    <div class="col-12" *ngIf="isSubepp()">
                         <h5 class="fw-bold text-primary mb-2">Parecer Estratégico</h5>
                         <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
                             A SUBEPP deverá elaborar um parecer estratégico acerca do projeto apresentado, contemplando
@@ -21,7 +21,7 @@
                         </ul>
                     </div>
 
-                    <div class="col-12" *ngIf="isSubeo">
+                    <div class="col-12" *ngIf="isSubeo()">
                         <h5 class="fw-bold text-primary mb-2">Parecer Orçamentário</h5>
                         <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
                             A SUBEO deverá apresentar parecer quanto à adequação orçamentária da proposta, abrangendo os

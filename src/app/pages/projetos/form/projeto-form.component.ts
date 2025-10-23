@@ -184,6 +184,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public reenvioDicAcionado: boolean = false;
 
   public parecerProjeto: IParecer = {} as IParecer;
+  public lotacaoUsuario: number = 0;
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -330,6 +331,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
 
           this.parecerProjeto = projetoModel.parecerProjeto;
+          this.lotacaoUsuario = projetoModel.lotacaoUsuario;
 
           // 
           if (projetoModel.status === StatusProjetoEnum.Arquivado) {
@@ -431,13 +433,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
-    // Apenas para debug — mostra no console tudo o que é digitado
-    // this.parecerService.parecerForm
-    //   .get('textoParecer')
-    //   ?.valueChanges.subscribe(valor => {
-    //     console.log('PAI :: Texto do parecer atualizado:', valor);
-    //   });
 
     const camposPedidoComplementacao: Record<string, string> = {
       sigla: 'Sigla',
@@ -602,7 +597,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.indicadoresService.idIndicadorIndicadoresValue$.next(event);
     setTimeout(() => (this.idIndicadorIndicadores = null), 0);
   }
-
 
   public baixarDIC(): void {
     this._projetosService.baixarDIC(this._idProjetoEdicao);
@@ -1507,10 +1501,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private reentranharDicProjetoForm(form: FormGroup): void {
 
-    // Força atualização dos valores
     form.updateValueAndValidity();
 
-    // Aguarda um tick para garantir sincronização
     setTimeout(() => {
       form.get('valor.tipo')?.enable();
       const payload = new ProjetoFormModel(form.value as IProjetoForm);
@@ -1526,10 +1518,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private autuarProjetoForm(form: FormGroup): void {
 
-    // Força atualização dos valores
     form.updateValueAndValidity();
-
-    // Aguarda um tick para garantir sincronização
     setTimeout(() => {
       form.get('valor.tipo')?.enable();
       const payload = new ProjetoFormModel(form.value as IProjetoForm);
@@ -1549,9 +1538,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
-    console.log(" payload -- > ", payload)
-
-    // this.efetivarEnvioParecerProjetoAsync(payload);
+    this.efetivarEnvioParecerProjetoAsync(payload);
 
   }
 
@@ -1698,7 +1685,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
         this.iniciarPollingProtocolo();
-        this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.Autuacao);
+        this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.CapturaAsinaturaParecer);
       });
 
   }
@@ -1769,7 +1756,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       takeUntil(
         this._projetosService.protocoloAtualizado$.pipe(
-          filter(dados => !!dados?.protocolo && contexto == ContextoIntegracaoEdocsEnum.Autuacao),
+          filter( dados => !!dados?.protocolo && contexto == ContextoIntegracaoEdocsEnum.Autuacao ),
           tap(dados => {
             this.aguardandoAvocamento = FaseStatuEnum.FINALIZADA;
             this.aguardandoDesentranhamento = FaseStatuEnum.FINALIZADA;
@@ -1939,7 +1926,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return false;
   }
 
-
   confirmarComplementacao(modal: NgbModalRef): void {
 
     modal.close('confirmado');
@@ -1982,7 +1968,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result) => {
         if (result === 'confirmado') {
-          this.enviarProjetoComplementacao();
+          this.confirmarAssinarCapturarParecer();
         }
       },
 

@@ -10,6 +10,7 @@ import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { IParecer } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
+import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 
 @Component({
   selector: 'siscap-projeto-parecer',
@@ -31,10 +32,8 @@ export class ProjetoParecerComponent {
 
   @Input() projetoForm!: FormGroup;
   @Input() statusProjeto!: string;
-
-  isSubepp: boolean = false;
-  isSubeo: boolean = true;
-
+  @Input() lotacaoUsuario!: number;
+  
   constructor(
     private fb: FormBuilder
   ) { }
@@ -45,6 +44,14 @@ export class ProjetoParecerComponent {
 
   get statusProjetoFormGroup(): FormGroup {
     return this.projetoForm.get('statusProjeto') as FormGroup;
+  }
+  
+  public isSubepp(): boolean {
+    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP;
+  }
+
+  public isSubeo(): boolean {
+    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO;
   }
 
   ngOnInit(): void {

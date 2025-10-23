@@ -11,6 +11,7 @@ import { IAcao } from '../interfaces/acoes.interface';
 import { AcaoModel } from './acao.model';
 import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from '../interfaces/estrutura.campo.complementar.dic.interface';
 import { IParecer } from '../interfaces/parecer.interface';
+import { LotacaoUsuarioEnum } from '../enums/lotacao-usuario.enum';
 
 export class ProjetoFormModel implements IProjetoForm {
   public sigla: string;
@@ -46,7 +47,8 @@ export class ProjetoFormModel implements IProjetoForm {
   public podeResponderComplementacao: boolean;
   public enviarProjetoPedirParecer: boolean;
   public camposComplementar: Array<IEstruturaCamposComplementarProjeto>;
-  public parecerProjeto: IParecer;
+  public parecerProjeto: IParecer
+  public lotacaoUsuario: number;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -89,6 +91,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.enviarProjetoPedirParecer = projetoForm?.enviarProjetoPedirParecer ?? false;
     this.camposComplementar = projetoForm?.camposComplementar ?? [];
     this.parecerProjeto = projetoForm?.parecerProjeto ?? ({} as IParecer);
+    this.lotacaoUsuario = projetoForm?.lotacaoUsuario ?? 0;
   }
 
   private construirRateioModelArray(

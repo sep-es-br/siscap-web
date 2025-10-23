@@ -301,7 +301,7 @@ export class ProjetosService extends BaseHttpService<
   ): Observable<IProjeto> {
     this.iniciarAutuacao(id);
     return this._http.put<IProjeto>(
-      `${this._url}/dic/edocs/capturaparecer/${id}`, body
+      `${this._url}/dic/edocs/capturarparecer/${id}`, body
     );
   }
 
