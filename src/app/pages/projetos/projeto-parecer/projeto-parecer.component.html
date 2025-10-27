@@ -1,4 +1,4 @@
-<div class="project-form">
+<div class="project-form" *ngIf="isSubeo() || isSubepp()" >
     <div class="card">
         <div class="card-body">
             <form [formGroup]="parecerFormGroup">
@@ -51,31 +51,23 @@
                         </validation-message>
 
                         <small class="text-muted d-block text-end ">
-                            {{ parecerFormGroup.get('textoParecer')?.value?.length || 0 }}/2000 caracteres
+                            {{ this.parecerFormGroup.get('textoParecer')?.value?.length || 0 }}/2000 caracteres
                         </small>
 
                     </div>
 
                 </div>
 
-                <!-- Status atual do parecer 
-                <div class="row  mt-1">
-                    <div class="col-12 col-md-6">
-                        <label for="statusParecer" class="form-label col-12">
-                            Status do Parecer
-                        </label>
-                        <input type="text" id="statusParecer" class="form-control" formControlName="statusParecer"
-                            readonly />
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label for="dataEnvioParecer" class="form-label col-12">
-                            Data de Envio
-                        </label>
-                        <input type="text" id="dataEnvioParecer" class="form-control" formControlName="dataEnvioParecer"
-                            readonly />
+                <div *ngIf="isEnviado()" class="row mt-2">
+                    <div class="col-12">
+                        <strong>Parecer enviado</strong> no dia
+                        <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'dd/MM/yyyy' }}</span>
+                        às
+                        <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'HH:mm' }}</span>
+                        por
+                        <span class="fw-semibold">{{  this.parecerFormGroup.get('usuarioFezEnvioParecer')?.value }}</span>
                     </div>
                 </div>
-                -->
 
             </form>
         </div>

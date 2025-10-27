@@ -95,6 +95,7 @@ import { ContextoIntegracaoEdocsEnum } from '../../../core/enums/contexto-integr
 import { IParecer } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
+import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -184,7 +185,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public reenvioDicAcionado: boolean = false;
 
   public parecerProjeto: IParecer = {} as IParecer;
-  public lotacaoUsuario: number = 0;
+  public lotacaoUsuario: number = LotacaoUsuarioEnum.OUTRO;
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -393,9 +394,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
               this.mostrarBotaoGerarDic = false;
 
-              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
-              );
+              this._breadcrumbService.listaItemsBreadcrumb$
+
+              if (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO)
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
+                );
+              else
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoeAcaoVoltar()
+                );
 
               setTimeout(() => this.trocarModo(true), 2000);
 
@@ -706,7 +714,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         textoParecer: [projetoFormModel?.parecerProjeto?.textoParecer ?? ''],
         dataEnvioParecer: [projetoFormModel?.parecerProjeto?.dataEnvio ?? null],
         guidDocumentoEdocs: [projetoFormModel?.parecerProjeto?.guidDocumentoEdocs ?? ''],
-        guidUnidadeOrganizacao: [projetoFormModel?.parecerProjeto?.guidUnidadeOrganizacao ?? '']
+        guidUnidadeOrganizacao: [projetoFormModel?.parecerProjeto?.guidUnidadeOrganizacao ?? ''],
+        usuarioFezEnvioParecer: [projetoFormModel?.parecerProjeto?.usuarioFezEnvioParecer ?? '']
       }),
     });
 
@@ -1087,10 +1096,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'parecerProjeto.textoParecer'
     ) as FormControl<string | null>;
 
+    const idDocumentoEdocsFormControl = this.projetoForm.get(
+      'parecerProjeto.guidDocumentoEdocs'
+    ) as FormControl<string | null>;
+
     if (this.statusProjeto === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) {
+
       setTimeout(() => {
-        textoParecerFormControl.enable({ emitEvent: false });
+        const idDocumentoEdocsParecer = idDocumentoEdocsFormControl?.value ?? '';
+        if (idDocumentoEdocsParecer.length > 0)
+          textoParecerFormControl.disable({ emitEvent: false });
+        else
+          textoParecerFormControl.enable({ emitEvent: false });
       });
+
     }
 
   }
@@ -1756,7 +1775,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       takeUntil(
         this._projetosService.protocoloAtualizado$.pipe(
-          filter( dados => !!dados?.protocolo && contexto == ContextoIntegracaoEdocsEnum.Autuacao ),
+          filter(dados => !!dados?.protocolo && contexto == ContextoIntegracaoEdocsEnum.Autuacao),
           tap(dados => {
             this.aguardandoAvocamento = FaseStatuEnum.FINALIZADA;
             this.aguardandoDesentranhamento = FaseStatuEnum.FINALIZADA;
@@ -1914,10 +1933,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public isIntegracaoEdocsConcluido(): boolean {
+    
     const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
-    if (!protocoloEdocsFormControl.value && (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada)))
+    const protocoloEdocs = protocoloEdocsFormControl?.value;
+    const fases = this.listaFasesIntegracaoProjeto;
+
+    // console.log('🔍 [isIntegracaoEdocsConcluido] Verificando integração eDocs...');
+    // console.log('📄 protocoloEdocs:', protocoloEdocs);
+    // console.log('📋 listaFasesIntegracaoProjeto:', fases);
+    // console.log('📏 Total de fases:', fases?.length ?? 0);
+    // console.log('✅ Todas finalizadas?', fases?.every(fase => fase.finalizada));
+
+    if (!protocoloEdocs && (fases.length > 0 && fases.every(fase => fase.finalizada)))
       return true;
+
     return false;
+
   }
 
   public isReentramentoEdocsConcluido(): boolean {

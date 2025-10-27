@@ -11,6 +11,7 @@ import { IParecer } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
+import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 
 @Component({
   selector: 'siscap-projeto-parecer',
@@ -45,6 +46,14 @@ export class ProjetoParecerComponent {
   get statusProjetoFormGroup(): FormGroup {
     return this.projetoForm.get('statusProjeto') as FormGroup;
   }
+
+  get dataEnvio(): any {
+    return this.projetoForm.get('dataEnvio')?.value;
+  }
+  
+  get usuarioFezEnvioParecer(): any {
+    return this.projetoForm.get('usuarioFezEnvioParecer')?.value;
+  }
   
   public isSubepp(): boolean {
     return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP;
@@ -52,6 +61,11 @@ export class ProjetoParecerComponent {
 
   public isSubeo(): boolean {
     return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO;
+  }
+
+  public isEnviado(): boolean {
+    const statusParecer = this.parecerFormGroup.get('statusParecer')?.value;
+    return statusParecer === StatusParecerEnum.Enviado
   }
 
   ngOnInit(): void {
@@ -65,6 +79,13 @@ export class ProjetoParecerComponent {
     }
 
     textoParecer?.updateValueAndValidity();
+
+    // const statusParecer = this.parecerFormGroup.get('statusParecer')?.value;
+    // if ( statusParecer === StatusParecerEnum.Enviado) {
+    //   setTimeout(() => this.parecerFormGroup.get('textoParecer')?.disable(), 2000);
+    // } else {
+    //   setTimeout(() => this.parecerFormGroup.get('textoParecer')?.enable(), 2000);
+    // }
 
   }
 

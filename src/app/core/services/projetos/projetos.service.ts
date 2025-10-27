@@ -118,6 +118,11 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCancelar];
   }
 
+  public gerarBotoeAcaoVoltar(): Array<BotaoPropriedadesModel> {
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    return [botaoVoltar];
+  }
+
   public gerarBotoesAcaoResponderComplementacao(): Array<BotaoPropriedadesModel> {
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
