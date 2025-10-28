@@ -396,7 +396,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
               this._breadcrumbService.listaItemsBreadcrumb$
 
-              if (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO)
+              if (( this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO ) &&
+                 ( !this.parecerProjeto.guidDocumentoEdocs || this.parecerProjeto.guidDocumentoEdocs.length == 0 ) )
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
                 );
@@ -1933,7 +1934,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public isIntegracaoEdocsConcluido(): boolean {
-    
+
     const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
     const protocoloEdocs = protocoloEdocsFormControl?.value;
     const fases = this.listaFasesIntegracaoProjeto;
