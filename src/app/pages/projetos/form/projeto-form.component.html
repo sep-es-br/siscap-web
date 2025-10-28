@@ -438,13 +438,13 @@
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Assinar e Autuar</span>
       </button>
-      <div *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
+      <div *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <i class="fa-solid fa-check text-white me-2"></i>
         <span>Processo concluído com sucesso!</span>
       </div>
-      <div *ngIf="autuacaoAcionada && isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
+      <div *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido() && !erroEmAlgumaFaseModalAutuacao"
         class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>

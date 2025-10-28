@@ -292,7 +292,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -1935,19 +1935,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public isIntegracaoEdocsConcluido(): boolean {
 
-    const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
-    const protocoloEdocs = protocoloEdocsFormControl?.value;
-    const fases = this.listaFasesIntegracaoProjeto;
-
-    // console.log('🔍 [isIntegracaoEdocsConcluido] Verificando integração eDocs...');
-    // console.log('📄 protocoloEdocs:', protocoloEdocs);
-    // console.log('📋 listaFasesIntegracaoProjeto:', fases);
-    // console.log('📏 Total de fases:', fases?.length ?? 0);
-    // console.log('✅ Todas finalizadas?', fases?.every(fase => fase.finalizada));
-
-    if (!protocoloEdocs && (fases.length > 0 && fases.every(fase => fase.finalizada)))
+    if (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada))
       return true;
-
     return false;
 
   }

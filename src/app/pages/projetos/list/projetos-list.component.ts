@@ -73,6 +73,7 @@ export class ProjetosListComponent {
       .subscribe(({ idProjeto, protocolo }) => {
         const projeto = this.projetosList()?.find(p => p.id === idProjeto);
         if (projeto) {
+          if( projeto?.protocoloEdocs == null || projeto?.protocoloEdocs.trim() == "" )
           projeto.protocoloEdocs = protocolo;
           projeto.status = StatusProjetoEnum.Em_Analise;
         }
