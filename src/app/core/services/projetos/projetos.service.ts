@@ -118,10 +118,22 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCancelar];
   }
 
+  public gerarBotoeAcaoVoltar(): Array<BotaoPropriedadesModel> {
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    return [botaoVoltar];
+  }
+
   public gerarBotoesAcaoResponderComplementacao(): Array<BotaoPropriedadesModel> {
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
     return [botaoCancelar, botaoAutuar];
+  }
+
+  public gerarBotoesAcaoParecerEstrategicoOrcamentario(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
+    const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('efetivarparecerestrategicoorcamentario');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoSalvar, botaoEnviar ];
   }
 
   public construirProjetoModelRateio(
@@ -285,6 +297,16 @@ export class ProjetosService extends BaseHttpService<
     this.iniciarAutuacao(id);
     return this._http.put<IProjeto>(
       `${this._url}/dic/edocs/autuar/${id}`, body
+    );
+  }
+
+  public efetivarEnvioParecerEdocs(
+    id: number,
+    body: ProjetoFormModel
+  ): Observable<IProjeto> {
+    this.iniciarAutuacao(id);
+    return this._http.put<IProjeto>(
+      `${this._url}/dic/edocs/capturarparecer/${id}`, body
     );
   }
 

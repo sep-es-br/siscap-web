@@ -49,6 +49,7 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   projetos: 'DIC',
   projetoscriar: 'Novo DIC',
   projetoseditar: 'Editar DIC',
+  projetosparecer: 'Parecer',
 
   pessoas: 'Pessoas',
   pessoascriar: 'Nova Pessoa',
@@ -72,6 +73,7 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   prospeccaocriar: 'Nova Prospecção',
   prospeccaoeditar: 'Editar Prospecção',
   prospeccaovisualizar: 'Visualizar Prospecção', // Caso específico
+
 };
 
 /**

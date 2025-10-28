@@ -17,7 +17,9 @@ export type TBotaoAcao =
   | 'recusar'
   | 'arquivar'
   | 'complementar'
-  | 'parecerestrategicoorcamentario';
+  | 'parecerestrategicoorcamentario'
+  | 'salvarparecer'
+  | 'efetivarparecerestrategicoorcamentario';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -111,9 +113,20 @@ export abstract class BotoesConfig {
     parecerestrategicoorcamentario: {
       classesCSS: ['btn-primary'],
       icone: ['fa-solid', 'fa-upload'],
-      texto: 'Enviar Parecer',
+      texto: 'Pedir Parecer',
       acao: 'parecerestrategicoorcamentario',
-    }
+    },salvarparecer: {
+      classesCSS: ['btn-success'],
+      icone: ['fa-solid', 'fa-save'],
+      texto: 'Salvar Parecer',
+      acao: 'salvar',
+    },
+    efetivarparecerestrategicoorcamentario: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Enviar Parecer',
+      acao: 'efetivarparecerestrategicoorcamentario',
+    },
   };
 
   public static gerarBotaoPropriedades(
