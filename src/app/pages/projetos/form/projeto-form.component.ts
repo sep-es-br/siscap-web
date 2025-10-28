@@ -352,7 +352,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           if (this.podeResponderComplementacao) {
             this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-              this._projetosService.gerarBotoesAcaoResponderComplementacao()
+              this._projetosService.gerarBotoesAcaoResponderComplementacao(this.podeEditar)
             );
             setTimeout(() => this.trocarModo(true), 2000);
           } else {
