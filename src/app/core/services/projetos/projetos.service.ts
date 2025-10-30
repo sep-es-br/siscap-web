@@ -41,9 +41,9 @@ export class ProjetosService extends BaseHttpService<
   adicionarProjetoAguardando(idProjeto: number): void {
     const atual = this.projetosAguardandoEdocsSubject.value;
     atual.add(idProjeto);
-    this.projetosAguardandoEdocsSubject.next(new Set(atual)); 
+    this.projetosAguardandoEdocsSubject.next(new Set(atual));
   }
-  
+
   removerProjetoAguardando(idProjeto: number): void {
     const atual = this.projetosAguardandoEdocsSubject.value;
     atual.delete(idProjeto);
@@ -77,7 +77,7 @@ export class ProjetosService extends BaseHttpService<
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
     return [botaoSalvar, botaoCancelar, botaoEnviar];
   }
-  
+
   public gerarBotoesAcaoFormularioUsuarioProponenteResponsavel(): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
@@ -91,7 +91,7 @@ export class ProjetosService extends BaseHttpService<
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
-    return [botaoSalvar, botaoCancelar, botaoEnviar ];
+    return [botaoSalvar, botaoCancelar, botaoEnviar];
   }
 
   public gerarBotoesAcaoFormularioProponenteEmAnalise(): Array<BotaoPropriedadesModel> {
@@ -100,16 +100,16 @@ export class ProjetosService extends BaseHttpService<
     const botaoArquivar = BotoesConfig.gerarBotaoPropriedades('arquivar');
     const botaoRevisar = BotoesConfig.gerarBotaoPropriedades('revisar');
     const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
-    return [botaoCancelar,botaoAutuar,botaoRevisar,botaoArquivar,botaoVoltar];
+    return [botaoCancelar, botaoAutuar, botaoRevisar, botaoArquivar, botaoVoltar];
   }
 
-  public gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao( podeComplementar: boolean ): Array<BotaoPropriedadesModel> {
+  public gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(podeComplementar: boolean): Array<BotaoPropriedadesModel> {
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    if( podeComplementar ){
+    if (podeComplementar) {
       const botaoComplementar = BotoesConfig.gerarBotaoPropriedades('complementar');
       const botaoSolicitarParecer = BotoesConfig.gerarBotaoPropriedades('parecerestrategicoorcamentario');
-      return [botaoCancelar,botaoSolicitarParecer,botaoComplementar]
-    }else
+      return [botaoCancelar, botaoSolicitarParecer, botaoComplementar]
+    } else
       return [botaoCancelar];
   }
 
@@ -123,17 +123,21 @@ export class ProjetosService extends BaseHttpService<
     return [botaoVoltar];
   }
 
-  public gerarBotoesAcaoResponderComplementacao(): Array<BotaoPropriedadesModel> {
+  public gerarBotoesAcaoResponderComplementacao(podeEditarDIC: boolean): Array<BotaoPropriedadesModel> {
+    if (podeEditarDIC) {
+      const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+      const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
+      return [botaoCancelar, botaoAutuar];
+    }
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
-    return [botaoCancelar, botaoAutuar];
+    return [botaoCancelar];
   }
 
   public gerarBotoesAcaoParecerEstrategicoOrcamentario(): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('efetivarparecerestrategicoorcamentario');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    return [botaoCancelar, botaoSalvar, botaoEnviar ];
+    return [botaoCancelar, botaoSalvar, botaoEnviar];
   }
 
   public construirProjetoModelRateio(
@@ -207,8 +211,8 @@ export class ProjetosService extends BaseHttpService<
     );
   }
 
-  public enviarEmailRevisarProjeto(id: number, 
-    justificativa: string ): Observable<string> {
+  public enviarEmailRevisarProjeto(id: number,
+    justificativa: string): Observable<string> {
     return this._http.post(
       `${this._url}/${id}/revisar?justificativa=${justificativa}`,
       { justificativa },
@@ -216,40 +220,40 @@ export class ProjetosService extends BaseHttpService<
     );
   }
 
-  public enviarEmailArquivarProjeto(id: number, 
+  public enviarEmailArquivarProjeto(id: number,
     justificativa: string,
-    codigoMotivoArquivamento: string ): Observable<string> {
+    codigoMotivoArquivamento: string): Observable<string> {
 
-      const payload = {
-        justificativa: justificativa,
-        codigoMotivoArquivamento: codigoMotivoArquivamento
-      };
+    const payload = {
+      justificativa: justificativa,
+      codigoMotivoArquivamento: codigoMotivoArquivamento
+    };
 
-      return this._http.post(
-        `${this._url}/${id}/arquivar`,
-        payload ,
-        { responseType: 'text' }
+    return this._http.post(
+      `${this._url}/${id}/arquivar`,
+      payload,
+      { responseType: 'text' }
 
     );
 
   }
 
   public enviarEmailAvisoComplementacaoProjeto(id: number, formCamposComplementar: IEstruturaCamposComplementar[]
-     ): Observable<string> {
+  ): Observable<string> {
 
-      const payload = formCamposComplementar
-        .filter(item => (item.mensagemComplementacao || '').length > 0)
-        .map(item => ({
-          idComplemento: null,
-          idCampo: item.name,
-          descricaoCampo: item.label,
-          descricaoComplemento: item.mensagemComplementacao
-        }));
+    const payload = formCamposComplementar
+      .filter(item => (item.mensagemComplementacao || '').length > 0)
+      .map(item => ({
+        idComplemento: null,
+        idCampo: item.name,
+        descricaoCampo: item.label,
+        descricaoComplemento: item.mensagemComplementacao
+      }));
 
-      return this._http.post(
-        `${this._url}/${id}/complementar`,
-        payload ,
-        { responseType: 'text' }
+    return this._http.post(
+      `${this._url}/${id}/complementar`,
+      payload,
+      { responseType: 'text' }
 
     );
 
@@ -316,7 +320,7 @@ export class ProjetosService extends BaseHttpService<
   ): Observable<IProjeto> {
     this.iniciarAutuacao(id);
     return this._http.put<IProjeto>(
-      `${this._url}/dic/edocs/reentranharDIC/${id}`, body , 
+      `${this._url}/dic/edocs/reentranharDIC/${id}`, body,
       {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`
@@ -328,18 +332,18 @@ export class ProjetosService extends BaseHttpService<
   public get projetosEmAutuacao$(): Observable<Set<number>> {
     return this._projetosEmAutuacao.asObservable();
   }
-  
+
   public iniciarAutuacao(idProjeto: number): void {
     const set = new Set(this._projetosEmAutuacao.value);
     set.add(idProjeto);
     this._projetosEmAutuacao.next(set);
   }
-  
+
   public consultarFasesIntegracaoEdcosProjeto(
     idProjeto: number
   ): Observable<IProjetoIntegracaoEdocsFases[]> {
     return this._http.get<IProjetoIntegracaoEdocsFases[]>(
-      `${this._url}/dic/edocs/fases/${idProjeto}` );
+      `${this._url}/dic/edocs/fases/${idProjeto}`);
   }
 
 }

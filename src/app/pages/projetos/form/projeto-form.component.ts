@@ -292,7 +292,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+           // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -352,7 +352,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           if (this.podeResponderComplementacao) {
             this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-              this._projetosService.gerarBotoesAcaoResponderComplementacao()
+              this._projetosService.gerarBotoesAcaoResponderComplementacao(this.podeEditar)
             );
             setTimeout(() => this.trocarModo(true), 2000);
           } else {
@@ -390,7 +390,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
             }
 
-            if (projetoModel.status === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) {
+            if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
 
               this.mostrarBotaoGerarDic = false;
 
@@ -438,7 +438,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public aguardandoParecer(): boolean {
-    return (this.statusProjeto == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) || false;
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || false;
   }
 
   ngOnInit(): void {
@@ -1101,7 +1101,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'parecerProjeto.guidDocumentoEdocs'
     ) as FormControl<string | null>;
 
-    if (this.statusProjeto === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP) {
 
       setTimeout(() => {
         const idDocumentoEdocsParecer = idDocumentoEdocsFormControl?.value ?? '';
@@ -1165,7 +1165,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
-    if (this.statusProjeto === StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP) {
 
       const parecerControl = this.projetoForm.get('parecerProjeto') as FormGroup;
 
