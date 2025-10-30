@@ -117,7 +117,7 @@ export class ProjetosListComponent {
 
     if (this.permissaoDeletarAdminAuth) {
       if (projetoTableData?.protocoloEdocs && projetoTableData?.protocoloEdocs.trim() != "") {
-        if (projetoTableData?.status == StatusProjetoEnum.Em_Analise || projetoTableData?.status == StatusProjetoEnum.Em_Complementacao || projetoTableData?.status == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario)
+        if (projetoTableData?.status == StatusProjetoEnum.Em_Analise || projetoTableData?.status == StatusProjetoEnum.Em_Complementacao || projetoTableData?.status == StatusProjetoEnum.Parecer_SEP)
           return true
         else
           return false
@@ -145,7 +145,7 @@ export class ProjetosListComponent {
 
     modalRef.componentInstance.conteudo = `${projetoTableData.sigla} - ${projetoTableData.titulo}`;
 
-    modalRef.componentInstance.exigirJustificativa = projetoTableData.status == StatusProjetoEnum.Em_Analise || projetoTableData.status == StatusProjetoEnum.Em_Complementacao || projetoTableData.status == StatusProjetoEnum.Em_Parecer_Estrategico_Orcamentario;
+    modalRef.componentInstance.exigirJustificativa = projetoTableData.status == StatusProjetoEnum.Em_Analise || projetoTableData.status == StatusProjetoEnum.Em_Complementacao || projetoTableData.status == StatusProjetoEnum.Parecer_SEP;
 
     modalRef.result.then(
       (resultado) => {

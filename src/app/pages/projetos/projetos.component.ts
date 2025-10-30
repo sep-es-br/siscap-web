@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subject, Subscription, takeUntil, tap } from 'rxjs';
 
 import { UsuarioService } from '../../core/services/usuario/usuario.service';
 import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
