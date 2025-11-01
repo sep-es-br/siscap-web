@@ -19,7 +19,8 @@ export type TBotaoAcao =
   | 'complementar'
   | 'parecerestrategicoorcamentario'
   | 'salvarparecer'
-  | 'efetivarparecerestrategicoorcamentario';
+  | 'efetivarparecerestrategicoorcamentario'
+  | 'entranharPareceresProcessoEdocs';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -126,6 +127,12 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Enviar Parecer',
       acao: 'efetivarparecerestrategicoorcamentario',
+    },
+    entranharPareceresProcessoEdocs: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Entranhar Pareceres',
+      acao: 'entranharPareceresProcessoEdocs',
     },
   };
 

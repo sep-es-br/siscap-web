@@ -140,6 +140,12 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCancelar, botaoSalvar, botaoEnviar];
   }
 
+  public gerarBotoesAcaoEntgranharPareceresProcessoEdocs(): Array<BotaoPropriedadesModel> {
+    const botaoEntranharPareceres = BotoesConfig.gerarBotaoPropriedades('entranharPareceresProcessoEdocs');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoEntranharPareceres];
+  }
+
   public construirProjetoModelRateio(
     idMicrorregioesList: Array<number>,
     valorEstimado: number
@@ -328,6 +334,17 @@ export class ProjetosService extends BaseHttpService<
       }
     );
   }
+
+  public efetivarEntranhamentoPareceresProjetoEdocs(
+    id: number,
+    body: ProjetoFormModel
+  ): Observable<IProjeto> {
+    this.iniciarAutuacao(id);
+    return this._http.put<IProjeto>(
+      `${this._url}/dic/edocs/entranharpareceres/${id}`, body
+    );
+  }
+
 
   public get projetosEmAutuacao$(): Observable<Set<number>> {
     return this._projetosEmAutuacao.asObservable();

@@ -196,6 +196,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   @ViewChild('enviarParecerProjetoModal') enviarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
 
   @ViewChild('efetivarParecerProjetoModal') efetivarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('entranharPareceresEdocsProjetoModal') entranharPareceresEdocsProjetoModalTemplate: TemplateRef<any> | undefined;
 
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
@@ -292,7 +293,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-           // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+            console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -407,6 +408,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 );
 
               setTimeout(() => this.trocarModo(true), 2000);
+
+            }
+
+            
+            if (projetoModel.status === StatusProjetoEnum.Elegibilidade) {
+
+              this.mostrarBotaoGerarDic = false;
+
+              this._breadcrumbService.listaItemsBreadcrumb$
+
+              if (( this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP ) )
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs()
+                );
+              else
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoeAcaoVoltar()
+                );
+
+              //setTimeout(() => this.trocarModo(false), 2000);
 
             }
 
@@ -944,6 +965,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
+    
     switch (acao) {
       case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
@@ -1027,6 +1049,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       case BreadcrumbAcoesEnum.EnviarEfetivacaoParecerEstrategicoOrgamentario:
         this.abrirEfetivarParecerModal()
+        break;
+
+      case BreadcrumbAcoesEnum.EntranharPareceresProcessoEdocs:
+        this.abrirEntranhamentoPareceresModal()
         break;
 
     }
@@ -1519,6 +1545,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.efetivarEnvioParecerProjetoForm(this.projetoForm);
   }
 
+  public confirmarEntranhamentoParecerProcessoEdocs(){
+    this.efetivarEntranhamentoPareceresProjetoForm(this.projetoForm);
+  }
+
   private reentranharDicProjetoForm(form: FormGroup): void {
 
     form.updateValueAndValidity();
@@ -1559,6 +1589,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
     this.efetivarEnvioParecerProjetoAsync(payload);
+
+  }
+
+  private efetivarEntranhamentoPareceresProjetoForm(form: FormGroup): void {
+
+    form.updateValueAndValidity();
+
+    form.get('valor.tipo')?.enable();
+
+    const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+
+    payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+
+    this.efetivarEntranhamentoPareceresProjetoAsync(payload);
 
   }
 
@@ -1695,6 +1739,37 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this._toastService.showToast(
             'error',
             'Erro ao iniciar autuação no E-Docs.'
+          );
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+        })
+      )
+      .subscribe(() => {
+        this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
+        this.iniciarPollingProtocolo();
+        this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.CapturaAsinaturaParecer);
+      });
+
+  }
+
+  private efetivarEntranhamentoPareceresProjetoAsync(payload: ProjetoFormModel): void {
+
+    this._projetosService.efetivarEntranhamentoPareceresProjetoEdocs(this._idProjetoEdicao, payload)
+      .pipe(
+        tap(() => {
+          this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
+          this._toastService.showToast(
+            'info',
+            'Processo de entranhamento de pareceres do DIC iniciado no E-Docs.'
+          );
+        }),
+        catchError(error => {
+          this.autuacaoAcionada = false;
+          this._toastService.showToast(
+            'error',
+            'Erro ao iniciar entranhamento de pareceres do DIC no E-Docs.'
           );
           return EMPTY;
         }),
@@ -1990,6 +2065,33 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       (result) => {
         if (result === 'confirmado') {
           this.confirmarAssinarCapturarParecer();
+        }
+      },
+
+    );
+
+  }
+
+  
+  public abrirEntranhamentoPareceresModal() {
+
+    const parecerControl = this.projetoForm.get('parecerProjeto') as FormGroup;
+
+    if (parecerControl.invalid) {
+      parecerControl.markAllAsTouched();
+      if (!this.validarFormulario(parecerControl))
+        return;
+    }
+
+    const modalRef = this._ngbModalService.open(this.entranharPareceresEdocsProjetoModalTemplate, {
+      centered: true,
+      size: 'lg',
+    });
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'confirmado') {
+          this.confirmarEntranhamentoParecerProcessoEdocs();
         }
       },
 

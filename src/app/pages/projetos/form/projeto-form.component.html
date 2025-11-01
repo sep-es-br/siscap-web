@@ -750,3 +750,63 @@
     </div>
   </div>
 </ng-template>
+
+<ng-template #entranharPareceresEdocsProjetoModal let-modal>
+  <div class="modal-header py-3 justify-content-center">
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+      Confirmação Entranhamento Pareceres ao Processo E-Docs
+    </h4>
+  </div>
+  <div class="modal-body">
+    <h6>Esta ação realizará automaticamente os seguintes procedimentos no Edocs, utilizando a sua identidade - {{
+      nomeProponenteResponsavel }} ( {{ lotacaoGestorProjeto }} ): </h6>
+    <ol class="fs-8">
+      <li>Entranhamento dos pareceres capturados no E-Docs;
+        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+          <span class="spinner-border spinner-border-sm"></span>
+        </span>
+        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
+          <i class="fa-solid fa-check text-success fs-6"></i>
+        </span>
+        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
+          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
+        </span>
+      </li>
+    </ol>
+  </div>
+  
+  <div class="modal-footer">
+    <div class="d-inline-flex flex-row-reverse">
+      <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
+        <span>{{ isIntegracaoEdocsConcluido() ? 'Fechar' : 'Cancelar' }}</span>
+        <i class="fa-solid fa-close"></i>
+      </button>
+      <button *ngIf="!reenvioDicAcionado && !erroEmAlgumaFaseModalAutuacao && !isIntegracaoEdocsConcluido()"
+        class="btn btn-success icon-text-btn me-2" (click)="confirmarEntranhamentoParecerProcessoEdocs()"
+        [disabled]="erroEmAlgumaFaseModalAutuacao">
+        <i class="fa-solid fa-paper-plane me-2"></i>
+        <span>Entranhar Pareceres</span>
+      </button>
+      <div *ngIf="isIntegracaoEdocsConcluido()"
+        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+        style="border-radius: 0; cursor: default; user-select: none;">
+        <i class="fa-solid fa-check text-white me-2"></i>
+        <span>Processo concluído com sucesso!</span>
+      </div>
+      <div *ngIf="reenvioDicAcionado && !isIntegracaoEdocsConcluido()"
+        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+        style="border-radius: 0; cursor: default; user-select: none;">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        <span>Processando...</span>
+      </div>
+      <div *ngIf="erroEmAlgumaFaseModalAutuacao"
+        class="btn btn-danger icon-text-btn me-2 d-inline-flex align-items-center"
+        style="cursor: default; user-select: none; border-radius: 0;">
+        <span class="me-2">
+          <i class="bi bi-x-circle-fill"></i>
+        </span>
+        <span>Erro no processamento.</span>
+      </div>
+    </div>
+  </div>
+</ng-template>

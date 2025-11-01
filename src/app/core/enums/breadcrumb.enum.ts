@@ -12,7 +12,8 @@ export enum BreadcrumbAcoesEnum {
   Arquivar = 'arquivar',
   Complementar = 'complementar',
   EnviarPedindoParecerEstrategicoOrcamentario = 'parecerestrategicoorcamentario',
-  EnviarEfetivacaoParecerEstrategicoOrgamentario = 'efetivarparecerestrategicoorcamentario'
+  EnviarEfetivacaoParecerEstrategicoOrgamentario = 'efetivarparecerestrategicoorcamentario',
+  EntranharPareceresProcessoEdocs = 'entranharPareceresProcessoEdocs'
 }
 
 export enum BreadcrumbContextoEnum {
