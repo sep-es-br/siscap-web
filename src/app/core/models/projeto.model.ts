@@ -47,8 +47,9 @@ export class ProjetoFormModel implements IProjetoForm {
   public podeResponderComplementacao: boolean;
   public enviarProjetoPedirParecer: boolean;
   public camposComplementar: Array<IEstruturaCamposComplementarProjeto>;
-  public parecerProjeto: IParecer
+  public parecerProjetoUsuario: IParecer
   public lotacaoUsuario: number;
+  public pareceresProjeto: Array<IParecer>;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -90,8 +91,9 @@ export class ProjetoFormModel implements IProjetoForm {
     this.podeResponderComplementacao = projetoForm?.podeResponderComplementacao ?? false;
     this.enviarProjetoPedirParecer = projetoForm?.enviarProjetoPedirParecer ?? false;
     this.camposComplementar = projetoForm?.camposComplementar ?? [];
-    this.parecerProjeto = projetoForm?.parecerProjeto ?? ({} as IParecer);
+    this.parecerProjetoUsuario = projetoForm?.parecerProjetoUsuario ?? ({} as IParecer);
     this.lotacaoUsuario = projetoForm?.lotacaoUsuario ?? 0;
+    this.pareceresProjeto = projetoForm?.pareceresProjeto ?? [];
   }
 
   private construirRateioModelArray(

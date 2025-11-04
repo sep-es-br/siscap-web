@@ -40,7 +40,7 @@ export class ProjetoParecerComponent {
   ) { }
 
   get parecerFormGroup(): FormGroup {
-    return this.projetoForm.get('parecerProjeto') as FormGroup;
+    return this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
   }
 
   get statusProjetoFormGroup(): FormGroup {

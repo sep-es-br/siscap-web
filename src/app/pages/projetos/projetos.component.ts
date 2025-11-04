@@ -84,7 +84,16 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    this._subscription.add(
+      this._projetosService.atualizarListaProjetos$.subscribe(() => {
+        // console.log('recarregando lista de DIC´s.. ')
+        this.fetchPage(); // 👈 recarrega a lista qdo houver acionamento pelo projetoservice
+      })
+    );
+
     this.fetchPage();
+
   }
 
   public redefinirFiltroPesquisa(event: IProjetoFiltroPesquisa): void {

@@ -31,6 +31,13 @@ export class ProjetosService extends BaseHttpService<
   IProjetoTableData
 > {
 
+  private _atualizarListaProjetos$ = new Subject<void>();
+  atualizarListaProjetos$ = this._atualizarListaProjetos$.asObservable();
+
+  notificarAtualizacaoLista() {
+    this._atualizarListaProjetos$.next();
+  }
+
   private readonly _url = `${environment.apiUrl}/projetos`;
 
   public protocoloAtualizado$ = new Subject<{ idProjeto: number; protocolo: string }>();
