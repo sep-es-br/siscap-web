@@ -294,7 +294,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -393,13 +393,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
             }
 
-            if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
+            if ( projetoModel.status === StatusProjetoEnum.Parecer_SEP ) {
 
               this.mostrarBotaoGerarDic = false;
 
               this._breadcrumbService.listaItemsBreadcrumb$
 
-              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO) &&
+              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO ) &&
                 (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0))
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
@@ -414,28 +414,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             }
 
 
-            if (projetoModel.status === StatusProjetoEnum.Elegibilidade) {
+            if ( projetoModel.status === StatusProjetoEnum.Elegibilidade ) {
 
               this.mostrarBotaoGerarDic = false;
 
               this._breadcrumbService.listaItemsBreadcrumb$
 
-              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP) && this.pareceresProjeto.some(parecer => parecer.statusParecer != StatusParecerEnum.Entranhado_Processo_Edocs))
+              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP))
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs()
+                  this._projetosService.gerarBotoesAcaoParecerGEOC()
                 );
               else
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoeAcaoVoltar()
                 );
 
-              //setTimeout(() => this.trocarModo(false), 2000);
-
             }
 
           }
 
-          // usa uma flag vinda da API informando se o DIC pode ser Editado
+          // usa uma flag vinda da API informando se o DIC pode ser Editado.. 
           setTimeout(() => this.trocarModo(this.podeEditar), 2000);
 
           this.loading = false;
@@ -461,7 +459,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public aguardandoParecer(): boolean {
-    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || false;
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegibilidade) || false;
   }
 
   ngOnInit(): void {
@@ -1057,6 +1055,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.abrirEntranhamentoPareceresModal()
         break;
 
+      case BreadcrumbAcoesEnum.CapturarparecerGEOC:
+        this.abrirEfetivarParecerModal()
+        break;
+
     }
 
   }
@@ -1129,7 +1131,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'parecerProjetoUsuario.guidDocumentoEdocs'
     ) as FormControl<string | null>;
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade) {
 
       setTimeout(() => {
         const idDocumentoEdocsParecer = idDocumentoEdocsFormControl?.value ?? '';
@@ -1193,7 +1195,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP) {
+    if ( this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade ) {
 
       const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
 
@@ -1205,6 +1207,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const payload = new ProjetoFormModel(this.projetoForm.getRawValue() as IProjetoForm);
 
       payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
+
+      // console.log( 'payload - ', payload )
 
       this.atualizarProjeto(payload, isRascunho).subscribe();
 

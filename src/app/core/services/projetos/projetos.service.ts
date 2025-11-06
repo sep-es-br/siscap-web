@@ -147,8 +147,21 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCancelar, botaoSalvar, botaoEnviar];
   }
 
+  public gerarBotoesAcaoParecerGEOC (): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
+    const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('capturarparecerGEOC');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoSalvar, botaoEnviar];
+  }
+
   public gerarBotoesAcaoEntgranharPareceresProcessoEdocs(): Array<BotaoPropriedadesModel> {
     const botaoEntranharPareceres = BotoesConfig.gerarBotaoPropriedades('entranharPareceresProcessoEdocs');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoEntranharPareceres];
+  }
+
+  public gerarBotoesAcaoParecereGEOCEdocs(): Array<BotaoPropriedadesModel> {
+    const botaoEntranharPareceres = BotoesConfig.gerarBotaoPropriedades('entranharParecerGEOCdocs');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     return [botaoCancelar, botaoEntranharPareceres];
   }
