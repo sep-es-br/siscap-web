@@ -40,7 +40,7 @@ export class ProjetoParecerComponent {
   ) { }
 
   get parecerFormGroup(): FormGroup {
-    return this.projetoForm.get('parecerProjeto') as FormGroup;
+    return this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
   }
 
   get statusProjetoFormGroup(): FormGroup {
@@ -63,29 +63,26 @@ export class ProjetoParecerComponent {
     return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO;
   }
 
+  public isSubcapGeoc(): boolean {
+    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
+  }
+
   public isEnviado(): boolean {
     const statusParecer = this.parecerFormGroup.get('statusParecer')?.value;
-    return statusParecer === StatusParecerEnum.Enviado
+    return !( statusParecer === StatusParecerEnum.Pendente )
   }
 
   ngOnInit(): void {
 
     const textoParecer = this.parecerFormGroup.get('textoParecer');
 
-    if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) {
+    if ( this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegibilidade ) {
       textoParecer?.setValidators([Validators.required]);
     } else {
       textoParecer?.clearValidators();
     }
 
     textoParecer?.updateValueAndValidity();
-
-    // const statusParecer = this.parecerFormGroup.get('statusParecer')?.value;
-    // if ( statusParecer === StatusParecerEnum.Enviado) {
-    //   setTimeout(() => this.parecerFormGroup.get('textoParecer')?.disable(), 2000);
-    // } else {
-    //   setTimeout(() => this.parecerFormGroup.get('textoParecer')?.enable(), 2000);
-    // }
 
   }
 

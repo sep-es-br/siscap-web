@@ -31,6 +31,13 @@ export class ProjetosService extends BaseHttpService<
   IProjetoTableData
 > {
 
+  private _atualizarListaProjetos$ = new Subject<void>();
+  atualizarListaProjetos$ = this._atualizarListaProjetos$.asObservable();
+
+  notificarAtualizacaoLista() {
+    this._atualizarListaProjetos$.next();
+  }
+
   private readonly _url = `${environment.apiUrl}/projetos`;
 
   public protocoloAtualizado$ = new Subject<{ idProjeto: number; protocolo: string }>();
@@ -138,6 +145,25 @@ export class ProjetosService extends BaseHttpService<
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('efetivarparecerestrategicoorcamentario');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     return [botaoCancelar, botaoSalvar, botaoEnviar];
+  }
+
+  public gerarBotoesAcaoParecerGEOC (): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
+    const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('capturarparecerGEOC');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoSalvar, botaoEnviar];
+  }
+
+  public gerarBotoesAcaoEntgranharPareceresProcessoEdocs(): Array<BotaoPropriedadesModel> {
+    const botaoEntranharPareceres = BotoesConfig.gerarBotaoPropriedades('entranharPareceresProcessoEdocs');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoEntranharPareceres];
+  }
+
+  public gerarBotoesAcaoParecereGEOCEdocs(): Array<BotaoPropriedadesModel> {
+    const botaoEntranharPareceres = BotoesConfig.gerarBotaoPropriedades('entranharParecerGEOCdocs');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoEntranharPareceres];
   }
 
   public construirProjetoModelRateio(
@@ -328,6 +354,17 @@ export class ProjetosService extends BaseHttpService<
       }
     );
   }
+
+  public efetivarEntranhamentoPareceresProjetoEdocs(
+    id: number,
+    body: ProjetoFormModel
+  ): Observable<IProjeto> {
+    this.iniciarAutuacao(id);
+    return this._http.put<IProjeto>(
+      `${this._url}/dic/edocs/entranharpareceres/${id}`, body
+    );
+  }
+
 
   public get projetosEmAutuacao$(): Observable<Set<number>> {
     return this._projetosEmAutuacao.asObservable();

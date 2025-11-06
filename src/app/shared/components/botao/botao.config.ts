@@ -19,7 +19,10 @@ export type TBotaoAcao =
   | 'complementar'
   | 'parecerestrategicoorcamentario'
   | 'salvarparecer'
-  | 'efetivarparecerestrategicoorcamentario';
+  | 'efetivarparecerestrategicoorcamentario'
+  | 'entranharPareceresProcessoEdocs'
+  | 'entranharParecerGEOCdocs'
+  | 'capturarparecerGEOC';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -126,6 +129,24 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Enviar Parecer',
       acao: 'efetivarparecerestrategicoorcamentario',
+    },
+    entranharPareceresProcessoEdocs: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Entranhar Pareceres',
+      acao: 'entranharPareceresProcessoEdocs',
+    },
+    entranharParecerGEOCdocs: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Entranhar Parecer',
+      acao: 'entranharParecerGEOCdocs',
+    },
+    capturarparecerGEOC: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Enviar Parecer',
+      acao: 'capturarparecerGEOC',
     },
   };
 

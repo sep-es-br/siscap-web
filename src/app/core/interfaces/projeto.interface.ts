@@ -42,8 +42,9 @@ export interface IProjeto {
   podeResponderComplementacao: boolean; 
   enviarProjetoPedirParecer: boolean;
   camposComplementar: Array<IEstruturaCamposComplementarProjeto>;
-  parecerProjeto: IParecer;
+  parecerProjetoUsuario: IParecer;
   lotacaoUsuario: number;
+  pareceresProjeto: Array<IParecer>;
 }
 
 export interface IProjetoForm

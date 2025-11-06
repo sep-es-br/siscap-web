@@ -184,8 +184,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public reenvioDicAcionado: boolean = false;
 
-  public parecerProjeto: IParecer = {} as IParecer;
+  public parecerProjetoUsuario: IParecer = {} as IParecer;
   public lotacaoUsuario: number = LotacaoUsuarioEnum.OUTRO;
+  public pareceresProjeto: IParecer[] = [];
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -196,6 +197,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   @ViewChild('enviarParecerProjetoModal') enviarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
 
   @ViewChild('efetivarParecerProjetoModal') efetivarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('entranharPareceresEdocsProjetoModal') entranharPareceresEdocsProjetoModalTemplate: TemplateRef<any> | undefined;
 
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
@@ -292,7 +294,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-           // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -331,8 +333,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
 
-          this.parecerProjeto = projetoModel.parecerProjeto;
+          this.parecerProjetoUsuario = projetoModel.parecerProjetoUsuario;
           this.lotacaoUsuario = projetoModel.lotacaoUsuario;
+          this.pareceresProjeto = projetoModel.pareceresProjeto;
 
           // 
           if (projetoModel.status === StatusProjetoEnum.Arquivado) {
@@ -390,14 +393,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
             }
 
-            if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
+            if ( projetoModel.status === StatusProjetoEnum.Parecer_SEP ) {
 
               this.mostrarBotaoGerarDic = false;
 
               this._breadcrumbService.listaItemsBreadcrumb$
 
-              if (( this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO ) &&
-                 ( !this.parecerProjeto.guidDocumentoEdocs || this.parecerProjeto.guidDocumentoEdocs.length == 0 ) )
+              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO ) &&
+                (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0))
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
                 );
@@ -410,9 +413,27 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             }
 
+
+            if ( projetoModel.status === StatusProjetoEnum.Elegibilidade ) {
+
+              this.mostrarBotaoGerarDic = false;
+
+              this._breadcrumbService.listaItemsBreadcrumb$
+
+              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP))
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoParecerGEOC()
+                );
+              else
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoeAcaoVoltar()
+                );
+
+            }
+
           }
 
-          // usa uma flag vinda da API informando se o DIC pode ser Editado
+          // usa uma flag vinda da API informando se o DIC pode ser Editado.. 
           setTimeout(() => this.trocarModo(this.podeEditar), 2000);
 
           this.loading = false;
@@ -438,7 +459,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public aguardandoParecer(): boolean {
-    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || false;
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegibilidade) || false;
   }
 
   ngOnInit(): void {
@@ -708,15 +729,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       enviarProjetoPedirParecer: this._nnfb.control(
         projetoFormModel?.enviarProjetoPedirParecer ?? false,
       ),
-      parecerProjeto: this._nnfb.group({
-        id: [projetoFormModel?.parecerProjeto?.id ?? null],
-        idProjeto: [projetoFormModel?.parecerProjeto?.idProjeto ?? null],
-        statusParecer: [projetoFormModel?.parecerProjeto?.statusParecer ?? null],
-        textoParecer: [projetoFormModel?.parecerProjeto?.textoParecer ?? ''],
-        dataEnvioParecer: [projetoFormModel?.parecerProjeto?.dataEnvio ?? null],
-        guidDocumentoEdocs: [projetoFormModel?.parecerProjeto?.guidDocumentoEdocs ?? ''],
-        guidUnidadeOrganizacao: [projetoFormModel?.parecerProjeto?.guidUnidadeOrganizacao ?? ''],
-        usuarioFezEnvioParecer: [projetoFormModel?.parecerProjeto?.usuarioFezEnvioParecer ?? '']
+      parecerProjetoUsuario: this._nnfb.group({
+        id: [projetoFormModel?.parecerProjetoUsuario?.id ?? null],
+        idProjeto: [projetoFormModel?.parecerProjetoUsuario?.idProjeto ?? null],
+        statusParecer: [projetoFormModel?.parecerProjetoUsuario?.statusParecer ?? null],
+        textoParecer: [projetoFormModel?.parecerProjetoUsuario?.textoParecer ?? ''],
+        dataEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.dataEnvio ?? null],
+        guidDocumentoEdocs: [projetoFormModel?.parecerProjetoUsuario?.guidDocumentoEdocs ?? ''],
+        guidUnidadeOrganizacao: [projetoFormModel?.parecerProjetoUsuario?.guidUnidadeOrganizacao ?? ''],
+        usuarioFezEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? '']
       }),
     });
 
@@ -854,7 +875,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private inicializarParecer(): void {
 
-    const parecerFormGroup = this.projetoForm.get('parecerProjeto') as FormGroup | null;
+    const parecerFormGroup = this.projetoForm.get('parecerProjetoUsuario') as FormGroup | null;
 
     if (!parecerFormGroup) {
       console.warn('parecerProjeto não encontrado no formulário principal.');
@@ -944,6 +965,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
+
     switch (acao) {
       case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
@@ -1029,6 +1051,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.abrirEfetivarParecerModal()
         break;
 
+      case BreadcrumbAcoesEnum.EntranharPareceresProcessoEdocs:
+        this.abrirEntranhamentoPareceresModal()
+        break;
+
+      case BreadcrumbAcoesEnum.CapturarparecerGEOC:
+        this.abrirEfetivarParecerModal()
+        break;
+
     }
 
   }
@@ -1094,14 +1124,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.projetoForm.get('codigoMotivoArquivamento')?.enable();
 
     const textoParecerFormControl = this.projetoForm.get(
-      'parecerProjeto.textoParecer'
+      'parecerProjetoUsuario.textoParecer'
     ) as FormControl<string | null>;
 
     const idDocumentoEdocsFormControl = this.projetoForm.get(
-      'parecerProjeto.guidDocumentoEdocs'
+      'parecerProjetoUsuario.guidDocumentoEdocs'
     ) as FormControl<string | null>;
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade) {
 
       setTimeout(() => {
         const idDocumentoEdocsParecer = idDocumentoEdocsFormControl?.value ?? '';
@@ -1165,9 +1195,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP) {
+    if ( this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade ) {
 
-      const parecerControl = this.projetoForm.get('parecerProjeto') as FormGroup;
+      const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
 
       if (parecerControl.invalid) {
         parecerControl.markAllAsTouched();
@@ -1176,7 +1206,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       const payload = new ProjetoFormModel(this.projetoForm.getRawValue() as IProjetoForm);
 
-      payload.parecerProjeto = this.projetoForm.get('parecerProjeto')?.getRawValue();
+      payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
+
+      // console.log( 'payload - ', payload )
 
       this.atualizarProjeto(payload, isRascunho).subscribe();
 
@@ -1519,6 +1551,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.efetivarEnvioParecerProjetoForm(this.projetoForm);
   }
 
+  public confirmarEntranhamentoParecerProcessoEdocs() {
+    this.efetivarEntranhamentoPareceresProjetoForm(this.projetoForm);
+  }
+
   private reentranharDicProjetoForm(form: FormGroup): void {
 
     form.updateValueAndValidity();
@@ -1556,9 +1592,25 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
+    // console.log('payload envio parecer captura : ', payload)
+
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
     this.efetivarEnvioParecerProjetoAsync(payload);
+
+  }
+
+  private efetivarEntranhamentoPareceresProjetoForm(form: FormGroup): void {
+
+    form.updateValueAndValidity();
+
+    form.get('valor.tipo')?.enable();
+
+    const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+
+    payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+
+    this.efetivarEntranhamentoPareceresProjetoAsync(payload);
 
   }
 
@@ -1704,7 +1756,36 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        this.iniciarPollingProtocolo();
+        this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.Autuacao);
+      });
+
+  }
+
+  private efetivarEntranhamentoPareceresProjetoAsync(payload: ProjetoFormModel): void {
+
+    this._projetosService.efetivarEntranhamentoPareceresProjetoEdocs(this._idProjetoEdicao, payload)
+      .pipe(
+        tap(() => {
+          this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
+          this._toastService.showToast(
+            'info',
+            'Processo de entranhamento de pareceres do DIC iniciado no E-Docs.'
+          );
+        }),
+        catchError(error => {
+          this.autuacaoAcionada = false;
+          this._toastService.showToast(
+            'error',
+            'Erro ao iniciar entranhamento de pareceres do DIC no E-Docs.'
+          );
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+        })
+      )
+      .subscribe(() => {
+        this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
         this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.CapturaAsinaturaParecer);
       });
 
@@ -1756,8 +1837,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private iniciarPollingEtapasIntegracaoModal(contexto: ContextoIntegracaoEdocsEnum): void {
 
-    const intervalo = 1000;
-    const timeout = 30000;
+    const intervalo = 2000;
+    const timeout = 10000;
 
     interval(intervalo).pipe(
       takeUntil(timer(timeout)),
@@ -1788,23 +1869,47 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         )
       ),
       takeUntil(this.pararPolling$),
+      finalize(() => {
+        this._projetosService.notificarAtualizacaoLista(); // 🔥 avisa o componente de lista para recarregar a lista
+      }
+      )
     ).subscribe((listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] | null) => {
 
       if (listaFasesIntegracaoProjeto) {
 
+        // console.log('listaFasesIntegracaoProjeto -> ', listaFasesIntegracaoProjeto);
+
         this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
 
         if (listaFasesIntegracaoProjeto.some(fase => fase.idProjeto == this._idProjetoEdicao && fase.erro)) {
+
           this.autuacaoAcionada = false;
           this.reenvioDicAcionado = false;
           this.erroEmAlgumaFaseModalAutuacao = true;
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
+
           this._toastService.showToast(
             'error',
             'Ocorreu erro na integração com E-Docs.'
           );
+
           this.pararPolling$.next();
           this.cdr.detectChanges();
+
+        }
+
+        if (listaFasesIntegracaoProjeto.every(fase => fase.finalizada)) {
+
+          this.aguardandoAvocamento = FaseStatuEnum.FINALIZADA;
+          this.aguardandoDesentranhamento = FaseStatuEnum.FINALIZADA;
+          this.aguardandoAssinatura = FaseStatuEnum.FINALIZADA;
+          this.aguardandoAutuacao = FaseStatuEnum.FINALIZADA;
+          this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
+          this.aguardandoDespacho = FaseStatuEnum.FINALIZADA;
+
+          this.pararPolling$.next();
+          this.cdr.detectChanges();
+
         }
 
         listaFasesIntegracaoProjeto.forEach(fase => {
@@ -1973,7 +2078,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirEfetivarParecerModal() {
 
-    const parecerControl = this.projetoForm.get('parecerProjeto') as FormGroup;
+    const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
 
     if (parecerControl.invalid) {
       parecerControl.markAllAsTouched();
@@ -1990,6 +2095,33 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       (result) => {
         if (result === 'confirmado') {
           this.confirmarAssinarCapturarParecer();
+        }
+      },
+
+    );
+
+  }
+
+
+  public abrirEntranhamentoPareceresModal() {
+
+    const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
+
+    if (parecerControl.invalid) {
+      parecerControl.markAllAsTouched();
+      if (!this.validarFormulario(parecerControl))
+        return;
+    }
+
+    const modalRef = this._ngbModalService.open(this.entranharPareceresEdocsProjetoModalTemplate, {
+      centered: true,
+      size: 'lg',
+    });
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'confirmado') {
+          this.confirmarEntranhamentoParecerProcessoEdocs();
         }
       },
 
