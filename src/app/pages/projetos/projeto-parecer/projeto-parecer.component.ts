@@ -34,6 +34,7 @@ export class ProjetoParecerComponent {
   @Input() projetoForm!: FormGroup;
   @Input() statusProjeto!: string;
   @Input() lotacaoUsuario!: number;
+  @Input() pareceresProjeto!: IParecer[];
 
   constructor(
     private fb: FormBuilder
@@ -65,20 +66,18 @@ export class ProjetoParecerComponent {
 
   public isSubcapGeoc(): boolean {
 
-    // no caso do parecer da GEOC precisamos garantir que os pareceres da SUBEPP e SUBEO foram enviados..
-    const pareceresProjeto = this.parecerFormGroup.get('pareceresProjeto')?.value as IParecer[] | null;
-    if (!pareceresProjeto || pareceresProjeto.length === 0) {
-      return false;
-    }
+    const subeppSubeoEnviados = 
+      this.pareceresProjeto
+        .filter(p =>
+          [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
+        )
+        .every(
+          p =>
+            p.statusParecer === StatusParecerEnum.Capturado_Edocs ||
+            p.statusParecer === StatusParecerEnum.Enviado || p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs
+        );
 
-    // Verifica se SUBEPP e SUBEO estão enviados
-    const subeppEnviado = pareceresProjeto.some(
-      p => p.lotacaoParecer === LotacaoUsuarioEnum.SUBEPP &&  p.statusParecer !== StatusParecerEnum.Pendente ) ;
-
-    const subeoEnviado = pareceresProjeto.some(
-      p => p.lotacaoParecer === LotacaoUsuarioEnum.SUBEO && p.statusParecer !== StatusParecerEnum.Pendente );
-
-    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP && subeppEnviado &&  subeoEnviado;
+    return ( this.statusProjeto == StatusProjetoEnum.Elegibilidade ) && ( subeppSubeoEnviados );
 
   }
 

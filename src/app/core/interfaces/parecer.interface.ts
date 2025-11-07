@@ -11,6 +11,6 @@ export interface IParecer {
 	dataEnvio: Date;
 	guidDocumentoEdocs: string;
 	usuarioFezEnvioParecer: string
-	lotacaoParecer: LotacaoUsuarioEnum;
+	parecerLotacao: LotacaoUsuarioEnum;
 
 }

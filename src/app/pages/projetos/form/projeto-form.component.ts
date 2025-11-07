@@ -294,7 +294,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -336,6 +336,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.parecerProjetoUsuario = projetoModel.parecerProjetoUsuario;
           this.lotacaoUsuario = projetoModel.lotacaoUsuario;
           this.pareceresProjeto = projetoModel.pareceresProjeto;
+
+          this.projetoForm.setControl('pareceresProjeto',
+            this._nnfb.array(projetoModel.pareceresProjeto || [])
+          );
 
           // 
           if (projetoModel.status === StatusProjetoEnum.Arquivado) {
@@ -393,13 +397,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
             }
 
-            if ( projetoModel.status === StatusProjetoEnum.Parecer_SEP ) {
+            if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
 
               this.mostrarBotaoGerarDic = false;
 
               this._breadcrumbService.listaItemsBreadcrumb$
 
-              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO ) &&
+              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO) &&
                 (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0))
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
@@ -414,7 +418,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             }
 
 
-            if ( projetoModel.status === StatusProjetoEnum.Elegibilidade ) {
+            if (projetoModel.status === StatusProjetoEnum.Elegibilidade) {
 
               this.mostrarBotaoGerarDic = false;
 
@@ -423,21 +427,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP)) {
 
                 const subeppSubeoEnviados = this.pareceresProjeto
-                  .filter(p => [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.lotacaoParecer ))
-                  .every(p => p.statusParecer === StatusParecerEnum.Enviado || p.statusParecer === StatusParecerEnum.Capturado_Edocs ); 
+                  .filter(p => [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao))
+                  .every(p => p.statusParecer === StatusParecerEnum.Capturado_Edocs || p.statusParecer === StatusParecerEnum.Enviado);
 
-                if ( subeppSubeoEnviados )
+                if (subeppSubeoEnviados)
                   this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                    this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs ()
+                    this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs()
                   );
-                  else
-                    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                      this._projetosService.gerarBotoesAcaoParecerGEOC()
-                    );
-                } else
+                else
                   this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                    this._projetosService.gerarBotoeAcaoVoltar()
+                    this._projetosService.gerarBotoesAcaoParecerGEOC()
                   );
+
+              } else
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoeAcaoVoltar()
+                );
 
             }
 
@@ -469,7 +474,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public aguardandoParecer(): boolean {
-    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegibilidade) || false;
+
+    // const subcapExiste = this.pareceresProjeto.some(
+    //   p => p.parecerLotacao === LotacaoUsuarioEnum.SUBCAP
+    // );
+
+    // const subeppSubeoEnviados = !subcapExiste &&
+    //   this.pareceresProjeto
+    //     .filter(p =>
+    //       [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
+    //     )
+    //     .every(
+    //       p =>
+    //         p.statusParecer === StatusParecerEnum.Capturado_Edocs ||
+    //         p.statusParecer === StatusParecerEnum.Enviado
+    //     );
+
+    return ( this.statusProjeto == StatusProjetoEnum.Parecer_SEP ) || ( this.statusProjeto == StatusProjetoEnum.Elegibilidade ) ;
+
   }
 
   ngOnInit(): void {
@@ -749,6 +771,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         guidUnidadeOrganizacao: [projetoFormModel?.parecerProjetoUsuario?.guidUnidadeOrganizacao ?? ''],
         usuarioFezEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? '']
       }),
+      pareceresProjeto: this._nnfb.array([]),
     });
 
     this.carregarPessoasPorOrganizacao();
@@ -1205,7 +1228,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
-    if ( this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade ) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade) {
 
       const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
 
@@ -1616,7 +1639,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     form.get('valor.tipo')?.enable();
 
-    const payload = new ProjetoFormModel( form.getRawValue() as IProjetoForm );
+    const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
@@ -2114,14 +2137,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
 
   public abrirEntranhamentoPareceresModal() {
-
-    const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
-
-    if (parecerControl.invalid) {
-      parecerControl.markAllAsTouched();
-      if (!this.validarFormulario(parecerControl))
-        return;
-    }
 
     const modalRef = this._ngbModalService.open(this.entranharPareceresEdocsProjetoModalTemplate, {
       centered: true,
