@@ -34,7 +34,7 @@ export class ProjetoParecerComponent {
   @Input() projetoForm!: FormGroup;
   @Input() statusProjeto!: string;
   @Input() lotacaoUsuario!: number;
-  
+
   constructor(
     private fb: FormBuilder
   ) { }
@@ -50,11 +50,11 @@ export class ProjetoParecerComponent {
   get dataEnvio(): any {
     return this.projetoForm.get('dataEnvio')?.value;
   }
-  
+
   get usuarioFezEnvioParecer(): any {
     return this.projetoForm.get('usuarioFezEnvioParecer')?.value;
   }
-  
+
   public isSubepp(): boolean {
     return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP;
   }
@@ -64,19 +64,34 @@ export class ProjetoParecerComponent {
   }
 
   public isSubcapGeoc(): boolean {
-    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
+
+    // no caso do parecer da GEOC precisamos garantir que os pareceres da SUBEPP e SUBEO foram enviados..
+    const pareceresProjeto = this.parecerFormGroup.get('pareceresProjeto')?.value as IParecer[] | null;
+    if (!pareceresProjeto || pareceresProjeto.length === 0) {
+      return false;
+    }
+
+    // Verifica se SUBEPP e SUBEO estão enviados
+    const subeppEnviado = pareceresProjeto.some(
+      p => p.lotacaoParecer === LotacaoUsuarioEnum.SUBEPP &&  p.statusParecer !== StatusParecerEnum.Pendente ) ;
+
+    const subeoEnviado = pareceresProjeto.some(
+      p => p.lotacaoParecer === LotacaoUsuarioEnum.SUBEO && p.statusParecer !== StatusParecerEnum.Pendente );
+
+    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP && subeppEnviado &&  subeoEnviado;
+
   }
 
   public isEnviado(): boolean {
     const statusParecer = this.parecerFormGroup.get('statusParecer')?.value;
-    return !( statusParecer === StatusParecerEnum.Pendente )
+    return !(statusParecer === StatusParecerEnum.Pendente)
   }
 
   ngOnInit(): void {
 
     const textoParecer = this.parecerFormGroup.get('textoParecer');
 
-    if ( this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegibilidade ) {
+    if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegibilidade) {
       textoParecer?.setValidators([Validators.required]);
     } else {
       textoParecer?.clearValidators();

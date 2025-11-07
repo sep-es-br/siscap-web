@@ -1,3 +1,4 @@
+import { LotacaoUsuarioEnum } from "../enums/lotacao-usuario.enum";
 import { StatusParecerEnum } from "../enums/status-parecer.enum";
 
 export interface IParecer {
@@ -9,6 +10,7 @@ export interface IParecer {
 	statusParecer: number;
 	dataEnvio: Date;
 	guidDocumentoEdocs: string;
-	usuarioFezEnvioParecer: string;
+	usuarioFezEnvioParecer: string
+	lotacaoParecer: LotacaoUsuarioEnum;
 
 }

@@ -420,14 +420,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
               this._breadcrumbService.listaItemsBreadcrumb$
 
-              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP))
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoParecerGEOC()
-                );
-              else
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoeAcaoVoltar()
-                );
+              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP)) {
+
+                const subeppSubeoEnviados = this.pareceresProjeto
+                  .filter(p => [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.lotacaoParecer ))
+                  .every(p => p.statusParecer === StatusParecerEnum.Enviado || p.statusParecer === StatusParecerEnum.Capturado_Edocs ); 
+
+                if ( subeppSubeoEnviados )
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs ()
+                  );
+                  else
+                    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                      this._projetosService.gerarBotoesAcaoParecerGEOC()
+                    );
+                } else
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoeAcaoVoltar()
+                  );
 
             }
 
@@ -1606,7 +1616,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     form.get('valor.tipo')?.enable();
 
-    const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+    const payload = new ProjetoFormModel( form.getRawValue() as IProjetoForm );
 
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
