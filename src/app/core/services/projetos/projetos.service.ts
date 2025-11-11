@@ -147,7 +147,7 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCancelar, botaoSalvar, botaoEnviar];
   }
 
-  public gerarBotoesAcaoParecerGEOC (): Array<BotaoPropriedadesModel> {
+  public gerarBotoesAcaoParecerGEOC(): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('capturarparecerGEOC');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
