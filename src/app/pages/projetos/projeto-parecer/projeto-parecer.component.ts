@@ -65,20 +65,13 @@ export class ProjetoParecerComponent {
   }
 
   public isSubcapGeoc(): boolean {
-
-    const subeppSubeoEnviados = 
+    const subeoSubeppEntranhados =
       this.pareceresProjeto
         .filter(p =>
           [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
         )
-        .every(
-          p =>
-            p.statusParecer === StatusParecerEnum.Capturado_Edocs ||
-            p.statusParecer === StatusParecerEnum.Enviado || p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs
-        );
-
-    return ( this.statusProjeto == StatusProjetoEnum.Elegibilidade ) && ( subeppSubeoEnviados );
-
+        .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
+    return this.statusProjeto === StatusProjetoEnum.Elegibilidade && subeoSubeppEntranhados;
   }
 
   public isEnviado(): boolean {

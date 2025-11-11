@@ -294,7 +294,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+           console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -1240,8 +1240,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const payload = new ProjetoFormModel(this.projetoForm.getRawValue() as IProjetoForm);
 
       payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
-
-      // console.log( 'payload - ', payload )
 
       this.atualizarProjeto(payload, isRascunho).subscribe();
 
