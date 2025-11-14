@@ -168,6 +168,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public aguardandoAvocamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public aguardandoDesentranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public FaseStatusEnum = FaseStatuEnum;
+  public FasesEdocsIntegracaoEnum = FasesEdocsIntegracaoEnum;
 
   public listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] = [];
 
@@ -294,7 +295,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-           console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -490,7 +491,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     //         p.statusParecer === StatusParecerEnum.Enviado
     //     );
 
-    return ( this.statusProjeto == StatusProjetoEnum.Parecer_SEP ) || ( this.statusProjeto == StatusProjetoEnum.Elegibilidade ) ;
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegibilidade);
 
   }
 
@@ -1908,21 +1909,27 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       if (listaFasesIntegracaoProjeto) {
 
-        // console.log('listaFasesIntegracaoProjeto -> ', listaFasesIntegracaoProjeto);
-
         this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
 
-        if (listaFasesIntegracaoProjeto.some(fase => fase.idProjeto == this._idProjetoEdicao && fase.erro)) {
+        const faseComFalha = listaFasesIntegracaoProjeto.find(fase => fase.idProjeto === this._idProjetoEdicao && fase.erro);
+
+        if (faseComFalha) {
 
           this.autuacaoAcionada = false;
           this.reenvioDicAcionado = false;
           this.erroEmAlgumaFaseModalAutuacao = true;
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
 
-          this._toastService.showToast(
-            'error',
-            'Ocorreu erro na integração com E-Docs.'
-          );
+          if ((faseComFalha.msgAlertaExibir?.length ?? 0) > 0)
+            this._toastService.showToast(
+              'warning',
+              faseComFalha.msgAlertaExibir
+            );
+          else
+            this._toastService.showToast(
+              'error',
+              'Ocorreu erro na integração com E-Docs.'
+            );
 
           this.pararPolling$.next();
           this.cdr.detectChanges();
@@ -2067,6 +2074,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     modal.close('confirmado');
 
+  }
+
+  public iconeClasse( faseIntegracao: FasesEdocsIntegracaoEnum ): string {
+    return this.erroNaFaseIntegracao(faseIntegracao)
+      ? 'fa-solid fa-circle-xmark text-danger'
+      : 'fa-solid fa-circle-xmark text-warning';
+  }
+
+  private erroNaFaseIntegracao(faseIntegracao: FasesEdocsIntegracaoEnum): boolean {
+    return this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.some( fase => fase.etapa == faseIntegracao && fase.erro && (fase.msgAlertaExibir?.length ?? 0  ) == 0);
   }
 
   public isIntegracaoEdocsConcluido(): boolean {

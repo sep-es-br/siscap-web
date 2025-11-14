@@ -482,7 +482,7 @@
           <i class="fa-solid fa-check text-success fs-6"></i>
         </span>
         <span *ngIf="aguardandoAssinatura === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
+          <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.captura_assinatura)" class="fs-6"> </i>
         </span>
       </li>
 
