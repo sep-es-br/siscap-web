@@ -1685,19 +1685,35 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     if (!this.camposParaComplementacao.some(campo => campo.mensagemComplementacao?.length ?? 0 > 0)) {
       this._toastService.showToast('error', 'Nenhum complemento informado.');
-      return
+      return;
     }
 
-    this._projetosService
-      .enviarEmailAvisoComplementacaoProjeto(this._idProjetoEdicao, this.camposParaComplementacao)
-      .subscribe({
-        next: (response: string) => {
-          this._toastService.showToast('success', response);
+    this._projetosService.enviarEmailAvisoComplementacaoProjeto(
+      this._idProjetoEdicao,
+      this.camposParaComplementacao
+    )
+      .pipe(
+        tap(() => {
+          this._toastService.showToast(
+            'info',
+            'Envio de aviso de complementação iniciado no E-Docs.'
+          );
+        }),
+        catchError(error => {
+          this._toastService.showToast(
+            'error',
+            'Erro ao iniciar o envio de aviso de complementação.'
+          );
+          return EMPTY;
+        }),
+
+        finalize(() => {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
-        },
-        error: (err) => {
-          this._toastService.showToast('error', 'Erro ao enviar aviso de complementacao: ' + err);
-        }
+        })
+      )
+      .subscribe(() => {
+        this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
+        this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.Complementar);
       });
 
   }
@@ -1902,7 +1918,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       takeUntil(this.pararPolling$),
       finalize(() => {
-        this._projetosService.notificarAtualizacaoLista(); // 🔥 avisa o componente de lista para recarregar a lista
+        this._projetosService.notificarAtualizacaoLista(); 
       }
       )
     ).subscribe((listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] | null) => {
@@ -1910,6 +1926,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       if (listaFasesIntegracaoProjeto) {
 
         this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
+
+        console.log(' listaFasesIntegracao --> ', this.listaFasesIntegracaoProjeto )
 
         const faseComFalha = listaFasesIntegracaoProjeto.find(fase => fase.idProjeto === this._idProjetoEdicao && fase.erro);
 
@@ -2076,14 +2094,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  public iconeClasse( faseIntegracao: FasesEdocsIntegracaoEnum ): string {
+  public iconeClasse(faseIntegracao: FasesEdocsIntegracaoEnum): string {
     return this.erroNaFaseIntegracao(faseIntegracao)
       ? 'fa-solid fa-circle-xmark text-danger'
       : 'fa-solid fa-circle-xmark text-warning';
   }
 
   private erroNaFaseIntegracao(faseIntegracao: FasesEdocsIntegracaoEnum): boolean {
-    return this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.some( fase => fase.etapa == faseIntegracao && fase.erro && (fase.msgAlertaExibir?.length ?? 0  ) == 0);
+    return this.listaFasesIntegracaoProjeto.length > 0 &&
+      this.listaFasesIntegracaoProjeto.some(fase => fase.etapa == faseIntegracao && fase.erro && (fase.msgAlertaExibir?.length ?? 0) == 0);
+  }
+
+  public possuiMensagemAlerta(): boolean {
+    return this.listaFasesIntegracaoProjeto.length > 0 &&
+      this.listaFasesIntegracaoProjeto.some(fase => fase.erro && (fase.msgAlertaExibir?.length ?? 0) == 0);
+  }
+
+  public classeCssMensagemAlerta(): string {
+    return this.possuiMensagemAlerta()
+      ? 'btn btn-danger icon-text-btn me-2 d-inline-flex align-items-center'
+      : 'btn btn-warning icon-text-btn me-2 d-inline-flex align-items-center';
   }
 
   public isIntegracaoEdocsConcluido(): boolean {
