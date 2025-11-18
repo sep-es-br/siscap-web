@@ -9,6 +9,7 @@ export class UsuarioPerfilModel implements IUsuarioPerfil {
   public idOrganizacoes: number[];
   public idPessoa: number;
   public isProponente: boolean;
+  public isSubcap: boolean;
 
   constructor(usuario?: IUsuario) {
     this.nome = usuario?.nome ?? 'Usuario';
@@ -19,5 +20,6 @@ export class UsuarioPerfilModel implements IUsuarioPerfil {
     this.idOrganizacoes = usuario?.idOrganizacoes ?? [];
     this.idPessoa = usuario?.idPessoa ?? 0;
     this.isProponente = usuario?.isProponente ?? false;
+    this.isSubcap = usuario?.isSubcap ?? false;
   }
 }
