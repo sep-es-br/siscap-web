@@ -35,7 +35,7 @@
         id="idOrganizacao"
         formControlName="idOrganizacao"
         class="select-filtro-pesquisa"
-        [ngClass]="{ 'pe-none': isProponente }"
+        [disabled]="!podeSelecionarOrganizacao()"
       >
         <option
           [value]="organizacao.id"

@@ -11,6 +11,7 @@ import { IProjetoFiltroPesquisa } from '../../../core/interfaces/projeto.interfa
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { TEMPO_INPUT_USUARIO } from '../../../core/utils/constants';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
+import { NumericDictionary } from 'lodash';
 
 @Component({
   selector: 'siscap-projetos-pesquisa',
@@ -19,6 +20,7 @@ import { UsuarioService } from '../../../core/services/usuario/usuario.service';
   styleUrl: './projetos-search.component.scss',
 })
 export class ProjetosPesquisaComponent implements OnInit {
+
   private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private usuario_IdOrganizacoes: number[] = [];
 
@@ -26,6 +28,7 @@ export class ProjetosPesquisaComponent implements OnInit {
   public organizacoesOpcoes: Array<IOpcoesDropdown> = [];
 
   public isProponente: boolean = false;
+  public isSubcap: boolean = false;
 
   public projetosPesquisaForm: FormGroup;
 
@@ -37,31 +40,33 @@ export class ProjetosPesquisaComponent implements OnInit {
     private readonly _usuarioService: UsuarioService
   ) {
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+    this.isSubcap = this._usuarioService.usuarioPerfil.isSubcap;
     this.usuario_IdOrganizacoes =
       this._usuarioService.usuarioPerfil.idOrganizacoes;
 
     this.statusProjetoOpcoes = ['Status', ...Object.values(StatusProjetoEnum)];
 
+    console.log(' this.isSubcap : ', this.isSubcap)
+
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes()
       .pipe(
         tap((response) => {
-          if (this.isProponente && this.usuario_IdOrganizacoes.length > 0) {
+
+          if (!this.isSubcap && this.isProponente && this.usuario_IdOrganizacoes.length > 0) {
             const organizacoesOpcoesFiltradas = response.filter((organizacao) =>
               this.usuario_IdOrganizacoes.includes(organizacao.id)
             );
-
             this.organizacoesOpcoes = organizacoesOpcoesFiltradas;
           } else {
-            this.organizacoesOpcoes = [{ id: 0, nome: 'Organização' }];
-
+            this.organizacoesOpcoes = [{ id: 0, nome: 'Todas' }];
             this.organizacoesOpcoes = this.organizacoesOpcoes.concat(response);
           }
         })
       );
 
     const idOrganizacaoValorInicial =
-      this.usuario_IdOrganizacoes.length > 0
+      !this.isSubcap && this.usuario_IdOrganizacoes.length > 0
         ? this.usuario_IdOrganizacoes[0]
         : 0;
 
@@ -90,5 +95,9 @@ export class ProjetosPesquisaComponent implements OnInit {
         this.pesquisarProjetos.emit(projetoPesquisaFormValue);
       });
   }
-  
+
+  public podeSelecionarOrganizacao(): boolean {
+    return this.isSubcap;
+  }
+
 }
