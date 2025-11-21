@@ -13,16 +13,28 @@ export class ProgramaFormModel implements IProgramaForm {
   public idProjetoPropostoList: number[];
   public valor: ValorModel;
 
+  public percentualCustoAdministrativo: number;
+  public valorCalculadoTotal: number;
+  public nomeagente: string;
+
   constructor(programaForm?: IProgramaForm) {
+
     this.sigla = programaForm?.sigla ?? '';
     this.titulo = programaForm?.titulo ?? '';
     this.idOrgaoExecutorList = programaForm?.idOrgaoExecutorList ?? [];
     this.equipeCaptacao = this.construirEquipeCaptação(
       programaForm?.equipeCaptacao
     );
+
     this.idProjetoPropostoList = programaForm?.idProjetoPropostoList ?? [];
 
     this.valor = new ValorModel(programaForm?.valor);
+
+    this.percentualCustoAdministrativo = programaForm?.percentualCustoAdministrativo ?? 0;
+    this.valorCalculadoTotal = programaForm?.valorCalculadoTotal ?? 0;
+
+    this.nomeagente = programaForm?.nomeagente ?? '';
+
   }
 
   private construirEquipeCaptação(equipeCaptacao?: IEquipe[]): EquipeModel[] {

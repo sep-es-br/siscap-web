@@ -9,6 +9,9 @@ export interface IPrograma {
   equipeCaptacao: Array<IEquipe>;
   idProjetoPropostoList: Array<number>;
   valor: IValor;
+  percentualCustoAdministrativo: number;
+  valorCalculadoTotal: number;
+  nomeagente: string;
 }
 
 export interface IProgramaForm extends Omit<IPrograma, 'id'> {}
