@@ -135,7 +135,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ),
       tap((response: IPrograma) => {
 
-        // console.log(" Programa : ", response);
+        console.log(" Programa getById: ", response);
 
         const programaModel = new ProgramaModel(response);
 
