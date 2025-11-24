@@ -46,8 +46,6 @@ export class ProjetosPesquisaComponent implements OnInit {
 
     this.statusProjetoOpcoes = ['Status', ...Object.values(StatusProjetoEnum)];
 
-    console.log(' this.isSubcap : ', this.isSubcap)
-
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes()
       .pipe(

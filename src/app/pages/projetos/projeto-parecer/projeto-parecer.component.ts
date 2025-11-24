@@ -71,7 +71,7 @@ export class ProjetoParecerComponent {
           [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
         )
         .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
-    return this.statusProjeto === StatusProjetoEnum.Elegibilidade && subeoSubeppEntranhados;
+    return this.statusProjeto === StatusProjetoEnum.Elegibilidade && subeoSubeppEntranhados && (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP);
   }
 
   public isEnviado(): boolean {
@@ -90,6 +90,8 @@ export class ProjetoParecerComponent {
     }
 
     textoParecer?.updateValueAndValidity();
+
+    console.log(' this.lotacaoUsuario - ', this.lotacaoUsuario)
 
   }
 
