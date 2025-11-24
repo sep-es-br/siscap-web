@@ -294,7 +294,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-           console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          //  console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -475,21 +475,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public aguardandoParecer(): boolean {
 
-    // const subcapExiste = this.pareceresProjeto.some(
-    //   p => p.parecerLotacao === LotacaoUsuarioEnum.SUBCAP
-    // );
-
-    // const subeppSubeoEnviados = !subcapExiste &&
-    //   this.pareceresProjeto
-    //     .filter(p =>
-    //       [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
-    //     )
-    //     .every(
-    //       p =>
-    //         p.statusParecer === StatusParecerEnum.Capturado_Edocs ||
-    //         p.statusParecer === StatusParecerEnum.Enviado
-    //     );
-
     return ( this.statusProjeto == StatusProjetoEnum.Parecer_SEP ) || ( this.statusProjeto == StatusProjetoEnum.Elegibilidade ) ;
 
   }
@@ -566,6 +551,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._subscription.add(this._getAllOpcoes$.subscribe());
     this._subscription.add(this._atualizarProjeto$.subscribe());
     this._subscription.add(this._cadastrarProjeto$.subscribe());
+
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
     });
@@ -576,11 +562,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const idOrganizacaoFormControl = this.projetoForm.get('idOrganizacao') as FormControl<number | null>;
 
-    idOrganizacaoFormControl.patchValue(this.usuario_IdOrganizacoes[0]);
+    var valorIdOrganizacao = idOrganizacaoFormControl.value;
 
+    if( valorIdOrganizacao == null )
+      valorIdOrganizacao = this.usuario_IdOrganizacoes[0];
+    
+    idOrganizacaoFormControl.patchValue(valorIdOrganizacao);
+    
     this.isLoadingPessoas = true;
 
-    this._pessoasService.buscarResponsavelPorIdOrganizacaoAC(this.usuario_IdOrganizacoes[0])
+    this._pessoasService.buscarResponsavelPorIdOrganizacaoAC(valorIdOrganizacao)
       .subscribe({
         next: (response) => {
 
@@ -1268,6 +1259,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  onSelecionarOrganizacao(organizacao: any) {
+
+    this.projetoForm.patchValue({
+      idResponsavelProponente: null,
+      nomeResponsavelProponente: '',
+      papelResponsavelProponente: '',
+      subResponsavelProponente: ''
+    });
+
+    this.lotacaoGestorProjeto = '';
+
+    this.idOrganizacaoChange(organizacao);
+    
+  }
+
   onSelecionarPessoa(pessoa: any) {
 
     if (pessoa) {
@@ -1622,8 +1628,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.get('valor.tipo')?.enable();
 
     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
-
-    // console.log('payload envio parecer captura : ', payload)
 
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 

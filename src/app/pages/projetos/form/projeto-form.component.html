@@ -68,7 +68,7 @@
               </validation-message>
             </label>
             <ng-select id="idOrganizacao" placeholder="-- Selecione um orgão da lista abaixo --"
-              formControlName="idOrganizacao">
+              formControlName="idOrganizacao"  (change)="onSelecionarOrganizacao($event)" >
               <ng-option *ngFor="let organizacao of organizacoesOpcoes" [value]="organizacao.id">{{ organizacao.nome
                 }}</ng-option>
             </ng-select>
