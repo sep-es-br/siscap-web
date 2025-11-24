@@ -1,3 +1,8 @@
 span.nome-projeto-proposto {
   font-size: clamp(13px, 2vw, 16px);
 }
+
+.input-readonly {
+  background-color: #e9ecef; 
+  pointer-events: none;  
+}

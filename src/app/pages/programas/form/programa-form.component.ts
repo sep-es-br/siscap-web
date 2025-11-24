@@ -54,6 +54,11 @@ import {
 
 import { MoedaHelper } from '../../../core/helpers/moeda.helper';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
+import { getSimboloMoeda } from '../../../core/utils/functions';
+import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
+import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
+import { IEquipe } from '../../../core/interfaces/equipe.interface';
+import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -96,7 +101,17 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public idMembroEquipeCaptacao: number | null = null;
   public idProjetoProposto: number | null = null;
 
+  public pessoasOpcoesGoves: IOpcoesDropdownResponsavelProponente[] = [];
+  public isLoadingPessoasFiltroTermo = false;
+  public exibirLista = true;
+  public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
+  public equipeCaptacao: IEquipe[] = [];
+  
+  public getSimboloMoeda: (moeda: string | undefined | null) => string =
+    getSimboloMoeda;
+
   constructor(
+    public valorService: ValorService,
     private readonly _nnfb: NonNullableFormBuilder,
     public equipeService: EquipeService,
     private readonly _programasService: ProgramasService,
@@ -105,7 +120,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
-    private readonly _navegacaoService: NavegacaoService
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _pessoasService: PessoasService,
+    private readonly _usuarioService: UsuarioService,
   ) {
     const [editar$, criar$] = partition(
       this._programasService.idPrograma$,
@@ -117,6 +134,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._programasService.getById(idPrograma)
       ),
       tap((response: IPrograma) => {
+
+        console.log(" Programa getById: ", response);
+
         const programaModel = new ProgramaModel(response);
 
         this.iniciarForm(programaModel);
@@ -126,6 +146,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
           this._programasService.gerarBotoesAcaoFormulario()
         );
+
+        this.equipeCaptacao = programaModel.equipeCaptacao;
 
         this.loading = false;
       })
@@ -159,9 +181,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     this._getTiposPapelOpcoes$ = this._opcoesDropdownService
       .getOpcoesTiposPapel()
-      .pipe(
-        tap((response: IOpcoesDropdown[]) => (this.tiposPapelOpcoes = response))
-      );
+      .pipe(tap((response) => {
+        this.tiposPapelOpcoes = response;
+        const idsPermitidos = [1, 5];
+        this.tiposPapelOpcoesVisiveis = response.filter(papel => idsPermitidos.includes(papel.id));
+      }
+      ));
 
     this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
       .getOpcoesProjetosPropostos()
@@ -184,9 +209,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       .pipe(
         tap(
           (response: IOpcoesDropdown[]) =>
-            (this.tiposValorOpcoes = response.filter(
-              (tipoValor) => tipoValor.id <= 3
-            ))
+          (this.tiposValorOpcoes = response.filter(
+            (tipoValor) => tipoValor.id <= 3
+          ))
         )
       );
 
@@ -207,10 +232,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
     this._subscription.add(this._getAllOpcoes$.subscribe());
 
     this._subscription.add(this._atualizarPrograma$.subscribe());
     this._subscription.add(this._cadastrarPrograma$.subscribe());
+
+    this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
+      error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
+    });
+
   }
 
   public getControl(controlName: string): AbstractControl<any, any> {
@@ -220,6 +251,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public get idProjetoPropostoList(): FormControl<Array<number>> {
     return this.programaForm.get('idProjetoPropostoList') as FormControl<
       Array<number>
+    >;
+  }
+
+  public get percentualCustosAdministrativos(): FormControl<number> {
+    return this.programaForm.get('percentualCustoAdministrativo') as FormControl<
+      number
     >;
   }
 
@@ -235,15 +272,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public toUppercaseOutputTransformFn =
     NgxMaskTransformFunctionHelper.toUppercaseOutputTransformFn;
 
-  public idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): void {
-    this.equipeService.idMembroNgSelectValue$.next(event);
-
-    setTimeout(() => (this.idMembroEquipeCaptacao = null), 0);
-  }
-
   public idProjetoPropostoNgSelectChangeEvent(
     event: IProjetoPropostoOpcoesDropdown
   ): void {
+
     if (event.idPrograma) {
       const nomeProjeto = event.nome;
 
@@ -259,6 +291,42 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     ]);
 
     setTimeout(() => (this.idProjetoProposto = null), 0);
+
+  }
+
+  public percentualCustoAdministrativoChangeEvent(
+    event: any
+  ): void {
+
+    const valorTotalCalculadoProgramaFormGroupControl = this.programaForm.get(
+      'valorCalculadoTotal'
+    ) as FormControl<number | null>;
+
+    const listaIds = this.idProjetoPropostoList.value ?? [];
+
+    var valorTotalCalculadoPrograma = 0;
+
+    const valorPercentual = Number(
+      event.target.value.replace(/\./g, '').replace(',', '.')
+    );
+
+    const somatorioValorProjetosPropostos = listaIds
+      .map(id => this.getProjetoPropostoOpcao(id).valorEstimado ?? 0)
+      .reduce((acc, valor) => acc + valor, 0);
+
+    if (valorPercentual > 0) {
+      valorTotalCalculadoPrograma =
+        somatorioValorProjetosPropostos * (1 + (valorPercentual / 100));
+    }
+
+    if (this.isModoEdicao) {
+      valorTotalCalculadoProgramaFormGroupControl.patchValue(
+        valorTotalCalculadoPrograma
+          ? valorTotalCalculadoPrograma
+          : 0
+      );
+    }
+
   }
 
   public filtrarProjetosPropostosOpcoes(
@@ -274,8 +342,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     idProjetoProposto: number
   ): IProjetoPropostoOpcoesDropdown {
     return this.projetosPropostosOpcoes.find(
-      (projetoPropostoOpcao) => projetoPropostoOpcao.id === idProjetoProposto
-    )!;
+      (projetoPropostoOpcao) => projetoPropostoOpcao.id === idProjetoProposto) || {
+      id: 0,
+      nome: '',
+      valorEstimado: 0,
+      idPrograma: null
+    };
   }
 
   public removerProjetoPropostoDoPrograma(index: number): void {
@@ -285,6 +357,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
+
     this.programaForm = this._nnfb.group({
       sigla: this._nnfb.control(programaModel?.sigla ?? null, [
         Validators.required,
@@ -306,18 +379,34 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.minLength(1)]
       ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
+      percentualCustoAdministrativo: this._nnfb.control(programaModel?.percentualCustoAdministrativo ?? 0,),
+      valorCalculadoTotal: this._nnfb.control( programaModel?.valorCalculadoTotal ?? 0 ),
+      nomeagente: this._nnfb.control(programaModel?.nomeagente ?? null,
+      ),
     });
 
     this.programaFormValueChanges();
+
   }
 
   private programaFormValueChanges(): void {
+
     const valorFormGroupQuantiaFormControl = this.programaForm.get(
       'valor.quantia'
     ) as FormControl<number | null>;
 
+    const percentualCustoAdministrativoFormGroupControl = this.programaForm.get(
+      'percentualCustoAdministrativo'
+    ) as FormControl<number | null>;
+
+    const valorTotalCalculadoProgramaFormGroupControl = this.programaForm.get(
+      'valorCalculadoTotal'
+    ) as FormControl<number | null>;
+
     this.idProjetoPropostoList.valueChanges.subscribe(
+
       (idProjetoPropostoListValue) => {
+
         const somatorioValorProjetosPropostos = idProjetoPropostoListValue
           .map(
             (idProjetoProposto) =>
@@ -325,15 +414,33 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           )
           .reduce((acc, valorEstimado) => acc + (valorEstimado ?? 0), 0);
 
+        var valorTotalCalculadoPrograma = 0;
+
+        if ((percentualCustoAdministrativoFormGroupControl?.value ?? 0) > 0) {
+          const percentual = (percentualCustoAdministrativoFormGroupControl.value ?? 0);
+          valorTotalCalculadoPrograma =
+            somatorioValorProjetosPropostos * (1 + (percentual / 100));
+        }
+
         if (this.isModoEdicao) {
+
           valorFormGroupQuantiaFormControl.patchValue(
             somatorioValorProjetosPropostos
               ? somatorioValorProjetosPropostos
               : null
           );
+
+          valorTotalCalculadoProgramaFormGroupControl.patchValue(
+            valorTotalCalculadoPrograma
+              ? valorTotalCalculadoPrograma
+              : 0
+          );
+
         }
+
       }
     );
+
   }
 
   private dispararModalAtencao(
@@ -379,6 +486,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     const payload = new ProgramaFormModel(form.value as IProgramaForm);
 
+    console.log('payload -> ', payload)
+
     const requisicao = this._idProgramaEdicao
       ? this.atualizarPrograma(payload)
       : this.cadastrarPrograma(payload);
@@ -415,4 +524,75 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this._programasService.idPrograma$.next(0);
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
+
+  public buscarAgentesPorTermo(): IOpcoesDropdownResponsavelProponente[] {
+
+    this.isLoadingPessoasFiltroTermo = true;
+
+    const termo = this.programaForm.get('nomeagente')?.value ?? '';
+
+    if (termo.length < 3) {
+      this._toastService.showToast(
+        'info',
+        'Informe pelo menos um nome com no mínimo 3 caracteres.'
+      );
+      this.pessoasOpcoesGoves = [];
+      this.isLoadingPessoasFiltroTermo = false;
+      return this.pessoasOpcoesGoves;
+    }
+
+    this._pessoasService.buscarAgentesPorTermo(termo)
+      .subscribe({
+        next: (lista) => {
+
+          this.pessoasOpcoesGoves = lista;
+
+          // this.pessoasOpcoesGoves = this.pessoasOpcoesGoves.filter( pessoa =>
+          //   !this.equipeCaptacao.some( equipeCaptacao => equipeCaptacao.idStatus === TipoStatusEnum.Inativo && equipeCaptacao.subPessoa === pessoa.agentePublicoSub )
+          // );
+
+          if (this.pessoasOpcoesGoves.length === 0) {
+            this._toastService.showToast(
+              'info',
+              'Nenhum agente encontrado.',
+              ['Verifique se já faz parte da equipe.']);
+          }
+
+          this.isLoadingPessoasFiltroTermo = false;
+          this.exibirLista = true;
+
+          this.programaForm.get('nomeagente')?.reset();
+
+        },
+        error: () => {
+          this.pessoasOpcoesGoves = [];
+          this.isLoadingPessoasFiltroTermo = false;
+        }
+
+      });
+
+    return this.pessoasOpcoesGoves;
+
+  }
+
+  public async idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): Promise<void> {
+
+    const jaExiste = this.equipeService.equipeFormArray.value.some(
+      (membro) => (membro.subPessoa === event.agentePublicoSub && membro.idStatus === TipoStatusEnum.Ativo)
+    ) || this._usuarioService.usuarioPerfil.subNovo === event.agentePublicoSub;
+
+    if (jaExiste) {
+      this._toastService.showToast(
+        'info',
+        'Pessoa já incluso na equipe',
+      );
+    } else {
+      this.equipeService.idMembroNgSelectValue$.next(event);
+    }
+
+    this.exibirLista = false;
+
+  }
+  
+
 }
