@@ -1577,6 +1577,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public confirmarAssinarAutuar() {
 
+    this.autuacaoAcionada = true;
+
     if (this.statusProjeto === StatusProjetoEnum.Em_Complementacao) {
       this.reentranharDicProjetoForm(this.projetoForm);
     } else {
@@ -1931,7 +1933,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
 
-        console.log(' listaFasesIntegracao --> ', this.listaFasesIntegracaoProjeto )
+        // console.log(' listaFasesIntegracao --> ', this.listaFasesIntegracaoProjeto )
 
         const faseComFalha = listaFasesIntegracaoProjeto.find(fase => fase.idProjeto === this._idProjetoEdicao && fase.erro);
 
@@ -1940,6 +1942,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.autuacaoAcionada = false;
           this.reenvioDicAcionado = false;
           this.erroEmAlgumaFaseModalAutuacao = true;
+          
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
 
           if ((faseComFalha.msgAlertaExibir?.length ?? 0) > 0)
