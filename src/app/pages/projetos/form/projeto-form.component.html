@@ -378,76 +378,82 @@
   </div>
 
   <div class="modal-body">
-
     <h6>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
-
-    <div class="fs-6">
-
-      <div [style.font-weight] = "aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
-        <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
-          <i class="fa-solid fa-check text-secondary fs-6"></i>
-        </span>
-        <span *ngIf="aguardandoAssinatura === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm fs-6"></span>
-        </span>
-        <span *ngIf="aguardandoAssinatura === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-6"></i>
-        </span>
-        <span *ngIf="aguardandoAssinatura === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
-        </span>
-        Assinatura e captura do DIC (Documento Inicial de Captação), gerado em PDF com os dados do formulário;
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <div>
+          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
+            <i class="fa-regular fa-circle text-secondary"></i>
+          </span>
+          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          </span>
+          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.FINALIZADA" class="icon-container">
+            <i class="fa-regular fa-circle-check text-success"></i>
+          </span>
+          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.ERROFASE" class="icon-container">
+            <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.autuar)"> </i>
+          </span>
+        </div>
+        <div [style.font-weight]="aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Assinatura e captura do DIC (Documento Inicial de Captação), gerado em PDF com os dados do formulário;
+        </div>
       </div>
-
-      <div [style.font-weight]="aguardandoAutuacao === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
+      <div class="d-flex align-items-center gap-2">
         <span *ngIf="aguardandoAutuacao === FaseStatusEnum.NAO_INICIADA">
-          <i class="fa-solid fa-check text-secondary fs-6"></i>
+          <i class="fa-regular fa-circle text-secondary"></i>
         </span>
         <span *ngIf="aguardandoAutuacao === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm fs-6"></span>
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
         </span>
         <span *ngIf="aguardandoAutuacao === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-6"></i>
+          <i class="fa-regular fa-circle-check text-success"></i>
         </span>
         <span *ngIf="aguardandoAutuacao === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
+          <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.autuar)"> </i>
         </span>
-        Autuação de processo de Solicitação de Captação de Recursos para a sua instituição;
+        <div [style.font-weight]="aguardandoAutuacao === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoAutuacao === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Autuação de processo de Solicitação de Captação de Recursos para a sua instituição;</div>
       </div>
-
-      <div [style.font-weight]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
+      <div class="d-flex align-items-center gap-2">
         <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.NAO_INICIADA">
-          <i class="fa-solid fa-check text-secondary fs-6"></i>
+          <i class="fa-regular fa-circle text-secondary"></i>
         </span>
         <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm fs-6"></span>
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
         </span>
         <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-6"></i>
+          <i class="fa-regular fa-circle-check text-success"></i>
         </span>
         <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
+          <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.autuar)"> </i>
         </span>
-        Entranhamento do DIC capturado ao processo;
+        <div [style.font-weight]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Entranhamento do DIC capturado ao processo;</div>
       </div>
-
-      <div [style.font-weight]="aguardandoDespacho === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
+      <div class="d-flex align-items-center gap-2">
         <span *ngIf="aguardandoDespacho === FaseStatusEnum.NAO_INICIADA">
-          <i class="fa-solid fa-check text-secondary fs-6"></i>
+          <i class="fa-regular fa-circle text-secondary"></i>
         </span>
         <span *ngIf="aguardandoDespacho === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm fs-6"></span>
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
         </span>
         <span *ngIf="aguardandoDespacho === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-6"></i>
+          <i class="fa-regular fa-circle-check text-success"></i>
         </span>
         <span *ngIf="aguardandoDespacho === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
+          <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.autuar)"> </i>
         </span>
-        Despacho com pedido de análise do processo à Subsecretaria de Captação de Recursos (SUBCAP) da Secretaria de Economia e Planejamento (SEP).
+        <div [style.font-weight]="aguardandoDespacho === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoDespacho === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Despacho com pedido de análise do processo à Subsecretaria de Captação de Recursos (SUBCAP) da Secretaria de
+          Economia e Planejamento (SEP).
+        </div>
       </div>
-
     </div>
   </div>
 
@@ -486,7 +492,7 @@
 </ng-template>
 
 <ng-template #autuarConfirmacaoReentramentoDicProjetoModal let-modal>
-  
+
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
       Confirmação Reentranhamento DIC E-Docs
@@ -497,84 +503,110 @@
 
     <h6>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
-
-    <div class="fs-6">
-
-      <div [style.font-weight]="aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <div>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
-            <i class="fa-solid fa-check text-secondary fs-5"></i>
+            <!-- <i class="fa-solid fa-check text-secondary fs-5"></i> -->
+            <i class="fa-regular fa-circle text-secondary"></i>
           </span>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-            <span class="spinner-border spinner-border-sm fs-5"></span>
+            <!-- <span class="spinner-border spinner-border-sm fs-5"></span> -->
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
           </span>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.FINALIZADA" class="icon-container">
-            <i class="fa-solid fa-check text-success fs-5"></i>
+            <!-- <i class="fa-solid fa-check text-success fs-5"></i> -->
+            <i class="fa-regular fa-circle-check text-success"></i>
           </span>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.ERROFASE" class="icon-container">
-            <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.captura_assinatura)" class="fs-6"> </i>
+            <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.captura_assinatura)"> </i>
           </span>
-        Assinatura e captura do DIC (Documento Inicial de Captação), gerado em PDF com os dados do formulário;
+        </div>
+        <div [style.font-weight]="aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Assinatura e captura do DIC (Documento Inicial de Captação), gerado em PDF com os dados do formulário;
+        </div>
       </div>
-
-      <div [style.font-weight]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.NAO_INICIADA">
-          <i class="fa-solid fa-check text-secondary fs-5"></i>
-        </span>
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm"></span>
-        </span>
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-5"></i>
-        </span>
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-5"></i>
-        </span>
-        Entranhamento do DIC atual capturado ao processo;
+      <div class="d-flex align-items-center gap-2">
+        <div>
+          <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.NAO_INICIADA">
+            <!-- <i class="fa-solid fa-check text-secondary fs-5"></i> -->
+            <i class="fa-regular fa-circle text-secondary"></i>
+          </span>
+          <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+            <!-- <span class="spinner-border spinner-border-sm"></span> -->
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          </span>
+          <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
+            <!-- <i class="fa-solid fa-check text-success fs-5"></i> -->
+            <i class="fa-regular fa-circle-check text-success"></i>
+          </span>
+          <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
+            <!-- <i class="fa-solid fa-circle-xmark text-danger fs-5"></i> -->
+            <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.entranhararquivo)"> </i>
+          </span>
+        </div>
+        <div [style.font-weight]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Entranhamento do DIC atual capturado ao processo;</div>
       </div>
-
-      <div [style.font-weight]="aguardandoDesentranhamento === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
-        <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.NAO_INICIADA">
-          <i class="fa-solid fa-check text-secondary fs-5"></i>
-        </span>
-        <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm"></span>
-        </span>
-        <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-5"></i>
-        </span>
-        <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-5"></i>
-        </span>
-        Desentranhamento do DIC anterior do processo;
+      <div class="d-flex align-items-center gap-2">
+        <div>
+          <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.NAO_INICIADA">
+            <!-- <i class="fa-solid fa-check text-secondary fs-5"></i> -->
+            <i class="fa-regular fa-circle text-secondary"></i>
+          </span>
+          <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+            <!-- <span class="spinner-border spinner-border-sm"></span> -->
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          </span>
+          <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
+            <!-- <i class="fa-solid fa-check text-success fs-5"></i> -->
+            <i class="fa-regular fa-circle-check text-success"></i>
+          </span>
+          <span *ngIf="aguardandoDesentranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
+            <!-- <i class="fa-solid fa-circle-xmark text-danger fs-5"></i> -->
+            <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.desentranhamento)"> </i>
+          </span>
+        </div>
+        <div [style.font-weight]="aguardandoDesentranhamento === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoDesentranhamento === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Desentranhamento do DIC anterior do processo;</div>
       </div>
-
-      <div [style.font-weight]="aguardandoDespacho === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
-        <span *ngIf="aguardandoDespacho === FaseStatusEnum.NAO_INICIADA">
-          <i class="fa-solid fa-check text-secondary fs-5"></i>
-        </span>
-        <span *ngIf="aguardandoDespacho === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm"></span>
-        </span>
-        <span *ngIf="aguardandoDespacho === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-5"></i>
-        </span>
-        <span *ngIf="aguardandoDespacho === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-5"></i>
-        </span>
-        Despacho com pedido de análise do processo à Subsecretaria de Captação de Recursos (SUBCAP) da Secretaria de
-        Economia e Planejamento (SEP).
+      <div class="d-flex align-items-center gap-2">
+        <div>
+          <span *ngIf="aguardandoDespacho === FaseStatusEnum.NAO_INICIADA">
+            <!-- <i class="fa-solid fa-check text-secondary fs-5"></i> -->
+            <i class="fa-regular fa-circle text-secondary"></i>
+          </span>
+          <span *ngIf="aguardandoDespacho === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+            <!-- <span class="spinner-border spinner-border-sm"></span> -->
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          </span>
+          <span *ngIf="aguardandoDespacho === FaseStatusEnum.FINALIZADA" class="icon-container">
+            <!-- <i class="fa-solid fa-check text-success fs-5"></i> -->
+            <i class="fa-regular fa-circle-check text-success"></i>
+          </span>
+          <span *ngIf="aguardandoDespacho === FaseStatusEnum.ERROFASE" class="icon-container">
+            <!-- <i class="fa-solid fa-circle-xmark text-danger fs-5"></i> -->
+            <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.despacharprocesso)"> </i>
+          </span>
+        </div>
+        <div [style.font-weight]="aguardandoDesentranhamento === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoDesentranhamento === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Despacho com pedido de análise do processo à Subsecretaria de Captação de Recursos (SUBCAP) da Secretaria de
+          Economia e Planejamento (SEP).</div>
       </div>
-
     </div>
   </div>
 
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ reenvioDicAcionado ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="!reenvioDicAcionado && !erroEmAlgumaFaseModalAutuacao && !isReentramentoEdocsConcluido()"
+      <button *ngIf="!autuacaoAcionada && !erroEmAlgumaFaseModalAutuacao && !isReentramentoEdocsConcluido()"
         class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
@@ -586,7 +618,7 @@
         <i class="fa-solid fa-check text-white me-2"></i>
         <span>Processo concluído com sucesso!</span>
       </div>
-      <div *ngIf="reenvioDicAcionado && !isReentramentoEdocsConcluido()"
+      <div *ngIf="autuacaoAcionada && !isReentramentoEdocsConcluido()"
         class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
@@ -740,33 +772,36 @@
   <div class="modal-body">
     <h6>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
-
-    <div class="fs-8">
-      <div [style.font-weight]="aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
-        <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
-          <i class="fa-solid fa-check text-secondary fs-5"></i>
-        </span>
-        <span *ngIf="aguardandoAssinatura === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm fs-5"></span>
-        </span>
-        <span *ngIf="aguardandoAssinatura === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-5"></i>
-        </span>
-        <span *ngIf="aguardandoAssinatura === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-5"></i>
-        </span>
-        Assinatura e captura do parecer, gerado em PDF a partir dos dados informados neste formulário;
+    <div class="d-flex align-items-center gap-2">
+      <div>
+        <div>
+          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
+            <i class="fa-regular fa-circle text-secondary"></i>
+          </span>
+          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          </span>
+          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.FINALIZADA" class="icon-container">
+            <i class="fa-regular fa-circle-check text-success"></i>
+          </span>
+          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.ERROFASE" class="icon-container">
+            <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.captura_assinatura)"> </i>
+          </span>
+        </div>
+        <div [style.font-weight]="aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Assinatura e captura do parecer, gerado em PDF a partir dos dados informados neste formulário;
+        </div>
       </div>
     </div>
   </div>
-
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ reenvioDicAcionado ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="!reenvioDicAcionado && !erroEmAlgumaFaseModalAutuacao && !isIntegracaoEdocsConcluido()"
+      <button *ngIf="!autuacaoAcionada && !erroEmAlgumaFaseModalAutuacao && !isIntegracaoEdocsConcluido()"
         class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarCapturarParecer()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
@@ -778,7 +813,7 @@
         <i class="fa-solid fa-check text-white me-2"></i>
         <span>Processo concluído com sucesso!</span>
       </div>
-      <div *ngIf="reenvioDicAcionado && !isIntegracaoEdocsConcluido()"
+      <div *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido()"
         class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
@@ -805,21 +840,25 @@
   <div class="modal-body">
     <h6>Esta ação realizará automaticamente os seguintes procedimentos no Edocs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
-    <div class="fs-8">
-      <div [style.font-weight]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 500 : 'normal'">
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.NAO_INICIADA">
-          <i class="fa-solid fa-check text-secondary fs-6"></i>
-        </span>
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
-          <span class="spinner-border spinner-border-sm"></span>
-        </span>
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
-          <i class="fa-solid fa-check text-success fs-6"></i>
-        </span>
-        <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
-          <i class="fa-solid fa-circle-xmark text-danger fs-6"></i>
-        </span>
-        Entranhamento dos pareceres capturados no E-Docs;
+    <div class="d-flex align-items-center gap-2">
+      <div>
+        <div>
+          <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.NAO_INICIADA">
+            <i class="fa-regular fa-circle text-secondary"></i>
+          </span>
+          <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          </span>
+          <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA" class="icon-container">
+            <i class="fa-regular fa-circle-check text-success"></i>
+          </span>
+          <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.ERROFASE" class="icon-container">
+            <i [ngClass]="iconeClasse(FasesEdocsIntegracaoEnum.despacharprocesso)"> </i>
+          </span>
+        </div>
+        <div [style.font-weight]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 500 : 'normal' "
+          [style.color]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
+          Entranhamento dos pareceres capturados no E-Docs;</div>
       </div>
     </div>
   </div>
@@ -830,7 +869,7 @@
         <span>{{ isIntegracaoEdocsConcluido() ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="!reenvioDicAcionado && !erroEmAlgumaFaseModalAutuacao && !isIntegracaoEdocsConcluido()"
+      <button *ngIf="!autuacaoAcionada && !erroEmAlgumaFaseModalAutuacao && !isIntegracaoEdocsConcluido()"
         class="btn btn-success icon-text-btn me-2" (click)="confirmarEntranhamentoParecerProcessoEdocs()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
@@ -842,7 +881,7 @@
         <i class="fa-solid fa-check text-white me-2"></i>
         <span>Processo concluído com sucesso!</span>
       </div>
-      <div *ngIf="reenvioDicAcionado && !isIntegracaoEdocsConcluido()"
+      <div *ngIf="autuacaoAcionada && !isIntegracaoEdocsConcluido()"
         class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
