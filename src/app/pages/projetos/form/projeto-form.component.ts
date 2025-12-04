@@ -295,7 +295,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          // // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -435,10 +435,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                   this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                     this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs()
                   );
-                else
-                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                    this._projetosService.gerarBotoesAcaoParecerGEOC()
-                  );
+                else {
+
+                  const parecerSubcapGeoc = this.pareceresProjeto
+                    .filter(p => [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao))
+
+                  if (parecerSubcapGeoc.length > 0 && parecerSubcapGeoc.every(p => p.statusParecer === StatusParecerEnum.Enviado || p.statusParecer === StatusParecerEnum.Capturado_Edocs || p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs))
+
+                    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                      this._projetosService.gerarBotoeAcaoVoltar()
+                    );
+
+                  else
+                    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                      this._projetosService.gerarBotoesAcaoParecerGEOC()
+                    );
+
+                }
 
               } else
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
@@ -1933,7 +1946,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
 
-        // console.log(' listaFasesIntegracao --> ', this.listaFasesIntegracaoProjeto )
+        // console.log(' listaFasesIntegracao --> ', this.listaFasesIntegracaoProjeto)
 
         const faseComFalha = listaFasesIntegracaoProjeto.find(fase => fase.idProjeto === this._idProjetoEdicao && fase.erro);
 

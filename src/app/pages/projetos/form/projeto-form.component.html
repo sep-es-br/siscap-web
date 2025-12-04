@@ -485,7 +485,7 @@
         <span class="me-2">
           <i class="bi bi-x-circle-fill"></i>
         </span>
-        <span>Erro no processamento.</span>
+        <span [textContent]="possuiMensagemAlerta() ? 'Erro no processamento.' : 'Alerta no processamento' "></span>
       </div>
     </div>
   </div>
@@ -772,8 +772,8 @@
   <div class="modal-body">
     <h6>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
-    <div class="d-flex align-items-center gap-2">
-      <div>
+    <div>
+      <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
             <i class="fa-regular fa-circle text-secondary"></i>
@@ -819,13 +819,12 @@
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
       </div>
-      <div *ngIf="erroEmAlgumaFaseModalAutuacao"
-        class="btn btn-danger icon-text-btn me-2 d-inline-flex align-items-center"
+      <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
         style="cursor: default; user-select: none; border-radius: 0;">
         <span class="me-2">
           <i class="bi bi-x-circle-fill"></i>
         </span>
-        <span>Erro no processamento.</span>
+        <span [textContent]="possuiMensagemAlerta() ? 'Erro no processamento.' : 'Alerta no processamento' "></span>
       </div>
     </div>
   </div>
@@ -840,8 +839,8 @@
   <div class="modal-body">
     <h6>Esta ação realizará automaticamente os seguintes procedimentos no Edocs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
-    <div class="d-flex align-items-center gap-2">
-      <div>
+    <div>
+      <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.NAO_INICIADA">
             <i class="fa-regular fa-circle text-secondary"></i>
