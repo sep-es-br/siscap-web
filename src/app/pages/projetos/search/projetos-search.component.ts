@@ -32,6 +32,8 @@ export class ProjetosPesquisaComponent implements OnInit {
 
   public projetosPesquisaForm: FormGroup;
 
+  public podeSelecionarOrganizacaoFlag = false;
+
   @Output() public pesquisarProjetos: EventEmitter<IProjetoFiltroPesquisa> =
     new EventEmitter<IProjetoFiltroPesquisa>();
 
@@ -76,14 +78,21 @@ export class ProjetosPesquisaComponent implements OnInit {
         this.isProponente ? idOrganizacaoValorInicial : 0
       ),*/
     });
-
+    
     this.projetoPesquisaFormValueChanges();
 
   }
-
+ 
   ngOnInit(): void {
     this._getOrganizacoesOpcoes$.subscribe();
+    
     this.pesquisarProjetos.emit(this.projetosPesquisaForm.value);
+
+    if (this.podeSelecionarOrganizacao()) {
+      this.projetosPesquisaForm.get('idOrganizacao')?.enable({ emitEvent: false });
+    } else {
+      this.projetosPesquisaForm.get('idOrganizacao')?.disable({ emitEvent: false });
+    }
   }
 
   private projetoPesquisaFormValueChanges(): void {

@@ -183,7 +183,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public camposParaComplementacao: IEstruturaCamposComplementar[] = [];
   public camposComplementarProjeto: IEstruturaCamposComplementarProjeto[] = [];
 
-  public reenvioDicAcionado: boolean = false;
+  // public reenvioDicAcionado: boolean = false;
 
   public parecerProjetoUsuario: IParecer = {} as IParecer;
   public lotacaoUsuario: number = LotacaoUsuarioEnum.OUTRO;
@@ -295,7 +295,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          // // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -435,10 +435,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                   this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                     this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs()
                   );
-                else
-                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                    this._projetosService.gerarBotoesAcaoParecerGEOC()
-                  );
+                else {
+
+                  const parecerSubcapGeoc = this.pareceresProjeto
+                    .filter(p => [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao))
+
+                  if (parecerSubcapGeoc.length > 0 && parecerSubcapGeoc.every(p => p.statusParecer === StatusParecerEnum.Enviado || p.statusParecer === StatusParecerEnum.Capturado_Edocs || p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs))
+
+                    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                      this._projetosService.gerarBotoeAcaoVoltar()
+                    );
+
+                  else
+                    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                      this._projetosService.gerarBotoesAcaoParecerGEOC()
+                    );
+
+                }
 
               } else
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
@@ -565,11 +578,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     var valorIdOrganizacao = idOrganizacaoFormControl.value;
 
-    if( valorIdOrganizacao == null )
+    if (valorIdOrganizacao == null)
       valorIdOrganizacao = this.usuario_IdOrganizacoes[0];
-    
+
     idOrganizacaoFormControl.patchValue(valorIdOrganizacao);
-    
+
     this.isLoadingPessoas = true;
 
     this._pessoasService.buscarResponsavelPorIdOrganizacaoAC(valorIdOrganizacao)
@@ -1272,7 +1285,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.lotacaoGestorProjeto = '';
 
     this.idOrganizacaoChange(organizacao);
-    
+
   }
 
   onSelecionarPessoa(pessoa: any) {
@@ -1577,6 +1590,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public confirmarAssinarAutuar() {
 
+    this.autuacaoAcionada = true;
+
     if (this.statusProjeto === StatusProjetoEnum.Em_Complementacao) {
       this.reentranharDicProjetoForm(this.projetoForm);
     } else {
@@ -1727,14 +1742,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._projetosService.reentranharDicEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
-          this.reenvioDicAcionado = true; // usado para desabilitar o botao na modal..
+          this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
           this._toastService.showToast(
             'info',
             'Processo reentranhar DIC com correções iniciado no E-Docs.'
           );
         }),
         catchError(error => {
-          this.reenvioDicAcionado = false;
+          this.autuacaoAcionada = false;
           this._toastService.showToast(
             'error',
             'Erro ao iniciar autuação no E-Docs.'
@@ -1922,7 +1937,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       takeUntil(this.pararPolling$),
       finalize(() => {
-        this._projetosService.notificarAtualizacaoLista(); 
+        this._projetosService.notificarAtualizacaoLista();
       }
       )
     ).subscribe((listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] | null) => {
@@ -1931,15 +1946,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
 
-        console.log(' listaFasesIntegracao --> ', this.listaFasesIntegracaoProjeto )
+        // console.log(' listaFasesIntegracao --> ', this.listaFasesIntegracaoProjeto)
 
         const faseComFalha = listaFasesIntegracaoProjeto.find(fase => fase.idProjeto === this._idProjetoEdicao && fase.erro);
 
         if (faseComFalha) {
 
           this.autuacaoAcionada = false;
-          this.reenvioDicAcionado = false;
+          // this.reenvioDicAcionado = false;
           this.erroEmAlgumaFaseModalAutuacao = true;
+
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
 
           if ((faseComFalha.msgAlertaExibir?.length ?? 0) > 0)
@@ -2102,6 +2118,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return this.erroNaFaseIntegracao(faseIntegracao)
       ? 'fa-solid fa-circle-xmark text-danger'
       : 'fa-solid fa-circle-xmark text-warning';
+    // return this.erroNaFaseIntegracao(faseIntegracao)
+    //   ? 'fa-regular fa-circle-check text-danger'
+    //   : 'fa-regular fa-circle-check text-warning';
   }
 
   private erroNaFaseIntegracao(faseIntegracao: FasesEdocsIntegracaoEnum): boolean {

@@ -91,7 +91,7 @@ export class ProjetoParecerComponent {
 
     textoParecer?.updateValueAndValidity();
 
-    console.log(' this.lotacaoUsuario - ', this.lotacaoUsuario)
+    //console.log(' this.lotacaoUsuario - ', this.lotacaoUsuario)
 
   }
 

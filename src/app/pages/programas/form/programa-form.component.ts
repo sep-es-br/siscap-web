@@ -135,7 +135,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ),
       tap((response: IPrograma) => {
 
-        console.log(" Programa getById: ", response);
+        //console.log(" Programa getById: ", response);
 
         const programaModel = new ProgramaModel(response);
 
@@ -486,7 +486,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     const payload = new ProgramaFormModel(form.value as IProgramaForm);
 
-    console.log('payload -> ', payload)
+    //console.log('payload -> ', payload)
 
     const requisicao = this._idProgramaEdicao
       ? this.atualizarPrograma(payload)
