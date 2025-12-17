@@ -34,3 +34,15 @@ export interface IOpcoesDropdownResponsavelProponente {
   agentePublicoSub: string;
   gestorOrganizacao: boolean;
 }
+
+export interface IOpcoesDropdownDestinatariosCartaConsulta {
+  id: number;
+  nomeOrganizacao: string;
+  idCartaConsulta: number;
+  idOrganizacao: number;
+}
+
+export interface IOpcoesDropdownDestinatariosOpcoes {
+  nomeOrganizacao: string;
+  idOrganizacao: number;
+}

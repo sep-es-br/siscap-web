@@ -29,6 +29,30 @@
         </div>
 
         <div class="col-12">
+
+          <label for="destinatario" class="form-label col-12">
+            <validation-message [control]="getControl('destinatarios')">
+              Destinatários
+            </validation-message>
+          </label>
+
+          <ng-select
+            [items]="destinatariosOpcoes"
+            [multiple]="true"
+            [hideSelected]="true"
+            bindLabel="nomeOrganizacao"
+            [clearable]="false"
+            id="destinatario"
+            placeholder="-- Selecione destinatários da lista abaixo --"
+            formControlName="destinatarios" >
+            <ng-template ng-optgroup-tmp let-item="destinatario">
+              {{ item.nome }}
+            </ng-template>
+          </ng-select>
+
+        </div>
+
+        <div class="col-12">
           <label for="operacao" class="form-label col-12">
             <validation-message [control]="getControl('operacao')">
               Operação
@@ -52,7 +76,7 @@
         <div class="col-12">
           <label for="corpo" class="form-label col-12">
             <validation-message [control]="getControl('corpo')">
-              Carta Consulta
+              Carta de Solicitação
             </validation-message>
           </label>
           <siscap-text-editor

@@ -1,6 +1,7 @@
 import {
   IObjetoOpcoesDropdown,
   IOpcoesDropdown,
+  IOpcoesDropdownDestinatariosCartaConsulta,
 } from './opcoes-dropdown.interface';
 import { IValor } from './valor.interface';
 
@@ -9,6 +10,7 @@ export interface ICartaConsulta {
   objeto: IObjetoOpcoesDropdown;
   operacao: number;
   corpo: string;
+  destinatarios: IOpcoesDropdownDestinatariosCartaConsulta[];
 }
 
 export interface ICartaConsultaForm extends Omit<ICartaConsulta, 'id'> {}

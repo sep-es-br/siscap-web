@@ -10,7 +10,7 @@ import { cartasConsulta_NoIdVisualizarGuard } from '../../core/guards/cartas-con
 
 const CARTAS_CONSULTA_ROUTES: Routes = [
   {
-    title: 'Cartas Consulta',
+    title: 'Pesquisa de Fontes de Financiamento-1',
     path: '',
     component: CartasConsultaComponent,
   },
