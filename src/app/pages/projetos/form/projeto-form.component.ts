@@ -191,6 +191,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public mostrarBotaoPedirRevisaoDic: boolean = false;
 
+  public subProponenteDIC: string = '';
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -312,7 +314,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
         tap((projetoModel: ProjetoModel) => {
 
-
+          this.mostrarBotaoPedirRevisaoDic = false;
 
           this.statusProjeto = projetoModel.status;
           this.lotacaoGestorProjeto = projetoModel.lotacaoProponenteResponsavel;
@@ -321,6 +323,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.podeSoilictarComplementacao = projetoModel.podeSolicitarComplementacao;
           this.podeResponderComplementacao = projetoModel.podeResponderComplementacao;
           this.camposComplementarProjeto = projetoModel.camposComplementar;
+          this.subProponenteDIC = projetoModel.subProponente;
 
           this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
             (status) => status != this.statusProjeto
@@ -337,6 +340,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.equipeProjeto = projetoModel.equipeElaboracao;
 
           this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
+
+          // console.log( 'projetoModel.subResponsavelProponente : ' +  projetoModel.subResponsavelProponente ) 
+          // console.log( 'this._usuarioService.usuarioPerfil.subNovo : ' + this._usuarioService.usuarioPerfil.subNovo )
 
           this.parecerProjetoUsuario = projetoModel.parecerProjetoUsuario;
           this.lotacaoUsuario = projetoModel.lotacaoUsuario;
@@ -362,6 +368,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             projetoModel.status === StatusProjetoEnum.Em_Elaboracao &&
             !projetoModel.protocoloEdocs;
 
+          if ( emElaboracaoSemProtocolo && this.subProponenteDIC ==  projetoModel.subResponsavelProponente ) {
+            this.mostrarBotaoPedirRevisaoDic = false
+          } else {
+            this.mostrarBotaoPedirRevisaoDic = true
+          }
+
           if (this.podeResponderComplementacao) {
             this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
               this._projetosService.gerarBotoesAcaoResponderComplementacao(this.podeEditar)
@@ -369,9 +381,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             setTimeout(() => this.trocarModo(true), 2000);
           } else {
             if (this.isProponente) {
-
               if (emElaboracaoSemProtocolo && !this.isUsuarioProponenteResponsavel) {
-                this.mostrarBotaoPedirRevisaoDic = true;
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
                 );
@@ -391,7 +401,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
             } else {
               if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
-                this.mostrarBotaoPedirRevisaoDic = true;
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
                 );

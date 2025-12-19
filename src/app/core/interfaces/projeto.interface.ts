@@ -45,6 +45,7 @@ export interface IProjeto {
   parecerProjetoUsuario: IParecer;
   lotacaoUsuario: number;
   pareceresProjeto: Array<IParecer>;
+  subProponente: string;
 }
 
 export interface IProjetoForm

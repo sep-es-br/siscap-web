@@ -50,6 +50,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public parecerProjetoUsuario: IParecer
   public lotacaoUsuario: number;
   public pareceresProjeto: Array<IParecer>;
+  public subProponente: string;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -94,6 +95,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.parecerProjetoUsuario = projetoForm?.parecerProjetoUsuario ?? ({} as IParecer);
     this.lotacaoUsuario = projetoForm?.lotacaoUsuario ?? 0;
     this.pareceresProjeto = projetoForm?.pareceresProjeto ?? [];
+    this.subProponente = projetoForm?.subProponente ?? '';
   }
 
   private construirRateioModelArray(
