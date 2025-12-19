@@ -1894,6 +1894,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
 
+        this._projetosService.notificarAtualizacaoLista();
+
       }
 
     });
@@ -1946,14 +1948,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
 
-        // console.log(' listaFasesIntegracao --> ', this.listaFasesIntegracaoProjeto)
-
         const faseComFalha = listaFasesIntegracaoProjeto.find(fase => fase.idProjeto === this._idProjetoEdicao && fase.erro);
 
         if (faseComFalha) {
 
           this.autuacaoAcionada = false;
-          // this.reenvioDicAcionado = false;
+
           this.erroEmAlgumaFaseModalAutuacao = true;
 
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
@@ -1982,7 +1982,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.aguardandoAutuacao = FaseStatuEnum.FINALIZADA;
           this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
           this.aguardandoDespacho = FaseStatuEnum.FINALIZADA;
-
           this.pararPolling$.next();
           this.cdr.detectChanges();
 
@@ -2141,8 +2140,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public isIntegracaoEdocsConcluido(): boolean {
 
-    if (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada))
+    if (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada)){
       return true;
+    }
+
     return false;
 
   }

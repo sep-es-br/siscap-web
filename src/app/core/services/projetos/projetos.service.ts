@@ -86,42 +86,40 @@ export class ProjetosService extends BaseHttpService<
   }
 
   public gerarBotoesAcaoFormularioUsuarioProponenteResponsavel(): Array<BotaoPropriedadesModel> {
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
-    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
     const botaoArquivar = BotoesConfig.gerarBotaoPropriedades('arquivar');
-    const botaoRevisar = BotoesConfig.gerarBotaoPropriedades('revisar');
-    return [botaoSalvar, botaoCancelar, botaoAutuar, botaoArquivar, botaoRevisar];
+    return [botaoVoltar, botaoSalvar, botaoAutuar, botaoArquivar];
   }
 
   public gerarBotoesAcaoFormularioProponente(): Array<BotaoPropriedadesModel> {
-    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
-    return [botaoSalvar, botaoCancelar, botaoEnviar];
+    return [botaoVoltar, botaoSalvar, botaoEnviar];
   }
 
   public gerarBotoesAcaoFormularioProponenteEmAnalise(): Array<BotaoPropriedadesModel> {
-    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
     const botaoArquivar = BotoesConfig.gerarBotaoPropriedades('arquivar');
-    const botaoRevisar = BotoesConfig.gerarBotaoPropriedades('revisar');
     const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
-    return [botaoCancelar, botaoAutuar, botaoRevisar, botaoArquivar, botaoVoltar];
+    return [botaoSalvar, botaoAutuar, botaoArquivar, botaoVoltar];
   }
 
   public gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(podeComplementar: boolean): Array<BotaoPropriedadesModel> {
-    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
     if (podeComplementar) {
       const botaoComplementar = BotoesConfig.gerarBotaoPropriedades('complementar');
       const botaoSolicitarParecer = BotoesConfig.gerarBotaoPropriedades('parecerestrategicoorcamentario');
-      return [botaoCancelar, botaoSolicitarParecer, botaoComplementar]
+      return [botaoVoltar, botaoSolicitarParecer, botaoComplementar]
     } else
-      return [botaoCancelar];
+      return [botaoVoltar];
   }
 
   public gerarBotoesAcaoFormularioArquivado(): Array<BotaoPropriedadesModel> {
-    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('voltar');
     return [botaoCancelar];
   }
 

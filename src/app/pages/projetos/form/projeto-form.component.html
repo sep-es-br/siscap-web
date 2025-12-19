@@ -11,7 +11,7 @@
     </button>
     <button *ngIf="mostrarBotaoGerarDic" class="btn btn-outline-primary icon-text-btn" (click)="baixarDIC()">
       <i class="fa-solid fa-file-arrow-down"></i>
-      <span>Gerar DIC</span>
+      <span>Baixar DIC</span>
     </button>
   </div>
 </div>
@@ -322,14 +322,14 @@
 
 <ng-template #enviarProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
-    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+    <h4 class="modal-title text-primary fs-4 text-center">
       Confirmação de Envio
     </h4>
   </div>
   <div class="modal-body">
-    <h6>Deseja fazer o envio do DIC para o gestor do orgão de origem?</h6>
-    <h6>Enviaremos email informando ao(a) gestor(a) {{ nomeProponenteResponsavel }} ({{lotacaoGestorProjeto }}) um
-      pedido de análise para posterior encaminhamento à SUBCAP/SEP.</h6>
+    <p>Deseja fazer o envio do DIC para o gestor do orgão de origem?</p>
+    <p>Enviaremos email informando ao(a) gestor(a) {{ nomeProponenteResponsavel }} ({{lotacaoGestorProjeto }}) um
+      pedido de análise para posterior encaminhamento à SUBCAP/SEP.</p>
   </div>
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
@@ -347,13 +347,13 @@
 
 <ng-template #enviarParecerProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
-    <h4 class="modal-title text-primary fw-bold fs-4 text-center">
+    <h4 class="modal-title text-primary fs-4 text-center">
       Confirmação de Envio
     </h4>
   </div>
   <div class="modal-body">
-    <h6>Deseja enviar a SUBEO e SUBEPP pedido para que elaborem os pareceres Estratégico e Orçamentário?</h6>
-    <h6>O sistema enviará um e-mail automático a ambos solicitando essas informações.</h6>
+    <p>Deseja enviar a SUBEO e SUBEPP pedido para que elaborem os pareceres Estratégico e Orçamentário?</p>
+    <p>O sistema enviará um e-mail automático a ambos solicitando essas informações.</p>
   </div>
   <div class="modal-footer py-2">
     <div class="d-inline-flex flex-row-reverse">
@@ -378,8 +378,8 @@
   </div>
 
   <div class="modal-body">
-    <h6>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
+    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
+      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
     <div>
       <div class="d-flex align-items-center gap-2">
         <div>
@@ -501,8 +501,8 @@
 
   <div class="modal-body">
 
-    <h6>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
+    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
+      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
     <div>
       <div class="d-flex align-items-center gap-2">
         <div>
@@ -770,8 +770,8 @@
     </h4>
   </div>
   <div class="modal-body">
-    <h6>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
+    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
+      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
     <div>
       <div class="d-flex align-items-center gap-2">
         <div>
@@ -837,8 +837,8 @@
     </h4>
   </div>
   <div class="modal-body">
-    <h6>Esta ação realizará automaticamente os seguintes procedimentos no E-docs, utilizando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </h6>
+    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-docs, utilizando a sua identidade - {{
+      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
     <div>
       <div class="d-flex align-items-center gap-2">
         <div>

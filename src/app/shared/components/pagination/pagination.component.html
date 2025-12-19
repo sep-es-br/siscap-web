@@ -13,6 +13,7 @@
     [pageSize]="paginacaoDadosInput().itensPorPagina"
     [collectionSize]="paginacaoDadosInput().totalRegistros"
     [boundaryLinks]="true"
+    [maxSize]="15"
     (pageChange)="ngbPaginationPageChangeEvent($event)"
   >
     <ng-template ngbPaginationFirst>

@@ -104,14 +104,6 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       .getOpcoesTiposOperacao()
       .pipe(tap((response) => (this.tiposOperacaoOpcoes = response)));
 
-    // this._getDestinatariosOpcoes$ = this._opcoesDropdownService
-    //   .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Instituicao_Financeira)
-    //   .pipe(
-    //     tap(
-    //       (response: IOpcoesDropdown[]) => (this.destinatariosOpcoes = response)
-    //     )
-    //   );
-
     this._getDestinatariosOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Instituicao_Financeira)
       .pipe(
@@ -139,8 +131,6 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
         (response: ICartaConsulta) => new CartaConsultaModel(response)
       ),
       tap((cartaConsultaModel: CartaConsultaModel) => {
-
-        // console.log('Response consulta : ' + JSON.stringify(cartaConsultaModel,null,2))
 
         this.destinatariosCarta = cartaConsultaModel.destinatarios;
 
@@ -197,8 +187,6 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       })
     );
 
-
-
     this._subscription.add(
       this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
@@ -241,16 +229,10 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
     if (cartaConsultaFormModel?.destinatarios?.length) {
 
-      console.log('cartaConsultaFormModel?.destinatarios : ' + JSON.stringify(cartaConsultaFormModel?.destinatarios, null, 2))
-
       this.cartaConsultaForm.patchValue(
-        { destinatarios: cartaConsultaFormModel?.destinatarios },
-        { emitEvent: false }
+        { destinatarios: cartaConsultaFormModel?.destinatarios }
+        // , { emitEvent: false }
       );
-
-      console.log('this.destinatariosCarta :', this.destinatariosCarta)
-
-      console.log('this.destinatarios :', this.cartaConsultaForm.get('destinatarios'))
 
     }
 
@@ -292,8 +274,6 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       ...this.cartaConsultaForm.value,
       destinatarios: this.destinatariosCarta
     } as ICartaConsultaForm;
-
-    // console.log(JSON.stringify(payload,null,2))
 
     const requisicao = this._idCartaConsultaEdicao
       ? this.atualizarCartaConsulta(payload)
@@ -337,28 +317,41 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
   private monitorarDestinatarios(): void {
 
-    // console.log('monitorarDestinatarios')
-
     this.cartaConsultaForm.get('destinatarios')!
       .valueChanges
       .pipe(
         withLatestFrom(this._cartasConsultaService.idCartaConsulta$)
       )
-      .subscribe(([selecionados, idCartaConsulta]: [IOpcoesDropdown[], number]) => {
-
-        console.log('.subscribe(([selecionados, idCartaConsulta]:', selecionados)
-
+      .subscribe(([selecionados, idCartaConsulta]: [IOpcoesDropdownDestinatariosCartaConsulta[], number]) => {
         this.destinatariosCarta = (selecionados ?? []).map(item => ({
-          id: 0,
-          nomeOrganizacao: item.nome,
-          idOrganizacao: item.id,
+          id: item.id,
+          nomeOrganizacao: item.nomeOrganizacao,
+          idOrganizacao: item.idOrganizacao,
           idCartaConsulta
         }));
 
-        // console.log('this.destinatariosCarta :', this.destinatariosCarta)
+      });
 
-        // console.log('this.destinatarios :', this.cartaConsultaForm.get('destinatarios') )
+  }
 
+  private filtrarDestinatariosOpcoes(destinatariosSelecionados: any[]): void {
+
+    const selecionados = destinatariosSelecionados ?? [];
+
+    this.destinatariosOpcoes = this.destinatariosCarta.filter(
+      opcao =>
+        !selecionados.some(
+          d => d.idOrganizacao === opcao.idOrganizacao
+        )
+    );
+
+  }
+
+  private observarMudancasDestinatarios(): void {
+    this.cartaConsultaForm
+      .get('destinatarios')
+      ?.valueChanges.subscribe(destinatariosSelecionados => {
+        this.filtrarDestinatariosOpcoes(destinatariosSelecionados);
       });
   }
 
