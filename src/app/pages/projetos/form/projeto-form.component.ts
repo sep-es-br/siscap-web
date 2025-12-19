@@ -192,6 +192,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public mostrarBotaoPedirRevisaoDic: boolean = false;
 
   public subProponenteDIC: string = '';
+  public nomeProponenteDIC: string = ''
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -299,7 +300,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -324,6 +325,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.podeResponderComplementacao = projetoModel.podeResponderComplementacao;
           this.camposComplementarProjeto = projetoModel.camposComplementar;
           this.subProponenteDIC = projetoModel.subProponente;
+          this.nomeProponenteDIC = projetoModel.nomeProponente
 
           this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
             (status) => status != this.statusProjeto
@@ -368,10 +370,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             projetoModel.status === StatusProjetoEnum.Em_Elaboracao &&
             !projetoModel.protocoloEdocs;
 
-          if ( emElaboracaoSemProtocolo && this.subProponenteDIC ==  projetoModel.subResponsavelProponente ) {
-            this.mostrarBotaoPedirRevisaoDic = false
-          } else {
+          if ( emElaboracaoSemProtocolo && this.subProponenteDIC != projetoModel.subResponsavelProponente && !this.isProponente ) {
             this.mostrarBotaoPedirRevisaoDic = true
+          } else {
+            this.mostrarBotaoPedirRevisaoDic = false
           }
 
           if (this.podeResponderComplementacao) {
@@ -381,11 +383,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             setTimeout(() => this.trocarModo(true), 2000);
           } else {
             if (this.isProponente) {
-              if (emElaboracaoSemProtocolo && !this.isUsuarioProponenteResponsavel) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
-                );
-              }else if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
+              if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
                 );
