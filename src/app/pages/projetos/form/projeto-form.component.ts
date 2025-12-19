@@ -189,6 +189,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public lotacaoUsuario: number = LotacaoUsuarioEnum.OUTRO;
   public pareceresProjeto: IParecer[] = [];
 
+  public mostrarBotaoPedirRevisaoDic: boolean = false;
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -310,6 +312,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
         tap((projetoModel: ProjetoModel) => {
 
+
+
           this.statusProjeto = projetoModel.status;
           this.lotacaoGestorProjeto = projetoModel.lotacaoProponenteResponsavel;
           this.nomeProponenteResponsavel = projetoModel.nomeProponenteResponsavel;
@@ -365,7 +369,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             setTimeout(() => this.trocarModo(true), 2000);
           } else {
             if (this.isProponente) {
-              if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
+
+              if (emElaboracaoSemProtocolo && !this.isUsuarioProponenteResponsavel) {
+                this.mostrarBotaoPedirRevisaoDic = true;
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
+                );
+              }else if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
                 );
@@ -890,7 +900,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     //this.moedaProjeto = moedaFormControl.value ?? '';
 
     if (!tipoFormControl.value) {
-      // Caso específico de Projetos; tipo do valor somente pode ser 'Estimado'
       tipoFormControl.patchValue(TipoValorEnum.Estimado);
       tipoFormControl.disable();
     }
@@ -1064,9 +1073,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         );
         break;
 
-      case BreadcrumbAcoesEnum.Revisar:
-        this.abrirRevisarModal(this.projetoForm)
-        break;
+      // case BreadcrumbAcoesEnum.Revisar: // MUDAMOS PARA BOTAO AO LADO DO GERAR DIC
+      //   this.abrirRevisarModal(this.projetoForm)
+      //   break;
 
       case BreadcrumbAcoesEnum.Arquivar:
         this.abrirArquivarModal(this.projetoForm)
@@ -2140,7 +2149,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public isIntegracaoEdocsConcluido(): boolean {
 
-    if (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada)){
+    if (this.listaFasesIntegracaoProjeto.length > 0 && this.listaFasesIntegracaoProjeto.every(fase => fase.finalizada)) {
       return true;
     }
 

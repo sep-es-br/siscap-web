@@ -85,7 +85,7 @@ export abstract class BotoesConfig {
     },
     autuarEdocs: {
       classesCSS: ['btn-success'],
-      icone: ['fa-solid', 'fa-paper-plane'],
+      icone: ['fa-solid', 'fa-save'],
       texto: 'Assinar e Autuar',
       acao: 'autuarEdocs',
     },
