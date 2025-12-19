@@ -391,6 +391,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
             } else {
               if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
+                this.mostrarBotaoPedirRevisaoDic = true;
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
                 );
