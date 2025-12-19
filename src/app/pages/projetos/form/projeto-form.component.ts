@@ -370,7 +370,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             projetoModel.status === StatusProjetoEnum.Em_Elaboracao &&
             !projetoModel.protocoloEdocs;
 
-          if ( emElaboracaoSemProtocolo && this.subProponenteDIC != projetoModel.subResponsavelProponente && !this.isProponente ) {
+          if ( emElaboracaoSemProtocolo && this.subProponenteDIC != projetoModel.subResponsavelProponente && this._usuarioService.usuarioPerfil.subNovo == projetoModel.subResponsavelProponente ) {
             this.mostrarBotaoPedirRevisaoDic = true
           } else {
             this.mostrarBotaoPedirRevisaoDic = false

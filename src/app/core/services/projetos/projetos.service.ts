@@ -82,7 +82,7 @@ export class ProjetosService extends BaseHttpService<
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
-    return [botaoSalvar, botaoCancelar, botaoEnviar];
+    return [botaoCancelar, botaoSalvar, botaoEnviar];
   }
 
   public gerarBotoesAcaoFormularioUsuarioProponenteResponsavel(): Array<BotaoPropriedadesModel> {

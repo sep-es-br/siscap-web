@@ -25,17 +25,17 @@ li.breadcrumb-item a.breadcrumb-link {
 }
 
 div#action-buttons * {
-  &:first-child:nth-last-child(2) {
-    margin-left: 0.25rem;
-  }
+  // &:first-child:nth-last-child(2) {
+  //   margin-left: 0.25rem;
+  // }
 
-  &:last-child:nth-child(2) {
-    margin-right: 0.25rem;
-  }
+  // &:last-child:nth-child(2) {
+  //   margin-right: 0.25rem;
+  // }
 
-  &:not(:first-child):not(:last-child) {
-    margin: 0 0.25rem;
-  }
+  // &:not(:first-child):not(:last-child) {
+  //   margin: 0 0.25rem;
+  // }
 }
 
 @media (max-width: 767px) {
