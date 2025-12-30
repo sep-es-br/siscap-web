@@ -125,14 +125,14 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
     this._atualizarCartaConsulta$ = editar$.pipe(
       switchMap((idCartaConsulta: number) =>
-        this._cartasConsultaService.getById(idCartaConsulta)
+        this._cartasConsultaService.getById(idCartaConsulta).pipe()
       ),
       map<ICartaConsulta, CartaConsultaModel>(
         (response: ICartaConsulta) => new CartaConsultaModel(response)
       ),
       tap((cartaConsultaModel: CartaConsultaModel) => {
 
-        this.destinatariosCarta = cartaConsultaModel.destinatarios;
+        this.destinatariosCarta = [...(cartaConsultaModel.destinatarios ?? [])];
 
         this.iniciarForm(cartaConsultaModel);
 
@@ -156,11 +156,9 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
         (response: ICartaConsulta) => new CartaConsultaModel(response)
       ),
 
-      filter((carta: CartaConsultaModel) =>
-        Array.isArray(carta.destinatarios) && carta.destinatarios.length > 0
-      ),
-
       tap((cartaConsultaModel: CartaConsultaModel) => {
+
+        this.destinatariosCarta = [...(cartaConsultaModel.destinatarios ?? [])];
 
         this.iniciarForm(cartaConsultaModel);
 
@@ -216,9 +214,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       objeto: this._nnfb.control(cartaConsultaFormModel?.objeto ?? null, {
         validators: Validators.required,
       }),
-      operacao: this._nnfb.control(cartaConsultaFormModel?.operacao ?? null, {
-        validators: Validators.required,
-      }),
+      operacao: this._nnfb.control(cartaConsultaFormModel?.operacao ?? null),
       corpo: this._nnfb.control(cartaConsultaFormModel?.corpo ?? null, {
         validators: Validators.required,
       }),
@@ -229,10 +225,19 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
     if (cartaConsultaFormModel?.destinatarios?.length) {
 
-      this.cartaConsultaForm.patchValue(
-        { destinatarios: cartaConsultaFormModel?.destinatarios }
-        // , { emitEvent: false }
-      );
+      // const destinatariosParaSelect =
+      //   cartaConsultaFormModel.destinatarios.map(d => ({
+      //     id: d.idOrganizacao,
+      //     nome: d.nomeOrganizacao
+      //   }));
+
+      // this.cartaConsultaForm.patchValue({
+      //   destinatarios: destinatariosParaSelect
+      // });
+
+      // this.cartaConsultaForm.patchValue(
+      //   { destinatarios: cartaConsultaFormModel?.destinatarios }
+      // );
 
     }
 
@@ -334,26 +339,23 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
   }
 
-  private filtrarDestinatariosOpcoes(destinatariosSelecionados: any[]): void {
+  // private filtrarDestinatariosOpcoes(destinatariosSelecionados: any[]): void {
+  //   const selecionados = destinatariosSelecionados ?? [];
+  //   this.destinatariosOpcoes = this.destinatariosCarta.filter(
+  //     opcao =>
+  //       !selecionados.some(
+  //         d => d.idOrganizacao === opcao.idOrganizacao
+  //       )
+  //   );
+  // }
 
-    const selecionados = destinatariosSelecionados ?? [];
-
-    this.destinatariosOpcoes = this.destinatariosCarta.filter(
-      opcao =>
-        !selecionados.some(
-          d => d.idOrganizacao === opcao.idOrganizacao
-        )
-    );
-
-  }
-
-  private observarMudancasDestinatarios(): void {
-    this.cartaConsultaForm
-      .get('destinatarios')
-      ?.valueChanges.subscribe(destinatariosSelecionados => {
-        this.filtrarDestinatariosOpcoes(destinatariosSelecionados);
-      });
-  }
+  // private observarMudancasDestinatarios(): void {
+  //   this.cartaConsultaForm
+  //     .get('destinatarios')
+  //     ?.valueChanges.subscribe(destinatariosSelecionados => {
+  //       this.filtrarDestinatariosOpcoes(destinatariosSelecionados);
+  //     });
+  // }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();

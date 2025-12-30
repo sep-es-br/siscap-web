@@ -12,7 +12,6 @@
               Programa
             </validation-message>
           </label>
-
           <ng-select
             [items]="objetosOpcoes"
             bindLabel="nome"
@@ -20,8 +19,7 @@
             [clearable]="false"
             id="objeto"
             placeholder="-- Selecione um objeto da lista abaixo --"
-            formControlName="objeto"
-          >
+            formControlName="objeto">
             <ng-template ng-optgroup-tmp let-item="item">
               {{ item.tipo }}
             </ng-template>
@@ -54,9 +52,7 @@
 
         <div class="col-12">
           <label for="operacao" class="form-label col-12">
-            <validation-message [control]="getControl('operacao')">
               Operação
-            </validation-message>
           </label>
           <ng-select
             [clearable]="false"
