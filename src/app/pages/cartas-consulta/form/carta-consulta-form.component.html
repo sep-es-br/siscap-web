@@ -39,6 +39,7 @@
             [multiple]="true"
             [hideSelected]="true"
             bindLabel="nomeOrganizacao"
+            bindValue="idOrganizacao"
             [clearable]="false"
             id="destinatario"
             placeholder="-- Selecione destinatários da lista abaixo --"
@@ -55,7 +56,7 @@
               Operação
           </label>
           <ng-select
-            [clearable]="false"
+            [clearable]="true"
             id="operacao"
             placeholder="-- Selecione uma operação da lista abaixo --"
             formControlName="operacao"

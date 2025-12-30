@@ -13,13 +13,13 @@ import { ValorModel } from './valor.model';
 
 export class CartaConsultaFormModel implements ICartaConsultaForm {
   public objeto: IObjetoOpcoesDropdown;
-  public operacao: number;
+  public operacao: number | null;
   public corpo: string;
   public destinatarios: IOpcoesDropdownDestinatariosCartaConsulta[];
 
   constructor(cartaConsultaForm?: ICartaConsultaForm) {
     this.objeto = cartaConsultaForm?.objeto ?? { id: 0, nome: '', tipo: '' };
-    this.operacao = cartaConsultaForm?.operacao ?? 0;
+    this.operacao = cartaConsultaForm?.operacao ?? null;
     this.corpo = cartaConsultaForm?.corpo ?? '';
     this.destinatarios = cartaConsultaForm?.destinatarios ?? [];
   }

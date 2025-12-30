@@ -8,7 +8,7 @@ import { IValor } from './valor.interface';
 export interface ICartaConsulta {
   readonly id: number;
   objeto: IObjetoOpcoesDropdown;
-  operacao: number;
+  operacao: number | null;
   corpo: string;
   destinatarios: IOpcoesDropdownDestinatariosCartaConsulta[];
 }
