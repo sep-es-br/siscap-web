@@ -300,7 +300,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -370,7 +370,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             projetoModel.status === StatusProjetoEnum.Em_Elaboracao &&
             !projetoModel.protocoloEdocs;
 
-          if ( emElaboracaoSemProtocolo && this.subProponenteDIC != projetoModel.subResponsavelProponente && this._usuarioService.usuarioPerfil.subNovo == projetoModel.subResponsavelProponente ) {
+          if (emElaboracaoSemProtocolo && this.subProponenteDIC != projetoModel.subResponsavelProponente && this._usuarioService.usuarioPerfil.subNovo == projetoModel.subResponsavelProponente) {
             this.mostrarBotaoPedirRevisaoDic = true
           } else {
             this.mostrarBotaoPedirRevisaoDic = false
@@ -905,20 +905,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     }
 
-    //this.moedaProjeto = moedaFormControl.value ?? '';
-
     if (!tipoFormControl.value) {
       tipoFormControl.patchValue(TipoValorEnum.Estimado);
       tipoFormControl.disable();
     }
-
-    /*
-    moedaFormControl.valueChanges.subscribe((moedaValue) => {
-      setTimeout(() => {
-        this._rateioService.moedaFormControlReferencia$.next(moedaValue);
-      });
-    });
-    */
 
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
@@ -952,7 +942,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
   }
-
 
   private idOrganizacaoChange(idOrganizacaoValue: number | null): void {
 
@@ -1746,9 +1735,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         })
+
       )
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
+        // this.iniciarPollingMudancaStatusDIC()
         this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.Complementar);
       });
 
@@ -1809,7 +1800,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        this.iniciarPollingProtocolo();
+        // this.iniciarPollingProtocolo();
         this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.Autuacao);
       });
 
@@ -1875,49 +1866,85 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  private iniciarPollingProtocolo(): void {
+  // private iniciarPollingProtocolo(): void {
 
-    const intervalo = 2000;
-    const timeout = 30000;
+  //   const intervalo = 2000;
+  //   const timeout = 30000;
 
-    interval(intervalo).pipe(
-      takeUntil(timer(timeout)),
-      switchMap(() =>
-        this._projetosService
-          .getById(this._idProjetoEdicao)
-          .pipe(
-            tap((response: IProjeto) => {
-            }),
-            map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
-            catchError(() => of(null))
-          )
-      ),
-      takeWhile((projeto: ProjetoModel | null) => {
-        if (!projeto) return true;
-        return !projeto.protocoloEdocs;
-      }, true)
-    ).subscribe((projetoFinal: ProjetoModel | null) => {
+  //   interval(intervalo).pipe(
+  //     takeUntil(timer(timeout)),
+  //     switchMap(() =>
+  //       this._projetosService
+  //         .getById(this._idProjetoEdicao)
+  //         .pipe(
+  //           tap((response: IProjeto) => {
+  //           }),
+  //           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
+  //           catchError(() => of(null))
+  //         )
+  //     ),
+  //     takeWhile((projeto: ProjetoModel | null) => {
+  //       if (!projeto) return true;
+  //       return !projeto.protocoloEdocs;
+  //     }, true)
+  //   ).subscribe((projetoFinal: ProjetoModel | null) => {
 
-      if (projetoFinal && projetoFinal.protocoloEdocs) {
+  //     if (projetoFinal && projetoFinal.protocoloEdocs) {
 
-        const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
+  //       const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
 
-        protocoloEdocsFormControl.patchValue(projetoFinal.protocoloEdocs);
+  //       protocoloEdocsFormControl.patchValue(projetoFinal.protocoloEdocs);
 
-        this._projetosService.protocoloAtualizado$.next({
-          idProjeto: this._idProjetoEdicao,
-          protocolo: projetoFinal.protocoloEdocs
-        });
+  //       this._projetosService.protocoloAtualizado$.next({
+  //         idProjeto: this._idProjetoEdicao,
+  //         protocolo: projetoFinal.protocoloEdocs
+  //       });
 
-        this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
+  //      // this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
 
-        this._projetosService.notificarAtualizacaoLista();
+  //       this._projetosService.notificarAtualizacaoLista();
 
-      }
+  //     }
 
-    });
+  //   });
 
-  }
+  // }
+
+  // private iniciarPollingMudancaStatusDIC(): void {
+  //   const intervalo = 2000;
+  //   const timeout = 30000;
+  //   interval(intervalo).pipe(
+  //     takeUntil(timer(timeout)),
+  //     switchMap(() =>
+  //       this._projetosService
+  //         .getById(this._idProjetoEdicao)
+  //         .pipe(
+  //           tap((response: IProjeto) => {
+  //           }),
+  //           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
+  //           catchError(() => of(null))
+  //         )
+  //     ),
+  //     takeWhile((projeto: ProjetoModel | null) => {
+  //       if (!projeto) return true;
+  //       return projeto.status != this.statusProjeto ;
+  //     }, true)
+  //   ).subscribe((projetoFinal: ProjetoModel | null) => {
+
+  //     if ( projetoFinal && projetoFinal.status != this.statusProjeto ) {
+  //       //const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
+  //       //protocoloEdocsFormControl.patchValue(projetoFinal.protocoloEdocs);
+  //       // this._projetosService.protocoloAtualizado$.next({
+  //       //   idProjeto: this._idProjetoEdicao,
+  //       //   protocolo: projetoFinal.protocoloEdocs
+  //       // });
+  //       this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
+  //       this._projetosService.notificarAtualizacaoLista();
+  //     }
+
+  //   });
+
+  // }
 
   private pararPolling$ = new Subject<void>();
 
@@ -1956,7 +1983,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       takeUntil(this.pararPolling$),
       finalize(() => {
+        this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
         this._projetosService.notificarAtualizacaoLista();
+        this.cdr.detectChanges();
       }
       )
     ).subscribe((listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] | null) => {
@@ -1973,7 +2002,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this.erroEmAlgumaFaseModalAutuacao = true;
 
-          this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
+         // this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
 
           if ((faseComFalha.msgAlertaExibir?.length ?? 0) > 0)
             this._toastService.showToast(

@@ -25,45 +25,37 @@
       </tr>
     </thead>
     <tbody class="fw-semibold">
-      <tr
-        *ngFor="let projeto of projetosList()"
-        (click)="editarProjeto(projeto.id)"
-      >
+      <tr *ngFor="let projeto of projetosList()" (click)="editarProjeto(projeto.id)">
         <td>{{ projeto.sigla }}</td>
         <td>{{ projeto.titulo }}</td>
         <td>
         </td>
         <td>{{ projeto.status }}</td>
-        <td style="white-space: nowrap; word-break: keep-all;" >
-          <a *ngIf="projeto.protocoloEdocs"
-            [href]="urlEdocsBase + projeto.protocoloEdocs"
-            target="_blank"
+        <td style="white-space: nowrap; word-break: keep-all;">
+          <a *ngIf="projeto.protocoloEdocs" [href]="urlEdocsBase + projeto.protocoloEdocs" target="_blank"
             rel="noopener noreferrer">
             {{ projeto.protocoloEdocs }}
           </a>
-          <span
-            class="badge rounded-pill text-bg-warning"
-            *ngIf="!projeto.protocoloEdocs && projetosAguardando.has(projeto.id)"
-            >Aguardando E-Docs</span
-          >
+          <span class="badge rounded-pill text-bg-warning d-inline-flex align-items-center gap-1"
+            *ngIf="projetosAguardando.has(projeto.id)">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Aguardando E-Docs</span>
         </td>
-        <td style="text-align: right; white-space: nowrap; " >
+        <td style="text-align: right; white-space: nowrap; ">
           {{
-            projeto.valorEstimado
-              | mask
-                : "separator.2"
-                : {
-                    prefix: "R$ ",
-                    leadZero: true,
-                    thousandSeparator: ".",
-                    decimalMarker: ","
-                  }
+          projeto.valorEstimado
+          | mask
+          : "separator.2"
+          : {
+          prefix: "R$ ",
+          leadZero: true,
+          thousandSeparator: ".",
+          decimalMarker: ","
+          }
           }}
         </td>
         <td (click)="$event.stopPropagation()">
-          <button class="btn border-none"
-            (click)="deletarProjeto(projeto.id)"
-            [disabled]="!podeDeletarDic(projeto.id)">
+          <button class="btn border-none" (click)="deletarProjeto(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)">
             <i class="fa-solid fa-trash-can me-2"></i>
           </button>
         </td>
