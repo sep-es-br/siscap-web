@@ -15,7 +15,7 @@ import { IPaginacaoDados } from '../../../core/interfaces/paginacao-dados.interf
 export class PaginationComponent {
   public paginacaoDadosInput = input<IPaginacaoDados>({
     paginaAtual: 1,
-    itensPorPagina: 15,
+    itensPorPagina: 3,
     primeiroItemPagina: 0,
     ultimoItemPagina: 0,
     totalRegistros: 0,

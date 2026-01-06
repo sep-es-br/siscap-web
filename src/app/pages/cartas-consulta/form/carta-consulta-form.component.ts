@@ -8,7 +8,9 @@ import {
 } from '@angular/forms';
 
 import {
+  combineLatest,
   concat,
+  filter,
   finalize,
   map,
   Observable,
@@ -16,6 +18,7 @@ import {
   Subscription,
   switchMap,
   tap,
+  withLatestFrom,
 } from 'rxjs';
 
 import { CartasConsultaService } from '../../../core/services/cartas-consulta/cartas-consulta.service';
@@ -38,12 +41,15 @@ import {
 import {
   IObjetoOpcoesDropdown,
   IOpcoesDropdown,
+  IOpcoesDropdownDestinatariosCartaConsulta,
+  IOpcoesDropdownDestinatariosOpcoes,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 import {
   BreadcrumbAcoesEnum,
   BreadcrumbContextoEnum,
 } from '../../../core/enums/breadcrumb.enum';
+import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 
 @Component({
   selector: 'siscap-carta-consulta-form',
@@ -61,6 +67,8 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
   private readonly _getTiposOperacaoOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
 
+  private readonly _getDestinatariosOpcoes$: Observable<IOpcoesDropdownDestinatariosOpcoes[]>;
+
   private _idCartaConsultaEdicao: number = 0;
 
   public loading: boolean = true;
@@ -70,6 +78,9 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
 
   public objetosOpcoes: IObjetoOpcoesDropdown[] = [];
   public tiposOperacaoOpcoes: IOpcoesDropdown[] = [];
+  public destinatariosOpcoes: IOpcoesDropdownDestinatariosOpcoes[] = [];
+
+  public destinatariosCarta: IOpcoesDropdownDestinatariosCartaConsulta[] = [];
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
@@ -79,20 +90,62 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
     private readonly _navegacaoService: NavegacaoService,
     private readonly _toastService: ToastService
   ) {
+
     const [editar$, criar$] = partition(
       this._cartasConsultaService.idCartaConsulta$,
       (idCartaConsulta: number) => idCartaConsulta > 0
     );
 
+    this._getObjetosOpcoes$ = this._opcoesDropdownService
+      .getOpcoesObjetos()
+      .pipe(tap((response) => (this.objetosOpcoes = response)));
+
+    this._getTiposOperacaoOpcoes$ = this._opcoesDropdownService
+      .getOpcoesTiposOperacao()
+      .pipe(tap((response) => (this.tiposOperacaoOpcoes = response)));
+
+    this._getDestinatariosOpcoes$ = this._opcoesDropdownService
+      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Instituicao_Financeira)
+      .pipe(
+        map((response: IOpcoesDropdown[]) =>
+          response.map(opcao => ({
+            idOrganizacao: opcao.id,
+            nomeOrganizacao: opcao.nome
+          }))
+        ),
+        tap(destinatarios => {
+          this.destinatariosOpcoes = destinatarios;
+        })
+      );
+
+    this._getAllOpcoes$ = concat(
+      this._getObjetosOpcoes$,
+      this._getTiposOperacaoOpcoes$
+    );
+
     this._atualizarCartaConsulta$ = editar$.pipe(
+
       switchMap((idCartaConsulta: number) =>
         this._cartasConsultaService.getById(idCartaConsulta)
       ),
+
+      // tap((response: ICartaConsulta) => {
+      //   console.log('Response bruto da API:', response);
+      // }),
+    
       map<ICartaConsulta, CartaConsultaModel>(
         (response: ICartaConsulta) => new CartaConsultaModel(response)
       ),
+
       tap((cartaConsultaModel: CartaConsultaModel) => {
+
+        this.destinatariosCarta = [...(cartaConsultaModel.destinatarios ?? [])];
+
         this.iniciarForm(cartaConsultaModel);
+
+        this.cartaConsultaForm.patchValue({
+          destinatarios: cartaConsultaModel.destinatarios.map( d => d.idOrganizacao )
+        });
 
         this._idCartaConsultaEdicao = cartaConsultaModel.id;
 
@@ -101,7 +154,9 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
         );
 
         this.loading = false;
+
       })
+
     );
 
     this._cadastrarCartaConsulta$ = criar$.pipe(
@@ -116,31 +171,19 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       })
     );
 
-    this._getObjetosOpcoes$ = this._opcoesDropdownService
-      .getOpcoesObjetos()
-      .pipe(tap((response) => (this.objetosOpcoes = response)));
-
-    this._getTiposOperacaoOpcoes$ = this._opcoesDropdownService
-      .getOpcoesTiposOperacao()
-      .pipe(tap((response) => (this.tiposOperacaoOpcoes = response)));
-
-    this._getAllOpcoes$ = concat(
-      this._getObjetosOpcoes$,
-      this._getTiposOperacaoOpcoes$
-    );
-
     this._subscription.add(
       this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       )
     );
+
   }
 
   ngOnInit(): void {
     this._subscription.add(this._getAllOpcoes$.subscribe());
-
     this._subscription.add(this._atualizarCartaConsulta$.subscribe());
     this._subscription.add(this._cadastrarCartaConsulta$.subscribe());
+    this._subscription.add(this._getDestinatariosOpcoes$.subscribe());
   }
 
   public get corpo(): FormControl<string | null> {
@@ -152,22 +195,27 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(cartaConsultaFormModel?: CartaConsultaFormModel): void {
+
     this.cartaConsultaForm = this._nnfb.group({
       objeto: this._nnfb.control(cartaConsultaFormModel?.objeto ?? null, {
         validators: Validators.required,
       }),
-      operacao: this._nnfb.control(cartaConsultaFormModel?.operacao ?? null, {
+      operacao: this._nnfb.control(cartaConsultaFormModel?.operacao ?? null),
+      corpo: this._nnfb.control(cartaConsultaFormModel?.corpo ?? null, {
         validators: Validators.required,
       }),
-      corpo: this._nnfb.control(cartaConsultaFormModel?.corpo ?? null, {
+      destinatarios: this._nnfb.control(cartaConsultaFormModel?.destinatarios ?? null, {
         validators: Validators.required,
       }),
     });
 
     this.cartaConsultaFormValueChanges();
+
+    this.monitorarDestinatarios();
+
   }
 
-  private cartaConsultaFormValueChanges(): void {}
+  private cartaConsultaFormValueChanges(): void { }
 
   private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
     switch (acao) {
@@ -195,15 +243,24 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const payload = new CartaConsultaFormModel(
-      form.value as ICartaConsultaForm
+    const destinatariosPayload = this.cartaConsultaForm.value.destinatarios.map(
+      (idOrganizacao: number) => ({
+        idCartaConsulta: this._idCartaConsultaEdicao ?? null,
+        idOrganizacao
+      })
     );
+    
+    const payload: ICartaConsultaForm = {
+      ...this.cartaConsultaForm.value,
+      destinatarios: destinatariosPayload
+    };
 
     const requisicao = this._idCartaConsultaEdicao
       ? this.atualizarCartaConsulta(payload)
       : this.cadastrarCartaConsulta(payload);
 
     requisicao.subscribe();
+
   }
 
   private cadastrarCartaConsulta(
@@ -238,9 +295,29 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       );
   }
 
+  private monitorarDestinatarios(): void {
+
+    this.cartaConsultaForm.get('destinatarios')!
+      .valueChanges
+      .pipe(
+        withLatestFrom(this._cartasConsultaService.idCartaConsulta$)
+      )
+      .subscribe(([selecionados, idCartaConsulta]: [IOpcoesDropdownDestinatariosCartaConsulta[], number]) => {
+        this.destinatariosCarta = (selecionados ?? []).map(item => ({
+          id: item.id,
+          nomeOrganizacao: item.nomeOrganizacao,
+          idOrganizacao: item.idOrganizacao,
+          idCartaConsulta
+        }));
+
+      });
+
+  }
+
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this._cartasConsultaService.idCartaConsulta$.next(0);
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
+
 }

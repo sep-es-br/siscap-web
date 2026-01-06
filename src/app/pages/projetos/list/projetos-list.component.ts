@@ -68,15 +68,10 @@ export class ProjetosListComponent {
 
     this._projetosService.protocoloAtualizado$
       .pipe(
-        takeUntil(this._destroy$) // para evitar memory leak
+        takeUntil(this._destroy$)
       )
       .subscribe(({ idProjeto, protocolo }) => {
         const projeto = this.projetosList()?.find(p => p.id === idProjeto);
-        // if (projeto) {
-        //   if( projeto?.protocoloEdocs == null || projeto?.protocoloEdocs.trim() == "" )
-        //   // projeto.protocoloEdocs = protocolo;
-        //   // projeto.status = StatusProjetoEnum.Em_Analise;
-        // }
       });
 
   }
@@ -177,4 +172,21 @@ export class ProjetosListComponent {
       }
     );
   }
+
+  // public exibirBadgeAguardandoEdocs(idDic: number): boolean {
+    
+  //   console.log('id:', idDic, 'timestamp:', Date.now());
+
+  //   if (!idDic) {
+  //     return false;
+  //   }
+  
+  //   const emIntegracao = this.projetosAguardando.has(idDic);
+
+  //   console.log( 'exibirBadgeAguardandoEdocs : ', emIntegracao )
+  
+  //   return emIntegracao;
+
+  // }
+
 }

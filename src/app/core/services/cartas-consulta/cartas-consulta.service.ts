@@ -51,7 +51,7 @@ export class CartasConsultaService
 
   public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
     const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
-      texto: 'Nova Carta Consulta',
+      texto: 'Nova Pesquisa Fonte Financiamento',
     });
 
     return [botaoCriar];

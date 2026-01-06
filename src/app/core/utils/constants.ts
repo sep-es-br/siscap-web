@@ -64,10 +64,10 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   programascriar: 'Novo Programa',
   programaseditar: 'Editar Programa',
 
-  cartasconsulta: 'Cartas Consulta',
-  cartasconsultacriar: 'Nova Carta Consulta',
-  cartasconsultaeditar: 'Editar Carta Consulta',
-  cartasconsultavisualizar: 'Visualizar Carta Consulta', // Caso específico
+  cartasconsulta: 'Pesquisa de Fontes de Financiamento',
+  cartasconsultacriar: 'Nova Pesquisa de Fonte de Financiamento',
+  cartasconsultaeditar: 'Editar Pesquisa de Fonte de Financiamento',
+  cartasconsultavisualizar: 'Visualizar Pesquisa de Fonte de Financiamento', // Caso específico
 
   prospeccao: 'Prospecção',
   prospeccaocriar: 'Nova Prospecção',

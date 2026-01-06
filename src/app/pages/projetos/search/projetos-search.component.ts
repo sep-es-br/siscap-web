@@ -78,14 +78,14 @@ export class ProjetosPesquisaComponent implements OnInit {
         this.isProponente ? idOrganizacaoValorInicial : 0
       ),*/
     });
-    
+
     this.projetoPesquisaFormValueChanges();
 
   }
- 
+
   ngOnInit(): void {
     this._getOrganizacoesOpcoes$.subscribe();
-    
+
     this.pesquisarProjetos.emit(this.projetosPesquisaForm.value);
 
     if (this.podeSelecionarOrganizacao()) {
@@ -98,8 +98,10 @@ export class ProjetosPesquisaComponent implements OnInit {
   private projetoPesquisaFormValueChanges(): void {
     this.projetosPesquisaForm.valueChanges
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
-      .subscribe((projetoPesquisaFormValue) => {
-        this.pesquisarProjetos.emit(projetoPesquisaFormValue);
+      .subscribe(() => {
+        this.pesquisarProjetos.emit(
+          this.projetosPesquisaForm.getRawValue()
+        );
       });
   }
 
