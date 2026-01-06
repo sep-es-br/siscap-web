@@ -130,7 +130,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       ),
 
       // tap((response: ICartaConsulta) => {
-      //   console.log('🔵 Response bruto da API:', response);
+      //   console.log('Response bruto da API:', response);
       // }),
     
       map<ICartaConsulta, CartaConsultaModel>(
@@ -158,7 +158,6 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       })
 
     );
-
 
     this._cadastrarCartaConsulta$ = criar$.pipe(
       tap(() => {
