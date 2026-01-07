@@ -22,7 +22,8 @@ export type TBotaoAcao =
   | 'efetivarparecerestrategicoorcamentario'
   | 'entranharPareceresProcessoEdocs'
   | 'entranharParecerGEOCdocs'
-  | 'capturarparecerGEOC';
+  | 'capturarparecerGEOC'
+  | 'salvarAposElaboracao';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -56,7 +57,7 @@ export abstract class BotoesConfig {
     salvar: {
       classesCSS: ['btn-success'],
       icone: ['fa-solid', 'fa-save'],
-      texto: 'Salvar',
+      texto: 'Salvar Rascunho',
       acao: 'salvar',
     },
     editar: {
@@ -74,7 +75,7 @@ export abstract class BotoesConfig {
     enviar: {
       classesCSS: ['btn-primary'],
       icone: ['fa-solid', 'fa-upload'],
-      texto: 'Enviar',
+      texto: 'Salvar e Enviar',
       acao: 'enviar',
     },
     prospectar: {
@@ -147,6 +148,12 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Enviar Parecer',
       acao: 'capturarparecerGEOC',
+    },
+    salvarAposElaboracao: {
+      classesCSS: ['btn-success'],
+      icone: ['fa-solid', 'fa-save'],
+      texto: 'Salvar',
+      acao: 'salvar',
     },
   };
 
