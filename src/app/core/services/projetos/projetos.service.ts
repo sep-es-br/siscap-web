@@ -130,9 +130,10 @@ export class ProjetosService extends BaseHttpService<
 
   public gerarBotoesAcaoResponderComplementacao(podeEditarDIC: boolean): Array<BotaoPropriedadesModel> {
     if (podeEditarDIC) {
+      const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
       const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
       const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
-      return [botaoCancelar, botaoAutuar];
+      return [botaoCancelar, botaoSalvar, botaoAutuar];
     }
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     return [botaoCancelar];
