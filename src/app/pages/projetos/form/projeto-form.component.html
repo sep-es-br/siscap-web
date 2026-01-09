@@ -382,9 +382,9 @@
   </div>
 
   <div class="modal-body">
-    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
+    <p>Esta ação realizará automaticamente procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
-    <div>
+    <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
@@ -507,7 +507,7 @@
 
     <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
-    <div>
+    <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
@@ -759,9 +759,9 @@
     </h4>
   </div>
   <div class="modal-body">
-    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
+    <p>Esta ação realizará automaticamente procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
-    <div>
+    <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
@@ -826,9 +826,9 @@
     </h4>
   </div>
   <div class="modal-body">
-    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-docs, utilizando a sua identidade - {{
+    <p>Esta ação realizará automaticamente procedimentos no E-docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
-    <div>
+    <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.NAO_INICIADA">
