@@ -46,9 +46,9 @@ export const BREADCRUMB_LISTA_CAMINHOS_ESPECIFICOS: Array<{
 export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   home: 'Página Principal',
 
-  projetos: 'DIC',
-  projetoscriar: 'Novo DIC',
-  projetoseditar: 'Editar DIC',
+  projetos: 'DIC (Documento Inicial de Captação)',
+  projetoscriar: 'Novo DIC (Documento Inicial de Captação)',
+  projetoseditar: 'Editar DIC (Documento Inicial de Captação)',
   projetosparecer: 'Parecer',
 
   pessoas: 'Pessoas',

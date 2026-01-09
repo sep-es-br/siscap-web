@@ -122,7 +122,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public loading: boolean = true;
   public isModoEdicao: boolean = false;
-  //public moedaProjeto: string = '';
+
   public mostrarBotaoGerarDic: boolean = false;
   public mostrarBotaoStatusProjeto: boolean = false;
   public isProponente: boolean = false;
@@ -182,8 +182,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public camposParaComplementacao: IEstruturaCamposComplementar[] = [];
   public camposComplementarProjeto: IEstruturaCamposComplementarProjeto[] = [];
-
-  // public reenvioDicAcionado: boolean = false;
 
   public parecerProjetoUsuario: IParecer = {} as IParecer;
   public lotacaoUsuario: number = LotacaoUsuarioEnum.OUTRO;
@@ -346,9 +344,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.equipeProjeto = projetoModel.equipeElaboracao;
 
           this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
-
-          // console.log( 'projetoModel.subResponsavelProponente : ' +  projetoModel.subResponsavelProponente ) 
-          // console.log( 'this._usuarioService.usuarioPerfil.subNovo : ' + this._usuarioService.usuarioPerfil.subNovo )
 
           this.parecerProjetoUsuario = projetoModel.parecerProjetoUsuario;
           this.lotacaoUsuario = projetoModel.lotacaoUsuario;
@@ -906,7 +901,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._rateioService.moedaFormControlReferencia$.next(
         moedaFormControl.value
       );
-
+      moedaFormControl.disable();
     }
 
     if (!tipoFormControl.value) {
@@ -1074,10 +1069,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         );
         break;
 
-      // case BreadcrumbAcoesEnum.Revisar: // MUDAMOS PARA BOTAO AO LADO DO GERAR DIC
-      //   this.abrirRevisarModal(this.projetoForm)
-      //   break;
-
       case BreadcrumbAcoesEnum.Arquivar:
         this.abrirArquivarModal(this.projetoForm)
         break;
@@ -1165,6 +1156,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
     this.projetoForm.get('valor.tipo')?.disable();
+
+    // moeda não será permitido mudar de Real para outra moeda..
+    this.projetoForm.get('valor.moeda')?.disable();
 
     // Caso especifico para os campos de justificativa (revisao e arquivamento ) na autuacao de projeto..
     this.projetoForm.get('justificativaRevisao')?.enable();
@@ -1264,6 +1258,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
         form.get('valor.tipo')?.enable();
+
+        // Caso especifico de Projetos; moeda somente pode ser 'Real'
+        form.get('valor.moeda')?.enable();
 
         const payload = new ProjetoFormModel(form.value as IProjetoForm);
 
@@ -1603,7 +1600,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.autuacaoAcionada = true;
     this.assinarAutuar = false;
     this.finalizadoProcessamentoIntegracao = false;
-    
+
     if (this.statusProjeto === StatusProjetoEnum.Em_Complementacao) {
       this.reentranharDicProjetoForm(this.projetoForm);
     } else {
@@ -1632,6 +1629,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       form.get('valor.tipo')?.enable();
+      form.get('valor.moeda')?.enable();
       const payload = new ProjetoFormModel(form.value as IProjetoForm);
       payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
       this.reentranharDicProjetoAsync(payload);
@@ -1648,6 +1646,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.updateValueAndValidity();
     setTimeout(() => {
       form.get('valor.tipo')?.enable();
+      form.get('valor.moeda')?.enable();
       const payload = new ProjetoFormModel(form.value as IProjetoForm);
       payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
       this.autuarProjetoAsync(payload);
@@ -1660,6 +1659,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.updateValueAndValidity();
 
     form.get('valor.tipo')?.enable();
+    form.get('valor.moeda')?.enable();
 
     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
@@ -1674,6 +1674,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.updateValueAndValidity();
 
     form.get('valor.tipo')?.enable();
+    form.get('valor.moeda')?.enable();
 
     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
@@ -1876,239 +1877,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  // private iniciarPollingProtocolo(): void {
-  //   const intervalo = 2000;
-  //   const timeout = 30000;
-  //   interval(intervalo).pipe(
-  //     takeUntil(timer(timeout)),
-  //     switchMap(() =>
-  //       this._projetosService
-  //         .getById(this._idProjetoEdicao)
-  //         .pipe(
-  //           tap((response: IProjeto) => {
-  //           }),
-  //           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
-  //           catchError(() => of(null))
-  //         )
-  //     ),
-  //     takeWhile((projeto: ProjetoModel | null) => {
-  //       if (!projeto) return true;
-  //       return !projeto.protocoloEdocs;
-  //     }, true)
-  //   ).subscribe((projetoFinal: ProjetoModel | null) => {
-  //     if (projetoFinal && projetoFinal.protocoloEdocs) {
-  //       const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
-  //       protocoloEdocsFormControl.patchValue(projetoFinal.protocoloEdocs);
-  //       this._projetosService.protocoloAtualizado$.next({
-  //         idProjeto: this._idProjetoEdicao,
-  //         protocolo: projetoFinal.protocoloEdocs
-  //       });
-  //      // this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
-  //       this._projetosService.notificarAtualizacaoLista();
-  //     }
-  //   });
-  // }
-
-  // private iniciarPollingMudancaStatusDIC(): void {
-  //   const intervalo = 2000;
-  //   const timeout = 30000;
-  //   interval(intervalo).pipe(
-  //     takeUntil(timer(timeout)),
-  //     switchMap(() =>
-  //       this._projetosService
-  //         .getById(this._idProjetoEdicao)
-  //         .pipe(
-  //           tap((response: IProjeto) => {
-  //           }),
-  //           map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
-  //           catchError(() => of(null))
-  //         )
-  //     ),
-  //     takeWhile((projeto: ProjetoModel | null) => {
-  //       if (!projeto) return true;
-  //       return projeto.status != this.statusProjeto ;
-  //     }, true)
-  //   ).subscribe((projetoFinal: ProjetoModel | null) => {
-
-  //     if ( projetoFinal && projetoFinal.status != this.statusProjeto ) {
-  //       //const protocoloEdocsFormControl = this.projetoForm.get('protocoloEdocs') as FormControl<string | null>;
-  //       //protocoloEdocsFormControl.patchValue(projetoFinal.protocoloEdocs);
-  //       // this._projetosService.protocoloAtualizado$.next({
-  //       //   idProjeto: this._idProjetoEdicao,
-  //       //   protocolo: projetoFinal.protocoloEdocs
-  //       // });
-  //       this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
-  //       this._projetosService.notificarAtualizacaoLista();
-  //     }
-
-  //   });
-
-  // }
-
   private pararPolling$ = new Subject<void>();
-
-  // private iniciarPollingEtapasIntegracaoModal(contexto: ContextoIntegracaoEdocsEnum): void {
-  //   const intervalo = 2000;
-  //   const timeout = 10000;
-  //   interval(intervalo).pipe(
-  //     takeUntil(timer(timeout)),
-  //     switchMap(() =>
-  //       this._projetosService
-  //         .consultarFasesIntegracaoEdcosProjeto(this._idProjetoEdicao)
-  //         .pipe(
-  //           map<IProjetoIntegracaoEdocsFases[], ProjetoIntegracaoEdocsFasesModel[]>(
-  //             (response: IProjetoIntegracaoEdocsFases[]) =>
-  //               response.map(fase => new ProjetoIntegracaoEdocsFasesModel(fase))),
-  //           catchError(err => {
-  //             console.error("Erro na requisição:", err);
-  //             return EMPTY;
-  //           }),
-  //         )
-  //     ),
-  //     takeUntil(
-  //       this._projetosService.protocoloAtualizado$.pipe(
-  //         filter(dados => !!dados?.protocolo && contexto == ContextoIntegracaoEdocsEnum.Autuacao),
-  //         tap(dados => {
-  //           this.aguardandoAvocamento = FaseStatuEnum.FINALIZADA;
-  //           this.aguardandoDesentranhamento = FaseStatuEnum.FINALIZADA;
-  //           this.aguardandoAssinatura = FaseStatuEnum.FINALIZADA;
-  //           this.aguardandoAutuacao = FaseStatuEnum.FINALIZADA;
-  //           this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
-  //           this.aguardandoDespacho = FaseStatuEnum.FINALIZADA;
-  //         })
-  //       )
-  //     ),
-  //     takeUntil(this.pararPolling$),
-  //     finalize(() => {
-  //       const now = new Date();
-  //       console.log(
-  //         `[${now.toLocaleTimeString('pt-BR', {
-  //           hour12: false,
-  //           fractionalSecondDigits: 3
-  //         })}] passou aqui no finalize (...)`
-  //       );
-  //       this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
-  //       this._projetosService.notificarAtualizacaoLista();
-  //       this.cdr.detectChanges();
-  //     }
-  //     )
-  //   ).subscribe((listaFasesIntegracaoProjeto: ProjetoIntegracaoEdocsFasesModel[] | null) => {
-  //     if (listaFasesIntegracaoProjeto) {
-  //       this.listaFasesIntegracaoProjeto = listaFasesIntegracaoProjeto;
-  //       const faseComFalha = listaFasesIntegracaoProjeto.find(fase => fase.idProjeto === this._idProjetoEdicao && fase.erro);
-  //       if (faseComFalha) {
-  //         this.autuacaoAcionada = false;
-  //         this.erroEmAlgumaFaseModalAutuacao = true;
-  //         // this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
-  //         if ((faseComFalha.msgAlertaExibir?.length ?? 0) > 0)
-  //           this._toastService.showToast(
-  //             'warning',
-  //             faseComFalha.msgAlertaExibir
-  //           );
-  //         else
-  //           this._toastService.showToast(
-  //             'error',
-  //             'Ocorreu erro na integração com E-Docs.'
-  //           );
-  //         this.pararPolling$.next();
-  //         this.cdr.detectChanges();
-  //       }
-  //       if (listaFasesIntegracaoProjeto.every(fase => fase.finalizada)) {
-  //         this.aguardandoAvocamento = FaseStatuEnum.FINALIZADA;
-  //         this.aguardandoDesentranhamento = FaseStatuEnum.FINALIZADA;
-  //         this.aguardandoAssinatura = FaseStatuEnum.FINALIZADA;
-  //         this.aguardandoAutuacao = FaseStatuEnum.FINALIZADA;
-  //         this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
-  //         this.aguardandoDespacho = FaseStatuEnum.FINALIZADA;
-  //         this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
-  //         this._projetosService.notificarAtualizacaoLista();
-  //         this.pararPolling$.next();
-  //         this.cdr.detectChanges();
-  //         const now = new Date();
-  //         console.log(
-  //           `[${now.toLocaleTimeString('pt-BR', {
-  //             hour12: false,
-  //             fractionalSecondDigits: 3
-  //           })}] passou aqui no if (...)`
-  //         );
-  //       }
-
-  //       listaFasesIntegracaoProjeto.forEach(fase => {
-  //         switch (fase.etapa) {
-  //           case FasesEdocsIntegracaoEnum.captura_assinatura:
-  //             if (fase.erro) {
-  //               this.aguardandoAssinatura = FaseStatuEnum.ERROFASE;
-  //               break;
-  //             }
-  //             if (fase.iniciada && !fase.finalizada)
-  //               this.aguardandoAssinatura = FaseStatuEnum.EM_ANDAMENTO;
-  //             if (fase.iniciada && fase.finalizada) {
-  //               this.aguardandoAssinatura = FaseStatuEnum.FINALIZADA;
-  //             }
-  //             break;
-  //           case FasesEdocsIntegracaoEnum.autuar:
-  //             if (fase.erro) {
-  //               this.aguardandoAutuacao = FaseStatuEnum.ERROFASE;
-  //               this.aguardandoEntranhamento = FaseStatuEnum.ERROFASE;
-  //               break;
-  //             }
-  //             if (fase.iniciada) {
-  //               this.aguardandoAutuacao = FaseStatuEnum.EM_ANDAMENTO;
-  //               this.aguardandoEntranhamento = FaseStatuEnum.EM_ANDAMENTO;
-  //             }
-  //             if (fase.finalizada) {
-  //               this.aguardandoAutuacao = FaseStatuEnum.FINALIZADA;
-  //               this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
-  //             }
-  //             break;
-  //           case FasesEdocsIntegracaoEnum.despacharprocesso:
-  //             if (fase.erro) {
-  //               this.aguardandoDespacho = FaseStatuEnum.ERROFASE;
-  //               break;
-  //             }
-  //             if (fase.iniciada)
-  //               this.aguardandoDespacho = FaseStatuEnum.EM_ANDAMENTO;
-  //             if (fase.finalizada)
-  //               this.aguardandoDespacho = FaseStatuEnum.FINALIZADA;
-  //             break;
-  //           case FasesEdocsIntegracaoEnum.desentranhamento:
-  //             if (fase.erro) {
-  //               this.aguardandoDesentranhamento = FaseStatuEnum.ERROFASE;
-  //               break;
-  //             }
-  //             if (fase.iniciada)
-  //               this.aguardandoDesentranhamento = FaseStatuEnum.EM_ANDAMENTO;
-  //             if (fase.finalizada)
-  //               this.aguardandoDesentranhamento = FaseStatuEnum.FINALIZADA;
-  //             break;
-  //           case FasesEdocsIntegracaoEnum.avocamento:
-  //             if (fase.erro) {
-  //               this.aguardandoAvocamento = FaseStatuEnum.ERROFASE;
-  //               break;
-  //             }
-  //             if (fase.iniciada)
-  //               this.aguardandoAvocamento = FaseStatuEnum.EM_ANDAMENTO;
-  //             if (fase.finalizada)
-  //               this.aguardandoAvocamento = FaseStatuEnum.FINALIZADA;
-  //             break;
-  //           case FasesEdocsIntegracaoEnum.entranhararquivo:
-  //             if (fase.erro) {
-  //               this.aguardandoEntranhamento = FaseStatuEnum.ERROFASE;
-  //               break;
-  //             }
-  //             if (fase.iniciada) {
-  //               this.aguardandoEntranhamento = FaseStatuEnum.EM_ANDAMENTO;
-  //             }
-  //             if (fase.finalizada) {
-  //               this.aguardandoEntranhamento = FaseStatuEnum.FINALIZADA;
-  //             }
-  //             break;
-  //         }
-  //       }
-  //       )
-  //     }
-  //   });
-  // }
 
   private iniciarPollingEtapasIntegracaoModal(
     contexto: ContextoIntegracaoEdocsEnum
@@ -2135,7 +1904,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           )
       ),
 
-      filter( lista => lista.length > 0 ),
+      filter(lista => lista.length > 0),
 
       tap(lista => this.atualizarStatusUI(lista)),
 
@@ -2147,7 +1916,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }
       }),
 
-      filter( lista => lista.every( fase => fase.finalizada ) ),
+      filter(lista => lista.every(fase => fase.finalizada)),
 
       take(1),
 
@@ -2160,7 +1929,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.autuacaoAcionada = false;
       }),
 
-      takeUntil( this.pararPolling$ ),
+      takeUntil(this.pararPolling$),
 
       finalize(() => {
         this.autuacaoAcionada = false;
@@ -2252,9 +2021,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.autuacaoAcionada = false;
     this.erroEmAlgumaFaseModalAutuacao = true;
 
-    // 2️⃣ Atualiza o status visual da fase com erro
-    // this.atualizarStatusFaseComErro(fase);
-
     if ((fase.msgAlertaExibir?.length ?? 0) > 0) {
       this._toastService.showToast(
         'warning',
@@ -2277,7 +2043,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
-    //this._rateioService.resetarRateio();
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 
@@ -2324,9 +2089,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return this.erroNaFaseIntegracao(faseIntegracao)
       ? 'fa-solid fa-circle-xmark text-danger'
       : 'fa-solid fa-circle-xmark text-warning';
-    // return this.erroNaFaseIntegracao(faseIntegracao)
-    //   ? 'fa-regular fa-circle-check text-danger'
-    //   : 'fa-regular fa-circle-check text-warning';
   }
 
   private erroNaFaseIntegracao(faseIntegracao: FasesEdocsIntegracaoEnum): boolean {
