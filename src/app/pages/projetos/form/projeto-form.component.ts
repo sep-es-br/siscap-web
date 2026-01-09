@@ -1259,6 +1259,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
         form.get('valor.tipo')?.enable();
 
+        // Caso especifico de Projetos; moeda somente pode ser 'Real'
+        form.get('valor.moeda')?.enable();
+
         const payload = new ProjetoFormModel(form.value as IProjetoForm);
 
         if (this.isProponente) {
@@ -1597,7 +1600,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.autuacaoAcionada = true;
     this.assinarAutuar = false;
     this.finalizadoProcessamentoIntegracao = false;
-    
+
     if (this.statusProjeto === StatusProjetoEnum.Em_Complementacao) {
       this.reentranharDicProjetoForm(this.projetoForm);
     } else {
@@ -1626,6 +1629,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       form.get('valor.tipo')?.enable();
+      form.get('valor.moeda')?.enable();
       const payload = new ProjetoFormModel(form.value as IProjetoForm);
       payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
       this.reentranharDicProjetoAsync(payload);
@@ -1642,6 +1646,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.updateValueAndValidity();
     setTimeout(() => {
       form.get('valor.tipo')?.enable();
+      form.get('valor.moeda')?.enable();
       const payload = new ProjetoFormModel(form.value as IProjetoForm);
       payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
       this.autuarProjetoAsync(payload);
@@ -1654,6 +1659,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.updateValueAndValidity();
 
     form.get('valor.tipo')?.enable();
+    form.get('valor.moeda')?.enable();
 
     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
@@ -1668,6 +1674,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.updateValueAndValidity();
 
     form.get('valor.tipo')?.enable();
+    form.get('valor.moeda')?.enable();
 
     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
@@ -1897,7 +1904,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           )
       ),
 
-      filter( lista => lista.length > 0 ),
+      filter(lista => lista.length > 0),
 
       tap(lista => this.atualizarStatusUI(lista)),
 
@@ -1909,7 +1916,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }
       }),
 
-      filter( lista => lista.every( fase => fase.finalizada ) ),
+      filter(lista => lista.every(fase => fase.finalizada)),
 
       take(1),
 
@@ -1922,7 +1929,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.autuacaoAcionada = false;
       }),
 
-      takeUntil( this.pararPolling$ ),
+      takeUntil(this.pararPolling$),
 
       finalize(() => {
         this.autuacaoAcionada = false;
