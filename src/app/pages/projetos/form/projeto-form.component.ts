@@ -901,7 +901,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._rateioService.moedaFormControlReferencia$.next(
         moedaFormControl.value
       );
-
+      moedaFormControl.disable();
     }
 
     if (!tipoFormControl.value) {
@@ -1156,6 +1156,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
     this.projetoForm.get('valor.tipo')?.disable();
+
+    // moeda não será permitido mudar de Real para outra moeda..
+    this.projetoForm.get('valor.moeda')?.disable();
 
     // Caso especifico para os campos de justificativa (revisao e arquivamento ) na autuacao de projeto..
     this.projetoForm.get('justificativaRevisao')?.enable();
