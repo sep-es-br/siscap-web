@@ -460,14 +460,9 @@
         </div>
       </div>
     </div>
-    <!-- <div *ngIf="finalizadoProcessamentoIntegracao" class="d-flex align-items-start mt-2" style="color: #1e7e34;">
-      <i class="fa-solid fa-circle-check me-2 mt-1"></i>
-      <span>Processo concluído com sucesso!</span>
-    </div> -->
-    <div *ngIf="finalizadoProcessamentoIntegracao" class="success-inline-message mt-4" role="status" aria-live="polite">
-      <span>Processo concluído com sucesso!</span>
+    <div *ngIf="finalizadoProcessamentoIntegracao" class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+      <span>PROCESSO AUTUADO E ENCAMINHADO COM SUCESSO!</span>
     </div>
-
   </div>
 
   <div class="modal-footer">
