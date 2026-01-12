@@ -9,7 +9,8 @@
       <i class="fa-solid fa-check"></i>
       <span>Status</span>
     </button>
-    <button *ngIf="mostrarBotaoPedirRevisaoDic" class="btn btn-warning icon-text-btn me-2" (click)="abrirRevisarModal(projetoForm)">
+    <button *ngIf="mostrarBotaoPedirRevisaoDic" class="btn btn-warning icon-text-btn me-2"
+      (click)="abrirRevisarModal(projetoForm)">
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Solicitar revisão a {{nomeProponenteDIC}} </span>
     </button>
@@ -459,6 +460,14 @@
         </div>
       </div>
     </div>
+    <!-- <div *ngIf="finalizadoProcessamentoIntegracao" class="d-flex align-items-start mt-2" style="color: #1e7e34;">
+      <i class="fa-solid fa-circle-check me-2 mt-1"></i>
+      <span>Processo concluído com sucesso!</span>
+    </div> -->
+    <div *ngIf="finalizadoProcessamentoIntegracao" class="success-inline-message mt-4" role="status" aria-live="polite">
+      <span>Processo concluído com sucesso!</span>
+    </div>
+
   </div>
 
   <div class="modal-footer">
@@ -467,19 +476,13 @@
         <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
-        (click)="confirmarAssinarAutuar()" [disabled]="erroEmAlgumaFaseModalAutuacao">
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
+        [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Assinar e Autuar</span>
       </button>
-      <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
-        style="border-radius: 0; cursor: default; user-select: none;">
-        <i class="fa-solid fa-check text-white me-2"></i>
-        <span>Processo concluído com sucesso!</span>
-      </div>
-      <div *ngIf="autuacaoAcionada"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
@@ -587,6 +590,12 @@
           Economia e Planejamento (SEP).</div>
       </div>
     </div>
+    <div *ngIf="finalizadoProcessamentoIntegracao"
+      class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      style="border-radius: 0; cursor: default; user-select: none;">
+      <i class="fa-solid fa-check text-white me-2"></i>
+      <span>Processo concluído com sucesso!</span>
+    </div>
   </div>
 
   <div class="modal-footer">
@@ -595,20 +604,13 @@
         <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar"
-        class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Assinar e Autuar</span>
       </button>
-      <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
-        style="border-radius: 0; cursor: default; user-select: none;">
-        <i class="fa-solid fa-check text-white me-2"></i>
-        <span>Processo concluído com sucesso!</span>
-      </div>
-      <div *ngIf="autuacaoAcionada"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
@@ -790,9 +792,8 @@
         <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar"
-        class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarCapturarParecer()"
-        [disabled]="erroEmAlgumaFaseModalAutuacao">
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
+        (click)="confirmarAssinarCapturarParecer()" [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Assinar e Capturar Parecer</span>
       </button>
@@ -802,8 +803,7 @@
         <i class="fa-solid fa-check text-white me-2"></i>
         <span>Processo concluído com sucesso!</span>
       </div>
-      <div *ngIf="autuacaoAcionada"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
@@ -857,9 +857,8 @@
         <span>{{ isIntegracaoEdocsConcluido() ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar"
-        class="btn btn-success icon-text-btn me-2" (click)="confirmarEntranhamentoParecerProcessoEdocs()"
-        [disabled]="erroEmAlgumaFaseModalAutuacao">
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
+        (click)="confirmarEntranhamentoParecerProcessoEdocs()" [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Entranhar Pareceres</span>
       </button>
@@ -869,8 +868,7 @@
         <i class="fa-solid fa-check text-white me-2"></i>
         <span>Processo concluído com sucesso!</span>
       </div>
-      <div *ngIf="autuacaoAcionada"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
