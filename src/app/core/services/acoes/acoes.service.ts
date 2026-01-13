@@ -12,6 +12,7 @@ import { TipoStatusEnum } from '../../enums/tipo-status.enum';
 import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
 import { IAcao } from '../../interfaces/acoes.interface';
 import { AcaoFormType } from '../../types/form/acao-form.type';
+import { limiteAcoesValidator } from '../../validators/acoes.validator';
 
 @Injectable({
   providedIn: 'root',
@@ -162,5 +163,19 @@ export class AcoesService {
       }, 0);
 
   }
+
+  public validarAcoes(
+      quantiaFormControlValue: number | null
+    ): void {
+      const acoesFormArrayErrors = this.acoesFormArray.errors;
+      const limiteAcoesError = limiteAcoesValidator(
+        quantiaFormControlValue,
+        this );
+      const resultErrors =
+      limiteAcoesError != null
+          ? { ...acoesFormArrayErrors, ...limiteAcoesError }
+          : acoesFormArrayErrors;
+      this.acoesFormArray.setErrors(resultErrors);
+    }
 
 }

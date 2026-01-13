@@ -14,7 +14,8 @@ import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { getSimboloMoeda } from '../../../core/utils/functions';
 import { ValorService } from '../../../core/services/valor/valor.service';
 import { NgxMaskPipe } from 'ngx-mask';
-import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
+import { combineLatest, debounceTime, distinctUntilChanged, filter, map, startWith } from 'rxjs';
+import { limiteAcoesValidator } from '../../../core/validators/acoes.validator';
 
 @Component({
   selector: 'siscap-acoes-form',
@@ -73,16 +74,25 @@ export class AcoesFormComponent {
 
   ngOnInit() {
 
-    this.valorService.valorFormGroup.valueChanges.subscribe(valor => {
-      this.valorEstimadoDIC = valor.quantia ?? 0;
-      this.recalcularTotais();
-    });
+    const valorDIC$ =
+      this.valorService.valorFormGroup.valueChanges.pipe(
+        startWith(this.valorService.valorFormGroup.value),
+        map(v => v.quantia ?? 0)
+      );
 
-    this.acoesService.acoesFormArray.valueChanges.subscribe(() => {
-      this.totalAcoesAtivas =
-        this.acoesService.calcularTotalAcoesAtivas();
-        this.recalcularTotais();
-    });
+    const totalAcoes$ =
+      this.acoesService.acoesFormArray.valueChanges.pipe(
+        startWith(this.acoesService.acoesFormArray.value),
+        map(() => this.acoesService.calcularTotalAcoesAtivas())
+      );
+
+    combineLatest([valorDIC$, totalAcoes$]).subscribe(
+      ([valorDIC, totalAcoes]) => {
+        this.valorEstimadoDIC = valorDIC;
+        this.totalAcoesAtivas = totalAcoes;
+        this.recalcularDiferencas();
+      }
+    );
 
   }
 
@@ -116,10 +126,12 @@ export class AcoesFormComponent {
       idStatus: [TipoStatusEnum.Ativo,]
     });
     this.acoesFormArray.push(novaAcao);
+
   }
 
   removerAcao(index: number): void {
     this.acoesFormArray.removeAt(index);
+    this.acoesFormArray.updateValueAndValidity();
   }
 
   public marcarAcaoExcluida(index: number) {
@@ -163,9 +175,11 @@ export class AcoesFormComponent {
     return this.acoesService.acoesFormArray;
   }
 
-  private recalcularTotais(): void {
+  private recalcularDiferencas(): void {
     this.totalFaltandoEmValorAcoes =
-      this.valorEstimadoDIC - this.totalAcoesAtivas;
+    this.totalAcoesAtivas - this.valorEstimadoDIC;
+    console.log('this.totalFaltandoEmValorAcoes : ',  this.totalFaltandoEmValorAcoes );
+    this.acoesService.validarAcoes(this.valorEstimadoDIC);
   }
 
 }

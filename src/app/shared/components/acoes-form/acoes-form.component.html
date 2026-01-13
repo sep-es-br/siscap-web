@@ -2,103 +2,48 @@
   <div class="card mb-3">
     <div class="card-body">
 
-      <div class="col-12 mb-2 d-flex flex-wrap justify-content-between justify-content-sm-end justify-content-lg-between align-items-center" >
-        
-        <div class="col-12 col-sm-6 col-lg-4">
-          <!-- <div id="estado-checkbox-div" class="form-check">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              name="estado-checkbox"
-              id="estado-checkbox"
-              [disabled]="!isModoEdicao"
-              [(ngModel)]="estadoBooleanCheckbox"
-              (change)="notificarEstadoCheckboxChange()"
-            />
-            <label class="form-check-label text-nowrap" for="estado-checkbox"
-              >Todo o Estado</label
-            >
-          </div> -->
-        </div>
-
+      <div
+        class="col-12 mb-2 d-flex flex-wrap justify-content-between justify-content-sm-end justify-content-lg-between align-items-center">
+        <div class="col-12 col-sm-6 col-lg-4"></div>
         <div class="row mb-2">
           <div class="col-12 d-flex justify-content-end align-items-center gap-4 text-end">
-                            
-            <span class="fs-small-3 total-quantia text-nowrap">
-              Ações:
+            <span class="fs-small-3 total-quantia text-nowrap" [ngClass]="{
+              'error-message':
+                acoesService.acoesFormArray.errors?.['limiteAcoes']
+            }">
+              Estimado em Ações:
               {{
-                totalAcoesAtivas
-                  | mask
-                    : "separator.2"
-                    : {
-                        prefix: getSimboloMoeda(moedaProjeto) + " ",
-                        leadZero: true,
-                        thousandSeparator: ".",
-                        decimalMarker: ","
-                      }
+              totalAcoesAtivas
+              | mask
+              : "separator.2"
+              : {
+              prefix: getSimboloMoeda(moedaProjeto) + " ",
+              leadZero: true,
+              thousandSeparator: ".",
+              decimalMarker: ","
+              }
               }}
             </span>
 
-            <span class="fs-small-3 total-quantia text-nowrap">
+            <span class="fs-small-3 total-quantia text-nowrap" [ngClass]="{
+              'error-message':
+                acoesService.acoesFormArray.errors?.['limiteAcoes']
+            }">
               Faltando :
               {{
-                totalFaltandoEmValorAcoes
-                  | mask
-                    : "separator.2"
-                    : {
-                        prefix: getSimboloMoeda(moedaProjeto) + " ",
-                        leadZero: true,
-                        thousandSeparator: ".",
-                        decimalMarker: ","
-                      }
+              totalFaltandoEmValorAcoes
+              | mask
+              : "separator.2"
+              : {
+              prefix: getSimboloMoeda(moedaProjeto) + " ",
+              leadZero: true,
+              thousandSeparator: ".",
+              decimalMarker: ","
+              }
               }}
             </span>
-        
           </div>
         </div>
-        
-  
-        <!-- <div class="col-12 col-sm-6 col-lg-4 d-inline-flex flex-row justify-content-between" >
-          <ng-container>
-            <div class="col-7 col-sm-8">
-              <span
-                class="fs-small-3 total-quantia"
-              >
-              Total estimado DIC : 
-                {{
-                  valorEstimadoDIC
-                    | mask
-                      : "separator.2"
-                      : {
-                          prefix: getSimboloMoeda(moedaProjeto) + " ",
-                          leadZero: true,
-                          thousandSeparator: ".",
-                          decimalMarker: ","
-                        }
-                }}
-              </span>
-            </div>
-            <div class="col-7 col-sm-8">
-              <span
-                class="fs-small-3 total-quantia"
-              >
-              Total estimado Ações : 
-                {{
-                  totalAcoesAtivas
-                    | mask
-                      : "separator.2"
-                      : {
-                          prefix: getSimboloMoeda(moedaProjeto) + " ",
-                          leadZero: true,
-                          thousandSeparator: ".",
-                          decimalMarker: ","
-                        }
-                }}
-              </span>
-            </div>
-          </ng-container>
-        </div> -->
-
       </div>
 
       <ng-container *ngFor="let acoesFormGroup of acoesService.acoesFormArray.controls; index as i">
@@ -140,21 +85,23 @@
               <textarea class="form-control" [id]="'acaoDescricao_' + i" formControlName="descricaoAcaoSecundaria"
                 rows="3" maxlength="2000"></textarea>
             </div>
-          </div>
-          <div *ngIf="isModoEdicao" class="d-flex justify-content-between align-items-center mb-2">
-            <button *ngIf="isModoEdicao || !isAcaoAtiva(i)" type="button" ngbTooltip="Remover Ação do DIC"
-              class="btn btn-outline-danger rounded-circle"
-              (click)="isNovaAcao(i) ? removerAcao(i) : marcarAcaoExcluida(i)">
-              <i class="fa-solid fa-minus remove-btn-icon"></i>
-            </button>
+            <div *ngIf="isModoEdicao" class="d-flex justify-content-between align-items-center mb-2">
+              <button *ngIf="isModoEdicao || !isAcaoAtiva(i)" type="button" ngbTooltip="Remover Ação do DIC"
+                class="btn btn-outline-danger rounded-circle"
+                (click)="isNovaAcao(i) ? removerAcao(i) : marcarAcaoExcluida(i)">
+                <i class="fa-solid fa-minus remove-btn-icon"></i>
+              </button>
+            </div>
           </div>
         </form>
       </ng-container>
+
       <div *ngIf="isModoEdicao" class="d-grid mt-3">
         <button type="button" class="btn btn-outline-primary" (click)="adicionarAcao()">
           <i class="fas fa-plus me-2"></i>Adicionar Nova Ação
         </button>
       </div>
+      
     </div>
   </div>
 </div>
