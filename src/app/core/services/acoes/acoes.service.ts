@@ -22,6 +22,22 @@ export class AcoesService {
     FormGroup<AcaoFormType>
   >([]);
 
+  private _simboloMoeda: string = '';
+
+  public get simboloMoeda(): string {
+    return this._simboloMoeda;
+  }
+
+  private _quantiaFormControlReferencia: number | null = null;
+
+  public get quantiaFormControlReferencia(): number | null {
+    return this._quantiaFormControlReferencia;
+  }
+
+  private set quantiaFormControlReferencia(quantia: number | null) {
+    this._quantiaFormControlReferencia = quantia;
+  }
+
   private _acoesFormArraySnapshot: Array<IAcao> = [];
 
   public get acoesFormArraySnapshot(): Array<IAcao> {
@@ -30,6 +46,22 @@ export class AcoesService {
 
   private set acoesFormArraySnapshot(indicadoresFormArrayValue: Array<IAcao>) {
     this._acoesFormArraySnapshot = indicadoresFormArrayValue;
+  }
+
+  private _totalAcoes: { percentual: number; quantia: number } = {
+    percentual: 0,
+    quantia: 0,
+  };
+
+  public get totalAcoes(): { percentual: number; quantia: number } {
+    return this._totalAcoes;
+  }
+
+  private set totalAcoes(totalAcoes: {
+    percentual: number;
+    quantia: number;
+  }) {
+    this._totalAcoes = totalAcoes;
   }
 
   private readonly _idAcaoAcoesValue$: Subject<number> = new Subject<number>();
@@ -59,16 +91,16 @@ export class AcoesService {
   constructor(private _nnfb: NonNullableFormBuilder) {
     this.idAcaoAcoesValue$.subscribe((idAcaoAcoesValue: number) => {
       const indicadorMontado = this.construirAcaoFormGroupNgSelectValue(idAcaoAcoesValue);
-      this.incluirAcao( indicadorMontado );
+      this.incluirAcao(indicadorMontado);
     });
   }
 
-    public construirAcaoFormGroupNgSelectValue(
-      ngSelectValue: number
-    ): FormGroup<AcaoFormType> {
-      const membroFormGroup = this.construirAcaoFormGroup();
-      return membroFormGroup;
-    }
+  public construirAcaoFormGroupNgSelectValue(
+    ngSelectValue: number
+  ): FormGroup<AcaoFormType> {
+    const membroFormGroup = this.construirAcaoFormGroup();
+    return membroFormGroup;
+  }
 
   public construirAcoesFormArray(
     acoes?: Array<IAcao>
@@ -77,10 +109,10 @@ export class AcoesService {
     const acoesFormArray = this._nnfb.array<FormGroup<AcaoFormType>>(
       [],
       [Validators.required, Validators.minLength(1),]);
-    
+
     if (acoes) {
-        acoes.forEach((acao) => {
-          acoesFormArray.push(this.construirAcaoFormGroup(acao));
+      acoes.forEach((acao) => {
+        acoesFormArray.push(this.construirAcaoFormGroup(acao));
       });
     }
 
@@ -89,18 +121,18 @@ export class AcoesService {
     return this.acoesFormArray;
   }
 
-  public construirAcaoFormGroup( membro?: IAcao): FormGroup<AcaoFormType> {
+  public construirAcaoFormGroup(membro?: IAcao): FormGroup<AcaoFormType> {
     return this._nnfb.group<AcaoFormType>({
-      idAcao: this._nnfb.control(membro?.idAcao ?? 0 ),
-      descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null, Validators.required ),
-      descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null, Validators.required ),
-      valorEstimadoAcaoPrincipal: this._nnfb.control(membro?.valorEstimadoAcaoPrincipal ?? 0, Validators.required ),
-      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required 
+      idAcao: this._nnfb.control(membro?.idAcao ?? 0),
+      descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null, Validators.required),
+      descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null, Validators.required),
+      valorEstimadoAcaoPrincipal: this._nnfb.control(membro?.valorEstimadoAcaoPrincipal ?? 0, Validators.required),
+      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required
       ),
     });
   }
 
- 
+
   public incluirAcao(
     acaoFormGroup: FormGroup<AcaoFormType>
   ): void {
@@ -117,6 +149,18 @@ export class AcoesService {
     });
     this.excluirMembroForm = excluirAcaoForm;
     return this.excluirMembroForm;
+  }
+
+  public calcularTotalAcoesAtivas(): number {
+
+    return this.acoesFormArray.controls
+      .filter(formGroup =>
+        formGroup.controls.idStatus.value === TipoStatusEnum.Ativo
+      )
+      .reduce((total, formGroup) => {
+        return total + (formGroup.controls.valorEstimadoAcaoPrincipal.value ?? 0);
+      }, 0);
+
   }
 
 }

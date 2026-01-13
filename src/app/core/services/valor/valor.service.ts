@@ -4,15 +4,26 @@ import { FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { IValor } from '../../interfaces/valor.interface';
 
 import { ValorFormType } from '../../types/form/valor-form.type';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ValorService {
+
+  private readonly _valorForm$ =
+    new BehaviorSubject<FormGroup<ValorFormType>>(this.construirValorFormGroup());
+
+  valorForm$ = this._valorForm$.asObservable();
+
+  setForm(valor?: IValor) {
+    this._valorForm$.next(this.construirValorFormGroup(valor));
+  }
+
   public valorFormGroup: FormGroup<ValorFormType> =
     this.construirValorFormGroup();
 
-  constructor(private readonly _nnfb: NonNullableFormBuilder) {}
+  constructor(private readonly _nnfb: NonNullableFormBuilder) { }
 
   public construirValorFormGroup(valor?: IValor): FormGroup<ValorFormType> {
     const valorFormGroup = this._nnfb.group<ValorFormType>({
@@ -30,5 +41,7 @@ export class ValorService {
     this.valorFormGroup = valorFormGroup;
 
     return this.valorFormGroup;
+
   }
+
 }
