@@ -4,14 +4,14 @@
 
       <div
         class="col-12 mb-2 d-flex flex-wrap justify-content-between justify-content-sm-end justify-content-lg-between align-items-center">
-        <div class="col-12 col-sm-6 col-lg-4"></div>
+
+        <div class="col-12 col-sm-6 col-lg-4"> </div>
+
         <div class="row mb-2">
           <div class="col-12 d-flex justify-content-end align-items-center gap-4 text-end">
-            <span class="fs-small-3 total-quantia text-nowrap" [ngClass]="{
-              'error-message':
-                acoesService.acoesFormArray.errors?.['limiteAcoes']
-            }">
-              Estimado em Ações:
+
+            <span class="fs-small-3 total-quantia fw-semibold text-nowrap">
+              Soma valor estimado das ações:
               {{
               totalAcoesAtivas
               | mask
@@ -25,11 +25,9 @@
               }}
             </span>
 
-            <span class="fs-small-3 total-quantia text-nowrap" [ngClass]="{
-              'error-message':
-                acoesService.acoesFormArray.errors?.['limiteAcoes']
-            }">
-              Faltando :
+            <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-2 text-nowrap"
+              *ngIf="acoesService.acoesFormArray.errors?.['limiteAcoes']">
+              Diferença:
               {{
               totalFaltandoEmValorAcoes
               | mask
@@ -42,9 +40,11 @@
               }
               }}
             </span>
+
           </div>
         </div>
       </div>
+
 
       <ng-container *ngFor="let acoesFormGroup of acoesService.acoesFormArray.controls; index as i">
         <form [formGroup]="acoesFormGroup">
@@ -101,7 +101,7 @@
           <i class="fas fa-plus me-2"></i>Adicionar Nova Ação
         </button>
       </div>
-      
+
     </div>
   </div>
 </div>
