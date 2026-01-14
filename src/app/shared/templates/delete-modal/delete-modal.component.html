@@ -7,7 +7,18 @@
   <p class="fw-bold">{{ conteudo }}</p>
   <p>Essa ação não poderá ser desfeita. Tem certeza que deseja continuar?</p>
 </div>
-
+<div class="modal-body text-left pt-0" 
+   *ngIf="exigirJustificativa">
+  <div class="fw-bold">Justificativa:</div>
+  <textarea
+    rows="5"
+    class="form-control"
+    id="justificativa"
+    [(ngModel)]="justificativa"
+    maxlength="499"
+    [required]="exigirJustificativa"
+  ></textarea>
+</div>
 <div class="modal-footer d-flex justify-content-center">
   <siscap-botao
     [propriedades]="botaoVoltar"
@@ -15,6 +26,6 @@
   ></siscap-botao>
   <siscap-botao
     [propriedades]="botaoProsseguir"
-    (acao)="activeModal.close(true)"
+    (acao)="confirmar()"
   ></siscap-botao>
 </div>

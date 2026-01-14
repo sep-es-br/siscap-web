@@ -11,7 +11,19 @@ export type TBotaoAcao =
   | 'editar'
   | 'deletar'
   | 'enviar'
-  | 'prospectar';
+  | 'prospectar'
+  | 'autuarEdocs'
+  | 'revisar'
+  | 'recusar'
+  | 'arquivar'
+  | 'complementar'
+  | 'parecerestrategicoorcamentario'
+  | 'salvarparecer'
+  | 'efetivarparecerestrategicoorcamentario'
+  | 'entranharPareceresProcessoEdocs'
+  | 'entranharParecerGEOCdocs'
+  | 'capturarparecerGEOC'
+  | 'salvarAposElaboracao';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -45,7 +57,7 @@ export abstract class BotoesConfig {
     salvar: {
       classesCSS: ['btn-success'],
       icone: ['fa-solid', 'fa-save'],
-      texto: 'Salvar',
+      texto: 'Salvar Rascunho',
       acao: 'salvar',
     },
     editar: {
@@ -63,7 +75,7 @@ export abstract class BotoesConfig {
     enviar: {
       classesCSS: ['btn-primary'],
       icone: ['fa-solid', 'fa-upload'],
-      texto: 'Enviar',
+      texto: 'Salvar e Enviar',
       acao: 'enviar',
     },
     prospectar: {
@@ -71,6 +83,77 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-paper-plane'],
       texto: 'Prospectar',
       acao: 'prospectar',
+    },
+    autuarEdocs: {
+      classesCSS: ['btn-success'],
+      icone: ['fa-solid', 'fa-paper-plane'],
+      texto: 'Assinar e Autuar',
+      acao: 'autuarEdocs',
+    },
+    revisar: {
+      classesCSS: ['btn-outline-warning'],
+      icone: ['fa-solid', 'fa-pen-to-square'],
+      texto: 'Revisar',
+      acao: 'revisar',
+    },
+    recusar: {
+      classesCSS: ['btn-danger'],
+      icone: ['fa-solid', 'fa-ban'],
+      texto: 'Recusar',
+      acao: 'recusar',
+    },
+    arquivar: {
+      classesCSS: ['btn-outline-danger'],
+      icone: ['fa-solid', 'fa-box-archive'],
+      texto: 'Arquivar',
+      acao: 'arquivar',
+    },
+    complementar: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-edit'],
+      texto: 'Complementar',
+      acao: 'complementar',
+    },
+    parecerestrategicoorcamentario: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Pedir Parecer',
+      acao: 'parecerestrategicoorcamentario',
+    },salvarparecer: {
+      classesCSS: ['btn-success'],
+      icone: ['fa-solid', 'fa-save'],
+      texto: 'Salvar Parecer',
+      acao: 'salvar',
+    },
+    efetivarparecerestrategicoorcamentario: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Enviar Parecer',
+      acao: 'efetivarparecerestrategicoorcamentario',
+    },
+    entranharPareceresProcessoEdocs: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Entranhar Pareceres',
+      acao: 'entranharPareceresProcessoEdocs',
+    },
+    entranharParecerGEOCdocs: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Entranhar Parecer',
+      acao: 'entranharParecerGEOCdocs',
+    },
+    capturarparecerGEOC: {
+      classesCSS: ['btn-primary'],
+      icone: ['fa-solid', 'fa-upload'],
+      texto: 'Enviar Parecer',
+      acao: 'capturarparecerGEOC',
+    },
+    salvarAposElaboracao: {
+      classesCSS: ['btn-success'],
+      icone: ['fa-solid', 'fa-save'],
+      texto: 'Salvar',
+      acao: 'salvar',
     },
   };
 

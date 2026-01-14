@@ -8,6 +8,7 @@ export interface IUsuario {
   idOrganizacoes: Array<number>;
   idPessoa: number;
   isProponente: boolean;
+  isSubcap: boolean;
 }
 
 export interface IUsuarioPerfil extends Omit<IUsuario, 'token'> {}

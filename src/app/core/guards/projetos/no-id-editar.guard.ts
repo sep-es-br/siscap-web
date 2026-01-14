@@ -2,13 +2,18 @@ import { inject } from '@angular/core';
 import { CanActivateFn, createUrlTreeFromSnapshot } from '@angular/router';
 
 import { ProjetosService } from '../../services/projetos/projetos.service';
+import { map } from 'rxjs';
 
 export const projetos_NoIdEditarGuard: CanActivateFn = (route, state) => {
-  const idProjetoValue: number = inject(ProjetosService).idProjeto$.value;
+  const projetosService = inject(ProjetosService);
 
-  if (idProjetoValue) {
-    return true;
-  }
-
-  return createUrlTreeFromSnapshot(route, ['..']);
+  return projetosService.idProjeto$.pipe(
+    map(idProjetoValue => {
+      if (idProjetoValue) {
+        return true;
+      } else {
+        return createUrlTreeFromSnapshot(route, ['..']);
+      }
+    })
+  );
 };

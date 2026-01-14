@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
+  NgbAccordionModule,
   NgbAlertModule,
   NgbDatepickerModule,
   NgbPaginationModule,
@@ -19,6 +20,7 @@ import { ProjetosRoutingModule } from './projetos-routing.module';
 import { ProjetosPesquisaComponent } from './search/projetos-search.component';
 import { IndicadoresFormComponent } from "../../shared/components/indicadores-form/indicadores-form.component";
 import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-form.component';
+import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,11 @@ import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-for
     NgbDatepickerModule,
     ProjetosRoutingModule,
     IndicadoresFormComponent,
-    AcoesFormComponent
+    AcoesFormComponent,
+    ReactiveFormsModule,
+    NgbAccordionModule,
+    ReactiveFormsModule,
+    ProjetoParecerComponent
 ],
   exports: [
     ProjetosComponent,

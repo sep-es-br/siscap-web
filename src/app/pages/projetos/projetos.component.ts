@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, Subject, Subscription, takeUntil, tap } from 'rxjs';
 
 import { UsuarioService } from '../../core/services/usuario/usuario.service';
 import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
@@ -66,9 +66,7 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   ) {
     const isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
-    const botoesAcaoPropriedades = isProponente
-      ? this._projetosService.gerarBotoesAcaoListagemProponente()
-      : this._projetosService.gerarBotoesAcaoListagem();
+    const botoesAcaoPropriedades = this._projetosService.gerarBotoesAcaoListagem();
 
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
       botoesAcaoPropriedades
@@ -86,7 +84,15 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    this._subscription.add(
+      this._projetosService.atualizarListaProjetos$.subscribe(() => {
+        this.fetchPage();
+      })
+    );
+
     this.fetchPage();
+
   }
 
   public redefinirFiltroPesquisa(event: IProjetoFiltroPesquisa): void {

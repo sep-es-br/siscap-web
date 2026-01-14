@@ -74,7 +74,10 @@ export class BreadcrumbService {
   private tratarCaminhosBreadcrumb(url: string): Array<IBreadcrumbItem> {
     const urlTratada = url
       .split('/')
-      .filter((caminho) => !this.filtrarCaminhosExclusao(caminho));
+      .filter((caminho) => 
+        !this.filtrarCaminhosExclusao(caminho) && 
+        !/^\d+$/.test(caminho)                    // ignora numeros
+      );
 
     const breadcrumbItemArray = urlTratada.map((caminho, index) => {
       if (this.filtrarCaminhosPrincipais(caminho)) {

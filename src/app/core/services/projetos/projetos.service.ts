@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -20,6 +20,8 @@ import {
 import { TipoValorEnum } from '../../enums/tipo-valor.enum';
 
 import { environment } from '../../../../environments/environment';
+import { IProjetoIntegracaoEdocsFases } from '../../interfaces/projeto-integracao-edcos-fases.interface';
+import { IEstruturaCamposComplementar } from '../../interfaces/estrutura.campo.complementar.dic.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +30,32 @@ export class ProjetosService extends BaseHttpService<
   IProjeto,
   IProjetoTableData
 > {
+
+  private _atualizarListaProjetos$ = new Subject<void>();
+  atualizarListaProjetos$ = this._atualizarListaProjetos$.asObservable();
+
+  notificarAtualizacaoLista() {
+    this._atualizarListaProjetos$.next();
+  }
+
   private readonly _url = `${environment.apiUrl}/projetos`;
+
+  public protocoloAtualizado$ = new Subject<{ idProjeto: number; protocolo: string }>();
+  private projetosAguardandoEdocsSubject = new BehaviorSubject<Set<number>>(new Set());
+  public projetosAguardandoEdocs$ = this.projetosAguardandoEdocsSubject.asObservable();
+  public complementacaoEdocsReenviado$ = new Subject<{ idProjeto: number; reenvioConcluido: boolean }>();
+
+  adicionarProjetoAguardando(idProjeto: number): void {
+    const atual = this.projetosAguardandoEdocsSubject.value;
+    atual.add(idProjeto);
+    this.projetosAguardandoEdocsSubject.next(new Set(atual));
+  }
+
+  removerProjetoAguardando(idProjeto: number): void {
+    const atual = this.projetosAguardandoEdocsSubject.value;
+    atual.delete(idProjeto);
+    this.projetosAguardandoEdocsSubject.next(new Set(atual));
+  }
 
   private readonly _idProjeto$: BehaviorSubject<number> =
     new BehaviorSubject<number>(0);
@@ -37,19 +64,13 @@ export class ProjetosService extends BaseHttpService<
     return this._idProjeto$;
   }
 
+  private _projetosEmAutuacao: BehaviorSubject<Set<number>> = new BehaviorSubject(new Set());
+
   constructor(private readonly _http: HttpClient) {
     super(_http, 'projetos');
   }
 
   public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
-    const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
-      texto: 'Novo Projeto',
-    });
-
-    return [botaoCriar];
-  }
-
-  public gerarBotoesAcaoListagemProponente(): Array<BotaoPropriedadesModel> {
     const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
       texto: 'Novo DIC',
     });
@@ -61,14 +82,87 @@ export class ProjetosService extends BaseHttpService<
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
-    return [botaoSalvar, botaoCancelar, botaoEnviar];
+    return [botaoCancelar, botaoSalvar, botaoEnviar];
+  }
+
+  public gerarBotoesAcaoFormularioUsuarioProponenteResponsavel(): Array<BotaoPropriedadesModel> {
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
+    const botaoArquivar = BotoesConfig.gerarBotaoPropriedades('arquivar');
+    return [botaoVoltar, botaoSalvar, botaoAutuar, botaoArquivar];
   }
 
   public gerarBotoesAcaoFormularioProponente(): Array<BotaoPropriedadesModel> {
-    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    //const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
-    return [botaoCancelar, botaoEnviar];
+    return [botaoVoltar, botaoSalvar, botaoEnviar];
+  }
+
+  public gerarBotoesAcaoFormularioProponenteEmAnalise(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+    const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
+    const botaoArquivar = BotoesConfig.gerarBotaoPropriedades('arquivar');
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    return [botaoSalvar, botaoAutuar, botaoArquivar, botaoVoltar];
+  }
+
+  public gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(podeComplementar: boolean): Array<BotaoPropriedadesModel> {
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    if (podeComplementar) {
+      const botaoComplementar = BotoesConfig.gerarBotaoPropriedades('complementar');
+      const botaoSolicitarParecer = BotoesConfig.gerarBotaoPropriedades('parecerestrategicoorcamentario');
+      return [botaoVoltar, botaoSolicitarParecer, botaoComplementar]
+    } else
+      return [botaoVoltar];
+  }
+
+  public gerarBotoesAcaoFormularioArquivado(): Array<BotaoPropriedadesModel> {
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    return [botaoCancelar];
+  }
+
+  public gerarBotoeAcaoVoltar(): Array<BotaoPropriedadesModel> {
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    return [botaoVoltar];
+  }
+
+  public gerarBotoesAcaoResponderComplementacao(podeEditarDIC: boolean): Array<BotaoPropriedadesModel> {
+    if (podeEditarDIC) {
+      const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
+      const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+      const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
+      return [botaoCancelar, botaoSalvar, botaoAutuar];
+    }
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar];
+  }
+
+  public gerarBotoesAcaoParecerEstrategicoOrcamentario(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
+    const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('efetivarparecerestrategicoorcamentario');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoSalvar, botaoEnviar];
+  }
+
+  public gerarBotoesAcaoParecerGEOC(): Array<BotaoPropriedadesModel> {
+    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
+    const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('capturarparecerGEOC');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoSalvar, botaoEnviar];
+  }
+
+  public gerarBotoesAcaoEntgranharPareceresProcessoEdocs(): Array<BotaoPropriedadesModel> {
+    const botaoEntranharPareceres = BotoesConfig.gerarBotaoPropriedades('entranharPareceresProcessoEdocs');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoEntranharPareceres];
+  }
+
+  public gerarBotoesAcaoParecereGEOCEdocs(): Array<BotaoPropriedadesModel> {
+    const botaoEntranharPareceres = BotoesConfig.gerarBotaoPropriedades('entranharParecerGEOCdocs');
+    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    return [botaoCancelar, botaoEntranharPareceres];
   }
 
   public construirProjetoModelRateio(
@@ -142,6 +236,54 @@ export class ProjetosService extends BaseHttpService<
     );
   }
 
+  public enviarEmailRevisarProjeto(id: number,
+    justificativa: string): Observable<string> {
+    return this._http.post(
+      `${this._url}/${id}/revisar?justificativa=${justificativa}`,
+      { justificativa },
+      { responseType: 'text' }
+    );
+  }
+
+  public enviarEmailArquivarProjeto(id: number,
+    justificativa: string,
+    codigoMotivoArquivamento: string): Observable<string> {
+
+    const payload = {
+      justificativa: justificativa,
+      codigoMotivoArquivamento: codigoMotivoArquivamento
+    };
+
+    return this._http.post(
+      `${this._url}/${id}/arquivar`,
+      payload,
+      { responseType: 'text' }
+
+    );
+
+  }
+
+  public enviarEmailAvisoComplementacaoProjeto(id: number, formCamposComplementar: IEstruturaCamposComplementar[]
+  ): Observable<string> {
+
+    const payload = formCamposComplementar
+      .filter(item => (item.mensagemComplementacao || '').length > 0)
+      .map(item => ({
+        idComplemento: null,
+        idCampo: item.name,
+        descricaoCampo: item.label,
+        descricaoComplemento: item.mensagemComplementacao
+      }));
+
+    return this._http.post(
+      `${this._url}/${id}/complementar`,
+      payload,
+      { responseType: 'text' }
+
+    );
+
+  }
+
   public baixarDIC(id: number): void {
     const userHttpOptions: Object = {
       responseType: 'arraybuffer',
@@ -176,4 +318,68 @@ export class ProjetosService extends BaseHttpService<
         }
       });
   }
+
+  public autuarProjetoEdocs(
+    id: number,
+    body: ProjetoFormModel
+  ): Observable<IProjeto> {
+    this.iniciarAutuacao(id);
+    return this._http.put<IProjeto>(
+      `${this._url}/dic/edocs/autuar/${id}`, body
+    );
+  }
+
+  public efetivarEnvioParecerEdocs(
+    id: number,
+    body: ProjetoFormModel
+  ): Observable<IProjeto> {
+    this.iniciarAutuacao(id);
+    return this._http.put<IProjeto>(
+      `${this._url}/dic/edocs/capturarparecer/${id}`, body
+    );
+  }
+
+  public reentranharDicEdocs(
+    id: number,
+    body: ProjetoFormModel
+  ): Observable<IProjeto> {
+    this.iniciarAutuacao(id);
+    return this._http.put<IProjeto>(
+      `${this._url}/dic/edocs/reentranharDIC/${id}`, body,
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`
+        }
+      }
+    );
+  }
+
+  public efetivarEntranhamentoPareceresProjetoEdocs(
+    id: number,
+    body: ProjetoFormModel
+  ): Observable<IProjeto> {
+    this.iniciarAutuacao(id);
+    return this._http.put<IProjeto>(
+      `${this._url}/dic/edocs/entranharpareceres/${id}`, body
+    );
+  }
+
+
+  public get projetosEmAutuacao$(): Observable<Set<number>> {
+    return this._projetosEmAutuacao.asObservable();
+  }
+
+  public iniciarAutuacao(idProjeto: number): void {
+    const set = new Set(this._projetosEmAutuacao.value);
+    set.add(idProjeto);
+    this._projetosEmAutuacao.next(set);
+  }
+
+  public consultarFasesIntegracaoEdcosProjeto(
+    idProjeto: number
+  ): Observable<IProjetoIntegracaoEdocsFases[]> {
+    return this._http.get<IProjetoIntegracaoEdocsFases[]>(
+      `${this._url}/dic/edocs/fases/${idProjeto}`);
+  }
+
 }

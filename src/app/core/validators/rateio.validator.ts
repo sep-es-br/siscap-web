@@ -14,7 +14,7 @@ export function limiteRateioValidator(
   const [totalPercentual, totalQuantia] =
     RateioCalculoHelper.calcularTotalRateio(rateioFormArrayValue);
 
-  if (totalPercentual > 100 || totalQuantia > quantiaFormControlValue) {
+  if ( ( totalPercentual < 100 && totalPercentual > 0 ) || totalPercentual > 100 || totalQuantia > quantiaFormControlValue) {
     return { limiteRateio: true };
   }
 

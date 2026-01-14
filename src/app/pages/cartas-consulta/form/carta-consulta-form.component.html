@@ -9,10 +9,9 @@
         <div class="col-12">
           <label for="objeto" class="form-label col-12">
             <validation-message [control]="getControl('objeto')">
-              Objeto
+              Programa
             </validation-message>
           </label>
-
           <ng-select
             [items]="objetosOpcoes"
             bindLabel="nome"
@@ -20,8 +19,7 @@
             [clearable]="false"
             id="objeto"
             placeholder="-- Selecione um objeto da lista abaixo --"
-            formControlName="objeto"
-          >
+            formControlName="objeto">
             <ng-template ng-optgroup-tmp let-item="item">
               {{ item.tipo }}
             </ng-template>
@@ -29,13 +27,36 @@
         </div>
 
         <div class="col-12">
-          <label for="operacao" class="form-label col-12">
-            <validation-message [control]="getControl('operacao')">
-              Operação
+
+          <label for="destinatario" class="form-label col-12">
+            <validation-message [control]="getControl('destinatarios')">
+              Destinatários
             </validation-message>
           </label>
+
           <ng-select
+            [items]="destinatariosOpcoes"
+            [multiple]="true"
+            [hideSelected]="true"
+            bindLabel="nomeOrganizacao"
+            bindValue="idOrganizacao"
             [clearable]="false"
+            id="destinatario"
+            placeholder="-- Selecione destinatários da lista abaixo --"
+            formControlName="destinatarios" >
+            <ng-template ng-optgroup-tmp let-item="destinatario">
+              {{ item.nome }}
+            </ng-template>
+          </ng-select>
+
+        </div>
+
+        <div class="col-12">
+          <label for="operacao" class="form-label col-12">
+              Operação
+          </label>
+          <ng-select
+            [clearable]="true"
             id="operacao"
             placeholder="-- Selecione uma operação da lista abaixo --"
             formControlName="operacao"
@@ -52,7 +73,7 @@
         <div class="col-12">
           <label for="corpo" class="form-label col-12">
             <validation-message [control]="getControl('corpo')">
-              Carta Consulta
+              Carta de Solicitação
             </validation-message>
           </label>
           <siscap-text-editor

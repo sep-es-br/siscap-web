@@ -18,6 +18,8 @@ import { ProgramaProjetoPropostoVinculadoWarningModalComponent } from './program
 import { BotaoComponent } from '../components/botao/botao.component';
 import { PreventActionModalComponent } from './prevent-action-modal/prevent-action-modal.component';
 import { FormHelperTooltipComponent } from './form-helper-tooltip/form-helper-tooltip.component';
+import { FormWarningTooltipComponent } from './form-warning-tooltip/form-warning-tooltip.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -31,9 +33,11 @@ import { FormHelperTooltipComponent } from './form-helper-tooltip/form-helper-to
     PreventActionModalComponent,
     ValidationMessageComponent,
     FormHelperTooltipComponent,
+    FormWarningTooltipComponent,
   ],
   imports: [
     CommonModule,
+    FormsModule,
     BotaoComponent,
     NgbDropdownModule,
     NgbAlertModule,
@@ -50,6 +54,7 @@ import { FormHelperTooltipComponent } from './form-helper-tooltip/form-helper-to
     TableActionsDropdownComponent,
     ValidationMessageComponent,
     FormHelperTooltipComponent,
+    FormWarningTooltipComponent,
   ],
 })
 export class TemplatesModule {}

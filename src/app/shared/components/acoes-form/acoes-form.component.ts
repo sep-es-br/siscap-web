@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
@@ -10,6 +10,9 @@ import { TemplatesModule } from '../../templates/templates.module';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
+import { RateioModel } from '../../../core/models/rateio.model';
+import { RateioService } from '../../../core/services/rateio/rateio.service';
+import { getSimboloMoeda } from '../../../core/utils/functions';
 
 
 @Component({
@@ -29,19 +32,28 @@ import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
   templateUrl: './acoes-form.component.html',
 })
 export class AcoesFormComponent {
-  @Input() descricaoAcaoPrincipal: string;
-  @Input() descricaoAcaoSecundaria: string;
-  @Input() valorEstimadoAcaoPrincipal: number;
+
   @Input() public isModoEdicao: boolean = false;
+  @Input() moedaProjeto: string;
+
+  public descricaoAcaoPrincipal: string;
+  public descricaoAcaoSecundaria: string;
+  public valorEstimadoAcaoPrincipal: number;
+  public idStatus: number;
 
   constructor(
     public acoesService: AcoesService,
     private readonly _toastService: ToastService,
     private fb: FormBuilder) {
+    this.moedaProjeto = '';
     this.descricaoAcaoPrincipal = '';
     this.descricaoAcaoSecundaria = '';
 	  this.valorEstimadoAcaoPrincipal = 0;
+    this.idStatus = 0;
   }
+
+   public getSimboloMoeda: (moeda: string | undefined | null) => string =
+      getSimboloMoeda;
 
   public TipoStatusEnum = TipoStatusEnum;
 
@@ -56,25 +68,33 @@ export class AcoesFormComponent {
   
   adicionarAcao(): void {
     const novaAcao = this.fb.group({
-      descricaoAcaoPrincipal: [''],
-      descricaoAcaoSecundaria: [''],
-      valorEstimadoAcaoPrincipal: ['']
+      descricaoAcaoPrincipal: ['', [
+        Validators.required,
+        Validators.maxLength(2000),
+      ]],
+      descricaoAcaoSecundaria: ['', [
+        Validators.required,
+        Validators.maxLength(2000),
+      ]],
+      valorEstimadoAcaoPrincipal: ['', [
+        Validators.required,
+      ]],
+      idStatus: [ TipoStatusEnum.Ativo , ]
     });
     this.acoesFormArray.push(novaAcao);
   }
-
+  
   removerAcao(index: number): void {
     this.acoesFormArray.removeAt(index);
   }
 
-  public marcarAcaoExcluida(
-    index: number ) {
+  public marcarAcaoExcluida( index: number ) {
 
     const acaoFormGroup = this.acoesService.acoesFormArray.at(index) as FormGroup;
 
     acaoFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Inativo);
 
-    const acaoPrincipal = acaoFormGroup.get('descricaoAcao')?.value || 'Ação';
+    const acaoPrincipal = acaoFormGroup.get('descricaoAcaoPrincipal')?.value || 'Ação';
     const acaoSecundaria = acaoFormGroup.get('descricaoAcaoSecundaria')?.value || '';
 
     this._toastService.showToast(

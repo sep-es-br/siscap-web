@@ -7,10 +7,12 @@
 				<div *ngIf="isAcaoAtiva(i)" class="row g-2">
           <div class="col-12 col-md-8">
             <label [for]="'acaoNome_' + i" class="form-label">
+              <validation-message [control]="acoesFormGroup.get('descricaoAcaoPrincipal')!">
               Ação Principal
                 <form-helper-tooltip 
                   [texto]="projetoTooltip['descricaoAcaoPrincipal']"> 
                 </form-helper-tooltip>
+              </validation-message>
             </label>
             <input
               type="text"
@@ -21,14 +23,16 @@
           </div>
           <div class="col-12 col-md-4">
             <label [for]="'acaoValor_' + i" class="form-label">
-              Valor Estimado (R$)
+              <validation-message [control]="acoesFormGroup.get('valorEstimadoAcaoPrincipal')!">
+              Valor Estimado
                 <form-helper-tooltip 
                   [texto]="projetoTooltip['valorEstimadoAcaoPrincipal']"> 
                 </form-helper-tooltip>
+              </validation-message>
             </label>
            <input
               mask="separator.2"
-              prefix="R$"
+              [prefix]="getSimboloMoeda(moedaProjeto)"
               thousandSeparator="."
               decimalMarker=","
               [inputTransformFn]="rtlCurrencyInputTransformFn"
@@ -41,10 +45,12 @@
           </div>
           <div class="col-12">
             <label [for]="'acaoDescricao_' + i" class="form-label">
+              <validation-message [control]="acoesFormGroup.get('descricaoAcaoSecundaria')!">
               Descrição de ações secundárias e produtos
                 <form-helper-tooltip 
                   [texto]="projetoTooltip['descricaoAcoesSecudariasProdutos']"> 
                 </form-helper-tooltip>
+              </validation-message>
             </label>
             <textarea
               class="form-control"
@@ -58,7 +64,7 @@
           <button
             *ngIf="isModoEdicao || !isAcaoAtiva(i)"
             type="button"
-            ngbTooltip="Remover Ação do projeto"
+            ngbTooltip="Remover Ação do DIC"
             class="btn btn-outline-danger rounded-circle"
             (click)="isNovaAcao(i) ? removerAcao(i) : marcarAcaoExcluida(i)">
             <i class="fa-solid fa-minus remove-btn-icon"></i>

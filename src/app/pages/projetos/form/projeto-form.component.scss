@@ -1,0 +1,66 @@
+.accordion-content {
+    padding: 8px 16px;
+    /* espaçamento interno (lados e topo) */
+}
+
+.accordion-content textarea.form-control {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 4px;
+    /* reduz a distância do header */
+}
+
+/* Reduz a largura da modal */
+.modal-dialog {
+    max-width: 600px;
+    /* ou 500px, dependendo do que preferir */
+}
+
+/* Limita altura da área rolável */
+.modal-body-scroll {
+    max-height: 300px;
+    /* ajusta conforme necessário */
+    overflow-y: auto;
+}
+
+/* Ajusta tamanho da fonte dos botões do accordion */
+.accordion-btn-custom {
+    font-size: 0.9rem;
+    /* menor que fs-5 */
+    line-height: 1.2rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.alerta-complementar-campo {
+    color: #0024f3;
+    font-weight: bold;
+}
+
+.etapas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    white-space: normal;
+}
+
+.etapa {
+    display: flex ;
+    align-items: center;
+    gap: 8px;
+    white-space: normal;
+}
+
+.status-icon {
+    width: 18px;
+    display: flex;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.etapa-andamento {
+    color: #0e5ef3;
+}
+
+.etapa-finalizada {
+    font-weight: bold;
+}

@@ -7,6 +7,10 @@
     "texto": "Dólar Americano",
     "simbolo": "$"
   },
+  "EUR": {
+    "texto": "Euro",
+    "simbolo": "€"
+  },
   "JPY": {
     "texto": "Iene Japonês",
     "simbolo": "¥"

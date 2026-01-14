@@ -20,15 +20,9 @@
         </div>
       </div>
 
-      <div
-        class="col-12 col-sm-6 col-lg-4 d-inline-flex flex-row justify-content-between"
-      >
+      <div class="col-12 col-sm-6 col-lg-4 d-inline-flex flex-row justify-content-between" >
         <ng-container
-          *ngIf="
-            rateioService.quantiaFormControlReferencia;
-            else nullQuantiaFormControlValue
-          "
-        >
+          *ngIf="rateioService.quantiaFormControlReferencia; else nullQuantiaFormControlValue" >
           <div class="col-5 col-sm-4">
             <span
               class="fs-small-3 total-percentual"

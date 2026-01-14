@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 import {
   ILocalidadeOpcoesDropdown,
+  IMotivoArquivamentoOpcoesDropdown,
   IObjetoOpcoesDropdown,
   IOpcoesDropdown,
   IOpcoesDropdownResponsavelProponente,
@@ -18,10 +19,10 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root',
 })
 export class OpcoesDropdownService {
-  
+
   private readonly _url = `${environment.apiUrl}/destino/opcoes`;
 
-  constructor(private readonly _http: HttpClient) {}
+  constructor(private readonly _http: HttpClient) { }
 
   private getOpcoesDropdown(
     destino: string,
@@ -32,17 +33,28 @@ export class OpcoesDropdownService {
       params: params,
     });
   }
-  
+
+  private getOpcoesMotivoArquivamentoDropdown(
+    destino: string,
+    params?: any
+  ): Observable<IMotivoArquivamentoOpcoesDropdown[]> {
+    const urlDestino = this._url.replace('destino', destino);
+    return this._http.get<IMotivoArquivamentoOpcoesDropdown[]>(urlDestino, {
+      params: params,
+    });
+  }
+
   private getOpcoesDropdownResponsaveisProponente(
     destino: string,
     params?: any
   ): Observable<IOpcoesDropdownResponsavelProponente[]> {
     const urlDestino = this._url.replace('destino', destino);
+    // console.log(' url buscar pessoas equipe : ', urlDestino);
     return this._http.get<IOpcoesDropdownResponsavelProponente[]>(urlDestino, {
       params: params,
     });
   }
- 
+
   public getOpcoesPessoas() {
     return this.getOpcoesDropdownResponsaveisProponente('pessoas');
   }
@@ -101,6 +113,11 @@ export class OpcoesDropdownService {
 
   public getOpcoesTiposPapel() {
     return this.getOpcoesDropdown('tipos-papel');
+  }
+
+
+  public getOpcoesTiposArquivamento() {
+    return this.getOpcoesMotivoArquivamentoDropdown('tipos-arquivamento-projeto');
   }
 
   public getOpcoesProjetosPropostos() {

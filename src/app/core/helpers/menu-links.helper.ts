@@ -33,7 +33,7 @@ export abstract class MenuLinksHelper {
       hidden: false,
       slug: 'captacao_recursos',
       routes: [
-        { title: 'Cartas Consulta', path: 'cartasconsulta', hidden: false },
+        { title: 'Pesquisa de Fontes de Financiamento', path: 'cartasconsulta', hidden: false },
         { title: 'Prospecção', path: 'prospeccao', hidden: false },
         { title: 'Oportunidade', path: 'oportunidade', hidden: true },
         { title: 'Captação', path: 'captacao', hidden: true },

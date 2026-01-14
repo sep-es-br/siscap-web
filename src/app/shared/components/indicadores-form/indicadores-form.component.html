@@ -3,14 +3,16 @@
     <div class="card-body">
         <ng-container *ngFor="let indicadorFormGroup of indicadoresService.indicadoresFormArray.controls; index as i">
           <form [formGroup]="indicadorFormGroup" >
-            <div *ngIf="isIndicadorAtivo(i)" class="card mb-2">
+            <div *ngIf="isIndicadorAtivo(i)" class="card mb-2" >
               <div class="card-body row align-items-start">
                 <div class="col-md-4 mb-2 mb-md-0">
                   <label for="tipoIndicador" class="form-label">
-                    Tipo do indicador
+                    <validation-message [control]="getControl('tipoIndicador')">
+                      Tipo do indicador
                       <form-helper-tooltip 
                         [texto]="projetoTooltip['tipoIndicadorDescricao']"> 
                       </form-helper-tooltip>
+                    </validation-message>
                   </label>
                   <textarea
                     class="form-control"
@@ -21,10 +23,12 @@
                 </div>
                 <div class="col-md-4 mb-2 mb-md-0">
                   <label for="descricaoIndicador" class="form-label">
-                    Descrição do indicador
-                      <form-helper-tooltip 
-                        [texto]="projetoTooltip['descricaoIndicador']"> 
-                      </form-helper-tooltip>
+                    <validation-message [control]="getControl('descricaoIndicador')">
+                      Descrição do indicador
+                        <form-helper-tooltip 
+                          [texto]="projetoTooltip['descricaoIndicador']"> 
+                        </form-helper-tooltip>
+                    </validation-message>
                   </label>
                   <textarea
                     class="form-control"
@@ -35,10 +39,12 @@
                 </div>
                 <div class="col-md-4 mb-2 mb-md-0">
                   <label for="descricaoMeta" class="form-label">
-                    Descrição da Meta
-                      <form-helper-tooltip 
-                        [texto]="projetoTooltip['descricaoMeta']"> 
-                      </form-helper-tooltip>
+                    <validation-message [control]="getControl('descricaoMeta')">
+                      Descrição da Meta
+                        <form-helper-tooltip 
+                          [texto]="projetoTooltip['descricaoMeta']"> 
+                        </form-helper-tooltip>
+                    </validation-message>
                   </label>
                   <textarea
                     class="form-control"
@@ -53,7 +59,7 @@
               <button
                 *ngIf="isModoEdicao || !isIndicadorAtivo(i)"
                 type="button"
-                ngbTooltip="Remover Ação do projeto"
+                ngbTooltip="Remover Indicador do DIC"
                 class="btn btn-outline-danger rounded-circle"
                 (click)="isNovoMembro(i) ? removerIndicador(i) : marcarIndicadorExcluido(i)">
                 <i class="fa-solid fa-minus remove-btn-icon"></i>

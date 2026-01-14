@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { AuthenticationService } from '../../core/services/authentication/authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'siscap-login',
@@ -10,12 +11,14 @@ import { AuthenticationService } from '../../core/services/authentication/authen
 })
 export class LoginComponent {
   public yearPublish: string = '2024';
-  constructor(private _authService: AuthenticationService) {}
-
+  constructor(
+    private _authService: AuthenticationService,
+  ) {}
+  
   logIn() {
     this._authService.acessoCidadaoSignIn();
   }
-
+    
   year_copyright() {
     const currentYear = new Date().getFullYear();
     if (currentYear > parseInt(this.yearPublish)) {
@@ -25,4 +28,5 @@ export class LoginComponent {
       return this.yearPublish;
     }
   }
+
 }

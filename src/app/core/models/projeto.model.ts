@@ -9,6 +9,9 @@ import { IIndicadores } from '../interfaces/indicadores.interface';
 import { IndicadorModel } from './indicador.model';
 import { IAcao } from '../interfaces/acoes.interface';
 import { AcaoModel } from './acao.model';
+import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from '../interfaces/estrutura.campo.complementar.dic.interface';
+import { IParecer } from '../interfaces/parecer.interface';
+import { LotacaoUsuarioEnum } from '../enums/lotacao-usuario.enum';
 
 export class ProjetoFormModel implements IProjetoForm {
   public sigla: string;
@@ -32,6 +35,23 @@ export class ProjetoFormModel implements IProjetoForm {
   public acoesProjeto: Array<IAcao>;
   public nomeagente: string;
   public pecasPlanejamento: string;
+  public enviarProjetoGestor: boolean;
+  public justificativaRevisao: string;
+  public justificativaArquivamento: string;
+  public protocoloEdocs: string;
+  public codigoMotivoArquivamento: string;
+  public lotacaoProponenteResponsavel: string;
+  public nomeProponenteResponsavel: string;
+  public podeEditar: boolean;
+  public podeSolicitarComplementacao: boolean;
+  public podeResponderComplementacao: boolean;
+  public enviarProjetoPedirParecer: boolean;
+  public camposComplementar: Array<IEstruturaCamposComplementarProjeto>;
+  public parecerProjetoUsuario: IParecer
+  public lotacaoUsuario: number;
+  public pareceresProjeto: Array<IParecer>;
+  public subProponente: string;
+  public nomeProponente: string;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -61,6 +81,23 @@ export class ProjetoFormModel implements IProjetoForm {
     );
     this.nomeagente = projetoForm?.nomeagente ?? '';
     this.pecasPlanejamento = projetoForm?.pecasPlanejamento ?? '';
+    this.enviarProjetoGestor = projetoForm?.enviarProjetoGestor ?? false;
+    this.justificativaRevisao = projetoForm?.justificativaRevisao ?? '';
+    this.justificativaArquivamento = projetoForm?.justificativaArquivamento ?? '';
+    this.protocoloEdocs = projetoForm?.protocoloEdocs ?? '';
+    this.codigoMotivoArquivamento = projetoForm?.codigoMotivoArquivamento ?? '';
+    this.lotacaoProponenteResponsavel = projetoForm?.lotacaoProponenteResponsavel ?? '';
+    this.nomeProponenteResponsavel = projetoForm?.nomeProponenteResponsavel ?? '';
+    this.podeEditar = projetoForm?.podeEditar ?? false;
+    this.podeSolicitarComplementacao = projetoForm?.podeSolicitarComplementacao ?? false;
+    this.podeResponderComplementacao = projetoForm?.podeResponderComplementacao ?? false;
+    this.enviarProjetoPedirParecer = projetoForm?.enviarProjetoPedirParecer ?? false;
+    this.camposComplementar = projetoForm?.camposComplementar ?? [];
+    this.parecerProjetoUsuario = projetoForm?.parecerProjetoUsuario ?? ({} as IParecer);
+    this.lotacaoUsuario = projetoForm?.lotacaoUsuario ?? 0;
+    this.pareceresProjeto = projetoForm?.pareceresProjeto ?? [];
+    this.subProponente = projetoForm?.subProponente ?? '';
+    this.nomeProponente = projetoForm?.nomeProponente ?? '';
   }
 
   private construirRateioModelArray(

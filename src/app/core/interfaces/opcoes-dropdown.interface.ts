@@ -8,6 +8,11 @@ export interface IProjetoPropostoOpcoesDropdown extends IOpcoesDropdown {
   idPrograma: number | null;
 }
 
+export interface IMotivoArquivamentoOpcoesDropdown extends IOpcoesDropdown {
+  tipo: string;
+  codigo: string;
+}
+
 export interface IObjetoOpcoesDropdown extends IOpcoesDropdown {
   tipo: string;
 }
@@ -28,4 +33,16 @@ export interface IOpcoesDropdownResponsavelProponente {
   papelPrioritario: string;
   agentePublicoSub: string;
   gestorOrganizacao: boolean;
+}
+
+export interface IOpcoesDropdownDestinatariosCartaConsulta {
+  id: number;
+  nomeOrganizacao: string;
+  idCartaConsulta: number;
+  idOrganizacao: number;
+}
+
+export interface IOpcoesDropdownDestinatariosOpcoes {
+  nomeOrganizacao: string;
+  idOrganizacao: number;
 }
