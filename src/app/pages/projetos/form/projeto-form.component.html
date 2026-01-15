@@ -467,10 +467,12 @@
 
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
+      
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
+      
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
@@ -779,12 +781,15 @@
           Assinatura e captura do parecer, gerado em PDF a partir dos dados informados neste formulário;
         </div>
       </div>
+      <div *ngIf="finalizadoProcessamentoIntegracao" class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+        <span>ASSINATURA E CAPTURA FINALIZADAS COM SUCESSO!</span>
+      </div>
     </div>
   </div>
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
@@ -792,12 +797,6 @@
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Assinar e Capturar Parecer</span>
       </button>
-      <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
-        style="border-radius: 0; cursor: default; user-select: none;">
-        <i class="fa-solid fa-check text-white me-2"></i>
-        <span>Processo concluído com sucesso!</span>
-      </div>
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
@@ -843,13 +842,16 @@
           [style.color]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
           Entranhamento dos pareceres capturados no E-Docs;</div>
       </div>
+      <div *ngIf="finalizadoProcessamentoIntegracao" class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+        <span>ENTRANHAMENTO PARECERES FINALIZADO COM SUCESSO!</span>
+      </div>
     </div>
   </div>
 
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ isIntegracaoEdocsConcluido() ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
@@ -857,12 +859,6 @@
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Entranhar Pareceres</span>
       </button>
-      <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
-        style="border-radius: 0; cursor: default; user-select: none;">
-        <i class="fa-solid fa-check text-white me-2"></i>
-        <span>Processo concluído com sucesso!</span>
-      </div>
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
