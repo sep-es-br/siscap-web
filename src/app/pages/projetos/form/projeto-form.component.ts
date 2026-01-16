@@ -1323,7 +1323,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   ): Observable<IProjeto> {
 
     const usuarioProponente = payload.equipeElaboracao.some(
-      membro => membro.idPessoa === this._usuarioService.usuarioPerfil.idPessoa && membro.idPapel === TipoPapelEnum.Proponente
+      membro => membro.idPessoa === this._usuarioService.usuarioPerfil.idPessoa && membro.idPapel === TipoPapelEnum.Redator
     );
 
     if (!usuarioProponente) {
@@ -1331,7 +1331,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const novoMembro: EquipeModel = {
         subPessoa: this._usuarioService.usuarioPerfil.subNovo,
         idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
-        idPapel: TipoPapelEnum.Proponente,
+        idPapel: TipoPapelEnum.Redator,
         idStatus: TipoStatusEnum.Ativo,
         justificativa: null,
         nome: this._usuarioService.usuarioPerfil.nome,

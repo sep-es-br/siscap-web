@@ -74,7 +74,7 @@ export class EquipeFormComponent implements OnDestroy {
   }
 
   public getPapelNome(idPapel: number | null | undefined): string {
-    if (idPapel === 3) return 'Proponente';
+    if (idPapel === 3) return 'Redator';
     return this.tiposPapelOpcoes.find((papel) => papel.id === idPapel)?.nome ?? '';
   }
 
@@ -82,6 +82,13 @@ export class EquipeFormComponent implements OnDestroy {
     return (
       this.equipeService.equipeFormArray.at(index).value.idStatus !=
       TipoStatusEnum.Ativo
+    );
+  }
+
+  public isMembroRedator(index: number): boolean {
+    return (
+      this.equipeService.equipeFormArray.at(index).value.idPapel ==
+      TipoPapelEnum.Redator
     );
   }
 
