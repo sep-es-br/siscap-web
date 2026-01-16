@@ -32,9 +32,15 @@ export class AuthRedirectComponent {
       .buscarUsuario()
       .pipe(
         tap((response: IUsuario) => {
+
+          // console.log('Response buscarUsuario:', response);
+
           sessionStorage.setItem('token', response.token);
 
           this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
+
+          // console.log(" this._usuarioService.usuarioPerfil : ", this._usuarioService.usuarioPerfil )
+
         }),
         finalize(() => {
           // Verifica se há uma URL original guardada antes do login

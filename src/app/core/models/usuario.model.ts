@@ -10,8 +10,11 @@ export class UsuarioPerfilModel implements IUsuarioPerfil {
   public idPessoa: number;
   public isProponente: boolean;
   public isSubcap: boolean;
+  public isSubeo: boolean;
+  public isSubepp: boolean;
 
   constructor(usuario?: IUsuario) {
+    // console.log("usuario : ", usuario)
     this.nome = usuario?.nome ?? 'Usuario';
     this.email = usuario?.email ?? 'usuario@email.com';
     this.subNovo = usuario?.subNovo ?? '';
@@ -21,5 +24,7 @@ export class UsuarioPerfilModel implements IUsuarioPerfil {
     this.idPessoa = usuario?.idPessoa ?? 0;
     this.isProponente = usuario?.isProponente ?? false;
     this.isSubcap = usuario?.isSubcap ?? false;
+    this.isSubeo = usuario?.isSubeo ?? false;
+    this.isSubepp = usuario?.isSubepp ?? false;
   }
 }
