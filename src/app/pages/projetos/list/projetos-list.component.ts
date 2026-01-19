@@ -173,20 +173,4 @@ export class ProjetosListComponent {
     );
   }
 
-  // public exibirBadgeAguardandoEdocs(idDic: number): boolean {
-    
-  //   console.log('id:', idDic, 'timestamp:', Date.now());
-
-  //   if (!idDic) {
-  //     return false;
-  //   }
-  
-  //   const emIntegracao = this.projetosAguardando.has(idDic);
-
-  //   console.log( 'exibirBadgeAguardandoEdocs : ', emIntegracao )
-  
-  //   return emIntegracao;
-
-  // }
-
 }

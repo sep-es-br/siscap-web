@@ -30,6 +30,9 @@ export class ProjetosPesquisaComponent implements OnInit {
   public isProponente: boolean = false;
   public isSubcap: boolean = false;
 
+  public isSubepp: boolean = false;
+  public isSubeo: boolean = false;
+
   public projetosPesquisaForm: FormGroup;
 
   public podeSelecionarOrganizacaoFlag = false;
@@ -45,16 +48,15 @@ export class ProjetosPesquisaComponent implements OnInit {
     this.isSubcap = this._usuarioService.usuarioPerfil.isSubcap;
     this.usuario_IdOrganizacoes =
       this._usuarioService.usuarioPerfil.idOrganizacoes;
-
+    
     this.statusProjetoOpcoes = ['Status', ...Object.values(StatusProjetoEnum)];
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes()
       .pipe(
         tap((response) => {
-
           if (!this.isSubcap && this.isProponente && this.usuario_IdOrganizacoes.length > 0) {
-            const organizacoesOpcoesFiltradas = response.filter((organizacao) =>
+            const organizacoesOpcoesFiltradas = response.filter( (organizacao) =>
               this.usuario_IdOrganizacoes.includes(organizacao.id)
             );
             this.organizacoesOpcoes = organizacoesOpcoesFiltradas;
