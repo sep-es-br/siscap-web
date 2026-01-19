@@ -59,6 +59,7 @@ import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
+import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -106,7 +107,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public exibirLista = true;
   public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
   public equipeCaptacao: IEquipe[] = [];
-  
+
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
@@ -240,6 +241,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
+    });
+
+    // fixa tipo como valor estimado.. 
+    this.programaForm.patchValue({
+      valor: {
+        tipo: TipoValorEnum.Estimado
+      }
     });
 
   }
@@ -380,7 +388,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
       percentualCustoAdministrativo: this._nnfb.control(programaModel?.percentualCustoAdministrativo ?? 0,),
-      valorCalculadoTotal: this._nnfb.control( programaModel?.valorCalculadoTotal ?? 0 ),
+      valorCalculadoTotal: this._nnfb.control(programaModel?.valorCalculadoTotal ?? 0),
       nomeagente: this._nnfb.control(programaModel?.nomeagente ?? null,
       ),
     });
@@ -402,6 +410,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     const valorTotalCalculadoProgramaFormGroupControl = this.programaForm.get(
       'valorCalculadoTotal'
     ) as FormControl<number | null>;
+
+    // const moedaFormControl = this.programaForm.get('valor.moeda') as FormControl<
+    //   string | null
+    // >;
+    // moedaFormControl.disable();
+    // const tipoFormControl = this.programaForm.get('valor.tipo') as FormControl<
+    //   number | null
+    // >;
+    // tipoFormControl.patchValue(TipoValorEnum.Estimado);
+   // tipoFormControl.disable();
 
     this.idProjetoPropostoList.valueChanges.subscribe(
 
@@ -593,6 +611,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this.exibirLista = false;
 
   }
-  
+
 
 }
