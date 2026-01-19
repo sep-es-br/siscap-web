@@ -145,7 +145,7 @@ export class AcoesFormComponent {
 
     this._toastService.showToast(
       'info',
-      'Indicador removido do projeto.',
+      'Ação removida do projeto.',
       [
         `${acaoPrincipal}`,
         `${acaoSecundaria.substring(0, 50)}${acaoSecundaria.length > 50 ? '...' : ''}`
@@ -178,7 +178,6 @@ export class AcoesFormComponent {
   private recalcularDiferencas(): void {
     this.totalFaltandoEmValorAcoes =
     this.totalAcoesAtivas - this.valorEstimadoDIC;
-    console.log('this.totalFaltandoEmValorAcoes : ',  this.totalFaltandoEmValorAcoes );
     this.acoesService.validarAcoes(this.valorEstimadoDIC);
   }
 

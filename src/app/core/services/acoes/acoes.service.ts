@@ -89,6 +89,8 @@ export class AcoesService {
     >;
   }
 
+  public acoesWarnings: { [key: string]: boolean } = {};
+
   constructor(private _nnfb: NonNullableFormBuilder) {
     this.idAcaoAcoesValue$.subscribe((idAcaoAcoesValue: number) => {
       const indicadorMontado = this.construirAcaoFormGroupNgSelectValue(idAcaoAcoesValue);
@@ -175,7 +177,8 @@ export class AcoesService {
       limiteAcoesError != null
           ? { ...acoesFormArrayErrors, ...limiteAcoesError }
           : acoesFormArrayErrors;
-      this.acoesFormArray.setErrors(resultErrors);
+      this.acoesWarnings['limiteAcoes'] = !!limiteAcoesError;
+      // this.acoesFormArray.setErrors(resultErrors);
     }
 
 }

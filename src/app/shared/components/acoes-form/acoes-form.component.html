@@ -26,7 +26,7 @@
             </span>
 
             <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-2 text-nowrap"
-              *ngIf="acoesService.acoesFormArray.errors?.['limiteAcoes']">
+              *ngIf="acoesService.acoesWarnings['limiteAcoes']">
               Diferença:
               {{
               totalFaltandoEmValorAcoes
