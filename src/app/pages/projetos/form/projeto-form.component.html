@@ -65,7 +65,7 @@
             <label for="idOrganizacao" class="form-label col-12"
               [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('idOrganizacao') }">
               <validation-message [control]="getControl('idOrganizacao')">
-                Orgão de Origem
+                Proponente
                 <form-helper-tooltip [texto]="projetoTooltip['idOrganizacao']"></form-helper-tooltip>
                 <form-warning-tooltip *ngIf="deveComplementarCampo('idOrganizacao')"
                   [texto]="mensagemComplementarCampo('idOrganizacao')"></form-warning-tooltip>
@@ -82,7 +82,7 @@
             <label for="responsavelProponente" class="form-label col-12"
               [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('subResponsavelProponente') }">
               <validation-message [control]="getControl('idResponsavelProponente')">
-                Responsavel Proponente
+                Gestor Proponente
                 <form-helper-tooltip [texto]="projetoTooltip['idResponsavelProponente']"></form-helper-tooltip>
                 <form-warning-tooltip *ngIf="deveComplementarCampo('subResponsavelProponente')"
                   [texto]="mensagemComplementarCampo('subResponsavelProponente')"></form-warning-tooltip>
