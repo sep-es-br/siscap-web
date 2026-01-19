@@ -196,6 +196,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public emProcessamentIntegracao: boolean = false;
   public finalizadoProcessamentoIntegracao: boolean = false;
 
+ public exibeListaEtapasIntegracao: boolean = false;
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -1759,6 +1761,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private reentranharDicProjetoAsync(payload: ProjetoFormModel): void {
+    
+    this.exibeListaEtapasIntegracao = true;
 
     this._projetosService.reentranharDicEdocs(this._idProjetoEdicao, payload)
       .pipe(
@@ -1790,6 +1794,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private autuarProjetoAsync(payload: ProjetoFormModel): void {
 
+    this.exibeListaEtapasIntegracao = true;
+
     this._projetosService.autuarProjetoEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
@@ -1820,6 +1826,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private efetivarEnvioParecerProjetoAsync(payload: ProjetoFormModel): void {
 
+    this.exibeListaEtapasIntegracao = true;
+
     this._projetosService.efetivarEnvioParecerEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
@@ -1849,6 +1857,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private efetivarEntranhamentoPareceresProjetoAsync(payload: ProjetoFormModel): void {
+
+    this.exibeListaEtapasIntegracao = true;
 
     this._projetosService.efetivarEntranhamentoPareceresProjetoEdocs(this._idProjetoEdicao, payload)
       .pipe(
