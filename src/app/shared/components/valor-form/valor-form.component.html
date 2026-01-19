@@ -11,7 +11,7 @@
         id="valor-moeda"
         placeholder="-- Moeda --"
         [clearable]="false"
-        formControlName="moeda" >
+        formControlName="moeda" [readonly]="true">
         <ng-option *ngFor="let moeda of moedasList()" [value]="moeda.codigo">
           {{ moeda.texto }} ({{ moeda.simbolo }})
         </ng-option>
@@ -54,8 +54,7 @@
         id="valor-tipo"
         placeholder="-- Tipo --"
         [clearable]="false"
-        formControlName="tipo"
-      >
+        formControlName="tipo" [readonly]="true" >
         <ng-option
           *ngFor="let tipoValor of tiposValorOpcoes()"
           [value]="tipoValor.id"
