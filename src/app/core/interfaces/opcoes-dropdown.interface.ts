@@ -6,6 +6,8 @@ export interface IOpcoesDropdown {
 export interface IProjetoPropostoOpcoesDropdown extends IOpcoesDropdown {
   valorEstimado: number;
   idPrograma: number | null;
+  parecerGEOCEnviado: boolean;
+
 }
 
 export interface IMotivoArquivamentoOpcoesDropdown extends IOpcoesDropdown {
