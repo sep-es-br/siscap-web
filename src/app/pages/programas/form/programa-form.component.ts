@@ -59,6 +59,8 @@ import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
+import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
+import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -135,8 +137,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ),
       tap((response: IPrograma) => {
 
-        //console.log(" Programa getById: ", response);
-
         const programaModel = new ProgramaModel(response);
 
         this.iniciarForm(programaModel);
@@ -191,10 +191,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
       .getOpcoesProjetosPropostos()
       .pipe(
-        tap(
-          (response: IProjetoPropostoOpcoesDropdown[]) =>
-            (this.projetosPropostosOpcoes = response)
-        )
+        tap((response: IProjetoPropostoOpcoesDropdown[]) => {
+          this.projetosPropostosOpcoes = response;
+        })
       );
 
     this._getProgramasOpcoes$ = this._opcoesDropdownService
@@ -285,6 +284,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this.dispararModalAtencao(nomeProjeto, nomePrograma!);
     }
 
+    if (!event.parecerGEOCEnviado) {
+      const nomeProjeto = event.nome;
+      const nomePrograma = this.programasOpcoes.find(
+        (programaOpcao) => programaOpcao.id === event.idPrograma
+      )?.nome;
+      this.dispararModalAtencaoParecerGEOC(nomeProjeto, nomePrograma!);
+      return
+    }
+
     this.idProjetoPropostoList.patchValue([
       ...this.idProjetoPropostoList.value,
       event.id,
@@ -346,7 +354,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       id: 0,
       nome: '',
       valorEstimado: 0,
-      idPrograma: null
+      idPrograma: null,
+      parecerGEOCEnviado: false
     };
   }
 
@@ -449,6 +458,21 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   ): void {
     const modalRef = this._ngbModalService.open(
       ProgramaProjetoPropostoVinculadoWarningModalComponent,
+      {
+        centered: true,
+      }
+    );
+
+    modalRef.componentInstance.nomeProjeto = nomeProjeto;
+    modalRef.componentInstance.nomePrograma = nomePrograma;
+  }
+
+  private dispararModalAtencaoParecerGEOC(
+    nomeProjeto: string,
+    nomePrograma: string
+  ): void {
+    const modalRef = this._ngbModalService.open(
+      ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent,
       {
         centered: true,
       }
