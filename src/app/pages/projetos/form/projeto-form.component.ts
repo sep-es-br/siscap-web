@@ -1325,26 +1325,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     isRascunho: boolean
   ): Observable<IProjeto> {
 
-    const usuarioProponente = payload.equipeElaboracao.some(
-      membro => membro.idPessoa === this._usuarioService.usuarioPerfil.idPessoa && membro.idPapel === TipoPapelEnum.Redator
-    );
-
-    if (!usuarioProponente) {
-
-      const novoMembro: EquipeModel = {
-        subPessoa: this._usuarioService.usuarioPerfil.subNovo,
-        idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
-        idPapel: TipoPapelEnum.Redator,
-        idStatus: TipoStatusEnum.Ativo,
-        justificativa: null,
-        nome: this._usuarioService.usuarioPerfil.nome,
-        papelNome: 'Elaborador'
-      };
-
-      payload.equipeElaboracao.push(novoMembro);
-
-    }
-
     if (payload.idResponsavelProponente === 0) {
       const dados = this.projetoForm.value;
       return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
@@ -1903,7 +1883,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           .consultarFasesIntegracaoEdcosProjeto(this._idProjetoEdicao)
           .pipe(
             tap(response => {
-              console.log('Response da API:', response);
+              // console.log('Response da API:', response);
             }),
             map(response =>
               response.map(fase => new ProjetoIntegracaoEdocsFasesModel(fase))
