@@ -13,20 +13,23 @@
 $main-content-padding-top: 225px;
 $main-content-padding-top-proponente: 185px;
 
+section#header-content {
+  position: sticky;
+}
+
 section#main-content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
 }
 
-section.main-content-wrapper {
-  padding-top: $main-content-padding-top;
-}
+// section.main-content-wrapper {
+//   padding-top: $main-content-padding-top;
+// }
 
-section.main-content-wrapper-proponente {
-  padding-top: $main-content-padding-top-proponente;
-}
+// section.main-content-wrapper-proponente {
+//   padding-top: $main-content-padding-top-proponente;
+// }
 
 div.footer {
   padding: 1rem 0;
@@ -40,12 +43,12 @@ div.footer {
   Valor calculado para breakpoints abaixo de 767px (smartphones e tablets em modo retrato). 
   Leva em consideração a redução do padding de <siscap-breadcrumb>.
 */
-@media (max-width: 767px) {
-  section.main-content-wrapper {
-    padding-top: calc($main-content-padding-top - 4vw);
-  }
+// @media (max-width: 767px) {
+//   section.main-content-wrapper {
+//     padding-top: calc($main-content-padding-top - 4vw);
+//   }
 
-  section.main-content-wrapper-proponente {
-    padding-top: calc($main-content-padding-top-proponente - 4vw);
-  }
-}
+//   section.main-content-wrapper-proponente {
+//     padding-top: calc($main-content-padding-top-proponente + 4vw);
+//   }
+// }
