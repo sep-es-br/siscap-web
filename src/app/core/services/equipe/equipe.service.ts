@@ -74,7 +74,8 @@ export class EquipeService {
   }
 
   public construirEquipeFormArray(
-    equipe?: Array<IEquipe>
+    equipe?: Array<IEquipe>,
+    exibirRedator: boolean = true
   ): FormArray<FormGroup<EquipeFormType>> {
 
     const equipeFormArray = this._nnfb.array<FormGroup<EquipeFormType>>(
@@ -88,17 +89,21 @@ export class EquipeService {
       });
     } else {
     
-      const novoMembro: EquipeModel = {
-        subPessoa: this._usuarioService.usuarioPerfil.subNovo,
-        idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
-        idPapel: TipoPapelEnum.Redator,
-        idStatus: TipoStatusEnum.Ativo,
-        justificativa: null,
-        nome: this._usuarioService.usuarioPerfil.nome,
-        papelNome: 'Elaborador'
-      };
+      if (exibirRedator){
+        
+        const novoMembro: EquipeModel = {
+          subPessoa: this._usuarioService.usuarioPerfil.subNovo,
+          idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
+          idPapel: TipoPapelEnum.Redator,
+          idStatus: TipoStatusEnum.Ativo,
+          justificativa: null,
+          nome: this._usuarioService.usuarioPerfil.nome,
+          papelNome: 'Elaborador'
+        };
+        
+        equipeFormArray.push(this.construirMembroFormGroup(novoMembro));
 
-      equipeFormArray.push(this.construirMembroFormGroup(novoMembro));
+      }
 
     }
 
