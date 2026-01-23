@@ -1,83 +1,107 @@
 <div class="col-12">
   <div class="card mb-3">
     <div class="card-body">
-		<ng-container *ngFor="let acoesFormGroup of acoesService.acoesFormArray.controls; index as i">
-			<form [formGroup]="acoesFormGroup" >
-        <h6 *ngIf="isAcaoAtiva(i)" class="mb-0">Ação #{{i + 1}}</h6>
-				<div *ngIf="isAcaoAtiva(i)" class="row g-2">
-          <div class="col-12 col-md-8">
-            <label [for]="'acaoNome_' + i" class="form-label">
-              <validation-message [control]="acoesFormGroup.get('descricaoAcaoPrincipal')!">
-              Ação Principal
-                <form-helper-tooltip 
-                  [texto]="projetoTooltip['descricaoAcaoPrincipal']"> 
-                </form-helper-tooltip>
-              </validation-message>
-            </label>
-            <input
-              type="text"
-              class="form-control"
-              [id]="'acaoNome_' + i"
-              formControlName="descricaoAcaoPrincipal"
-              maxlength="2000" />
+
+      <div
+        class="col-12 mb-2 d-flex flex-wrap justify-content-between justify-content-sm-end justify-content-lg-between align-items-center">
+
+        <div class="col-12 col-sm-6 col-lg-4"> </div>
+
+        <div class="row mb-2">
+          <div class="col-12 d-flex justify-content-end align-items-center gap-4 text-end">
+
+            <span class="fs-small-3 total-quantia fw-semibold text-nowrap">
+              Soma valor estimado das ações:
+              {{
+              totalAcoesAtivas
+              | mask
+              : "separator.2"
+              : {
+              prefix: getSimboloMoeda(moedaProjeto) + " ",
+              leadZero: true,
+              thousandSeparator: ".",
+              decimalMarker: ","
+              }
+              }}
+            </span>
+
+            <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-2 text-nowrap"
+              *ngIf="acoesService.acoesWarnings['limiteAcoes']">
+              Diferença:
+              {{
+              totalFaltandoEmValorAcoes
+              | mask
+              : "separator.2"
+              : {
+              prefix: getSimboloMoeda(moedaProjeto) + " ",
+              leadZero: true,
+              thousandSeparator: ".",
+              decimalMarker: ","
+              }
+              }}
+            </span>
+
           </div>
-          <div class="col-12 col-md-4">
-            <label [for]="'acaoValor_' + i" class="form-label">
-              <validation-message [control]="acoesFormGroup.get('valorEstimadoAcaoPrincipal')!">
-              Valor Estimado
-                <form-helper-tooltip 
-                  [texto]="projetoTooltip['valorEstimadoAcaoPrincipal']"> 
-                </form-helper-tooltip>
-              </validation-message>
-            </label>
-           <input
-              mask="separator.2"
-              [prefix]="getSimboloMoeda(moedaProjeto)"
-              thousandSeparator="."
-              decimalMarker=","
-              [inputTransformFn]="rtlCurrencyInputTransformFn"
-              [outputTransformFn]="rtlCurrencyOutputTransformFn"
-              type="text"
-              class="form-control"
-              [id]="'acaoValor_' + i"
-              formControlName="valorEstimadoAcaoPrincipal"
-              placeholder="0,00"/>
+        </div>
+      </div>
+
+
+      <ng-container *ngFor="let acoesFormGroup of acoesService.acoesFormArray.controls; index as i">
+        <form [formGroup]="acoesFormGroup">
+          <h6 *ngIf="isAcaoAtiva(i)" class="mb-0">Ação #{{i + 1}}</h6>
+          <div *ngIf="isAcaoAtiva(i)" class="row g-2">
+            <div class="col-12 col-md-8">
+              <label [for]="'acaoNome_' + i" class="form-label">
+                <validation-message [control]="acoesFormGroup.get('descricaoAcaoPrincipal')!">
+                  Ação Principal
+                  <form-helper-tooltip [texto]="projetoTooltip['descricaoAcaoPrincipal']">
+                  </form-helper-tooltip>
+                </validation-message>
+              </label>
+              <input type="text" class="form-control" [id]="'acaoNome_' + i" formControlName="descricaoAcaoPrincipal"
+                maxlength="2000" />
+            </div>
+            <div class="col-12 col-md-4">
+              <label [for]="'acaoValor_' + i" class="form-label">
+                <validation-message [control]="acoesFormGroup.get('valorEstimadoAcaoPrincipal')!">
+                  Valor Estimado
+                  <form-helper-tooltip [texto]="projetoTooltip['valorEstimadoAcaoPrincipal']">
+                  </form-helper-tooltip>
+                </validation-message>
+              </label>
+              <input mask="separator.2" [prefix]="getSimboloMoeda(moedaProjeto)" thousandSeparator="." decimalMarker=","
+                [inputTransformFn]="rtlCurrencyInputTransformFn" [outputTransformFn]="rtlCurrencyOutputTransformFn"
+                type="text" class="form-control" [id]="'acaoValor_' + i" formControlName="valorEstimadoAcaoPrincipal"
+                placeholder="0,00" />
+            </div>
+            <div class="col-12">
+              <label [for]="'acaoDescricao_' + i" class="form-label">
+                <validation-message [control]="acoesFormGroup.get('descricaoAcaoSecundaria')!">
+                  Descrição de ações secundárias e produtos
+                  <form-helper-tooltip [texto]="projetoTooltip['descricaoAcoesSecudariasProdutos']">
+                  </form-helper-tooltip>
+                </validation-message>
+              </label>
+              <textarea class="form-control" [id]="'acaoDescricao_' + i" formControlName="descricaoAcaoSecundaria"
+                rows="3" maxlength="2000"></textarea>
+            </div>
+            <div *ngIf="isModoEdicao" class="d-flex justify-content-between align-items-center mb-2">
+              <button *ngIf="isModoEdicao || !isAcaoAtiva(i)" type="button" ngbTooltip="Remover Ação do DIC"
+                class="btn btn-outline-danger rounded-circle"
+                (click)="isNovaAcao(i) ? removerAcao(i) : marcarAcaoExcluida(i)">
+                <i class="fa-solid fa-minus remove-btn-icon"></i>
+              </button>
+            </div>
           </div>
-          <div class="col-12">
-            <label [for]="'acaoDescricao_' + i" class="form-label">
-              <validation-message [control]="acoesFormGroup.get('descricaoAcaoSecundaria')!">
-              Descrição de ações secundárias e produtos
-                <form-helper-tooltip 
-                  [texto]="projetoTooltip['descricaoAcoesSecudariasProdutos']"> 
-                </form-helper-tooltip>
-              </validation-message>
-            </label>
-            <textarea
-              class="form-control"
-              [id]="'acaoDescricao_' + i"
-              formControlName="descricaoAcaoSecundaria"
-              rows="3"
-              maxlength="2000"></textarea>
-          </div>
-				</div>
-        <div *ngIf="isModoEdicao" class="d-flex justify-content-between align-items-center mb-2">
-          <button
-            *ngIf="isModoEdicao || !isAcaoAtiva(i)"
-            type="button"
-            ngbTooltip="Remover Ação do DIC"
-            class="btn btn-outline-danger rounded-circle"
-            (click)="isNovaAcao(i) ? removerAcao(i) : marcarAcaoExcluida(i)">
-            <i class="fa-solid fa-minus remove-btn-icon"></i>
-          </button>
-				</div>
-			</form>
-		</ng-container>
-		<div *ngIf="isModoEdicao" class="d-grid mt-3">
-			<button type="button" class="btn btn-outline-primary" 
-				(click)="adicionarAcao()">
-				<i class="fas fa-plus me-2"></i>Adicionar Nova Ação
-			</button>
-		</div>
+        </form>
+      </ng-container>
+
+      <div *ngIf="isModoEdicao" class="d-grid mt-3">
+        <button type="button" class="btn btn-outline-primary" (click)="adicionarAcao()">
+          <i class="fas fa-plus me-2"></i>Adicionar Nova Ação
+        </button>
+      </div>
+
     </div>
   </div>
 </div>

@@ -59,6 +59,8 @@ import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
+import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
+import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -106,7 +108,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public exibirLista = true;
   public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
   public equipeCaptacao: IEquipe[] = [];
-  
+
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
@@ -134,8 +136,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._programasService.getById(idPrograma)
       ),
       tap((response: IPrograma) => {
-
-        //console.log(" Programa getById: ", response);
 
         const programaModel = new ProgramaModel(response);
 
@@ -191,10 +191,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
       .getOpcoesProjetosPropostos()
       .pipe(
-        tap(
-          (response: IProjetoPropostoOpcoesDropdown[]) =>
-            (this.projetosPropostosOpcoes = response)
-        )
+        tap((response: IProjetoPropostoOpcoesDropdown[]) => {
+          this.projetosPropostosOpcoes = response;
+        })
       );
 
     this._getProgramasOpcoes$ = this._opcoesDropdownService
@@ -242,6 +241,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
     });
 
+    // fixa tipo como valor estimado.. 
+    this.programaForm.patchValue({
+      valor: {
+        tipo: TipoValorEnum.Estimado
+      }
+    });
+
   }
 
   public getControl(controlName: string): AbstractControl<any, any> {
@@ -283,6 +289,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         (programaOpcao) => programaOpcao.id === event.idPrograma
       )?.nome;
       this.dispararModalAtencao(nomeProjeto, nomePrograma!);
+    }
+
+    if (!event.parecerGEOCEnviado) {
+      const nomeProjeto = event.nome;
+      const nomePrograma = this.programasOpcoes.find(
+        (programaOpcao) => programaOpcao.id === event.idPrograma
+      )?.nome;
+      this.dispararModalAtencaoParecerGEOC(nomeProjeto, nomePrograma!);
+      return
     }
 
     this.idProjetoPropostoList.patchValue([
@@ -346,7 +361,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       id: 0,
       nome: '',
       valorEstimado: 0,
-      idPrograma: null
+      idPrograma: null,
+      parecerGEOCEnviado: false
     };
   }
 
@@ -372,7 +388,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.minLength(1)]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
-        programaModel?.equipeCaptacao
+        programaModel?.equipeCaptacao, false
       ),
       idProjetoPropostoList: this._nnfb.control(
         programaModel?.idProjetoPropostoList ?? [],
@@ -380,7 +396,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
       percentualCustoAdministrativo: this._nnfb.control(programaModel?.percentualCustoAdministrativo ?? 0,),
-      valorCalculadoTotal: this._nnfb.control( programaModel?.valorCalculadoTotal ?? 0 ),
+      valorCalculadoTotal: this._nnfb.control(programaModel?.valorCalculadoTotal ?? 0),
       nomeagente: this._nnfb.control(programaModel?.nomeagente ?? null,
       ),
     });
@@ -402,6 +418,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     const valorTotalCalculadoProgramaFormGroupControl = this.programaForm.get(
       'valorCalculadoTotal'
     ) as FormControl<number | null>;
+
+    // const moedaFormControl = this.programaForm.get('valor.moeda') as FormControl<
+    //   string | null
+    // >;
+    // moedaFormControl.disable();
+    // const tipoFormControl = this.programaForm.get('valor.tipo') as FormControl<
+    //   number | null
+    // >;
+    // tipoFormControl.patchValue(TipoValorEnum.Estimado);
+   // tipoFormControl.disable();
 
     this.idProjetoPropostoList.valueChanges.subscribe(
 
@@ -449,6 +475,21 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   ): void {
     const modalRef = this._ngbModalService.open(
       ProgramaProjetoPropostoVinculadoWarningModalComponent,
+      {
+        centered: true,
+      }
+    );
+
+    modalRef.componentInstance.nomeProjeto = nomeProjeto;
+    modalRef.componentInstance.nomePrograma = nomePrograma;
+  }
+
+  private dispararModalAtencaoParecerGEOC(
+    nomeProjeto: string,
+    nomePrograma: string
+  ): void {
+    const modalRef = this._ngbModalService.open(
+      ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent,
       {
         centered: true,
       }
@@ -593,6 +634,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this.exibirLista = false;
 
   }
-  
+
 
 }

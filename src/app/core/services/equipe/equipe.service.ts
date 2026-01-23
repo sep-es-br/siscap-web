@@ -17,6 +17,8 @@ import { EquipeFormType } from '../../types/form/equipe-form.type';
 import { TipoStatusEnum } from '../../enums/tipo-status.enum';
 import { equipeValidator } from '../../validators/equipe.validator';
 import { TipoPapelEnum } from '../../enums/tipo-papel.enum';
+import { EquipeModel } from '../../models/equipe.model';
+import { UsuarioService } from '../usuario/usuario.service';
 
 @Injectable({
   providedIn: 'root',
@@ -61,7 +63,9 @@ export class EquipeService {
     >;
   }
 
-  constructor(private _nnfb: NonNullableFormBuilder) {
+  constructor(private _nnfb: NonNullableFormBuilder,
+     private readonly _usuarioService: UsuarioService
+  ) {
     this.idMembroNgSelectValue$.subscribe((idMembroNgSelectValue: IOpcoesDropdownResponsavelProponente) => {
       this.incluirMembroNaEquipe(
         this.construirMembroFormGroupNgSelectValue(idMembroNgSelectValue)
@@ -70,8 +74,10 @@ export class EquipeService {
   }
 
   public construirEquipeFormArray(
-    equipe?: Array<IEquipe>
+    equipe?: Array<IEquipe>,
+    exibirRedator: boolean = true
   ): FormArray<FormGroup<EquipeFormType>> {
+
     const equipeFormArray = this._nnfb.array<FormGroup<EquipeFormType>>(
       [],
       [Validators.required, Validators.minLength(1), equipeValidator()]
@@ -81,6 +87,24 @@ export class EquipeService {
       equipe.forEach((membro) => {
         equipeFormArray.push(this.construirMembroFormGroup(membro));
       });
+    } else {
+    
+      if (exibirRedator){
+        
+        const novoMembro: EquipeModel = {
+          subPessoa: this._usuarioService.usuarioPerfil.subNovo,
+          idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
+          idPapel: TipoPapelEnum.Redator,
+          idStatus: TipoStatusEnum.Ativo,
+          justificativa: null,
+          nome: this._usuarioService.usuarioPerfil.nome,
+          papelNome: 'Elaborador'
+        };
+        
+        equipeFormArray.push(this.construirMembroFormGroup(novoMembro));
+
+      }
+
     }
 
     this.equipeFormArray = equipeFormArray;
@@ -106,7 +130,7 @@ export class EquipeService {
     ngSelectValue: IOpcoesDropdownResponsavelProponente
   ): FormGroup<EquipeFormType> {
     const membroFormGroup = this.construirMembroFormGroup();
-    membroFormGroup.patchValue({ subPessoa: ngSelectValue.agentePublicoSub , nome: ngSelectValue.nome });
+    membroFormGroup.patchValue({ subPessoa: ngSelectValue.agentePublicoSub, nome: ngSelectValue.nome });
     return membroFormGroup;
   }
 

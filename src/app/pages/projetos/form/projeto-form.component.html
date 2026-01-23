@@ -9,7 +9,8 @@
       <i class="fa-solid fa-check"></i>
       <span>Status</span>
     </button>
-    <button *ngIf="mostrarBotaoPedirRevisaoDic" class="btn btn-warning icon-text-btn me-2" (click)="abrirRevisarModal(projetoForm)">
+    <button *ngIf="mostrarBotaoPedirRevisaoDic" class="btn btn-warning icon-text-btn me-2"
+      (click)="abrirRevisarModal(projetoForm)">
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Solicitar revisão a {{nomeProponenteDIC}} </span>
     </button>
@@ -65,7 +66,7 @@
             <label for="idOrganizacao" class="form-label col-12"
               [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('idOrganizacao') }">
               <validation-message [control]="getControl('idOrganizacao')">
-                Orgão de Origem
+                Proponente
                 <form-helper-tooltip [texto]="projetoTooltip['idOrganizacao']"></form-helper-tooltip>
                 <form-warning-tooltip *ngIf="deveComplementarCampo('idOrganizacao')"
                   [texto]="mensagemComplementarCampo('idOrganizacao')"></form-warning-tooltip>
@@ -82,7 +83,7 @@
             <label for="responsavelProponente" class="form-label col-12"
               [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('subResponsavelProponente') }">
               <validation-message [control]="getControl('idResponsavelProponente')">
-                Responsavel Proponente
+                Gestor Proponente
                 <form-helper-tooltip [texto]="projetoTooltip['idResponsavelProponente']"></form-helper-tooltip>
                 <form-warning-tooltip *ngIf="deveComplementarCampo('subResponsavelProponente')"
                   [texto]="mensagemComplementarCampo('subResponsavelProponente')"></form-warning-tooltip>
@@ -382,9 +383,9 @@
   </div>
 
   <div class="modal-body">
-    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
+    <p>Esta ação realizará automaticamente procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
-    <div>
+    <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
@@ -459,27 +460,26 @@
         </div>
       </div>
     </div>
+    <div *ngIf="finalizadoProcessamentoIntegracao" class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+      <span>PROCESSO AUTUADO E ENCAMINHADO COM SUCESSO!</span>
+    </div>
   </div>
 
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
+      
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
-        (click)="confirmarAssinarAutuar()" [disabled]="erroEmAlgumaFaseModalAutuacao">
+      
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
+        [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Assinar e Autuar</span>
       </button>
-      <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
-        style="border-radius: 0; cursor: default; user-select: none;">
-        <i class="fa-solid fa-check text-white me-2"></i>
-        <span>Processo concluído com sucesso!</span>
-      </div>
-      <div *ngIf="autuacaoAcionada"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
@@ -507,7 +507,7 @@
 
     <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
-    <div>
+    <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
@@ -587,6 +587,12 @@
           Economia e Planejamento (SEP).</div>
       </div>
     </div>
+    <div *ngIf="finalizadoProcessamentoIntegracao"
+      class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      style="border-radius: 0; cursor: default; user-select: none;">
+      <i class="fa-solid fa-check text-white me-2"></i>
+      <span>Processo concluído com sucesso!</span>
+    </div>
   </div>
 
   <div class="modal-footer">
@@ -595,20 +601,13 @@
         <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar"
-        class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Assinar e Autuar</span>
       </button>
-      <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
-        style="border-radius: 0; cursor: default; user-select: none;">
-        <i class="fa-solid fa-check text-white me-2"></i>
-        <span>Processo concluído com sucesso!</span>
-      </div>
-      <div *ngIf="autuacaoAcionada"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
@@ -759,9 +758,9 @@
     </h4>
   </div>
   <div class="modal-body">
-    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
+    <p>Esta ação realizará automaticamente procedimentos no E-Docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
-    <div>
+    <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
@@ -782,28 +781,23 @@
           Assinatura e captura do parecer, gerado em PDF a partir dos dados informados neste formulário;
         </div>
       </div>
+      <div *ngIf="finalizadoProcessamentoIntegracao" class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+        <span>ASSINATURA E CAPTURA FINALIZADAS COM SUCESSO!</span>
+      </div>
     </div>
   </div>
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar"
-        class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarCapturarParecer()"
-        [disabled]="erroEmAlgumaFaseModalAutuacao">
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
+        (click)="confirmarAssinarCapturarParecer()" [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Assinar e Capturar Parecer</span>
       </button>
-      <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
-        style="border-radius: 0; cursor: default; user-select: none;">
-        <i class="fa-solid fa-check text-white me-2"></i>
-        <span>Processo concluído com sucesso!</span>
-      </div>
-      <div *ngIf="autuacaoAcionada"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>
@@ -826,9 +820,9 @@
     </h4>
   </div>
   <div class="modal-body">
-    <p>Esta ação realizará automaticamente os seguintes procedimentos no E-docs, utilizando a sua identidade - {{
+    <p>Esta ação realizará automaticamente procedimentos no E-docs, utilizando a sua identidade - {{
       nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
-    <div>
+    <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
           <span *ngIf="aguardandoEntranhamento === FaseStatusEnum.NAO_INICIADA">
@@ -848,29 +842,24 @@
           [style.color]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
           Entranhamento dos pareceres capturados no E-Docs;</div>
       </div>
+      <div *ngIf="finalizadoProcessamentoIntegracao" class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+        <span>ENTRANHAMENTO PARECERES FINALIZADO COM SUCESSO!</span>
+      </div>
     </div>
   </div>
 
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ isIntegracaoEdocsConcluido() ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar"
-        class="btn btn-success icon-text-btn me-2" (click)="confirmarEntranhamentoParecerProcessoEdocs()"
-        [disabled]="erroEmAlgumaFaseModalAutuacao">
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
+        (click)="confirmarEntranhamentoParecerProcessoEdocs()" [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
         <span>Entranhar Pareceres</span>
       </button>
-      <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
-        style="border-radius: 0; cursor: default; user-select: none;">
-        <i class="fa-solid fa-check text-white me-2"></i>
-        <span>Processo concluído com sucesso!</span>
-      </div>
-      <div *ngIf="autuacaoAcionada"
-        class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>
         <span>Processando...</span>

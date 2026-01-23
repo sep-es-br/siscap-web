@@ -36,7 +36,7 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
   templateUrl: './valor-form.component.html',
   styleUrl: './valor-form.component.scss',
 })
-export class  ValorFormComponent {
+export class ValorFormComponent {
   public moedasList = input<Array<IMoeda>>();
   public tiposValorOpcoes = input<Array<IOpcoesDropdown>>();
   public camposComplementarProjeto = input<Array<IEstruturaCamposComplementarProjeto>>([]);
@@ -45,7 +45,7 @@ export class  ValorFormComponent {
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
-  constructor(public valorService: ValorService) {}
+  constructor(public valorService: ValorService) { }
 
   public getControl(controlName: string): AbstractControl<any, any> {
     return this.valorService.valorFormGroup.get(controlName) as AbstractControl<
@@ -61,20 +61,20 @@ export class  ValorFormComponent {
     NgxMaskTransformFunctionHelper.rtlCurrencyOutputTransformFn;
 
   public projetoTooltip: Record<string, string> =
-      COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
+    COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   public deveComplementarCampo(nomeControle: string): boolean {
-      const deveComplementar = this.camposComplementarProjeto().some(
-        campo => campo.idCampo  === nomeControle
-      );
-      return ( this.statusProjeto() == StatusProjetoEnum.Em_Complementacao && deveComplementar ) || false;
-    }
-  
-    public mensagemComplementarCampo(nomeControle: string): string {
-      const campoEncontrado = this.camposComplementarProjeto().find(
-        campo => campo.idCampo === nomeControle
-      );
-      return campoEncontrado ? campoEncontrado.descricaoComplemento : '';
-    }
-      
+    const deveComplementar = this.camposComplementarProjeto().some(
+      campo => campo.idCampo === nomeControle
+    );
+    return (this.statusProjeto() == StatusProjetoEnum.Em_Complementacao && deveComplementar) || false;
+  }
+
+  public mensagemComplementarCampo(nomeControle: string): string {
+    const campoEncontrado = this.camposComplementarProjeto().find(
+      campo => campo.idCampo === nomeControle
+    );
+    return campoEncontrado ? campoEncontrado.descricaoComplemento : '';
+  }
+
 }

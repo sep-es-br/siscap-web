@@ -12,7 +12,7 @@
       id="current-page-title-breadcrumb"
       class="col-12 col-md-8 d-inline-flex flex-column"
     >
-      <h1 class="current-page-title mb-0">
+      <h1 class="current-page-title mb-0 text-truncate">
         {{ paginaAtual.titulo }}
         <span
           *ngIf="isProponente && paginaAtual.caminho == 'projetos'"
@@ -40,6 +40,7 @@
           </ng-container>
         </ol>
       </nav>
+      
     </div>
 
     <div

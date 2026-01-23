@@ -196,6 +196,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public emProcessamentIntegracao: boolean = false;
   public finalizadoProcessamentoIntegracao: boolean = false;
 
+ public exibeListaEtapasIntegracao: boolean = false;
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -1221,12 +1223,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     // valida se tem pelo menos uma acao ATIVA no form
+    // e seja diferente do papel 'Redator'
     const membrosEquipeAtivas = this.projetoForm.get('equipeElaboracao')?.value
-      .filter((membro: EquipeModel) => membro.idStatus === TipoStatusEnum.Ativo);
+      .filter((membro: EquipeModel) => membro.idStatus === TipoStatusEnum.Ativo && membro.idPapel != TipoPapelEnum.Redator);
 
     if (membrosEquipeAtivas.length === 0) {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Nenhum membro informado.',
+        'Nenhum membro informado além do Redator.',
       ]);
       return false;
     }
@@ -1321,26 +1324,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload: ProjetoFormModel,
     isRascunho: boolean
   ): Observable<IProjeto> {
-
-    const usuarioProponente = payload.equipeElaboracao.some(
-      membro => membro.idPessoa === this._usuarioService.usuarioPerfil.idPessoa && membro.idPapel === TipoPapelEnum.Proponente
-    );
-
-    if (!usuarioProponente) {
-
-      const novoMembro: EquipeModel = {
-        subPessoa: this._usuarioService.usuarioPerfil.subNovo,
-        idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
-        idPapel: TipoPapelEnum.Proponente,
-        idStatus: TipoStatusEnum.Ativo,
-        justificativa: null,
-        nome: this._usuarioService.usuarioPerfil.nome,
-        papelNome: 'Elaborador'
-      };
-
-      payload.equipeElaboracao.push(novoMembro);
-
-    }
 
     if (payload.idResponsavelProponente === 0) {
       const dados = this.projetoForm.value;
@@ -1758,6 +1741,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private reentranharDicProjetoAsync(payload: ProjetoFormModel): void {
+    
+    this.exibeListaEtapasIntegracao = true;
 
     this._projetosService.reentranharDicEdocs(this._idProjetoEdicao, payload)
       .pipe(
@@ -1789,6 +1774,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private autuarProjetoAsync(payload: ProjetoFormModel): void {
 
+    this.exibeListaEtapasIntegracao = true;
+
     this._projetosService.autuarProjetoEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
@@ -1819,6 +1806,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private efetivarEnvioParecerProjetoAsync(payload: ProjetoFormModel): void {
 
+    this.exibeListaEtapasIntegracao = true;
+
     this._projetosService.efetivarEnvioParecerEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
@@ -1848,6 +1837,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private efetivarEntranhamentoPareceresProjetoAsync(payload: ProjetoFormModel): void {
+
+    this.exibeListaEtapasIntegracao = true;
 
     this._projetosService.efetivarEntranhamentoPareceresProjetoEdocs(this._idProjetoEdicao, payload)
       .pipe(
@@ -1892,7 +1883,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           .consultarFasesIntegracaoEdcosProjeto(this._idProjetoEdicao)
           .pipe(
             tap(response => {
-              console.log('Response da API:', response);
+              // console.log('Response da API:', response);
             }),
             map(response =>
               response.map(fase => new ProjetoIntegracaoEdocsFasesModel(fase))

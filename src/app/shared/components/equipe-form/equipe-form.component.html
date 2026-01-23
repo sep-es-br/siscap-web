@@ -21,7 +21,7 @@
                     id="papelSelect"
                     class="papel-select"
                     placeholder="-- Papel do membro --"
-                    [readonly]="isMembroRemovido(i)"
+                    [readonly]="isMembroRemovido(i) || isMembroRedator(i)"
                     [clearable]="false"
                     formControlName="idPapel" >
                     <ng-option
@@ -39,7 +39,7 @@
                     type="button"
                     ngbTooltip="Excluir membro da equipe"
                     class="btn btn-outline-danger rounded-circle"
-                    [disabled]="desabilitarCampo(i)"
+                    [disabled]="desabilitarCampo(i) || isMembroRedator(i)"
                     (click)="removerMembroDaEquipe(i)">
                     <i class="fa-solid fa-close delete-btn-icon"></i>
                   </button>
