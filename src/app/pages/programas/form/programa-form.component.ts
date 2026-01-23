@@ -388,7 +388,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.minLength(1)]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
-        programaModel?.equipeCaptacao
+        programaModel?.equipeCaptacao, false
       ),
       idProjetoPropostoList: this._nnfb.control(
         programaModel?.idProjetoPropostoList ?? [],
