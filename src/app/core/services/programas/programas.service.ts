@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -18,6 +18,7 @@ import { Post } from '../../interfaces/http-post.interface';
 import { Put } from '../../interfaces/http-put.interface';
 
 import { environment } from '../../../../environments/environment';
+import { FilesService } from '../files/files.service';
 
 @Injectable({
   providedIn: 'root',
@@ -37,7 +38,10 @@ export class ProgramasService
     return this._idPrograma$;
   }
 
-  constructor(private readonly _http: HttpClient) {
+  constructor(
+    private readonly _http: HttpClient,
+    private filesService: FilesService,
+  ) {
     super(_http, 'programas');
   }
 
@@ -49,11 +53,19 @@ export class ProgramasService
     return [botaoCriar];
   }
 
-  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
+  public gerarBotoesAcaoFormulario(config?: { editMode: boolean; }): Array<BotaoPropriedadesModel> {
+    const botoesFinais = [];
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
 
-    return [botaoSalvar, botaoCancelar];
+    botoesFinais.push(botaoSalvar, botaoCancelar);
+
+    if (config && config.editMode) {
+      const botaoExportar = BotoesConfig.gerarBotaoPropriedades('exportar');
+      botoesFinais.push(botaoExportar);
+    }
+
+    return botoesFinais;
   }
 
   public post(body: ProgramaFormModel): Observable<IPrograma> {
@@ -62,5 +74,18 @@ export class ProgramasService
 
   public put(id: number, body: ProgramaFormModel): Observable<IPrograma> {
     return this._http.put<IPrograma>(`${this._url}/${id}`, body);
+  }
+
+  public exportById(idPrograma: number, nomePrograma: string): void {
+    const downloadURL = `programa/${idPrograma}/baixar-pdf`;
+    this.filesService.requestPDF(downloadURL).subscribe({
+      next: (res) => {
+        if (res instanceof HttpResponse) {
+          const httpResponse = res as HttpResponse<Blob>;
+          const fileName = `SISCAP - Programa ${nomePrograma}`;
+          this.filesService.downloadPDF(httpResponse, fileName);
+        }
+      },
+    });
   }
 }
