@@ -77,12 +77,12 @@ export class ProgramasService
   }
 
   public exportById(idPrograma: number, nomePrograma: string): void {
-    const downloadURL = `programa/${idPrograma}/baixar-pdf`;
+    const downloadURL = `${this._url}/programa/${idPrograma}/baixar-pdf`;
     this.filesService.requestPDF(downloadURL).subscribe({
       next: (res) => {
         if (res instanceof HttpResponse) {
           const httpResponse = res as HttpResponse<Blob>;
-          const fileName = `SISCAP - Programa ${nomePrograma}`;
+          const fileName = `SISCAP - ${nomePrograma}`;
           this.filesService.downloadPDF(httpResponse, fileName);
         }
       },
