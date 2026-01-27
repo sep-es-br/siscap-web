@@ -61,6 +61,8 @@ import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
+import { PreventActionModalComponent } from '../../../shared/templates/prevent-action-modal/prevent-action-modal.component';
+import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -144,7 +146,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._idProgramaEdicao = programaModel.id;
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario()
+          this._programasService.gerarBotoesAcaoFormulario({ isModoEdicao: true })
         );
 
         this.equipeCaptacao = programaModel.equipeCaptacao;
@@ -158,7 +160,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.iniciarForm();
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario()
+          this._programasService.gerarBotoesAcaoFormulario({ isModoEdicao: false })
         );
 
         this.loading = false;
@@ -507,6 +509,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         );
         break;
 
+      case BreadcrumbAcoesEnum.SolicitarAutorizacao:
+        this.dispararModalConfirmarSolicitarAutorizacao();
+        break;
+
       case BreadcrumbAcoesEnum.Salvar:
         this.submitProgramaForm(this.programaForm);
         break;
@@ -635,5 +641,31 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   }
 
+  private dispararModalConfirmarSolicitarAutorizacao() {
+    const modalRef = this._ngbModalService.open(
+      ConfirmationModalComponent,
+      {
+        centered: true,
+      }
+    );
 
+    modalRef.componentInstance.conteudo = 'Essa ação irá solicitar as Assinaturas Confirmatórias aos gestores do Programa.';
+
+    modalRef.result.then(
+      (resolve) => {},
+      (result) => {
+        if (result === 'confirmar') {
+          this._programasService.solicitarAutorizacoesPrograma(this._idProgramaEdicao).subscribe({
+            next: (res) => {
+              // Falta testar a resposta da API
+              console.log('res: ', res);
+            },
+            error: (err) => {
+
+            },
+          });
+        } //  else if (result === 'cancelar') {}
+      }
+    );
+  }
 }

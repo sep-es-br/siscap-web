@@ -1,0 +1,18 @@
+<div class="modal-header bg-danger-subtle">
+  <h4 class="modal-title">Atenção!</h4>
+  <button class="btn-close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body text-center">
+  <p class="fw-bold">{{ conteudo }}</p>
+  <p>Tem certeza que deseja continuar?</p>
+</div>
+<div class="modal-footer d-flex justify-content-center">
+  <siscap-botao
+    [propriedades]="botaoCancelar"
+    (acao)="activeModal.dismiss('cancelar')"
+  ></siscap-botao>
+  <siscap-botao
+    [propriedades]="botaoProsseguir"
+    (acao)="activeModal.dismiss('confirmar')"
+  ></siscap-botao>
+</div>

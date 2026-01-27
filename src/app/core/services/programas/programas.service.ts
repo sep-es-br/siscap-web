@@ -49,11 +49,17 @@ export class ProgramasService
     return [botaoCriar];
   }
 
-  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
+  public gerarBotoesAcaoFormulario(config: { isModoEdicao: boolean }): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    let finalButtons: Array<BotaoPropriedadesModel> = [botaoSalvar, botaoCancelar];
 
-    return [botaoSalvar, botaoCancelar];
+    if (config && config.isModoEdicao) {
+      const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades('solicitarAutorizacao');
+      finalButtons = [botaoSalvar, botaoSolicitarAutorizacao, botaoCancelar];
+    }
+
+    return finalButtons;
   }
 
   public post(body: ProgramaFormModel): Observable<IPrograma> {
@@ -62,5 +68,9 @@ export class ProgramasService
 
   public put(id: number, body: ProgramaFormModel): Observable<IPrograma> {
     return this._http.put<IPrograma>(`${this._url}/${id}`, body);
+  }
+
+  public solicitarAutorizacoesPrograma(idPrograma: number): Observable<void> {
+    return this._http.get<void>(`${this._url}/programa/${idPrograma}/edocs/solicitarassinaturas`);
   }
 }
