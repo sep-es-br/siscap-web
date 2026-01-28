@@ -144,7 +144,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._idProgramaEdicao = programaModel.id;
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario()
+          this._programasService.gerarBotoesAcaoFormulario({ editMode: true })
         );
 
         this.equipeCaptacao = programaModel.equipeCaptacao;
@@ -158,7 +158,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.iniciarForm();
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario()
+          this._programasService.gerarBotoesAcaoFormulario({ editMode: false })
         );
 
         this.loading = false;
@@ -510,6 +510,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       case BreadcrumbAcoesEnum.Salvar:
         this.submitProgramaForm(this.programaForm);
         break;
+
+      case BreadcrumbAcoesEnum.Exportar:
+        this.exportarPrograma();
+        break;
     }
   }
 
@@ -635,5 +639,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   }
 
-
+  public async exportarPrograma() {
+    this._programasService.exportById(
+      this._programasService.idPrograma$.getValue(),
+      this.getControl('titulo').value,
+    );
+  }
 }
