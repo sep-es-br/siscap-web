@@ -41,6 +41,7 @@ export const BREADCRUMB_LISTA_CAMINHOS_ESPECIFICOS: Array<{
   { caminho: 'meu-perfil', contexto: 'pessoas' },
   { caminho: 'visualizar', contexto: 'cartasconsulta' },
   { caminho: 'visualizar', contexto: 'prospeccao' },
+  { caminho: 'assinaturas', contexto: 'programas' },
 ];
 
 export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
@@ -63,6 +64,7 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   programas: 'Programas',
   programascriar: 'Novo Programa',
   programaseditar: 'Editar Programa',
+  programasassinaturas: 'Assinaturas do Programa',
 
   cartasconsulta: 'Pesquisa de Fontes de Financiamento',
   cartasconsultacriar: 'Nova Pesquisa de Fonte de Financiamento',

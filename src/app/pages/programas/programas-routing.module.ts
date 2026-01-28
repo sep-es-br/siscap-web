@@ -5,6 +5,8 @@ import { ProgramasComponent } from './programas.component';
 import { ProgramaFormComponent } from './form/programa-form.component';
 
 import { programas_NoIdEditarGuard } from '../../core/guards/programas/no-id-editar.guard';
+import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas.component';
+import { authExternalUrlGuard } from '../../core/guards/auth/auth.externalUrl.guard';
 
 const PROGRAMAS_ROUTES: Routes = [
   {
@@ -23,6 +25,12 @@ const PROGRAMAS_ROUTES: Routes = [
     component: ProgramaFormComponent,
     canActivate: [programas_NoIdEditarGuard],
   },
+  {
+    title: 'Assinaturas Programa',
+    path: ':id/assinaturas',
+    component: ProgramaAssinaturasComponent,
+    canActivate: [authExternalUrlGuard],
+  }
 ];
 
 @NgModule({
