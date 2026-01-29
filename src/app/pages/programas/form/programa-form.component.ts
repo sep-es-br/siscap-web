@@ -112,6 +112,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
+  public mostrarBotaoBaixarPrograma: boolean = false;
+
   constructor(
     public valorService: ValorService,
     private readonly _nnfb: NonNullableFormBuilder,
@@ -144,8 +146,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._idProgramaEdicao = programaModel.id;
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario({ editMode: true })
+          this._programasService.gerarBotoesAcaoFormulario()
         );
+
+        this.mostrarBotaoBaixarPrograma = true;
 
         this.equipeCaptacao = programaModel.equipeCaptacao;
 
@@ -158,7 +162,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.iniciarForm();
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario({ editMode: false })
+          this._programasService.gerarBotoesAcaoFormulario()
         );
 
         this.loading = false;

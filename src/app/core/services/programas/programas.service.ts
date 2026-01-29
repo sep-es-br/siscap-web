@@ -53,19 +53,11 @@ export class ProgramasService
     return [botaoCriar];
   }
 
-  public gerarBotoesAcaoFormulario(config?: { editMode: boolean; }): Array<BotaoPropriedadesModel> {
-    const botoesFinais = [];
+  public gerarBotoesAcaoFormulario(): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
 
-    botoesFinais.push(botaoSalvar, botaoCancelar);
-
-    if (config && config.editMode) {
-      const botaoExportar = BotoesConfig.gerarBotaoPropriedades('exportar');
-      botoesFinais.push(botaoExportar);
-    }
-
-    return botoesFinais;
+    return [botaoSalvar, botaoCancelar];
   }
 
   public post(body: ProgramaFormModel): Observable<IPrograma> {
