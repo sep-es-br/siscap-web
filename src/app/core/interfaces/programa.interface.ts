@@ -21,3 +21,8 @@ export interface IProgramaTableData
   moeda: string;
   tetoPrograma: number;
 }
+
+export interface IProgramaAssinaturas extends IPrograma {
+  nomesOrgaosExecutores: Array<string>;
+  listaDICSPropostos: Array<string>;
+}

@@ -1,0 +1,11 @@
+.card {
+  .card-body {
+    .form-label {
+      margin-bottom: .5rem;
+    }
+
+    .no-pointer-effects {
+      pointer-events: none;
+    }
+  }
+}
