@@ -2,37 +2,48 @@
   <loading-spinner></loading-spinner>
 </div>
 
+<!-- <div class="d-flex justify-content-end" *ngIf="!isLoading">
+  <button class="btn btn-outline-primary icon-text-btn" (click)="baixarPrograma()">
+    <i class="fa-solid fa-file-arrow-down"></i>
+    <span>Baixar Programa</span>
+  </button>
+</div> -->
+
 <div
   *ngIf="!isLoading"
   class="card"
 >
   <div class="card-body">
     <form class="row g-3" [formGroup]="formPrograma">
-      <div class="col-12 col-sm-8">
-        <label class="form-label no-pointer-effects" for="inputTitulo">Título</label>
-        <input class="form-control no-pointer-effects" type="text" formControlName="tituloPrograma" id="inputTitulo" readonly>
-      </div>
       <div class="col-12 col-sm-4">
         <label class="form-label no-pointer-effects" for="inputSigla">Sigla</label>
-        <input class="form-control no-pointer-effects" type="text" formControlName="siglaPrograma" id="inputSigla" readonly>
+        <input class="form-control no-pointer-effects" type="text" formControlName="siglaPrograma" id="inputSigla" readonly />
       </div>
-      <!-- <div class="col-12">
-        <label class="form-label no-pointer-effects" for="inputOrgao">
-          {{ programaAtual.nomesOrgaosExecutores.length > 1 ? 'Órgãos Executores' : 'Órgão Executor' }}
-        </label>
-        <ng-container *ngFor="let orgao of programaAtual.nomesOrgaosExecutores; let idx = index">
-          <input class="form control no-pointer-effects" type="text" [formControlName]="'orgao' + (idx + 1)" id="inputOrgao">
-        </ng-container>
-      </div> -->
+      <div class="col-12 col-sm-8">
+        <label class="form-label no-pointer-effects" for="inputTitulo">Título</label>
+        <input class="form-control no-pointer-effects" type="text" formControlName="tituloPrograma" id="inputTitulo" readonly />
+      </div>
       <div class="col-12">
         <label class="form-label no-pointer-effects" for="inputOrgao">
           {{ programaAtual.nomesOrgaosExecutores.length > 1 ? 'Órgãos Executores' : 'Órgão Executor' }}
         </label>
-        <ng-select id="inputOrgao" [multiple]="true" formControlName="orgaosPrograma" [disabled]="true">
+        <ng-select id="inputOrgao" [multiple]="true" formControlName="orgaosPrograma">
           <ng-option *ngFor="let organizacao of programaAtual.nomesOrgaosExecutores" [value]="organizacao">
             {{ organizacao }}
           </ng-option>
         </ng-select>
+      </div>
+      <div class="col-12">
+        <label class="form-label no-pointer-effects" for="inputDics">DICS Propostos</label>
+        <ng-select id="inputDics" [multiple]="true" formControlName="dicsPrograma">
+          <ng-option *ngFor="let dic of programaAtual.listaDICSPropostos" [value]="dic">
+            {{ dic }}
+          </ng-option>
+        </ng-select>
+      </div>
+      <div class="col-12 col-sm-4">
+        <label class="form-label no-pointer-effects" for="inputValor">Valor Estimado</label>
+        <input class="form-control no-pointer-effects" type="text" formControlName="valorPrograma" id="inputValor" readonly />
       </div>
     </form>
   </div>
