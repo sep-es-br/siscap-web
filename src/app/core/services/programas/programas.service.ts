@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -18,6 +18,7 @@ import { Post } from '../../interfaces/http-post.interface';
 import { Put } from '../../interfaces/http-put.interface';
 
 import { environment } from '../../../../environments/environment';
+import { FilesService } from '../files/files.service';
 
 @Injectable({
   providedIn: 'root',
@@ -37,7 +38,10 @@ export class ProgramasService
     return this._idPrograma$;
   }
 
-  constructor(private readonly _http: HttpClient) {
+  constructor(
+    private readonly _http: HttpClient,
+    private filesService: FilesService
+  ) {
     super(_http, 'programas');
   }
 
@@ -49,13 +53,20 @@ export class ProgramasService
     return [botaoCriar];
   }
 
-  public gerarBotoesAcaoFormulario(config: { isModoEdicao: boolean }): Array<BotaoPropriedadesModel> {
+  public gerarBotoesAcaoFormulario(config: {
+    isModoEdicao: boolean;
+  }): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    let finalButtons: Array<BotaoPropriedadesModel> = [botaoSalvar, botaoCancelar];
+    let finalButtons: Array<BotaoPropriedadesModel> = [
+      botaoSalvar,
+      botaoCancelar,
+    ];
 
     if (config && config.isModoEdicao) {
-      const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades('solicitarAutorizacao');
+      const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades(
+        'solicitarAutorizacao'
+      );
       finalButtons = [botaoSalvar, botaoSolicitarAutorizacao, botaoCancelar];
     }
 
@@ -70,7 +81,22 @@ export class ProgramasService
     return this._http.put<IPrograma>(`${this._url}/${id}`, body);
   }
 
+  public exportById(idPrograma: number, nomePrograma: string): void {
+    const downloadURL = `${this._url}/programa/${idPrograma}/baixar-pdf`;
+    this.filesService.requestPDF(downloadURL).subscribe({
+      next: (res) => {
+        if (res instanceof HttpResponse) {
+          const httpResponse = res as HttpResponse<Blob>;
+          const fileName = `SISCAP - ${nomePrograma}`;
+          this.filesService.downloadPDF(httpResponse, fileName);
+        }
+      },
+    });
+  }
+
   public solicitarAutorizacoesPrograma(idPrograma: number): Observable<void> {
-    return this._http.get<void>(`${this._url}/programa/${idPrograma}/edocs/solicitarassinaturas`);
+    return this._http.get<void>(
+      `${this._url}/programa/${idPrograma}/edocs/solicitarassinaturas`
+    );
   }
 }

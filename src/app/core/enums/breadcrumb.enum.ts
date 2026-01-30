@@ -16,6 +16,7 @@ export enum BreadcrumbAcoesEnum {
   EntranharPareceresProcessoEdocs = 'entranharPareceresProcessoEdocs',
   EntranharParecerGEOCdocs = 'entranharParecerGEOCdocs',
   CapturarparecerGEOC = 'capturarparecerGEOC',
+  Exportar = 'exportar',
   SolicitarAutorizacao = 'solicitarAutorizacao',
 }
 

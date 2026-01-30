@@ -24,6 +24,7 @@ export type TBotaoAcao =
   | 'entranharParecerGEOCdocs'
   | 'capturarparecerGEOC'
   | 'salvarAposElaboracao'
+  | 'exportar'
   | 'solicitarAutorizacao';
 
 export abstract class BotoesConfig {
@@ -120,7 +121,8 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Pedir Parecer',
       acao: 'parecerestrategicoorcamentario',
-    },salvarparecer: {
+    },
+    salvarparecer: {
       classesCSS: ['btn-success'],
       icone: ['fa-solid', 'fa-save'],
       texto: 'Salvar Parecer',
@@ -155,6 +157,12 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-save'],
       texto: 'Salvar',
       acao: 'salvar',
+    },
+    exportar: {
+      classesCSS: ['btn-warning'],
+      icone: ['fa-solid', 'fa-file-arrow-down'],
+      texto: 'Exportar',
+      acao: 'exportar',
     },
     solicitarAutorizacao: {
       classesCSS: ['btn-outline-success'],

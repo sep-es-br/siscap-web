@@ -2,6 +2,13 @@
   <loading-spinner></loading-spinner>
 </div>
 
+<div class="d-flex justify-content-end mb-3" *ngIf="!loading">
+  <button *ngIf="mostrarBotaoBaixarPrograma" class="btn btn-outline-primary icon-text-btn" (click)="exportarPrograma()">
+    <i class="fa-solid fa-file-arrow-down"></i>
+    <span>Baixar Programa</span>
+  </button>
+</div>
+
 <div class="programa-form" *ngIf="!loading">
   <div class="card">
     <div class="card-body">
@@ -112,7 +119,7 @@
           <div class="col-12">
             <label for="idProjetoProposto" class="col-12 form-label">
               <validation-message [control]="getControl('idProjetoPropostoList')">
-                Projetos Propostos
+                DICs Propostos
               </validation-message>
             </label>
 

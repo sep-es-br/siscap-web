@@ -114,6 +114,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
+  public mostrarBotaoBaixarPrograma: boolean = false;
+
   constructor(
     public valorService: ValorService,
     private readonly _nnfb: NonNullableFormBuilder,
@@ -126,7 +128,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _toastService: ToastService,
     private readonly _navegacaoService: NavegacaoService,
     private readonly _pessoasService: PessoasService,
-    private readonly _usuarioService: UsuarioService,
+    private readonly _usuarioService: UsuarioService
   ) {
     const [editar$, criar$] = partition(
       this._programasService.idPrograma$,
@@ -138,7 +140,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._programasService.getById(idPrograma)
       ),
       tap((response: IPrograma) => {
-
         const programaModel = new ProgramaModel(response);
 
         this.iniciarForm(programaModel);
@@ -146,8 +147,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._idProgramaEdicao = programaModel.id;
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario({ isModoEdicao: true })
+          this._programasService.gerarBotoesAcaoFormulario({
+            isModoEdicao: true,
+          })
         );
+
+        this.mostrarBotaoBaixarPrograma = true;
 
         this.equipeCaptacao = programaModel.equipeCaptacao;
 
@@ -160,7 +165,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.iniciarForm();
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario({ isModoEdicao: false })
+          this._programasService.gerarBotoesAcaoFormulario({
+            isModoEdicao: false,
+          })
         );
 
         this.loading = false;
@@ -178,17 +185,23 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this._getPessoasOpcoes$ = this._opcoesDropdownService
       .getOpcoesPessoas()
       .pipe(
-        tap((response: IOpcoesDropdownResponsavelProponente[]) => (this.pessoasOpcoes = response))
+        tap(
+          (response: IOpcoesDropdownResponsavelProponente[]) =>
+            (this.pessoasOpcoes = response)
+        )
       );
 
     this._getTiposPapelOpcoes$ = this._opcoesDropdownService
       .getOpcoesTiposPapel()
-      .pipe(tap((response) => {
-        this.tiposPapelOpcoes = response;
-        const idsPermitidos = [1, 5];
-        this.tiposPapelOpcoesVisiveis = response.filter(papel => idsPermitidos.includes(papel.id));
-      }
-      ));
+      .pipe(
+        tap((response) => {
+          this.tiposPapelOpcoes = response;
+          const idsPermitidos = [1, 5];
+          this.tiposPapelOpcoesVisiveis = response.filter((papel) =>
+            idsPermitidos.includes(papel.id)
+          );
+        })
+      );
 
     this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
       .getOpcoesProjetosPropostos()
@@ -210,9 +223,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       .pipe(
         tap(
           (response: IOpcoesDropdown[]) =>
-          (this.tiposValorOpcoes = response.filter(
-            (tipoValor) => tipoValor.id <= 3
-          ))
+            (this.tiposValorOpcoes = response.filter(
+              (tipoValor) => tipoValor.id <= 3
+            ))
         )
       );
 
@@ -233,23 +246,25 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this._subscription.add(this._getAllOpcoes$.subscribe());
 
     this._subscription.add(this._atualizarPrograma$.subscribe());
     this._subscription.add(this._cadastrarPrograma$.subscribe());
 
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
-      error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
+      error: (err) =>
+        console.error(
+          'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
+          err
+        ),
     });
 
-    // fixa tipo como valor estimado.. 
+    // fixa tipo como valor estimado..
     this.programaForm.patchValue({
       valor: {
-        tipo: TipoValorEnum.Estimado
-      }
+        tipo: TipoValorEnum.Estimado,
+      },
     });
-
   }
 
   public getControl(controlName: string): AbstractControl<any, any> {
@@ -263,9 +278,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   public get percentualCustosAdministrativos(): FormControl<number> {
-    return this.programaForm.get('percentualCustoAdministrativo') as FormControl<
-      number
-    >;
+    return this.programaForm.get(
+      'percentualCustoAdministrativo'
+    ) as FormControl<number>;
   }
 
   public rtlCurrencyInputTransformFn =
@@ -283,7 +298,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public idProjetoPropostoNgSelectChangeEvent(
     event: IProjetoPropostoOpcoesDropdown
   ): void {
-
     if (event.idPrograma) {
       const nomeProjeto = event.nome;
 
@@ -299,7 +313,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         (programaOpcao) => programaOpcao.id === event.idPrograma
       )?.nome;
       this.dispararModalAtencaoParecerGEOC(nomeProjeto, nomePrograma!);
-      return
+      return;
     }
 
     this.idProjetoPropostoList.patchValue([
@@ -308,13 +322,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     ]);
 
     setTimeout(() => (this.idProjetoProposto = null), 0);
-
   }
 
-  public percentualCustoAdministrativoChangeEvent(
-    event: any
-  ): void {
-
+  public percentualCustoAdministrativoChangeEvent(event: any): void {
     const valorTotalCalculadoProgramaFormGroupControl = this.programaForm.get(
       'valorCalculadoTotal'
     ) as FormControl<number | null>;
@@ -328,22 +338,19 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
 
     const somatorioValorProjetosPropostos = listaIds
-      .map(id => this.getProjetoPropostoOpcao(id).valorEstimado ?? 0)
+      .map((id) => this.getProjetoPropostoOpcao(id).valorEstimado ?? 0)
       .reduce((acc, valor) => acc + valor, 0);
 
     if (valorPercentual > 0) {
       valorTotalCalculadoPrograma =
-        somatorioValorProjetosPropostos * (1 + (valorPercentual / 100));
+        somatorioValorProjetosPropostos * (1 + valorPercentual / 100);
     }
 
     if (this.isModoEdicao) {
       valorTotalCalculadoProgramaFormGroupControl.patchValue(
-        valorTotalCalculadoPrograma
-          ? valorTotalCalculadoPrograma
-          : 0
+        valorTotalCalculadoPrograma ? valorTotalCalculadoPrograma : 0
       );
     }
-
   }
 
   public filtrarProjetosPropostosOpcoes(
@@ -358,14 +365,17 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public getProjetoPropostoOpcao(
     idProjetoProposto: number
   ): IProjetoPropostoOpcoesDropdown {
-    return this.projetosPropostosOpcoes.find(
-      (projetoPropostoOpcao) => projetoPropostoOpcao.id === idProjetoProposto) || {
-      id: 0,
-      nome: '',
-      valorEstimado: 0,
-      idPrograma: null,
-      parecerGEOCEnviado: false
-    };
+    return (
+      this.projetosPropostosOpcoes.find(
+        (projetoPropostoOpcao) => projetoPropostoOpcao.id === idProjetoProposto
+      ) || {
+        id: 0,
+        nome: '',
+        valorEstimado: 0,
+        idPrograma: null,
+        parecerGEOCEnviado: false,
+      }
+    );
   }
 
   public removerProjetoPropostoDoPrograma(index: number): void {
@@ -375,7 +385,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
-
     this.programaForm = this._nnfb.group({
       sigla: this._nnfb.control(programaModel?.sigla ?? null, [
         Validators.required,
@@ -390,25 +399,27 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.minLength(1)]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
-        programaModel?.equipeCaptacao, false
+        programaModel?.equipeCaptacao,
+        false
       ),
       idProjetoPropostoList: this._nnfb.control(
         programaModel?.idProjetoPropostoList ?? [],
         [Validators.required, Validators.minLength(1)]
       ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
-      percentualCustoAdministrativo: this._nnfb.control(programaModel?.percentualCustoAdministrativo ?? 0,),
-      valorCalculadoTotal: this._nnfb.control(programaModel?.valorCalculadoTotal ?? 0),
-      nomeagente: this._nnfb.control(programaModel?.nomeagente ?? null,
+      percentualCustoAdministrativo: this._nnfb.control(
+        programaModel?.percentualCustoAdministrativo ?? 0
       ),
+      valorCalculadoTotal: this._nnfb.control(
+        programaModel?.valorCalculadoTotal ?? 0
+      ),
+      nomeagente: this._nnfb.control(programaModel?.nomeagente ?? null),
     });
 
     this.programaFormValueChanges();
-
   }
 
   private programaFormValueChanges(): void {
-
     const valorFormGroupQuantiaFormControl = this.programaForm.get(
       'valor.quantia'
     ) as FormControl<number | null>;
@@ -429,12 +440,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     //   number | null
     // >;
     // tipoFormControl.patchValue(TipoValorEnum.Estimado);
-   // tipoFormControl.disable();
+    // tipoFormControl.disable();
 
     this.idProjetoPropostoList.valueChanges.subscribe(
-
       (idProjetoPropostoListValue) => {
-
         const somatorioValorProjetosPropostos = idProjetoPropostoListValue
           .map(
             (idProjetoProposto) =>
@@ -445,13 +454,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         var valorTotalCalculadoPrograma = 0;
 
         if ((percentualCustoAdministrativoFormGroupControl?.value ?? 0) > 0) {
-          const percentual = (percentualCustoAdministrativoFormGroupControl.value ?? 0);
+          const percentual =
+            percentualCustoAdministrativoFormGroupControl.value ?? 0;
           valorTotalCalculadoPrograma =
-            somatorioValorProjetosPropostos * (1 + (percentual / 100));
+            somatorioValorProjetosPropostos * (1 + percentual / 100);
         }
 
         if (this.isModoEdicao) {
-
           valorFormGroupQuantiaFormControl.patchValue(
             somatorioValorProjetosPropostos
               ? somatorioValorProjetosPropostos
@@ -459,16 +468,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           );
 
           valorTotalCalculadoProgramaFormGroupControl.patchValue(
-            valorTotalCalculadoPrograma
-              ? valorTotalCalculadoPrograma
-              : 0
+            valorTotalCalculadoPrograma ? valorTotalCalculadoPrograma : 0
           );
-
         }
-
       }
     );
-
   }
 
   private dispararModalAtencao(
@@ -515,6 +519,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
       case BreadcrumbAcoesEnum.Salvar:
         this.submitProgramaForm(this.programaForm);
+        break;
+
+      case BreadcrumbAcoesEnum.Exportar:
+        this.exportarPrograma();
         break;
     }
   }
@@ -573,7 +581,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   public buscarAgentesPorTermo(): IOpcoesDropdownResponsavelProponente[] {
-
     this.isLoadingPessoasFiltroTermo = true;
 
     const termo = this.programaForm.get('nomeagente')?.value ?? '';
@@ -588,82 +595,82 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       return this.pessoasOpcoesGoves;
     }
 
-    this._pessoasService.buscarAgentesPorTermo(termo)
-      .subscribe({
-        next: (lista) => {
+    this._pessoasService.buscarAgentesPorTermo(termo).subscribe({
+      next: (lista) => {
+        this.pessoasOpcoesGoves = lista;
 
-          this.pessoasOpcoesGoves = lista;
+        // this.pessoasOpcoesGoves = this.pessoasOpcoesGoves.filter( pessoa =>
+        //   !this.equipeCaptacao.some( equipeCaptacao => equipeCaptacao.idStatus === TipoStatusEnum.Inativo && equipeCaptacao.subPessoa === pessoa.agentePublicoSub )
+        // );
 
-          // this.pessoasOpcoesGoves = this.pessoasOpcoesGoves.filter( pessoa =>
-          //   !this.equipeCaptacao.some( equipeCaptacao => equipeCaptacao.idStatus === TipoStatusEnum.Inativo && equipeCaptacao.subPessoa === pessoa.agentePublicoSub )
-          // );
-
-          if (this.pessoasOpcoesGoves.length === 0) {
-            this._toastService.showToast(
-              'info',
-              'Nenhum agente encontrado.',
-              ['Verifique se já faz parte da equipe.']);
-          }
-
-          this.isLoadingPessoasFiltroTermo = false;
-          this.exibirLista = true;
-
-          this.programaForm.get('nomeagente')?.reset();
-
-        },
-        error: () => {
-          this.pessoasOpcoesGoves = [];
-          this.isLoadingPessoasFiltroTermo = false;
+        if (this.pessoasOpcoesGoves.length === 0) {
+          this._toastService.showToast('info', 'Nenhum agente encontrado.', [
+            'Verifique se já faz parte da equipe.',
+          ]);
         }
 
-      });
+        this.isLoadingPessoasFiltroTermo = false;
+        this.exibirLista = true;
+
+        this.programaForm.get('nomeagente')?.reset();
+      },
+      error: () => {
+        this.pessoasOpcoesGoves = [];
+        this.isLoadingPessoasFiltroTermo = false;
+      },
+    });
 
     return this.pessoasOpcoesGoves;
-
   }
 
-  public async idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): Promise<void> {
-
-    const jaExiste = this.equipeService.equipeFormArray.value.some(
-      (membro) => (membro.subPessoa === event.agentePublicoSub && membro.idStatus === TipoStatusEnum.Ativo)
-    ) || this._usuarioService.usuarioPerfil.subNovo === event.agentePublicoSub;
+  public async idMembroNgSelectChangeEvent(
+    event: IOpcoesDropdownResponsavelProponente
+  ): Promise<void> {
+    const jaExiste =
+      this.equipeService.equipeFormArray.value.some(
+        (membro) =>
+          membro.subPessoa === event.agentePublicoSub &&
+          membro.idStatus === TipoStatusEnum.Ativo
+      ) ||
+      this._usuarioService.usuarioPerfil.subNovo === event.agentePublicoSub;
 
     if (jaExiste) {
-      this._toastService.showToast(
-        'info',
-        'Pessoa já incluso na equipe',
-      );
+      this._toastService.showToast('info', 'Pessoa já incluso na equipe');
     } else {
       this.equipeService.idMembroNgSelectValue$.next(event);
     }
 
     this.exibirLista = false;
+  }
 
+  public async exportarPrograma() {
+    this._programasService.exportById(
+      this._programasService.idPrograma$.getValue(),
+      this.getControl('titulo').value
+    );
   }
 
   private dispararModalConfirmarSolicitarAutorizacao() {
-    const modalRef = this._ngbModalService.open(
-      ConfirmationModalComponent,
-      {
-        centered: true,
-      }
-    );
+    const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
+      centered: true,
+    });
 
-    modalRef.componentInstance.conteudo = 'Essa ação irá solicitar as Assinaturas Confirmatórias aos gestores do Programa.';
+    modalRef.componentInstance.conteudo =
+      'Essa ação irá solicitar as Assinaturas Confirmatórias aos gestores do Programa.';
 
     modalRef.result.then(
       (resolve) => {},
       (result) => {
         if (result === 'confirmar') {
-          this._programasService.solicitarAutorizacoesPrograma(this._idProgramaEdicao).subscribe({
-            next: (res) => {
-              // Falta testar a resposta da API
-              console.log('res: ', res);
-            },
-            error: (err) => {
-
-            },
-          });
+          this._programasService
+            .solicitarAutorizacoesPrograma(this._idProgramaEdicao)
+            .subscribe({
+              next: (res) => {
+                // Falta testar a resposta da API
+                console.log('res: ', res);
+              },
+              error: (err) => {},
+            });
         } //  else if (result === 'cancelar') {}
       }
     );

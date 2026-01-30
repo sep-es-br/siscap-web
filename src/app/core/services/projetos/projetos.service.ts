@@ -22,6 +22,7 @@ import { TipoValorEnum } from '../../enums/tipo-valor.enum';
 import { environment } from '../../../../environments/environment';
 import { IProjetoIntegracaoEdocsFases } from '../../interfaces/projeto-integracao-edcos-fases.interface';
 import { IEstruturaCamposComplementar } from '../../interfaces/estrutura.campo.complementar.dic.interface';
+import { FilesService } from '../files/files.service';
 
 @Injectable({
   providedIn: 'root',
@@ -66,7 +67,10 @@ export class ProjetosService extends BaseHttpService<
 
   private _projetosEmAutuacao: BehaviorSubject<Set<number>> = new BehaviorSubject(new Set());
 
-  constructor(private readonly _http: HttpClient) {
+  constructor(
+    private readonly _http: HttpClient,
+    private filesService: FilesService,
+  ) {
     super(_http, 'projetos');
   }
 
@@ -285,38 +289,15 @@ export class ProjetosService extends BaseHttpService<
   }
 
   public baixarDIC(id: number): void {
-    const userHttpOptions: Object = {
-      responseType: 'arraybuffer',
-      observe: 'response',
-    };
-    this._http
-      .get<Blob>(`${this._url}/dic/${id}`, userHttpOptions)
-      .subscribe((response) => {
-        if (response instanceof HttpResponse) {
-          const httpResponse = response as HttpResponse<Blob>;
-          const contentDisposition = httpResponse.headers.get(
-            'Content-Disposition'
-          );
-          if (httpResponse.body && contentDisposition) {
-            const filename = contentDisposition
-              .split('filename=')[1]
-              .split(';')[0]
-              .replace(/["']/g, '');
-            const pdfBlob = new Blob([httpResponse.body], {
-              type: 'application/pdf',
-            });
-            let url = window.URL.createObjectURL(pdfBlob);
-            let a = document.createElement('a');
-            document.body.appendChild(a);
-            a.setAttribute('style', 'display: none');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            window.URL.revokeObjectURL(url);
-            a.remove();
-          }
+    const downloadURL = `${this._url}/dic/${id}`;
+    this.filesService.requestPDF(downloadURL).subscribe({
+      next: (res) => {
+        if (res instanceof HttpResponse) {
+          const httpResponse = res as HttpResponse<Blob>;
+          this.filesService.downloadPDF(httpResponse);
         }
-      });
+      },
+    });
   }
 
   public autuarProjetoEdocs(
