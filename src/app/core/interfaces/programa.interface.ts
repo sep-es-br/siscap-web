@@ -45,5 +45,6 @@ export interface IProgramaAssinaturaSanitized extends IProgramaAssinaturaDto {
 export interface IProgramaAssinaturasForm extends IPrograma {
   nomesOrgaosExecutores: Array<string>;
   listaDICSPropostos: Array<string>;
-  assinaturas: Array<IProgramaAssinaturaSanitized>;
+  assinaturaUsuarioAtual?: IProgramaAssinaturaSanitized;
+  demaisAssinaturas: Array<IProgramaAssinaturaSanitized>;
 }

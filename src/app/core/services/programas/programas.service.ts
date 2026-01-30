@@ -99,4 +99,11 @@ export class ProgramasService
       `${this._url}/programa/${idPrograma}/edocs/solicitarassinaturas`
     );
   }
+
+  public assinarAutorizacaoPrograma(idPrograma: number, userSub: string): Observable<void> {
+    return this._http.put<void>(
+      `${this._url}/programa/${idPrograma}/edocs/assinar`,
+      { subAssinante: userSub },
+    );
+  }
 }

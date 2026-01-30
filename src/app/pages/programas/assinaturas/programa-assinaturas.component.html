@@ -2,12 +2,12 @@
   <loading-spinner></loading-spinner>
 </div>
 
-<!-- <div class="d-flex justify-content-end" *ngIf="!isLoading">
-  <button class="btn btn-outline-primary icon-text-btn" (click)="baixarPrograma()">
+<div class="d-flex justify-content-end mb-3" *ngIf="!isLoading">
+  <button class="btn btn-outline-primary icon-text-btn" (click)="exportarPrograma()">
     <i class="fa-solid fa-file-arrow-down"></i>
     <span>Baixar Programa</span>
   </button>
-</div> -->
+</div>
 
 <div
   *ngIf="!isLoading"
@@ -46,5 +46,64 @@
         <input class="form-control no-pointer-effects" type="text" formControlName="valorPrograma" id="inputValor" readonly />
       </div>
     </form>
+
+    <div class="assinaturas mt-4">
+      @if (programaAtual.assinaturaUsuarioAtual) {
+        <p class="assinatura-title">Minha assinatura</p>
+        <div class="assinatura-box col-12 p-4 d-flex flex-column justify-content-center align-items-center">
+          <p class="assinatura-termo mb-5">
+            Autorizo a assinatura eletrônica do Programa "{{ programaAtual.titulo }}", destinado à prospecção de recursos, conforme documento apresentado nesta tela.
+            Declaro ciência de que a assinatura será realizada por meio do sistema SISCAP, com registro e validade no e-Docs.
+          </p>
+
+          <span class="nome-assinante">{{ programaAtual.assinaturaUsuarioAtual.nomePessoa }}</span>
+          <span class="cargo-assinante mb-5">{{ programaAtual.assinaturaUsuarioAtual.cargoPessoa }}</span>
+
+          @if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1) {
+            <button class="btn btn-success icon-text-btn text-nowrap w-25 p-2" (click)="dispararModalConfirmarAssinatura()">
+              <i class="fa-solid fa-pencil"></i>
+              <span>Assinar</span>
+            </button>
+          } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 2) {
+            <span>
+              <i class="status-assinatura check-icon fa-solid fa-check"></i>
+              Assinado
+            </span>
+            @if (programaAtual.assinaturaUsuarioAtual.dataAssinatura) {
+              <span class="data-assinatura">{{ programaAtual.assinaturaUsuarioAtual.dataAssinatura | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
+            }
+          }
+        </div>
+      }
+
+      <p class="assinatura-title mt-3">Demais assinaturas</p>
+      <div class="d-flex flex-wrap">
+        @for (assinatura of programaAtual.demaisAssinaturas; track assinatura) {
+          <div class="assinatura-box col-12 col-sm-6 d-flex align-items-center p-4">
+            <div class="col-6 d-flex flex-column align-items-center">
+              <span class="nome-assinante">{{ assinatura.nomePessoa }}</span>
+              <span class="cargo-assinante">{{ assinatura.cargoPessoa }}</span>
+            </div>
+            <div class="col-6 d-flex flex-column align-items-center">
+              @if (assinatura.statusAssinatura === 2) {
+                <span>
+                  <i class="status-assinatura check-icon fa-solid fa-check"></i>
+                  Assinado
+                </span>
+              } @else {
+                <span>
+                  <i class="status-assinatura pending-icon fa-regular fa-clock"></i>
+                  Pendente
+                </span>
+              }
+
+              @if (assinatura.dataAssinatura) {
+                <span class="data-assinatura">{{ assinatura.dataAssinatura | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
   </div>
 </div>

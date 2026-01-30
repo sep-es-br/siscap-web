@@ -7,5 +7,36 @@
     .no-pointer-effects {
       pointer-events: none;
     }
+
+    .assinaturas {
+      font-size: 13px;
+
+      .assinatura-title {
+        margin-bottom: .5rem;
+      }
+
+      .assinatura-box {
+        background-color: #E9ECEF;
+        border: 1px solid #CCC;
+        border-radius: 10px;
+
+        .cargo-assinante {
+          font-weight: bold;
+        }
+
+        .status-assinatura {
+          &.check-icon {
+            color: #2FBB34
+          }
+          &.error-icon {
+            color: red;
+          }
+        }
+
+        .data-assinatura {
+          font-weight: bold;
+        }
+      }
+    }
   }
 }
