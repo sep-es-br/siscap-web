@@ -15,26 +15,37 @@
         margin-bottom: .5rem;
       }
 
-      .assinatura-box {
-        background-color: #E9ECEF;
-        border: 1px solid #CCC;
-        border-radius: 10px;
-
-        .cargo-assinante {
-          font-weight: bold;
+      .assinatura-wrap {
+        &:nth-of-type(odd) {
+          padding-right: .25em;
+          margin-bottom: .5em;
+        }
+        &:nth-of-type(even) {
+          padding-left: .25em;
+          margin-bottom: .5em;
         }
 
-        .status-assinatura {
-          &.check-icon {
-            color: #2FBB34
+        .assinatura-box {
+          background-color: #E9ECEF;
+          border: 1px solid #CCC;
+          border-radius: 10px;
+  
+          .cargo-assinante {
+            font-weight: bold;
           }
-          &.error-icon {
-            color: red;
+  
+          .status-assinatura {
+            &.check-icon {
+              color: #2FBB34
+            }
+            &.error-icon {
+              color: red;
+            }
           }
-        }
-
-        .data-assinatura {
-          font-weight: bold;
+  
+          .data-assinatura {
+            font-weight: bold;
+          }
         }
       }
     }

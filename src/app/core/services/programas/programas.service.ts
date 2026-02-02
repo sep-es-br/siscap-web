@@ -94,9 +94,10 @@ export class ProgramasService
     });
   }
 
-  public solicitarAutorizacoesPrograma(idPrograma: number): Observable<void> {
-    return this._http.get<void>(
-      `${this._url}/programa/${idPrograma}/edocs/solicitarassinaturas`
+  public solicitarAutorizacoesPrograma(idPrograma: number): Observable<ArrayBuffer> {
+    return this._http.post<ArrayBuffer>(
+      `${this._url}/programa/${idPrograma}/edocs/solicitarassinaturas`,
+      null,
     );
   }
 
