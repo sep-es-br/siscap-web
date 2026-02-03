@@ -33,7 +33,7 @@ export interface IProgramaAssinaturaDto {
   id: number;
   idPrograma: number;
   idPessoa: number;
-  nomePessoa: string;
+  nomeAssinante: string;
   statusAssinatura: StatusAssinaturaPrograma;
   dataAssinatura?: string;
 }
