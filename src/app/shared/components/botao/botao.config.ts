@@ -165,7 +165,7 @@ export abstract class BotoesConfig {
       acao: 'exportar',
     },
     solicitarAutorizacao: {
-      classesCSS: ['btn-outline-success'],
+      classesCSS: ['btn-success'],
       icone: ['fa-solid', 'fa-share'],
       texto: 'Solicitar Autorização',
       acao: 'solicitarAutorizacao',

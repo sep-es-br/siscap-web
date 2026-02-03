@@ -102,7 +102,7 @@ export class ProgramasService
   }
 
   public assinarAutorizacaoPrograma(idPrograma: number, userSub: string): Observable<void> {
-    return this._http.put<void>(
+    return this._http.post<void>(
       `${this._url}/programa/${idPrograma}/edocs/assinar`,
       { subAssinante: userSub },
     );
