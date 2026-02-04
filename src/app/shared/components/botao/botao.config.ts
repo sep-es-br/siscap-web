@@ -25,7 +25,9 @@ export type TBotaoAcao =
   | 'capturarparecerGEOC'
   | 'salvarAposElaboracao'
   | 'exportar'
-  | 'solicitarAutorizacao';
+  | 'solicitarAutorizacao'
+  | 'autuar'
+  | 'autuarDisabled';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -169,6 +171,18 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-share'],
       texto: 'Solicitar Autorização',
       acao: 'solicitarAutorizacao',
+    },
+    autuar: {
+      classesCSS: ['btn-success'],
+      icone: ['fa-solid fa-lock'],
+      texto: 'Autuar',
+      acao: 'autuar',
+    },
+    autuarDisabled: {
+      classesCSS: ['btn-secondary', 'disabled'],
+      icone: ['fa-solid fa-lock'],
+      texto: 'Autuado',
+      acao: 'autuarDisabled',
     },
   };
 

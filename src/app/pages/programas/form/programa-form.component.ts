@@ -38,6 +38,7 @@ import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
 import {
   IPrograma,
   IProgramaForm,
+  StatusAssinaturaPrograma,
 } from '../../../core/interfaces/programa.interface';
 import {
   IProjetoPropostoOpcoesDropdown,
@@ -116,6 +117,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public mostrarBotaoBaixarPrograma: boolean = false;
 
+  public programaAtual!: IPrograma;
+
   constructor(
     public valorService: ValorService,
     private readonly _nnfb: NonNullableFormBuilder,
@@ -140,22 +143,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._programasService.getById(idPrograma)
       ),
       tap((response: IPrograma) => {
+        this.programaAtual = response;
         const programaModel = new ProgramaModel(response);
 
         this.iniciarForm(programaModel);
 
         this._idProgramaEdicao = programaModel.id;
-
-        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario({
-            isModoEdicao: true,
-          })
-        );
-
+        this.atualizarBotoes(this.programaAtual);
         this.mostrarBotaoBaixarPrograma = true;
-
         this.equipeCaptacao = programaModel.equipeCaptacao;
-
         this.loading = false;
       })
     );
@@ -166,7 +162,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
           this._programasService.gerarBotoesAcaoFormulario({
-            isModoEdicao: false,
+            deveExibirBotaoSolicitarAutorizacao: false,
+            deveExibirBotaoAutuar: false,
+            deveExibirBotaoAutuarDesabilitado: false,
           })
         );
 
@@ -517,6 +515,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.dispararModalConfirmarSolicitarAutorizacao();
         break;
 
+      case BreadcrumbAcoesEnum.Autuar:
+        this.dispararModalConfirmarAutuacao();
+        break;
+
       case BreadcrumbAcoesEnum.Salvar:
         this.submitProgramaForm(this.programaForm);
         break;
@@ -643,6 +645,36 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this.exibirLista = false;
   }
 
+  private atualizarBotoes(programa: IPrograma) {
+    let deveExibirBotaoAutuar = false;
+    let deveExibirBotaoAutuarDesabilitado = false;
+    let deveExibirBotaoSolicitarAutorizacao = false;
+
+    if (
+      programa.programaAssinantesEdocsDto &&
+      programa.programaAssinantesEdocsDto.every(
+        (assinatura) =>
+          assinatura.statusAssinatura === StatusAssinaturaPrograma.ASSINADO
+      )
+    ) {
+      if (programa.protocoloEDocs && programa.protocoloEDocs.length > 0) {
+        deveExibirBotaoAutuarDesabilitado = true;
+      } else {
+        deveExibirBotaoAutuar = true;
+      }
+    } else {
+      deveExibirBotaoSolicitarAutorizacao = true;
+    }
+
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      this._programasService.gerarBotoesAcaoFormulario({
+        deveExibirBotaoSolicitarAutorizacao,
+        deveExibirBotaoAutuar,
+        deveExibirBotaoAutuarDesabilitado,
+      })
+    );
+  }
+
   public async exportarPrograma() {
     this._programasService.exportById(
       this._programasService.idPrograma$.getValue(),
@@ -655,23 +687,102 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       centered: true,
     });
 
-    modalRef.componentInstance.conteudo =
-      'Essa ação irá solicitar as Assinaturas Confirmatórias aos gestores do Programa.';
+    modalRef.componentInstance.config = {
+      titulo: 'Atenção!',
+      headerCustomClass: 'bg-success-subtle',
+      textoPrincipal:
+        'Essa ação irá solicitar as Assinaturas Confirmatórias aos gestores do Programa.',
+      textoSecundario: 'Tem certeza que deseja continuar?',
+      textoPrincipalCustomClass: 'fw-bold',
+      // textoSecundarioCustomClass: '',
+    };
 
     modalRef.result.then(
       (resolve) => {},
       (result) => {
         if (result === 'confirmar') {
+          this.loading = true;
+
           this._programasService
             .solicitarAutorizacoesPrograma(this._idProgramaEdicao)
             .subscribe({
               next: (res) => {
-                // Falta testar a resposta da API
-                console.log('res: ', res);
+                console.log('res - solicitarAutorizacoesPrograma: ', res);
+                this.loading = false;
+
+                this._toastService.showToast(
+                  'success',
+                  'As Autorizações foram solicitadas com sucesso!'
+                );
               },
-              error: (err) => {},
+              error: (err) => {
+                console.error(
+                  'Ocorreu um erro ao tentar solicitar as Autorizações do Programa.\n',
+                  err
+                );
+                this._toastService.showToast(
+                  'error',
+                  'Ocorreu um erro ao tentar solicitar as Autorizações do Programa'
+                );
+              },
             });
-        } //  else if (result === 'cancelar') {}
+        }
+      }
+    );
+  }
+
+  private dispararModalConfirmarAutuacao() {
+    const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
+      centered: true,
+    });
+
+    modalRef.componentInstance.config = {
+      titulo: 'Confirmação',
+      headerCustomClass: 'bg-success-subtle',
+      textoPrincipal:
+        'Essa ação irá Autuar o Programa em seu estado atual. Os dados do Programa jamais poderão ser alterados a partir deste ponto.',
+      textoSecundario: 'Tem certeza que deseja continuar?',
+      textoPrincipalCustomClass: 'fw-bold',
+    };
+
+    modalRef.result.then(
+      (resolve) => {},
+      (result) => {
+        if (result === 'confirmar') {
+          this.loading = true;
+
+          this._programasService
+            .autuarPrograma(this._idProgramaEdicao)
+            .subscribe({
+              next: (res) => {
+                console.log('res - autuarPrograma: ', res);
+                // this.programaAtual.autuado = true;
+                // Precisa atualizar o status de autuação do programa
+                this.atualizarBotoes(this.programaAtual);
+                // Em seguida atualizar os botões pro botão de "Autuar" aparecer corretamente
+                console.error('Pendência pra resolver acima');
+
+                this.loading = false;
+
+                this._toastService.showToast(
+                  'success',
+                  'O Programa foi autuado com sucesso!'
+                );
+              },
+              error: (err) => {
+                console.error(
+                  'Ocorreu um erro ao tentar Autuar o Programa!.\n',
+                  err
+                );
+                this.loading = false;
+
+                this._toastService.showToast(
+                  'error',
+                  'Ocorreu um erro ao tentar Autuar o Programa!'
+                );
+              },
+            });
+        }
       }
     );
   }

@@ -12,7 +12,8 @@ export interface IPrograma {
   percentualCustoAdministrativo: number;
   valorCalculadoTotal: number;
   nomeagente: string;
-  programaAssinantesEdocsDto?: Array<IProgramaAssinaturaDto>;
+  programaAssinantesEdocsDto?: Array<IProgramaAssinatura>;
+  protocoloEDocs?: string;
 }
 
 export interface IProgramaForm extends Omit<IPrograma, 'id'> {}
@@ -29,22 +30,19 @@ export enum StatusAssinaturaPrograma {
   ERRO = 3,
 }
 
-export interface IProgramaAssinaturaDto {
+export interface IProgramaAssinatura {
   id: number;
   idPrograma: number;
   idPessoa: number;
   nomeAssinante: string;
   statusAssinatura: StatusAssinaturaPrograma;
   dataAssinatura?: string;
-}
-
-export interface IProgramaAssinaturaSanitized extends IProgramaAssinaturaDto {
   cargoPessoa: string;
 }
 
 export interface IProgramaAssinaturasForm extends IPrograma {
   nomesOrgaosExecutores: Array<string>;
   listaDICSPropostos: Array<string>;
-  assinaturaUsuarioAtual?: IProgramaAssinaturaSanitized;
-  demaisAssinaturas: Array<IProgramaAssinaturaSanitized>;
+  assinaturaUsuarioAtual?: IProgramaAssinatura;
+  demaisAssinaturas: Array<IProgramaAssinatura>;
 }

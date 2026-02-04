@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import {
   IPrograma,
-  IProgramaAssinaturaSanitized,
+  IProgramaAssinatura,
   IProgramaAssinaturasForm,
 } from '../../../core/interfaces/programa.interface';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
@@ -81,7 +81,7 @@ export class ProgramaAssinaturasComponent {
             )
             .map((el) => el.nome);
 
-          let assinaturasSanitized: Array<IProgramaAssinaturaSanitized>;
+          let assinaturasSanitized: Array<IProgramaAssinatura>;
 
           if (
             !programaResponse.programaAssinantesEdocsDto ||
@@ -90,9 +90,16 @@ export class ProgramaAssinaturasComponent {
             this.appStatus = AppStatus.ERROR;
             console.error('Por algum motivo não há lista de assinantes!\n programaAssinantesEdocsDto: ', programaResponse.programaAssinantesEdocsDto);
             this._toastService.showToast(
-              'error',
-              'A lista de assinantes não existe ou está vazia!',
+              'warning',
+              'A lista de assinantes não existe ou está vazia! É necessário solicitar as Autorizações primeiro.',
             );
+
+            this.programaAtual = {
+              ...programaResponse,
+              nomesOrgaosExecutores,
+              listaDICSPropostos: dicsPropostos,
+              demaisAssinaturas: [],
+            };
           } else {
             assinaturasSanitized = programaResponse.programaAssinantesEdocsDto.map((assinatura) => {
               return {
@@ -162,10 +169,14 @@ export class ProgramaAssinaturasComponent {
       (resolve) => {},
       (result) => {
         if (result === 'confirmar') {
+          this.appStatus = AppStatus.LOADING;
+
           this._programasService
             .assinarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo)
             .subscribe({
               next: (res) => {
+                this.appStatus = AppStatus.SUCCESS;
+
                 this._toastService.showToast(
                   'success',
                   'Assinado com sucesso!',
@@ -173,6 +184,7 @@ export class ProgramaAssinaturasComponent {
               },
               error: (err) => {
                 console.error('Ocorreu um erro ao tentar assinar a autorização!\n', err);
+                this.appStatus = AppStatus.ERROR;
               },
             });
         }

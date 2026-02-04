@@ -54,20 +54,41 @@ export class ProgramasService
   }
 
   public gerarBotoesAcaoFormulario(config: {
-    isModoEdicao: boolean;
+    deveExibirBotaoSolicitarAutorizacao: boolean;
+    deveExibirBotaoAutuar: boolean;
+    deveExibirBotaoAutuarDesabilitado: boolean;
   }): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
+    const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades(
+      'solicitarAutorizacao'
+    );
+    const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuar');
+    const botaoAutuarDesabilitado =
+      BotoesConfig.gerarBotaoPropriedades('autuarDisabled');
+
     let finalButtons: Array<BotaoPropriedadesModel> = [
       botaoSalvar,
       botaoCancelar,
     ];
 
-    if (config && config.isModoEdicao) {
-      const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades(
-        'solicitarAutorizacao'
-      );
+    if (
+      config &&
+      config.deveExibirBotaoSolicitarAutorizacao &&
+      config.deveExibirBotaoAutuar
+    ) {
+      finalButtons = [
+        botaoSalvar,
+        botaoAutuar,
+        botaoSolicitarAutorizacao,
+        botaoCancelar,
+      ];
+    } else if (config && config.deveExibirBotaoSolicitarAutorizacao) {
       finalButtons = [botaoSalvar, botaoSolicitarAutorizacao, botaoCancelar];
+    } else if (config && config.deveExibirBotaoAutuar) {
+      finalButtons = [botaoSalvar, botaoAutuar, botaoCancelar];
+    } else if (config && config.deveExibirBotaoAutuarDesabilitado) {
+      finalButtons = [botaoSalvar, botaoAutuarDesabilitado, botaoCancelar];
     }
 
     return finalButtons;
@@ -94,17 +115,27 @@ export class ProgramasService
     });
   }
 
-  public solicitarAutorizacoesPrograma(idPrograma: number): Observable<ArrayBuffer> {
-    return this._http.post<ArrayBuffer>(
+  public solicitarAutorizacoesPrograma(idPrograma: number): Observable<void> {
+    return this._http.post<void>(
       `${this._url}/programa/${idPrograma}/edocs/solicitarassinaturas`,
-      null,
+      null
     );
   }
 
-  public assinarAutorizacaoPrograma(idPrograma: number, userSub: string): Observable<void> {
+  public assinarAutorizacaoPrograma(
+    idPrograma: number,
+    userSub: string
+  ): Observable<void> {
     return this._http.post<void>(
       `${this._url}/programa/${idPrograma}/edocs/assinar`,
-      { subAssinante: userSub },
+      { subAssinante: userSub }
+    );
+  }
+
+  public autuarPrograma(idPrograma: number): Observable<void> {
+    return this._http.post<void>(
+      `${this._url}/programa/${idPrograma}/edocs/autuar`,
+      null
     );
   }
 }

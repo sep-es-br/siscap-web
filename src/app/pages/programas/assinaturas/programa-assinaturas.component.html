@@ -78,9 +78,11 @@
         </div>
       }
 
-      <p class="assinatura-title mt-3">Demais assinaturas</p>
+      <p class="assinatura-title mt-3">
+        {{ programaAtual.assinaturaUsuarioAtual ? 'Demais assinaturas' : 'Assinaturas' }}
+      </p>
       <div class="d-flex flex-wrap">
-        @if (appStatus === 'Success') {
+        @if (appStatus === 'Success' && programaAtual.demaisAssinaturas.length > 0) {
           @for (assinatura of programaAtual.demaisAssinaturas; track assinatura) {
             <div class="assinatura-wrap col-12 col-sm-6 d-flex">
               <div class="assinatura-box w-100 d-flex align-items-center p-4">
@@ -108,10 +110,14 @@
               </div>
             </div>
           }
-        } @else if (appStatus === 'Error'){
+        } @else {
           <div class="assinatura-wrap col-12">
             <div class="assinatura-box w-100 d-flex justify-content-center align-items-center p-4">
-              <span class="erro-assinatura">Ocorreu algum erro ao carregar as assinaturas</span>
+              @if (appStatus === 'Error') {
+                <span class="erro-assinatura">Ocorreu algum erro ao carregar as assinaturas</span>
+              } @else if (appStatus === 'Success' && programaAtual.demaisAssinaturas.length === 0) {
+                <span class="erro-assinatura">Não existem assinaturas pendentes para este Programa. É necessário Solicitar Autorização primeiro.</span>
+              }
             </div>
           </div>
         }
