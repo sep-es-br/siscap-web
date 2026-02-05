@@ -696,12 +696,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     });
 
     modalRef.componentInstance.config = {
-      titulo: 'Atenção!',
+      titulo: 'Confirmação',
       headerCustomClass: 'bg-success-subtle',
-      textoPrincipal:
-        'Essa ação irá solicitar as Assinaturas Confirmatórias aos gestores do Programa.',
-      textoSecundario: 'Tem certeza que deseja continuar?',
-      textoPrincipalCustomClass: 'fw-bold',
+      textoPrincipal: 'Essa ação enviará email aos gestores para autorização do programa.',
+      // textoSecundario: 'Tem certeza que deseja continuar?',
+      // textoPrincipalCustomClass: 'fw-bold',
       // textoSecundarioCustomClass: '',
     };
 
