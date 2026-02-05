@@ -653,7 +653,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     if (
       programa.programaAssinantesEdocsDto &&
-      // programa.programaAssinantesEdocsDto.length > 0 &&
+      programa.programaAssinantesEdocsDto.length > 0 &&
       programa.programaAssinantesEdocsDto.every(
         (assinatura) =>
           assinatura.statusAssinatura === StatusAssinaturaPrograma.ASSINADO
