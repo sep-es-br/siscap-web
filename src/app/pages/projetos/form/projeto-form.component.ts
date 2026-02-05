@@ -1035,7 +1035,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.validacaoSomaValoresAcoesEnviar(this.projetoForm, false);
         break;
 
-      case BreadcrumbAcoesEnum.Autuar:
+      case BreadcrumbAcoesEnum.AssinarAutuar:
 
         this.projetoForm.patchValue({
           autuarConfirmacaoProjetoModal: true,

@@ -64,6 +64,7 @@ import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
 import { PreventActionModalComponent } from '../../../shared/templates/prevent-action-modal/prevent-action-modal.component';
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
+import { RequestStatus } from '../../../core/enums/request-status.enum';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -652,6 +653,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     if (
       programa.programaAssinantesEdocsDto &&
+      // programa.programaAssinantesEdocsDto.length > 0 &&
       programa.programaAssinantesEdocsDto.every(
         (assinatura) =>
           assinatura.statusAssinatura === StatusAssinaturaPrograma.ASSINADO
@@ -675,11 +677,17 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  public async exportarPrograma() {
-    this._programasService.exportById(
+  public exportarPrograma() {
+    this.loading = true;
+
+    const $requestStatus = this._programasService.exportById(
       this._programasService.idPrograma$.getValue(),
       this.getControl('titulo').value
     );
+
+    $requestStatus.subscribe((newStatus) => {
+      this.loading = false;
+    });
   }
 
   private dispararModalConfirmarSolicitarAutorizacao() {

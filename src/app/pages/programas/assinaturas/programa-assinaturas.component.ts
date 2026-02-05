@@ -16,6 +16,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 import { AppStatus } from '../../../core/enums/app-status.enum';
 import { ToastService } from '../../../core/services/toast/toast.service';
+import { RequestStatus } from '../../../core/enums/request-status.enum';
 
 @Component({
   selector: 'siscap-programa-assinaturas',
@@ -151,10 +152,20 @@ export class ProgramaAssinaturasComponent {
   }
 
   exportarPrograma() {
-    this._programasService.exportById(
+    this.appStatus = AppStatus.LOADING;
+
+    const $requestStatus = this._programasService.exportById(
       this.programaAtual.id,
       this.programaAtual.titulo
     );
+
+    $requestStatus.subscribe((newStatus) => {
+      if (newStatus === RequestStatus.SUCCESS) {
+        this.appStatus = AppStatus.SUCCESS;
+      } else if (newStatus === RequestStatus.ERROR) {
+        this.appStatus = AppStatus.EMPTY;
+      }
+    });
   }
 
   dispararModalConfirmarAssinatura() {

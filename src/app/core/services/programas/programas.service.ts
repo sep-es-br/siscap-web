@@ -1,7 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject, Observable } from 'rxjs';
+import { AsyncSubject, BehaviorSubject, Observable } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -19,11 +19,14 @@ import { Put } from '../../interfaces/http-put.interface';
 
 import { environment } from '../../../../environments/environment';
 import { FilesService } from '../files/files.service';
+import { ToastService } from '../toast/toast.service';
+import { RequestStatus } from '../../enums/request-status.enum';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ProgramasService
+export
+  class ProgramasService
   extends BaseHttpService<IPrograma, IProgramaTableData>
   implements
     Post<IPrograma, ProgramaFormModel>,
@@ -40,7 +43,8 @@ export class ProgramasService
 
   constructor(
     private readonly _http: HttpClient,
-    private filesService: FilesService
+    private filesService: FilesService,
+    private _toastService: ToastService,
   ) {
     super(_http, 'programas');
   }
@@ -102,7 +106,9 @@ export class ProgramasService
     return this._http.put<IPrograma>(`${this._url}/${id}`, body);
   }
 
-  public exportById(idPrograma: number, nomePrograma: string): void {
+  public exportById(idPrograma: number, nomePrograma: string): BehaviorSubject<RequestStatus> {
+    const $requestStatus = new BehaviorSubject<RequestStatus>(RequestStatus.EMPTY);
+
     const downloadURL = `${this._url}/programa/${idPrograma}/baixar-pdf`;
     this.filesService.requestPDF(downloadURL).subscribe({
       next: (res) => {
@@ -110,9 +116,34 @@ export class ProgramasService
           const httpResponse = res as HttpResponse<Blob>;
           const fileName = `SISCAP - ${nomePrograma}`;
           this.filesService.downloadPDF(httpResponse, fileName);
+
+          this._toastService.showToast(
+            'success',
+            'Programa exportado com sucesso!',
+          );
+          
+          $requestStatus.next(RequestStatus.SUCCESS);
+          $requestStatus.complete();
         }
       },
+      error: (err) => {
+        console.error('Ocorreu um erro ao tentar exportar o Programa! \n', err);
+        $requestStatus.next(RequestStatus.ERROR);
+        this._toastService.showToast(
+          'error',
+          'Ocorreu um erro ao tentar exportar o Programa',
+        );
+
+        this._toastService.toastNotifier$.subscribe((isOpen) => {
+          if (!isOpen) {
+            $requestStatus.next(RequestStatus.EMPTY);
+            $requestStatus.complete();
+          }
+        });
+      },
     });
+
+    return $requestStatus;
   }
 
   public solicitarAutorizacoesPrograma(idPrograma: number): Observable<void> {
