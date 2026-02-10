@@ -46,3 +46,12 @@ export interface IProgramaAssinaturasForm extends IPrograma {
   assinaturaUsuarioAtual?: IProgramaAssinatura;
   demaisAssinaturas: Array<IProgramaAssinatura>;
 }
+
+export interface IProgramaAssinaturaFases {
+  readonly idPrograma: number;
+  readonly etapa: string;
+  readonly iniciada: boolean;
+  readonly finalizada: boolean;
+  readonly erro: boolean;
+  readonly msgAlertaExibir: string;
+}

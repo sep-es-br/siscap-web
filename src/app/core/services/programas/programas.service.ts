@@ -1,7 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { AsyncSubject, BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, filter, interval, map, Observable, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -12,6 +12,7 @@ import { BotoesConfig } from '../../../shared/components/botao/botao.config';
 
 import {
   IPrograma,
+  IProgramaAssinaturaFases,
   IProgramaTableData,
 } from '../../interfaces/programa.interface';
 import { Post } from '../../interfaces/http-post.interface';
@@ -21,6 +22,7 @@ import { environment } from '../../../../environments/environment';
 import { FilesService } from '../files/files.service';
 import { ToastService } from '../toast/toast.service';
 import { RequestStatus } from '../../enums/request-status.enum';
+import { ProgramaFasesAssinaturaModel } from '../../models/programa-fases-assinatura.model';
 
 @Injectable({
   providedIn: 'root',
@@ -169,4 +171,61 @@ export
       null
     );
   }
+
+  public consultarFasesAssinaturaPrograma(
+    idPrograma: number
+  ): Observable<IProgramaAssinaturaFases[]> {
+    return this._http.get<IProgramaAssinaturaFases[]>(
+      `${this._url}/dic/edocs/fases/${idPrograma}`,
+    );
+  }
+
+  public executarPollingFasesAssinaturaPrograma(
+    idPrograma: number,
+  ): Observable<ProgramaFasesAssinaturaModel[]> {
+    const intervalo = 2000; //ms
+    const $pararPolling = new Subject<void>();
+
+    return interval(intervalo).pipe(
+      switchMap(() =>
+        this.consultarFasesAssinaturaPrograma(idPrograma)
+        .pipe(
+          tap(response => console.log('Resposta do Polling: ', response)),
+          map(response => response.map(fase => new ProgramaFasesAssinaturaModel(fase))),
+          catchError(err => {
+            console.error('Erro ao tentar obter a fase do Programa durante o polling: ', err);
+            return of([]);
+          }),
+        ),
+      ),
+      filter(lista => lista.length > 0),
+      tap(lista => { return lista }),
+      tap(lista => {
+        const faseComErro = lista.find(f => f.erro);
+        if (faseComErro) {
+          if (faseComErro.msgAlertaExibir && faseComErro.msgAlertaExibir.length > 0) {
+            this._toastService.showToast(
+              'warning',
+              faseComErro.msgAlertaExibir,
+            );
+          } else {
+            this._toastService.showToast(
+              'error',
+              'Ocorreu um erro na integração com o E-Docs.',
+            );
+          }
+
+          $pararPolling.next();
+        }
+      }),
+      filter(lista => lista.every(fase => fase.finalizada)),
+      take(1),
+      tap((lista) => {
+        $pararPolling.next();
+        return lista;
+      }),
+      takeUntil($pararPolling),
+    );
+  }
+  
 }
