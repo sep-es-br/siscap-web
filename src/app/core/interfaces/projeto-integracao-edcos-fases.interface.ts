@@ -6,12 +6,13 @@ import { IRateio } from './rateio.interface';
 import { IValor } from './valor.interface';
 
 export interface IProjetoIntegracaoEdocsFases {
-  readonly idProjeto: number;
+  readonly id: number;
   readonly etapa: string;
   readonly iniciada: boolean;
   readonly finalizada: boolean;
   readonly erro: boolean;
   readonly msgAlertaExibir: string;
+  readonly contextoNegocio: string;
 }
 
 

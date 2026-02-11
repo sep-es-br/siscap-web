@@ -469,7 +469,7 @@
     <div class="d-inline-flex flex-row-reverse">
       
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ autuacaoAcionada || finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
       
@@ -598,7 +598,7 @@
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ autuacaoAcionada ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ autuacaoAcionada || finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
@@ -789,7 +789,7 @@
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ autuacaoAcionada || finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
@@ -851,7 +851,7 @@
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
+        <span>{{ autuacaoAcionada || finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
