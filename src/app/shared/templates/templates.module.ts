@@ -21,6 +21,7 @@ import { FormHelperTooltipComponent } from './form-helper-tooltip/form-helper-to
 import { FormWarningTooltipComponent } from './form-warning-tooltip/form-warning-tooltip.component';
 import { FormsModule } from '@angular/forms';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from './programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
+import { PollingModalComponent } from './polling-modal/polling-modal.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '
     ValidationMessageComponent,
     FormHelperTooltipComponent,
     FormWarningTooltipComponent,
-    ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent
+    ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent,
+    PollingModalComponent,
   ],
   imports: [
     CommonModule,
@@ -57,7 +59,8 @@ import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '
     ValidationMessageComponent,
     FormHelperTooltipComponent,
     FormWarningTooltipComponent,
-    ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent
+    ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent,
+    PollingModalComponent,
   ],
 })
 export class TemplatesModule {}

@@ -1,22 +1,19 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
-import {
-  IPrograma,
-  IProgramaAssinatura,
-  IProgramaAssinaturasForm,
-} from '../../../core/interfaces/programa.interface';
+import { IPrograma, IProgramaAssinaturaFases, IProgramaAssinaturaFasesForm, IProgramaAssinaturasForm, ProgramaAssinaturasStatus, acharDescricaoEtapaPorEtapaAssinatura, getEtapaStatus } from '../../../core/interfaces/programa.interface';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 import { forkJoin } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { UsuarioPerfilModel } from '../../../core/models/usuario.model';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 import { AppStatus } from '../../../core/enums/app-status.enum';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { RequestStatus } from '../../../core/enums/request-status.enum';
+import { PollingModalComponent } from '../../../shared/templates/polling-modal/polling-modal.component';
 
 @Component({
   selector: 'siscap-programa-assinaturas',
@@ -37,6 +34,10 @@ export class ProgramaAssinaturasComponent {
   });
 
   usuarioAtual!: UsuarioPerfilModel;
+
+  exibirModalPollingAssinatura: boolean = true;
+
+  fasesPollingAssinatura: Array<IProgramaAssinaturaFasesForm> = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -82,14 +83,12 @@ export class ProgramaAssinaturasComponent {
             )
             .map((el) => el.nome);
 
-          let assinaturasSanitized: Array<IProgramaAssinatura>;
-
           if (
             !programaResponse.programaAssinantesEdocsDto ||
             programaResponse.programaAssinantesEdocsDto.length === 0
           ) {
             this.appStatus = AppStatus.ERROR;
-            console.error('Por algum motivo não há lista de assinantes!\n programaAssinantesEdocsDto: ', programaResponse.programaAssinantesEdocsDto);
+            console.error('Não há lista de assinantes!\n programaAssinantesEdocsDto: ', programaResponse.programaAssinantesEdocsDto);
             this._toastService.showToast(
               'warning',
               'A lista de assinantes não existe ou está vazia! É necessário solicitar as Autorizações primeiro.',
@@ -102,30 +101,23 @@ export class ProgramaAssinaturasComponent {
               demaisAssinaturas: [],
             };
           } else {
-            assinaturasSanitized = programaResponse.programaAssinantesEdocsDto.map((assinatura) => {
-              return {
-                ...assinatura,
-                cargoPessoa: '',
-              };
-            });
-
-            const assinaturaUsuarioAtual = assinaturasSanitized.find((ass) => ass.idPessoa === this.usuarioAtual.idPessoa);
+            const assinaturaUsuarioAtual = programaResponse.programaAssinantesEdocsDto.find((ass) => ass.idPessoa === this.usuarioAtual.idPessoa);
             if (assinaturaUsuarioAtual) {
-              assinaturasSanitized = assinaturasSanitized.filter((ass) => ass.idPessoa !== this.usuarioAtual.idPessoa);
+              const demaisAssinaturas = programaResponse.programaAssinantesEdocsDto.filter((ass) => ass.idPessoa !== assinaturaUsuarioAtual.idPessoa);
 
               this.programaAtual = {
                 ...programaResponse,
                 nomesOrgaosExecutores,
                 listaDICSPropostos: dicsPropostos,
                 assinaturaUsuarioAtual,
-                demaisAssinaturas: assinaturasSanitized,
+                demaisAssinaturas,
               };
             } else {
               this.programaAtual = {
                 ...programaResponse,
                 nomesOrgaosExecutores,
                 listaDICSPropostos: dicsPropostos,
-                demaisAssinaturas: assinaturasSanitized,
+                demaisAssinaturas: programaResponse.programaAssinantesEdocsDto,
               };
             }
           }
@@ -173,8 +165,10 @@ export class ProgramaAssinaturasComponent {
       centered: true,
     });
 
-    modalRef.componentInstance.conteudo =
-      'Essa ação irá marcar a sua assinatura no Programa.';
+    modalRef.componentInstance.config = {
+      titulo: 'Confirmar assinatura',
+      textoPrincipal: 'Essa ação irá marcar a sua assinatura no Programa.'
+    };
 
     modalRef.result.then(
       (resolve) => {},
@@ -182,24 +176,64 @@ export class ProgramaAssinaturasComponent {
         if (result === 'confirmar') {
           this.appStatus = AppStatus.LOADING;
 
-          this._programasService
-            .assinarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo)
-            .subscribe({
-              next: (res) => {
-                this.appStatus = AppStatus.SUCCESS;
+          this._toastService.showToast(
+            'warning',
+            'A sua assinatura está sendo processada!',
+          );
+          modalRef.close();
 
-                this._toastService.showToast(
-                  'success',
-                  'Assinado com sucesso!',
-                );
-              },
-              error: (err) => {
-                console.error('Ocorreu um erro ao tentar assinar a autorização!\n', err);
-                this.appStatus = AppStatus.ERROR;
-              },
-            });
+          this.dispararModalPollingAssinaturas();
         }
       }
     );
+  }
+
+  dispararModalPollingAssinaturas() {
+    this.exibirModalPollingAssinatura = true;
+
+    let pollingModalRef: NgbModalRef;
+
+    this._programasService
+      .consultarFasesAssinaturaPrograma(this.programaAtual.id)
+      .subscribe({
+        next: (res: IProgramaAssinaturaFases[]) => {
+          this.fasesPollingAssinatura = res.map((fase) => {
+            const descricao = acharDescricaoEtapaPorEtapaAssinatura(fase.etapa);
+            const status = getEtapaStatus.get(fase.etapa) || ProgramaAssinaturasStatus.NAO_INICIADA;
+
+            return {
+              ...fase,
+              descricao,
+              status,
+            };
+          });
+
+          if (!pollingModalRef) {
+            pollingModalRef = this._ngbModalService.open(PollingModalComponent, {
+              centered: true,
+            });
+
+            
+
+            pollingModalRef.componentInstance.fasesPollingAssinatura = this.fasesPollingAssinatura;
+            pollingModalRef.result.then(
+              (resolve) => {},
+              (result) => {
+                if (result === 'fechar') {
+                  pollingModalRef.close();
+                }
+              },
+            );
+          }
+        },
+        complete: () => {
+          this._toastService.showToast(
+            'success',
+            'Assinado com sucesso!',
+          );
+
+          this.appStatus = AppStatus.SUCCESS;
+        },
+      });
   }
 }

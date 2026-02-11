@@ -4,6 +4,10 @@
   </div>
 } @else {
   <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-outline-primary icon-text-btn" (click)="dispararModalConfirmarAssinatura()">
+      <i class="fa-solid fa-file-arrow-down"></i>
+      <span>Testar Assinatura</span>
+    </button>
     <button class="btn btn-outline-primary icon-text-btn" (click)="exportarPrograma()">
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Baixar Programa</span>
@@ -60,7 +64,7 @@
               </p>
 
               <span class="nome-assinante">{{ programaAtual.assinaturaUsuarioAtual.nomeAssinante }}</span>
-              <span class="cargo-assinante mb-5">{{ programaAtual.assinaturaUsuarioAtual.cargoPessoa }}</span>
+              <span class="cargo-assinante mb-5">{{ programaAtual.assinaturaUsuarioAtual.papelAssinante }}</span>
 
               @if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1) {
                 <button class="btn btn-success icon-text-btn text-nowrap w-25 p-2" (click)="dispararModalConfirmarAssinatura()">
@@ -90,7 +94,7 @@
                 <div class="assinatura-box w-100 d-flex align-items-center p-4">
                   <div class="col-6 d-flex flex-column align-items-center">
                     <span class="nome-assinante">{{ assinatura.nomeAssinante }}</span>
-                    <span class="cargo-assinante">{{ assinatura.cargoPessoa }}</span>
+                    <span class="cargo-assinante">{{ assinatura.papelAssinante }}</span>
                   </div>
                   <div class="col-6 d-flex flex-column align-items-center">
                     @if (assinatura.statusAssinatura === 2) {

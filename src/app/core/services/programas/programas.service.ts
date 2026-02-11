@@ -1,7 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject, catchError, filter, interval, map, Observable, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, catchError, interval, map, Observable, switchMap, takeWhile, tap } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -176,7 +176,7 @@ export
     idPrograma: number
   ): Observable<IProgramaAssinaturaFases[]> {
     return this._http.get<IProgramaAssinaturaFases[]>(
-      `${this._url}/dic/edocs/fases/${idPrograma}`,
+      `${this._url}/programa/edocs/fases/${idPrograma}`,
     );
   }
 
@@ -184,48 +184,26 @@ export
     idPrograma: number,
   ): Observable<ProgramaFasesAssinaturaModel[]> {
     const intervalo = 2000; //ms
-    const $pararPolling = new Subject<void>();
-
     return interval(intervalo).pipe(
       switchMap(() =>
         this.consultarFasesAssinaturaPrograma(idPrograma)
-        .pipe(
-          tap(response => console.log('Resposta do Polling: ', response)),
-          map(response => response.map(fase => new ProgramaFasesAssinaturaModel(fase))),
-          catchError(err => {
-            console.error('Erro ao tentar obter a fase do Programa durante o polling: ', err);
-            return of([]);
-          }),
+          .pipe(
+            tap(lista => console.log('Resposta do Polling: ', lista)),
+            map(response => response.map(fase => new ProgramaFasesAssinaturaModel(fase))),
+            catchError(err => {
+              console.error('Erro ao obter fases do Programa!\n', err);
+              this._toastService.showToast(
+                'error',
+                'Ocorreu um erro na integração com o E-Docs',
+              );
+              return [];
+            })
+          ),
         ),
-      ),
-      filter(lista => lista.length > 0),
-      tap(lista => { return lista }),
-      tap(lista => {
-        const faseComErro = lista.find(f => f.erro);
-        if (faseComErro) {
-          if (faseComErro.msgAlertaExibir && faseComErro.msgAlertaExibir.length > 0) {
-            this._toastService.showToast(
-              'warning',
-              faseComErro.msgAlertaExibir,
-            );
-          } else {
-            this._toastService.showToast(
-              'error',
-              'Ocorreu um erro na integração com o E-Docs.',
-            );
-          }
-
-          $pararPolling.next();
-        }
-      }),
-      filter(lista => lista.every(fase => fase.finalizada)),
-      take(1),
-      tap((lista) => {
-        $pararPolling.next();
-        return lista;
-      }),
-      takeUntil($pararPolling),
+        takeWhile(
+          lista => !lista.every(fase => fase.finalizada),
+          true
+        ),
     );
   }
-  
 }

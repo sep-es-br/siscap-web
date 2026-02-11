@@ -17,6 +17,7 @@ import { RateioFormComponent } from './rateio-form/rateio-form.component';
 import { CropperComponent } from './cropper/cropper.component';
 import { DatepickerComponent } from './datepicker/datepicker.component';
 import { IndicadoresFormComponent } from './indicadores-form/indicadores-form.component';
+import { ModalComponent } from './modal/modal.component';
 
 
 @NgModule({
@@ -39,6 +40,7 @@ import { IndicadoresFormComponent } from './indicadores-form/indicadores-form.co
     RateioFormComponent,
     CropperComponent,
     IndicadoresFormComponent,
+    ModalComponent,
   ],
   exports: [
     BotaoComponent,
@@ -56,6 +58,7 @@ import { IndicadoresFormComponent } from './indicadores-form/indicadores-form.co
     ValorFormComponent,
     RateioFormComponent,
     CropperComponent,
+    ModalComponent,
   ],
 })
 export class ComponentsModule {}
