@@ -122,11 +122,11 @@
             <div class="col-12">
               <label for="idProjetoProposto" class="col-12 form-label">
                 <validation-message [control]="getControl('idProjetoPropostoList')">
-                  DICs Propostos
+                  Documento Inicial de Captação
                 </validation-message>
               </label>
   
-              <ng-select id="idProjetoProposto" placeholder="-- Selecione um projeto para incluir no programa --"
+              <ng-select id="idProjetoProposto" placeholder="-- Selecione um DIC para incluir no programa --"
                 [(ngModel)]="idProjetoProposto" [ngModelOptions]="{ standalone: true }" [disabled]="!isModoEdicao"
                 (change)="idProjetoPropostoNgSelectChangeEvent($event)">
                 <ng-option *ngFor="
