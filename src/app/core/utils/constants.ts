@@ -49,7 +49,7 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
 
   projetos: 'Documento Inicial de Captação (DIC)',
   projetoscriar: 'Novo DIC (Documento Inicial de Captação)',
-  projetoseditar: 'Editar DIC (Documento Inicial de Captação)',
+  projetoseditar: 'Editar Documento Inicial de Captação - DIC',
   projetosparecer: 'Parecer',
 
   pessoas: 'Pessoas',
