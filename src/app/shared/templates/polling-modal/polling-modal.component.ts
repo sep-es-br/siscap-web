@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { BotaoPropriedadesModel } from '../../components/botao/botao.model';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BotoesConfig } from '../../components/botao/botao.config';
-import { IProgramaAssinaturaFasesForm } from '../../../core/interfaces/programa.interface';
+import { IPollingFasesForm } from '../../../core/interfaces/polling.interface';
 
 @Component({
   selector: 'app-polling-modal',
@@ -11,7 +11,7 @@ import { IProgramaAssinaturaFasesForm } from '../../../core/interfaces/programa.
   styleUrl: './polling-modal.component.scss'
 })
 export class PollingModalComponent {
- @Input() fasesPollingAssinatura: Array<IProgramaAssinaturaFasesForm> = [];
+ @Input() fasesPolling: Array<IPollingFasesForm> = [];
 
   botaoFechar: BotaoPropriedadesModel;
 

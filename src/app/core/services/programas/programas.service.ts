@@ -10,11 +10,7 @@ import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.m
 
 import { BotoesConfig } from '../../../shared/components/botao/botao.config';
 
-import {
-  IPrograma,
-  IProgramaAssinaturaFases,
-  IProgramaTableData,
-} from '../../interfaces/programa.interface';
+import { IPrograma, IProgramaTableData } from '../../interfaces/programa.interface';
 import { Post } from '../../interfaces/http-post.interface';
 import { Put } from '../../interfaces/http-put.interface';
 
@@ -22,7 +18,9 @@ import { environment } from '../../../../environments/environment';
 import { FilesService } from '../files/files.service';
 import { ToastService } from '../toast/toast.service';
 import { RequestStatus } from '../../enums/request-status.enum';
-import { ProgramaFasesAssinaturaModel } from '../../models/programa-fases-assinatura.model';
+import { PollingService } from '../polling/polling.service';
+import { IPollingFases } from '../../interfaces/polling.interface';
+import { PollingFasesModel } from '../../models/polling.model';
 
 @Injectable({
   providedIn: 'root',
@@ -45,6 +43,7 @@ export
 
   constructor(
     private readonly _http: HttpClient,
+    private readonly _pollingService: PollingService,
     private filesService: FilesService,
     private _toastService: ToastService,
   ) {
@@ -172,38 +171,11 @@ export
     );
   }
 
-  public consultarFasesAssinaturaPrograma(
-    idPrograma: number
-  ): Observable<IProgramaAssinaturaFases[]> {
-    return this._http.get<IProgramaAssinaturaFases[]>(
-      `${this._url}/programa/edocs/fases/${idPrograma}`,
-    );
+  public consultarFasesPrograma(idPrograma: number): Observable<IPollingFases[]> {
+    return this._pollingService.consultarFasesEntity(idPrograma, 'programas');
   }
 
-  public executarPollingFasesAssinaturaPrograma(
-    idPrograma: number,
-  ): Observable<ProgramaFasesAssinaturaModel[]> {
-    const intervalo = 2000; //ms
-    return interval(intervalo).pipe(
-      switchMap(() =>
-        this.consultarFasesAssinaturaPrograma(idPrograma)
-          .pipe(
-            tap(lista => console.log('Resposta do Polling: ', lista)),
-            map(response => response.map(fase => new ProgramaFasesAssinaturaModel(fase))),
-            catchError(err => {
-              console.error('Erro ao obter fases do Programa!\n', err);
-              this._toastService.showToast(
-                'error',
-                'Ocorreu um erro na integração com o E-Docs',
-              );
-              return [];
-            })
-          ),
-        ),
-        takeWhile(
-          lista => !lista.every(fase => fase.finalizada),
-          true
-        ),
-    );
+  public executarPollingFasesProgramas(idPrograma: number): Observable<PollingFasesModel[]> {
+    return this._pollingService.executarPollingFasesEntity(idPrograma, 'programas');
   }
 }

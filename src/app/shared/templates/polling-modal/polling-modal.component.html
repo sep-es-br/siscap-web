@@ -2,21 +2,29 @@
   <h4 class="modal-title">Processo E-Docs</h4>
 </div>
 <div class="modal-body d-flex flex-column">
-  @for (fase of fasesPollingAssinatura; track fase) {
-    <div class="row">
-      <span>
+  @for (fase of fasesPolling; track fase) {
+    <div class="d-flex flex-row align-items-center">
+      <span class="pe-2">
         @switch (fase.status) {
           @case ('NAO_INICIADA') {
-            <i class="fa-regular fa-circle text-secondary"></i>
+            @if (!fase.iniciada && !fase.finalizada) {
+              <i class="fa-regular fa-circle text-secondary"></i>
+            }
           }
           @case ('EM_ANDAMENTO') {
-            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            @if (fase.iniciada && !fase.finalizada) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+            }
           }
           @case ('FINALIZADA') {
-            <i class="fa-regular fa-circle-check text-success"></i>
+            @if (fase.iniciada && fase.finalizada) {
+              <i class="fa-regular fa-circle-check text-success"></i>
+            }
           }
           @case ('ERRO_FASE') {
-            <i class="fa-solid fa-circle-xmark text-danger"></i>
+            @if (fase.erro) {
+              <i class="fa-solid fa-circle-xmark text-danger"></i>
+            }
           }
         }
       </span>
