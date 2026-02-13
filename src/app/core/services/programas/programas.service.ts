@@ -34,8 +34,11 @@ export
 {
   private readonly _url = `${environment.apiUrl}/programas`;
 
-  private readonly _idPrograma$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
+  private readonly _idPrograma$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+
+  private programasAguardandoEdocsSubject = new BehaviorSubject<Set<number>>(new Set());
+
+  public programasAguardandoEdocs$ = this.programasAguardandoEdocsSubject.asObservable();
 
   public get idPrograma$(): BehaviorSubject<number> {
     return this._idPrograma$;
@@ -65,12 +68,9 @@ export
   }): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades(
-      'solicitarAutorizacao'
-    );
+    const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades('solicitarAutorizacao');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuar');
-    const botaoAutuarDesabilitado =
-      BotoesConfig.gerarBotaoPropriedades('autuarDisabled');
+    const botaoAutuarDesabilitado = BotoesConfig.gerarBotaoPropriedades('autuarDisabled');
 
     let finalButtons: Array<BotaoPropriedadesModel> = [
       botaoSalvar,
@@ -145,6 +145,18 @@ export
     });
 
     return $requestStatus;
+  }
+
+  public adicionarProgramaAguardandoEdocs(idPrograma: number): void {
+    const lista = this.programasAguardandoEdocsSubject.value;
+    lista.add(idPrograma);
+    this.programasAguardandoEdocsSubject.next(new Set(lista));
+  }
+
+  public removerProgramaAguardandoEdocs(idPrograma: number): void {
+    const lista = this.programasAguardandoEdocsSubject.value;
+    lista.delete(idPrograma);
+    this.programasAguardandoEdocsSubject.next(new Set(lista));
   }
 
   public solicitarAutorizacoesPrograma(idPrograma: number): Observable<void> {

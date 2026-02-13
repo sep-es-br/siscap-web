@@ -19,7 +19,7 @@ export interface IPrograma {
 export interface IProgramaForm extends Omit<IPrograma, 'id'> {}
 
 export interface IProgramaTableData
-  extends Pick<IPrograma, 'id' | 'sigla' | 'titulo'> {
+  extends Pick<IPrograma, 'id' | 'sigla' | 'titulo' | 'protocoloEDocs'> {
   moeda: string;
   tetoPrograma: number;
 }

@@ -62,7 +62,12 @@
               <span class="nome-assinante">{{ programaAtual.assinaturaUsuarioAtual.nomeAssinante }}</span>
               <span class="cargo-assinante mb-5">{{ programaAtual.assinaturaUsuarioAtual.papelAssinante }}</span>
 
-              @if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1) {
+              @if (statusAssinatura === 'EM_ANDAMENTO') {
+                <span class="badge rounded-pill text-bg-warning">
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                  Assinando
+                </span>
+              } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1) {
                 <button class="btn btn-success icon-text-btn text-nowrap w-25 p-2" (click)="dispararModalConfirmarAssinatura()">
                   <i class="fa-solid fa-pencil"></i>
                   <span>Assinar</span>

@@ -64,8 +64,6 @@ import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 import { acharDescricaoEtapaPorEtapa, getEtapasStatus, IPollingFases, PollingEtapas, PollingEtapasStatus } from '../../../core/interfaces/polling.interface';
-import { PollingModalComponent } from '../../../shared/templates/polling-modal/polling-modal.component';
-import { PollingFasesModel } from '../../../core/models/polling.model';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -121,12 +119,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public programaAtual!: IPrograma;
 
-  private fasesPolling: Array<IPollingFases> = [];
-
-  private statusAutorizacoes: PollingEtapasStatus = PollingEtapasStatus.NAO_INICIADA;
-
-  private statusAutuacao: PollingEtapasStatus = PollingEtapasStatus.NAO_INICIADA;
-
   constructor(
     public valorService: ValorService,
     private readonly _nnfb: NonNullableFormBuilder,
@@ -139,7 +131,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _toastService: ToastService,
     private readonly _navegacaoService: NavegacaoService,
     private readonly _pessoasService: PessoasService,
-    private readonly _usuarioService: UsuarioService
+    private readonly _usuarioService: UsuarioService,
   ) {
     const [editar$, criar$] = partition(
       this._programasService.idPrograma$,
@@ -448,6 +440,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     // tipoFormControl.patchValue(TipoValorEnum.Estimado);
     // tipoFormControl.disable();
 
+    const valorEstimadoFormControl = this.programaForm.get('valor.quantia') as FormControl<number | null>;
+    if (valorEstimadoFormControl) valorEstimadoFormControl.disable();
+
     this.idProjetoPropostoList.valueChanges.subscribe(
       (idProjetoPropostoListValue) => {
         const somatorioValorProjetosPropostos = idProjetoPropostoListValue
@@ -706,9 +701,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       titulo: 'Confirmação',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal: 'Essa ação enviará email aos gestores para autorização do programa.',
-      // textoSecundario: 'Tem certeza que deseja continuar?',
-      // textoPrincipalCustomClass: 'fw-bold',
-      // textoSecundarioCustomClass: '',
     };
 
     modalRef.result.then(
@@ -720,86 +712,34 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           this._programasService
             .solicitarAutorizacoesPrograma(this._idProgramaEdicao)
             .subscribe({
-              next: (res) => {
+              next: () => {
+                this.loading = false;
+
+                this._programasService.adicionarProgramaAguardandoEdocs(this._idProgramaEdicao);
                 this._toastService.showToast(
                   'warning',
                   'As Autorizações foram solicitadas!'
                 );
 
-                this.loading = false;
-
-                this.dispararModalPollingAutorizacaoPrograma();
+                this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+                // Redireciona pra lista de Programas
               },
               error: (err) => {
                 console.error(
                   'Ocorreu um erro ao tentar solicitar as Autorizações do Programa.\n',
                   err
                 );
+                this.loading = false;
+
                 this._toastService.showToast(
                   'error',
                   'Ocorreu um erro ao tentar solicitar as Autorizações do Programa'
                 );
-
-                this.statusAutorizacoes = PollingEtapasStatus.ERRO_FASE;
               },
             });
         }
       }
     );
-  }
-
-  dispararModalPollingAutorizacaoPrograma() {
-    let pollingModalRef: NgbModalRef;
-    this.statusAutorizacoes = PollingEtapasStatus.EM_ANDAMENTO;
-
-    this._programasService
-      .executarPollingFasesProgramas(this.programaAtual.id)
-      .subscribe({
-        next: (listaFases: PollingFasesModel[]) => {
-          this.fasesPolling = listaFases.map((fase) => {
-            const descricao = acharDescricaoEtapaPorEtapa(fase.etapa);
-            const status =
-              getEtapasStatus.get(fase.etapa) ||
-              PollingEtapasStatus.NAO_INICIADA;
-
-            return {
-              ...fase,
-              descricao,
-              status,
-            };
-          });
-
-          if (!pollingModalRef) {
-            pollingModalRef = this._ngbModalService.open(
-              PollingModalComponent,
-              { centered: true }
-            );
-
-            pollingModalRef.componentInstance.fasesPolling = this.fasesPolling;
-            pollingModalRef.result.then(
-              (resolve) => {},
-              (result) => {
-                if (result === 'fechar') {
-                  pollingModalRef.close();
-                }
-              }
-            );
-          }
-        },
-        complete: () => {
-          const faseAutorizacaoEnviada = this.fasesPolling.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.CAPTURA_ASSINATURA_PENDENTE && fase.finalizada);
-          const faseErro = this.fasesPolling.find((fase: PollingFasesModel) => fase.erro);
-
-          if (faseAutorizacaoEnviada) {
-            this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
-          } else if (faseErro) {
-            this._toastService.showToast('error', faseErro.msgAlertaExibir ?? 'Ocorreu um erro ao tentar processar as Autorizações!')
-          }
-
-          this.statusAutorizacoes = PollingEtapasStatus.FINALIZADA;
-          this.loading = false;
-        },
-      });
   }
 
   private dispararModalConfirmarAutuacao() {
@@ -826,14 +766,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
             .autuarPrograma(this._idProgramaEdicao)
             .subscribe({
               next: (res) => {
+                this._programasService.adicionarProgramaAguardandoEdocs(this._idProgramaEdicao);
                 this.loading = false;
 
                 this._toastService.showToast(
                   'warning',
                   'A Autuação do Programa foi solicitada!'
                 );
-                
-                this.dispararModalPollingAutuacaoPrograma();
+
+                this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+                // Redireciona pra lista de Programas
               },
               error: (err) => {
                 console.error(
@@ -846,66 +788,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
                   'error',
                   'Ocorreu um erro ao tentar Autuar o Programa!'
                 );
-
-                this.statusAutuacao = PollingEtapasStatus.ERRO_FASE;
               },
             });
         }
       }
     );
-  }
-
-  dispararModalPollingAutuacaoPrograma() {
-    let pollingModalRef: NgbModalRef;
-    this.statusAutuacao = PollingEtapasStatus.EM_ANDAMENTO;
-
-    this._programasService
-      .executarPollingFasesProgramas(this.programaAtual.id)
-      .subscribe({
-        next: (listaFases: PollingFasesModel[]) => {
-          this.fasesPolling = listaFases.map((fase) => {
-            const descricao = acharDescricaoEtapaPorEtapa(fase.etapa);
-            const status =
-              getEtapasStatus.get(fase.etapa) ||
-              PollingEtapasStatus.NAO_INICIADA;
-
-            return {
-              ...fase,
-              descricao,
-              status,
-            };
-          });
-
-          if (!pollingModalRef) {
-            pollingModalRef = this._ngbModalService.open(
-              PollingModalComponent,
-              { centered: true }
-            );
-
-            pollingModalRef.componentInstance.fasesPolling = this.fasesPolling;
-            pollingModalRef.result.then(
-              (resolve) => {},
-              (result) => {
-                if (result === 'fechar') {
-                  pollingModalRef.close();
-                }
-              }
-            );
-          }
-        },
-        complete: () => {
-          const faseAutorizacaoEnviada = this.fasesPolling.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.CAPTURA_ASSINATURA_PENDENTE && fase.finalizada);
-          const faseErro = this.fasesPolling.find((fase: PollingFasesModel) => fase.erro);
-
-          if (faseAutorizacaoEnviada) {
-            this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
-          } else if (faseErro) {
-            this._toastService.showToast('error', faseErro.msgAlertaExibir ?? 'Ocorreu um erro ao tentar processar as Autorizações!')
-          }
-
-          this.statusAutuacao = PollingEtapasStatus.FINALIZADA;
-          this.loading = false;
-        },
-      });
   }
 }

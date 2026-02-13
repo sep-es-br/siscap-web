@@ -1,7 +1,7 @@
 import { Component, input, output } from '@angular/core';
 
 import { tap } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { DeleteModalComponent } from '../../../shared/templates/delete-modal/delete-modal.component';
 import { SuccessModalComponent } from '../../../shared/templates/success-modal/success-modal.component';
@@ -19,6 +19,10 @@ import {
 } from '../../../core/enums/breadcrumb.enum';
 
 import { getSimboloMoeda } from '../../../core/utils/functions';
+import { acharDescricaoEtapaPorEtapa, getEtapasStatus, PollingEtapas, PollingEtapasStatus } from '../../../core/interfaces/polling.interface';
+import { PollingFasesModel } from '../../../core/models/polling.model';
+import { PollingModalComponent } from '../../../shared/templates/polling-modal/polling-modal.component';
+import { ToastService } from '../../../core/services/toast/toast.service';
 
 @Component({
   selector: 'siscap-programas-list',
@@ -33,11 +37,32 @@ export class ProgramasListComponent {
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
+  public currentPolling: {
+    idPrograma: number;
+    status: PollingEtapasStatus;
+    fases: Array<PollingFasesModel>;
+  } = {
+    idPrograma: -1,
+    status: PollingEtapasStatus.NAO_INICIADA,
+    fases: [],
+  };
+
   constructor(
     private readonly _programasService: ProgramasService,
     private readonly _navegacaoService: NavegacaoService,
-    private readonly _ngbModalService: NgbModal
-  ) {}
+    private readonly _ngbModalService: NgbModal,
+    private readonly _toastService: ToastService,
+  ) {
+    this._programasService.programasAguardandoEdocs$
+      .subscribe(set => {
+        const programaId = set.values().next().value;
+        if (programaId) {
+          console.log('programaId: ', programaId);
+          this.currentPolling.idPrograma = programaId;
+          this.dispararModalPolling(programaId);
+        }
+      });
+  }
 
   public sortColumn(event: SortColumn): void {
     this.sortableDirectiveOutput.emit(`${event.column},${event.direction}`);
@@ -109,5 +134,63 @@ export class ProgramasListComponent {
         );
       }
     );
+  }
+
+  dispararModalPolling(idPrograma: number) {
+    let pollingModalRef: NgbModalRef;
+    this.currentPolling.status = PollingEtapasStatus.EM_ANDAMENTO;
+
+    this._programasService
+      .executarPollingFasesProgramas(idPrograma)
+      .subscribe({
+        next: (listaFases: PollingFasesModel[]) => {
+          this.currentPolling.fases = listaFases.map((fase) => {
+            const descricao = acharDescricaoEtapaPorEtapa(fase.etapa);
+            const status =
+              getEtapasStatus.get(fase.etapa) ||
+              PollingEtapasStatus.NAO_INICIADA;
+
+            return {
+              ...fase,
+              descricao,
+              status,
+            };
+          });
+
+          if (!pollingModalRef) {
+            pollingModalRef = this._ngbModalService.open(
+              PollingModalComponent,
+              { centered: true }
+            );
+
+            pollingModalRef.componentInstance.fasesPolling = this.currentPolling.fases;
+            pollingModalRef.result.then(
+              (resolve) => {},
+              (result) => {
+                if (result === 'fechar') {
+                  pollingModalRef.close();
+                }
+              }
+            );
+          }
+        },
+        complete: () => {
+          const faseAutorizacaoEnviada = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.CAPTURA_ASSINATURA_PENDENTE && fase.finalizada);
+          const faseAutuacaoConfirmada = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.AUTUAR && fase.finalizada);
+          const faseErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.erro);
+
+          if (faseAutorizacaoEnviada) {
+            this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
+          } else if (faseAutuacaoConfirmada) {
+            this._toastService.showToast('success', 'A Autuação foi realizada com sucesso!');
+          } else if (faseErro) {
+            this._toastService.showToast('error', faseErro.msgAlertaExibir ?? 'Ocorreu um erro ao tentar processar as Autorizações!')
+          }
+
+          this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
+          this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
+          this.currentPolling.idPrograma = -1;
+        },
+      });
   }
 }

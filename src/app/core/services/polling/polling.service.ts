@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, interval, map, Observable, of, switchMap, take, takeUntil, takeWhile, tap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, interval, map, Observable, of, switchMap, take, takeUntil, takeWhile, tap, timer } from 'rxjs';
 import { IPollingFases } from '../../interfaces/polling.interface';
 import { environment } from '../../../../environments/environment';
 import { PollingFasesModel } from '../../models/polling.model';
@@ -56,12 +56,12 @@ export class PollingService {
               return of([]);
             })
           ),
-        ),
-        takeWhile(
-          lista => !lista.every(fase => fase.finalizada) && !lista.some(fase => fase.erro),
-          true
-        ),
-        // take(50),
-    );
+      ),
+      takeWhile(
+        lista => !lista.every(fase => fase.finalizada) && !lista.some(fase => fase.erro),
+        true
+      ),
+      // take(50),
+    )
   }
 }

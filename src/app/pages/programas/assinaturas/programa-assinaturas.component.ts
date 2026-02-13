@@ -46,6 +46,8 @@ export class ProgramaAssinaturasComponent {
 
   fasesPollingAssinatura: Array<IPollingFases> = [];
 
+  statusAssinatura: PollingEtapasStatus = PollingEtapasStatus.NAO_INICIADA;
+
   constructor(
     private route: ActivatedRoute,
     private _programasService: ProgramasService,
@@ -227,13 +229,14 @@ export class ProgramaAssinaturasComponent {
           });
 
           if (!pollingModalRef) {
+            this.statusAssinatura = PollingEtapasStatus.EM_ANDAMENTO;
+
             pollingModalRef = this._ngbModalService.open(
               PollingModalComponent,
               { centered: true }
             );
 
-            pollingModalRef.componentInstance.fasesPollingAssinatura =
-              this.fasesPollingAssinatura;
+            pollingModalRef.componentInstance.fasesPollingAssinatura = this.fasesPollingAssinatura;
             pollingModalRef.result.then(
               (resolve) => {},
               (result) => {
@@ -246,6 +249,7 @@ export class ProgramaAssinaturasComponent {
         },
         complete: () => {
           this._toastService.showToast('success', 'Assinado com sucesso!');
+          this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
 
           this.appStatus = AppStatus.SUCCESS;
         },
