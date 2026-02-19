@@ -65,13 +65,13 @@ export class ProjetoParecerComponent {
   }
 
   public isSubcapGeoc(): boolean {
-    const subeoSubeppEntranhados =
+    const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
       this.pareceresProjeto
         .filter(p =>
           [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
         )
         .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
-    return this.statusProjeto === StatusProjetoEnum.Elegibilidade && subeoSubeppEntranhados && (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP);
+    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && subeoSubeppEntranhados && (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP);
   }
 
   public isEnviado(): boolean {
@@ -83,7 +83,7 @@ export class ProjetoParecerComponent {
 
     const textoParecer = this.parecerFormGroup.get('textoParecer');
 
-    if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegibilidade) {
+    if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegivel ) {
       textoParecer?.setValidators([Validators.required]);
     } else {
       textoParecer?.clearValidators();
@@ -91,7 +91,8 @@ export class ProjetoParecerComponent {
 
     textoParecer?.updateValueAndValidity();
 
-    //console.log(' this.lotacaoUsuario - ', this.lotacaoUsuario)
+    console.log(' this.isSubeep - ', this.isSubepp() )
+    console.log(' this.lotacaoUsuario - ', this.lotacaoUsuario )
 
   }
 
