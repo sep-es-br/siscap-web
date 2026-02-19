@@ -19,7 +19,7 @@ import { RequestStatus } from '../../../core/enums/request-status.enum';
 import { PollingModalComponent } from '../../../shared/templates/polling-modal/polling-modal.component';
 import {
   acharDescricaoEtapaPorEtapa,
-  getEtapasStatus,
+  getFaseStatus,
   IPollingFases,
   PollingEtapasStatus,
 } from '../../../core/interfaces/polling.interface';
@@ -217,9 +217,7 @@ export class ProgramaAssinaturasComponent {
         next: (res: IPollingFases[]) => {
           this.fasesPollingAssinatura = res.map((fase) => {
             const descricao = acharDescricaoEtapaPorEtapa(fase.etapa);
-            const status =
-              getEtapasStatus.get(fase.etapa) ||
-              PollingEtapasStatus.NAO_INICIADA;
+            const status = getFaseStatus(fase.iniciada, fase.finalizada, fase.erro);
 
             return {
               ...fase,
@@ -228,7 +226,9 @@ export class ProgramaAssinaturasComponent {
             };
           });
 
-          if (!pollingModalRef) {
+          if (pollingModalRef) {
+            pollingModalRef.componentInstance.fasesPollingAssinatura = this.fasesPollingAssinatura;
+          } else {
             this.statusAssinatura = PollingEtapasStatus.EM_ANDAMENTO;
 
             pollingModalRef = this._ngbModalService.open(

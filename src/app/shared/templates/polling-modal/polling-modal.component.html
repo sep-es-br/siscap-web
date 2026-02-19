@@ -7,24 +7,16 @@
       <span class="pe-2">
         @switch (fase.status) {
           @case ('NAO_INICIADA') {
-            @if (!fase.iniciada && !fase.finalizada) {
-              <i class="fa-regular fa-circle text-secondary"></i>
-            }
+            <i class="fa-regular fa-circle text-secondary"></i>
           }
           @case ('EM_ANDAMENTO') {
-            @if (fase.iniciada && !fase.finalizada) {
-              <i class="fa-solid fa-circle-notch fa-spin"></i>
-            }
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
           }
           @case ('FINALIZADA') {
-            @if (fase.iniciada && fase.finalizada) {
-              <i class="fa-regular fa-circle-check text-success"></i>
-            }
+            <i class="fa-regular fa-circle-check text-success"></i>
           }
           @case ('ERRO_FASE') {
-            @if (fase.erro) {
-              <i class="fa-solid fa-circle-xmark text-danger"></i>
-            }
+            <i class="fa-solid fa-circle-xmark text-danger"></i>
           }
         }
       </span>

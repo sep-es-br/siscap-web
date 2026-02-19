@@ -17,17 +17,19 @@ export enum PollingEtapasStatus {
   ERRO_FASE = "ERRO_FASE",
 }
 
-export const getEtapasStatus = new Map<PollingEtapas, PollingEtapasStatus> ([
-  [PollingEtapas.CAPTURA_ASSINATURA, PollingEtapasStatus.EM_ANDAMENTO],
-  [PollingEtapas.AUTUAR, PollingEtapasStatus.FINALIZADA],
-  [PollingEtapas.ENTRANHAR_ARQUIVO, PollingEtapasStatus.EM_ANDAMENTO],
-  [PollingEtapas.DESPACHAR_PROCESSO, PollingEtapasStatus.EM_ANDAMENTO],
-  [PollingEtapas.AVOCAR, PollingEtapasStatus.EM_ANDAMENTO],
-  [PollingEtapas.DESENTRANHAR, PollingEtapasStatus.EM_ANDAMENTO],
-  [PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, PollingEtapasStatus.EM_ANDAMENTO],
-  [PollingEtapas.ASSINADO, PollingEtapasStatus.FINALIZADA],
-  [PollingEtapas.ERRO_FASE, PollingEtapasStatus.ERRO_FASE],
-]);
+export const getFaseStatus = (iniciada: boolean, finalizada: boolean, erro: boolean): PollingEtapasStatus => {
+  if (erro) {
+    return PollingEtapasStatus.ERRO_FASE;
+  } else if (!iniciada) {
+    return PollingEtapasStatus.NAO_INICIADA;
+  } else if (iniciada && !finalizada) {
+    return PollingEtapasStatus.EM_ANDAMENTO;
+  } else if (iniciada && finalizada) {
+    return PollingEtapasStatus.FINALIZADA;
+  }
+
+  return PollingEtapasStatus.ERRO_FASE;
+}
 
 export interface IPollingFases {
   readonly id: number;
@@ -54,7 +56,7 @@ export const pollingEtapasConfig: Array<{
   { etapa: PollingEtapas.DESPACHAR_PROCESSO, descricao: 'Não sei' },
   { etapa: PollingEtapas.AVOCAR, descricao: 'Não sei' },
   { etapa: PollingEtapas.DESENTRANHAR, descricao: 'Não sei' },
-  { etapa: PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, descricao: 'Assinatura está pendente' },
+  { etapa: PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, descricao: 'Solicitação de Assinaturas pendente' },
   { etapa: PollingEtapas.ASSINADO, descricao: 'Assinatura confirmada' },
   { etapa: PollingEtapas.ERRO_FASE, descricao: 'Ocorreu um erro' },
 ];

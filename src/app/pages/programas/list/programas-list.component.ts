@@ -19,7 +19,7 @@ import {
 } from '../../../core/enums/breadcrumb.enum';
 
 import { getSimboloMoeda } from '../../../core/utils/functions';
-import { acharDescricaoEtapaPorEtapa, getEtapasStatus, PollingEtapas, PollingEtapasStatus } from '../../../core/interfaces/polling.interface';
+import { acharDescricaoEtapaPorEtapa, getFaseStatus, PollingEtapas, PollingEtapasStatus } from '../../../core/interfaces/polling.interface';
 import { PollingFasesModel } from '../../../core/models/polling.model';
 import { PollingModalComponent } from '../../../shared/templates/polling-modal/polling-modal.component';
 import { ToastService } from '../../../core/services/toast/toast.service';
@@ -148,9 +148,7 @@ export class ProgramasListComponent {
         next: (listaFases: PollingFasesModel[]) => {
           this.currentPolling.fases = listaFases.map((fase) => {
             const descricao = acharDescricaoEtapaPorEtapa(fase.etapa);
-            const status =
-              getEtapasStatus.get(fase.etapa) ||
-              PollingEtapasStatus.NAO_INICIADA;
+            const status = getFaseStatus(fase.iniciada, fase.finalizada, fase.erro);
 
             return {
               ...fase,
@@ -159,7 +157,9 @@ export class ProgramasListComponent {
             };
           });
 
-          if (!pollingModalRef) {
+          if (pollingModalRef) {
+            pollingModalRef.componentInstance.fasesPolling = this.currentPolling.fases;
+          } else {
             pollingModalRef = this._ngbModalService.open(
               PollingModalComponent,
               { centered: true }
