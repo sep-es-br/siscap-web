@@ -16,7 +16,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ProgramaProjetoPropostoVinculadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-vinculado-warning-modal/programa-projeto-proposto-vinculado-warning-modal.component';
 
@@ -63,7 +63,6 @@ import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
-import { acharDescricaoEtapaPorEtapa, getEtapasStatus, IPollingFases, PollingEtapas, PollingEtapasStatus } from '../../../core/interfaces/polling.interface';
 
 @Component({
   selector: 'siscap-programa-form',

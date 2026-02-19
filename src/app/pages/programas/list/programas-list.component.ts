@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 
-import { tap } from 'rxjs';
+import { take, tap } from 'rxjs';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { DeleteModalComponent } from '../../../shared/templates/delete-modal/delete-modal.component';
@@ -54,10 +54,12 @@ export class ProgramasListComponent {
     private readonly _toastService: ToastService,
   ) {
     this._programasService.programasAguardandoEdocs$
+      .pipe(
+        take(1)
+      )
       .subscribe(set => {
         const programaId = set.values().next().value;
         if (programaId) {
-          console.log('programaId: ', programaId);
           this.currentPolling.idPrograma = programaId;
           this.dispararModalPolling(programaId);
         }
@@ -177,14 +179,29 @@ export class ProgramasListComponent {
         complete: () => {
           const faseAutorizacaoEnviada = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.CAPTURA_ASSINATURA_PENDENTE && fase.finalizada);
           const faseAutuacaoConfirmada = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.AUTUAR && fase.finalizada);
-          const faseErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.erro);
+          const faseAutorizacaoErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.CAPTURA_ASSINATURA_PENDENTE && fase.erro);
+          const faseAutuacaoErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.AUTUAR && fase.erro);
 
           if (faseAutorizacaoEnviada) {
             this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
           } else if (faseAutuacaoConfirmada) {
             this._toastService.showToast('success', 'A Autuação foi realizada com sucesso!');
-          } else if (faseErro) {
-            this._toastService.showToast('error', faseErro.msgAlertaExibir ?? 'Ocorreu um erro ao tentar processar as Autorizações!')
+          } else if (faseAutorizacaoErro) {
+            const errorMessage = (
+              faseAutorizacaoErro.msgAlertaExibir &&
+              faseAutorizacaoErro.msgAlertaExibir.length > 0
+            )
+              ? faseAutorizacaoErro.msgAlertaExibir
+              : 'Ocorreu um erro ao tentar processar as Autorizações!';
+            this._toastService.showToast('error', errorMessage);
+          } else if (faseAutuacaoErro) {
+            const errorMessage = (
+              faseAutuacaoErro.msgAlertaExibir &&
+              faseAutuacaoErro.msgAlertaExibir.length > 0
+            )
+              ? faseAutuacaoErro.msgAlertaExibir
+              : 'Ocorreu um erro ao tentar Autuar o programa!';
+            this._toastService.showToast('error', errorMessage);
           }
 
           this.currentPolling.status = PollingEtapasStatus.FINALIZADA;

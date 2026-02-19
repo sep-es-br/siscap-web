@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, finalize, interval, map, Observable, of, switchMap, take, takeUntil, takeWhile, tap, timer } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, takeWhile, tap, timer } from 'rxjs';
 import { IPollingFases } from '../../interfaces/polling.interface';
 import { environment } from '../../../../environments/environment';
 import { PollingFasesModel } from '../../models/polling.model';
@@ -42,7 +42,7 @@ export class PollingService {
         this.consultarFasesEntity(idEntity, entity)
           .pipe(
             tap(lista => {
-              console.log('Resposta do Polling: ', lista);
+              // console.log('Resposta do Polling: ', lista);
               // Considerar a ideia de implementar um intervalo maior após certo nº de ciclos
             }),
             map(response => response.map(fase => new PollingFasesModel(fase))),

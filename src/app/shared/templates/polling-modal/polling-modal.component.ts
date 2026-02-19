@@ -21,7 +21,7 @@ export class PollingModalComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes && changes['fasesPolling']) {
-      console.log('this.fasesPolling: ', this.fasesPolling);
+      // console.log('this.fasesPolling: ', this.fasesPolling);
     }
   }
 }
