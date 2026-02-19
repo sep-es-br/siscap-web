@@ -428,7 +428,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               this._breadcrumbService.listaItemsBreadcrumb$
 
               const parecerSubcapGeoc = this.pareceresProjeto
-                .filter(p => [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao))
+                .find(p => [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao))
 
               if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO) &&
                 (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0)) {
@@ -437,7 +437,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                   this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
                 );
 
-              } else if (parecerSubcapGeoc.length == 0 && subeppSubeoEntranhados) {
+              } else if ( ( !parecerSubcapGeoc && subeppSubeoEntranhados) || 
+                ( parecerSubcapGeoc && parecerSubcapGeoc?.statusParecer !== StatusParecerEnum.Entranhado_Processo_Edocs ) ) {
 
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoParecerGEOC()
@@ -533,7 +534,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public aguardandoParecer(): boolean {
 
-    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegibilidade);
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegivel);
 
   }
 
@@ -1200,7 +1201,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'parecerProjetoUsuario.guidDocumentoEdocs'
     ) as FormControl<string | null>;
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel ) {
 
       setTimeout(() => {
         const idDocumentoEdocsParecer = idDocumentoEdocsFormControl?.value ?? '';
@@ -1265,7 +1266,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel ) {
 
       const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
 

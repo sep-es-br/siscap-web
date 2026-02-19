@@ -83,7 +83,7 @@ export class ProjetoParecerComponent {
 
     const textoParecer = this.parecerFormGroup.get('textoParecer');
 
-    if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegibilidade) {
+    if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegivel ) {
       textoParecer?.setValidators([Validators.required]);
     } else {
       textoParecer?.clearValidators();
