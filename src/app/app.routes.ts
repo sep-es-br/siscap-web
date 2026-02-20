@@ -25,7 +25,7 @@ export const APP_ROUTES: Routes = [
     component: MainComponent,
     loadChildren: () =>
       import('./pages/pages.module').then((m) => m.PagesModule),
-    canActivateChild: [authGuard, authExternalUrlGuard],
+    canActivateChild: [authGuard],
   },
   {
     path: 'projetos/editar/:id',  // :id é um parâmetro dinâmico
@@ -40,7 +40,6 @@ export const APP_ROUTES: Routes = [
   {
     path: 'main/programas/:id/assinaturas',
     component: ProgramaAssinaturasComponent,
-    canActivateChild: [authExternalUrlGuard],
   },
   {
     path: '**',
