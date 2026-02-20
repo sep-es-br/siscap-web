@@ -12,25 +12,17 @@ import {
   finalize,
   map,
   Observable,
-  partition,
   Subscription,
   switchMap,
   tap,
   EMPTY,
   catchError,
   Subject,
-  merge,
-  debounceTime,
-  distinctUntilChanged,
   of,
-  shareReplay,
   take,
   interval,
   takeUntil,
-  timer,
-  takeWhile,
   filter,
-  ObservableInput
 } from 'rxjs';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -49,8 +41,6 @@ import {
   ProjetoFormModel,
   ProjetoModel,
 } from '../../../core/models/projeto.model';
-import { RateioModel } from '../../../core/models/rateio.model';
-import { ValorModel } from '../../../core/models/valor.model';
 
 import {
   ILocalidadeOpcoesDropdown,
@@ -83,11 +73,10 @@ import { IndicadoresService } from '../../../core/services/indicadores/indicador
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { IAcao } from '../../../core/interfaces/acoes.interface';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { EquipeModel } from '../../../core/models/equipe.model';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
-import { IProjetoIntegracaoEdocsFases } from '../../../core/interfaces/projeto-integracao-edcos-fases.interface';
 import { ProjetoIntegracaoEdocsFasesModel } from '../../../core/models/projeto-integracao-edocs-fases.model';
 import { FasesEdocsIntegracaoEnum, FaseStatuEnum } from '../../../core/enums/fases-edocs-integracao.enum';
 import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from '../../../core/interfaces/estrutura.campo.complementar.dic.interface';

@@ -1,17 +1,17 @@
-import { IProgramaAssinaturaFases, ProgramaAssinaturasEtapas } from '../interfaces/programa.interface';
+import { IPollingFases, PollingEtapas } from "../interfaces/polling.interface";
 
-export class ProgramaFasesAssinaturaModel implements IProgramaAssinaturaFases {
+export class PollingFasesModel implements IPollingFases {
   public id: number;
-  public etapa: ProgramaAssinaturasEtapas;
+  public etapa: PollingEtapas;
   public iniciada: boolean;
   public finalizada: boolean;
   public erro: boolean;
   public msgAlertaExibir: string;
   public contextoNegocio: string;
 
-  constructor(fase?: IProgramaAssinaturaFases) {
+  constructor(fase?: IPollingFases) {
     this.id = (fase && fase.id) ?? 0;
-    this.etapa = (fase && fase.etapa) ?? ProgramaAssinaturasEtapas.CAPTURA_ASSINATURA_PENDENTE;
+    this.etapa = (fase && fase.etapa) ?? PollingEtapas.CAPTURA_ASSINATURA_PENDENTE;
     this.iniciada = (fase && fase.iniciada) ?? false;
     this.finalizada = (fase && fase.finalizada) ?? false;
     this.erro = (fase && fase.erro) ?? false;

@@ -62,9 +62,7 @@ import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
-import { PreventActionModalComponent } from '../../../shared/templates/prevent-action-modal/prevent-action-modal.component';
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
-import { RequestStatus } from '../../../core/enums/request-status.enum';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -132,7 +130,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _toastService: ToastService,
     private readonly _navegacaoService: NavegacaoService,
     private readonly _pessoasService: PessoasService,
-    private readonly _usuarioService: UsuarioService
+    private readonly _usuarioService: UsuarioService,
   ) {
     const [editar$, criar$] = partition(
       this._programasService.idPrograma$,
@@ -441,6 +439,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     // tipoFormControl.patchValue(TipoValorEnum.Estimado);
     // tipoFormControl.disable();
 
+    const valorEstimadoFormControl = this.programaForm.get('valor.quantia') as FormControl<number | null>;
+    if (valorEstimadoFormControl) valorEstimadoFormControl.disable();
+
     this.idProjetoPropostoList.valueChanges.subscribe(
       (idProjetoPropostoListValue) => {
         const somatorioValorProjetosPropostos = idProjetoPropostoListValue
@@ -699,9 +700,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       titulo: 'Confirmação',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal: 'Essa ação enviará email aos gestores para autorização do programa.',
-      // textoSecundario: 'Tem certeza que deseja continuar?',
-      // textoPrincipalCustomClass: 'fw-bold',
-      // textoSecundarioCustomClass: '',
     };
 
     modalRef.result.then(
@@ -713,20 +711,25 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           this._programasService
             .solicitarAutorizacoesPrograma(this._idProgramaEdicao)
             .subscribe({
-              next: (res) => {
-                console.log('res - solicitarAutorizacoesPrograma: ', res);
+              next: () => {
                 this.loading = false;
 
+                this._programasService.adicionarProgramaAguardandoEdocs(this._idProgramaEdicao);
                 this._toastService.showToast(
-                  'success',
-                  'As Autorizações foram solicitadas com sucesso!'
+                  'warning',
+                  'As Autorizações foram solicitadas!'
                 );
+
+                this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+                // Redireciona pra lista de Programas
               },
               error: (err) => {
                 console.error(
                   'Ocorreu um erro ao tentar solicitar as Autorizações do Programa.\n',
                   err
                 );
+                this.loading = false;
+
                 this._toastService.showToast(
                   'error',
                   'Ocorreu um erro ao tentar solicitar as Autorizações do Programa'
@@ -762,19 +765,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
             .autuarPrograma(this._idProgramaEdicao)
             .subscribe({
               next: (res) => {
-                console.log('res - autuarPrograma: ', res);
-                // this.programaAtual.autuado = true;
-                // Precisa atualizar o status de autuação do programa
-                this.atualizarBotoes(this.programaAtual);
-                // Em seguida atualizar os botões pro botão de "Autuar" aparecer corretamente
-                console.error('Pendência pra resolver acima');
-
+                this._programasService.adicionarProgramaAguardandoEdocs(this._idProgramaEdicao);
                 this.loading = false;
 
                 this._toastService.showToast(
-                  'success',
-                  'O Programa foi autuado com sucesso!'
+                  'warning',
+                  'A Autuação do Programa foi solicitada!'
                 );
+
+                this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+                // Redireciona pra lista de Programas
               },
               error: (err) => {
                 console.error(

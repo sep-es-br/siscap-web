@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { BotaoPropriedadesModel } from '../../components/botao/botao.model';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BotoesConfig } from '../../components/botao/botao.config';
-import { IProgramaAssinaturaFasesForm } from '../../../core/interfaces/programa.interface';
+import { IPollingFasesForm } from '../../../core/interfaces/polling.interface';
 
 @Component({
   selector: 'app-polling-modal',
@@ -10,12 +10,18 @@ import { IProgramaAssinaturaFasesForm } from '../../../core/interfaces/programa.
   templateUrl: './polling-modal.component.html',
   styleUrl: './polling-modal.component.scss'
 })
-export class PollingModalComponent {
- @Input() fasesPollingAssinatura: Array<IProgramaAssinaturaFasesForm> = [];
+export class PollingModalComponent implements OnChanges {
+ @Input() fasesPolling: Array<IPollingFasesForm> = [];
 
   botaoFechar: BotaoPropriedadesModel;
 
   constructor(public activeModal: NgbActiveModal) {
     this.botaoFechar = BotoesConfig.gerarBotaoPropriedades('fechar');
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes && changes['fasesPolling']) {
+      // console.log('this.fasesPolling: ', this.fasesPolling);
+    }
   }
 }

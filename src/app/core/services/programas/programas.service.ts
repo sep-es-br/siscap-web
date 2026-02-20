@@ -10,11 +10,7 @@ import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.m
 
 import { BotoesConfig } from '../../../shared/components/botao/botao.config';
 
-import {
-  IPrograma,
-  IProgramaAssinaturaFases,
-  IProgramaTableData,
-} from '../../interfaces/programa.interface';
+import { IPrograma, IProgramaTableData } from '../../interfaces/programa.interface';
 import { Post } from '../../interfaces/http-post.interface';
 import { Put } from '../../interfaces/http-put.interface';
 
@@ -22,7 +18,9 @@ import { environment } from '../../../../environments/environment';
 import { FilesService } from '../files/files.service';
 import { ToastService } from '../toast/toast.service';
 import { RequestStatus } from '../../enums/request-status.enum';
-import { ProgramaFasesAssinaturaModel } from '../../models/programa-fases-assinatura.model';
+import { PollingService } from '../polling/polling.service';
+import { IPollingFases } from '../../interfaces/polling.interface';
+import { PollingFasesModel } from '../../models/polling.model';
 
 @Injectable({
   providedIn: 'root',
@@ -36,8 +34,11 @@ export
 {
   private readonly _url = `${environment.apiUrl}/programas`;
 
-  private readonly _idPrograma$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
+  private readonly _idPrograma$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+
+  private programasAguardandoEdocsSubject = new BehaviorSubject<Set<number>>(new Set());
+
+  public programasAguardandoEdocs$ = this.programasAguardandoEdocsSubject.asObservable();
 
   public get idPrograma$(): BehaviorSubject<number> {
     return this._idPrograma$;
@@ -45,6 +46,7 @@ export
 
   constructor(
     private readonly _http: HttpClient,
+    private readonly _pollingService: PollingService,
     private filesService: FilesService,
     private _toastService: ToastService,
   ) {
@@ -66,12 +68,9 @@ export
   }): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades(
-      'solicitarAutorizacao'
-    );
+    const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades('solicitarAutorizacao');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuar');
-    const botaoAutuarDesabilitado =
-      BotoesConfig.gerarBotaoPropriedades('autuarDisabled');
+    const botaoAutuarDesabilitado = BotoesConfig.gerarBotaoPropriedades('autuarDisabled');
 
     let finalButtons: Array<BotaoPropriedadesModel> = [
       botaoSalvar,
@@ -148,6 +147,18 @@ export
     return $requestStatus;
   }
 
+  public adicionarProgramaAguardandoEdocs(idPrograma: number): void {
+    const lista = this.programasAguardandoEdocsSubject.value;
+    lista.add(idPrograma);
+    this.programasAguardandoEdocsSubject.next(new Set(lista));
+  }
+
+  public removerProgramaAguardandoEdocs(idPrograma: number): void {
+    const lista = this.programasAguardandoEdocsSubject.value;
+    lista.delete(idPrograma);
+    this.programasAguardandoEdocsSubject.next(new Set(lista));
+  }
+
   public solicitarAutorizacoesPrograma(idPrograma: number): Observable<void> {
     return this._http.post<void>(
       `${this._url}/programa/${idPrograma}/edocs/solicitarassinaturas`,
@@ -172,38 +183,11 @@ export
     );
   }
 
-  public consultarFasesAssinaturaPrograma(
-    idPrograma: number
-  ): Observable<IProgramaAssinaturaFases[]> {
-    return this._http.get<IProgramaAssinaturaFases[]>(
-      `${this._url}/programa/edocs/fases/${idPrograma}`,
-    );
+  public consultarFasesPrograma(idPrograma: number): Observable<IPollingFases[]> {
+    return this._pollingService.consultarFasesEntity(idPrograma, 'programas');
   }
 
-  public executarPollingFasesAssinaturaPrograma(
-    idPrograma: number,
-  ): Observable<ProgramaFasesAssinaturaModel[]> {
-    const intervalo = 2000; //ms
-    return interval(intervalo).pipe(
-      switchMap(() =>
-        this.consultarFasesAssinaturaPrograma(idPrograma)
-          .pipe(
-            tap(lista => console.log('Resposta do Polling: ', lista)),
-            map(response => response.map(fase => new ProgramaFasesAssinaturaModel(fase))),
-            catchError(err => {
-              console.error('Erro ao obter fases do Programa!\n', err);
-              this._toastService.showToast(
-                'error',
-                'Ocorreu um erro na integração com o E-Docs',
-              );
-              return [];
-            })
-          ),
-        ),
-        takeWhile(
-          lista => !lista.every(fase => fase.finalizada),
-          true
-        ),
-    );
+  public executarPollingFasesProgramas(idPrograma: number): Observable<PollingFasesModel[]> {
+    return this._pollingService.executarPollingFasesEntity(idPrograma, 'programas');
   }
 }
