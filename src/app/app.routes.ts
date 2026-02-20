@@ -30,14 +30,17 @@ export const APP_ROUTES: Routes = [
   {
     path: 'projetos/editar/:id',  // :id é um parâmetro dinâmico
     component: ProjetoFormComponent,  // Ou carrega um módulo
+    canActivateChild: [authExternalUrlGuard],
   },
   {
     path: 'projetos/parecer/:id',
     component: ProjetoFormComponent,
+    canActivateChild: [authExternalUrlGuard],
   },
   {
     path: 'main/programas/:id/assinaturas',
     component: ProgramaAssinaturasComponent,
+    canActivateChild: [authExternalUrlGuard],
   },
   {
     path: '**',
