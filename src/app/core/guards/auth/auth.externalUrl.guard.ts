@@ -13,7 +13,7 @@ export const authExternalUrlGuard: CanActivateFn = (route, state) => {
   const isAuthenticated = !!sessionStorage.getItem('token');
 
   if (!isAuthenticated) {
-    sessionStorage.setItem('externalRedirectUrl', state.url);
+    sessionStorage.setItem('redirectUrl', state.url);
     return router.createUrlTree(['/login']); // Redireciona para o login
   }
 

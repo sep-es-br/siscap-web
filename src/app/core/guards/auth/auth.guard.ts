@@ -1,22 +1,16 @@
-import {
-  CanActivateChildFn,
-  UrlSegment,
-  UrlSegmentGroup,
-  UrlTree,
-} from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateChildFn, Router } from '@angular/router';
 
 export const authGuard: CanActivateChildFn = (route, state) => {
+  const router = inject(Router);
   const storageToken = sessionStorage.getItem('token');
 
-  if (!!storageToken) {
+  if (storageToken) {
     return true;
   }
 
-  const loginPageReroute = new UrlTree(
-    new UrlSegmentGroup([], {
-      primary: new UrlSegmentGroup([new UrlSegment('login', {})], {}),
-    })
-  );
+  // Salva a URL que o usuário tentou acessar
+  sessionStorage.setItem('redirectUrl', state.url);
 
-  return loginPageReroute;
+  return router.createUrlTree(['/login']);
 };
