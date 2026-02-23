@@ -9,8 +9,7 @@ export const authGuard: CanActivateChildFn = (route, state) => {
     return true;
   }
 
-  // Salva a URL que o usuário tentou acessar
-  sessionStorage.setItem('redirectUrl', state.url);
+  localStorage.setItem('redirectUrl', state.url);
 
   return router.createUrlTree(['/login']);
 };

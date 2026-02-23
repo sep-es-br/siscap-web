@@ -7,7 +7,6 @@ import { MainComponent } from './pages/main/main.component';
 import { authGuard } from './core/guards/auth/auth.guard';
 import { authExternalUrlGuard } from './core/guards/auth/auth.externalUrl.guard';
 import { ProjetoFormComponent } from './pages/projetos/form/projeto-form.component';
-import { ProgramaAssinaturasComponent } from './pages/programas/assinaturas/programa-assinaturas.component';
 
 export const APP_ROUTES: Routes = [
   {
@@ -30,16 +29,12 @@ export const APP_ROUTES: Routes = [
   {
     path: 'projetos/editar/:id',  // :id é um parâmetro dinâmico
     component: ProjetoFormComponent,  // Ou carrega um módulo
-    canActivateChild: [authExternalUrlGuard],
+    canActivate: [authExternalUrlGuard]  // Guard personalizado para links externos
   },
   {
     path: 'projetos/parecer/:id',
     component: ProjetoFormComponent,
-    canActivateChild: [authExternalUrlGuard],
-  },
-  {
-    path: 'main/programas/:id/assinaturas',
-    component: ProgramaAssinaturasComponent,
+    canActivate: [authExternalUrlGuard]
   },
   {
     path: '**',
