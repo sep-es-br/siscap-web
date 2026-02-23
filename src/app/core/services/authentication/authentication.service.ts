@@ -15,9 +15,11 @@ export class AuthenticationService {
 
   public acessoCidadaoSignIn() {
     const currentUrl = this.router.url;
-    if (currentUrl.startsWith('/projetos/editar/')) {
-      sessionStorage.setItem('externalRedirectUrl', currentUrl);
-    }
+    // if (currentUrl.startsWith('/projetos/editar/')) {
+    //   sessionStorage.setItem('externalRedirectUrl', currentUrl);
+    // }
+    
+    // sessionStorage.setItem('externalRedirectUrl', currentUrl);
     window.location.href = this._url;
   }
 
