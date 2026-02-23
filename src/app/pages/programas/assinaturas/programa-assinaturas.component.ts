@@ -196,13 +196,26 @@ export class ProgramaAssinaturasComponent {
         if (result === 'confirmar') {
           this.appStatus = AppStatus.LOADING;
 
-          this._toastService.showToast(
-            'warning',
-            'A sua assinatura está sendo processada!'
-          );
-          modalRef.close();
+          this._programasService.assinarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo).subscribe({
+            next: (res) => {
+              this._toastService.showToast(
+                'warning',
+                'A sua assinatura está sendo processada!'
+              );
+              modalRef.close();
+    
+              this.dispararModalPollingPrograma();
 
-          this.dispararModalPollingPrograma();
+              this.appStatus = AppStatus.SUCCESS;
+            },
+            error: (err) => {
+              console.error('Ocorreu um erro ao tentar assinar o programa!\n', err);
+              this._toastService.showToast(
+                'error',
+                'Ocorreu um erro ao tentar assinar o Programa!',
+              );
+            }
+          });
         }
       }
     );
@@ -227,7 +240,7 @@ export class ProgramaAssinaturasComponent {
           });
 
           if (pollingModalRef) {
-            pollingModalRef.componentInstance.fasesPollingAssinatura = this.fasesPollingAssinatura;
+            pollingModalRef.componentInstance.fasesPolling = this.fasesPollingAssinatura;
           } else {
             this.statusAssinatura = PollingEtapasStatus.EM_ANDAMENTO;
 
@@ -236,7 +249,7 @@ export class ProgramaAssinaturasComponent {
               { centered: true }
             );
 
-            pollingModalRef.componentInstance.fasesPollingAssinatura = this.fasesPollingAssinatura;
+            pollingModalRef.componentInstance.fasesPolling = this.fasesPollingAssinatura;
             pollingModalRef.result.then(
               (resolve) => {},
               (result) => {

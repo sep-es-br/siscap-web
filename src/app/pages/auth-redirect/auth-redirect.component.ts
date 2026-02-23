@@ -44,9 +44,9 @@ export class AuthRedirectComponent {
         }),
         finalize(() => {
           // Verifica se há uma URL original guardada antes do login
-          const externalUrl = sessionStorage.getItem('externalRedirectUrl');
+          const externalUrl = sessionStorage.getItem('redirectUrl');
           if (externalUrl) {
-            sessionStorage.removeItem('externalRedirectUrl');
+            sessionStorage.removeItem('redirectUrl');
             const separator = externalUrl.includes('?') ? '&' : '?';
             const tokenGravado = sessionStorage.getItem('token') || '';
             const urlComToken = `${externalUrl}${separator}token=${encodeURIComponent(tokenGravado)}`;
