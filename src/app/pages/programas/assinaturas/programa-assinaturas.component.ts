@@ -34,6 +34,10 @@ export class ProgramaAssinaturasComponent {
 
   programaAtual!: IProgramaAssinaturasForm;
 
+  listaNomesOrgaosExecutores: Array<string> = [];
+
+  listaDicsPropostos: Array<string> = [];
+
   formPrograma: FormGroup = new FormGroup({
     tituloPrograma: new FormControl(''),
     siglaPrograma: new FormControl(''),
@@ -61,7 +65,10 @@ export class ProgramaAssinaturasComponent {
     this.usuarioAtual = this._usuarioService.usuarioPerfil;
 
     const idPrograma = this.route.snapshot.paramMap.get('id');
+    
     if (idPrograma) {
+      this._programasService.idPrograma$.next(Number(idPrograma));
+
       const programaSubscription$ = this._programasService.getById(
         Number(idPrograma)
       );
@@ -81,12 +88,12 @@ export class ProgramaAssinaturasComponent {
       ]).subscribe({
         next: (results) => {
           const programaResponse: IPrograma = results[0];
-          const nomesOrgaosExecutores = results[1]
+          this.listaNomesOrgaosExecutores = results[1]
             .filter((el) =>
               programaResponse.idOrgaoExecutorList.includes(el.id)
             )
             .map((el) => el.nome);
-          const dicsPropostos = results[2]
+          this.listaDicsPropostos = results[2]
             .filter((el) =>
               programaResponse.idProjetoPropostoList.includes(el.id)
             )
@@ -108,36 +115,12 @@ export class ProgramaAssinaturasComponent {
 
             this.programaAtual = {
               ...programaResponse,
-              nomesOrgaosExecutores,
-              listaDICSPropostos: dicsPropostos,
+              nomesOrgaosExecutores: this.listaNomesOrgaosExecutores,
+              listaDICSPropostos: this.listaDicsPropostos,
               demaisAssinaturas: [],
             };
           } else {
-            const assinaturaUsuarioAtual =
-              programaResponse.programaAssinantesEdocsDto.find(
-                (ass) => ass.idPessoa === this.usuarioAtual.idPessoa
-              );
-            if (assinaturaUsuarioAtual) {
-              const demaisAssinaturas =
-                programaResponse.programaAssinantesEdocsDto.filter(
-                  (ass) => ass.idPessoa !== assinaturaUsuarioAtual.idPessoa
-                );
-
-              this.programaAtual = {
-                ...programaResponse,
-                nomesOrgaosExecutores,
-                listaDICSPropostos: dicsPropostos,
-                assinaturaUsuarioAtual,
-                demaisAssinaturas,
-              };
-            } else {
-              this.programaAtual = {
-                ...programaResponse,
-                nomesOrgaosExecutores,
-                listaDICSPropostos: dicsPropostos,
-                demaisAssinaturas: programaResponse.programaAssinantesEdocsDto,
-              };
-            }
+            this.atualizarAssinaturas(programaResponse);
           }
         },
         error: (err) => {
@@ -160,6 +143,39 @@ export class ProgramaAssinaturasComponent {
           this.appStatus = AppStatus.SUCCESS;
         },
       });
+    }
+  }
+
+  atualizarAssinaturas(programa: IPrograma) {
+    // Função chamada no início da execução do componente, e após realizar uma assinatura
+
+    if (programa.programaAssinantesEdocsDto && programa.programaAssinantesEdocsDto.length > 0) {
+      const assinaturaUsuarioAtual =
+        programa.programaAssinantesEdocsDto.find(
+          (ass) => ass.idPessoa === this.usuarioAtual.idPessoa
+        );
+
+      if (assinaturaUsuarioAtual) {
+        const demaisAssinaturas =
+          programa.programaAssinantesEdocsDto.filter(
+            (ass) => ass.idPessoa !== assinaturaUsuarioAtual.idPessoa
+          );
+  
+        this.programaAtual = {
+          ...programa,
+          nomesOrgaosExecutores: this.listaNomesOrgaosExecutores,
+          listaDICSPropostos: this.listaDicsPropostos,
+          assinaturaUsuarioAtual,
+          demaisAssinaturas,
+        };
+      } else {
+        this.programaAtual = {
+          ...programa,
+          nomesOrgaosExecutores: this.listaNomesOrgaosExecutores,
+          listaDICSPropostos: this.listaDicsPropostos,
+          demaisAssinaturas: programa.programaAssinantesEdocsDto,
+        };
+      }
     }
   }
 
@@ -197,11 +213,7 @@ export class ProgramaAssinaturasComponent {
           this.appStatus = AppStatus.LOADING;
 
           this._programasService.assinarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo).subscribe({
-            next: (res) => {
-              this._toastService.showToast(
-                'warning',
-                'A sua assinatura está sendo processada!'
-              );
+            next: (res) => {              
               modalRef.close();
     
               this.dispararModalPollingPrograma();
@@ -260,11 +272,29 @@ export class ProgramaAssinaturasComponent {
             );
           }
         },
+        error: (err: any) => {
+          console.error('Ocorreu um erro ao fazer o pooling.\n', err);
+          this._toastService.showToast('error', 'Ocorreu um erro!');
+
+          this.appStatus = AppStatus.EMPTY;
+        },
         complete: () => {
           this._toastService.showToast('success', 'Assinado com sucesso!');
-          this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
 
-          this.appStatus = AppStatus.SUCCESS;
+          this._programasService
+            .getById(this._programasService.idPrograma$.getValue())
+            .subscribe({
+              next: (programa: IPrograma) => {
+                this.programaAtual = {
+                  ...this.programaAtual,
+                  ...programa,
+                };
+
+                this.atualizarAssinaturas(this.programaAtual);
+                this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
+                this.appStatus = AppStatus.SUCCESS;
+              },
+            });
         },
       });
   }
