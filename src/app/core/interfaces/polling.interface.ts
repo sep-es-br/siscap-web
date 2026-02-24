@@ -51,12 +51,12 @@ export const pollingEtapasConfig: Array<{
   descricao: string;
 }> = [
   { etapa: PollingEtapas.CAPTURA_ASSINATURA, descricao: 'Assinatura foi enviada com sucesso' },
-  { etapa: PollingEtapas.AUTUAR, descricao: 'Não sei' },
-  { etapa: PollingEtapas.ENTRANHAR_ARQUIVO, descricao: 'Não sei' },
-  { etapa: PollingEtapas.DESPACHAR_PROCESSO, descricao: 'Não sei' },
-  { etapa: PollingEtapas.AVOCAR, descricao: 'Não sei' },
-  { etapa: PollingEtapas.DESENTRANHAR, descricao: 'Não sei' },
-  { etapa: PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, descricao: 'Solicitação de Assinaturas pendente' },
+  { etapa: PollingEtapas.AUTUAR, descricao: 'Autuar o Programa' },
+  { etapa: PollingEtapas.ENTRANHAR_ARQUIVO, descricao: 'Entranhar Arquivo' },
+  { etapa: PollingEtapas.DESPACHAR_PROCESSO, descricao: 'Despachar Processo' },
+  { etapa: PollingEtapas.AVOCAR, descricao: 'Avocar' },
+  { etapa: PollingEtapas.DESENTRANHAR, descricao: 'Desentranhar' },
+  { etapa: PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, descricao: 'Solicitação de Assinaturas Pendente' },
   { etapa: PollingEtapas.ASSINADO, descricao: 'Assinatura confirmada' },
   { etapa: PollingEtapas.ERRO_FASE, descricao: 'Ocorreu um erro' },
 ];
