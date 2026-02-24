@@ -543,9 +543,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const payload = new ProgramaFormModel(form.value as IProgramaForm);
+    const payload = new ProgramaFormModel(form.getRawValue() as IProgramaForm);
 
-    //console.log('payload -> ', payload)
+    // console.log('payload -> ', payload);
 
     const requisicao = this._idProgramaEdicao
       ? this.atualizarPrograma(payload)
