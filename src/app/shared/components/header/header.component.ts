@@ -16,6 +16,7 @@ import {
   IMenuLink,
   MenuLinksHelper,
 } from '../../../core/helpers/menu-links.helper';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'siscap-header',
@@ -35,7 +36,8 @@ export class HeaderComponent {
   constructor(
     private readonly _usuarioService: UsuarioService,
     private readonly _breadcrumbService: BreadcrumbService,
-    private readonly _ngbOffcanvasService: NgbOffcanvas
+    private readonly _ngbOffcanvasService: NgbOffcanvas,
+    private readonly _router: Router,
   ) {
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
@@ -81,5 +83,9 @@ export class HeaderComponent {
       this._sideMenuOffcanvasRef.componentInstance.subMenuCategoriaAtiva =
         this.subMenuCategoriaAtiva;
     }
+  }
+
+  handleLogoClick() {
+    this._router.navigate(['/home']);
   }
 }

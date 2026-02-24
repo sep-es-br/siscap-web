@@ -203,7 +203,7 @@ export class ProgramaAssinaturasComponent {
 
     modalRef.componentInstance.config = {
       titulo: 'Confirmar assinatura',
-      textoPrincipal: 'Essa ação irá marcar a sua assinatura no Programa.',
+      textoPrincipal: 'Sua confirmação autorizará a realização deste programa.',
     };
 
     modalRef.result.then(
