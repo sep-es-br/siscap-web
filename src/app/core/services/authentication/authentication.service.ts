@@ -14,18 +14,13 @@ export class AuthenticationService {
   constructor(private router: Router) {}
 
   public acessoCidadaoSignIn() {
-    const currentUrl = this.router.url;
-    // if (currentUrl.startsWith('/projetos/editar/')) {
-    //   sessionStorage.setItem('externalRedirectUrl', currentUrl);
-    // }
-    
-    // sessionStorage.setItem('externalRedirectUrl', currentUrl);
     window.location.href = this._url;
   }
 
   public acessoCidadaoSignOut() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('usuario-perfil');
+    localStorage.removeItem('redirectUrl');
     window.location.href = this._signOutUrl;
   }
 }

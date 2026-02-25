@@ -28,7 +28,7 @@ const PROGRAMAS_ROUTES: Routes = [
     canActivate: [programas_NoIdEditarGuard, isProponenteGuard],
   },
   {
-    title: 'Assinaturas Programa',
+    title: 'Autorizações Programa',
     path: ':id/assinaturas',
     component: ProgramaAssinaturasComponent,
   }

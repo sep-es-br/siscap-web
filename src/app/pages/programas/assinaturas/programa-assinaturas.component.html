@@ -52,7 +52,7 @@
       <div class="assinaturas mt-4">
         @if (programaAtual.assinaturaUsuarioAtual) {
           <div class="assinatura-wrap col-12">
-            <p class="assinatura-title">Minha assinatura</p>
+            <p class="assinatura-title">Minha Autorização</p>
             <div class="assinatura-box col-12 p-4 d-flex flex-column justify-content-center align-items-center">
               <p class="assinatura-termo mb-5">
                 Autorizo a assinatura eletrônica do Programa "{{ programaAtual.titulo }}", destinado à prospecção de recursos, conforme documento apresentado nesta tela.
@@ -86,7 +86,7 @@
         }
 
         <p class="assinatura-title mt-3">
-          {{ programaAtual.assinaturaUsuarioAtual ? 'Demais assinaturas' : 'Assinaturas' }}
+          {{ programaAtual.assinaturaUsuarioAtual ? 'Demais Autorizações' : 'Autorizações' }}
         </p>
         <div class="d-flex flex-wrap">
           @if (appStatus === 'Success' && programaAtual.demaisAssinaturas.length > 0) {

@@ -64,7 +64,7 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   programas: 'Programas',
   programascriar: 'Novo Programa',
   programaseditar: 'Editar Programa',
-  programasassinaturas: 'Assinaturas do Programa',
+  programasassinaturas: 'Autorizações do Programa',
 
   cartasconsulta: 'Pesquisa de Fontes de Financiamento',
   cartasconsultacriar: 'Nova Pesquisa de Fonte de Financiamento',
