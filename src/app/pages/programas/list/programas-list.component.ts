@@ -23,6 +23,7 @@ import { acharDescricaoEtapaPorEtapa, getFaseStatus, PollingEtapas, PollingEtapa
 import { PollingFasesModel } from '../../../core/models/polling.model';
 import { PollingModalComponent } from '../../../shared/templates/polling-modal/polling-modal.component';
 import { ToastService } from '../../../core/services/toast/toast.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'siscap-programas-list',
@@ -32,6 +33,7 @@ import { ToastService } from '../../../core/services/toast/toast.service';
 })
 export class ProgramasListComponent {
   public programasList = input<Array<IProgramaTableData> | null>([]);
+
   public sortableDirectiveOutput = output<string>();
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
@@ -46,6 +48,8 @@ export class ProgramasListComponent {
     status: PollingEtapasStatus.NAO_INICIADA,
     fases: [],
   };
+
+  urlEdocsBase = environment.edocsUrl;
 
   constructor(
     private readonly _programasService: ProgramasService,

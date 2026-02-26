@@ -32,7 +32,9 @@
                 </span>
               </div>
             } @else {
-              {{ programa.protocoloEDocs }}
+              <a [href]="urlEdocsBase + programa.protocoloEDocs" target="_blank" rel="noopener noreferrer">
+                {{ programa.protocoloEDocs }}
+              </a>
             }
           </td>
           <td>{{ programa.moeda }}</td>
