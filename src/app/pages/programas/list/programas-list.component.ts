@@ -11,7 +11,7 @@ import { SortColumn } from '../../../shared/directives/sortable/sortable.directi
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
-import { IProgramaTableData } from '../../../core/interfaces/programa.interface';
+import { IPrograma, IProgramaTableData } from '../../../core/interfaces/programa.interface';
 
 import {
   BreadcrumbAcoesEnum,
@@ -210,7 +210,18 @@ export class ProgramasListComponent {
 
           this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
           this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
-          this.currentPolling.idPrograma = -1;
+
+          if (faseAutuacaoConfirmada) {
+            // Busca o Programa pra atualizar o Protocolo EDocs do mesmo
+            this._programasService.getById(this.currentPolling.idPrograma).subscribe({
+              next: (response: IPrograma) => {
+                const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === response.id);
+                if (programaNaLista) programaNaLista.protocoloEDocs = response.protocoloEDocs;
+              },
+            });
+          } else {
+            this.currentPolling.idPrograma = -1;
+          }
         },
       });
   }
