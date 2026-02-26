@@ -208,19 +208,26 @@ export class ProgramasListComponent {
             this._toastService.showToast('error', errorMessage);
           }
 
-          this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
-          this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
-
+          
           if (faseAutuacaoConfirmada) {
             // Busca o Programa pra atualizar o Protocolo EDocs do mesmo
             this._programasService.getById(this.currentPolling.idPrograma).subscribe({
               next: (response: IPrograma) => {
                 const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === response.id);
                 if (programaNaLista) programaNaLista.protocoloEDocs = response.protocoloEDocs;
+
+                this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
+                this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
+              },
+              error: (err) => {
+                console.error('Ocorreu um erro ao tentar atualizar o Programa!\n', err);
+                this._toastService.showToast('error', 'Ocorreu um erro ao tentar atualizar o Programa');
               },
             });
           } else {
             this.currentPolling.idPrograma = -1;
+            this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
+            this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           }
         },
       });
