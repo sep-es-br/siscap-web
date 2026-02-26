@@ -1,87 +1,84 @@
 <div class="project-form" *ngIf="isSubeo() || isSubepp() || isSubcapGeoc()" >
-    <div class="card">
-        <div class="card-body">
-            <form [formGroup]="parecerFormGroup">
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="parecerFormGroup">
+        <div class="row ">
+          <div class="col-12" *ngIf="isSubepp()">
+            <h5 class="fw-bold text-primary mb-2">Parecer Estratégico</h5>
+            <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
+                A SUBEPP deverá elaborar um parecer estratégico acerca do projeto apresentado, contemplando
+                os seguintes pontos:
+            </p>
+            <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
+              <li>Indicar e/ou confirmar o enquadramento do projeto em relação ao Planejamento Estratégico do Governo vigente (eixo, área estratégica, programa ou afins);</li>
+              <li>Sugerir projetos de sua carteira estratégica que apresentem alinhamento com o tema
+                  proposto;</li>
+              <li>Identificar indicadores estratégicos que possam ser associados ao projeto em análise.
+              </li>
+            </ul>
+          </div>
 
-                <div class="row ">
+          <div class="col-12" *ngIf="isSubeo()">
+            <h5 class="fw-bold text-primary mb-2">Parecer Orçamentário</h5>
+            <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
+                A SUBEO deverá apresentar parecer quanto à adequação orçamentária da proposta, abrangendo os
+                seguintes aspectos:
+            </p>
+            <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
+              <li>Verificar a conformidade com a LOA, LDO e PPA;</li>
+              <li>Indicar a disponibilidade de outras fontes de recursos eventualmente acessíveis ao Órgão demandante.</li>
+            </ul>
+          </div>
 
-                    <div class="col-12" *ngIf="isSubepp()">
-                        <h5 class="fw-bold text-primary mb-2">Parecer Estratégico</h5>
-                        <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
-                            A SUBEPP deverá elaborar um parecer estratégico acerca do projeto apresentado, contemplando
-                            os seguintes pontos:
-                        </p>
-                        <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
-                            <li>Indicar e/ou confirmar o enquadramento do projeto em relação ao eixo, tema e programa
-                                estratégicos;</li>
-                            <li>Sugerir projetos de sua carteira estratégica que apresentem alinhamento com o tema
-                                proposto;</li>
-                            <li>Identificar indicadores estratégicos que possam ser associados ao projeto em análise.
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="col-12" *ngIf="isSubeo()">
-                        <h5 class="fw-bold text-primary mb-2">Parecer Orçamentário</h5>
-                        <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
-                            A SUBEO deverá apresentar parecer quanto à adequação orçamentária da proposta, abrangendo os
-                            seguintes aspectos:
-                        </p>
-                        <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
-                            <li>Verificar a conformidade com a LOA, LDO e PPA;</li>
-                            <li>Indicar a disponibilidade de outras fontes de recursos eventualmente acessíveis ao Órgão
-                                demandante.</li>
-                        </ul>
-                    </div>
-
-                    <div class="col-12" *ngIf="isSubcapGeoc()">
-                        <h5 class="fw-bold text-primary mb-2">Parecer GEOC</h5>
-                        <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
-                            A GEOC deverá elaborar parecer acerca da proposta, contemplando os seguintes aspectos:
-                        </p>
-                        <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
-                            <li>Declarar a elegibilidade da proposta para pleito de financiamento;</li>
-                            <li>Avaliar a aderência do projeto a contratações já realizadas ou em prospecção, bem como a viabilidade de associação com outros projetos para a formatação de uma proposta de programa;</li>
-                            <li>Apresentar projeção das taxas que poderão compor eventual operação de crédito, considerando contratos firmados e a experiência prévia com bancos de fomento.</li>
-                        </ul>
-                    </div>
-
-                </div>
-
-                <!-- Campo de Texto do Parecer -->
-                <div class="row  ">
-
-                    <div class="col-12">
-
-                        <label for="textoParecer" class="form-label col-12">
-                            Parecer
-                        </label>
-
-                        <validation-message [control]="this.parecerFormGroup.get('textoParecer')!">
-                            <textarea id="textoParecer" class="form-control" formControlName="textoParecer" rows="8"
-                                maxlength="2000" placeholder="Digite aqui o texto do parecer..."></textarea>
-                        </validation-message>
-
-                        <small class="text-muted d-block text-end ">
-                            {{ this.parecerFormGroup.get('textoParecer')?.value?.length || 0 }}/2000 caracteres
-                        </small>
-
-                    </div>
-
-                </div>
-
-                <div *ngIf="isEnviado()" class="row mt-2">
-                    <div class="col-12">
-                        <strong>Parecer enviado</strong> no dia
-                        <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'dd/MM/yyyy' }}</span>
-                        às
-                        <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'HH:mm' }}</span>
-                        por
-                        <span class="fw-semibold">{{  this.parecerFormGroup.get('usuarioFezEnvioParecer')?.value }}</span>
-                    </div>
-                </div>
-
-            </form>
+          <div class="col-12" *ngIf="isSubcapGeoc()">
+            <h5 class="fw-bold text-primary mb-2">Parecer GEOC</h5>
+            <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
+                A GEOC deverá elaborar parecer acerca da proposta, contemplando os seguintes aspectos:
+            </p>
+            <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
+              <li>Declarar a elegibilidade da proposta para pleito de financiamento;</li>
+              <li>Avaliar a aderência do projeto a contratações já realizadas ou em prospecção, bem como a viabilidade de associação com outros projetos para a formatação de uma proposta de programa;</li>
+              <li>Apresentar projeção das taxas que poderão compor eventual operação de crédito, considerando contratos firmados e a experiência prévia com bancos de fomento.</li>
+            </ul>
+          </div>
         </div>
+
+        <!-- Campo de Texto do Parecer -->
+        <div class="row">
+          <div class="col-12">
+            <label for="textoParecer" class="form-label col-12">
+              <validation-message [control]="this.parecerFormGroup.get('textoParecer')!">
+                Parecer
+              </validation-message>
+            </label>
+
+            <textarea
+              id="textoParecer"
+              class="form-control"
+              formControlName="textoParecer"
+              rows="8"
+              maxlength="2000"
+              placeholder="Digite aqui o texto do parecer..."
+            >
+            </textarea>
+
+            <small class="text-muted d-block text-end ">
+              {{ this.parecerFormGroup.get('textoParecer')?.value?.length || 0 }}/2000 caracteres
+            </small>
+          </div>
+        </div>
+
+        <div *ngIf="isEnviado()" class="row mt-2">
+          <div class="col-12">
+            <strong>Parecer enviado</strong> no dia
+            <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'dd/MM/yyyy' }}</span>
+            às
+            <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'HH:mm' }}</span>
+            por
+            <span class="fw-semibold">{{  this.parecerFormGroup.get('usuarioFezEnvioParecer')?.value }}</span>
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
