@@ -1,7 +1,5 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-
-import { finalize, tap } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { UsuarioService } from '../../core/services/usuario/usuario.service';
 import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
@@ -16,48 +14,32 @@ import { IUsuario } from '../../core/interfaces/usuario.interface';
   templateUrl: './auth-redirect.component.html',
   styleUrl: './auth-redirect.component.scss',
 })
-export class AuthRedirectComponent {
+export class AuthRedirectComponent implements OnInit {
   constructor(
     private readonly _route: ActivatedRoute,
     private readonly _usuarioService: UsuarioService,
-    private readonly _navegacaoService: NavegacaoService
-  ) {
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _router: Router,
+  ) {}
 
-    sessionStorage.setItem(
-      'token',
-      window.atob(this._route.snapshot.queryParams['token'])
-    );
+  ngOnInit(): void {
+    const tokenRecebido = window.atob(this._route.snapshot.queryParams['token']);
+    sessionStorage.setItem('token', tokenRecebido);
 
-    this._usuarioService
-      .buscarUsuario()
-      .pipe(
-        tap((response: IUsuario) => {
+    this._usuarioService.buscarUsuario().subscribe({
+      next: (response: IUsuario) => {
+        sessionStorage.setItem('token', response.token);
+        this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
 
-          // console.log('Response buscarUsuario:', response);
+        const redirectUrl = localStorage.getItem('redirectUrl');
 
-          sessionStorage.setItem('token', response.token);
-
-          this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
-
-          // console.log(" this._usuarioService.usuarioPerfil : ", this._usuarioService.usuarioPerfil )
-
-        }),
-        finalize(() => {
-          // Verifica se há uma URL original guardada antes do login
-          const externalUrl = sessionStorage.getItem('externalRedirectUrl');
-          if (externalUrl) {
-            sessionStorage.removeItem('externalRedirectUrl');
-            const separator = externalUrl.includes('?') ? '&' : '?';
-            const tokenGravado = sessionStorage.getItem('token') || '';
-            const urlComToken = `${externalUrl}${separator}token=${encodeURIComponent(tokenGravado)}`;
-            window.location.href = externalUrl; // Redireciona para a URL original
-          } else {
-            const destino = this._usuarioService.usuarioPerfil.isProponente
-              ? 'projetos'
-              : 'home';
-            this._navegacaoService.navegacaoSimples(destino);
-          }
-        })
-      ).subscribe();
+        if (redirectUrl) {
+          this._router.navigateByUrl(redirectUrl);
+        } else {
+          const destino = this._usuarioService.usuarioPerfil.isProponente ? '/projetos' : '/home';
+          this._router.navigate([destino]);
+        }
+      },
+    });
   }
 }

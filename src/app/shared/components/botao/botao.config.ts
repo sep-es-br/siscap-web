@@ -23,7 +23,12 @@ export type TBotaoAcao =
   | 'entranharPareceresProcessoEdocs'
   | 'entranharParecerGEOCdocs'
   | 'capturarparecerGEOC'
-  | 'salvarAposElaboracao';
+  | 'salvarAposElaboracao'
+  | 'exportar'
+  | 'solicitarAutorizacao'
+  | 'autuar'
+  | 'autuarDisabled'
+  | 'fechar';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -119,7 +124,8 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Pedir Parecer',
       acao: 'parecerestrategicoorcamentario',
-    },salvarparecer: {
+    },
+    salvarparecer: {
       classesCSS: ['btn-success'],
       icone: ['fa-solid', 'fa-save'],
       texto: 'Salvar Parecer',
@@ -154,6 +160,36 @@ export abstract class BotoesConfig {
       icone: ['fa-solid', 'fa-save'],
       texto: 'Salvar',
       acao: 'salvar',
+    },
+    exportar: {
+      classesCSS: ['btn-warning'],
+      icone: ['fa-solid', 'fa-file-arrow-down'],
+      texto: 'Exportar',
+      acao: 'exportar',
+    },
+    solicitarAutorizacao: {
+      classesCSS: ['btn-success'],
+      icone: ['fa-solid', 'fa-share'],
+      texto: 'Solicitar Autorização',
+      acao: 'solicitarAutorizacao',
+    },
+    autuar: {
+      classesCSS: ['btn-success'],
+      icone: ['fa-solid fa-lock'],
+      texto: 'Autuar',
+      acao: 'autuar',
+    },
+    autuarDisabled: {
+      classesCSS: ['btn-secondary', 'disabled'],
+      icone: ['fa-solid fa-lock'],
+      texto: 'Autuado',
+      acao: 'autuarDisabled',
+    },
+    fechar: {
+      classesCSS: ['btn-secondary'],
+      icone: [],
+      texto: 'Fechar',
+      acao: 'fechar',
     },
   };
 

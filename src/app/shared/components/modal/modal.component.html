@@ -1,0 +1,23 @@
+<div class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" [ngClass]="headerClasses">
+        <h4 class="modal-title">{{ titulo }}</h4>
+        <button
+          class="btn-close"
+          type="button"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="fecharModal.emit()"
+        >
+        </button>
+      </div>
+      <div class="modal-body">
+        <ng-content select="[modalBody]"></ng-content>
+      </div>
+      <div class="modal-footer">
+        <ng-content select="[modalFooter]"></ng-content>
+      </div>
+    </div>
+  </div>
+</div>

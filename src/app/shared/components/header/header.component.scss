@@ -5,4 +5,8 @@ header.header-wrapper {
 
 img.siscap-logo {
   max-width: 150px;
+
+  &:hover {
+    cursor: pointer;
+  }
 }

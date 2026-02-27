@@ -17,12 +17,14 @@ import { ProgramaFormComponent } from './form/programa-form.component';
 import { ProgramasListComponent } from './list/programas-list.component';
 
 import { ProgramasRoutingModule } from './programas-routing.module';
+import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas.component';
 
 @NgModule({
   declarations: [
     ProgramasComponent,
     ProgramasListComponent,
     ProgramaFormComponent,
+    ProgramaAssinaturasComponent,
   ],
   imports: [
     CommonModule,
@@ -37,6 +39,11 @@ import { ProgramasRoutingModule } from './programas-routing.module';
     NgbTooltipModule,
     ProgramasRoutingModule,
   ],
-  exports: [ProgramasComponent, ProgramasListComponent, ProgramaFormComponent],
+  exports: [
+    ProgramasComponent,
+    ProgramasListComponent,
+    ProgramaFormComponent,
+    ProgramaAssinaturasComponent,
+  ],
 })
 export class ProgramasModule {}

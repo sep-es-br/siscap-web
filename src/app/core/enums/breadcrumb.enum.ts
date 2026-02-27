@@ -6,7 +6,7 @@ export enum BreadcrumbAcoesEnum {
   Salvar = 'salvar',
   Enviar = 'enviar',
   Prospectar = 'prospectar',
-  Autuar = 'autuarEdocs',
+  AssinarAutuar = 'autuarEdocs',
   Voltar = 'voltar',
   Revisar = 'revisar',
   Arquivar = 'arquivar',
@@ -15,7 +15,10 @@ export enum BreadcrumbAcoesEnum {
   EnviarEfetivacaoParecerEstrategicoOrgamentario = 'efetivarparecerestrategicoorcamentario',
   EntranharPareceresProcessoEdocs = 'entranharPareceresProcessoEdocs',
   EntranharParecerGEOCdocs = 'entranharParecerGEOCdocs',
-  CapturarparecerGEOC = 'capturarparecerGEOC'
+  CapturarparecerGEOC = 'capturarparecerGEOC',
+  Exportar = 'exportar',
+  SolicitarAutorizacao = 'solicitarAutorizacao',
+  Autuar = 'autuar',
 }
 
 export enum BreadcrumbContextoEnum {

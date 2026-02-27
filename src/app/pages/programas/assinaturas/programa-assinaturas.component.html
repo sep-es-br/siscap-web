@@ -1,0 +1,135 @@
+@if (appStatus === 'Loading') {
+  <div class="h-100">
+    <loading-spinner></loading-spinner>
+  </div>
+} @else {
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-outline-primary icon-text-btn" (click)="exportarPrograma()">
+      <i class="fa-solid fa-file-arrow-down"></i>
+      <span>Baixar Programa</span>
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form class="row g-3" [formGroup]="formPrograma">
+        <div class="col-12 col-sm-4">
+          <label class="form-label no-pointer-effects" for="inputSigla">Sigla</label>
+          <input class="form-control no-pointer-effects" type="text" formControlName="siglaPrograma" id="inputSigla" readonly />
+        </div>
+        <div class="col-12 col-sm-8">
+          <label class="form-label no-pointer-effects" for="inputTitulo">Título</label>
+          <input class="form-control no-pointer-effects" type="text" formControlName="tituloPrograma" id="inputTitulo" readonly />
+        </div>
+        <div class="col-12">
+          <label class="form-label no-pointer-effects" for="inputOrgao">
+            {{ programaAtual.nomesOrgaosExecutores.length > 1 ? 'Órgãos Executores' : 'Órgão Executor' }}
+          </label>
+          <ng-select id="inputOrgao" [multiple]="true" formControlName="orgaosPrograma">
+            @for (organizacao of programaAtual.nomesOrgaosExecutores; track organizacao) {
+              <ng-option [value]="organizacao">
+                {{ organizacao }}
+              </ng-option>
+            }
+          </ng-select>
+        </div>
+        <div class="col-12">
+          <label class="form-label no-pointer-effects" for="inputDics">DICS Propostos</label>
+          <ng-select id="inputDics" [multiple]="true" formControlName="dicsPrograma">
+            @for (dic of programaAtual.listaDICSPropostos; track dic) {
+              <ng-option [value]="dic">
+                {{ dic }}
+              </ng-option>
+            }
+          </ng-select>
+        </div>
+        <div class="col-12 col-sm-4">
+          <label class="form-label no-pointer-effects" for="inputValor">Valor Total Estimado</label>
+          <input class="form-control no-pointer-effects" type="text" formControlName="valorTotalEstimadoProgama" id="inputValor" readonly />
+        </div>
+      </form>
+
+      <div class="assinaturas mt-4">
+        @if (programaAtual.assinaturaUsuarioAtual) {
+          <div class="assinatura-wrap col-12">
+            <p class="assinatura-title">Minha Autorização</p>
+            <div class="assinatura-box col-12 p-4 d-flex flex-column justify-content-center align-items-center">
+              <p class="assinatura-termo mb-5">
+                Autorizo a assinatura eletrônica do Programa "{{ programaAtual.titulo }}", destinado à prospecção de recursos, conforme documento apresentado nesta tela.
+                Declaro ciência de que a assinatura será realizada por meio do sistema SISCAP, com registro e validade no e-Docs.
+              </p>
+
+              <span class="nome-assinante">{{ programaAtual.assinaturaUsuarioAtual.nomeAssinante }}</span>
+              <span class="cargo-assinante mb-5">{{ programaAtual.assinaturaUsuarioAtual.papelAssinante }}</span>
+
+              @if (statusAssinatura === 'EM_ANDAMENTO') {
+                <span class="badge rounded-pill text-bg-warning">
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                  Assinando
+                </span>
+              } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1) {
+                <button class="btn btn-success icon-text-btn text-nowrap w-25 p-2" (click)="dispararModalConfirmarAssinatura()">
+                  <i class="fa-solid fa-pencil"></i>
+                  <span>Assinar</span>
+                </button>
+              } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 2) {
+                <span>
+                  <i class="status-assinatura check-icon fa-solid fa-check"></i>
+                  Assinado
+                </span>
+                @if (programaAtual.assinaturaUsuarioAtual.dataAssinatura) {
+                  <span class="data-assinatura">{{ programaAtual.assinaturaUsuarioAtual.dataAssinatura | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
+                }
+              }
+            </div>
+          </div>
+        }
+
+        <p class="assinatura-title mt-3">
+          {{ programaAtual.assinaturaUsuarioAtual ? 'Demais Autorizações' : 'Autorizações' }}
+        </p>
+        <div class="d-flex flex-wrap">
+          @if (appStatus === 'Success' && programaAtual.demaisAssinaturas.length > 0) {
+            @for (assinatura of programaAtual.demaisAssinaturas; track assinatura) {
+              <div class="assinatura-wrap col-12 col-sm-6 d-flex">
+                <div class="assinatura-box w-100 d-flex align-items-center p-4">
+                  <div class="col-6 d-flex flex-column align-items-center">
+                    <span class="nome-assinante">{{ assinatura.nomeAssinante }}</span>
+                    <span class="cargo-assinante">{{ assinatura.papelAssinante }}</span>
+                  </div>
+                  <div class="col-6 d-flex flex-column align-items-center">
+                    @if (assinatura.statusAssinatura === 2) {
+                      <span>
+                        <i class="status-assinatura check-icon fa-solid fa-check"></i>
+                        Assinado
+                      </span>
+                    } @else {
+                      <span>
+                        <i class="status-assinatura pending-icon fa-regular fa-clock"></i>
+                        Pendente
+                      </span>
+                    }
+    
+                    @if (assinatura.dataAssinatura) {
+                      <span class="data-assinatura">{{ assinatura.dataAssinatura | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="assinatura-wrap col-12">
+              <div class="assinatura-box w-100 d-flex justify-content-center align-items-center p-4">
+                @if (appStatus === 'Error') {
+                  <span class="erro-assinatura">Ocorreu algum erro ao carregar as assinaturas</span>
+                } @else if (appStatus === 'Success' && programaAtual.demaisAssinaturas.length === 0) {
+                  <span class="erro-assinatura">Não existem assinaturas pendentes para este Programa. É necessário Solicitar Autorização primeiro.</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

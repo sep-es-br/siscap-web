@@ -6,11 +6,11 @@
   }"
 >
   <div
-    class="col-10 col-xl-8 mx-auto d-flex flex-wrap justify-content-between align-items-center"
+    class="col-10 col-xl-8 mx-auto d-flex flex-column"
   >
     <div
       id="current-page-title-breadcrumb"
-      class="col-12 col-md-8 d-inline-flex flex-column"
+      class="col-12 d-inline-flex flex-column mb-2"
     >
       <h1 class="current-page-title mb-0 text-truncate">
         {{ paginaAtual.titulo }}
@@ -45,12 +45,15 @@
 
     <div
       id="action-buttons"
-      class="col-12 col-md-4 mt-2 mt-md-0 d-inline-flex flex-row-reverse justify-content-end justify-content-md-start align-self-end gap-2" >
+      class="col-12 mt-2 mt-md-0 d-flex flex-column-reverse flex-md-row-reverse justify-content-end justify-content-md-start align-self-end gap-2"
+    >
       <ng-container *ngFor="let propriedades of botoesAcaoPropriedades">
-        <siscap-botao
-          [propriedades]="propriedades"
-          (acao)="emitirAcaoBreadcrumb($event)"
-        ></siscap-botao>
+        <div class="col-12 col-sm-auto">
+          <siscap-botao
+            [propriedades]="propriedades"
+            (acao)="emitirAcaoBreadcrumb($event)"
+          ></siscap-botao>
+        </div>
       </ng-container>
     </div>
   </div>

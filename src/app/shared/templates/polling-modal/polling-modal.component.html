@@ -1,0 +1,41 @@
+<div class="modal-header bg-secondary-subtle">
+  <h4 class="modal-title">Processo E-Docs</h4>
+</div>
+<div class="modal-body d-flex flex-column">
+  @for (fase of fasesPolling; track fase) {
+    <div class="d-flex flex-row align-items-center">
+      <span class="pe-2">
+        @switch (fase.status) {
+          @case ('NAO_INICIADA') {
+            <i class="fa-regular fa-circle text-secondary"></i>
+          }
+          @case ('EM_ANDAMENTO') {
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          }
+          @case ('FINALIZADA') {
+            <i class="fa-regular fa-circle-check text-success"></i>
+          }
+          @case ('ERRO_FASE') {
+            <i class="fa-solid fa-circle-xmark text-danger"></i>
+          }
+        }
+      </span>
+      <div>{{ fase.descricao }}</div>
+    </div>
+    @if (fase.msgAlertaExibir) {
+      <div class="row">
+        <span class="text-warning">{{ fase.msgAlertaExibir }}</span>
+      </div>
+    } @else if (fase.erro) {
+      <div class="row">
+        <span class="text-danger">Ocorreu um erro!</span>
+      </div>
+    }
+  }
+</div>
+<div class="modal-footer d-flex justify-content-center">
+  <siscap-botao
+    [propriedades]="botaoFechar"
+    (acao)="activeModal.dismiss()"
+  ></siscap-botao>
+</div>

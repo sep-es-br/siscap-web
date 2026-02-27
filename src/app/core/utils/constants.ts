@@ -41,14 +41,15 @@ export const BREADCRUMB_LISTA_CAMINHOS_ESPECIFICOS: Array<{
   { caminho: 'meu-perfil', contexto: 'pessoas' },
   { caminho: 'visualizar', contexto: 'cartasconsulta' },
   { caminho: 'visualizar', contexto: 'prospeccao' },
+  { caminho: 'assinaturas', contexto: 'programas' },
 ];
 
 export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   home: 'Página Principal',
 
-  projetos: 'DIC (Documento Inicial de Captação)',
+  projetos: 'Documento Inicial de Captação (DIC)',
   projetoscriar: 'Novo DIC (Documento Inicial de Captação)',
-  projetoseditar: 'Editar DIC (Documento Inicial de Captação)',
+  projetoseditar: 'Editar Documento Inicial de Captação - DIC',
   projetosparecer: 'Parecer',
 
   pessoas: 'Pessoas',
@@ -63,6 +64,7 @@ export const BREADCRUMB_COLECAO_CAMINHO_TITULO: Record<string, string> = {
   programas: 'Programas',
   programascriar: 'Novo Programa',
   programaseditar: 'Editar Programa',
+  programasassinaturas: 'Autorizações do Programa',
 
   cartasconsulta: 'Pesquisa de Fontes de Financiamento',
   cartasconsultacriar: 'Nova Pesquisa de Fonte de Financiamento',
@@ -292,5 +294,6 @@ export const COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO: Record<string, string> =
     valorEstimadoAcaoPrincipal: 'Preencher o valor estimado total a ser destinado à implantação das ações principais. O valor deverá ser compatível com o objeto.',
     descricaoAcoesSecudariasProdutos: 'Inserir as ações secundárias, se houver, e os produtos. Os produtos deverão compreender os bens ou serviços oferecidos pelo DIC e estar associados à etapa ou sub etapa, conforme o caso.',
     pecasPlanejamento: '(i) Apontar quais áreas estratégicas referidas no Planejamento Estratégico são atendidas pelo DIC. Apontar se o programa ou DIC é destinado ao atendimento de uma ou mais das prioridades da Administração Pública. (ii) Demonstrar a inserção do DIC no Plano Plurianual (PPA) vigente, identificando os programas e ações para os quais o DIC está previsto. (iii) Indicar a previsão orçamentária do DIC na Lei Orçamentária Anual (LOA) vigente, identificando as fontes, as ações e os valores respectivos que estão previstos para o DIC.',
-    tipoIndicadorDescricao: 'Descrever o tipo de indicador.'
+    tipoIndicadorDescricao: 'Descrever o tipo de indicador.',
+    valorTotalEstimadoPrograma: 'Total estimado dos DICs selecionados para composição do Programa.'
   };

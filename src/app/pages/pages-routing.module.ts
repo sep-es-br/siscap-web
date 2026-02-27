@@ -23,7 +23,7 @@ const PAGES_ROUTES: Routes = [
     path: 'pessoas',
     loadChildren: () =>
       import('./pessoas/pessoas.module').then((m) => m.PessoasModule),
-    canActivateChild: [authGuard, isProponenteGuard],
+    canActivateChild: [authGuard],
   },
   {
     path: 'organizacoes',
@@ -37,7 +37,7 @@ const PAGES_ROUTES: Routes = [
     path: 'programas',
     loadChildren: () =>
       import('./programas/programas.module').then((m) => m.ProgramasModule),
-    canActivateChild: [authGuard, isProponenteGuard],
+    canActivateChild: [authGuard],
   },
   {
     path: 'cartasconsulta',

@@ -2,20 +2,22 @@ import { IProjetoIntegracaoEdocsFases } from '../interfaces/projeto-integracao-e
 
 export class ProjetoIntegracaoEdocsFasesModel implements IProjetoIntegracaoEdocsFases {
   
-  public idProjeto: number;
+  public id: number;
   public etapa: string;
   public iniciada: boolean;
   public finalizada: boolean;
   public erro: boolean;
   public msgAlertaExibir: string;
+  public contextoNegocio: string;
 
     constructor(integracao?: IProjetoIntegracaoEdocsFases) {
-      this.idProjeto = integracao?.idProjeto ?? 0;
+      this.id = integracao?.id ?? 0;
       this.etapa = integracao?.etapa ?? '';
       this.iniciada = integracao?.iniciada ?? false;
       this.finalizada = integracao?.finalizada ?? false;
       this.erro = integracao?.erro ?? false;
       this.msgAlertaExibir = integracao?.msgAlertaExibir ?? '';
+      this.contextoNegocio = integracao?.contextoNegocio ?? '';
     }
 
 }

@@ -11,7 +11,11 @@ import { UsuarioService } from '../../core/services/usuario/usuario.service';
 export class MainComponent {
   public isProponente: boolean = false;
 
+  currentYear: number = 2024;
+
   constructor(private readonly _usuarioService: UsuarioService) {
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
+    this.currentYear = new Date().getFullYear();
   }
 }

@@ -1,17 +1,16 @@
 <form [formGroup]="valorService.valorFormGroup">
   <div class="row">
     <div class="col-12 col-md-4 col-lg-2">
-      <label for="valor-moeda" class="col-12 form-label" [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('moeda') }" >
+      <label for="valor-moeda" class="col-12 form-label"
+        [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('moeda') }">
         <validation-message [control]="getControl('moeda')">
           Moeda
-          <form-warning-tooltip *ngIf="deveComplementarCampo('moeda')" [texto]="mensagemComplementarCampo('moeda')" ></form-warning-tooltip>
+          <form-warning-tooltip *ngIf="deveComplementarCampo('moeda')"
+            [texto]="mensagemComplementarCampo('moeda')"></form-warning-tooltip>
         </validation-message>
       </label>
-      <ng-select
-        id="valor-moeda"
-        placeholder="-- Moeda --"
-        [clearable]="false"
-        formControlName="moeda" [readonly]="true">
+      <ng-select id="valor-moeda" placeholder="-- Moeda --" [clearable]="false" formControlName="moeda"
+        [readonly]="true">
         <ng-option *ngFor="let moeda of moedasList()" [value]="moeda.codigo">
           {{ moeda.texto }} ({{ moeda.simbolo }})
         </ng-option>
@@ -19,46 +18,34 @@
     </div>
 
     <div id="valor-col" class="col-12 col-md-4 col-lg-7">
-      <label for="valor-quantia" class="col-12 form-label" [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('quantia') }">
+      <label for="valor-quantia" class="col-12 form-label"
+        [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('quantia') }">
         <validation-message [control]="getControl('quantia')">
           Valor Estimado
-          <form-helper-tooltip [texto]="projetoTooltip['valorEstimado']"></form-helper-tooltip>
-          <form-warning-tooltip *ngIf="deveComplementarCampo('quantia')" [texto]="mensagemComplementarCampo('quantia')" ></form-warning-tooltip>
+          <form-helper-tooltip
+            [texto]="contextoValor() === 'PROGRAMA' ? projetoTooltip['valorTotalEstimadoPrograma'] : projetoTooltip['valorEstimado']"></form-helper-tooltip>
+          <form-warning-tooltip *ngIf="deveComplementarCampo('quantia')"
+            [texto]="mensagemComplementarCampo('quantia')"></form-warning-tooltip>
         </validation-message>
       </label>
-      <input
-        mask="separator.2"
-        [prefix]="
+      <input mask="separator.2" [prefix]="
           getSimboloMoeda(valorService.valorFormGroup.controls.moeda.value)
-        "
-        thousandSeparator="."
-        decimalMarker=","
-        [inputTransformFn]="rtlCurrencyInputTransformFn"
-        [outputTransformFn]="rtlCurrencyOutputTransformFn"
-        type="text"
-        id="valor-quantia"
-        class="form-control"
-        formControlName="quantia"
-        min="1"
-      />
+        " thousandSeparator="." decimalMarker="," [inputTransformFn]="rtlCurrencyInputTransformFn"
+        [outputTransformFn]="rtlCurrencyOutputTransformFn" type="text" id="valor-quantia" class="form-control"
+        formControlName="quantia" min="1" />
     </div>
 
     <div class="col-12 col-md-4 col-lg-3">
-      <label for="valor-tipo" class="col-12 form-label" [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('tipo') }">
+      <label for="valor-tipo" class="col-12 form-label"
+        [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('tipo') }">
         <validation-message [control]="getControl('tipo')">
           Tipo de Valor
-          <form-warning-tooltip *ngIf="deveComplementarCampo('tipo')" [texto]="mensagemComplementarCampo('tipo')" ></form-warning-tooltip>
+          <form-warning-tooltip *ngIf="deveComplementarCampo('tipo')"
+            [texto]="mensagemComplementarCampo('tipo')"></form-warning-tooltip>
         </validation-message>
       </label>
-      <ng-select
-        id="valor-tipo"
-        placeholder="-- Tipo --"
-        [clearable]="false"
-        formControlName="tipo" [readonly]="true" >
-        <ng-option
-          *ngFor="let tipoValor of tiposValorOpcoes()"
-          [value]="tipoValor.id"
-        >
+      <ng-select id="valor-tipo" placeholder="-- Tipo --" [clearable]="false" formControlName="tipo" [readonly]="true">
+        <ng-option *ngFor="let tipoValor of tiposValorOpcoes()" [value]="tipoValor.id">
           {{ tipoValor.nome }}
         </ng-option>
       </ng-select>

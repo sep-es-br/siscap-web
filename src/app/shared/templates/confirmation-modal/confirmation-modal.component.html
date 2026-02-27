@@ -1,0 +1,20 @@
+<div class="modal-header" [ngClass]="config.headerCustomClass">
+  <h4 class="modal-title">{{ config.titulo }}</h4>
+  <button class="btn-close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body text-center">
+  <p [ngClass]="config.textoPrincipalCustomClass">{{ config.textoPrincipal }}</p>
+  @if (config.textoSecundario) {
+    <p [ngClass]="config.textoSecundarioCustomClass">{{ config.textoSecundario }}</p>
+  }
+</div>
+<div class="modal-footer d-flex justify-content-center">
+  <siscap-botao
+    [propriedades]="botaoCancelar"
+    (acao)="activeModal.dismiss('cancelar')"
+  ></siscap-botao>
+  <siscap-botao
+    [propriedades]="botaoProsseguir"
+    (acao)="activeModal.dismiss('confirmar')"
+  ></siscap-botao>
+</div>

@@ -38,6 +38,7 @@ import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
 import {
   IPrograma,
   IProgramaForm,
+  StatusAssinaturaPrograma,
 } from '../../../core/interfaces/programa.interface';
 import {
   IProjetoPropostoOpcoesDropdown,
@@ -61,6 +62,7 @@ import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
+import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -112,6 +114,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
+  public mostrarBotaoBaixarPrograma: boolean = false;
+
+  public programaAtual!: IPrograma;
+
   constructor(
     public valorService: ValorService,
     private readonly _nnfb: NonNullableFormBuilder,
@@ -136,19 +142,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._programasService.getById(idPrograma)
       ),
       tap((response: IPrograma) => {
-
+        this.programaAtual = response;
         const programaModel = new ProgramaModel(response);
 
         this.iniciarForm(programaModel);
 
         this._idProgramaEdicao = programaModel.id;
-
-        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario()
-        );
-
+        this.atualizarBotoes(this.programaAtual);
+        this.mostrarBotaoBaixarPrograma = true;
         this.equipeCaptacao = programaModel.equipeCaptacao;
-
         this.loading = false;
       })
     );
@@ -158,7 +160,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.iniciarForm();
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario()
+          this._programasService.gerarBotoesAcaoFormulario({
+            deveExibirBotaoSolicitarAutorizacao: false,
+            deveExibirBotaoAutuar: false,
+            deveExibirBotaoAutuarDesabilitado: false,
+          })
         );
 
         this.loading = false;
@@ -176,17 +182,23 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this._getPessoasOpcoes$ = this._opcoesDropdownService
       .getOpcoesPessoas()
       .pipe(
-        tap((response: IOpcoesDropdownResponsavelProponente[]) => (this.pessoasOpcoes = response))
+        tap(
+          (response: IOpcoesDropdownResponsavelProponente[]) =>
+            (this.pessoasOpcoes = response)
+        )
       );
 
     this._getTiposPapelOpcoes$ = this._opcoesDropdownService
       .getOpcoesTiposPapel()
-      .pipe(tap((response) => {
-        this.tiposPapelOpcoes = response;
-        const idsPermitidos = [1, 5];
-        this.tiposPapelOpcoesVisiveis = response.filter(papel => idsPermitidos.includes(papel.id));
-      }
-      ));
+      .pipe(
+        tap((response) => {
+          this.tiposPapelOpcoes = response;
+          const idsPermitidos = [1, 5];
+          this.tiposPapelOpcoesVisiveis = response.filter((papel) =>
+            idsPermitidos.includes(papel.id)
+          );
+        })
+      );
 
     this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
       .getOpcoesProjetosPropostos()
@@ -208,9 +220,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       .pipe(
         tap(
           (response: IOpcoesDropdown[]) =>
-          (this.tiposValorOpcoes = response.filter(
-            (tipoValor) => tipoValor.id <= 3
-          ))
+            (this.tiposValorOpcoes = response.filter(
+              (tipoValor) => tipoValor.id <= 3
+            ))
         )
       );
 
@@ -231,23 +243,25 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this._subscription.add(this._getAllOpcoes$.subscribe());
 
     this._subscription.add(this._atualizarPrograma$.subscribe());
     this._subscription.add(this._cadastrarPrograma$.subscribe());
 
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
-      error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
+      error: (err) =>
+        console.error(
+          'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
+          err
+        ),
     });
 
-    // fixa tipo como valor estimado.. 
+    // fixa tipo como valor estimado..
     this.programaForm.patchValue({
       valor: {
-        tipo: TipoValorEnum.Estimado
-      }
+        tipo: TipoValorEnum.Estimado,
+      },
     });
-
   }
 
   public getControl(controlName: string): AbstractControl<any, any> {
@@ -261,9 +275,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   public get percentualCustosAdministrativos(): FormControl<number> {
-    return this.programaForm.get('percentualCustoAdministrativo') as FormControl<
-      number
-    >;
+    return this.programaForm.get(
+      'percentualCustoAdministrativo'
+    ) as FormControl<number>;
   }
 
   public rtlCurrencyInputTransformFn =
@@ -281,7 +295,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public idProjetoPropostoNgSelectChangeEvent(
     event: IProjetoPropostoOpcoesDropdown
   ): void {
-
     if (event.idPrograma) {
       const nomeProjeto = event.nome;
 
@@ -297,7 +310,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         (programaOpcao) => programaOpcao.id === event.idPrograma
       )?.nome;
       this.dispararModalAtencaoParecerGEOC(nomeProjeto, nomePrograma!);
-      return
+      return;
     }
 
     this.idProjetoPropostoList.patchValue([
@@ -306,13 +319,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     ]);
 
     setTimeout(() => (this.idProjetoProposto = null), 0);
-
   }
 
-  public percentualCustoAdministrativoChangeEvent(
-    event: any
-  ): void {
-
+  public percentualCustoAdministrativoChangeEvent(event: any): void {
     const valorTotalCalculadoProgramaFormGroupControl = this.programaForm.get(
       'valorCalculadoTotal'
     ) as FormControl<number | null>;
@@ -326,22 +335,19 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
 
     const somatorioValorProjetosPropostos = listaIds
-      .map(id => this.getProjetoPropostoOpcao(id).valorEstimado ?? 0)
+      .map((id) => this.getProjetoPropostoOpcao(id).valorEstimado ?? 0)
       .reduce((acc, valor) => acc + valor, 0);
 
     if (valorPercentual > 0) {
       valorTotalCalculadoPrograma =
-        somatorioValorProjetosPropostos * (1 + (valorPercentual / 100));
+        somatorioValorProjetosPropostos * (1 + valorPercentual / 100);
     }
 
     if (this.isModoEdicao) {
       valorTotalCalculadoProgramaFormGroupControl.patchValue(
-        valorTotalCalculadoPrograma
-          ? valorTotalCalculadoPrograma
-          : 0
+        valorTotalCalculadoPrograma ? valorTotalCalculadoPrograma : 0
       );
     }
-
   }
 
   public filtrarProjetosPropostosOpcoes(
@@ -356,14 +362,17 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public getProjetoPropostoOpcao(
     idProjetoProposto: number
   ): IProjetoPropostoOpcoesDropdown {
-    return this.projetosPropostosOpcoes.find(
-      (projetoPropostoOpcao) => projetoPropostoOpcao.id === idProjetoProposto) || {
-      id: 0,
-      nome: '',
-      valorEstimado: 0,
-      idPrograma: null,
-      parecerGEOCEnviado: false
-    };
+    return (
+      this.projetosPropostosOpcoes.find(
+        (projetoPropostoOpcao) => projetoPropostoOpcao.id === idProjetoProposto
+      ) || {
+        id: 0,
+        nome: '',
+        valorEstimado: 0,
+        idPrograma: null,
+        parecerGEOCEnviado: false,
+      }
+    );
   }
 
   public removerProjetoPropostoDoPrograma(index: number): void {
@@ -373,7 +382,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
-
     this.programaForm = this._nnfb.group({
       sigla: this._nnfb.control(programaModel?.sigla ?? null, [
         Validators.required,
@@ -388,25 +396,27 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.minLength(1)]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
-        programaModel?.equipeCaptacao, false
+        programaModel?.equipeCaptacao,
+        false
       ),
       idProjetoPropostoList: this._nnfb.control(
         programaModel?.idProjetoPropostoList ?? [],
         [Validators.required, Validators.minLength(1)]
       ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
-      percentualCustoAdministrativo: this._nnfb.control(programaModel?.percentualCustoAdministrativo ?? 0,),
-      valorCalculadoTotal: this._nnfb.control(programaModel?.valorCalculadoTotal ?? 0),
-      nomeagente: this._nnfb.control(programaModel?.nomeagente ?? null,
+      percentualCustoAdministrativo: this._nnfb.control(
+        programaModel?.percentualCustoAdministrativo ?? 0
       ),
+      valorCalculadoTotal: this._nnfb.control(
+        programaModel?.valorCalculadoTotal ?? 0
+      ),
+      nomeagente: this._nnfb.control(programaModel?.nomeagente ?? null),
     });
 
     this.programaFormValueChanges();
-
   }
 
   private programaFormValueChanges(): void {
-
     const valorFormGroupQuantiaFormControl = this.programaForm.get(
       'valor.quantia'
     ) as FormControl<number | null>;
@@ -427,12 +437,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     //   number | null
     // >;
     // tipoFormControl.patchValue(TipoValorEnum.Estimado);
-   // tipoFormControl.disable();
+    // tipoFormControl.disable();
+
+    const valorEstimadoFormControl = this.programaForm.get('valor.quantia') as FormControl<number | null>;
+    if (valorEstimadoFormControl) valorEstimadoFormControl.disable();
 
     this.idProjetoPropostoList.valueChanges.subscribe(
-
       (idProjetoPropostoListValue) => {
-
         const somatorioValorProjetosPropostos = idProjetoPropostoListValue
           .map(
             (idProjetoProposto) =>
@@ -443,13 +454,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         var valorTotalCalculadoPrograma = 0;
 
         if ((percentualCustoAdministrativoFormGroupControl?.value ?? 0) > 0) {
-          const percentual = (percentualCustoAdministrativoFormGroupControl.value ?? 0);
+          const percentual =
+            percentualCustoAdministrativoFormGroupControl.value ?? 0;
           valorTotalCalculadoPrograma =
-            somatorioValorProjetosPropostos * (1 + (percentual / 100));
+            somatorioValorProjetosPropostos * (1 + percentual / 100);
         }
 
         if (this.isModoEdicao) {
-
           valorFormGroupQuantiaFormControl.patchValue(
             somatorioValorProjetosPropostos
               ? somatorioValorProjetosPropostos
@@ -457,16 +468,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           );
 
           valorTotalCalculadoProgramaFormGroupControl.patchValue(
-            valorTotalCalculadoPrograma
-              ? valorTotalCalculadoPrograma
-              : 0
+            valorTotalCalculadoPrograma ? valorTotalCalculadoPrograma : 0
           );
-
         }
-
       }
     );
-
   }
 
   private dispararModalAtencao(
@@ -507,8 +513,20 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         );
         break;
 
+      case BreadcrumbAcoesEnum.SolicitarAutorizacao:
+        this.dispararModalConfirmarSolicitarAutorizacao();
+        break;
+
+      case BreadcrumbAcoesEnum.Autuar:
+        this.dispararModalConfirmarAutuacao();
+        break;
+
       case BreadcrumbAcoesEnum.Salvar:
         this.submitProgramaForm(this.programaForm);
+        break;
+
+      case BreadcrumbAcoesEnum.Exportar:
+        this.exportarPrograma();
         break;
     }
   }
@@ -525,9 +543,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const payload = new ProgramaFormModel(form.value as IProgramaForm);
+    const payload = new ProgramaFormModel(form.getRawValue() as IProgramaForm);
 
-    //console.log('payload -> ', payload)
+    // console.log('payload -> ', payload);
 
     const requisicao = this._idProgramaEdicao
       ? this.atualizarPrograma(payload)
@@ -567,7 +585,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   public buscarAgentesPorTermo(): IOpcoesDropdownResponsavelProponente[] {
-
     this.isLoadingPessoasFiltroTermo = true;
 
     const termo = this.programaForm.get('nomeagente')?.value ?? '';
@@ -582,58 +599,198 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       return this.pessoasOpcoesGoves;
     }
 
-    this._pessoasService.buscarAgentesPorTermo(termo)
-      .subscribe({
-        next: (lista) => {
+    this._pessoasService.buscarAgentesPorTermo(termo).subscribe({
+      next: (lista) => {
+        this.pessoasOpcoesGoves = lista;
 
-          this.pessoasOpcoesGoves = lista;
+        // this.pessoasOpcoesGoves = this.pessoasOpcoesGoves.filter( pessoa =>
+        //   !this.equipeCaptacao.some( equipeCaptacao => equipeCaptacao.idStatus === TipoStatusEnum.Inativo && equipeCaptacao.subPessoa === pessoa.agentePublicoSub )
+        // );
 
-          // this.pessoasOpcoesGoves = this.pessoasOpcoesGoves.filter( pessoa =>
-          //   !this.equipeCaptacao.some( equipeCaptacao => equipeCaptacao.idStatus === TipoStatusEnum.Inativo && equipeCaptacao.subPessoa === pessoa.agentePublicoSub )
-          // );
-
-          if (this.pessoasOpcoesGoves.length === 0) {
-            this._toastService.showToast(
-              'info',
-              'Nenhum agente encontrado.',
-              ['Verifique se já faz parte da equipe.']);
-          }
-
-          this.isLoadingPessoasFiltroTermo = false;
-          this.exibirLista = true;
-
-          this.programaForm.get('nomeagente')?.reset();
-
-        },
-        error: () => {
-          this.pessoasOpcoesGoves = [];
-          this.isLoadingPessoasFiltroTermo = false;
+        if (this.pessoasOpcoesGoves.length === 0) {
+          this._toastService.showToast('info', 'Nenhum agente encontrado.', [
+            'Verifique se já faz parte da equipe.',
+          ]);
         }
 
-      });
+        this.isLoadingPessoasFiltroTermo = false;
+        this.exibirLista = true;
+
+        this.programaForm.get('nomeagente')?.reset();
+      },
+      error: () => {
+        this.pessoasOpcoesGoves = [];
+        this.isLoadingPessoasFiltroTermo = false;
+      },
+    });
 
     return this.pessoasOpcoesGoves;
-
   }
 
-  public async idMembroNgSelectChangeEvent(event: IOpcoesDropdownResponsavelProponente): Promise<void> {
-
-    const jaExiste = this.equipeService.equipeFormArray.value.some(
-      (membro) => (membro.subPessoa === event.agentePublicoSub && membro.idStatus === TipoStatusEnum.Ativo)
-    ) || this._usuarioService.usuarioPerfil.subNovo === event.agentePublicoSub;
+  public async idMembroNgSelectChangeEvent(
+    event: IOpcoesDropdownResponsavelProponente
+  ): Promise<void> {
+    const jaExiste =
+      this.equipeService.equipeFormArray.value.some(
+        (membro) =>
+          membro.subPessoa === event.agentePublicoSub &&
+          membro.idStatus === TipoStatusEnum.Ativo
+      ) ||
+      this._usuarioService.usuarioPerfil.subNovo === event.agentePublicoSub;
 
     if (jaExiste) {
-      this._toastService.showToast(
-        'info',
-        'Pessoa já incluso na equipe',
-      );
+      this._toastService.showToast('info', 'Pessoa já incluso na equipe');
     } else {
       this.equipeService.idMembroNgSelectValue$.next(event);
     }
 
     this.exibirLista = false;
-
   }
 
+  private atualizarBotoes(programa: IPrograma) {
+    let deveExibirBotaoAutuar = false;
+    let deveExibirBotaoAutuarDesabilitado = false;
+    let deveExibirBotaoSolicitarAutorizacao = false;
 
+    if (
+      programa.programaAssinantesEdocsDto &&
+      programa.programaAssinantesEdocsDto.length > 0 &&
+      programa.programaAssinantesEdocsDto.every(
+        (assinatura) =>
+          assinatura.statusAssinatura === StatusAssinaturaPrograma.ASSINADO
+      )
+    ) {
+      if (programa.protocoloEDocs && programa.protocoloEDocs.length > 0) {
+        deveExibirBotaoAutuarDesabilitado = true;
+      } else {
+        deveExibirBotaoAutuar = true;
+      }
+    } else {
+      deveExibirBotaoSolicitarAutorizacao = true;
+    }
+
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      this._programasService.gerarBotoesAcaoFormulario({
+        deveExibirBotaoSolicitarAutorizacao,
+        deveExibirBotaoAutuar,
+        deveExibirBotaoAutuarDesabilitado,
+      })
+    );
+  }
+
+  public exportarPrograma() {
+    this.loading = true;
+
+    const $requestStatus = this._programasService.exportById(
+      this._programasService.idPrograma$.getValue(),
+      this.getControl('titulo').value
+    );
+
+    $requestStatus.subscribe((newStatus) => {
+      this.loading = false;
+    });
+  }
+
+  private dispararModalConfirmarSolicitarAutorizacao() {
+    const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
+      centered: true,
+    });
+
+    modalRef.componentInstance.config = {
+      titulo: 'Confirmação',
+      headerCustomClass: 'bg-success-subtle',
+      textoPrincipal: 'Essa ação enviará email aos gestores para autorização do programa.',
+    };
+
+    modalRef.result.then(
+      (resolve) => {},
+      (result) => {
+        if (result === 'confirmar') {
+          this.loading = true;
+
+          this._programasService
+            .solicitarAutorizacoesPrograma(this._idProgramaEdicao)
+            .subscribe({
+              next: () => {
+                this.loading = false;
+
+                this._programasService.adicionarProgramaAguardandoEdocs(this._idProgramaEdicao);
+                this._toastService.showToast(
+                  'warning',
+                  'As Autorizações foram solicitadas!'
+                );
+
+                this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+                // Redireciona pra lista de Programas
+              },
+              error: (err) => {
+                console.error(
+                  'Ocorreu um erro ao tentar solicitar as Autorizações do Programa.\n',
+                  err
+                );
+                this.loading = false;
+
+                this._toastService.showToast(
+                  'error',
+                  'Ocorreu um erro ao tentar solicitar as Autorizações do Programa'
+                );
+              },
+            });
+        }
+      }
+    );
+  }
+
+  private dispararModalConfirmarAutuacao() {
+    const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
+      centered: true,
+    });
+
+    modalRef.componentInstance.config = {
+      titulo: 'Confirmação',
+      headerCustomClass: 'bg-success-subtle',
+      textoPrincipal:
+        'Essa ação irá Autuar o Programa em seu estado atual. Os dados do Programa jamais poderão ser alterados a partir deste ponto.',
+      textoSecundario: 'Tem certeza que deseja continuar?',
+      textoPrincipalCustomClass: 'fw-bold',
+    };
+
+    modalRef.result.then(
+      (resolve) => {},
+      (result) => {
+        if (result === 'confirmar') {
+          this.loading = true;
+
+          this._programasService
+            .autuarPrograma(this._idProgramaEdicao)
+            .subscribe({
+              next: (res) => {
+                this._programasService.adicionarProgramaAguardandoEdocs(this._idProgramaEdicao);
+                this.loading = false;
+
+                this._toastService.showToast(
+                  'warning',
+                  'A Autuação do Programa foi solicitada!'
+                );
+
+                this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+                // Redireciona pra lista de Programas
+              },
+              error: (err) => {
+                console.error(
+                  'Ocorreu um erro ao tentar Autuar o Programa!.\n',
+                  err
+                );
+                this.loading = false;
+
+                this._toastService.showToast(
+                  'error',
+                  'Ocorreu um erro ao tentar Autuar o Programa!'
+                );
+              },
+            });
+        }
+      }
+    );
+  }
 }

@@ -12,25 +12,17 @@ import {
   finalize,
   map,
   Observable,
-  partition,
   Subscription,
   switchMap,
   tap,
   EMPTY,
   catchError,
   Subject,
-  merge,
-  debounceTime,
-  distinctUntilChanged,
   of,
-  shareReplay,
   take,
   interval,
   takeUntil,
-  timer,
-  takeWhile,
   filter,
-  ObservableInput
 } from 'rxjs';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -49,8 +41,6 @@ import {
   ProjetoFormModel,
   ProjetoModel,
 } from '../../../core/models/projeto.model';
-import { RateioModel } from '../../../core/models/rateio.model';
-import { ValorModel } from '../../../core/models/valor.model';
 
 import {
   ILocalidadeOpcoesDropdown,
@@ -83,11 +73,10 @@ import { IndicadoresService } from '../../../core/services/indicadores/indicador
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { IAcao } from '../../../core/interfaces/acoes.interface';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { EquipeModel } from '../../../core/models/equipe.model';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
-import { IProjetoIntegracaoEdocsFases } from '../../../core/interfaces/projeto-integracao-edcos-fases.interface';
 import { ProjetoIntegracaoEdocsFasesModel } from '../../../core/models/projeto-integracao-edocs-fases.model';
 import { FasesEdocsIntegracaoEnum, FaseStatuEnum } from '../../../core/enums/fases-edocs-integracao.enum';
 import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from '../../../core/interfaces/estrutura.campo.complementar.dic.interface';
@@ -196,7 +185,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public emProcessamentIntegracao: boolean = false;
   public finalizadoProcessamentoIntegracao: boolean = false;
 
- public exibeListaEtapasIntegracao: boolean = false;
+  public exibeListaEtapasIntegracao: boolean = false;
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -421,61 +410,42 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
               this.mostrarBotaoGerarDic = false;
 
+              const subeppSubeoEnviados = this.pareceresEstrategicoOrcamentarioForamEnviados();
+
+              const subeppSubeoEntranhados = this.pareceresEstrategicoOrcamentarioForamEntranhados();
+
               this._breadcrumbService.listaItemsBreadcrumb$
 
+              const parecerSubcapGeoc = this.pareceresProjeto
+                .find(p => [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao))
+
               if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO) &&
-                (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0))
+                (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0)) {
+
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
                 );
-              else
+
+              } else if ( ( !parecerSubcapGeoc && subeppSubeoEntranhados) || 
+                ( parecerSubcapGeoc && parecerSubcapGeoc?.statusParecer !== StatusParecerEnum.Entranhado_Processo_Edocs ) ) {
+
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoParecerGEOC()
+                );
+
+              } else if (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP && subeppSubeoEnviados && !subeppSubeoEntranhados) {
+
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs()
+                );
+
+              } else {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoeAcaoVoltar()
                 );
+              }
 
               setTimeout(() => this.trocarModo(true), 2000);
-
-            }
-
-
-            if (projetoModel.status === StatusProjetoEnum.Elegibilidade) {
-
-              this.mostrarBotaoGerarDic = false;
-
-              this._breadcrumbService.listaItemsBreadcrumb$
-
-              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP)) {
-
-                const subeppSubeoEnviados = this.pareceresProjeto
-                  .filter(p => [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao))
-                  .every(p => p.statusParecer === StatusParecerEnum.Capturado_Edocs || p.statusParecer === StatusParecerEnum.Enviado);
-
-                if (subeppSubeoEnviados)
-                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                    this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs()
-                  );
-                else {
-
-                  const parecerSubcapGeoc = this.pareceresProjeto
-                    .filter(p => [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao))
-
-                  if (parecerSubcapGeoc.length > 0 && parecerSubcapGeoc.every(p => p.statusParecer === StatusParecerEnum.Enviado || p.statusParecer === StatusParecerEnum.Capturado_Edocs || p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs))
-
-                    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                      this._projetosService.gerarBotoeAcaoVoltar()
-                    );
-
-                  else
-                    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                      this._projetosService.gerarBotoesAcaoParecerGEOC()
-                    );
-
-                }
-
-              } else
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoeAcaoVoltar()
-                );
 
             }
 
@@ -488,7 +458,52 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.isLoadingPessoas = false;
 
         })
+
       );
+  }
+
+  private pareceresEstrategicoOrcamentarioForamEnviados(): boolean {
+
+    const pareceresFiltrados = this.pareceresProjeto
+      .filter(p =>
+        [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP]
+          .includes(p.parecerLotacao)
+      );
+
+    const temSubeo = pareceresFiltrados
+      .some(p => p.parecerLotacao === LotacaoUsuarioEnum.SUBEO);
+
+    const temSubepp = pareceresFiltrados
+      .some(p => p.parecerLotacao === LotacaoUsuarioEnum.SUBEPP);
+
+    const todosEnviados =
+      pareceresFiltrados.length > 0 &&
+      pareceresFiltrados.every(p => p.guidDocumentoEdocs?.length > 0);
+
+    return temSubeo && temSubepp && todosEnviados;
+
+  }
+
+  private pareceresEstrategicoOrcamentarioForamEntranhados(): boolean {
+
+    const pareceresFiltrados = this.pareceresProjeto
+      .filter(p =>
+        [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP]
+          .includes(p.parecerLotacao)
+      );
+
+    const entranhouSubeo = pareceresFiltrados
+      .some(p => p.parecerLotacao === LotacaoUsuarioEnum.SUBEO);
+
+    const entranhouSubepp = pareceresFiltrados
+      .some(p => p.parecerLotacao === LotacaoUsuarioEnum.SUBEPP);
+
+    const todosEntranhados =
+      pareceresFiltrados.length > 0 &&
+      pareceresFiltrados.every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
+
+    return entranhouSubeo && entranhouSubepp && todosEntranhados;
+
   }
 
   public deveComplementarCampo(nomeControle: string): boolean {
@@ -508,7 +523,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public aguardandoParecer(): boolean {
 
-    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegibilidade);
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegivel);
 
   }
 
@@ -1035,7 +1050,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.validacaoSomaValoresAcoesEnviar(this.projetoForm, false);
         break;
 
-      case BreadcrumbAcoesEnum.Autuar:
+      case BreadcrumbAcoesEnum.AssinarAutuar:
 
         this.projetoForm.patchValue({
           autuarConfirmacaoProjetoModal: true,
@@ -1175,7 +1190,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'parecerProjetoUsuario.guidDocumentoEdocs'
     ) as FormControl<string | null>;
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel ) {
 
       setTimeout(() => {
         const idDocumentoEdocsParecer = idDocumentoEdocsFormControl?.value ?? '';
@@ -1240,7 +1255,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegibilidade) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel ) {
 
       const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
 
@@ -1741,7 +1756,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private reentranharDicProjetoAsync(payload: ProjetoFormModel): void {
-    
+
     this.exibeListaEtapasIntegracao = true;
 
     this._projetosService.reentranharDicEdocs(this._idProjetoEdicao, payload)

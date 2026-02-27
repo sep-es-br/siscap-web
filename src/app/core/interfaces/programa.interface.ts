@@ -12,12 +12,37 @@ export interface IPrograma {
   percentualCustoAdministrativo: number;
   valorCalculadoTotal: number;
   nomeagente: string;
+  programaAssinantesEdocsDto?: Array<IProgramaAssinatura>;
+  protocoloEDocs?: string;
 }
 
 export interface IProgramaForm extends Omit<IPrograma, 'id'> {}
 
 export interface IProgramaTableData
-  extends Pick<IPrograma, 'id' | 'sigla' | 'titulo'> {
+  extends Pick<IPrograma, 'id' | 'sigla' | 'titulo' | 'protocoloEDocs'> {
   moeda: string;
   tetoPrograma: number;
+}
+
+export enum StatusAssinaturaPrograma {
+  PENDENTE = 1,
+  ASSINADO = 2,
+  ERRO = 3,
+}
+
+export interface IProgramaAssinatura {
+  id: number;
+  idPrograma: number;
+  idPessoa: number;
+  nomeAssinante: string;
+  statusAssinatura: StatusAssinaturaPrograma;
+  dataAssinatura?: string;
+  papelAssinante: string;
+}
+
+export interface IProgramaAssinaturasForm extends IPrograma {
+  nomesOrgaosExecutores: Array<string>;
+  listaDICSPropostos: Array<string>;
+  assinaturaUsuarioAtual?: IProgramaAssinatura;
+  demaisAssinaturas: Array<IProgramaAssinatura>;
 }
