@@ -44,6 +44,7 @@ export class ProgramaAssinaturasComponent {
     orgaosPrograma: new FormControl(''),
     valorPrograma: new FormControl(''),
     dicsPrograma: new FormControl(''),
+    valorTotalEstimadoProgama: new FormControl(''),
   });
 
   usuarioAtual!: UsuarioPerfilModel;
@@ -65,7 +66,7 @@ export class ProgramaAssinaturasComponent {
     this.usuarioAtual = this._usuarioService.usuarioPerfil;
 
     const idPrograma = this.route.snapshot.paramMap.get('id');
-    
+
     if (idPrograma) {
       this._programasService.idPrograma$.next(Number(idPrograma));
 
@@ -87,6 +88,9 @@ export class ProgramaAssinaturasComponent {
         projetosSubscription$,
       ]).subscribe({
         next: (results) => {
+
+          console.log('response programa - ', results)
+
           const programaResponse: IPrograma = results[0];
           this.listaNomesOrgaosExecutores = results[1]
             .filter((el) =>
@@ -136,6 +140,10 @@ export class ProgramaAssinaturasComponent {
               'pt-BR'
             )}`,
             dicsPrograma: this.programaAtual.listaDICSPropostos,
+            valorTotalEstimadoProgama: `R$ ${this.programaAtual.valorCalculadoTotal.toLocaleString(
+              'pt-BR',
+              { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+            )}`,
           });
 
           this.formPrograma.disable();
@@ -160,7 +168,7 @@ export class ProgramaAssinaturasComponent {
           programa.programaAssinantesEdocsDto.filter(
             (ass) => ass.idPessoa !== assinaturaUsuarioAtual.idPessoa
           );
-  
+
         this.programaAtual = {
           ...programa,
           nomesOrgaosExecutores: this.listaNomesOrgaosExecutores,
@@ -207,15 +215,15 @@ export class ProgramaAssinaturasComponent {
     };
 
     modalRef.result.then(
-      (resolve) => {},
+      (resolve) => { },
       (result) => {
         if (result === 'confirmar') {
           this.appStatus = AppStatus.LOADING;
 
           this._programasService.assinarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo).subscribe({
-            next: (res) => {              
+            next: (res) => {
               modalRef.close();
-    
+
               this.dispararModalPollingPrograma();
 
               this.appStatus = AppStatus.SUCCESS;
@@ -263,7 +271,7 @@ export class ProgramaAssinaturasComponent {
 
             pollingModalRef.componentInstance.fasesPolling = this.fasesPollingAssinatura;
             pollingModalRef.result.then(
-              (resolve) => {},
+              (resolve) => { },
               (result) => {
                 if (result === 'fechar') {
                   pollingModalRef.close();
