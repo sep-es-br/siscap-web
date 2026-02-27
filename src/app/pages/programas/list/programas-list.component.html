@@ -14,7 +14,7 @@
         <th>Programa</th>
         <th>Processo E-Docs</th>
         <th>Moeda</th>
-        <th>Valor</th>
+        <th>Valor Total Estimado</th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -52,11 +52,6 @@
             }}
           </td>
           <td (click)="$event.stopPropagation()">
-            <!-- <table-actions-dropdown
-              [tableActionInput]="programa.id"
-              (tableActionOutput)="tableActionOutputEvent($event)"
-            >
-            </table-actions-dropdown> -->
             <button
               class="btn border-none"
               (click)="tableActionOutputEvent({ acao: 'deletar', id: programa.id})"

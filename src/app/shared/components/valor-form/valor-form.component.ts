@@ -41,6 +41,7 @@ export class ValorFormComponent {
   public tiposValorOpcoes = input<Array<IOpcoesDropdown>>();
   public camposComplementarProjeto = input<Array<IEstruturaCamposComplementarProjeto>>([]);
   public statusProjeto = input<string>();
+  public contextoValor = input<string>('DIC');
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;

@@ -50,33 +50,6 @@
               </ng-select>
             </div>
   
-            <!-- <div class="col-12">
-              <label for="membroEquipeCaptacao" class="col-12 form-label">
-                <validation-message [control]="getControl('equipeCaptacao')">
-                  Equipe de Captação
-                </validation-message>
-              </label>
-  
-              <ng-select id="idMembroEquipeCaptacao"
-                placeholder="-- Selecione uma pessoa para incluir na equipe de captação --"
-                [(ngModel)]="idMembroEquipeCaptacao" [ngModelOptions]="{ standalone: true }" [disabled]="!isModoEdicao"
-                (change)="idMembroNgSelectChangeEvent($event)">
-                <ng-option *ngFor="
-                    let pessoa of equipeService.filtrarPessoasOpcoes(
-                      pessoasOpcoes
-                    )
-                  " [value]="pessoa.agentePublicoSub">
-                  {{ pessoa.nome }}
-                </ng-option>
-              </ng-select>
-            </div>
-            <div class="col-12 mt-2">
-              <siscap-equipe-form [pessoasOpcoesGoves]="pessoasOpcoes" [tiposPapelOpcoes]="tiposPapelOpcoes"
-                [isModoEdicao]="isModoEdicao"></siscap-equipe-form>
-              <siscap-equipe-form [tiposPapelOpcoes]="tiposPapelOpcoesVisiveis" [isModoEdicao]="isModoEdicao"
-                [pessoasOpcoesGoves]="pessoasOpcoesGoves"></siscap-equipe-form>
-            </div> -->
-  
             <div class="col-12">
               <label for="membroEquipeCaptacao" class="col-12 form-label">
                 <validation-message [control]="getControl('equipeCaptacao')">
@@ -187,7 +160,7 @@
             </div>
   
             <div class="col-12">
-              <siscap-valor-form [moedasList]="moedasList" [tiposValorOpcoes]="tiposValorOpcoes"></siscap-valor-form>
+              <siscap-valor-form [moedasList]="moedasList" [tiposValorOpcoes]="tiposValorOpcoes" [contextoValor]="'PROGRAMA'" ></siscap-valor-form>
             </div>
   
             <div class="col-12 col-md-4 col-lg-2">
@@ -202,7 +175,7 @@
   
             <div id="valor-col" class="col-12 col-md-4 col-lg-7">
               <label for="valor-total-calculado-programa" class="col-12 form-label">
-                Valor Total Calculado
+                Valor Total Estimado
               </label>
               <input readonly mask="separator.2" [prefix]="getSimboloMoeda(valorService.valorFormGroup.controls.moeda.value)
                 " thousandSeparator="." decimalMarker="," [outputTransformFn]="rtlCurrencyOutputTransformFn"
