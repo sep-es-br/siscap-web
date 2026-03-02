@@ -1,3 +1,5 @@
+import { PapelOrgaoPrograma } from "../enums/orgaos.enum";
+
 export interface IOpcoesDropdown {
   id: number;
   nome: string;
@@ -47,4 +49,8 @@ export interface IOpcoesDropdownDestinatariosCartaConsulta {
 export interface IOpcoesDropdownDestinatariosOpcoes {
   nomeOrganizacao: string;
   idOrganizacao: number;
+}
+
+export interface IPapeisOrgaoProgramaDropdownOpcoes extends IOpcoesDropdown {
+  papel?: PapelOrgaoPrograma;
 }

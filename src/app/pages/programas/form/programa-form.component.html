@@ -49,6 +49,13 @@
                 </ng-option>
               </ng-select>
             </div>
+            <div class="col-12 mt-2">
+              <siscap-orgaos-papeis-form
+                [orgaosSelecionados]="orgaosSelecionados"
+                (selecaoOrgaos)="handlePapeisOrgaosSelecionados($event)"
+              >
+              </siscap-orgaos-papeis-form>
+            </div>
   
             <div class="col-12">
               <label for="membroEquipeCaptacao" class="col-12 form-label">

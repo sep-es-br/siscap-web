@@ -44,6 +44,7 @@ import {
   IProjetoPropostoOpcoesDropdown,
   IOpcoesDropdown,
   IOpcoesDropdownResponsavelProponente,
+  IPapeisOrgaoProgramaDropdownOpcoes,
 } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
 
@@ -93,7 +94,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public programaForm: FormGroup = new FormGroup({});
 
-  public organizacoesOpcoes: IOpcoesDropdown[] = [];
+  public organizacoesOpcoes: IPapeisOrgaoProgramaDropdownOpcoes[] = [];
   public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   public projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[] = [];
@@ -117,6 +118,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public mostrarBotaoBaixarPrograma: boolean = false;
 
   public programaAtual!: IPrograma;
+
+  get orgaosSelecionados(): Array<IPapeisOrgaoProgramaDropdownOpcoes> {
+    const orgaosSelecionadosIds: Array<number> = this.programaForm.controls['idOrgaoExecutorList'].value;
+
+    return this.organizacoesOpcoes.filter((el) => orgaosSelecionadosIds.includes(el.id));
+  }
 
   constructor(
     public valorService: ValorService,
@@ -792,5 +799,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  handlePapeisOrgaosSelecionados(orgaosSelecionados: Array<IPapeisOrgaoProgramaDropdownOpcoes>) {
+    orgaosSelecionados.forEach((orgao) => {
+      const equivalente = this.organizacoesOpcoes.find((el) => el.id === orgao.id);
+      if (equivalente) equivalente.papel = orgao.papel;
+    });
   }
 }

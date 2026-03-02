@@ -1,0 +1,53 @@
+@if (orgaosSelecionados.length > 0) {
+  <div class="card">
+    <div class="card-body row gy-2 mb-0">
+
+      @for (orgao of orgaosSelecionados; track orgao; let i = $index) {
+        <div class="col-12 col-sm-6">
+          <div class="card">
+            <!-- <form [formGroup]="membroFormGroup"> -->
+              <div 
+                class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center">
+                <div class="col-12 col-lg pb-2 pb-lg-0 d-inline-flex justify-content-center justify-content-md-start" >
+                  <span class="nome-orgao">{{ orgao.nome }}</span>
+                </div>
+                <div class="col-12 col-lg d-inline-flex flex-wrap flex-lg-nowrap">
+                  <div class="col-12 col-md-9">
+                    <ng-select
+                      name="papelSelect"
+                      id="papelSelect"
+                      class="papel-select"
+                      placeholder="-- Papel do órgão --"
+                      [clearable]="false"
+                      [(ngModel)]="orgao.papel"
+                      (ngModelChange)="emitirNovoValor()"
+                    >
+                      @for (papel of tiposPapelOrgaoPrograma; track papel) {
+                        <ng-option [value]="papel">
+                          {{ papel }}
+                        </ng-option>
+                        <!-- <ng-template ng-label-tmp let-papel="papel">
+                          {{ papel }}
+                        </ng-template> -->
+                      }
+                    </ng-select>
+                  </div>
+                  <div class="col-12 col-md-3 ps-0 ps-md-2 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-between align-items-center" >
+                    <button
+                      type="button"
+                      ngbTooltip="Excluir órgão"
+                      class="btn btn-outline-danger rounded-circle"
+                      (click)="removerOrgao(i)"
+                    >
+                      <i class="fa-solid fa-close delete-btn-icon"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            <!-- </form> -->
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}  
