@@ -20,11 +20,11 @@
                       placeholder="-- Papel do órgão --"
                       [clearable]="false"
                       [(ngModel)]="orgao.papel"
-                      (ngModelChange)="emitirNovoValor()"
+                      (ngModelChange)="handleNovoValor($event, orgao)"
                     >
                       @for (papel of tiposPapelOrgaoPrograma; track papel) {
-                        <ng-option [value]="papel">
-                          {{ papel }}
+                        <ng-option [value]="papel.value">
+                          {{ papel.label }}
                         </ng-option>
                         <!-- <ng-template ng-label-tmp let-papel="papel">
                           {{ papel }}
@@ -37,7 +37,7 @@
                       type="button"
                       ngbTooltip="Excluir órgão"
                       class="btn btn-outline-danger rounded-circle"
-                      (click)="removerOrgao(i)"
+                      (click)="removerOrgao(orgao)"
                     >
                       <i class="fa-solid fa-close delete-btn-icon"></i>
                     </button>

@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { IPapeisOrgaoProgramaDropdownOpcoes } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
+import { listaOpcoesPapelOrgaoPrograma, OpcaoPapelOrgaoPrograma, PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 import { FormsModule } from '@angular/forms';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -19,19 +19,23 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 export class OrgaosPapeisFormComponent {
   @Input() orgaosSelecionados: Array<IPapeisOrgaoProgramaDropdownOpcoes> = [];
 
+  @Output() orgaoRemovido = new EventEmitter<IPapeisOrgaoProgramaDropdownOpcoes>();
+
   @Output() selecaoOrgaos = new EventEmitter<Array<IPapeisOrgaoProgramaDropdownOpcoes>>();
 
-  tiposPapelOrgaoPrograma: Array<string> = [
-    PapelOrgaoPrograma.GESTOR,
-    PapelOrgaoPrograma.EXECUTOR,
-  ];
+  tiposPapelOrgaoPrograma: Array<OpcaoPapelOrgaoPrograma> = listaOpcoesPapelOrgaoPrograma;
 
-  emitirNovoValor(): void {
-    this.selecaoOrgaos.emit(this.orgaosSelecionados);
+  removerOrgao(orgao: IPapeisOrgaoProgramaDropdownOpcoes) {
+    this.orgaoRemovido.emit(orgao);
   }
 
-  removerOrgao(index: number) {
-    this.orgaosSelecionados = this.orgaosSelecionados.filter((el, idx) => idx !== index);
-    this.emitirNovoValor();
+  handleNovoValor(selectedValue: PapelOrgaoPrograma, selectedOrgao: IPapeisOrgaoProgramaDropdownOpcoes): void {
+    if (selectedValue === PapelOrgaoPrograma.GESTOR && this.orgaosSelecionados.length > 1) {
+      this.orgaosSelecionados
+        .filter((org) => org.id !== selectedOrgao.id)
+        .forEach((org) => org.papel = PapelOrgaoPrograma.EXECUTOR);
+    }
+
+    this.selecaoOrgaos.emit(this.orgaosSelecionados);
   }
 }

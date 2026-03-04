@@ -1,9 +1,14 @@
 export enum PapelOrgaoPrograma {
-  GESTOR = 'Gestor',
-  EXECUTOR = 'Executor',
+  GESTOR = 1,
+  EXECUTOR = 2,
 }
 
-export const listaPapeisOrgaoPrograma = [
-  PapelOrgaoPrograma.GESTOR,
-  PapelOrgaoPrograma.EXECUTOR,
+export interface OpcaoPapelOrgaoPrograma {
+  label: string;
+  value: PapelOrgaoPrograma;
+}
+
+export const listaOpcoesPapelOrgaoPrograma: Array<OpcaoPapelOrgaoPrograma> = [
+  { label: 'Gestor', value: PapelOrgaoPrograma.GESTOR },
+  { label: 'Executor', value: PapelOrgaoPrograma.EXECUTOR },
 ];

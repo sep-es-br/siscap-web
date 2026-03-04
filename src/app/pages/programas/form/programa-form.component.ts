@@ -1,16 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
+  AsyncValidatorFn,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
 
 import {
   concat,
   finalize,
+  map,
   Observable,
+  of,
   partition,
   Subscription,
   switchMap,
@@ -38,6 +42,7 @@ import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
 import {
   IPrograma,
   IProgramaForm,
+  IProgramaOrgaosEnvolvidos,
   StatusAssinaturaPrograma,
 } from '../../../core/interfaces/programa.interface';
 import {
@@ -64,6 +69,8 @@ import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
+import { ValidationMessageComponent } from '../../../shared/templates/validation-message/validation-message.component';
+import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -408,7 +415,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ),
       idProjetoPropostoList: this._nnfb.control(
         programaModel?.idProjetoPropostoList ?? [],
-        [Validators.required, Validators.minLength(1)]
+        [Validators.required, Validators.minLength(1)],
+        // [this.todosOrgaosPossuemTipoValidator()],
       ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
       percentualCustoAdministrativo: this._nnfb.control(
@@ -801,10 +809,41 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  handlePapeisOrgaosSelecionados(orgaosSelecionados: Array<IPapeisOrgaoProgramaDropdownOpcoes>) {
-    orgaosSelecionados.forEach((orgao) => {
-      const equivalente = this.organizacoesOpcoes.find((el) => el.id === orgao.id);
-      if (equivalente) equivalente.papel = orgao.papel;
+  handleSelecaoOrgaoRemovido(orgaoRemovido: IPapeisOrgaoProgramaDropdownOpcoes) {
+    
+    const objOrgao = this.organizacoesOpcoes.find((org) => org.id === orgaoRemovido.id);
+    if (objOrgao) delete objOrgao.papel;
+
+    const orgaosControl = this.getControl('idOrgaoExecutorList');
+    if (orgaosControl) {
+      const listaOrgaosSelecionados: Array<number> = orgaosControl.value;
+      const listaOrgaosAtualizados = listaOrgaosSelecionados.filter((id) => id !== orgaoRemovido.id);
+      orgaosControl.setValue(listaOrgaosAtualizados);
+    }
+  }
+
+  handlePapeisOrgaosSelecionados(orgaosSelecionadosAtualizados: Array<IPapeisOrgaoProgramaDropdownOpcoes>) {
+    orgaosSelecionadosAtualizados.forEach((orgao) => {
+      const objOrgao = this.organizacoesOpcoes.find((el) => el.id === orgao.id);
+      if (objOrgao) objOrgao.papel = orgao.papel;
     });
   }
+
+  /* Async Validator */
+  // todosOrgaosPossuemTipoValidator(): AsyncValidatorFn {
+  //   return (control: AbstractControl): Observable<ValidationErrors | null> => {
+  //     return of(control.value as Array<IProgramaOrgaosEnvolvidos>)
+  //       .pipe(
+  //         map(orgaosSelecionados => {
+  //           if (orgaosSelecionados.length === 0) {
+  //             return { precisaSelecionarOrgao: true };
+  //           } else if (!orgaosSelecionados.some((org) => org.papel === PapelOrgaoPrograma.GESTOR)) {
+  //             return { precisaAoMenosUmOrgaoGestor: true };
+  //           } else {
+  //             return null;
+  //           }
+  //         }),
+  //       );
+  //   }
+  // }
 }

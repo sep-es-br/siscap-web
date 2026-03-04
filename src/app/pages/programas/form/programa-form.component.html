@@ -39,7 +39,7 @@
             <div class="col-12">
               <label for="idOrgaoExecutorList" class="col-12 form-label">
                 <validation-message [control]="getControl('idOrgaoExecutorList')">
-                  Orgão Executor
+                  Orgãos Envolvidos
                 </validation-message>
               </label>
               <ng-select id="idOrgaoExecutorList" placeholder="-- Selecione os orgãos executores do programa --"
@@ -52,6 +52,7 @@
             <div class="col-12 mt-2">
               <siscap-orgaos-papeis-form
                 [orgaosSelecionados]="orgaosSelecionados"
+                (orgaoRemovido)="handleSelecaoOrgaoRemovido($event)"
                 (selecaoOrgaos)="handlePapeisOrgaosSelecionados($event)"
               >
               </siscap-orgaos-papeis-form>
