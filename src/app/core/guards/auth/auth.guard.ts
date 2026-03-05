@@ -6,6 +6,7 @@ export const authGuard: CanActivateChildFn = (route, state) => {
   const storageToken = sessionStorage.getItem('token');
 
   if (storageToken) {
+    localStorage.removeItem('redirectUrl');
     return true;
   }
 
