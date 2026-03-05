@@ -69,7 +69,6 @@ import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
-import { ValidationMessageComponent } from '../../../shared/templates/validation-message/validation-message.component';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 
 @Component({
@@ -127,7 +126,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public programaAtual!: IPrograma;
 
   get orgaosSelecionados(): Array<IPapeisOrgaoProgramaDropdownOpcoes> {
-    const orgaosSelecionadosIds: Array<number> = this.programaForm.controls['idOrgaoExecutorList'].value;
+    const orgaosSelecionadosIds: Array<number> = this.programaForm.controls['orgaosEnvolvidosList'].value;
 
     return this.organizacoesOpcoes.filter((el) => orgaosSelecionadosIds.includes(el.id));
   }
@@ -405,8 +404,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         Validators.required,
         Validators.maxLength(150),
       ]),
-      idOrgaoExecutorList: this._nnfb.control(
-        programaModel?.idOrgaoExecutorList ?? [],
+      orgaosEnvolvidosList: this._nnfb.control(
+        programaModel?.orgaosEnvolvidosList ?? [],
         [Validators.required, Validators.minLength(1)]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
@@ -416,7 +415,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       idProjetoPropostoList: this._nnfb.control(
         programaModel?.idProjetoPropostoList ?? [],
         [Validators.required, Validators.minLength(1)],
-        // [this.todosOrgaosPossuemTipoValidator()],
+        [this.todosOrgaosPossuemTipoValidator()],
       ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
       percentualCustoAdministrativo: this._nnfb.control(
@@ -814,7 +813,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     const objOrgao = this.organizacoesOpcoes.find((org) => org.id === orgaoRemovido.id);
     if (objOrgao) delete objOrgao.papel;
 
-    const orgaosControl = this.getControl('idOrgaoExecutorList');
+    const orgaosControl = this.getControl('orgaosEnvolvidosList');
     if (orgaosControl) {
       const listaOrgaosSelecionados: Array<number> = orgaosControl.value;
       const listaOrgaosAtualizados = listaOrgaosSelecionados.filter((id) => id !== orgaoRemovido.id);
@@ -830,20 +829,20 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   /* Async Validator */
-  // todosOrgaosPossuemTipoValidator(): AsyncValidatorFn {
-  //   return (control: AbstractControl): Observable<ValidationErrors | null> => {
-  //     return of(control.value as Array<IProgramaOrgaosEnvolvidos>)
-  //       .pipe(
-  //         map(orgaosSelecionados => {
-  //           if (orgaosSelecionados.length === 0) {
-  //             return { precisaSelecionarOrgao: true };
-  //           } else if (!orgaosSelecionados.some((org) => org.papel === PapelOrgaoPrograma.GESTOR)) {
-  //             return { precisaAoMenosUmOrgaoGestor: true };
-  //           } else {
-  //             return null;
-  //           }
-  //         }),
-  //       );
-  //   }
-  // }
+  todosOrgaosPossuemTipoValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      return of(control.value as Array<IProgramaOrgaosEnvolvidos>)
+        .pipe(
+          map(orgaosSelecionados => {
+            if (orgaosSelecionados.length === 0) {
+              return { precisaSelecionarOrgao: true };
+            } else if (!orgaosSelecionados.some((org) => org.papel === PapelOrgaoPrograma.GESTOR)) {
+              return { precisaAoMenosUmOrgaoGestor: true };
+            } else {
+              return null;
+            }
+          }),
+        );
+    }
+  }
 }

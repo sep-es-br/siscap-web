@@ -6,8 +6,7 @@ export interface IPrograma {
   readonly id: number;
   sigla: string;
   titulo: string;
-  idOrgaoExecutorList: Array<number>;
-  // orgaosEnvolvidosList: Array<IProgramaOrgaosEnvolvidos>;
+  orgaosEnvolvidosList: Array<IProgramaOrgaosEnvolvidos>;
   equipeCaptacao: Array<IEquipe>;
   idProjetoPropostoList: Array<number>;
   valor: IValor;

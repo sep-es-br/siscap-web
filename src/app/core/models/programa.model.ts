@@ -1,5 +1,5 @@
 import { IEquipe } from '../interfaces/equipe.interface';
-import { IPrograma, IProgramaForm } from '../interfaces/programa.interface';
+import { IPrograma, IProgramaForm, IProgramaOrgaosEnvolvidos } from '../interfaces/programa.interface';
 
 import { EquipeModel } from './equipe.model';
 import { ValorModel } from './valor.model';
@@ -7,8 +7,7 @@ import { ValorModel } from './valor.model';
 export class ProgramaFormModel implements IProgramaForm {
   public sigla: string;
   public titulo: string;
-  public idOrgaoExecutorList: Array<number>;
-  // public orgaosEnvolvidosList: Array<IProgramaOrgaosEnvolvidos>;
+  public orgaosEnvolvidosList: Array<IProgramaOrgaosEnvolvidos>;
   public equipeCaptacao: EquipeModel[];
 
   public idProjetoPropostoList: number[];
@@ -21,8 +20,7 @@ export class ProgramaFormModel implements IProgramaForm {
   constructor(programaForm?: IProgramaForm) {
     this.sigla = programaForm?.sigla ?? '';
     this.titulo = programaForm?.titulo ?? '';
-    this.idOrgaoExecutorList = programaForm?.idOrgaoExecutorList ?? [];
-    // this.orgaosEnvolvidosList = programaForm?.orgaosEnvolvidosList ?? [];
+    this.orgaosEnvolvidosList = programaForm?.orgaosEnvolvidosList ?? [];
     this.equipeCaptacao = this.construirEquipeCaptação(
       programaForm?.equipeCaptacao
     );
