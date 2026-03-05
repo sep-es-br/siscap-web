@@ -151,6 +151,20 @@
               [statusProjeto]="statusProjeto"></siscap-equipe-form>
           </div>
 
+          <div class="col-12">
+            <label for="situacaoProblema" class="form-label col-12"
+              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('situacaoProblema') }">
+              <validation-message [control]="getControl('situacaoProblema')">
+                Situação Problema
+                <form-helper-tooltip [texto]="projetoTooltip['situacaoProblema']"></form-helper-tooltip>
+                <form-warning-tooltip *ngIf="deveComplementarCampo('situacaoProblema')"
+                  [texto]="mensagemComplementarCampo('situacaoProblema')"></form-warning-tooltip>
+              </validation-message>
+            </label>
+            <textarea rows="5" class="form-control" id="situacaoProblema" formControlName="situacaoProblema"
+              maxLength="2000"></textarea>
+          </div>
+
           <div class="col-12 mt-2">
             <label for="membroIndicadorElaboracao" class="form-label col-12"
               [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('indicadoresProjeto') }">
@@ -167,7 +181,7 @@
             <label for="objetivo" class="form-label col-12"
               [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('objetivo') }">
               <validation-message [control]="getControl('objetivo')">
-                Objetivo
+                Objetivo Geral
                 <form-helper-tooltip [texto]="projetoTooltip['objetivo']"></form-helper-tooltip>
                 <form-warning-tooltip *ngIf="deveComplementarCampo('objetivo')"
                   [texto]="mensagemComplementarCampo('objetivo')"></form-warning-tooltip>
@@ -181,7 +195,7 @@
             <label for="objetivoEspecifico" class="form-label col-12"
               [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('objetivoEspecifico') }">
               <validation-message [control]="getControl('objetivoEspecifico')">
-                Objetivo Específico
+                Objetivos Específicos
                 <form-helper-tooltip [texto]="projetoTooltip['objetivoEspecifico']"></form-helper-tooltip>
                 <form-warning-tooltip *ngIf="deveComplementarCampo('objetivoEspecifico')"
                   [texto]="mensagemComplementarCampo('objetivoEspecifico')"></form-warning-tooltip>
@@ -276,20 +290,6 @@
               </validation-message>
             </label>
             <textarea rows="5" class="form-control" id="pecasPlanejamento" formControlName="pecasPlanejamento"
-              maxLength="2000"></textarea>
-          </div>
-
-          <div class="col-12">
-            <label for="situacaoProblema" class="form-label col-12"
-              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('situacaoProblema') }">
-              <validation-message [control]="getControl('situacaoProblema')">
-                Situação Problema
-                <form-helper-tooltip [texto]="projetoTooltip['situacaoProblema']"></form-helper-tooltip>
-                <form-warning-tooltip *ngIf="deveComplementarCampo('situacaoProblema')"
-                  [texto]="mensagemComplementarCampo('situacaoProblema')"></form-warning-tooltip>
-              </validation-message>
-            </label>
-            <textarea rows="5" class="form-control" id="situacaoProblema" formControlName="situacaoProblema"
               maxLength="2000"></textarea>
           </div>
         </div>
