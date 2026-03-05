@@ -63,6 +63,7 @@ import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '../../../shared/templates/programa-projeto-proposto-parecer-geoc-enviado-warning-modal/programa-projeto-proposto-parecer-geoc-enviado-warning-modal.component';
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
+import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -193,7 +194,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       .pipe(
         tap((response) => {
           this.tiposPapelOpcoes = response;
-          const idsPermitidos = [1, 5];
+          const idsPermitidos = [
+            TipoPapelEnum.Gerente_de_Projeto,
+            TipoPapelEnum.Redator,
+            TipoPapelEnum.Membro_do_Projeto
+          ];
           this.tiposPapelOpcoesVisiveis = response.filter((papel) =>
             idsPermitidos.includes(papel.id)
           );
@@ -397,7 +402,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao,
-        false
+        true,
       ),
       idProjetoPropostoList: this._nnfb.control(
         programaModel?.idProjetoPropostoList ?? [],
