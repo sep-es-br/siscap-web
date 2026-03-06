@@ -14,9 +14,9 @@
                 <div class="col-12 col-lg d-inline-flex flex-wrap flex-lg-nowrap">
                   <div class="col-12 col-md-9">
                     <ng-select
-                      name="papelSelect"
-                      id="papelSelect"
-                      class="papel-select"
+                      name="papelOrgaoSelect"
+                      id="papelOrgaoSelect"
+                      class="papel-orgao-select"
                       placeholder="-- Papel do órgão --"
                       [clearable]="false"
                       [(ngModel)]="orgao.papel"
@@ -25,10 +25,7 @@
                       @for (papel of tiposPapelOrgaoPrograma; track papel) {
                         <ng-option [value]="papel.value">
                           {{ papel.label }}
-                        </ng-option>
-                        <!-- <ng-template ng-label-tmp let-papel="papel">
-                          {{ papel }}
-                        </ng-template> -->
+                        </ng-option>                        
                       }
                     </ng-select>
                   </div>

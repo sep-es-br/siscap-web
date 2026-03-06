@@ -17,7 +17,7 @@ export interface IPrograma {
   protocoloEDocs?: string;
 }
 
-export interface IProgramaForm extends Omit<IPrograma, 'id'> {}
+export interface IProgramaForm extends Omit<IPrograma, 'id'> { }
 
 export interface IProgramaTableData
   extends Pick<IPrograma, 'id' | 'sigla' | 'titulo' | 'protocoloEDocs'> {
@@ -50,5 +50,6 @@ export interface IProgramaAssinaturasForm extends IPrograma {
 
 export interface IProgramaOrgaosEnvolvidos {
   id: number;
+  idPrograma: number;
   papel: PapelOrgaoPrograma;
 }

@@ -233,7 +233,8 @@ const ERRO_MENSAGEM_MEMBRO_EQUIPE_SEM_PAPEL: string =
   'Algum membro da equipe não possui um papel atribuído';
 const ERRO_MENSAGEM_LIMITE_RATEIO: string =
   'Soma do rateio diferente do valor estimado do DIC.';
-const ERRO_MENSAGEM_EQUIPE_SEM_MEMBRO_ATIVO: string = 'Equipe elaboração deve conter pelo menos um membro.'
+const ERRO_MENSAGEM_EQUIPE_SEM_MEMBRO_ATIVO: string = 'Equipe elaboração deve conter pelo menos um membro.';
+const ERRO_MENSAGEM_PROGRAMA_SEM_ORGAO_GESTOR: string = 'Programa deve conter ao menos um Órgão Gestor.';
 
 /**
  * Objeto de coleção de mensagens padrão de erro para validações de formulários.
@@ -250,7 +251,8 @@ export const COLECAO_ERRO_MENSAGEM: Record<string, string> = {
   cpf: ERRO_MENSAGEM_CPF,
   membroEquipeSemPapel: ERRO_MENSAGEM_MEMBRO_EQUIPE_SEM_PAPEL,
   limiteRateio: ERRO_MENSAGEM_LIMITE_RATEIO,
-  equipeSemMembroAtivo: ERRO_MENSAGEM_EQUIPE_SEM_MEMBRO_ATIVO
+  equipeSemMembroAtivo: ERRO_MENSAGEM_EQUIPE_SEM_MEMBRO_ATIVO,
+  precisaAoMenosUmOrgaoGestor: ERRO_MENSAGEM_PROGRAMA_SEM_ORGAO_GESTOR,
 };
 
 /**

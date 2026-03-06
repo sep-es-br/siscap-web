@@ -157,7 +157,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       tap((response: IPrograma) => {
 
         // console.log(' response byId programa : ', response);
-        
+
         this.programaAtual = response;
         const programaModel = new ProgramaModel(response);
 
@@ -285,7 +285,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   public get idProjetoPropostoList(): FormControl<Array<number>> {
-    return this.programaForm.get('orgaosEnvolvidosList') as FormControl<
+    return this.programaForm.get('idProjetoPropostoList') as FormControl<
       Array<number>
     >;
   }
@@ -398,6 +398,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
+    console.log('programaModel: ', programaModel);
     this.programaForm = this._nnfb.group({
       sigla: this._nnfb.control(programaModel?.sigla ?? null, [
         Validators.required,
@@ -408,8 +409,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         Validators.maxLength(150),
       ]),
       orgaosEnvolvidosList: this._nnfb.control(
-        programaModel?.orgaosEnvolvidosList ?? [],
-        [Validators.required, Validators.minLength(1)]
+        programaModel?.orgaosEnvolvidosList ? programaModel.orgaosEnvolvidosList.map((org) => org.id) : [],
+        [Validators.required, Validators.minLength(1)],
+        [this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes)],
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao,
@@ -418,7 +420,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       idProjetoPropostoList: this._nnfb.control(
         programaModel?.idProjetoPropostoList ?? [],
         [Validators.required, Validators.minLength(1)],
-        [this.todosOrgaosPossuemTipoValidator()],
       ),
       valor: this._valorService.construirValorFormGroup(programaModel?.valor),
       percentualCustoAdministrativo: this._nnfb.control(
@@ -431,6 +432,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     });
 
     this.programaFormValueChanges();
+    this.programaForm.updateValueAndValidity();
   }
 
   private programaFormValueChanges(): void {
@@ -557,10 +559,19 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
         'Por favor, verifique os campos.',
       ]);
+      console.log('form: ', form);
       return;
     }
 
     const payload = new ProgramaFormModel(form.getRawValue() as IProgramaForm);
+
+    const idsOrgaosSelecionados = (payload.orgaosEnvolvidosList as unknown as Array<number>);
+    const orgaosSelecionados = this.organizacoesOpcoes.filter((org) => idsOrgaosSelecionados.includes(org.id));
+    payload.orgaosEnvolvidosList = orgaosSelecionados.map((org) => ({
+      id: org.id,
+      idPrograma: this.programaAtual?.id,
+      papel: org.papel || PapelOrgaoPrograma.EXECUTOR,
+    }));
 
     // console.log('payload -> ', payload);
 
@@ -812,7 +823,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   handleSelecaoOrgaoRemovido(orgaoRemovido: IPapeisOrgaoProgramaDropdownOpcoes) {
-    
     const objOrgao = this.organizacoesOpcoes.find((org) => org.id === orgaoRemovido.id);
     if (objOrgao) delete objOrgao.papel;
 
@@ -821,6 +831,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       const listaOrgaosSelecionados: Array<number> = orgaosControl.value;
       const listaOrgaosAtualizados = listaOrgaosSelecionados.filter((id) => id !== orgaoRemovido.id);
       orgaosControl.setValue(listaOrgaosAtualizados);
+      orgaosControl.updateValueAndValidity();
     }
   }
 
@@ -829,21 +840,24 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       const objOrgao = this.organizacoesOpcoes.find((el) => el.id === orgao.id);
       if (objOrgao) objOrgao.papel = orgao.papel;
     });
+
+    this.getControl('orgaosEnvolvidosList').updateValueAndValidity();
   }
 
   /* Async Validator */
-  todosOrgaosPossuemTipoValidator(): AsyncValidatorFn {
+  todosOrgaosPossuemTipoValidator(organizacoesOpcoes: Array<IPapeisOrgaoProgramaDropdownOpcoes>): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      return of(control.value as Array<IProgramaOrgaosEnvolvidos>)
+      return of(control.value as Array<number>)
         .pipe(
-          map(orgaosSelecionados => {
-            if (orgaosSelecionados.length === 0) {
-              return { precisaSelecionarOrgao: true };
-            } else if (!orgaosSelecionados.some((org) => org.papel === PapelOrgaoPrograma.GESTOR)) {
+          map(idsOrgaosSelecionados => {
+            const opcoesSelecionadas = organizacoesOpcoes.filter((org) => idsOrgaosSelecionados.includes(org.id));
+            const algumOrgaoGestor = opcoesSelecionadas.some((org) => org.papel === PapelOrgaoPrograma.GESTOR);
+
+            if (!algumOrgaoGestor) {
               return { precisaAoMenosUmOrgaoGestor: true };
-            } else {
-              return null;
             }
+
+            return null;
           }),
         );
     }
