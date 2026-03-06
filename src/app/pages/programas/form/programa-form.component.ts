@@ -155,6 +155,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this._programasService.getById(idPrograma)
       ),
       tap((response: IPrograma) => {
+
+        console.log(' response byId programa : ', response);
+        
         this.programaAtual = response;
         const programaModel = new ProgramaModel(response);
 
@@ -282,7 +285,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   public get idProjetoPropostoList(): FormControl<Array<number>> {
-    return this.programaForm.get('idProjetoPropostoList') as FormControl<
+    return this.programaForm.get('orgaosEnvolvidosList') as FormControl<
       Array<number>
     >;
   }

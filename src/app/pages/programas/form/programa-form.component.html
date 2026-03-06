@@ -38,12 +38,12 @@
   
             <div class="col-12">
               <label for="idOrgaoExecutorList" class="col-12 form-label">
-                <validation-message [control]="getControl('idOrgaoExecutorList')">
+                <validation-message [control]="getControl('orgaosEnvolvidosList')">
                   Orgãos Envolvidos
                 </validation-message>
               </label>
               <ng-select id="idOrgaoExecutorList" placeholder="-- Selecione os orgãos executores do programa --"
-                [multiple]="true" [hideSelected]="true" formControlName="idOrgaoExecutorList">
+                [multiple]="true" [hideSelected]="true" formControlName="orgaosEnvolvidosList">
                 <ng-option *ngFor="let organizacao of organizacoesOpcoes" [value]="organizacao.id">
                   {{ organizacao.nome }}
                 </ng-option>
