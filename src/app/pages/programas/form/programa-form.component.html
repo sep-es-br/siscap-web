@@ -37,17 +37,16 @@
             </div>
   
             <div class="col-12">
-              <label for="orgaosEnvolvidosList" class="col-12 form-label">
+              <label for="orgaosEnvolvidos" class="col-12 form-label">
                 <validation-message [control]="getControl('orgaosEnvolvidosList')">
                   Orgãos Envolvidos
                 </validation-message>
               </label>
               <ng-select
-                id="orgaosEnvolvidosList"
-                name="orgaosEnvolvidosList"
+                id="orgaosEnvolvidos"
+                name="orgaosEnvolvidos"
                 placeholder="-- Selecione os orgãos executores do programa --"
                 formControlName="orgaosEnvolvidosList"
-                bindValue="orgao"
                 [multiple]="true"
                 [hideSelected]="true"
               >

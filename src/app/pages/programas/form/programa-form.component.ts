@@ -399,6 +399,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
     console.log('programaModel: ', programaModel);
+
     this.programaForm = this._nnfb.group({
       sigla: this._nnfb.control(programaModel?.sigla ?? null, [
         Validators.required,
