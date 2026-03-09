@@ -42,7 +42,6 @@ import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
 import {
   IPrograma,
   IProgramaForm,
-  IProgramaOrgaosEnvolvidos,
   StatusAssinaturaPrograma,
 } from '../../../core/interfaces/programa.interface';
 import {
@@ -212,7 +211,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           this.tiposPapelOpcoes = response;
           const idsPermitidos = [
             TipoPapelEnum.Gerente_de_Projeto,
-            TipoPapelEnum.Redator,
+            // TipoPapelEnum.Redator,
             TipoPapelEnum.Membro_do_Projeto
           ];
           this.tiposPapelOpcoesVisiveis = response.filter((papel) =>
@@ -273,8 +272,14 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         // fazer as verificações.
 
         const orgaosController = this.getControl('orgaosEnvolvidosList');
-        orgaosController.clearAsyncValidators()
-        orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+        if (orgaosController) {
+          if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
+            orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+          }
+
+          orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+          orgaosController.updateValueAndValidity();
+        }
       }
     }));
 
@@ -423,6 +428,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       });
     }
 
+    const deveExibirRedatorNaListaDaEquipe: boolean = false;
+
     this.programaForm = this._nnfb.group({
       sigla: this._nnfb.control(programaModel?.sigla ?? null, [
         Validators.required,
@@ -435,11 +442,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       orgaosEnvolvidosList: this._nnfb.control(
         programaModel?.orgaosEnvolvidosList ? programaModel.orgaosEnvolvidosList.map((org) => org.id) : [],
         [Validators.required, Validators.minLength(1)],
-        [this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes)],
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao,
-        true,
+        deveExibirRedatorNaListaDaEquipe,
       ),
       idProjetoPropostoList: this._nnfb.control(
         programaModel?.idProjetoPropostoList ?? [],

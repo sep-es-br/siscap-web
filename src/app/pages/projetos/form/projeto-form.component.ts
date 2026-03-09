@@ -257,7 +257,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.tiposPapelOpcoes = response;
         const idsPermitidos = [
           TipoPapelEnum.Gerente_de_Projeto,
-          TipoPapelEnum.Redator,
+          // TipoPapelEnum.Redator,
           TipoPapelEnum.Membro_do_Projeto
         ];
         this.tiposPapelOpcoesVisiveis = response.filter(papel => idsPermitidos.includes(papel.id));
