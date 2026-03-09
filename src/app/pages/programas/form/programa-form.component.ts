@@ -403,7 +403,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(programaModel?: ProgramaFormModel): void {
-    console.log('programaModel: ', programaModel);
+    // Atualiza os órgãos locais com seus respectivos papeis ao carregar o Programa
+    if (programaModel && programaModel.orgaosEnvolvidosList) {
+      programaModel.orgaosEnvolvidosList.forEach((orgao) => {
+        const objOrgao = this.organizacoesOpcoes.find((org) => org.id === orgao.id);
+        if (objOrgao) objOrgao.papel = orgao.papel;
+      });
+    }
 
     this.programaForm = this._nnfb.group({
       sigla: this._nnfb.control(programaModel?.sigla ?? null, [
@@ -565,7 +571,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
         'Por favor, verifique os campos.',
       ]);
-      console.log('form: ', form);
       return;
     }
 
@@ -578,8 +583,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       idPrograma: this.programaAtual?.id,
       papel: org.papel || PapelOrgaoPrograma.EXECUTOR,
     }));
-
-    // console.log('payload -> ', payload);
 
     const requisicao = this._idProgramaEdicao
       ? this.atualizarPrograma(payload)
