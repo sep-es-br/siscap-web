@@ -261,10 +261,22 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.executarAcaoBreadcrumb(acao)
       )
     );
+    
   }
-
+  
   ngOnInit(): void {
-    this._subscription.add(this._getAllOpcoes$.subscribe());
+    this._subscription.add(this._getAllOpcoes$.subscribe({
+      next: (res) => {
+        // É necessário fazer os passos abaixos pois no caso de Cadastrar Programa, o validator assícrono estava sendo
+        // criado antes da propriedade organizacoesOpcoes ser preenchida.
+        // Isso fazia com que o validator sempre retornava um erro, visto que não conseguia acessar a lista de opções p/
+        // fazer as verificações.
+
+        const orgaosController = this.getControl('orgaosEnvolvidosList');
+        orgaosController.clearAsyncValidators()
+        orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+      }
+    }));
 
     this._subscription.add(this._atualizarPrograma$.subscribe());
     this._subscription.add(this._cadastrarPrograma$.subscribe());
@@ -859,11 +871,17 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       return of(control.value as Array<number>)
         .pipe(
           map(idsOrgaosSelecionados => {
-            const opcoesSelecionadas = organizacoesOpcoes.filter((org) => idsOrgaosSelecionados.includes(org.id));
-            const algumOrgaoGestor = opcoesSelecionadas.some((org) => org.papel === PapelOrgaoPrograma.GESTOR);
-
-            if (!algumOrgaoGestor) {
-              return { precisaAoMenosUmOrgaoGestor: true };
+            if (organizacoesOpcoes.length > 0) {
+              const opcoesSelecionadas = organizacoesOpcoes.filter((org) => idsOrgaosSelecionados.includes(org.id));
+              const algumOrgaoGestor = opcoesSelecionadas.some((org) => org.papel === PapelOrgaoPrograma.GESTOR);
+              const algumOrgaoSemPapel = opcoesSelecionadas.some((org) => !org.papel || org.papel === null);
+  
+              if (!algumOrgaoGestor) {
+                return { precisaAoMenosUmOrgaoGestor: true };
+              }
+              if (algumOrgaoSemPapel) {
+                return { orgaoPrecisaTerUmPapel: true };
+              }
             }
 
             return null;
