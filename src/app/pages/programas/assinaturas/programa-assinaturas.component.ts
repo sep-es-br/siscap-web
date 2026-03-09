@@ -88,13 +88,12 @@ export class ProgramaAssinaturasComponent {
         projetosSubscription$,
       ]).subscribe({
         next: (results) => {
-
-          console.log('response programa - ', results)
-
           const programaResponse: IPrograma = results[0];
           this.listaNomesOrgaosExecutores = results[1]
             .filter((el) =>
-              programaResponse.idOrgaoExecutorList.includes(el.id)
+              programaResponse.orgaosEnvolvidosList
+                .map((el) => el.id)
+                .includes(el.id)
             )
             .map((el) => el.nome);
           this.listaDicsPropostos = results[2]

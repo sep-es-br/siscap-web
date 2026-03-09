@@ -18,6 +18,7 @@ import { CropperComponent } from './cropper/cropper.component';
 import { DatepickerComponent } from './datepicker/datepicker.component';
 import { IndicadoresFormComponent } from './indicadores-form/indicadores-form.component';
 import { ModalComponent } from './modal/modal.component';
+import { OrgaosPapeisFormComponent } from './orgaos-papeis-form/orgaos-papeis-form.component';
 
 
 @NgModule({
@@ -41,6 +42,7 @@ import { ModalComponent } from './modal/modal.component';
     CropperComponent,
     IndicadoresFormComponent,
     ModalComponent,
+    OrgaosPapeisFormComponent,
   ],
   exports: [
     BotaoComponent,
@@ -59,6 +61,7 @@ import { ModalComponent } from './modal/modal.component';
     RateioFormComponent,
     CropperComponent,
     ModalComponent,
+    OrgaosPapeisFormComponent,
   ],
 })
 export class ComponentsModule {}
