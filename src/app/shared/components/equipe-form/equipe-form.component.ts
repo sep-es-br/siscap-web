@@ -1,10 +1,9 @@
-import { Component, Input, OnDestroy, TemplateRef } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import {
-  NgbModal,
   NgbModalModule,
   NgbPopoverModule,
   NgbTooltipModule,
@@ -17,14 +16,9 @@ import { ToastService } from '../../../core/services/toast/toast.service';
 import { IOpcoesDropdown, IOpcoesDropdownResponsavelProponente } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
-import { EquipeModel } from '../../../core/models/equipe.model';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
-import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
-import { catchError, map, Observable, of, tap } from 'rxjs';
-import { IProjeto } from '../../../core/interfaces/projeto.interface';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
-import { EquipeFormType } from '../../../core/types/form/equipe-form.type';
 
 @Component({
   selector: 'siscap-equipe-form',
@@ -42,16 +36,20 @@ import { EquipeFormType } from '../../../core/types/form/equipe-form.type';
   styleUrl: './equipe-form.component.scss',
 })
 export class EquipeFormComponent implements OnDestroy {
-  
   @Input() public tiposPapelOpcoes: IOpcoesDropdown[] = [];
+
   @Input() public isModoEdicao: boolean = false;
+
   @Input() public pessoasOpcoesGoves: IOpcoesDropdownResponsavelProponente[] = [];
+
   @Input() public equipeProjeto: IEquipe[] = [];
+
   @Input() public statusProjeto: string = '';
 
   public TipoStatusEnum = TipoStatusEnum;
 
   public isProponente: boolean = false;
+
   public permissaoRemoverMembro: boolean = false;
 
   constructor(
@@ -59,11 +57,13 @@ export class EquipeFormComponent implements OnDestroy {
     private readonly _usuarioService: UsuarioService,
     private readonly _toastService: ToastService,
   ) {
-
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
-    this.permissaoRemoverMembro =
-      this._usuarioService.verificarPermissao('adminAuth');
+    this.permissaoRemoverMembro = this._usuarioService.verificarPermissao('adminAuth');
+  }
+
+  ngOnDestroy(): void {
+    this.equipeService.equipeFormArray.clear();
   }
   
   public getMembroNome(subPessoa: string | null | undefined): string {
@@ -130,11 +130,6 @@ export class EquipeFormComponent implements OnDestroy {
         )} - ${this.getPapelNome(membroFormGroup.value.idPapel)}`,
       ]
     );
-
-  }
- 
-  ngOnDestroy(): void {
-    this.equipeService.equipeFormArray.clear();
   }
 
   public desabilitarCampo(index: number) : boolean {
@@ -149,5 +144,4 @@ export class EquipeFormComponent implements OnDestroy {
       // Desativa a opção "Redator" dos papeis se já houver um membro incluso com o papel selecionado
     );
   }
-
 }

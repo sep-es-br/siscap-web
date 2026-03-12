@@ -18,6 +18,7 @@ import { ProgramasListComponent } from './list/programas-list.component';
 
 import { ProgramasRoutingModule } from './programas-routing.module';
 import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas.component';
+import { NomeStatusProgramaPipe } from '../../shared/pipes/programa-status/programa-status.pipe';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas
     NgbAlertModule,
     NgbTooltipModule,
     ProgramasRoutingModule,
+    NomeStatusProgramaPipe,
   ],
   exports: [
     ProgramasComponent,

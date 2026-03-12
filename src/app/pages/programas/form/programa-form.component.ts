@@ -43,6 +43,7 @@ import {
   IPrograma,
   IProgramaForm,
   StatusAssinaturaPrograma,
+  StatusPrograma,
 } from '../../../core/interfaces/programa.interface';
 import {
   IProjetoPropostoOpcoesDropdown,
@@ -96,7 +97,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _idProgramaEdicao: number = 0;
 
   public loading: boolean = true;
-  public isModoEdicao: boolean = true;
 
   public programaForm: FormGroup = new FormGroup({});
 
@@ -125,10 +125,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public programaAtual!: IPrograma;
 
+  public statusProgramaAtual: StatusPrograma = StatusPrograma.EDICAO;
+
   get orgaosSelecionados(): Array<IPapeisOrgaoProgramaDropdownOpcoes> {
     const orgaosSelecionadosIds: Array<number> = this.programaForm.controls['orgaosEnvolvidosList'].value;
 
     return this.organizacoesOpcoes.filter((el) => orgaosSelecionadosIds.includes(el.id));
+  }
+
+  get isProgramaAtualEditavel(): boolean {
+    return this.statusProgramaAtual === StatusPrograma.EDICAO;
   }
 
   constructor(
@@ -381,19 +387,31 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         somatorioValorProjetosPropostos * (1 + valorPercentual / 100);
     }
 
-    if (this.isModoEdicao) {
+    if (this.statusProgramaAtual === StatusPrograma.EDICAO) {
       valorTotalCalculadoProgramaFormGroupControl.patchValue(
         valorTotalCalculadoPrograma ? valorTotalCalculadoPrograma : 0
       );
     }
   }
 
-  public filtrarProjetosPropostosOpcoes(
-    projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[]
-  ): IProjetoPropostoOpcoesDropdown[] {
+  public filtrarOpcoesProjetosPropostos(
+    projetosPropostosOpcoes: Array<IProjetoPropostoOpcoesDropdown>
+  ): Array<IProjetoPropostoOpcoesDropdown> {
+    const projetosSelecionados = this.idProjetoPropostoList.value;
+
     return projetosPropostosOpcoes.filter(
-      (projetoProposto) =>
-        !this.idProjetoPropostoList.value.includes(projetoProposto.id)
+      (projeto) => {
+        // Condições
+        const projetoNaoFoiSelecionado = !projetosSelecionados.includes(projeto.id);
+
+        if (projeto.idPrograma) {
+          // Se o projeto estiver vinculado a algum Programa
+          // const programaAQualOProjetoEstaVinculado = this.pro
+        }
+
+        // Se projeto/DIC não está vinculado a nenhum Programa
+        return projetoNaoFoiSelecionado;
+      }
     );
   }
 
@@ -427,6 +445,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         if (objOrgao) objOrgao.papel = orgao.papel;
       });
     }
+
+    this.statusProgramaAtual = programaModel?.statusPrograma ?? StatusPrograma.EDICAO;
 
     const deveExibirRedatorNaListaDaEquipe: boolean = false;
 
@@ -509,7 +529,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
             somatorioValorProjetosPropostos * (1 + percentual / 100);
         }
 
-        if (this.isModoEdicao) {
+        if (this.statusProgramaAtual === StatusPrograma.EDICAO) {
           valorFormGroupQuantiaFormControl.patchValue(
             somatorioValorProjetosPropostos
               ? somatorioValorProjetosPropostos
