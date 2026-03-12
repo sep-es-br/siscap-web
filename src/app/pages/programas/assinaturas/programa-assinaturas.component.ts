@@ -258,7 +258,7 @@ export class ProgramaAssinaturasComponent {
             };
           });
 
-          if (pollingModalRef) {
+          if (pollingModalRef && pollingModalRef.componentInstance && pollingModalRef.componentInstance.fasesPolling) {
             pollingModalRef.componentInstance.fasesPolling = this.fasesPollingAssinatura;
           } else {
             this.statusAssinatura = PollingEtapasStatus.EM_ANDAMENTO;
@@ -301,6 +301,15 @@ export class ProgramaAssinaturasComponent {
                 this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
                 this.appStatus = AppStatus.SUCCESS;
               },
+              error: (err) => {
+                this._toastService.showToast(
+                  'error',
+                  'Ocorreu um erro ao tentar atualizar o Programa! Atualize a página.'
+                );
+                console.error('Ocorreu um erro ao tentar atualizar o Programa:\n', err);
+                this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
+                this.appStatus = AppStatus.ERROR;
+              }
             });
         },
       });
