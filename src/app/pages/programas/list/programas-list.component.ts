@@ -216,6 +216,7 @@ export class ProgramasListComponent {
                 const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === response.id);
                 if (programaNaLista) programaNaLista.protocoloEDocs = response.protocoloEDocs;
 
+                this.currentPolling.idPrograma = -1;
                 this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
                 this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
               },
