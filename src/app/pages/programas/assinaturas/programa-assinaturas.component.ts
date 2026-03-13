@@ -293,23 +293,26 @@ export class ProgramaAssinaturasComponent {
 
           if (this.programaAtual.assinaturaUsuarioAtual) {
             this.programaAtual.assinaturaUsuarioAtual.statusAssinatura = StatusAssinaturaPrograma.ASSINADO;
-            this.programaAtual.assinaturaUsuarioAtual.dataAssinatura = new Date().toISOString();
+            this.programaAtual.assinaturaUsuarioAtual.dataAssinatura = new Date().toLocaleString().replace(',', '');
           }
 
-          this._programasService
-            .getById(this._programasService.idPrograma$.getValue())
-            .subscribe({
-              next: (programa: IPrograma) => {
-                this.programaAtual = {
-                  ...this.programaAtual,
-                  ...programa,
-                };
+          this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
+          this.appStatus = AppStatus.SUCCESS;
 
-                this.atualizarAssinaturas(this.programaAtual);
-                this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
-                this.appStatus = AppStatus.SUCCESS;
-              },
-            });
+          // this._programasService
+          //   .getById(this._programasService.idPrograma$.getValue())
+          //   .subscribe({
+          //     next: (programa: IPrograma) => {
+          //       this.programaAtual = {
+          //         ...this.programaAtual,
+          //         ...programa,
+          //       };
+
+          //       this.atualizarAssinaturas(this.programaAtual);
+          //       this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
+          //       this.appStatus = AppStatus.SUCCESS;
+          //     },
+          //   });
         },
       });
   }
