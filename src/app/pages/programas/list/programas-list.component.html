@@ -3,6 +3,7 @@
     <colgroup>
       <col class="sigla-col" />
       <col class="programa-col" />
+      <col class="status-col" />
       <col class="processoEdocs-col" />
       <col class="moeda-col" />
       <col class="valor-col" />
@@ -12,6 +13,7 @@
       <tr>
         <th>Sigla</th>
         <th>Programa</th>
+        <th>Status</th>
         <th>Processo E-Docs</th>
         <th>Moeda</th>
         <th>Valor Total Estimado</th>
@@ -23,6 +25,7 @@
         <tr (click)="tableActionOutputEvent({ acao: 'editar', id: programa.id })">
           <td>{{ programa.sigla }}</td>
           <td>{{ programa.titulo }}</td>
+          <td>{{ programa.statusPrograma | nomeStatusPrograma }}</td>
           <td>
             @if (currentPolling.idPrograma === programa.id) {
               <div>

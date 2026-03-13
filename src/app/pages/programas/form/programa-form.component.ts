@@ -43,6 +43,7 @@ import {
   IPrograma,
   IProgramaForm,
   StatusAssinaturaPrograma,
+  StatusPrograma,
 } from '../../../core/interfaces/programa.interface';
 import {
   IProjetoPropostoOpcoesDropdown,
@@ -96,7 +97,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _idProgramaEdicao: number = 0;
 
   public loading: boolean = true;
-  public isModoEdicao: boolean = true;
 
   public programaForm: FormGroup = new FormGroup({});
 
@@ -125,10 +125,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public programaAtual!: IPrograma;
 
+  public statusProgramaAtual: StatusPrograma = StatusPrograma.EDICAO;
+
   get orgaosSelecionados(): Array<IPapeisOrgaoProgramaDropdownOpcoes> {
     const orgaosSelecionadosIds: Array<number> = this.programaForm.controls['orgaosEnvolvidosList'].value;
 
     return this.organizacoesOpcoes.filter((el) => orgaosSelecionadosIds.includes(el.id));
+  }
+
+  get isProgramaAtualEditavel(): boolean {
+    return this.statusProgramaAtual === StatusPrograma.EDICAO;
   }
 
   constructor(
@@ -179,7 +185,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           this._programasService.gerarBotoesAcaoFormulario({
             deveExibirBotaoSolicitarAutorizacao: false,
             deveExibirBotaoAutuar: false,
-            deveExibirBotaoAutuarDesabilitado: false,
           })
         );
 
@@ -302,6 +307,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
+    this._programasService.idPrograma$.next(0);
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
+  }
+
   public getControl(controlName: string): AbstractControl<any, any> {
     return this.programaForm.get(controlName) as AbstractControl<any, any>;
   }
@@ -383,19 +394,31 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       valorTotalCalculadoPrograma = somatorioValorProjetosPropostos;
     }
 
-    if (this.isModoEdicao) {
+    if (this.statusProgramaAtual === StatusPrograma.EDICAO) {
       valorTotalCalculadoProgramaFormGroupControl.patchValue(
         valorTotalCalculadoPrograma ? valorTotalCalculadoPrograma : 0
       );
     }
   }
 
-  public filtrarProjetosPropostosOpcoes(
-    projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[]
-  ): IProjetoPropostoOpcoesDropdown[] {
+  public filtrarOpcoesProjetosPropostos(
+    projetosPropostosOpcoes: Array<IProjetoPropostoOpcoesDropdown>
+  ): Array<IProjetoPropostoOpcoesDropdown> {
+    const projetosSelecionados = this.idProjetoPropostoList.value;
+
     return projetosPropostosOpcoes.filter(
-      (projetoProposto) =>
-        !this.idProjetoPropostoList.value.includes(projetoProposto.id)
+      (projeto) => {
+        // Condições
+        const projetoNaoFoiSelecionado = !projetosSelecionados.includes(projeto.id);
+
+        if (projeto.idPrograma) {
+          // Se o projeto estiver vinculado a algum Programa
+          // const programaAQualOProjetoEstaVinculado = this.pro
+        }
+
+        // Se projeto/DIC não está vinculado a nenhum Programa
+        return projetoNaoFoiSelecionado;
+      }
     );
   }
 
@@ -429,6 +452,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         if (objOrgao) objOrgao.papel = orgao.papel;
       });
     }
+
+    this.statusProgramaAtual = programaModel?.statusPrograma ?? StatusPrograma.EDICAO;
 
     const deveExibirRedatorNaListaDaEquipe: boolean = false;
 
@@ -513,7 +538,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           valorTotalCalculadoPrograma = somatorioValorProjetosPropostos;
         }
 
-        if (this.isModoEdicao) {
+        if (this.statusProgramaAtual === StatusPrograma.EDICAO) {
           valorFormGroupQuantiaFormControl.patchValue(
             somatorioValorProjetosPropostos
               ? somatorioValorProjetosPropostos
@@ -637,12 +662,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
-    this._subscription.unsubscribe();
-    this._programasService.idPrograma$.next(0);
-    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
-  }
-
   public buscarAgentesPorTermo(): IOpcoesDropdownResponsavelProponente[] {
     this.isLoadingPessoasFiltroTermo = true;
 
@@ -707,32 +726,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private atualizarBotoes(programa: IPrograma) {
-    let deveExibirBotaoAutuar = false;
-    let deveExibirBotaoAutuarDesabilitado = false;
-    let deveExibirBotaoSolicitarAutorizacao = false;
+    const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
+    // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
 
-    if (
-      programa.programaAssinantesEdocsDto &&
-      programa.programaAssinantesEdocsDto.length > 0 &&
-      programa.programaAssinantesEdocsDto.every(
-        (assinatura) =>
-          assinatura.statusAssinatura === StatusAssinaturaPrograma.ASSINADO
-      )
-    ) {
-      if (programa.protocoloEDocs && programa.protocoloEDocs.length > 0) {
-        deveExibirBotaoAutuarDesabilitado = true;
-      } else {
-        deveExibirBotaoAutuar = true;
-      }
-    } else {
-      deveExibirBotaoSolicitarAutorizacao = true;
-    }
+    const deveExibirBotaoSolicitarAutorizacao = ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
+    // Botão de Solicitar Autorizações não deve aparecer se o Programa já foi Assinado, Autuado ou Recusado
 
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
       this._programasService.gerarBotoesAcaoFormulario({
         deveExibirBotaoSolicitarAutorizacao,
         deveExibirBotaoAutuar,
-        deveExibirBotaoAutuarDesabilitado,
       })
     );
   }
