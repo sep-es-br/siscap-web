@@ -64,13 +64,11 @@ export
   public gerarBotoesAcaoFormulario(config: {
     deveExibirBotaoSolicitarAutorizacao: boolean;
     deveExibirBotaoAutuar: boolean;
-    deveExibirBotaoAutuarDesabilitado: boolean;
   }): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades('solicitarAutorizacao');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuar');
-    const botaoAutuarDesabilitado = BotoesConfig.gerarBotaoPropriedades('autuarDisabled');
 
     let finalButtons: Array<BotaoPropriedadesModel> = [
       botaoSalvar,
@@ -92,8 +90,6 @@ export
       finalButtons = [botaoSalvar, botaoSolicitarAutorizacao, botaoCancelar];
     } else if (config && config.deveExibirBotaoAutuar) {
       finalButtons = [botaoSalvar, botaoAutuar, botaoCancelar];
-    } else if (config && config.deveExibirBotaoAutuarDesabilitado) {
-      finalButtons = [botaoSalvar, botaoAutuarDesabilitado, botaoCancelar];
     }
 
     return finalButtons;

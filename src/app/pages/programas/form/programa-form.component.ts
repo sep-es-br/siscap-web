@@ -185,7 +185,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           this._programasService.gerarBotoesAcaoFormulario({
             deveExibirBotaoSolicitarAutorizacao: false,
             deveExibirBotaoAutuar: false,
-            deveExibirBotaoAutuarDesabilitado: false,
           })
         );
 
@@ -306,6 +305,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         tipo: TipoValorEnum.Estimado,
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
+    this._programasService.idPrograma$.next(0);
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 
   public getControl(controlName: string): AbstractControl<any, any> {
@@ -653,12 +658,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
-    this._subscription.unsubscribe();
-    this._programasService.idPrograma$.next(0);
-    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
-  }
-
   public buscarAgentesPorTermo(): IOpcoesDropdownResponsavelProponente[] {
     this.isLoadingPessoasFiltroTermo = true;
 
@@ -723,32 +722,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private atualizarBotoes(programa: IPrograma) {
-    let deveExibirBotaoAutuar = false;
-    let deveExibirBotaoAutuarDesabilitado = false;
-    let deveExibirBotaoSolicitarAutorizacao = false;
+    const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
+    // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
 
-    if (
-      programa.programaAssinantesEdocsDto &&
-      programa.programaAssinantesEdocsDto.length > 0 &&
-      programa.programaAssinantesEdocsDto.every(
-        (assinatura) =>
-          assinatura.statusAssinatura === StatusAssinaturaPrograma.ASSINADO
-      )
-    ) {
-      if (programa.protocoloEDocs && programa.protocoloEDocs.length > 0) {
-        deveExibirBotaoAutuarDesabilitado = true;
-      } else {
-        deveExibirBotaoAutuar = true;
-      }
-    } else {
-      deveExibirBotaoSolicitarAutorizacao = true;
-    }
+    const deveExibirBotaoSolicitarAutorizacao = ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
+    // Botão de Solicitar Autorizações não deve aparecer se o Programa já foi Assinado, Autuado ou Recusado
 
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
       this._programasService.gerarBotoesAcaoFormulario({
         deveExibirBotaoSolicitarAutorizacao,
         deveExibirBotaoAutuar,
-        deveExibirBotaoAutuarDesabilitado,
       })
     );
   }
