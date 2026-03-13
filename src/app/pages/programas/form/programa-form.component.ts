@@ -379,6 +379,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     if (valorPercentual > 0) {
       valorTotalCalculadoPrograma =
         somatorioValorProjetosPropostos * (1 + valorPercentual / 100);
+    } else if (valorPercentual === 0) {
+      valorTotalCalculadoPrograma = somatorioValorProjetosPropostos;
     }
 
     if (this.isModoEdicao) {
@@ -507,6 +509,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
             percentualCustoAdministrativoFormGroupControl.value ?? 0;
           valorTotalCalculadoPrograma =
             somatorioValorProjetosPropostos * (1 + percentual / 100);
+        } else if ((percentualCustoAdministrativoFormGroupControl?.value ?? 0) === 0) {
+          valorTotalCalculadoPrograma = somatorioValorProjetosPropostos;
         }
 
         if (this.isModoEdicao) {
