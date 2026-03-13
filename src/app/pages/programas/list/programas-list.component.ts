@@ -68,8 +68,6 @@ export class ProgramasListComponent {
           this.dispararModalPolling(programaId);
         }
       });
-
-    setTimeout(() => console.log('this.programasList(): ', this.programasList()), 4000);
   }
 
   public sortColumn(event: SortColumn): void {
@@ -183,7 +181,6 @@ export class ProgramasListComponent {
           }
         },
         complete: () => {
-          console.log('this.currentPolling.fases: ', this.currentPolling.fases);
           const faseAutorizacaoEnviada = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.CAPTURA_ASSINATURA_PENDENTE && fase.finalizada);
           const faseAutuacaoConfirmada = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.AUTUAR && fase.finalizada);
           const faseAutorizacaoErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.CAPTURA_ASSINATURA_PENDENTE && fase.erro);
@@ -215,12 +212,8 @@ export class ProgramasListComponent {
             // Busca o Programa pra atualizar o Protocolo EDocs do mesmo
             this._programasService.getById(this.currentPolling.idPrograma).subscribe({
               next: (response: IPrograma) => {
-                console.log('response: ', response);
                 const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === response.id);
-                console.log('programaNaLista.protocoloEdocs ANTES: ', programaNaLista?.protocoloEDocs);
                 if (programaNaLista) programaNaLista.protocoloEDocs = response.protocoloEDocs;
-                console.log('programaNaLista: ', programaNaLista);
-                console.log('programaNaLista.protocoloEdocs DEPOIS: ', programaNaLista?.protocoloEDocs);
 
                 this.currentPolling.idPrograma = -1;
                 this.currentPolling.status = PollingEtapasStatus.FINALIZADA;

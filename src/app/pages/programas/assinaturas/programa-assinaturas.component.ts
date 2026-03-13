@@ -4,6 +4,7 @@ import { ProgramasService } from '../../../core/services/programas/programas.ser
 import {
   IPrograma,
   IProgramaAssinaturasForm,
+  StatusAssinaturaPrograma,
 } from '../../../core/interfaces/programa.interface';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
@@ -52,6 +53,8 @@ export class ProgramaAssinaturasComponent {
   fasesPollingAssinatura: Array<IPollingFases> = [];
 
   statusAssinatura: PollingEtapasStatus = PollingEtapasStatus.NAO_INICIADA;
+
+  assinaturaPropria: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -287,6 +290,11 @@ export class ProgramaAssinaturasComponent {
         },
         complete: () => {
           this._toastService.showToast('success', 'Assinado com sucesso!');
+
+          if (this.programaAtual.assinaturaUsuarioAtual) {
+            this.programaAtual.assinaturaUsuarioAtual.statusAssinatura = StatusAssinaturaPrograma.ASSINADO;
+            this.programaAtual.assinaturaUsuarioAtual.dataAssinatura = new Date().toISOString();
+          }
 
           this._programasService
             .getById(this._programasService.idPrograma$.getValue())
