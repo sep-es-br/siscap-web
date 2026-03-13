@@ -14,13 +14,13 @@ export interface IPrograma {
   valorCalculadoTotal: number;
   nomeagente: string;
   programaAssinantesEdocsDto?: Array<IProgramaAssinatura>;
-  protocoloEDocs?: string;
+  protocoloEdocs?: string;
 }
 
 export interface IProgramaForm extends Omit<IPrograma, 'id'> { }
 
 export interface IProgramaTableData
-  extends Pick<IPrograma, 'id' | 'sigla' | 'titulo' | 'protocoloEDocs'> {
+  extends Pick<IPrograma, 'id' | 'sigla' | 'titulo' | 'protocoloEdocs'> {
   moeda: string;
   tetoPrograma: number;
 }

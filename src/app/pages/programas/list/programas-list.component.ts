@@ -215,17 +215,15 @@ export class ProgramasListComponent {
             this._pollingService.executarPollingPersonalizado(
               (() => this._programasService.getById(this.currentPolling.idPrograma)),
               ((response: IPrograma) => {
-                console.log('condição do takeWhile');
-                if (response && response.protocoloEDocs) return true;
+                if (response && response.protocoloEdocs) return true;
                 return false;
               }),
               2000,
             ).subscribe({
               next: (programa: IPrograma) => {
-                console.log('next do polling');
-                if (programa.protocoloEDocs) {
+                if (programa.protocoloEdocs) {
                   const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === programa.id);
-                  if (programaNaLista) programaNaLista.protocoloEDocs = programa.protocoloEDocs;
+                  if (programaNaLista) programaNaLista.protocoloEdocs = programa.protocoloEdocs;
 
                   this.currentPolling.idPrograma = -1;
                   this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
