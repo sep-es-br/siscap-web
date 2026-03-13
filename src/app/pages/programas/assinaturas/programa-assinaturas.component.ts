@@ -289,30 +289,44 @@ export class ProgramaAssinaturasComponent {
           this.appStatus = AppStatus.EMPTY;
         },
         complete: () => {
-          this._toastService.showToast('success', 'Assinado com sucesso!');
+          this._programasService
+            .getById(this._programasService.idPrograma$.getValue())
+            .subscribe({
+              next: (programa: IPrograma) => {
+                this._toastService.showToast('success', 'Assinado com sucesso!');
+                const assinaturaUsuarioAtual = programa.programaAssinantesEdocsDto?.find((ass) => ass.idPessoa === this.usuarioAtual.idPessoa);
 
-          if (this.programaAtual.assinaturaUsuarioAtual) {
-            this.programaAtual.assinaturaUsuarioAtual.statusAssinatura = StatusAssinaturaPrograma.ASSINADO;
-            this.programaAtual.assinaturaUsuarioAtual.dataAssinatura = new Date().toLocaleString().replace(',', '');
-          }
+                if (
+                  assinaturaUsuarioAtual &&
+                  assinaturaUsuarioAtual.statusAssinatura === StatusAssinaturaPrograma.ASSINADO &&
+                  assinaturaUsuarioAtual.dataAssinatura
+                ) {
+                  this.programaAtual = {
+                    ...this.programaAtual,
+                    ...programa,
+                  };
+  
+                  this.atualizarAssinaturas(this.programaAtual);
+                } else if (this.programaAtual.assinaturaUsuarioAtual) {
+                  // Se o GET do programa não tiver retornado as assinaturas devidamente atualizadas, altera só o status local mesmo
+                  this.programaAtual.assinaturaUsuarioAtual.statusAssinatura = StatusAssinaturaPrograma.ASSINADO;
+                  this.programaAtual.assinaturaUsuarioAtual.dataAssinatura = new Date().toString();
+                }
 
-          this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
-          this.appStatus = AppStatus.SUCCESS;
-
-          // this._programasService
-          //   .getById(this._programasService.idPrograma$.getValue())
-          //   .subscribe({
-          //     next: (programa: IPrograma) => {
-          //       this.programaAtual = {
-          //         ...this.programaAtual,
-          //         ...programa,
-          //       };
-
-          //       this.atualizarAssinaturas(this.programaAtual);
-          //       this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
-          //       this.appStatus = AppStatus.SUCCESS;
-          //     },
-          //   });
+                this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
+                this.appStatus = AppStatus.SUCCESS;
+              },
+              error: (err) => {
+                // Ocorreu um erro na chamada do GET de Programa, mas a essa altura a assinatura já foi feita com sucesso
+                this._toastService.showToast('success', 'Assinado com sucesso!');
+                if (this.programaAtual.assinaturaUsuarioAtual) {
+                  this.programaAtual.assinaturaUsuarioAtual.statusAssinatura = StatusAssinaturaPrograma.ASSINADO;
+                  this.programaAtual.assinaturaUsuarioAtual.dataAssinatura = new Date().toString();
+                  this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
+                  this.appStatus = AppStatus.SUCCESS;
+                }
+              },
+            });
         },
       });
   }
