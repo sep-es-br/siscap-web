@@ -719,7 +719,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           assinatura.statusAssinatura === StatusAssinaturaPrograma.ASSINADO
       )
     ) {
-      if (programa.protocoloEDocs && programa.protocoloEDocs.length > 0) {
+      if (programa.protocoloEdocs && programa.protocoloEdocs.length > 0) {
         deveExibirBotaoAutuarDesabilitado = true;
       } else {
         deveExibirBotaoAutuar = true;
