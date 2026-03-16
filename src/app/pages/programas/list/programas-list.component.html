@@ -17,7 +17,7 @@
         <th>Processo E-Docs</th>
         <th>Moeda</th>
         <th>Valor Total Estimado</th>
-        <th>Ações</th>
+        <th class="text-center">Ações</th>
       </tr>
     </thead>
     <tbody class="fw-semibold">
@@ -54,12 +54,20 @@
                     }
             }}
           </td>
-          <td (click)="$event.stopPropagation()">
+          <td class="d-flex flex-row acoes-botoes" (click)="$event.stopPropagation()">
             <button
               class="btn border-none"
               (click)="tableActionOutputEvent({ acao: 'deletar', id: programa.id})"
             >
-              <i class="fa-solid fa-trash-can me-2"></i>
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+            <button
+              class="btn border-none botao-assinaturas"
+              [ngClass]="{ 'disabled': !programa.statusPrograma || [-1, 1].includes(programa.statusPrograma) }"
+              [disabled]="!programa.statusPrograma || [-1, 1].includes(programa.statusPrograma)"
+              (click)="acessarAssinaturasPrograma(programa.id)"
+            >
+              <i class="fa-solid fa-pen-fancy"></i>
             </button>
           </td>
         </tr>

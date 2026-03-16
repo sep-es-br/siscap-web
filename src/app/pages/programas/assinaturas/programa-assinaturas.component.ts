@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import {
   IPrograma,
@@ -60,7 +60,8 @@ export class ProgramaAssinaturasComponent {
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _usuarioService: UsuarioService,
     private readonly _ngbModalService: NgbModal,
-    private readonly _toastService: ToastService
+    private readonly _toastService: ToastService,
+    private readonly _router: Router,
   ) {
     this.appStatus = AppStatus.LOADING;
 
@@ -359,5 +360,9 @@ export class ProgramaAssinaturasComponent {
         }
       }
     );
+  }
+
+  voltarParaLista() {
+    this._router.navigateByUrl('/main/programas');
   }
 }

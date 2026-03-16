@@ -3,8 +3,18 @@
     <loading-spinner></loading-spinner>
   </div>
 } @else {
-  <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-outline-primary icon-text-btn" (click)="exportarPrograma()">
+  <div class="d-flex flex-column flex-sm-row justify-content-end mb-3">
+    <button
+      class="btn btn-outline-danger icon-text-btn col-12 col-sm-3 mb-2 mb-sm-0 me-sm-2"
+      (click)="voltarParaLista()"
+    >
+      <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
+      <span>Voltar</span>
+    </button>
+    <button
+      class="btn btn-outline-primary icon-text-btn col-12 col-sm-3"
+      (click)="exportarPrograma()"
+    >
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Baixar Programa</span>
     </button>
