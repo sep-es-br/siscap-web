@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import {
@@ -24,6 +24,7 @@ import { PessoasService } from '../../../core/services/pessoas/pessoas.service';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { IProjeto } from '../../../core/interfaces/projeto.interface';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
+import { EquipeFormType } from '../../../core/types/form/equipe-form.type';
 
 @Component({
   selector: 'siscap-equipe-form',
@@ -92,6 +93,12 @@ export class EquipeFormComponent implements OnDestroy {
     );
   }
 
+  public hasMembroRedator(): boolean {
+    return (
+      this.equipeService.equipeFormArray.controls.some((control) => control.value.idPapel === TipoPapelEnum.Redator)
+    );
+  }
+
   public isNovoMembro(index: number): boolean {
     return !this.equipeService.equipeFormArraySnapshot.some(
       (membro) =>
@@ -132,6 +139,15 @@ export class EquipeFormComponent implements OnDestroy {
 
   public desabilitarCampo(index: number) : boolean {
     return ( this.statusProjeto != StatusProjetoEnum.Em_Elaboracao && !this.isNovoMembro(index) );
+  }
+
+  public papelDeveEstarDesabilitado(papel: IOpcoesDropdown, indexMembro: number): boolean {
+    return (
+      papel.id === TipoPapelEnum.Redator &&
+      this.hasMembroRedator() &&
+      !this.isMembroRedator(indexMembro)
+      // Desativa a opção "Redator" dos papeis se já houver um membro incluso com o papel selecionado
+    );
   }
 
 }

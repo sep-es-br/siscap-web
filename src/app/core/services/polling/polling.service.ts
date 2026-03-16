@@ -64,4 +64,27 @@ export class PollingService {
       // take(50),
     )
   }
+
+  public executarPollingPersonalizado(
+    requisicao: () => Observable<any>,
+    parametroParaEncerrar: (response: any) => boolean,
+    intervalo: number = 2000,
+  ): Observable<any> {
+    return timer(0, intervalo)
+      .pipe(
+        switchMap(() => 
+          requisicao()
+            .pipe(
+              catchError((err) => {
+                console.error('Ocorreu um erro durante o polling!\n', err);
+                return of(null);
+              }),
+            ),
+        ),
+        takeWhile(
+          response => !parametroParaEncerrar(response),
+          true,
+        ),
+      );
+  }
 }

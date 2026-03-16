@@ -1,3 +1,4 @@
+import { PapelOrgaoPrograma } from '../enums/orgaos.enum';
 import { IEquipe } from './equipe.interface';
 import { IValor } from './valor.interface';
 
@@ -5,7 +6,7 @@ export interface IPrograma {
   readonly id: number;
   sigla: string;
   titulo: string;
-  idOrgaoExecutorList: Array<number>;
+  orgaosEnvolvidosList: Array<IProgramaOrgaosEnvolvidos>;
   equipeCaptacao: Array<IEquipe>;
   idProjetoPropostoList: Array<number>;
   valor: IValor;
@@ -13,13 +14,13 @@ export interface IPrograma {
   valorCalculadoTotal: number;
   nomeagente: string;
   programaAssinantesEdocsDto?: Array<IProgramaAssinatura>;
-  protocoloEDocs?: string;
+  protocoloEdocs?: string;
 }
 
-export interface IProgramaForm extends Omit<IPrograma, 'id'> {}
+export interface IProgramaForm extends Omit<IPrograma, 'id'> { }
 
 export interface IProgramaTableData
-  extends Pick<IPrograma, 'id' | 'sigla' | 'titulo' | 'protocoloEDocs'> {
+  extends Pick<IPrograma, 'id' | 'sigla' | 'titulo' | 'protocoloEdocs'> {
   moeda: string;
   tetoPrograma: number;
 }
@@ -45,4 +46,10 @@ export interface IProgramaAssinaturasForm extends IPrograma {
   listaDICSPropostos: Array<string>;
   assinaturaUsuarioAtual?: IProgramaAssinatura;
   demaisAssinaturas: Array<IProgramaAssinatura>;
+}
+
+export interface IProgramaOrgaosEnvolvidos {
+  id: number;
+  idPrograma: number;
+  papel: PapelOrgaoPrograma;
 }

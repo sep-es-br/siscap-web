@@ -8,9 +8,9 @@
         <div class="col-12 col-sm-6 col-lg-4"> </div>
 
         <div class="row mb-2">
-          <div class="col-12 d-flex justify-content-end align-items-center gap-4 text-end">
+          <div class="col-12 d-flex flex-column justify-content-end align-items-end gap-4 text-end">
 
-            <span class="fs-small-3 total-quantia fw-semibold text-nowrap">
+            <span class="fs-small-3 total-quantia fw-semibold">
               Soma valor estimado das ações:
               {{
               totalAcoesAtivas
@@ -25,7 +25,7 @@
               }}
             </span>
 
-            <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-2 text-nowrap"
+            <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-2"
               *ngIf="acoesService.acoesWarnings['limiteAcoes']">
               Diferença:
               {{

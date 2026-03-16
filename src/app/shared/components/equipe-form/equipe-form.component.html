@@ -6,7 +6,7 @@
         index as i
       "
     >
-      <div [hidden]= "isMembroRemovido(i)" class="col-12 col-sm-6">
+      <div [hidden]="isMembroRemovido(i)" class="col-12 col-sm-6">
         <div class="card">
           <form [formGroup]="membroFormGroup">
             <div 
@@ -26,7 +26,9 @@
                     formControlName="idPapel" >
                     <ng-option
                       *ngFor="let tipoPapel of tiposPapelOpcoes"
-                      [value]="tipoPapel.id" >
+                      [value]="tipoPapel.id"
+                      [disabled]="papelDeveEstarDesabilitado(tipoPapel, i)"
+                    >
                       {{ tipoPapel.nome }}
                     </ng-option>
                     <ng-template ng-label-tmp let-item="item">
@@ -39,7 +41,7 @@
                     type="button"
                     ngbTooltip="Excluir membro da equipe"
                     class="btn btn-outline-danger rounded-circle"
-                    [disabled]="desabilitarCampo(i) || isMembroRedator(i)"
+                    [disabled]="desabilitarCampo(i)"
                     (click)="removerMembroDaEquipe(i)">
                     <i class="fa-solid fa-close delete-btn-icon"></i>
                   </button>

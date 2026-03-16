@@ -37,17 +37,31 @@
             </div>
   
             <div class="col-12">
-              <label for="idOrgaoExecutorList" class="col-12 form-label">
-                <validation-message [control]="getControl('idOrgaoExecutorList')">
-                  Orgão Executor
+              <label for="orgaosEnvolvidos" class="col-12 form-label">
+                <validation-message [control]="getControl('orgaosEnvolvidosList')">
+                  Orgãos Envolvidos
                 </validation-message>
               </label>
-              <ng-select id="idOrgaoExecutorList" placeholder="-- Selecione os orgãos executores do programa --"
-                [multiple]="true" [hideSelected]="true" formControlName="idOrgaoExecutorList">
+              <ng-select
+                id="orgaosEnvolvidos"
+                name="orgaosEnvolvidos"
+                placeholder="-- Selecione os orgãos executores do programa --"
+                formControlName="orgaosEnvolvidosList"
+                [multiple]="true"
+                [hideSelected]="true"
+              >
                 <ng-option *ngFor="let organizacao of organizacoesOpcoes" [value]="organizacao.id">
                   {{ organizacao.nome }}
                 </ng-option>
               </ng-select>
+            </div>
+            <div class="col-12 mt-2">
+              <siscap-orgaos-papeis-form
+                [orgaosSelecionados]="orgaosSelecionados"
+                (orgaoRemovido)="handleSelecaoOrgaoRemovido($event)"
+                (selecaoOrgaos)="handlePapeisOrgaosSelecionados($event)"
+              >
+              </siscap-orgaos-papeis-form>
             </div>
   
             <div class="col-12">
@@ -99,9 +113,16 @@
                 </validation-message>
               </label>
   
-              <ng-select id="idProjetoProposto" placeholder="-- Selecione um DIC para incluir no programa --"
-                [(ngModel)]="idProjetoProposto" [ngModelOptions]="{ standalone: true }" [disabled]="!isModoEdicao"
-                (change)="idProjetoPropostoNgSelectChangeEvent($event)">
+              <ng-select
+                name="idProjetoProposto"
+                id="idProjetoProposto"
+                placeholder="-- Selecione um DIC para incluir no programa --"
+                [(ngModel)]="idProjetoProposto"
+                [ngModelOptions]="{ standalone: true }"
+                [disabled]="!isModoEdicao"
+                (change)="idProjetoPropostoNgSelectChangeEvent($event)"
+                bindValue="nome"
+              >
                 <ng-option *ngFor="
                     let projetoPropostoOpcao of filtrarProjetosPropostosOpcoes(
                       projetosPropostosOpcoes
@@ -109,7 +130,7 @@
                   " [value]="projetoPropostoOpcao">
                   {{ projetoPropostoOpcao.nome }}
                 </ng-option>
-              </ng-select>
+              </ng-select>              
             </div>
   
             <div class="col-12 my-2">

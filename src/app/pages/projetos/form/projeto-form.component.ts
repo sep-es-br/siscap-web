@@ -112,7 +112,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public loading: boolean = true;
   public isModoEdicao: boolean = false;
 
-  public mostrarBotaoGerarDic: boolean = false;
+  public mostrarBotaoBaixarDic: boolean = false;
   public mostrarBotaoStatusProjeto: boolean = false;
   public isProponente: boolean = false;
   public usuario_IdOrganizacoes: Array<number> = [];
@@ -224,7 +224,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   ) {
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
-      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
+      .getOpcoesOrganizacoes()
       .pipe(tap((response) => (this.organizacoesOpcoes = response)));
 
     this._getPlanosOpcoes$ = this._opcoesDropdownService
@@ -255,7 +255,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getOpcoesTiposPapel()
       .pipe(tap((response) => {
         this.tiposPapelOpcoes = response;
-        const idsPermitidos = [1, 5];
+        const idsPermitidos = [
+          TipoPapelEnum.Gerente_de_Projeto,
+          // TipoPapelEnum.Redator,
+          TipoPapelEnum.Membro_do_Projeto
+        ];
         this.tiposPapelOpcoesVisiveis = response.filter(papel => idsPermitidos.includes(papel.id));
       }
       ));
@@ -328,9 +332,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this._idProjetoEdicao = projetoModel.id;
 
-          this.mostrarBotaoGerarDic =
-            !projetoModel.rascunho &&
-            this.statusProjeto !== StatusProjetoEnum.Em_Elaboracao;
+          this.mostrarBotaoBaixarDic = !projetoModel.rascunho;
 
           this.equipeProjeto = projetoModel.equipeElaboracao;
 
@@ -346,7 +348,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           // 
           if (projetoModel.status === StatusProjetoEnum.Arquivado) {
-            this.mostrarBotaoGerarDic = false;
+            this.mostrarBotaoBaixarDic = false;
             this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
               this._projetosService.gerarBotoesAcaoFormularioArquivado()
             );
@@ -408,7 +410,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
 
-              this.mostrarBotaoGerarDic = false;
+              this.mostrarBotaoBaixarDic = false;
 
               const subeppSubeoEnviados = this.pareceresEstrategicoOrcamentarioForamEnviados();
 
@@ -589,7 +591,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         this.trocarModo(true);
 
-        this.mostrarBotaoGerarDic = false;
+        this.mostrarBotaoBaixarDic = false;
         this.loading = false;
         this.isLoadingPessoas = false;
 

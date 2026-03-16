@@ -14,7 +14,7 @@
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Solicitar revisão a {{nomeProponenteDIC}} </span>
     </button>
-    <button *ngIf="mostrarBotaoGerarDic" class="btn btn-outline-primary icon-text-btn" (click)="baixarDIC()">
+    <button *ngIf="mostrarBotaoBaixarDic" class="btn btn-outline-primary icon-text-btn" (click)="baixarDIC()">
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Baixar DIC</span>
     </button>
@@ -151,6 +151,20 @@
               [statusProjeto]="statusProjeto"></siscap-equipe-form>
           </div>
 
+          <div class="col-12">
+            <label for="situacaoProblema" class="form-label col-12"
+              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('situacaoProblema') }">
+              <validation-message [control]="getControl('situacaoProblema')">
+                Situação Problema
+                <form-helper-tooltip [texto]="projetoTooltip['situacaoProblema']"></form-helper-tooltip>
+                <form-warning-tooltip *ngIf="deveComplementarCampo('situacaoProblema')"
+                  [texto]="mensagemComplementarCampo('situacaoProblema')"></form-warning-tooltip>
+              </validation-message>
+            </label>
+            <textarea rows="5" class="form-control" id="situacaoProblema" formControlName="situacaoProblema"
+              maxLength="2000"></textarea>
+          </div>
+
           <div class="col-12 mt-2">
             <label for="membroIndicadorElaboracao" class="form-label col-12"
               [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('indicadoresProjeto') }">
@@ -164,9 +178,63 @@
           </div>
 
           <div class="col-12">
+            <label for="objetivo" class="form-label col-12"
+              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('objetivo') }">
+              <validation-message [control]="getControl('objetivo')">
+                Objetivo Geral
+                <form-helper-tooltip [texto]="projetoTooltip['objetivo']"></form-helper-tooltip>
+                <form-warning-tooltip *ngIf="deveComplementarCampo('objetivo')"
+                  [texto]="mensagemComplementarCampo('objetivo')"></form-warning-tooltip>
+              </validation-message>
+            </label>
+            <textarea rows="5" class="form-control" id="objetivo" formControlName="objetivo"
+              maxLength="2000"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="objetivoEspecifico" class="form-label col-12"
+              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('objetivoEspecifico') }">
+              <validation-message [control]="getControl('objetivoEspecifico')">
+                Objetivos Específicos
+                <form-helper-tooltip [texto]="projetoTooltip['objetivoEspecifico']"></form-helper-tooltip>
+                <form-warning-tooltip *ngIf="deveComplementarCampo('objetivoEspecifico')"
+                  [texto]="mensagemComplementarCampo('objetivoEspecifico')"></form-warning-tooltip>
+              </validation-message>
+            </label>
+            <textarea rows="5" class="form-control" id="objetivoEspecifico" formControlName="objetivoEspecifico"
+              maxLength="2000"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="solucoesPropostas" class="form-label col-12"
+              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('solucoesPropostas') }">
+              <validation-message [control]="getControl('solucoesPropostas')">
+                Soluções Propostas/Resultados Esperados
+                <form-helper-tooltip [texto]="projetoTooltip['solucoesPropostas']"></form-helper-tooltip>
+                <form-warning-tooltip *ngIf="deveComplementarCampo('solucoesPropostas')"
+                  [texto]="mensagemComplementarCampo('solucoesPropostas')"></form-warning-tooltip>
+              </validation-message>
+            </label>
+            <textarea rows="5" class="form-control" id="solucoesPropostas" formControlName="solucoesPropostas"
+              maxLength="2000"></textarea>
+          </div>
+
+          <div class="col-12">
             <siscap-valor-form [moedasList]="moedasList" [tiposValorOpcoes]="tiposValorOpcoes"
               [camposComplementarProjeto]="camposComplementarProjeto"
               [statusProjeto]="statusProjeto"></siscap-valor-form>
+          </div>
+
+          <div class="col-12">
+            <label for="acoes" class="form-label col-12"
+              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('acoesProjeto') }">
+              <validation-message [control]="getControl('acoesProjeto')">
+                Ações
+                <form-warning-tooltip *ngIf="deveComplementarCampo('acoesProjeto')"
+                  [texto]="mensagemComplementarCampo('acoesProjeto')"></form-warning-tooltip>
+              </validation-message>
+            </label>
+            <siscap-acoes-form [isModoEdicao]="isModoEdicao"></siscap-acoes-form>
           </div>
 
           <div class="col-12 mt-2">
@@ -183,70 +251,16 @@
           </div>
 
           <div class="col-12">
-            <label for="acoes" class="form-label col-12"
-              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('acoesProjeto') }">
-              <validation-message [control]="getControl('acoesProjeto')">
-                Ações
-                <form-warning-tooltip *ngIf="deveComplementarCampo('acoesProjeto')"
-                  [texto]="mensagemComplementarCampo('acoesProjeto')"></form-warning-tooltip>
+            <label for="arranjosInstitucionais" class="form-label col-12"
+              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('arranjosInstitucionais') }">
+              <validation-message [control]="getControl('arranjosInstitucionais')">
+                Arranjo Institucional
+                <form-helper-tooltip [texto]="projetoTooltip['arranjosInstitucionais']"></form-helper-tooltip>
+                <form-warning-tooltip *ngIf="deveComplementarCampo('arranjosInstitucionais')"
+                  [texto]="mensagemComplementarCampo('arranjosInstitucionais')"></form-warning-tooltip>
               </validation-message>
             </label>
-            <siscap-acoes-form [isModoEdicao]="isModoEdicao"></siscap-acoes-form>
-          </div>
-
-          <div class="col-12">
-            <label for="objetivo" class="form-label col-12"
-              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('objetivo') }">
-              <validation-message [control]="getControl('objetivo')">
-                Objetivo
-                <form-helper-tooltip [texto]="projetoTooltip['objetivo']"></form-helper-tooltip>
-                <form-warning-tooltip *ngIf="deveComplementarCampo('objetivo')"
-                  [texto]="mensagemComplementarCampo('objetivo')"></form-warning-tooltip>
-              </validation-message>
-            </label>
-            <textarea rows="5" class="form-control" id="objetivo" formControlName="objetivo"
-              maxLength="2000"></textarea>
-          </div>
-
-          <div class="col-12">
-            <label for="objetivoEspecifico" class="form-label col-12"
-              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('objetivoEspecifico') }">
-              <validation-message [control]="getControl('objetivoEspecifico')">
-                Objetivo Específico
-                <form-helper-tooltip [texto]="projetoTooltip['objetivoEspecifico']"></form-helper-tooltip>
-                <form-warning-tooltip *ngIf="deveComplementarCampo('objetivoEspecifico')"
-                  [texto]="mensagemComplementarCampo('objetivoEspecifico')"></form-warning-tooltip>
-              </validation-message>
-            </label>
-            <textarea rows="5" class="form-control" id="objetivoEspecifico" formControlName="objetivoEspecifico"
-              maxLength="2000"></textarea>
-          </div>
-
-          <div class="col-12">
-            <label for="situacaoProblema" class="form-label col-12"
-              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('situacaoProblema') }">
-              <validation-message [control]="getControl('situacaoProblema')">
-                Situação Problema
-                <form-helper-tooltip [texto]="projetoTooltip['situacaoProblema']"></form-helper-tooltip>
-                <form-warning-tooltip *ngIf="deveComplementarCampo('situacaoProblema')"
-                  [texto]="mensagemComplementarCampo('situacaoProblema')"></form-warning-tooltip>
-              </validation-message>
-            </label>
-            <textarea rows="5" class="form-control" id="situacaoProblema" formControlName="situacaoProblema"
-              maxLength="2000"></textarea>
-          </div>
-
-          <div class="col-12">
-            <label for="solucoesPropostas" class="form-label col-12"
-              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('solucoesPropostas') }">
-              <validation-message [control]="getControl('solucoesPropostas')">
-                Soluções Propostas/Resultados Esperados
-                <form-helper-tooltip [texto]="projetoTooltip['solucoesPropostas']"></form-helper-tooltip>
-                <form-warning-tooltip *ngIf="deveComplementarCampo('solucoesPropostas')"
-                  [texto]="mensagemComplementarCampo('solucoesPropostas')"></form-warning-tooltip>
-              </validation-message>
-            </label>
-            <textarea rows="5" class="form-control" id="solucoesPropostas" formControlName="solucoesPropostas"
+            <textarea rows="5" class="form-control" id="arranjosInstitucionais" formControlName="arranjosInstitucionais"
               maxLength="2000"></textarea>
           </div>
 
@@ -266,20 +280,6 @@
           </div>
 
           <div class="col-12">
-            <label for="arranjosInstitucionais" class="form-label col-12"
-              [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('arranjosInstitucionais') }">
-              <validation-message [control]="getControl('arranjosInstitucionais')">
-                Arranjo Institucional
-                <form-helper-tooltip [texto]="projetoTooltip['arranjosInstitucionais']"></form-helper-tooltip>
-                <form-warning-tooltip *ngIf="deveComplementarCampo('arranjosInstitucionais')"
-                  [texto]="mensagemComplementarCampo('arranjosInstitucionais')"></form-warning-tooltip>
-              </validation-message>
-            </label>
-            <textarea rows="5" class="form-control" id="arranjosInstitucionais" formControlName="arranjosInstitucionais"
-              maxLength="2000"></textarea>
-          </div>
-
-          <div class="col-12">
             <label for="pecasPlanejamento" class="form-label col-12"
               [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('pecasPlanejamento') }">
               <validation-message [control]="getControl('pecasPlanejamento')">
@@ -292,7 +292,6 @@
             <textarea rows="5" class="form-control" id="pecasPlanejamento" formControlName="pecasPlanejamento"
               maxLength="2000"></textarea>
           </div>
-
         </div>
       </form>
     </div>
@@ -467,12 +466,12 @@
 
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
-      
+
       <button class="btn btn-outline-danger  icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>{{ autuacaoAcionada || finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      
+
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
