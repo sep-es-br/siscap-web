@@ -224,7 +224,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   ) {
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
-      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
+      .getOpcoesOrganizacoes()
       .pipe(tap((response) => (this.organizacoesOpcoes = response)));
 
     this._getPlanosOpcoes$ = this._opcoesDropdownService
