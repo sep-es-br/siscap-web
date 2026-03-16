@@ -225,6 +225,10 @@ export class ProgramasListComponent {
               error: (err) => {
                 console.error('Ocorreu um erro ao tentar atualizar o Programa!\n', err);
                 this._toastService.showToast('error', 'Ocorreu um erro ao tentar atualizar o Programa');
+
+                this.currentPolling.idPrograma = -1;
+                this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
+                this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
               },
             });
           } else {
