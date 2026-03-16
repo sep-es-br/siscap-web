@@ -24,6 +24,7 @@ import { PollingFasesModel } from '../../../core/models/polling.model';
 import { PollingModalComponent } from '../../../shared/templates/polling-modal/polling-modal.component';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { environment } from '../../../../environments/environment';
+import { PollingService } from '../../../core/services/polling/polling.service';
 
 @Component({
   selector: 'siscap-programas-list',
@@ -56,6 +57,7 @@ export class ProgramasListComponent {
     private readonly _navegacaoService: NavegacaoService,
     private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
+    private readonly _pollingService: PollingService,
   ) {
     this._programasService.programasAguardandoEdocs$
       .pipe(
@@ -208,16 +210,25 @@ export class ProgramasListComponent {
             this._toastService.showToast('error', errorMessage);
           }
 
-          
           if (faseAutuacaoConfirmada) {
             // Busca o Programa pra atualizar o Protocolo EDocs do mesmo
-            this._programasService.getById(this.currentPolling.idPrograma).subscribe({
-              next: (response: IPrograma) => {
-                const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === response.id);
-                if (programaNaLista) programaNaLista.protocoloEDocs = response.protocoloEDocs;
+            this._pollingService.executarPollingPersonalizado(
+              (() => this._programasService.getById(this.currentPolling.idPrograma)),
+              ((response: IPrograma) => {
+                if (response && response.protocoloEdocs) return true;
+                return false;
+              }),
+              2000,
+            ).subscribe({
+              next: (programa: IPrograma) => {
+                if (programa.protocoloEdocs) {
+                  const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === programa.id);
+                  if (programaNaLista) programaNaLista.protocoloEdocs = programa.protocoloEdocs;
 
-                this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
-                this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
+                  this.currentPolling.idPrograma = -1;
+                  this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
+                  this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
+                }
               },
               error: (err) => {
                 console.error('Ocorreu um erro ao tentar atualizar o Programa!\n', err);

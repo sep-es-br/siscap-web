@@ -18,6 +18,7 @@ import { ProgramasListComponent } from './list/programas-list.component';
 
 import { ProgramasRoutingModule } from './programas-routing.module';
 import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas.component';
+import { OrgaosPapeisFormComponent } from '../../shared/components/orgaos-papeis-form/orgaos-papeis-form.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas
     NgbAlertModule,
     NgbTooltipModule,
     ProgramasRoutingModule,
+    OrgaosPapeisFormComponent,
   ],
   exports: [
     ProgramasComponent,
