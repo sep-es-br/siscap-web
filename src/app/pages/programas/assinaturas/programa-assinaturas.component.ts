@@ -4,6 +4,7 @@ import { ProgramasService } from '../../../core/services/programas/programas.ser
 import {
   IPrograma,
   IProgramaAssinaturasForm,
+  StatusAssinaturaPrograma,
 } from '../../../core/interfaces/programa.interface';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
@@ -332,7 +333,13 @@ export class ProgramaAssinaturasComponent {
           this.appStatus = AppStatus.LOADING;
 
           this._programasService.recusarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo).subscribe({
-            next: (res) => {
+            next: () => {
+              const assinaturaUsuario = this.programaAtual.programaAssinantesEdocsDto?.find((ass) => ass.idPessoa === this.usuarioAtual.idPessoa);
+              if (assinaturaUsuario) {
+                assinaturaUsuario.statusAssinatura = StatusAssinaturaPrograma.RECUSADO;
+                this.atualizarAssinaturas(this.programaAtual);
+              }
+
               modalRef.close();
               this.appStatus = AppStatus.SUCCESS;
 

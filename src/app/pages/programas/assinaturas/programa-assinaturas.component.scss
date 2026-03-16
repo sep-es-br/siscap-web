@@ -16,13 +16,15 @@
       }
 
       .assinatura-wrap {
-        &:nth-of-type(odd) {
-          padding-right: .25em;
-          margin-bottom: .5em;
-        }
-        &:nth-of-type(even) {
-          padding-left: .25em;
-          margin-bottom: .5em;
+        margin-bottom: .5em;
+
+        @media screen and (min-width: 768px) {
+          &:nth-of-type(odd) {
+            padding-right: .25em;
+          }
+          &:nth-of-type(even) {
+            padding-left: .25em;
+          }
         }
 
         .assinatura-box {
@@ -49,7 +51,7 @@
             &.check-icon {
               color: #2FBB34
             }
-            &.error-icon {
+            &.refused-icon {
               color: red;
             }
           }

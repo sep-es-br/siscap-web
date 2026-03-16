@@ -39,6 +39,7 @@ export enum StatusAssinaturaPrograma {
   PENDENTE = 1,
   ASSINADO = 2,
   ERRO = 3,
+  RECUSADO = 4,
 }
 
 export interface IProgramaAssinatura {
