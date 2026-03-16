@@ -68,10 +68,16 @@
                   Assinando
                 </span>
               } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1) {
-                <button class="btn btn-success icon-text-btn text-nowrap w-25 p-2" (click)="dispararModalConfirmarAssinatura()">
-                  <i class="fa-solid fa-pencil"></i>
-                  <span>Assinar</span>
-                </button>
+                <div class="d-flex flex-column flex-md-row align-items-center justify-content-center w-100 acoes-assinatura">
+                  <button class="botao-recusar btn btn-danger icon-text-btn text-nowrap p-2 mb-2 mb-md-0 me-md-1" (click)="dispararModalRecusarAutorizacao()">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span>Não Autorizo</span>
+                  </button>
+                  <button class="botao-assinar btn btn-success icon-text-btn text-nowrap p-2 ms-md-1" (click)="dispararModalConfirmarAssinatura()">
+                    <i class="fa-solid fa-pencil"></i>
+                    <span>Assinar</span>
+                  </button>
+                </div>
               } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 2) {
                 <span>
                   <i class="status-assinatura check-icon fa-solid fa-check"></i>

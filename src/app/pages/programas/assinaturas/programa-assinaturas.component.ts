@@ -314,4 +314,43 @@ export class ProgramaAssinaturasComponent {
         },
       });
   }
+
+  dispararModalRecusarAutorizacao() {
+    const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
+      centered: true,
+    });
+
+    modalRef.componentInstance.config = {
+      titulo: 'Recusar assinatura',
+      textoPrincipal: 'Sua recusa a assinar esse Programa o impossibilitará de ser Autuado.',
+    };
+
+    modalRef.result.then(
+      (resolve) => { },
+      (result) => {
+        if (result === 'confirmar') {
+          this.appStatus = AppStatus.LOADING;
+
+          this._programasService.recusarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo).subscribe({
+            next: (res) => {
+              modalRef.close();
+              this.appStatus = AppStatus.SUCCESS;
+
+              this._toastService.showToast(
+                'success',
+                'Recusa registrada com sucesso',
+              );
+            },
+            error: (err) => {
+              console.error('Ocorreu um erro ao tentar recusar a assinatura do Programa!\n', err);
+              this._toastService.showToast(
+                'error',
+                'Ocorreu um erro ao tentar recusar a assinatura do Programa!',
+              );
+            }
+          });
+        }
+      }
+    );
+  }
 }

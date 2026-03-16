@@ -34,6 +34,16 @@
             font-weight: bold;
             text-transform: uppercase;
           }
+
+          .acoes-assinatura {
+            .botao-recusar, .botao-assinar {
+              width: 100%;
+
+              @media screen and (min-width: 768px) {
+                width: 25%;
+              }
+            }
+          }
   
           .status-assinatura {
             &.check-icon {
