@@ -62,7 +62,6 @@ export class ProjetosService extends BaseHttpService<
     new BehaviorSubject<number>(0);
 
   public get idProjeto$(): BehaviorSubject<number> {
-    return new BehaviorSubject(685);
     return this._idProjeto$;
   }
 

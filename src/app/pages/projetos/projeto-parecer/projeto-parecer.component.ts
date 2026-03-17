@@ -119,7 +119,9 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
 
         this.editor = Jodit.make(this.editorElement?.nativeElement, {
           height: 300,
-
+          enter: 'p',
+          disablePlugins: 'file image',
+          toolbarSticky: false,
           // Toolbar simples (ideal pro Jasper)
           buttons: [
             'bold',
@@ -128,9 +130,25 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
             '|',
             'ul',
             'ol',
-            '|',
-            'link'
-          ]
+          ],
+          cleanHTML: {
+            removeEmptyElements: true,   // remove <p><br></p>
+            fillEmptyParagraph: false,
+            replaceOldTags: {
+              // define tags que são permitidas; as não listadas serão removidas
+              b: 'b',
+              strong: 'strong',
+              i: 'i',
+              em: 'em',
+              u: 'u',
+              ul: 'ul',
+              ol: 'ol',
+              li: 'li',
+              a: 'a',
+              p: 'p',
+              br: 'br'
+            }
+          }
         });
 
         this.editor.events.on(['change'], () => this.updateFormControl());
