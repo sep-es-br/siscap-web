@@ -12,6 +12,7 @@ import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
+import { EditorComponent } from '@tinymce/tinymce-angular';
 
 @Component({
   selector: 'siscap-projeto-parecer',
@@ -24,7 +25,8 @@ import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
     NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
-    TemplatesModule
+    TemplatesModule,
+    EditorComponent
   ],
   templateUrl: './projeto-parecer.component.html',
   styleUrl: './projeto-parecer.component.scss'
@@ -35,6 +37,7 @@ export class ProjetoParecerComponent {
   @Input() statusProjeto!: string;
   @Input() lotacaoUsuario!: number;
   @Input() pareceresProjeto!: IParecer[];
+  
 
   constructor(
     private fb: FormBuilder
@@ -65,13 +68,7 @@ export class ProjetoParecerComponent {
   }
 
   public isSubcapGeoc(): boolean {
-    const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
-      this.pareceresProjeto
-        .filter(p =>
-          [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
-        )
-        .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
-    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && subeoSubeppEntranhados && (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP);
+    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
   }
 
   public isEnviado(): boolean {

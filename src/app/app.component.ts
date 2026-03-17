@@ -6,6 +6,7 @@ import { NgSelectConfig } from '@ng-select/ng-select';
 import { SharedModule } from './shared/shared.module';
 import { PagesModule } from './pages/pages.module';
 import { NgbInputDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @Component({
   selector: 'app-root',
