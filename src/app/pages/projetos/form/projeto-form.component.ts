@@ -1229,7 +1229,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
         )
         .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
-    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && subeoSubeppEntranhados && (this.lotacaoUsuario  === LotacaoUsuarioEnum.SUBCAP);
+    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && subeoSubeppEntranhados;
   }
 
   private validarFormulario(form: FormGroup): boolean {
@@ -1300,7 +1300,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               } as IParecer;
 
             })
-            .filter(parecer => parecer.parecerLotacao !== this.lotacaoUsuario)
+            .filter(parecer =>!this.aguardandoParecer() || parecer.parecerLotacao !== this.lotacaoUsuario)
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {

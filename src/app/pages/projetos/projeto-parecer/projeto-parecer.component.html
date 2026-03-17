@@ -47,18 +47,18 @@
             </validation-message>
           </label>
 
-          <textarea
+          <textarea #editor
             id="textoParecer"
             class="form-control"
-            formControlName="textoParecer"
             rows="8"
             maxlength="2000"
             placeholder="Digite aqui o texto do parecer..."
+            [disabled]="isEnviado()"
           >
           </textarea>
 
           <small class="text-muted d-block text-end ">
-            {{ this.parecerFormGroup.get('textoParecer')?.value?.length || 0 }}/2000 caracteres
+            {{ this.textoLength }}/2000 caracteres
           </small>
         </div>
       </div>
