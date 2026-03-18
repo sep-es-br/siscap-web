@@ -14,6 +14,8 @@ import {
   NgbDatepickerI18n,
 } from '@ng-bootstrap/ng-bootstrap';
 
+import { provideAnimations } from '@angular/platform-browser/animations'
+
 import { APP_ROUTES } from './app.routes';
 
 import { SiscapTitleStrategy } from './core/providers/angular/SiscapTitleStrategy';
@@ -48,5 +50,6 @@ export const appConfig: ApplicationConfig = {
     { provide: NgbDateParserFormatter, useClass: SiscapNgbDateParserFormatter },
     { provide: NgbDateAdapter, useClass: SiscapNgbDateAdapter },
     { provide: NgbDatepickerI18n, useClass: SiscapNgbDatepickerI18n },
+    provideAnimations()
   ],
 };

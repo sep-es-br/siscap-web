@@ -23,6 +23,9 @@ import {
   interval,
   takeUntil,
   filter,
+  startWith,
+  mergeAll,
+  forkJoin,
 } from 'rxjs';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -85,12 +88,13 @@ import { IParecer } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
+import { animate, query, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'siscap-projeto-form',
   standalone: false,
   templateUrl: './projeto-form.component.html',
-  styleUrl: './projeto-form.component.scss',
+  styleUrl: './projeto-form.component.scss'
 })
 export class ProjetoFormComponent implements OnInit, OnDestroy {
 
@@ -187,6 +191,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public exibeListaEtapasIntegracao: boolean = false;
 
+  public mapSubUser : {[index:string] : string} = {};
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -201,6 +207,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
   input$ = new Subject<string>();
+
+  StatusParecerEnum = StatusParecerEnum;
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
@@ -578,7 +586,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._usuarioService.usuarioPerfil.idOrganizacoes;
 
     this._projetosService.idProjeto$.pipe(take(1)).subscribe(idProjeto => {
-
+      
       if (idProjeto > 0) {
         this.carregarProjetoEditar(idProjeto);
       } else {
@@ -814,6 +822,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }),
       pareceresProjeto: this._nnfb.array([]),
     });
+
+    const mapSubObs : {[index: string]: Observable<string>} = {};
+    projetoFormModel?.pareceresProjeto?.forEach(parecer => {
+        mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
+                                                    .pipe(map(pessoa => pessoa.nome))
+    })
+
+    forkJoin(mapSubObs).subscribe(retorno => this.mapSubUser = retorno);
 
     this.carregarPessoasPorOrganizacao();
 
@@ -1196,7 +1212,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       setTimeout(() => {
         const idDocumentoEdocsParecer = idDocumentoEdocsFormControl?.value ?? '';
-        if (idDocumentoEdocsParecer.length > 0)
+        if (idDocumentoEdocsParecer.length > 0 || (this.lotacaoUsuario  === LotacaoUsuarioEnum.SUBCAP && !this.isGeocEditavel()))
           textoParecerFormControl.disable({ emitEvent: false });
         else
           textoParecerFormControl.enable({ emitEvent: false });
@@ -1204,6 +1220,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     }
 
+  }
+
+  public isGeocEditavel() : boolean {
+    const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
+      this.pareceresProjeto
+        .filter(p =>
+          [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
+        )
+        .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
+    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && subeoSubeppEntranhados;
   }
 
   private validarFormulario(form: FormGroup): boolean {
@@ -1253,6 +1279,28 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     return true;
 
+  }
+
+  getLotacao(nLotacao: number) {
+    switch(nLotacao) {
+      case LotacaoUsuarioEnum.SUBCAP: return "GEOC";
+      case LotacaoUsuarioEnum.SUBEO: return "Orçamentário";
+      case LotacaoUsuarioEnum.SUBEPP: return "Estratégico";
+    }
+    return undefined;
+  }
+
+  get demaisPareceres() {
+    return [1, 2, 4]
+            .map(n => {
+              const parecer = this.pareceresProjeto.filter(p => p.parecerLotacao === n)[0]
+
+              return parecer ?? {
+                parecerLotacao: n
+              } as IParecer;
+
+            })
+            .filter(parecer =>!this.aguardandoParecer() || parecer.parecerLotacao !== this.lotacaoUsuario)
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
