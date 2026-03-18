@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import {
   IPrograma,
@@ -62,7 +62,8 @@ export class ProgramaAssinaturasComponent {
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _usuarioService: UsuarioService,
     private readonly _ngbModalService: NgbModal,
-    private readonly _toastService: ToastService
+    private readonly _toastService: ToastService,
+    private readonly _router: Router,
   ) {
     this.appStatus = AppStatus.LOADING;
 
@@ -363,5 +364,54 @@ export class ProgramaAssinaturasComponent {
             });
         },
       });
+  }
+
+  dispararModalRecusarAutorizacao() {
+    const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
+      centered: true,
+    });
+
+    modalRef.componentInstance.config = {
+      titulo: 'Recusar assinatura',
+      textoPrincipal: 'Sua recusa a assinar esse Programa o impossibilitará de ser Autuado.',
+    };
+
+    modalRef.result.then(
+      (resolve) => { },
+      (result) => {
+        if (result === 'confirmar') {
+          this.appStatus = AppStatus.LOADING;
+
+          this._programasService.recusarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo).subscribe({
+            next: () => {
+              const assinaturaUsuario = this.programaAtual.programaAssinantesEdocsDto?.find((ass) => ass.idPessoa === this.usuarioAtual.idPessoa);
+              if (assinaturaUsuario) {
+                assinaturaUsuario.statusAssinatura = StatusAssinaturaPrograma.RECUSADO;
+                this.atualizarAssinaturas(this.programaAtual);
+              }
+
+              modalRef.close();
+              this.appStatus = AppStatus.SUCCESS;
+
+              this._toastService.showToast(
+                'success',
+                'Recusa registrada com sucesso',
+              );
+            },
+            error: (err) => {
+              console.error('Ocorreu um erro ao tentar recusar a assinatura do Programa!\n', err);
+              this._toastService.showToast(
+                'error',
+                'Ocorreu um erro ao tentar recusar a assinatura do Programa!',
+              );
+            }
+          });
+        }
+      }
+    );
+  }
+
+  voltarParaLista() {
+    this._router.navigateByUrl('/main/programas');
   }
 }

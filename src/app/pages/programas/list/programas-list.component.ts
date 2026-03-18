@@ -24,7 +24,7 @@ import { PollingFasesModel } from '../../../core/models/polling.model';
 import { PollingModalComponent } from '../../../shared/templates/polling-modal/polling-modal.component';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { environment } from '../../../../environments/environment';
-import { PollingService } from '../../../core/services/polling/polling.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'siscap-programas-list',
@@ -57,7 +57,7 @@ export class ProgramasListComponent {
     private readonly _navegacaoService: NavegacaoService,
     private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
-    private readonly _pollingService: PollingService,
+    private readonly _router: Router,
   ) {
     this._programasService.programasAguardandoEdocs$
       .pipe(
@@ -233,6 +233,10 @@ export class ProgramasListComponent {
               error: (err) => {
                 console.error('Ocorreu um erro ao tentar atualizar o Programa!\n', err);
                 this._toastService.showToast('error', 'Ocorreu um erro ao tentar atualizar o Programa');
+
+                this.currentPolling.idPrograma = -1;
+                this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
+                this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
               },
             });
           } else {
@@ -242,5 +246,9 @@ export class ProgramasListComponent {
           }
         },
       });
+  }
+
+  acessarAssinaturasPrograma(idPrograma: number) {
+    this._router.navigateByUrl(`/main/programas/${idPrograma}/assinaturas`); 
   }
 }

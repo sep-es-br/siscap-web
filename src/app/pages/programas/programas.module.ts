@@ -19,6 +19,7 @@ import { ProgramasListComponent } from './list/programas-list.component';
 import { ProgramasRoutingModule } from './programas-routing.module';
 import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas.component';
 import { OrgaosPapeisFormComponent } from '../../shared/components/orgaos-papeis-form/orgaos-papeis-form.component';
+import { NomeStatusProgramaPipe } from '../../shared/pipes/programa-status/programa-status.pipe';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { OrgaosPapeisFormComponent } from '../../shared/components/orgaos-papeis
     NgbTooltipModule,
     ProgramasRoutingModule,
     OrgaosPapeisFormComponent,
+    NomeStatusProgramaPipe,
   ],
   exports: [
     ProgramasComponent,

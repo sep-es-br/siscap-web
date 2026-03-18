@@ -1,5 +1,5 @@
 @if (loading) {
-  <div class="h-100" *ngIf="loading">
+  <div class="h-100">
     <loading-spinner></loading-spinner>
   </div>
 } @else {
@@ -23,9 +23,18 @@
                   Sigla do Programa
                 </validation-message>
               </label>
-              <input mask="" [inputTransformFn]="toUppercaseInputTransformFn"
-                [outputTransformFn]="toUppercaseOutputTransformFn" id="sigla" type="text" class="form-control"
-                formControlName="sigla" maxlength="12" />
+              <input
+                class="form-control"
+                mask=""
+                id="sigla"
+                type="text"
+                formControlName="sigla"
+                maxlength="12"
+                [ngClass]="{ 'input-readonly': !isProgramaAtualEditavel }"
+                [readonly]="!isProgramaAtualEditavel"
+                [inputTransformFn]="toUppercaseInputTransformFn"
+                [outputTransformFn]="toUppercaseOutputTransformFn"
+              />
             </div>
             <div class="col-12 col-md-8">
               <label for="titulo" class="col-12 form-label">
@@ -33,7 +42,15 @@
                   Titulo do Programa
                 </validation-message>
               </label>
-              <input id="titulo" type="text" class="form-control" formControlName="titulo" maxlength="150" />
+              <input
+                id="titulo"
+                type="text"
+                class="form-control"
+                formControlName="titulo"
+                maxlength="150"
+                [ngClass]="{ 'input-readonly': !isProgramaAtualEditavel }"
+                [readonly]="!isProgramaAtualEditavel"
+              />
             </div>
   
             <div class="col-12">
@@ -47,17 +64,21 @@
                 name="orgaosEnvolvidos"
                 placeholder="-- Selecione os orgãos executores do programa --"
                 formControlName="orgaosEnvolvidosList"
+                [readonly]="!isProgramaAtualEditavel"
                 [multiple]="true"
                 [hideSelected]="true"
               >
-                <ng-option *ngFor="let organizacao of organizacoesOpcoes" [value]="organizacao.id">
-                  {{ organizacao.nome }}
-                </ng-option>
+                @for (organizacao of organizacoesOpcoes; track organizacao) {
+                  <ng-option [value]="organizacao.id">
+                    {{ organizacao.nome }}
+                  </ng-option>
+                }
               </ng-select>
             </div>
             <div class="col-12 mt-2">
               <siscap-orgaos-papeis-form
                 [orgaosSelecionados]="orgaosSelecionados"
+                [isModoEdicao]="isProgramaAtualEditavel"
                 (orgaoRemovido)="handleSelecaoOrgaoRemovido($event)"
                 (selecaoOrgaos)="handlePapeisOrgaosSelecionados($event)"
               >
@@ -72,38 +93,63 @@
               </label>
   
               <div class="input-group">
-                <input type="text" class="form-control" placeholder="Digite o nome" id="nomeagente"
-                  formControlName="nomeagente" maxLength="150" (keyup.enter)="buscarAgentesPorTermo()"
-                  (click)="exibirLista = false" />
-                <button class="btn btn-outline-secondary" type="button" (click)="buscarAgentesPorTermo()"
-                  [disabled]="isLoadingPessoasFiltroTermo || !isModoEdicao">
-                  <span *ngIf="!isLoadingPessoasFiltroTermo" class="icon-container">
-                    <i class="fas fa-search"></i>
-                  </span>
-                  <span *ngIf="isLoadingPessoasFiltroTermo" class="icon-container">
-                    <span class="spinner-border spinner-border-sm"></span>
-                  </span>
+                <input
+                  class="form-control"
+                  id="nomeagente"
+                  type="text"
+                  placeholder="Digite o nome"
+                  formControlName="nomeagente"
+                  maxLength="150"
+                  [ngClass]="{ 'input-readonly': !isProgramaAtualEditavel }"
+                  [readonly]="!isProgramaAtualEditavel"
+                  (keyup.enter)="buscarAgentesPorTermo()"
+                  (click)="exibirLista = false"
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  [disabled]="isLoadingPessoasFiltroTermo || !isProgramaAtualEditavel"
+                  (click)="buscarAgentesPorTermo()"
+                >
+                  @if (isLoadingPessoasFiltroTermo) {
+                    <span class="icon-container">
+                      <span class="spinner-border spinner-border-sm"></span>
+                    </span>
+                  } @else {
+                    <span class="icon-container">
+                      <i class="fas fa-search"></i>
+                    </span>
+                  }
                 </button>
               </div>
   
-              <div class="card resultados-container" *ngIf="exibirLista && pessoasOpcoesGoves.length > 0"
-                style="max-height: 300px; margin-top: 6px; margin-bottom: 6px;">
-                <div class="card-body p-0">
-                  <ul class="list-group list-group-flush lista-rolavel" style="max-height: 300px; overflow-y: auto;">
-                    <li class="list-group-item list-group-item-action cursor-pointer"
-                      *ngFor="let agente of pessoasOpcoesGoves" (click)="idMembroNgSelectChangeEvent(agente)">
-                      <div class="d-flex flex-column">
-                        <span>{{ agente.nome }}</span>
-                        <small class="text-muted">{{ agente.papelPrioritario }}</small>
-                      </div>
-                    </li>
-                  </ul>
+              @if (exibirLista && pessoasOpcoesGoves.length > 0) {
+                <div class="card resultados-container" style="max-height: 300px; margin-top: 6px; margin-bottom: 6px;">
+                  <div class="card-body p-0">
+                    <ul class="list-group list-group-flush lista-rolavel" style="max-height: 300px; overflow-y: auto;">
+                      @for (agente of pessoasOpcoesGoves; track agente) {
+                        <li
+                          class="list-group-item list-group-item-action cursor-pointer"
+                          (click)="idMembroNgSelectChangeEvent(agente)"
+                        >
+                          <div class="d-flex flex-column">
+                            <span>{{ agente.nome }}</span>
+                            <small class="text-muted">{{ agente.papelPrioritario }}</small>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                  </div>
                 </div>
-              </div>
+              }
             </div>
             <div class="col-12 mt-2">
-              <siscap-equipe-form [tiposPapelOpcoes]="tiposPapelOpcoesVisiveis" [isModoEdicao]="isModoEdicao"
-                [pessoasOpcoesGoves]="pessoasOpcoesGoves"></siscap-equipe-form>
+              <siscap-equipe-form
+                [tiposPapelOpcoes]="tiposPapelOpcoesVisiveis"
+                [isModoEdicao]="isProgramaAtualEditavel"
+                [pessoasOpcoesGoves]="pessoasOpcoesGoves"
+              >
+              </siscap-equipe-form>
             </div>
   
             <div class="col-12">
@@ -114,70 +160,68 @@
               </label>
   
               <ng-select
-                name="idProjetoProposto"
                 id="idProjetoProposto"
+                name="idProjetoProposto"
                 placeholder="-- Selecione um DIC para incluir no programa --"
+                bindValue="nome"
+                [disabled]="!isProgramaAtualEditavel"
                 [(ngModel)]="idProjetoProposto"
                 [ngModelOptions]="{ standalone: true }"
-                [disabled]="!isModoEdicao"
                 (change)="idProjetoPropostoNgSelectChangeEvent($event)"
-                bindValue="nome"
               >
-                <ng-option *ngFor="
-                    let projetoPropostoOpcao of filtrarProjetosPropostosOpcoes(
-                      projetosPropostosOpcoes
-                    )
-                  " [value]="projetoPropostoOpcao">
-                  {{ projetoPropostoOpcao.nome }}
-                </ng-option>
-              </ng-select>              
+                @for (projetoPropostoOpcao of filtrarOpcoesProjetosPropostos(projetosPropostosOpcoes); track projetoPropostoOpcao) {
+                  <ng-option [value]="projetoPropostoOpcao">
+                    {{ projetoPropostoOpcao.nome }}
+                  </ng-option>
+                }
+              </ng-select>
             </div>
   
             <div class="col-12 my-2">
-              <div class="card" *ngIf="idProjetoPropostoList.value.length > 0">
-                <div class="card-body row gy-2 mb-0">
-                  <ng-container *ngFor="
-                      let idProjetoProposto of idProjetoPropostoList.value;
-                      index as i
-                    ">
-                    <div class="col-12 col-sm-6">
-                      <div class="card">
-                        <div
-                          class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center">
-                          <div class="col-12 col-lg-5 pb-2 pb-lg-0 text-truncate" #projetoPropostoNomeTarget>
-                            <span
-                              class="nome-projeto-proposto"
-                              placement="bottom"
-                              [positionTarget]="projetoPropostoNomeTarget"
-                              [ngbTooltip]="getProjetoPropostoOpcao(idProjetoProposto).nome"
-                            >
-                              {{ getProjetoPropostoOpcao(idProjetoProposto).nome }}
-                            </span>
-                          </div>
-                          <div
-                            class="col-12 col-md-5 d-inline-flex justify-content-center justify-content-md-start align-items-center">
-                            <span>
-                              {{ getProjetoPropostoOpcao(idProjetoProposto).valorEstimado
-                                | mask
-                                : "separator.2"
-                                : { prefix: "R$ ", leadZero: true, thousandSeparator: ".", decimalMarker: "," }
-                              }}
-                            </span>
-                          </div>
-                          <div
-                            class="col-12 col-md-2 col-lg-1 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-start align-items-center">
-                            <button type="button" ngbTooltip="Remover Projeto do Programa"
-                              class="btn btn-outline-danger rounded-circle" [disabled]="!isModoEdicao"
-                              (click)="removerProjetoPropostoDoPrograma(i)">
-                              <i class="fa-solid fa-close delete-btn-icon"></i>
-                            </button>
+              @if (idProjetoPropostoList.value.length > 0) {
+                <div class="card">
+                  <div class="card-body row gy-2 mb-0">
+                    @for (idProjetoProposto of idProjetoPropostoList.value; track idProjetoProposto; let i = $index) {
+                      <div class="col-12 col-sm-6">
+                        <div class="card">
+                          <div class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center">
+                            <div class="col-12 col-lg-5 pb-2 pb-lg-0 text-truncate" #projetoPropostoNomeTarget>
+                              <span
+                                class="nome-projeto-proposto"
+                                placement="bottom"
+                                [positionTarget]="projetoPropostoNomeTarget"
+                                [ngbTooltip]="getProjetoPropostoOpcao(idProjetoProposto).nome"
+                              >
+                                {{ getProjetoPropostoOpcao(idProjetoProposto).nome }}
+                              </span>
+                            </div>
+                            <div class="col-12 col-md-5 d-inline-flex justify-content-center justify-content-md-start align-items-center">
+                              <span>
+                                {{ getProjetoPropostoOpcao(idProjetoProposto).valorEstimado
+                                  | mask
+                                  : "separator.2"
+                                  : { prefix: "R$ ", leadZero: true, thousandSeparator: ".", decimalMarker: "," }
+                                }}
+                              </span>
+                            </div>
+                            <div class="col-12 col-md-2 col-lg-1 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-start align-items-center">
+                              <button
+                                class="btn btn-outline-danger rounded-circle"
+                                type="button"
+                                ngbTooltip="Remover Projeto do Programa"
+                                [disabled]="!isProgramaAtualEditavel"
+                                (click)="removerProjetoPropostoDoPrograma(i)"
+                              >
+                                <i class="fa-solid fa-close delete-btn-icon"></i>
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </ng-container>
+                    }
+                  </div>
                 </div>
-              </div>
+              }
             </div>
   
             <div class="col-12">
@@ -188,23 +232,42 @@
               <label for="percentual-custo-administrativo" class="col-12 form-label">
                 % Custos Administrativos
               </label>
-              <input mask="separator.2" thousandSeparator="." decimalMarker=","
-                (blur)="percentualCustoAdministrativoChangeEvent($event)" [inputTransformFn]="rtlCurrencyInputTransformFn"
-                [outputTransformFn]="rtlCurrencyOutputTransformFn" type="text" id="percentual-custo-administrativo"
-                class="form-control" formControlName="percentualCustoAdministrativo" min="1" />
+              <input
+                class="form-control"
+                type="text"
+                id="percentual-custo-administrativo"
+                formControlName="percentualCustoAdministrativo"
+                mask="separator.2"
+                min="1"
+                thousandSeparator="."
+                decimalMarker=","
+                [ngClass]="{ 'input-readonly': !isProgramaAtualEditavel }"
+                [inputTransformFn]="rtlCurrencyInputTransformFn"
+                [outputTransformFn]="rtlCurrencyOutputTransformFn"
+                [readonly]="!isProgramaAtualEditavel"
+                (blur)="percentualCustoAdministrativoChangeEvent($event)"
+              />
             </div>
   
             <div id="valor-col" class="col-12 col-md-4 col-lg-7">
               <label for="valor-total-calculado-programa" class="col-12 form-label">
                 Valor Total Estimado
               </label>
-              <input readonly mask="separator.2" [prefix]="getSimboloMoeda(valorService.valorFormGroup.controls.moeda.value)
-                " thousandSeparator="." decimalMarker="," [outputTransformFn]="rtlCurrencyOutputTransformFn"
-                [inputTransformFn]="rtlCurrencyInputTransformFn" type="text" id="valor-total-calculado-programa"
-                class="form-control input-readonly" formControlName="valorCalculadoTotal" min="1" />
-  
+              <input
+                class="form-control input-readonly"
+                type="text"
+                id="valor-total-calculado-programa"
+                formControlName="valorCalculadoTotal"
+                mask="separator.2"
+                min="1"
+                thousandSeparator="."
+                decimalMarker=","
+                readonly
+                [inputTransformFn]="rtlCurrencyInputTransformFn"
+                [outputTransformFn]="rtlCurrencyOutputTransformFn"
+                [prefix]="getSimboloMoeda(valorService.valorFormGroup.controls.moeda.value)"
+              />
             </div>
-  
           </div>
         </form>
       </div>

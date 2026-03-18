@@ -18,6 +18,7 @@
                       id="papelOrgaoSelect"
                       class="papel-orgao-select"
                       placeholder="-- Papel do órgão --"
+                      [disabled]="!isModoEdicao"
                       [clearable]="false"
                       [(ngModel)]="orgao.papel"
                       (ngModelChange)="handleNovoValor($event, orgao)"
@@ -31,9 +32,10 @@
                   </div>
                   <div class="col-12 col-md-3 ps-0 ps-md-2 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-between align-items-center" >
                     <button
+                      class="btn btn-outline-danger rounded-circle"
                       type="button"
                       ngbTooltip="Excluir órgão"
-                      class="btn btn-outline-danger rounded-circle"
+                      [disabled]="!isModoEdicao"
                       (click)="removerOrgao(orgao)"
                     >
                       <i class="fa-solid fa-close delete-btn-icon"></i>

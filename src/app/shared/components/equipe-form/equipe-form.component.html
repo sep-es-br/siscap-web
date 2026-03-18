@@ -21,16 +21,18 @@
                     id="papelSelect"
                     class="papel-select"
                     placeholder="-- Papel do membro --"
-                    [readonly]="isMembroRemovido(i) || isMembroRedator(i)"
+                    [readonly]="isMembroRemovido(i) || isMembroRedator(i) || !isModoEdicao"
                     [clearable]="false"
-                    formControlName="idPapel" >
-                    <ng-option
-                      *ngFor="let tipoPapel of tiposPapelOpcoes"
-                      [value]="tipoPapel.id"
-                      [disabled]="papelDeveEstarDesabilitado(tipoPapel, i)"
-                    >
-                      {{ tipoPapel.nome }}
-                    </ng-option>
+                    formControlName="idPapel"
+                  >
+                    @for (tipoPapel of tiposPapelOpcoes; track tipoPapel) {
+                      <ng-option
+                        [value]="tipoPapel.id"
+                        [disabled]="papelDeveEstarDesabilitado(tipoPapel, i)"
+                      >
+                        {{ tipoPapel.nome }}
+                      </ng-option>
+                    }
                     <ng-template ng-label-tmp let-item="item">
                       {{ getPapelNome(item) }}
                     </ng-template>
@@ -41,8 +43,9 @@
                     type="button"
                     ngbTooltip="Excluir membro da equipe"
                     class="btn btn-outline-danger rounded-circle"
-                    [disabled]="desabilitarCampo(i)"
-                    (click)="removerMembroDaEquipe(i)">
+                    [disabled]="desabilitarCampo(i) || !isModoEdicao"
+                    (click)="removerMembroDaEquipe(i)"
+                  >
                     <i class="fa-solid fa-close delete-btn-icon"></i>
                   </button>
                 </div>
