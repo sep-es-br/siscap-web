@@ -226,7 +226,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       );
 
     this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
-      .getOpcoesProjetosPropostos()
+      .getOpcoesDicsElegiveisPrograma()
       .pipe(
         tap((response: IProjetoPropostoOpcoesDropdown[]) => {
           this.projetosPropostosOpcoes = response;
