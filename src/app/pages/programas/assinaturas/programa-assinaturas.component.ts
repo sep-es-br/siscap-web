@@ -54,6 +54,8 @@ export class ProgramaAssinaturasComponent {
 
   statusAssinatura: PollingEtapasStatus = PollingEtapasStatus.NAO_INICIADA;
 
+  assinaturaPropria: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private _programasService: ProgramasService,
@@ -158,17 +160,18 @@ export class ProgramaAssinaturasComponent {
   atualizarAssinaturas(programa: IPrograma) {
     // Função chamada no início da execução do componente, e após realizar uma assinatura
 
-    if (programa.programaAssinantesEdocsDto && programa.programaAssinantesEdocsDto.length > 0) {
-      const assinaturaUsuarioAtual =
-        programa.programaAssinantesEdocsDto.find(
-          (ass) => ass.idPessoa === this.usuarioAtual.idPessoa
-        );
+    if (
+      programa.programaAssinantesEdocsDto &&
+      programa.programaAssinantesEdocsDto.length > 0
+    ) {
+      const assinaturaUsuarioAtual = programa.programaAssinantesEdocsDto.find(
+        (ass) => ass.idPessoa === this.usuarioAtual.idPessoa
+      );
 
       if (assinaturaUsuarioAtual) {
-        const demaisAssinaturas =
-          programa.programaAssinantesEdocsDto.filter(
-            (ass) => ass.idPessoa !== assinaturaUsuarioAtual.idPessoa
-          );
+        const demaisAssinaturas = programa.programaAssinantesEdocsDto.filter(
+          (ass) => ass.idPessoa !== assinaturaUsuarioAtual.idPessoa
+        );
 
         this.programaAtual = {
           ...programa,
@@ -212,31 +215,40 @@ export class ProgramaAssinaturasComponent {
 
     modalRef.componentInstance.config = {
       titulo: 'Confirmar assinatura',
-      textoPrincipal: 'Sua confirmação autorizará o início dos procedimentos de captação de recursos deste programa.',
+      textoPrincipal:
+        'Sua confirmação autorizará o início dos procedimentos de captação de recursos deste programa.',
     };
 
     modalRef.result.then(
-      (resolve) => { },
+      (resolve) => {},
       (result) => {
         if (result === 'confirmar') {
           this.appStatus = AppStatus.LOADING;
 
-          this._programasService.assinarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo).subscribe({
-            next: (res) => {
-              modalRef.close();
+          this._programasService
+            .assinarAutorizacaoPrograma(
+              this.programaAtual.id,
+              this.usuarioAtual.subNovo
+            )
+            .subscribe({
+              next: (res) => {
+                modalRef.close();
 
-              this.dispararModalPollingPrograma();
+                this.dispararModalPollingPrograma();
 
-              this.appStatus = AppStatus.SUCCESS;
-            },
-            error: (err) => {
-              console.error('Ocorreu um erro ao tentar assinar o programa!\n', err);
-              this._toastService.showToast(
-                'error',
-                'Ocorreu um erro ao tentar assinar o Programa!',
-              );
-            }
-          });
+                this.appStatus = AppStatus.SUCCESS;
+              },
+              error: (err) => {
+                console.error(
+                  'Ocorreu um erro ao tentar assinar o programa!\n',
+                  err
+                );
+                this._toastService.showToast(
+                  'error',
+                  'Ocorreu um erro ao tentar assinar o Programa!'
+                );
+              },
+            });
         }
       }
     );
@@ -251,7 +263,11 @@ export class ProgramaAssinaturasComponent {
         next: (res: IPollingFases[]) => {
           this.fasesPollingAssinatura = res.map((fase) => {
             const descricao = acharDescricaoEtapaPorEtapa(fase.etapa);
-            const status = getFaseStatus(fase.iniciada, fase.finalizada, fase.erro);
+            const status = getFaseStatus(
+              fase.iniciada,
+              fase.finalizada,
+              fase.erro
+            );
 
             return {
               ...fase,
@@ -260,8 +276,13 @@ export class ProgramaAssinaturasComponent {
             };
           });
 
-          if (pollingModalRef && pollingModalRef.componentInstance && pollingModalRef.componentInstance.fasesPolling) {
-            pollingModalRef.componentInstance.fasesPolling = this.fasesPollingAssinatura;
+          if (
+            pollingModalRef &&
+            pollingModalRef.componentInstance &&
+            pollingModalRef.componentInstance.fasesPolling
+          ) {
+            pollingModalRef.componentInstance.fasesPolling =
+              this.fasesPollingAssinatura;
           } else {
             this.statusAssinatura = PollingEtapasStatus.EM_ANDAMENTO;
 
@@ -270,9 +291,10 @@ export class ProgramaAssinaturasComponent {
               { centered: true }
             );
 
-            pollingModalRef.componentInstance.fasesPolling = this.fasesPollingAssinatura;
+            pollingModalRef.componentInstance.fasesPolling =
+              this.fasesPollingAssinatura;
             pollingModalRef.result.then(
-              (resolve) => { },
+              (resolve) => {},
               (result) => {
                 if (result === 'fechar') {
                   pollingModalRef.close();
@@ -288,30 +310,57 @@ export class ProgramaAssinaturasComponent {
           this.appStatus = AppStatus.EMPTY;
         },
         complete: () => {
-          this._toastService.showToast('success', 'Assinado com sucesso!');
-
           this._programasService
             .getById(this._programasService.idPrograma$.getValue())
             .subscribe({
               next: (programa: IPrograma) => {
-                this.programaAtual = {
-                  ...this.programaAtual,
-                  ...programa,
-                };
+                this._toastService.showToast(
+                  'success',
+                  'Assinado com sucesso!'
+                );
+                const assinaturaUsuarioAtual =
+                  programa.programaAssinantesEdocsDto?.find(
+                    (ass) => ass.idPessoa === this.usuarioAtual.idPessoa
+                  );
 
-                this.atualizarAssinaturas(this.programaAtual);
+                if (
+                  assinaturaUsuarioAtual &&
+                  assinaturaUsuarioAtual.statusAssinatura ===
+                    StatusAssinaturaPrograma.ASSINADO &&
+                  assinaturaUsuarioAtual.dataAssinatura
+                ) {
+                  this.programaAtual = {
+                    ...this.programaAtual,
+                    ...programa,
+                  };
+
+                  this.atualizarAssinaturas(this.programaAtual);
+                } else if (this.programaAtual.assinaturaUsuarioAtual) {
+                  // Se o GET do programa não tiver retornado as assinaturas devidamente atualizadas, altera só o status local mesmo
+                  this.programaAtual.assinaturaUsuarioAtual.statusAssinatura =
+                    StatusAssinaturaPrograma.ASSINADO;
+                  this.programaAtual.assinaturaUsuarioAtual.dataAssinatura =
+                    new Date().toString();
+                }
+
                 this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
                 this.appStatus = AppStatus.SUCCESS;
               },
               error: (err) => {
+                // Ocorreu um erro na chamada do GET de Programa, mas a essa altura a assinatura já foi feita com sucesso
                 this._toastService.showToast(
-                  'error',
-                  'Ocorreu um erro ao tentar atualizar o Programa! Atualize a página.'
+                  'success',
+                  'Assinado com sucesso!'
                 );
-                console.error('Ocorreu um erro ao tentar atualizar o Programa:\n', err);
-                this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
-                this.appStatus = AppStatus.ERROR;
-              }
+                if (this.programaAtual.assinaturaUsuarioAtual) {
+                  this.programaAtual.assinaturaUsuarioAtual.statusAssinatura =
+                    StatusAssinaturaPrograma.ASSINADO;
+                  this.programaAtual.assinaturaUsuarioAtual.dataAssinatura =
+                    new Date().toString();
+                  this.statusAssinatura = PollingEtapasStatus.FINALIZADA;
+                  this.appStatus = AppStatus.SUCCESS;
+                }
+              },
             });
         },
       });

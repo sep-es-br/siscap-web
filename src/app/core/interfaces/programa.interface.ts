@@ -9,7 +9,7 @@ export interface IPrograma {
   orgaosEnvolvidosList: Array<IProgramaOrgaosEnvolvidos>;
   percentualCustoAdministrativo: number;
   programaAssinantesEdocsDto?: Array<IProgramaAssinatura>;
-  protocoloEDocs?: string;
+  protocoloEdocs?: string;
   sigla: string;
   statusPrograma: StatusPrograma;
   titulo: string;
@@ -20,8 +20,7 @@ export interface IPrograma {
 
 export interface IProgramaForm extends Omit<IPrograma, 'id'> { }
 
-export interface IProgramaTableData
-  extends Pick<IPrograma, 'id' | 'sigla' | 'titulo' | 'protocoloEDocs' | 'statusPrograma'> {
+export interface IProgramaTableData extends Pick<IPrograma, 'id' | 'sigla' | 'titulo' | 'protocoloEdocs' | 'statusPrograma'> {
   moeda: string;
   tetoPrograma: number;
 }
