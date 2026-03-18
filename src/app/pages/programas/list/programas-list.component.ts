@@ -25,6 +25,7 @@ import { PollingModalComponent } from '../../../shared/templates/polling-modal/p
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
+import { PollingService } from '../../../core/services/polling/polling.service';
 
 @Component({
   selector: 'siscap-programas-list',
@@ -58,6 +59,7 @@ export class ProgramasListComponent {
     private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
     private readonly _router: Router,
+    private readonly _pollingService: PollingService,
   ) {
     this._programasService.programasAguardandoEdocs$
       .pipe(
