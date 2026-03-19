@@ -533,9 +533,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public aguardandoParecer(): boolean {
 
-    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegivel);
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || this.isProjetoElegivel();
 
   }
+
+  public isProjetoElegivel() : boolean {
+    return this.statusProjeto == StatusProjetoEnum.Elegivel;
+  }
+  
 
   ngOnInit(): void {
 
@@ -1212,7 +1217,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       setTimeout(() => {
         const idDocumentoEdocsParecer = idDocumentoEdocsFormControl?.value ?? '';
-        if (idDocumentoEdocsParecer.length > 0 || (this.lotacaoUsuario  === LotacaoUsuarioEnum.SUBCAP && !this.isGeocEditavel()))
+        if (idDocumentoEdocsParecer.length > 0)
           textoParecerFormControl.disable({ emitEvent: false });
         else
           textoParecerFormControl.enable({ emitEvent: false });
@@ -1222,6 +1227,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  public isSubcapGeoc(): boolean {
+    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
+  }
+
   public isGeocEditavel() : boolean {
     const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
       this.pareceresProjeto
@@ -1229,7 +1238,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
         )
         .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
-    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && subeoSubeppEntranhados;
+    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && this.isSubeoSubeppEntranhados();
+  }
+
+  public isSubeoSubeppEntranhados() : boolean {
+    const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
+      this.pareceresProjeto
+        .filter(p =>
+          [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
+        )
+        .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
+    return subeoSubeppEntranhados;
   }
 
   private validarFormulario(form: FormGroup): boolean {
@@ -1291,7 +1310,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   get demaisPareceres() {
-    return [1, 2, 4]
+    
+    return [LotacaoUsuarioEnum.SUBEPP, LotacaoUsuarioEnum.SUBEO, ...(this.isSubeoSubeppEntranhados() ? [LotacaoUsuarioEnum.SUBCAP] : [])]
             .map(n => {
               const parecer = this.pareceresProjeto.filter(p => p.parecerLotacao === n)[0]
 
@@ -1300,7 +1320,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               } as IParecer;
 
             })
-            .filter(parecer =>!this.aguardandoParecer() || parecer.parecerLotacao !== this.lotacaoUsuario)
+            .filter(parecer =>!this.aguardandoParecer() || this.isProjetoElegivel() || parecer.parecerLotacao !== this.lotacaoUsuario)
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
