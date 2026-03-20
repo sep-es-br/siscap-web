@@ -62,6 +62,7 @@ export
   }
 
   public gerarBotoesAcaoFormulario(config: {
+    deveExibirBotaoSalvar: boolean;
     deveExibirBotaoSolicitarAutorizacao: boolean;
     deveExibirBotaoAutuar: boolean;
   }): Array<BotaoPropriedadesModel> {
@@ -70,28 +71,19 @@ export
     const botaoSolicitarAutorizacao = BotoesConfig.gerarBotaoPropriedades('solicitarAutorizacao');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuar');
 
-    let finalButtons: Array<BotaoPropriedadesModel> = [
-      botaoSalvar,
-      botaoCancelar,
-    ];
+    let finalButtons: Array<BotaoPropriedadesModel> = [];
 
-    if (
-      config &&
-      config.deveExibirBotaoSolicitarAutorizacao &&
-      config.deveExibirBotaoAutuar
-    ) {
-      finalButtons = [
-        botaoSalvar,
-        botaoAutuar,
-        botaoSolicitarAutorizacao,
-        botaoCancelar,
-      ];
-    } else if (config && config.deveExibirBotaoSolicitarAutorizacao) {
-      finalButtons = [botaoSalvar, botaoSolicitarAutorizacao, botaoCancelar];
-    } else if (config && config.deveExibirBotaoAutuar) {
-      finalButtons = [botaoSalvar, botaoAutuar, botaoCancelar];
+    if (config.deveExibirBotaoSalvar) {
+      finalButtons.push(botaoSalvar);
+    }
+    if (config.deveExibirBotaoAutuar) {
+      finalButtons.push(botaoAutuar);
+    }
+    if (config.deveExibirBotaoSolicitarAutorizacao) {
+      finalButtons.push(botaoSolicitarAutorizacao);
     }
 
+    finalButtons.push(botaoCancelar);
     return finalButtons;
   }
 

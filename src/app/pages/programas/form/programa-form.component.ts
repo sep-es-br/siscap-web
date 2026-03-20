@@ -187,6 +187,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
         this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
           this._programasService.gerarBotoesAcaoFormulario({
+            deveExibirBotaoSalvar: true,
             deveExibirBotaoSolicitarAutorizacao: false,
             deveExibirBotaoAutuar: false,
           })
@@ -730,6 +731,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private atualizarBotoes(programa: IPrograma) {
+    const deveExibirBotaoSalvar = programa.statusPrograma !== StatusPrograma.RECUSADO;
+    // Botão de Salvar Rascunho só aparece se o Programa não foi Recusado
+    
     const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
     // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
 
@@ -738,6 +742,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
       this._programasService.gerarBotoesAcaoFormulario({
+        deveExibirBotaoSalvar,
         deveExibirBotaoSolicitarAutorizacao,
         deveExibirBotaoAutuar,
       })
