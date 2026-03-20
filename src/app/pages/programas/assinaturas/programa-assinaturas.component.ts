@@ -227,8 +227,7 @@ export class ProgramaAssinaturasComponent {
 
           this._programasService
             .assinarAutorizacaoPrograma(
-              this.programaAtual.id,
-              this.usuarioAtual.subNovo
+              this.programaAtual.id
             )
             .subscribe({
               next: (res) => {
