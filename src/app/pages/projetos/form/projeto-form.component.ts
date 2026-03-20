@@ -875,7 +875,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
 
     const mapSubObs : {[index: string]: Observable<string>} = {};
-    projetoFormModel?.pareceresProjeto?.forEach(parecer => {
+    projetoFormModel?.pareceresProjeto?.filter(parecer => parecer.usuarioFezEnvioParecer).forEach(parecer => {
         mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
                                                     .pipe(map(pessoa => pessoa.nome))
     })
