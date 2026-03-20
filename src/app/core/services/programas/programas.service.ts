@@ -163,12 +163,11 @@ export
   }
 
   public assinarAutorizacaoPrograma(
-    idPrograma: number,
-    userSub: string,
+    idPrograma: number
   ): Observable<void> {
     return this._http.post<void>(
       `${this._url}/programa/${idPrograma}/edocs/assinar`,
-      { subAssinante: userSub },
+      { },
     );
   }
 
