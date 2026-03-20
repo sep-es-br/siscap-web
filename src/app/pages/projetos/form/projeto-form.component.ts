@@ -509,13 +509,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             }
 
           }
-
+        }),
+        finalize(() => {
+          
           // usa uma flag vinda da API informando se o DIC pode ser Editado.. 
           setTimeout(() => this.trocarModo(this.podeEditar), 2000);
 
           this.loading = false;
           this.isLoadingPessoas = false;
-
         })
 
       );
@@ -643,6 +644,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       
       if (idProjeto > 0) {
         this.carregarProjetoEditar(idProjeto);
+        this._subscription.add(this._getAllOpcoes$.pipe(tap(() => {
+          this._subscription.add(this._atualizarProjeto$.subscribe());
+        })).subscribe());
       } else {
 
         this.iniciarForm();
@@ -654,15 +658,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.trocarModo(true);
 
         this.mostrarBotaoBaixarDic = false;
+        
+        this._subscription.add(this._cadastrarProjeto$.subscribe());
+
         this.loading = false;
         this.isLoadingPessoas = false;
 
       }
+      
     });
 
-    this._subscription.add(this._getAllOpcoes$.subscribe());
-    this._subscription.add(this._atualizarProjeto$.subscribe());
-    this._subscription.add(this._cadastrarProjeto$.subscribe());
+
+    
+    
+    
 
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)

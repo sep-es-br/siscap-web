@@ -93,10 +93,6 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
 
     textoParecer?.updateValueAndValidity();
 
-    textoParecer?.valueChanges.subscribe(value => {
-      if(this.editor)  
-        this.editor.value = value
-    })
 
     console.log(' this.isSubeep - ', this.isSubepp() )
     console.log(' this.lotacaoUsuario - ', this.lotacaoUsuario )
@@ -152,6 +148,14 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
         });
 
         this.editor.events.on(['change'], () => this.updateFormControl());
+        const textoParecer = this.parecerFormGroup.get('textoParecer');
+
+        this.editor.value = textoParecer?.getRawValue();
+
+        textoParecer?.valueChanges.subscribe(value => {
+          if(this.editor)  
+            this.editor.value = value
+        })
 
 
     })
