@@ -23,20 +23,21 @@
 <main class="d-flex justify-content-end">
   <p-timeline [value]="statusList">
     <ng-template pTemplate="content" let-event>
-      {{event.status}}
+      
+      <div class="text-nowrap">
+        <button class="btn" data-bs-toggle="collapse" title="{{event.date | date : 'dd/MM/yyyy HH:mm'}}" [attr.data-bs-target]="'#cardBody' + event.id">
+          {{event.status}}
+        </button>
+      </div>
+      <div class="text-start collapse" *ngIf="event.feitoPor" [id]="'cardBody' + event.id">
+        <p class="mb-0">Iniciado em:</p>
+        <p class="mb-0">{{event.date | date : 'dd/MM/yyyy HH:mm'}}</p>
+        <p class="mb-0">Concluido por:</p>
+        <p class="mb-0">{{event.feitoPor}}</p>
+      </div>
     </ng-template>
     <ng-template pTemplate="opposite" let-event>
-      <div class="card" *ngIf="event.date">
-        <div class="card-header text-nowrap">
-          <button class="btn" data-bs-toggle="collapse" [attr.data-bs-target]="'#cardBody' + event.id">
-            {{event.date | date : 'dd/MM/yyyy HH:mm'}}
-          </button>
-        </div>
-        <div class="card-body text-start collapse" *ngIf="event.feitoPor" [id]="'cardBody' + event.id">
-          <p class="mb-0">Concluido por:</p>
-          <p class="mb-0">{{event.feitoPor}}</p>
-        </div>
-      </div>
+      
     </ng-template>
     <ng-template pTemplate="marker" let-event>
       <span [style.borderColor]="event.color"
@@ -333,7 +334,7 @@
       </div>
       <div class="tab-pane fade" [ngClass]="{'show active': aguardandoParecer()}"  *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0" id="tab-pareceres" role="tabpanel" aria-labelledby="nav-pareceres">
         
-        <div class="card" *ngIf="(aguardandoParecer() && (!isSubcapGeoc() || isSubeoSubeppEntranhados())) || isProjetoElegivel()">
+        <div class="card" *ngIf="(aguardandoParecer() && (!isSubcapGeoc() || isSubeoSubeppEntranhados())) && !isProjetoElegivel()">
           <div class="card-header" id="parecerTituloAtual" 
                   data-bs-toggle="collapse" data-bs-target="#parecerAtual">
             <h5 class="fw-bold text-primary mb-2">
