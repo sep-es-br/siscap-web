@@ -30,6 +30,7 @@ import { SiscapNgbDateParserFormatter } from './core/providers/ng-bootstrap/Sisc
 import { SiscapNgbDateAdapter } from './core/providers/ng-bootstrap/SiscapNgbDateAdapter';
 import { SiscapNgbDatepickerI18n } from './core/providers/ng-bootstrap/SiscapNgbDatepickerI18n';
 
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(

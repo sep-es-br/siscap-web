@@ -21,7 +21,6 @@ import { HomeComponent } from '../pages/home/home.component';
 import { DashboardComponent } from './home/dashboard/dashboard.component';
 
 import { PagesRoutingModule } from './pages-routing.module';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [

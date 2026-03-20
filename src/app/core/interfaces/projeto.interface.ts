@@ -4,6 +4,7 @@ import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } fro
 import { IIndicadores } from './indicadores.interface';
 import { IParecer } from './parecer.interface';
 import { IRateio } from './rateio.interface';
+import { IStatusProjeto } from './status-projeto.interface';
 import { IValor } from './valor.interface';
 
 export interface IProjeto {
@@ -47,6 +48,7 @@ export interface IProjeto {
   pareceresProjeto: Array<IParecer>;
   subProponente: string;
   nomeProponente: string;
+  historico: Array<IStatusProjeto >
 }
 
 export interface IProjetoForm
