@@ -290,26 +290,30 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
           orgaosController.updateValueAndValidity();
         }
+
+        this._subscription.add(this._atualizarPrograma$.subscribe());
+        this._subscription.add(this._cadastrarPrograma$.subscribe());
+
+         this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
+          error: (err) =>
+            console.error(
+              'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
+              err
+            ),
+        });
+
+        // fixa tipo como valor estimado..
+        this.programaForm.patchValue({
+          valor: {
+            tipo: TipoValorEnum.Estimado,
+          },
+        });
       }
     }));
 
-    this._subscription.add(this._atualizarPrograma$.subscribe());
-    this._subscription.add(this._cadastrarPrograma$.subscribe());
+    
 
-    this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
-      error: (err) =>
-        console.error(
-          'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
-          err
-        ),
-    });
-
-    // fixa tipo como valor estimado..
-    this.programaForm.patchValue({
-      valor: {
-        tipo: TipoValorEnum.Estimado,
-      },
-    });
+   
   }
 
   ngOnDestroy(): void {
