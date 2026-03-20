@@ -90,6 +90,7 @@ import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { animate, query, style, transition, trigger } from '@angular/animations';
 import { PrimeIcons } from 'primeng/api';
+import { range } from 'lodash';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -385,7 +386,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 feitoPor: statusProjeto.feitoPor
               }
             }
-          });
+          })
+          
+          const index = this.statusList.findIndex(s => s.id);
+
+          if (index > -1) {
+            this.statusList
+              .slice(0, index)
+              .forEach(item => item.color = 'green');
+          }
 
           this.projetoForm.setControl('pareceresProjeto',
             this._nnfb.array(projetoModel.pareceresProjeto || [])
