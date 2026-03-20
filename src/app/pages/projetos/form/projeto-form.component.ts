@@ -579,7 +579,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public aguardandoParecer(): boolean {
 
-    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || this.isProjetoElegivel();
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP);
 
   }
 
