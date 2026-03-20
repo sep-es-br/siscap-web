@@ -731,7 +731,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private atualizarBotoes(programa: IPrograma) {
-    const deveExibirBotaoSalvar = (programa.statusPrograma && programa.statusPrograma === StatusPrograma.EDICAO) || true;
+    const deveExibirBotaoSalvar = (programa.statusPrograma && programa.statusPrograma === StatusPrograma.EDICAO) || !programa.statusPrograma;
     // Botão de Salvar Rascunho só aparece se o Programa é editável
     
     const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
