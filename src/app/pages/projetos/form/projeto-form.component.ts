@@ -393,7 +393,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           if (index > -1) {
             this.statusList
               .slice(0, index)
-              .forEach(item => item.color = 'green');
+              .forEach(item => {
+                item.color = 'green';
+                item.icon = 'pi-check';
+              });
           }
 
           this.projetoForm.setControl('pareceresProjeto',
