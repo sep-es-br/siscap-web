@@ -72,3 +72,17 @@
 .parecerLabel {
     font-weight: bold;
 }
+
+main {
+    display: flex;
+}
+
+::ng-deep {
+    .p-timeline-event-opposite {
+        width: 15rem;
+    }
+
+    .p-timeline-event-content {
+        max-width: 8rem;
+    }
+}

@@ -89,6 +89,7 @@ import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { animate, query, style, transition, trigger } from '@angular/animations';
+import { PrimeIcons } from 'primeng/api';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -192,6 +193,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public exibeListaEtapasIntegracao: boolean = false;
 
   public mapSubUser : {[index:string] : string} = {};
+
+  public statusList : any[] = [];
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -349,6 +352,40 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.parecerProjetoUsuario = projetoModel.parecerProjetoUsuario;
           this.lotacaoUsuario = projetoModel.lotacaoUsuario;
           this.pareceresProjeto = projetoModel.pareceresProjeto;
+
+          this.statusList = [
+            StatusProjetoEnum.Em_Analise,
+            StatusProjetoEnum.Parecer_SEP,
+            StatusProjetoEnum.Elegivel
+          ].map((status) => {
+            const statusProjeto = projetoModel.historico
+              .find(h => h.status == status);
+
+            if (!statusProjeto) {
+              return {
+                color: 'gray',
+                icon: 'pi-circle', // 👈 importante
+                status: status
+              }
+            } else if (!statusProjeto.fimEm) {
+              return {
+                id: statusProjeto.id,
+                color: 'orange',
+                icon: 'pi-exclamation-circle',
+                status: statusProjeto.status,
+                date: statusProjeto.inicioEm
+              }
+            } else {
+              return {
+                id: statusProjeto.id,
+                color: 'green',
+                icon: 'pi-check',
+                status: statusProjeto.status,
+                date: statusProjeto.inicioEm,
+                feitoPor: statusProjeto.feitoPor
+              }
+            }
+          });
 
           this.projetoForm.setControl('pareceresProjeto',
             this._nnfb.array(projetoModel.pareceresProjeto || [])

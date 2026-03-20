@@ -21,6 +21,7 @@ import { ProjetosPesquisaComponent } from './search/projetos-search.component';
 import { IndicadoresFormComponent } from "../../shared/components/indicadores-form/indicadores-form.component";
 import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-form.component';
 import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.component';
+import { TimelineModule } from "primeng/timeline";
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.compo
     ReactiveFormsModule,
     NgbAccordionModule,
     ReactiveFormsModule,
-    ProjetoParecerComponent
+    ProjetoParecerComponent,
+    TimelineModule
 ],
   exports: [
     ProjetosComponent,
