@@ -60,6 +60,6 @@ export class OffcanvasUserProfileComponent {
     this.usuarioPerfil = this._usuarioService.usuarioPerfil;
     this.usuarioAvatar = this.usuarioPerfil.imagemPerfil
       ? converterArrayBufferEmImgSrc(this.usuarioPerfil.imagemPerfil)
-      : '/assets/images/user.png';
+      : 'assets/images/user.png';
   }
 }
