@@ -12,12 +12,15 @@ import {
 import {
   concat,
   finalize,
+  forkJoin,
   map,
   Observable,
   of,
   partition,
+  Subject,
   Subscription,
   switchMap,
+  takeUntil,
   tap,
 } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -70,6 +73,7 @@ import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
+import { take } from 'lodash';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -78,7 +82,8 @@ import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
   styleUrl: './programa-form.component.scss',
 })
 export class ProgramaFormComponent implements OnInit, OnDestroy {
-  private readonly _subscription: Subscription = new Subscription();
+
+  private readonly _destroy$ = new Subject<undefined>();
 
   private readonly _atualizarPrograma$: Observable<IPrograma>;
   private readonly _cadastrarPrograma$: Observable<number>;
@@ -145,47 +150,69 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _pessoasService: PessoasService,
     private readonly _usuarioService: UsuarioService,
   ) {
-    const [editar$, criar$] = partition(
-      this._programasService.idPrograma$,
-      (idPrograma: number) => idPrograma > 0
-    );
 
-    this._atualizarPrograma$ = editar$.pipe(
-      switchMap((idPrograma: number) =>
-        this._programasService.getById(idPrograma)
-      ),
-      tap((response: IPrograma) => {
 
-        // console.log(' response byId programa : ', response);
+    forkJoin({
+      programa: this._programasService.idPrograma$.pipe(
+                  takeUntil(this._destroy$),
+                  switchMap(idPrograma => {
+                    return idPrograma === 0 ? of(undefined) : this._programasService.getById(idPrograma)
+                  })
+                ),
+      
+    }).subscribe(
+      ({programa}) => {
 
-        this.programaAtual = response;
-        const programaModel = new ProgramaModel(response);
+        let config;
 
-        this.iniciarForm(programaModel);
+        if(programa) {
+          
+          this.programaAtual = programa;
+          const programaModel = new ProgramaModel(programa);
 
-        this._idProgramaEdicao = programaModel.id;
-        this.atualizarBotoes(this.programaAtual);
-        this.mostrarBotaoBaixarPrograma = true;
-        this.equipeCaptacao = programaModel.equipeCaptacao;
-        this.loading = false;
-      })
-    );
+          this.iniciarForm(programaModel);
 
-    this._cadastrarPrograma$ = criar$.pipe(
-      tap(() => {
-        this.iniciarForm();
+          this._idProgramaEdicao = programaModel.id;
+          config = this.atualizarBotoes(this.programaAtual);
+          this.mostrarBotaoBaixarPrograma = true;
+          this.equipeCaptacao = programaModel.equipeCaptacao;
+        } else {
+          this.iniciarForm();
 
-        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario({
+          config = {
             deveExibirBotaoSolicitarAutorizacao: false,
             deveExibirBotaoAutuar: false,
+<<<<<<< Updated upstream
             deveExibirBotaoAutuarDesabilitado: false,
           })
         );
+=======
+          };
+>>>>>>> Stashed changes
 
+        }
+
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._programasService.gerarBotoesAcaoFormulario(config)
+        );
         this.loading = false;
+
+      }
+    )
+
+
+
+    this._programasService.idPrograma$.pipe(
+      takeUntil(this._destroy$),
+      switchMap(idPrograma => {
+        return idPrograma === 0 ? of(undefined) : this._programasService.getById(idPrograma)
+      }),
+      tap(response => {
+        
+        
       })
-    );
+    )
+
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
@@ -255,16 +282,14 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this._getTiposValorOpcoes$
     );
 
-    this._subscription.add(
-      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
-        this.executarAcaoBreadcrumb(acao)
-      )
-    );
+    this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
+      this.executarAcaoBreadcrumb(acao)
+    )
     
   }
   
   ngOnInit(): void {
-    this._subscription.add(this._getAllOpcoes$.subscribe({
+    this._getAllOpcoes$.pipe(takeUntil(this._destroy$)).subscribe({
       next: (res) => {
         // É necessário fazer os passos abaixos pois no caso de Cadastrar Programa, o validator assícrono estava sendo
         // criado antes da propriedade organizacoesOpcoes ser preenchida.
@@ -280,11 +305,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
           orgaosController.updateValueAndValidity();
         }
-      }
-    }));
 
-    this._subscription.add(this._atualizarPrograma$.subscribe());
-    this._subscription.add(this._cadastrarPrograma$.subscribe());
+        this._atualizarPrograma$.pipe(takeUntil(this._destroy$)).subscribe();
+        this._cadastrarPrograma$.pipe(takeUntil(this._destroy$)).subscribe();
+      }
+    });
+
+    
 
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       error: (err) =>
@@ -302,6 +329,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     });
   }
 
+<<<<<<< Updated upstream
+=======
+  ngOnDestroy(): void {
+    this._destroy$.next(undefined);
+    this._destroy$.complete();
+    this._programasService.idPrograma$.next(0);
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
+  }
+
+>>>>>>> Stashed changes
   public getControl(controlName: string): AbstractControl<any, any> {
     return this.programaForm.get(controlName) as AbstractControl<any, any>;
   }
@@ -706,10 +743,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this.exibirLista = false;
   }
 
+<<<<<<< Updated upstream
   private atualizarBotoes(programa: IPrograma) {
     let deveExibirBotaoAutuar = false;
     let deveExibirBotaoAutuarDesabilitado = false;
     let deveExibirBotaoSolicitarAutorizacao = false;
+=======
+  private atualizarBotoes(programa: IPrograma) : any {
+    const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
+    // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
+>>>>>>> Stashed changes
 
     if (
       programa.programaAssinantesEdocsDto &&
@@ -728,6 +771,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       deveExibirBotaoSolicitarAutorizacao = true;
     }
 
+<<<<<<< Updated upstream
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
       this._programasService.gerarBotoesAcaoFormulario({
         deveExibirBotaoSolicitarAutorizacao,
@@ -735,6 +779,12 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         deveExibirBotaoAutuarDesabilitado,
       })
     );
+=======
+    return {
+      deveExibirBotaoSolicitarAutorizacao,
+      deveExibirBotaoAutuar,
+    };
+>>>>>>> Stashed changes
   }
 
   public exportarPrograma() {
