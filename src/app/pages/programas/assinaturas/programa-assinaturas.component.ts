@@ -56,6 +56,11 @@ export class ProgramaAssinaturasComponent {
 
   assinaturaPropria: boolean = false;
 
+  get botaoDeAssinarDeveEstarDesabilitado(): boolean {
+    // Desativa o botão de Assinar pro usuário caso algum outro assinante tenha recusado o Programa
+    return this.programaAtual.demaisAssinaturas.some((ass) => ass.statusAssinatura === StatusAssinaturaPrograma.RECUSADO);
+  }
+
   constructor(
     private route: ActivatedRoute,
     private _programasService: ProgramasService,
@@ -225,29 +230,37 @@ export class ProgramaAssinaturasComponent {
         if (result === 'confirmar') {
           this.appStatus = AppStatus.LOADING;
 
-          this._programasService
-            .assinarAutorizacaoPrograma(
-              this.programaAtual.id
-            )
-            .subscribe({
-              next: (res) => {
-                modalRef.close();
-
-                this.dispararModalPollingPrograma();
-
-                this.appStatus = AppStatus.SUCCESS;
-              },
-              error: (err) => {
-                console.error(
-                  'Ocorreu um erro ao tentar assinar o programa!\n',
-                  err
-                );
-                this._toastService.showToast(
-                  'error',
-                  'Ocorreu um erro ao tentar assinar o Programa!'
-                );
-              },
-            });
+          if (this.programaAtual.demaisAssinaturas.some((ass) => ass.statusAssinatura === StatusAssinaturaPrograma.RECUSADO)) {
+            // Verificação extra para garantir que o usuário não tente assinar um Programa que já foi recusado por outra pessoa
+            this._toastService.showToast(
+              'error',
+              'Impossível assinar o Programa pois um dos assinantes já o Recusou',
+            );
+          } else {
+            this._programasService
+              .assinarAutorizacaoPrograma(
+                this.programaAtual.id
+              )
+              .subscribe({
+                next: (res) => {
+                  modalRef.close();
+  
+                  this.dispararModalPollingPrograma();
+  
+                  this.appStatus = AppStatus.SUCCESS;
+                },
+                error: (err) => {
+                  console.error(
+                    'Ocorreu um erro ao tentar assinar o programa!\n',
+                    err
+                  );
+                  this._toastService.showToast(
+                    'error',
+                    'Ocorreu um erro ao tentar assinar o Programa!'
+                  );
+                },
+              });
+          }
         }
       }
     );

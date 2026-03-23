@@ -83,7 +83,11 @@
                     <i class="fa-solid fa-xmark"></i>
                     <span>Não Autorizo</span>
                   </button>
-                  <button class="botao-assinar btn btn-success icon-text-btn text-nowrap p-2 ms-md-1" (click)="dispararModalConfirmarAssinatura()">
+                  <button
+                    class="botao-assinar btn btn-success icon-text-btn text-nowrap p-2 ms-md-1"
+                    [disabled]="botaoDeAssinarDeveEstarDesabilitado"
+                    (click)="dispararModalConfirmarAssinatura()"
+                  >
                     <i class="fa-solid fa-pencil"></i>
                     <span>Assinar</span>
                   </button>
