@@ -658,8 +658,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.trocarModo(true);
 
         this.mostrarBotaoBaixarDic = false;
-        
-        this._subscription.add(this._cadastrarProjeto$.subscribe());
+        this._subscription.add(this._getAllOpcoes$.pipe(tap(() => {
+          this._subscription.add(this._cadastrarProjeto$.subscribe());
+        })).subscribe());
 
         this.loading = false;
         this.isLoadingPessoas = false;
