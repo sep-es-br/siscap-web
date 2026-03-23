@@ -11,7 +11,7 @@ import { SortColumn } from '../../../shared/directives/sortable/sortable.directi
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
-import { IPrograma, IProgramaTableData } from '../../../core/interfaces/programa.interface';
+import { IPrograma, IProgramaTableData, StatusPrograma } from '../../../core/interfaces/programa.interface';
 
 import {
   BreadcrumbAcoesEnum,
@@ -225,7 +225,10 @@ export class ProgramasListComponent {
               next: (programa: IPrograma) => {
                 if (programa.protocoloEdocs) {
                   const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === programa.id);
-                  if (programaNaLista) programaNaLista.protocoloEdocs = programa.protocoloEdocs;
+                  if (programaNaLista) {
+                    programaNaLista.protocoloEdocs = programa.protocoloEdocs;
+                    programaNaLista.statusPrograma = StatusPrograma.AUTUADO;
+                  }
 
                   this.currentPolling.idPrograma = -1;
                   this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
