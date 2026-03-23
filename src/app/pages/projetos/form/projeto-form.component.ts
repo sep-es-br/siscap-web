@@ -368,7 +368,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 icon: 'pi-circle', // 👈 importante
                 status: status
               }
-            } else if (!statusProjeto.fimEm) {
+            } else if (!statusProjeto.fimEm && !StatusProjetoEnum.Elegivel) {
               return {
                 id: statusProjeto.id,
                 color: 'orange',
