@@ -199,8 +199,13 @@ export class ProgramasListComponent implements OnDestroy{
 
           if (faseAutorizacaoEnviada) {
             this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
+
           } else if (faseAutuacaoConfirmada) {
             this._toastService.showToast('success', 'A Autuação foi realizada com sucesso!');
+            const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === this.currentPolling.idPrograma);
+              if (programaNaLista) {
+                programaNaLista.statusPrograma = StatusPrograma.AGUARDANDO_ASSINATURAS;
+              }
           } else if (faseAutorizacaoErro) {
             const errorMessage = (
               faseAutorizacaoErro.msgAlertaExibir &&
