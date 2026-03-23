@@ -258,7 +258,8 @@ export class ProgramaAssinaturasComponent {
                     'error',
                     'Ocorreu um erro ao tentar assinar o Programa!'
                   );
-                },
+                  this.appStatus = AppStatus.ERROR;
+              },
               });
           }
         }
