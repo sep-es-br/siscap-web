@@ -1,6 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, OnDestroy, output } from '@angular/core';
 
-import { take, tap } from 'rxjs';
+import { Subject, take, takeUntil, tap } from 'rxjs';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { DeleteModalComponent } from '../../../shared/templates/delete-modal/delete-modal.component';
@@ -33,10 +33,12 @@ import { PollingService } from '../../../core/services/polling/polling.service';
   templateUrl: './programas-list.component.html',
   styleUrl: './programas-list.component.scss',
 })
-export class ProgramasListComponent {
+export class ProgramasListComponent implements OnDestroy{
   public programasList = input<Array<IProgramaTableData> | null>([]);
 
   public sortableDirectiveOutput = output<string>();
+
+  private destroy$ = new Subject();
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
@@ -63,7 +65,7 @@ export class ProgramasListComponent {
   ) {
     this._programasService.programasAguardandoEdocs$
       .pipe(
-        take(1)
+        takeUntil(this.destroy$)
       )
       .subscribe(set => {
         const programaId = set.values().next().value;
@@ -72,6 +74,11 @@ export class ProgramasListComponent {
           this.dispararModalPolling(programaId);
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(null);
+    this.destroy$.complete();
   }
 
   public sortColumn(event: SortColumn): void {
