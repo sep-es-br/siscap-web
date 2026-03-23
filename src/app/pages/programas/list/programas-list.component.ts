@@ -65,7 +65,7 @@ export class ProgramasListComponent implements OnDestroy{
   ) {
     this._programasService.programasAguardandoEdocs$
       .pipe(
-        takeUntil(this.destroy$)
+        take(1)
       )
       .subscribe(set => {
         const programaId = set.values().next().value;
