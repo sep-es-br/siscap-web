@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -80,7 +80,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
   templateUrl: './programa-form.component.html',
   styleUrl: './programa-form.component.scss',
 })
-export class ProgramaFormComponent implements OnInit, OnDestroy {
+export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly _subscription: Subscription = new Subscription();
 
   private readonly _atualizarPrograma$: Observable<IPrograma>;
@@ -281,6 +281,18 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
     
   }
+
+  ngAfterViewInit(): void {
+    const orgaosController = this.getControl('orgaosEnvolvidosList');
+    if (orgaosController) {
+      if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
+        orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+      }
+
+      orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+      orgaosController.updateValueAndValidity();
+    }
+  }
   
   ngOnInit(): void {
     this._subscription.add(this._getAllOpcoes$.subscribe({
@@ -292,28 +304,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
         
 
-        this._subscription.add(this._atualizarPrograma$.subscribe(() => {
-          const orgaosController = this.getControl('orgaosEnvolvidosList');
-          if (orgaosController) {
-            if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
-              orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
-            }
-
-            orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
-            orgaosController.updateValueAndValidity();
-          }
-        }));
-        this._subscription.add(this._cadastrarPrograma$.subscribe(() => {
-          const orgaosController = this.getControl('orgaosEnvolvidosList');
-          if (orgaosController) {
-            if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
-              orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
-            }
-
-            orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
-            orgaosController.updateValueAndValidity();
-          }
-        }));
+        this._subscription.add(this._atualizarPrograma$.subscribe());
+        this._subscription.add(this._cadastrarPrograma$.subscribe());
 
          this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
           error: (err) =>
