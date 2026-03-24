@@ -14,6 +14,7 @@ import {
 } from '../../interfaces/opcoes-dropdown.interface';
 
 import { environment } from '../../../../environments/environment';
+import { param } from 'jquery';
 
 @Injectable({
   providedIn: 'root',
@@ -160,10 +161,12 @@ export class OpcoesDropdownService {
     >;
   }
 
-  public getOpcoesDicsElegiveisPrograma() {
+  public getOpcoesDicsElegiveisPrograma(incluir? : string) {
     const params = {
       elegiveis: true
-    };
+    } as {[index:string]: any};
+
+    if(incluir) params['incluir'] = incluir
     return this.getOpcoesDropdown('projetos',params) as Observable<
       IProjetoPropostoOpcoesDropdown[]
     >;
