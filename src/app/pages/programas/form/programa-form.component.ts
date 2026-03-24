@@ -148,21 +148,21 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _usuarioService: UsuarioService,
   ) {
 
+    this._programasService.idPrograma$.pipe(
+      takeUntil(this._destroy$),
+      switchMap(idPrograma => {
 
-    forkJoin({
-      programa: this._programasService.idPrograma$.pipe(
-                  takeUntil(this._destroy$),
-                  switchMap(idPrograma => {
-                    return idPrograma === 0 ? of(undefined) : this._programasService.getById(idPrograma)
-                  })
-                ),
-      organizacoesOpcoes: this._opcoesDropdownService.getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria),
-      pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
-      tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
-      projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
-      programasOpcoes: this._opcoesDropdownService.getOpcoesProgramas(),
-      tiposValorOpcoes: this._opcoesDropdownService.getOpcoesTiposValor()
-    }).subscribe(
+        return forkJoin({
+          programa: idPrograma === 0 ? of(undefined) : this._programasService.getById(idPrograma),
+          organizacoesOpcoes: this._opcoesDropdownService.getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria),
+          pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
+          tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
+          projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
+          programasOpcoes: this._opcoesDropdownService.getOpcoesProgramas(),
+          tiposValorOpcoes: this._opcoesDropdownService.getOpcoesTiposValor()
+        })        
+      })
+    ).subscribe(
       ({
         programa, 
         organizacoesOpcoes, 
