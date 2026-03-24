@@ -490,7 +490,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
       ]),
       orgaosEnvolvidosList: this._nnfb.control(
         programaModel?.orgaosEnvolvidosList ? programaModel.orgaosEnvolvidosList.map((org) => org.id) : [],
-        [Validators.required, Validators.minLength(1)],
+        [Validators.required, Validators.minLength(1), this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes)],
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao,
