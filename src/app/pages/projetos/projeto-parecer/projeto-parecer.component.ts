@@ -133,9 +133,9 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
             replaceOldTags: {
               // define tags que são permitidas; as não listadas serão removidas
               b: 'b',
-              strong: 'strong',
+              strong: 'b',
               i: 'i',
-              em: 'em',
+              em: 'i',
               u: 'u',
               ul: 'ul',
               ol: 'ol',
@@ -162,6 +162,14 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
     
   }
 
+  normalizeHtml(html: string): string {
+    return html
+      .replace(/<strong>/g, '<b>')
+      .replace(/<\/strong>/g, '</b>')
+      .replace(/<em>/g, '<i>')
+      .replace(/<\/em>/g, '</i>');
+  }
+
   MAX_CHARS = 2000;
 
   updateFormControl() {
@@ -186,7 +194,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
       this.editor.value = truncated;
       this.textoLength = this.MAX_CHARS;
       const scroll = this.editor.editor.scrollTop;
-      this.parecerFormGroup.get('textoParecer')?.patchValue(truncated, { emitEvent: false });
+      this.parecerFormGroup.get('textoParecer')?.patchValue(this.normalizeHtml(truncated), { emitEvent: false });
       setTimeout(() => {
         if(!this.editor) return;
         this.editor.editor.scrollTop = this.editor.editor.scrollHeight;
@@ -196,7 +204,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
     }
 
     this.textoLength = plainText.length;
-    this.parecerFormGroup.get('textoParecer')?.patchValue(html, { emitEvent: false });
+    this.parecerFormGroup.get('textoParecer')?.patchValue(this.normalizeHtml(html), { emitEvent: false });
   }
 
   // função auxiliar para extrair texto puro
