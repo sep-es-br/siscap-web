@@ -174,13 +174,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
         this.iniciarForm(programaModel);
 
-        this._opcoesDropdownService
+        this._subscription.add( this._opcoesDropdownService
           .getOpcoesDicsElegiveisPrograma(response.idProjetoPropostoList.join(';'))
           .pipe(
             tap((response: IProjetoPropostoOpcoesDropdown[]) => {
               this.projetosPropostosOpcoes = response;
             })
-          )
+          ).subscribe());
 
         this._idProgramaEdicao = programaModel.id;
         this.atualizarBotoes(this.programaAtual);
