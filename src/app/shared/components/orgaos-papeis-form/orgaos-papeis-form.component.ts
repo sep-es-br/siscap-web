@@ -19,6 +19,8 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 export class OrgaosPapeisFormComponent {
   @Input() orgaosSelecionados: Array<IPapeisOrgaoProgramaDropdownOpcoes> = [];
 
+  @Input() isModoEdicao: boolean = true;
+
   @Output() orgaoRemovido = new EventEmitter<IPapeisOrgaoProgramaDropdownOpcoes>();
 
   @Output() selecaoOrgaos = new EventEmitter<Array<IPapeisOrgaoProgramaDropdownOpcoes>>();

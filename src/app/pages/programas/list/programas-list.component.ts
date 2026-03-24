@@ -1,6 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, OnDestroy, output } from '@angular/core';
 
-import { take, tap } from 'rxjs';
+import { Subject, take, takeUntil, tap } from 'rxjs';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { DeleteModalComponent } from '../../../shared/templates/delete-modal/delete-modal.component';
@@ -11,7 +11,7 @@ import { SortColumn } from '../../../shared/directives/sortable/sortable.directi
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import { NavegacaoService } from '../../../core/services/navegacao/navegacao.service';
 
-import { IPrograma, IProgramaTableData } from '../../../core/interfaces/programa.interface';
+import { IPrograma, IProgramaTableData, StatusPrograma } from '../../../core/interfaces/programa.interface';
 
 import {
   BreadcrumbAcoesEnum,
@@ -24,6 +24,7 @@ import { PollingFasesModel } from '../../../core/models/polling.model';
 import { PollingModalComponent } from '../../../shared/templates/polling-modal/polling-modal.component';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { environment } from '../../../../environments/environment';
+import { Router } from '@angular/router';
 import { PollingService } from '../../../core/services/polling/polling.service';
 
 @Component({
@@ -32,10 +33,12 @@ import { PollingService } from '../../../core/services/polling/polling.service';
   templateUrl: './programas-list.component.html',
   styleUrl: './programas-list.component.scss',
 })
-export class ProgramasListComponent {
+export class ProgramasListComponent implements OnDestroy{
   public programasList = input<Array<IProgramaTableData> | null>([]);
 
   public sortableDirectiveOutput = output<string>();
+
+  private destroy$ = new Subject();
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
@@ -57,6 +60,7 @@ export class ProgramasListComponent {
     private readonly _navegacaoService: NavegacaoService,
     private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
+    private readonly _router: Router,
     private readonly _pollingService: PollingService,
   ) {
     this._programasService.programasAguardandoEdocs$
@@ -70,6 +74,11 @@ export class ProgramasListComponent {
           this.dispararModalPolling(programaId);
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(null);
+    this.destroy$.complete();
   }
 
   public sortColumn(event: SortColumn): void {
@@ -190,8 +199,13 @@ export class ProgramasListComponent {
 
           if (faseAutorizacaoEnviada) {
             this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
+
           } else if (faseAutuacaoConfirmada) {
             this._toastService.showToast('success', 'A Autuação foi realizada com sucesso!');
+            const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === this.currentPolling.idPrograma);
+              if (programaNaLista) {
+                programaNaLista.statusPrograma = StatusPrograma.AGUARDANDO_ASSINATURAS;
+              }
           } else if (faseAutorizacaoErro) {
             const errorMessage = (
               faseAutorizacaoErro.msgAlertaExibir &&
@@ -223,7 +237,10 @@ export class ProgramasListComponent {
               next: (programa: IPrograma) => {
                 if (programa.protocoloEdocs) {
                   const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === programa.id);
-                  if (programaNaLista) programaNaLista.protocoloEdocs = programa.protocoloEdocs;
+                  if (programaNaLista) {
+                    programaNaLista.protocoloEdocs = programa.protocoloEdocs;
+                    programaNaLista.statusPrograma = StatusPrograma.AUTUADO;
+                  }
 
                   this.currentPolling.idPrograma = -1;
                   this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
@@ -233,6 +250,10 @@ export class ProgramasListComponent {
               error: (err) => {
                 console.error('Ocorreu um erro ao tentar atualizar o Programa!\n', err);
                 this._toastService.showToast('error', 'Ocorreu um erro ao tentar atualizar o Programa');
+
+                this.currentPolling.idPrograma = -1;
+                this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
+                this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
               },
             });
           } else {
@@ -242,5 +263,9 @@ export class ProgramasListComponent {
           }
         },
       });
+  }
+
+  acessarAssinaturasPrograma(idPrograma: number) {
+    this._router.navigateByUrl(`/main/programas/${idPrograma}/assinaturas`); 
   }
 }

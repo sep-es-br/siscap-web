@@ -23,13 +23,10 @@ import {
   interval,
   takeUntil,
   filter,
-<<<<<<< Updated upstream
-=======
   startWith,
   mergeAll,
   forkJoin,
   throwError,
->>>>>>> Stashed changes
 } from 'rxjs';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -92,16 +89,12 @@ import { IParecer } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
-<<<<<<< Updated upstream
-=======
-import { animate, query, style, transition, trigger } from '@angular/animations';
->>>>>>> Stashed changes
 
 @Component({
   selector: 'siscap-projeto-form',
   standalone: false,
   templateUrl: './projeto-form.component.html',
-  styleUrl: './projeto-form.component.scss',
+  styleUrl: './projeto-form.component.scss'
 })
 export class ProjetoFormComponent implements OnInit, OnDestroy {
 
@@ -198,6 +191,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public exibeListaEtapasIntegracao: boolean = false;
 
+  public mapSubUser : {[index:string] : string} = {};
+
+  public statusList : any[] = [];
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -212,6 +209,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
   input$ = new Subject<string>();
+
+  StatusParecerEnum = StatusParecerEnum;
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
@@ -360,17 +359,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               const statusProjeto = projetoModel.historico
                 .find(h => h.status == status);
 
-<<<<<<< Updated upstream
-          this.projetoForm.setControl('pareceresProjeto',
-            this._nnfb.array(projetoModel.pareceresProjeto || [])
-          );
-
-          // 
-          if (projetoModel.status === StatusProjetoEnum.Arquivado) {
-            this.mostrarBotaoBaixarDic = false;
-            this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-              this._projetosService.gerarBotoesAcaoFormularioArquivado()
-=======
               if (!statusProjeto) {
                 return {
                   color: 'gray',
@@ -399,7 +387,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             this.projetoForm.setControl('pareceresProjeto',
               this._nnfb.array(projetoModel.pareceresProjeto || [])
->>>>>>> Stashed changes
             );
 
             // 
@@ -584,9 +571,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public aguardandoParecer(): boolean {
 
-    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegivel);
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP);
 
   }
+
+  public isProjetoElegivel() : boolean {
+    return this.statusProjeto == StatusProjetoEnum.Elegivel;
+  }
+  
 
   ngOnInit(): void {
 
@@ -637,9 +629,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._usuarioService.usuarioPerfil.idOrganizacoes;
 
     this._projetosService.idProjeto$.pipe(take(1)).subscribe(idProjeto => {
-
+      
       if (idProjeto > 0) {
         this.carregarProjetoEditar(idProjeto);
+        this._subscription.add(this._getAllOpcoes$.pipe(tap(() => {
+          this._subscription.add(this._atualizarProjeto$.subscribe());
+        })).subscribe());
       } else {
 
         this.iniciarForm().subscribe(() => {
@@ -656,11 +651,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         });
       }
+      
     });
 
-    this._subscription.add(this._getAllOpcoes$.subscribe());
-    this._subscription.add(this._atualizarProjeto$.subscribe());
-    this._subscription.add(this._cadastrarProjeto$.subscribe());
+
+    
+    
+    
 
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
@@ -875,9 +872,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       pareceresProjeto: this._nnfb.array([]),
     });
 
-<<<<<<< Updated upstream
-    this.carregarPessoasPorOrganizacao();
-=======
     const mapSubObs : {[index: string]: Observable<string>} = {};
     projetoFormModel?.pareceresProjeto?.forEach(parecer => {
         mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
@@ -891,7 +885,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.projetoFormValueChanges();
 
       this.valorFormValueChanges();
->>>>>>> Stashed changes
 
       if (this.isProponente && !projetoFormModel)
         this.usuarioProponenteValoresIniciaisProjetoForm();
@@ -1282,6 +1275,30 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  public isSubcapGeoc(): boolean {
+    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
+  }
+
+  public isGeocEditavel() : boolean {
+    const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
+      this.pareceresProjeto
+        .filter(p =>
+          [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
+        )
+        .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
+    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && this.isSubeoSubeppEntranhados();
+  }
+
+  public isSubeoSubeppEntranhados() : boolean {
+    const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
+      this.pareceresProjeto
+        .filter(p =>
+          [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
+        )
+        .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
+    return subeoSubeppEntranhados;
+  }
+
   private validarFormulario(form: FormGroup): boolean {
 
     for (const key in form.controls) {
@@ -1329,6 +1346,29 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     return true;
 
+  }
+
+  getLotacao(nLotacao: number) {
+    switch(nLotacao) {
+      case LotacaoUsuarioEnum.SUBCAP: return "GEOC";
+      case LotacaoUsuarioEnum.SUBEO: return "Orçamentário";
+      case LotacaoUsuarioEnum.SUBEPP: return "Estratégico";
+    }
+    return undefined;
+  }
+
+  get demaisPareceres() {
+    
+    return [LotacaoUsuarioEnum.SUBEPP, LotacaoUsuarioEnum.SUBEO, ...(this.isSubeoSubeppEntranhados() ? [LotacaoUsuarioEnum.SUBCAP] : [])]
+            .map(n => {
+              const parecer = this.pareceresProjeto.filter(p => p.parecerLotacao === n)[0]
+
+              return parecer ?? {
+                parecerLotacao: n
+              } as IParecer;
+
+            })
+            .filter(parecer =>!this.aguardandoParecer() || this.isProjetoElegivel() || parecer.parecerLotacao !== this.lotacaoUsuario)
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {

@@ -27,7 +27,6 @@ export type TBotaoAcao =
   | 'exportar'
   | 'solicitarAutorizacao'
   | 'autuar'
-  | 'autuarDisabled'
   | 'fechar';
 
 export abstract class BotoesConfig {
@@ -178,12 +177,6 @@ export abstract class BotoesConfig {
       icone: ['fa-solid fa-lock'],
       texto: 'Autuar',
       acao: 'autuar',
-    },
-    autuarDisabled: {
-      classesCSS: ['btn-secondary', 'disabled'],
-      icone: ['fa-solid fa-lock'],
-      texto: 'Autuado',
-      acao: 'autuarDisabled',
     },
     fechar: {
       classesCSS: ['btn-secondary'],

@@ -160,4 +160,13 @@ export class OpcoesDropdownService {
     >;
   }
 
+  public getOpcoesDicsElegiveisPrograma() {
+    const params = {
+      elegiveis: true
+    };
+    return this.getOpcoesDropdown('projetos',params) as Observable<
+      IProjetoPropostoOpcoesDropdown[]
+    >;
+  }
+
 }

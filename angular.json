@@ -22,11 +22,14 @@
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/quill/dist/quill.core.css",
               "node_modules/quill/dist/quill.snow.css",
+              "node_modules/primeng/resources/themes/lara-light-blue/theme.css",
+              "node_modules/primeng/resources/primeng.min.css",
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/jodit/es2015/jodit.min.css",
               "src/styles.scss"
             ],
             "scripts": [
@@ -34,6 +37,10 @@
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "node_modules/quill/dist/quill.js",
               "node_modules/jquery/dist/jquery.min.js"
+            ],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
             ]
           },
           "configurations": {

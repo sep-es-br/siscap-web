@@ -1,5 +1,5 @@
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,7 @@ import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
+import { Jodit } from 'jodit';
 
 @Component({
   selector: 'siscap-projeto-parecer',
@@ -29,12 +30,19 @@ import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
   templateUrl: './projeto-parecer.component.html',
   styleUrl: './projeto-parecer.component.scss'
 })
-export class ProjetoParecerComponent {
+export class ProjetoParecerComponent implements OnInit, AfterViewInit{
+
+  @ViewChild('editor') editorElement!: ElementRef<HTMLTextAreaElement>;
+  
+  editor! : Jodit | undefined;
+
+  textoLength = 0;
 
   @Input() projetoForm!: FormGroup;
   @Input() statusProjeto!: string;
   @Input() lotacaoUsuario!: number;
   @Input() pareceresProjeto!: IParecer[];
+  
 
   constructor(
     private fb: FormBuilder
@@ -65,13 +73,7 @@ export class ProjetoParecerComponent {
   }
 
   public isSubcapGeoc(): boolean {
-    const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
-      this.pareceresProjeto
-        .filter(p =>
-          [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
-        )
-        .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
-    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && subeoSubeppEntranhados && (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP);
+    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
   }
 
   public isEnviado(): boolean {
@@ -91,13 +93,12 @@ export class ProjetoParecerComponent {
 
     textoParecer?.updateValueAndValidity();
 
+
     console.log(' this.isSubeep - ', this.isSubepp() )
     console.log(' this.lotacaoUsuario - ', this.lotacaoUsuario )
 
   }
 
-<<<<<<< Updated upstream
-=======
   getPlainTextLength(html: string): number {
     if (!html) return 0;
 
@@ -132,9 +133,9 @@ export class ProjetoParecerComponent {
             replaceOldTags: {
               // define tags que são permitidas; as não listadas serão removidas
               b: 'b',
-              strong: 'strong',
+              strong: 'b',
               i: 'i',
-              em: 'em',
+              em: 'i',
               u: 'u',
               ul: 'ul',
               ol: 'ol',
@@ -147,10 +148,26 @@ export class ProjetoParecerComponent {
         });
 
         this.editor.events.on(['change'], () => this.updateFormControl());
+        const textoParecer = this.parecerFormGroup.get('textoParecer');
+
+        this.editor.value = textoParecer?.getRawValue();
+
+        textoParecer?.valueChanges.subscribe(value => {
+          if(this.editor)  
+            this.editor.value = value
+        })
 
 
     })
     
+  }
+
+  normalizeHtml(html: string): string {
+    return html
+      .replace(/<strong>/g, '<b>')
+      .replace(/<\/strong>/g, '</b>')
+      .replace(/<em>/g, '<i>')
+      .replace(/<\/em>/g, '</i>');
   }
 
   MAX_CHARS = 2000;
@@ -177,17 +194,17 @@ export class ProjetoParecerComponent {
       this.editor.value = truncated;
       this.textoLength = this.MAX_CHARS;
       const scroll = this.editor.editor.scrollTop;
-      this.parecerFormGroup.get('textoParecer')?.patchValue(truncated, { emitEvent: false });
+      this.parecerFormGroup.get('textoParecer')?.patchValue(this.normalizeHtml(truncated), { emitEvent: false });
       setTimeout(() => {
         if(!this.editor) return;
         this.editor.editor.scrollTop = this.editor.editor.scrollHeight;
-      })
+      }, 0)
       
       return;
     }
 
     this.textoLength = plainText.length;
-    this.parecerFormGroup.get('textoParecer')?.patchValue(html, { emitEvent: false });
+    this.parecerFormGroup.get('textoParecer')?.patchValue(this.normalizeHtml(html), { emitEvent: false });
   }
 
   // função auxiliar para extrair texto puro
@@ -197,5 +214,4 @@ export class ProjetoParecerComponent {
     return div.textContent?.trim() || '';
   }
 
->>>>>>> Stashed changes
 }

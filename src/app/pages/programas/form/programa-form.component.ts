@@ -46,6 +46,7 @@ import {
   IPrograma,
   IProgramaForm,
   StatusAssinaturaPrograma,
+  StatusPrograma,
 } from '../../../core/interfaces/programa.interface';
 import {
   IProjetoPropostoOpcoesDropdown,
@@ -73,7 +74,11 @@ import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
+<<<<<<< HEAD
 import { take } from 'lodash';
+=======
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+>>>>>>> hml
 
 @Component({
   selector: 'siscap-programa-form',
@@ -101,7 +106,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _idProgramaEdicao: number = 0;
 
   public loading: boolean = true;
-  public isModoEdicao: boolean = true;
 
   public programaForm: FormGroup = new FormGroup({});
 
@@ -123,6 +127,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
   public equipeCaptacao: IEquipe[] = [];
 
+  public projetoTooltip: Record<string, string> =
+      COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
+
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
 
@@ -130,10 +137,16 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public programaAtual!: IPrograma;
 
+  public statusProgramaAtual: StatusPrograma = StatusPrograma.EDICAO;
+
   get orgaosSelecionados(): Array<IPapeisOrgaoProgramaDropdownOpcoes> {
     const orgaosSelecionadosIds: Array<number> = this.programaForm.controls['orgaosEnvolvidosList'].value;
 
     return this.organizacoesOpcoes.filter((el) => orgaosSelecionadosIds.includes(el.id));
+  }
+
+  get isProgramaAtualEditavel(): boolean {
+    return this.statusProgramaAtual === StatusPrograma.EDICAO;
   }
 
   constructor(
@@ -179,11 +192,19 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         } else {
           this.iniciarForm();
 
+<<<<<<< HEAD
           config = {
             deveExibirBotaoSolicitarAutorizacao: false,
             deveExibirBotaoAutuar: false,
 <<<<<<< Updated upstream
             deveExibirBotaoAutuarDesabilitado: false,
+=======
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._programasService.gerarBotoesAcaoFormulario({
+            deveExibirBotaoSalvar: true,
+            deveExibirBotaoSolicitarAutorizacao: false,
+            deveExibirBotaoAutuar: false,
+>>>>>>> hml
           })
         );
 =======
@@ -248,7 +269,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       );
 
     this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
-      .getOpcoesProjetosPropostos()
+      .getOpcoesDicsElegiveisPrograma()
       .pipe(
         tap((response: IProjetoPropostoOpcoesDropdown[]) => {
           this.projetosPropostosOpcoes = response;
@@ -305,28 +326,45 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
           orgaosController.updateValueAndValidity();
         }
+<<<<<<< HEAD
 
         this._atualizarPrograma$.pipe(takeUntil(this._destroy$)).subscribe();
         this._cadastrarPrograma$.pipe(takeUntil(this._destroy$)).subscribe();
       }
     });
 
+=======
+
+        this._subscription.add(this._atualizarPrograma$.subscribe());
+        this._subscription.add(this._cadastrarPrograma$.subscribe());
+
+         this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
+          error: (err) =>
+            console.error(
+              'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
+              err
+            ),
+        });
+
+        // fixa tipo como valor estimado..
+        this.programaForm.patchValue({
+          valor: {
+            tipo: TipoValorEnum.Estimado,
+          },
+        });
+      }
+    }));
+
+>>>>>>> hml
     
 
-    this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
-      error: (err) =>
-        console.error(
-          'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
-          err
-        ),
-    });
+   
+  }
 
-    // fixa tipo como valor estimado..
-    this.programaForm.patchValue({
-      valor: {
-        tipo: TipoValorEnum.Estimado,
-      },
-    });
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
+    this._programasService.idPrograma$.next(0);
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 
 <<<<<<< Updated upstream
@@ -420,19 +458,31 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       valorTotalCalculadoPrograma = somatorioValorProjetosPropostos;
     }
 
-    if (this.isModoEdicao) {
+    if (this.statusProgramaAtual === StatusPrograma.EDICAO) {
       valorTotalCalculadoProgramaFormGroupControl.patchValue(
         valorTotalCalculadoPrograma ? valorTotalCalculadoPrograma : 0
       );
     }
   }
 
-  public filtrarProjetosPropostosOpcoes(
-    projetosPropostosOpcoes: IProjetoPropostoOpcoesDropdown[]
-  ): IProjetoPropostoOpcoesDropdown[] {
+  public filtrarOpcoesProjetosPropostos(
+    projetosPropostosOpcoes: Array<IProjetoPropostoOpcoesDropdown>
+  ): Array<IProjetoPropostoOpcoesDropdown> {
+    const projetosSelecionados = this.idProjetoPropostoList.value;
+
     return projetosPropostosOpcoes.filter(
-      (projetoProposto) =>
-        !this.idProjetoPropostoList.value.includes(projetoProposto.id)
+      (projeto) => {
+        // Condições
+        const projetoNaoFoiSelecionado = !projetosSelecionados.includes(projeto.id);
+
+        if (projeto.idPrograma) {
+          // Se o projeto estiver vinculado a algum Programa
+          // const programaAQualOProjetoEstaVinculado = this.pro
+        }
+
+        // Se projeto/DIC não está vinculado a nenhum Programa
+        return projetoNaoFoiSelecionado;
+      }
     );
   }
 
@@ -466,6 +516,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         if (objOrgao) objOrgao.papel = orgao.papel;
       });
     }
+
+    this.statusProgramaAtual = programaModel?.statusPrograma ?? StatusPrograma.EDICAO;
 
     const deveExibirRedatorNaListaDaEquipe: boolean = false;
 
@@ -550,7 +602,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           valorTotalCalculadoPrograma = somatorioValorProjetosPropostos;
         }
 
-        if (this.isModoEdicao) {
+        if (this.statusProgramaAtual === StatusPrograma.EDICAO) {
           valorFormGroupQuantiaFormControl.patchValue(
             somatorioValorProjetosPropostos
               ? somatorioValorProjetosPropostos
@@ -674,12 +726,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
-    this._subscription.unsubscribe();
-    this._programasService.idPrograma$.next(0);
-    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
-  }
-
   public buscarAgentesPorTermo(): IOpcoesDropdownResponsavelProponente[] {
     this.isLoadingPessoasFiltroTermo = true;
 
@@ -745,6 +791,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
 <<<<<<< Updated upstream
   private atualizarBotoes(programa: IPrograma) {
+<<<<<<< HEAD
     let deveExibirBotaoAutuar = false;
     let deveExibirBotaoAutuarDesabilitado = false;
     let deveExibirBotaoSolicitarAutorizacao = false;
@@ -753,30 +800,23 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
     // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
 >>>>>>> Stashed changes
+=======
+    const deveExibirBotaoSalvar = (programa.statusPrograma && programa.statusPrograma === StatusPrograma.EDICAO) || !programa.statusPrograma;
+    // Botão de Salvar Rascunho só aparece se o Programa é editável
+    
+    const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
+    // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
+>>>>>>> hml
 
-    if (
-      programa.programaAssinantesEdocsDto &&
-      programa.programaAssinantesEdocsDto.length > 0 &&
-      programa.programaAssinantesEdocsDto.every(
-        (assinatura) =>
-          assinatura.statusAssinatura === StatusAssinaturaPrograma.ASSINADO
-      )
-    ) {
-      if (programa.protocoloEdocs && programa.protocoloEdocs.length > 0) {
-        deveExibirBotaoAutuarDesabilitado = true;
-      } else {
-        deveExibirBotaoAutuar = true;
-      }
-    } else {
-      deveExibirBotaoSolicitarAutorizacao = true;
-    }
+    const deveExibirBotaoSolicitarAutorizacao = ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
+    // Botão de Solicitar Autorizações não deve aparecer se o Programa já foi Assinado, Autuado ou Recusado
 
 <<<<<<< Updated upstream
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
       this._programasService.gerarBotoesAcaoFormulario({
+        deveExibirBotaoSalvar,
         deveExibirBotaoSolicitarAutorizacao,
         deveExibirBotaoAutuar,
-        deveExibirBotaoAutuarDesabilitado,
       })
     );
 =======
