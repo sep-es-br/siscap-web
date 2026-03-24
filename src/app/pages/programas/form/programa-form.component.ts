@@ -290,18 +290,30 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         // Isso fazia com que o validator sempre retornava um erro, visto que não conseguia acessar a lista de opções p/
         // fazer as verificações.
 
-        const orgaosController = this.getControl('orgaosEnvolvidosList');
-        if (orgaosController) {
-          if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
-            orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+        
+
+        this._subscription.add(this._atualizarPrograma$.subscribe(() => {
+          const orgaosController = this.getControl('orgaosEnvolvidosList');
+          if (orgaosController) {
+            if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
+              orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+            }
+
+            orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+            orgaosController.updateValueAndValidity();
           }
+        }));
+        this._subscription.add(this._cadastrarPrograma$.subscribe(() => {
+          const orgaosController = this.getControl('orgaosEnvolvidosList');
+          if (orgaosController) {
+            if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
+              orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+            }
 
-          orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
-          orgaosController.updateValueAndValidity();
-        }
-
-        this._subscription.add(this._atualizarPrograma$.subscribe());
-        this._subscription.add(this._cadastrarPrograma$.subscribe());
+            orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+            orgaosController.updateValueAndValidity();
+          }
+        }));
 
          this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
           error: (err) =>
