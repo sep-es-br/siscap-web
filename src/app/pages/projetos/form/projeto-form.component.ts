@@ -110,7 +110,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getLocalidadesOpcoes$: Observable<ILocalidadeOpcoesDropdown[]>;
   private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<any>;
   private readonly _getTiposMotivosArquivamentoOpcoes$: Observable<IMotivoArquivamentoOpcoesDropdown[]>;
 
   private _idProjetoEdicao: number = 0;
@@ -282,14 +282,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.tiposMotivoArquivamentoOpcoes = response;
       }));
 
-    this._getAllOpcoes$ = concat(
+    this._getAllOpcoes$ = forkJoin([
       this._getOrganizacoesOpcoes$,
       this._getPlanosOpcoes$,
       this._getTiposValorOpcoes$,
       this._getTiposPapelOpcoes$,
       this._getLocalidadesOpcoes$,
       this._getTiposMotivosArquivamentoOpcoes$
-    ).pipe(
+    ]).pipe(
       finalize(
         () => (this._rateioService.localidadesOpcoes = this.localidadesOpcoes)
       )

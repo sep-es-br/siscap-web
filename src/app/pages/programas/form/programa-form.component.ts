@@ -12,6 +12,7 @@ import {
 import {
   concat,
   finalize,
+  forkJoin,
   map,
   Observable,
   of,
@@ -93,7 +94,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   >;
   private readonly _getProgramasOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<any>;
 
   private _idProgramaEdicao: number = 0;
 
@@ -256,14 +257,14 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         )
       );
 
-    this._getAllOpcoes$ = concat(
+    this._getAllOpcoes$ = forkJoin([
       this._getOrganizacoesOpcoes$,
       this._getPessoasOpcoes$,
       this._getTiposPapelOpcoes$,
       this._getProjetosPropostosOpcoes$,
       this._getProgramasOpcoes$,
       this._getTiposValorOpcoes$
-    );
+    ]);
 
     this._subscription.add(
       this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
