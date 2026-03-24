@@ -285,11 +285,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): void {
     const orgaosController = this.getControl('orgaosEnvolvidosList');
     if (orgaosController) {
-      if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
-        orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+      if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator())) {
+        orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator());
       }
 
-      orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+      orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator());
       orgaosController.updateValueAndValidity();
     }
   }
@@ -490,7 +490,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
       ]),
       orgaosEnvolvidosList: this._nnfb.control(
         programaModel?.orgaosEnvolvidosList ? programaModel.orgaosEnvolvidosList.map((org) => org.id) : [],
-        [Validators.required, Validators.minLength(1), this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes)],
+        [Validators.required, Validators.minLength(1)], [this.todosOrgaosPossuemTipoValidator()]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao,
@@ -906,11 +906,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /* Async Validator */
-  todosOrgaosPossuemTipoValidator(organizacoesOpcoes: Array<IPapeisOrgaoProgramaDropdownOpcoes>): AsyncValidatorFn {
+  todosOrgaosPossuemTipoValidator(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
       return of(control.value as Array<number>)
         .pipe(
           map(idsOrgaosSelecionados => {
+            const organizacoesOpcoes = this.organizacoesOpcoes;
+
             if (organizacoesOpcoes.length > 0) {
               const opcoesSelecionadas = organizacoesOpcoes.filter((org) => idsOrgaosSelecionados.includes(org.id));
               const algumOrgaoGestor = opcoesSelecionadas.some((org) => org.papel === PapelOrgaoPrograma.GESTOR);
