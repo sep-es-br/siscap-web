@@ -741,7 +741,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
     // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
 
-    const deveExibirBotaoSolicitarAutorizacao = ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
+    const deveExibirBotaoSolicitarAutorizacao = ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO, StatusPrograma.AGUARDANDO_ASSINATURAS].includes(programa.statusPrograma);
     // Botão de Solicitar Autorizações não deve aparecer se o Programa já foi Assinado, Autuado ou Recusado
 
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
