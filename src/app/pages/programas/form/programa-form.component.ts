@@ -73,6 +73,7 @@ import { ConfirmationModalComponent } from '../../../shared/templates/confirmati
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -155,6 +156,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly _navegacaoService: NavegacaoService,
     private readonly _pessoasService: PessoasService,
     private readonly _usuarioService: UsuarioService,
+    private readonly _projetosService: ProjetosService
   ) {
     const [editar$, criar$] = partition(
       this._programasService.idPrograma$,
@@ -384,6 +386,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
+
+    orgaosEnvolvidosList.patchValue([
+      ...orgaosEnvolvidosList.value,
+      ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === event.idOrganizacao) 
+          ? [] 
+          : [event.idOrganizacao])
+    ])
+
     this.idProjetoPropostoList.patchValue([
       ...this.idProjetoPropostoList.value,
       event.id,
@@ -456,6 +467,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
         valorEstimado: 0,
         idPrograma: null,
         parecerGEOCEnviado: false,
+        idOrganizacao: undefined
       }
     );
   }
