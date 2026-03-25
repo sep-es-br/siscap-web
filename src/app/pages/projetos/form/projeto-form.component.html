@@ -21,7 +21,7 @@
   </div>
 </div>
 <main class="d-flex justify-content-end">
-  <p-timeline [value]="statusList">
+  <p-timeline [value]="statusList" align="right">
     <ng-template pTemplate="content" let-event>
       
       <div class="text-nowrap">
@@ -35,9 +35,6 @@
         <p class="mb-0">Concluido por:</p>
         <p class="mb-0">{{event.feitoPor}}</p>
       </div>
-    </ng-template>
-    <ng-template pTemplate="opposite" let-event>
-      
     </ng-template>
     <ng-template pTemplate="marker" let-event>
       <span [style.borderColor]="event.color"

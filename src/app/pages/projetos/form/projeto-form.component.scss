@@ -75,14 +75,15 @@
 
 main {
     display: flex;
+    gap: 1rem;
 }
 
 ::ng-deep {
     .p-timeline-event-opposite {
-        width: 15rem;
+        display: none;
     }
 
     .p-timeline-event-content {
-        max-width: 8rem;
+        width: 13rem;
     }
 }
