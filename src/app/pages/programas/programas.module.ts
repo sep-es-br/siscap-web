@@ -20,6 +20,8 @@ import { ProgramasRoutingModule } from './programas-routing.module';
 import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas.component';
 import { OrgaosPapeisFormComponent } from '../../shared/components/orgaos-papeis-form/orgaos-papeis-form.component';
 import { NomeStatusProgramaPipe } from '../../shared/pipes/programa-status/programa-status.pipe';
+import { TimelineModule } from "primeng/timeline";
+import { TooltipModule } from "primeng/tooltip"
 
 @NgModule({
   declarations: [
@@ -42,7 +44,9 @@ import { NomeStatusProgramaPipe } from '../../shared/pipes/programa-status/progr
     ProgramasRoutingModule,
     OrgaosPapeisFormComponent,
     NomeStatusProgramaPipe,
-  ],
+    TimelineModule,
+    TooltipModule
+],
   exports: [
     ProgramasComponent,
     ProgramasListComponent,

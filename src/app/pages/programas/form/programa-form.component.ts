@@ -43,8 +43,10 @@ import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
 import {
   IPrograma,
   IProgramaForm,
+  IProgramaStatus,
   StatusAssinaturaPrograma,
   StatusPrograma,
+  StatusProgramaLabel,
 } from '../../../core/interfaces/programa.interface';
 import {
   IProjetoPropostoOpcoesDropdown,
@@ -74,6 +76,18 @@ import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 
+interface IStep {
+  statusHistorico?: IProgramaStatus;
+  nome: string;
+  getStatusStep: () => StatusStepEnum;
+}
+
+enum StatusStepEnum {
+  INATIVO,
+  ATUAL,
+  FINALIZADO
+}
+
 @Component({
   selector: 'siscap-programa-form',
   standalone: false,
@@ -81,6 +95,8 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
   styleUrl: './programa-form.component.scss',
 })
 export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
+  public StatusStepEnum = StatusStepEnum;
+  
   private readonly _subscription: Subscription = new Subscription();
 
   private readonly _atualizarPrograma$: Observable<IPrograma>;
@@ -132,6 +148,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public statusProgramaAtual: StatusPrograma = StatusPrograma.EDICAO;
 
+  public statusSteps: IStep[] | undefined;
+
   get orgaosSelecionados(): Array<IPapeisOrgaoProgramaDropdownOpcoes> {
     const orgaosSelecionadosIds: Array<number> = this.programaForm.controls['orgaosEnvolvidosList'].value;
 
@@ -156,6 +174,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly _pessoasService: PessoasService,
     private readonly _usuarioService: UsuarioService,
   ) {
+
     const [editar$, criar$] = partition(
       this._programasService.idPrograma$,
       (idPrograma: number) => idPrograma > 0
@@ -173,6 +192,58 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
         const programaModel = new ProgramaModel(response);
 
         this.iniciarForm(programaModel);
+
+        
+        this.statusSteps = [
+          {
+            nome: StatusProgramaLabel[StatusPrograma.EDICAO],
+            statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.EDICAO),
+            
+            
+            getStatusStep: () => {
+              if(!programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.EDICAO)) return StatusStepEnum.INATIVO;
+              if(StatusPrograma.EDICAO != programaModel.statusPrograma) return StatusStepEnum.FINALIZADO;
+              return StatusStepEnum.ATUAL;
+            }
+          },{
+            nome: StatusProgramaLabel[StatusPrograma.AGUARDANDO_ASSINATURAS],
+            statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.AGUARDANDO_ASSINATURAS),
+            getStatusStep: () => {
+              if(!programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.AGUARDANDO_ASSINATURAS)) return StatusStepEnum.INATIVO;
+              if(StatusPrograma.AGUARDANDO_ASSINATURAS != programaModel.statusPrograma) return StatusStepEnum.FINALIZADO;
+              return StatusStepEnum.ATUAL;
+            }
+          }
+        ]
+
+        if(programaModel.statusPrograma == StatusPrograma.RECUSADO) {
+          this.statusSteps.push(
+            {
+              nome: StatusProgramaLabel[StatusPrograma.RECUSADO],
+              statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.RECUSADO),
+              getStatusStep: () => StatusStepEnum.FINALIZADO
+            }
+          )
+        } else {
+          this.statusSteps.push(
+            {
+              nome: StatusProgramaLabel[StatusPrograma.ASSINADO],
+              statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.ASSINADO),
+              getStatusStep: () => {
+                if(!programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.ASSINADO)) return StatusStepEnum.INATIVO;
+                return StatusStepEnum.FINALIZADO;
+              }
+            },{
+              nome: StatusProgramaLabel[StatusPrograma.AUTUADO],
+              statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.AUTUADO),
+              getStatusStep: () => {
+                if(programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.AUTUADO)) return StatusStepEnum.FINALIZADO;
+                if(programaModel.statusPrograma == StatusPrograma.ASSINADO) return StatusStepEnum.ATUAL;
+                return StatusStepEnum.INATIVO;
+              }
+            }
+          )
+        }
 
         this._subscription.add( this._opcoesDropdownService
           .getOpcoesDicsElegiveisPrograma(response.idProjetoPropostoList.join(';'))
@@ -324,9 +395,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }));
 
-    
-
-   
   }
 
   ngOnDestroy(): void {
@@ -390,6 +458,22 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
     ]);
 
     setTimeout(() => (this.idProjetoProposto = null), 0);
+  }
+
+  public getIcon(status: StatusStepEnum) : string | null {
+    switch(status) {
+      case StatusStepEnum.INATIVO: return "pi-circle";
+      case StatusStepEnum.ATUAL: return "pi-exclamation-circle";
+      case StatusStepEnum.FINALIZADO: return "pi-check"
+    }
+  }
+
+  public getColor(status: StatusStepEnum) : string | null {
+    switch(status) {
+      case StatusStepEnum.INATIVO: return "gray"
+      case StatusStepEnum.ATUAL: return "orange"
+      case StatusStepEnum.FINALIZADO: return "green"
+    }
   }
 
   public percentualCustoAdministrativoChangeEvent(event: any): void {
