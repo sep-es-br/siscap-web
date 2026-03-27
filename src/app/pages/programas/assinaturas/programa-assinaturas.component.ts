@@ -384,9 +384,18 @@ export class ProgramaAssinaturasComponent {
       centered: true,
     });
 
+    let textoPrincipal = 'Sua recusa a assinar esse Programa o impossibilitará de ser Autuado.';
+
+    if (
+      this.programaAtual.assinaturaUsuarioAtual &&
+      this.programaAtual.assinaturaUsuarioAtual.textoAssinanteRecusa
+    ) {
+      textoPrincipal = this.programaAtual.assinaturaUsuarioAtual.textoAssinanteRecusa;
+    }
+
     modalRef.componentInstance.config = {
       titulo: 'Recusar assinatura',
-      textoPrincipal: 'Sua recusa a assinar esse Programa o impossibilitará de ser Autuado.',
+      textoPrincipal,
     };
 
     modalRef.result.then(
