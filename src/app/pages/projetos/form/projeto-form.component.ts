@@ -474,11 +474,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 }
               }
 
-              if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
-
-                this.mostrarBotaoBaixarDic = false;
-
-                const subeppSubeoEnviados = this.pareceresEstrategicoOrcamentarioForamEnviados();
+            if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
+              const subeppSubeoEnviados = this.pareceresEstrategicoOrcamentarioForamEnviados();
 
                 const subeppSubeoEntranhados = this.pareceresEstrategicoOrcamentarioForamEntranhados();
 

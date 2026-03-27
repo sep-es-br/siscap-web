@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import {
@@ -30,7 +30,7 @@ import {
   templateUrl: './programa-assinaturas.component.html',
   styleUrl: './programa-assinaturas.component.scss',
 })
-export class ProgramaAssinaturasComponent {
+export class ProgramaAssinaturasComponent implements OnDestroy {
   appStatus: AppStatus = AppStatus.LOADING;
 
   programaAtual!: IProgramaAssinaturasForm;
@@ -160,6 +160,10 @@ export class ProgramaAssinaturasComponent {
         },
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    this._programasService.idPrograma$.next(0);
   }
 
   atualizarAssinaturas(programa: IPrograma) {
@@ -384,9 +388,18 @@ export class ProgramaAssinaturasComponent {
       centered: true,
     });
 
+    let textoPrincipal = 'Sua recusa a assinar esse Programa o impossibilitará de ser Autuado.';
+
+    if (
+      this.programaAtual.assinaturaUsuarioAtual &&
+      this.programaAtual.assinaturaUsuarioAtual.textoAssinanteRecusa
+    ) {
+      textoPrincipal = this.programaAtual.assinaturaUsuarioAtual.textoAssinanteRecusa;
+    }
+
     modalRef.componentInstance.config = {
       titulo: 'Recusar assinatura',
-      textoPrincipal: 'Sua recusa a assinar esse Programa o impossibilitará de ser Autuado.',
+      textoPrincipal,
     };
 
     modalRef.result.then(
