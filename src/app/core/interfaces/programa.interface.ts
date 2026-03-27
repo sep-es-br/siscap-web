@@ -49,6 +49,7 @@ export interface IProgramaAssinatura {
   statusAssinatura: StatusAssinaturaPrograma;
   dataAssinatura?: string;
   papelAssinante: string;
+  textoAssinanteRecusa: string;
 }
 
 export interface IProgramaAssinaturasForm extends IPrograma {
