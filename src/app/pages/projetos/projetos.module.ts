@@ -22,6 +22,7 @@ import { IndicadoresFormComponent } from "../../shared/components/indicadores-fo
 import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-form.component';
 import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.component';
 import { TimelineModule } from "primeng/timeline";
+import { TooltipModule } from "primeng/tooltip"
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { TimelineModule } from "primeng/timeline";
     NgbAccordionModule,
     ReactiveFormsModule,
     ProjetoParecerComponent,
-    TimelineModule
+    TimelineModule,
+    TooltipModule
 ],
   exports: [
     ProjetosComponent,

@@ -91,6 +91,8 @@ import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { animate, query, style, transition, trigger } from '@angular/animations';
 import { PrimeIcons } from 'primeng/api';
 import { range } from 'lodash';
+import { gerarStepStatusProjeto, IStep } from '../../../core/utils/steps';
+import { IStatusProjeto } from '../../../core/interfaces/status-projeto.interface';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -196,6 +198,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public mapSubUser : {[index:string] : string} = {};
 
   public statusList : any[] = [];
+  public statusSteps? : IStep<StatusProjetoEnum>[];
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -354,50 +357,72 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.lotacaoUsuario = projetoModel.lotacaoUsuario;
           this.pareceresProjeto = projetoModel.pareceresProjeto;
 
-          this.statusList = [
-            StatusProjetoEnum.Em_Analise,
-            StatusProjetoEnum.Parecer_SEP,
-            StatusProjetoEnum.Elegivel
-          ].map((status) => {
-            const statusProjeto = projetoModel.historico
-              .find(h => h.status == status);
-
-            if (!statusProjeto) {
-              return {
-                color: 'gray',
-                icon: 'pi-circle', // 👈 importante
-                status: status
-              }
-            } else if (!statusProjeto.fimEm && !StatusProjetoEnum.Elegivel) {
-              return {
-                id: statusProjeto.id,
-                color: 'orange',
-                icon: 'pi-exclamation-circle',
-                status: statusProjeto.status,
-                date: statusProjeto.inicioEm
-              }
-            } else {
-              return {
-                id: statusProjeto.id,
-                color: 'green',
-                icon: 'pi-check',
-                status: statusProjeto.status,
-                date: statusProjeto.inicioEm,
-                feitoPor: statusProjeto.feitoPor
-              }
-            }
+          const mapSubObs : {[index: string]: Observable<string>} = {dumb: of('dumb')};
+          projetoModel?.pareceresProjeto?.filter(parecer => parecer.usuarioFezEnvioParecer).forEach(parecer => {
+              mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
+                                                          .pipe(map(pessoa => pessoa.nome))
           })
-          
-          const index = this.statusList.findIndex(s => s.id);
 
-          if (index > -1) {
-            this.statusList
-              .slice(0, index)
-              .forEach(item => {
-                item.color = 'green';
-                item.icon = 'pi-check';
-              });
-          }
+          forkJoin(mapSubObs).subscribe(retorno => {
+            this.mapSubUser = retorno;
+
+            const caminhoFeliz = [
+              StatusProjetoEnum.Em_Elaboracao,
+              StatusProjetoEnum.Em_Complementacao,
+              StatusProjetoEnum.Em_Analise,
+              StatusProjetoEnum.Parecer_SEP,
+              StatusProjetoEnum.Elegivel
+            ]
+            
+            this.statusSteps = [];
+
+            projetoModel.historico.sort((s1, s2) =>{
+              return Date.parse(s1.inicioEm) - Date.parse(s2.inicioEm)
+            } ).forEach(
+              h => {
+                if(!this.statusSteps) return;
+                
+                if(h.status == StatusProjetoEnum.Parecer_SEP){
+                  this.statusSteps.push(gerarStepStatusProjeto(
+                    StatusProjetoEnum.Parecer_SEP, 
+                    h, 
+                    projetoModel.pareceresProjeto
+                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})), 
+                    true
+                  ));
+                }
+
+                this.statusSteps.push(gerarStepStatusProjeto(
+                  h.status, 
+                  h, 
+                  projetoModel.pareceresProjeto
+                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})), 
+                  false
+                )) ;
+              }
+            )
+
+            if(![StatusProjetoEnum.Elegivel, StatusProjetoEnum.Arquivado].includes(projetoModel.status as StatusProjetoEnum)) {
+              let indexUltimaEtapa = caminhoFeliz.findIndex(s => s == projetoModel.status);
+
+              if(projetoModel.status == StatusProjetoEnum.Em_Elaboracao) indexUltimaEtapa++;
+              
+              caminhoFeliz.slice(indexUltimaEtapa+1).forEach(
+                s => {
+                  if(!this.statusSteps) return;
+                  
+                  if(s == StatusProjetoEnum.Parecer_SEP){
+                    this.statusSteps.push(gerarStepStatusProjeto(StatusProjetoEnum.Parecer_SEP, undefined, projetoModel.pareceresProjeto, true));
+                  }
+
+                  this.statusSteps.push(gerarStepStatusProjeto(s, undefined, projetoModel.pareceresProjeto, false)) ;
+                }
+              )
+            }
+            
+          });
+
+          
 
           this.projetoForm.setControl('pareceresProjeto',
             this._nnfb.array(projetoModel.pareceresProjeto || [])
@@ -886,14 +911,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }),
       pareceresProjeto: this._nnfb.array([]),
     });
-
-    const mapSubObs : {[index: string]: Observable<string>} = {};
-    projetoFormModel?.pareceresProjeto?.filter(parecer => parecer.usuarioFezEnvioParecer).forEach(parecer => {
-        mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
-                                                    .pipe(map(pessoa => pessoa.nome))
-    })
-
-    forkJoin(mapSubObs).subscribe(retorno => this.mapSubUser = retorno);
 
     this.carregarPessoasPorOrganizacao();
 

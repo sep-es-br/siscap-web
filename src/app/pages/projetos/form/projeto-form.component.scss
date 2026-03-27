@@ -75,14 +75,21 @@
 
 main {
     display: flex;
+    gap: 1rem;
 }
 
 ::ng-deep {
     .p-timeline-event-opposite {
-        width: 15rem;
+        display: none;
     }
 
     .p-timeline-event-content {
-        max-width: 8rem;
+        max-width: unset;
+        transform: translateY(0.3rem);
+        padding-inline-end: 0.3rem;
+    }
+
+    .p-tooltip {
+        max-width: unset;
     }
 }

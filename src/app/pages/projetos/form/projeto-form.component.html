@@ -21,29 +21,44 @@
   </div>
 </div>
 <main class="d-flex justify-content-end">
-  <p-timeline [value]="statusList">
+<!--
+export interface IStep<T> {
+    label: string;
+    status: T;
+    dataInicio: Date;
+    dataFim: Date;
+    nomePessoa: string;
+    positivo: boolean;
+    isFinalizado: () => boolean;
+    isAtual: () => boolean;
+    isInativo: () => boolean;
+
+}
+-->
+
+  <p-timeline [value]="statusSteps" align="right" *ngIf="statusSteps">
     <ng-template pTemplate="content" let-event>
-      
-      <div class="text-nowrap">
-        <button class="btn" data-bs-toggle="collapse" title="{{event.date | date : 'dd/MM/yyyy HH:mm'}}" [attr.data-bs-target]="'#cardBody' + event.id">
-          {{event.status}}
-        </button>
-      </div>
-      <div class="text-start collapse" *ngIf="event.feitoPor" [id]="'cardBody' + event.id">
-        <p class="mb-0">Iniciado em:</p>
-        <p class="mb-0">{{event.date | date : 'dd/MM/yyyy HH:mm'}}</p>
-        <p class="mb-0">Concluido por:</p>
-        <p class="mb-0">{{event.feitoPor}}</p>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="opposite" let-event>
-      
+      <span class="text-nowrap" [innerHTML]="event.label"></span>
     </ng-template>
     <ng-template pTemplate="marker" let-event>
-      <span [style.borderColor]="event.color"
+      <span [style.borderColor]="event.isInativo() ? 'gray' : event.isAtual() ? 'orange' : event.positivo ? 'green' : 'red'"
+            [pTooltip]="tooltipContent" tooltipPosition="right" [tooltipDisabled]="event.isInativo()"
             style="display:flex; align-items:center; background-color: white; justify-content:center; width:2rem; height:2rem; border-radius:50%; border-width: 1px; border-style: solid; ">
-        <i class="pi" [ngClass]="event.icon" [style.color]="event.color"></i>
+        @if (event.isInativo()) {
+          <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>
+        } @else if (event.isAtual()) {
+          <i class="pi pi-refresh" [style.color]="'orange'"></i>
+        } @else if (event.isFinalizado()) {
+          <i class="fa-solid" [ngClass]="event.positivo ? 'check-icon fa-check' : 'refused-icon fa-xmark'" [style.color]="event.positivo ? 'green' : 'red'"></i>
+        }
       </span>
+      <ng-template #tooltipContent>
+          <p class="my-0 text-nowrap">Iniciado em: {{event.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
+          <ng-container *ngIf="event.dataFim">
+            <p class="my-0 text-nowrap">Finalizado em: {{event.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
+            <p class="my-0 text-nowrap">Finalizado por:  {{event.nomePessoa}}</p>
+          </ng-container>
+      </ng-template>
     </ng-template>
   </p-timeline>
   <div class="project-form col-12" *ngIf="!loading">
@@ -333,13 +348,20 @@
 
       </div>
       <div class="tab-pane fade" [ngClass]="{'show active': aguardandoParecer()}"  *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0" id="tab-pareceres" role="tabpanel" aria-labelledby="nav-pareceres">
-        
+
         <div class="card" *ngIf="(aguardandoParecer() && (!isSubcapGeoc() || isSubeoSubeppEntranhados())) && !isProjetoElegivel()">
-          <div class="card-header" id="parecerTituloAtual" 
+          <div class="card-header d-flex flex-wrap align-content-center" id="parecerTituloAtual" 
                   data-bs-toggle="collapse" data-bs-target="#parecerAtual">
-            <h5 class="fw-bold text-primary mb-2">
-                Parecer {{getLotacao(this.lotacaoUsuario)}}
-            </h5>
+            <span style="display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; ">
+                @if(this.parecerProjetoUsuario?.guidDocumentoEdocs) {
+                  <i class="fa-solid check-icon fa-check" [style.color]="'green'"></i>
+                } @else {
+                  <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>
+                }
+              </span>
+              <h5 class="fw-bold text-primary m-0">
+                  Parecer {{getLotacao(lotacaoUsuario)}}
+              </h5>
           </div>
           <div id="parecerAtual" class="collapse show" aria-labelledby="parecerTituloAtual">
             <div class="card-body mb-4">
@@ -351,9 +373,16 @@
         </div>
 
           <div class="card" *ngFor="let parecer of demaisPareceres">
-            <div class="card-header" id="parecerTitulo{{parecer.parecerLotacao}}" 
+            <div class="card-header d-flex flex-wrap align-content-center" id="parecerTitulo{{parecer.parecerLotacao}}" 
                     data-bs-toggle="collapse" [attr.data-bs-target]="'#parecer' + parecer.parecerLotacao">
-              <h5 class="fw-bold text-primary mb-2">
+              <span style="display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; ">
+                @if(parecer.guidDocumentoEdocs) {
+                  <i class="fa-solid check-icon fa-check" [style.color]="'green'"></i>
+                } @else {
+                  <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>
+                }
+              </span>
+              <h5 class="fw-bold text-primary m-0">
                   Parecer {{getLotacao(parecer.parecerLotacao)}}
               </h5>
             </div>
