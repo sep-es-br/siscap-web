@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -17,8 +17,10 @@ import {
   Observable,
   of,
   partition,
+  Subject,
   Subscription,
   switchMap,
+  takeUntil,
   tap,
 } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -72,6 +74,7 @@ import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
+import { take } from 'lodash';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 
 @Component({
@@ -80,21 +83,9 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
   templateUrl: './programa-form.component.html',
   styleUrl: './programa-form.component.scss',
 })
-export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
-  private readonly _subscription: Subscription = new Subscription();
+export class ProgramaFormComponent implements OnInit, OnDestroy {
 
-  private readonly _atualizarPrograma$: Observable<IPrograma>;
-  private readonly _cadastrarPrograma$: Observable<number>;
-
-  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getProjetosPropostosOpcoes$: Observable<
-    IProjetoPropostoOpcoesDropdown[]
-  >;
-  private readonly _getProgramasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getAllOpcoes$: Observable<any>;
+  private readonly _destroy$ = new Subject<undefined>();
 
   private _idProgramaEdicao: number = 0;
 
@@ -156,173 +147,106 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly _pessoasService: PessoasService,
     private readonly _usuarioService: UsuarioService,
   ) {
-    const [editar$, criar$] = partition(
-      this._programasService.idPrograma$,
-      (idPrograma: number) => idPrograma > 0
-    );
 
-    this._atualizarPrograma$ = editar$.pipe(
-      switchMap((idPrograma: number) =>
-        this._programasService.getById(idPrograma)
-      ),
-      tap((response: IPrograma) => {
+    this._programasService.idPrograma$.pipe(
+      takeUntil(this._destroy$),
+      switchMap(idPrograma => {
 
-        // console.log(' response byId programa : ', response);
-
-        this.programaAtual = response;
-        const programaModel = new ProgramaModel(response);
-
-        this.iniciarForm(programaModel);
-
-        this._subscription.add( this._opcoesDropdownService
-          .getOpcoesDicsElegiveisPrograma(response.idProjetoPropostoList.join(';'))
-          .pipe(
-            tap((response: IProjetoPropostoOpcoesDropdown[]) => {
-              this.projetosPropostosOpcoes = response;
-            })
-          ).subscribe());
-
-        this._idProgramaEdicao = programaModel.id;
-        this.atualizarBotoes(this.programaAtual);
-        this.mostrarBotaoBaixarPrograma = true;
-        this.equipeCaptacao = programaModel.equipeCaptacao;
-        this.loading = false;
+        return forkJoin({
+          programa: idPrograma === 0 ? of(undefined) : this._programasService.getById(idPrograma),
+          organizacoesOpcoes: this._opcoesDropdownService.getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria),
+          pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
+          tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
+          projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
+          programasOpcoes: this._opcoesDropdownService.getOpcoesProgramas(),
+          tiposValorOpcoes: this._opcoesDropdownService.getOpcoesTiposValor()
+        })        
       })
-    );
+    ).subscribe(
+      ({
+        programa, 
+        organizacoesOpcoes, 
+        pessoasOpcoes, 
+        tiposPapelOpcoes, 
+        projetosPropostosOpcoes,
+        programasOpcoes,
+        tiposValorOpcoes
+      }) => {
 
-    this._cadastrarPrograma$ = criar$.pipe(
-      tap(() => {
-        this.iniciarForm();
+        this.organizacoesOpcoes = organizacoesOpcoes;
+        this.pessoasOpcoes = pessoasOpcoes;
 
-        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario({
-            deveExibirBotaoSalvar: true,
-            deveExibirBotaoSolicitarAutorizacao: false,
-            deveExibirBotaoAutuar: false,
-          })
-        );
-
-        this.loading = false;
-      })
-    );
-
-    this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
-      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
-      .pipe(
-        tap(
-          (response: IOpcoesDropdown[]) => (this.organizacoesOpcoes = response)
-        )
-      );
-
-    this._getPessoasOpcoes$ = this._opcoesDropdownService
-      .getOpcoesPessoas()
-      .pipe(
-        tap(
-          (response: IOpcoesDropdownResponsavelProponente[]) =>
-            (this.pessoasOpcoes = response)
-        )
-      );
-
-    this._getTiposPapelOpcoes$ = this._opcoesDropdownService
-      .getOpcoesTiposPapel()
-      .pipe(
-        tap((response) => {
-          this.tiposPapelOpcoes = response;
+        this.tiposPapelOpcoes = tiposPapelOpcoes;
           const idsPermitidos = [
             TipoPapelEnum.Gerente_de_Projeto,
             // TipoPapelEnum.Redator,
             TipoPapelEnum.Membro_do_Projeto
           ];
-          this.tiposPapelOpcoesVisiveis = response.filter((papel) =>
+          this.tiposPapelOpcoesVisiveis = tiposPapelOpcoes.filter((papel) =>
             idsPermitidos.includes(papel.id)
           );
-        })
-      );
 
-    this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
-      .getOpcoesDicsElegiveisPrograma()
-      .pipe(
-        tap((response: IProjetoPropostoOpcoesDropdown[]) => {
-          this.projetosPropostosOpcoes = response;
-        })
-      );
-
-    this._getProgramasOpcoes$ = this._opcoesDropdownService
-      .getOpcoesProgramas()
-      .pipe(
-        tap((response: IOpcoesDropdown[]) => (this.programasOpcoes = response))
-      );
-
-    // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
-    this._getTiposValorOpcoes$ = this._opcoesDropdownService
-      .getOpcoesTiposValor()
-      .pipe(
-        tap(
-          (response: IOpcoesDropdown[]) =>
-            (this.tiposValorOpcoes = response.filter(
+        this.projetosPropostosOpcoes = projetosPropostosOpcoes;
+        this.programasOpcoes = programasOpcoes;
+        this.tiposValorOpcoes = tiposValorOpcoes.filter(
               (tipoValor) => tipoValor.id <= 3
-            ))
-        )
-      );
+            )
 
-    this._getAllOpcoes$ = forkJoin([
-      this._getOrganizacoesOpcoes$,
-      this._getPessoasOpcoes$,
-      this._getTiposPapelOpcoes$,
-      this._getProjetosPropostosOpcoes$,
-      this._getProgramasOpcoes$,
-      this._getTiposValorOpcoes$
-    ]);
+        let config;
 
-    this._subscription.add(
-      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
-        this.executarAcaoBreadcrumb(acao)
-      )
-    );
-    
-  }
+        if(programa) {
+          
+          this.programaAtual = programa;
+          const programaModel = new ProgramaModel(programa);
 
-  ngAfterViewInit(): void {
-    const orgaosController = this.getControl('orgaosEnvolvidosList');
-    if (orgaosController) {
-      if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator())) {
-        orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator());
+          this.iniciarForm(programaModel);
+
+          this._idProgramaEdicao = programaModel.id;
+          config = this.atualizarBotoes(this.programaAtual);
+          this.mostrarBotaoBaixarPrograma = true;
+          this.equipeCaptacao = programaModel.equipeCaptacao;
+        } else {
+          this.iniciarForm();
+
+          config = {
+            deveExibirBotaoSolicitarAutorizacao: false,
+            deveExibirBotaoAutuar: false
+          };
+
+        }
+
+        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+          this._programasService.gerarBotoesAcaoFormulario(config as { deveExibirBotaoSalvar: boolean; deveExibirBotaoSolicitarAutorizacao: boolean; deveExibirBotaoAutuar: boolean; })
+        );
+        this.loading = false;
+
+
       }
+    )
 
-      orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator());
-      orgaosController.updateValueAndValidity();
-    }
+    this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
+      this.executarAcaoBreadcrumb(acao)
+    )
+    
   }
   
   ngOnInit(): void {
-    this._subscription.add(this._getAllOpcoes$.subscribe({
-      next: (res) => {
-        // É necessário fazer os passos abaixos pois no caso de Cadastrar Programa, o validator assícrono estava sendo
-        // criado antes da propriedade organizacoesOpcoes ser preenchida.
-        // Isso fazia com que o validator sempre retornava um erro, visto que não conseguia acessar a lista de opções p/
-        // fazer as verificações.
+    // É necessário fazer os passos abaixos pois no caso de Cadastrar Programa, o validator assícrono estava sendo
+    // criado antes da propriedade organizacoesOpcoes ser preenchida.
+    // Isso fazia com que o validator sempre retornava um erro, visto que não conseguia acessar a lista de opções p/
+    // fazer as verificações.
 
-        
-
-        this._subscription.add(this._atualizarPrograma$.subscribe());
-        this._subscription.add(this._cadastrarPrograma$.subscribe());
-
-         this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
-          error: (err) =>
-            console.error(
-              'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
-              err
-            ),
-        });
-
-        // fixa tipo como valor estimado..
-        this.programaForm.patchValue({
-          valor: {
-            tipo: TipoValorEnum.Estimado,
-          },
-        });
+    /* Talvez ainda seja nescessario ??? só talvez
+    const orgaosController = this.getControl('orgaosEnvolvidosList');
+    if (orgaosController) {
+      if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
+        orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
       }
-    }));
+
+      orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+      orgaosController.updateValueAndValidity();
+    }
+    */
 
     
 
@@ -330,7 +254,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this._subscription.unsubscribe();
+    this._destroy$.next(undefined);
+    this._destroy$.complete();
     this._programasService.idPrograma$.next(0);
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
@@ -490,7 +415,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
       ]),
       orgaosEnvolvidosList: this._nnfb.control(
         programaModel?.orgaosEnvolvidosList ? programaModel.orgaosEnvolvidosList.map((org) => org.id) : [],
-        [Validators.required, Validators.minLength(1)], [this.todosOrgaosPossuemTipoValidator()]
+        [Validators.required, Validators.minLength(1)],
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao,
@@ -747,24 +672,23 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.exibirLista = false;
   }
 
-  private atualizarBotoes(programa: IPrograma) {
-    const deveExibirBotaoSalvar = (programa.statusPrograma && programa.statusPrograma === StatusPrograma.EDICAO) || !programa.statusPrograma;
-    // Botão de Salvar Rascunho só aparece se o Programa é editável
     
+  private atualizarBotoes(programa: IPrograma) : any {
+
     const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
     // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
 
-    const deveExibirBotaoSolicitarAutorizacao = [StatusPrograma.AGUARDANDO_ASSINATURAS].includes(programa.statusPrograma) 
-                                              || ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
+    const deveExibirBotaoSalvar = (programa.statusPrograma && programa.statusPrograma === StatusPrograma.EDICAO) || !programa.statusPrograma;
+    // Botão de Salvar Rascunho só aparece se o Programa é editável
+    
+    const deveExibirBotaoSolicitarAutorizacao = ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
     // Botão de Solicitar Autorizações não deve aparecer se o Programa já foi Assinado, Autuado ou Recusado
 
-    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-      this._programasService.gerarBotoesAcaoFormulario({
-        deveExibirBotaoSalvar,
-        deveExibirBotaoSolicitarAutorizacao,
-        deveExibirBotaoAutuar,
-      })
-    );
+    return {
+      deveExibirBotaoSolicitarAutorizacao,
+      deveExibirBotaoAutuar,
+      deveExibirBotaoSalvar
+    };
   }
 
   public exportarPrograma() {
@@ -906,13 +830,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /* Async Validator */
-  todosOrgaosPossuemTipoValidator(): AsyncValidatorFn {
+  todosOrgaosPossuemTipoValidator(organizacoesOpcoes: Array<IPapeisOrgaoProgramaDropdownOpcoes>): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
       return of(control.value as Array<number>)
         .pipe(
           map(idsOrgaosSelecionados => {
-            const organizacoesOpcoes = this.organizacoesOpcoes;
-
             if (organizacoesOpcoes.length > 0) {
               const opcoesSelecionadas = organizacoesOpcoes.filter((org) => idsOrgaosSelecionados.includes(org.id));
               const algumOrgaoGestor = opcoesSelecionadas.some((org) => org.papel === PapelOrgaoPrograma.GESTOR);
