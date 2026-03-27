@@ -43,7 +43,7 @@
                     type="button"
                     ngbTooltip="Excluir membro da equipe"
                     class="btn btn-outline-danger rounded-circle"
-                    [disabled]="desabilitarCampo(i) || !isModoEdicao"
+                    [disabled]="!isModoEdicao"
                     (click)="removerMembroDaEquipe(i)"
                   >
                     <i class="fa-solid fa-close delete-btn-icon"></i>
