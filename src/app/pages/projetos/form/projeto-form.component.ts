@@ -197,7 +197,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public mapSubUser : {[index:string] : string} = {};
 
-  public statusList : any[] = [];
   public statusSteps? : IStep<StatusProjetoEnum>[];
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
