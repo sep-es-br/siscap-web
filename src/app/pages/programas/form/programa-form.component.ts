@@ -76,6 +76,7 @@ import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 import { take } from 'lodash';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 
 @Component({
   selector: 'siscap-programa-form',
@@ -146,6 +147,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _navegacaoService: NavegacaoService,
     private readonly _pessoasService: PessoasService,
     private readonly _usuarioService: UsuarioService,
+    private readonly _projetosService: ProjetosService
   ) {
 
     this._programasService.idPrograma$.pipe(
@@ -309,6 +311,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
+
+    orgaosEnvolvidosList.patchValue([
+      ...orgaosEnvolvidosList.value,
+      ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === event.idOrganizacao) 
+          ? [] 
+          : [event.idOrganizacao])
+    ])
+
     this.idProjetoPropostoList.patchValue([
       ...this.idProjetoPropostoList.value,
       event.id,
@@ -381,6 +392,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         valorEstimado: 0,
         idPrograma: null,
         parecerGEOCEnviado: false,
+        idOrganizacao: undefined
       }
     );
   }
