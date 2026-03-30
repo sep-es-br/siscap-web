@@ -56,18 +56,20 @@
           </td>
           <td class="d-flex flex-row acoes-botoes" (click)="$event.stopPropagation()">
             <button
-              class="btn border-none"
-              (click)="tableActionOutputEvent({ acao: 'deletar', id: programa.id})"
-            >
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-            <button
               class="btn border-none botao-assinaturas"
               [ngClass]="{ 'disabled': !programa.statusPrograma || [-1, 1].includes(programa.statusPrograma) }"
               [disabled]="!programa.statusPrograma || [-1, 1].includes(programa.statusPrograma)"
               (click)="acessarAssinaturasPrograma(programa.id)"
+              title="Assinaturas"
             >
               <i class="fa-solid fa-pen-fancy"></i>
+            </button>
+            <button
+              class="btn border-none"
+              (click)="tableActionOutputEvent({ acao: 'deletar', id: programa.id})"
+              title="Excluir"
+            >
+              <i class="fa-solid fa-trash-can"></i>
             </button>
           </td>
         </tr>
