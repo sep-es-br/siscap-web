@@ -22,17 +22,18 @@
       </ng-template>
       <ng-template pTemplate="marker" let-step>
         <span [style.borderColor]="getColor(step)"
-            [pTooltip]="step.statusHistorico && tooltipContent"
+            [pTooltip]="tooltipContent"
+            [tooltipDisabled]="step.isInativo()"
             tooltipPosition="right">
           <i [ngClass]="getIcon(step)" [style.color]="getColor(step) "></i>
         </span>
 
         <ng-template #tooltipContent>
-          <div class="card-body" [id]="step.statusHistorico && 'content'+step.statusHistorico.id">
-            <p class="my-0">Iniciado em: {{step.statusHistorico?.inicioEm | date : 'dd/MM/yyyy HH:mm'}}</p>
-            <p class="my-0">Finalizado em: {{step.statusHistorico?.fimEm | date : 'dd/MM/yyyy HH:mm'}}</p>
-            <p class="my-0">Finalizado por: {{step.statusHistorico?.nomePessoa}}</p>
-          </div>
+            <p class="my-0">Iniciado em: {{step.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
+            <ng-container *ngIf="step.isFinalizado()">
+              <p class="my-0">Finalizado em: {{step.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
+              <p class="my-0">Finalizado por: {{step.nomePessoa}}</p>
+            </ng-container>
         </ng-template>
       </ng-template>
     </p-timeline>
