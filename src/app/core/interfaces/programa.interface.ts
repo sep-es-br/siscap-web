@@ -65,7 +65,8 @@ export interface IProgramaStatus {
   status: StatusPrograma,
   idPessoa: number,
   nomePessoa: string,
-  inicioEm: Date
+  inicioEm: Date,
+  fimEm: Date
 }
 
 export interface IProgramaOrgaosEnvolvidos {

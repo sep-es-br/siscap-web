@@ -15,23 +15,23 @@
   <div class="programa-form justify-content-end">
     <p-timeline *ngIf="statusSteps" [value]="statusSteps" align="right">
       <ng-template pTemplate="content" let-step>
-        <span class="text-nowrap" 
-            title="{{step.statusHistorico?.inicioEm | date : 'dd/MM/yyyy hh:mm a'}}">
-              {{step.nome}}
+        <span class="text-nowrap" >
+              {{step.label}}
         </span>
         
       </ng-template>
       <ng-template pTemplate="marker" let-step>
-        <span [style.borderColor]="getColor(step.getStatusStep())"
+        <span [style.borderColor]="getColor(step)"
             [pTooltip]="step.statusHistorico && tooltipContent"
             tooltipPosition="right">
-          <i class="pi" [ngClass]="getIcon(step.getStatusStep())" [style.color]="getColor(step.getStatusStep()) "></i>
+          <i [ngClass]="getIcon(step)" [style.color]="getColor(step) "></i>
         </span>
 
         <ng-template #tooltipContent>
           <div class="card-body" [id]="step.statusHistorico && 'content'+step.statusHistorico.id">
             <p class="my-0">Iniciado em: {{step.statusHistorico?.inicioEm | date : 'dd/MM/yyyy HH:mm'}}</p>
-            <p class="my-0">por: {{step.statusHistorico?.nomePessoa}}</p>
+            <p class="my-0">Finalizado em: {{step.statusHistorico?.fimEm | date : 'dd/MM/yyyy HH:mm'}}</p>
+            <p class="my-0">Finalizado por: {{step.statusHistorico?.nomePessoa}}</p>
           </div>
         </ng-template>
       </ng-template>

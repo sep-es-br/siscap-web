@@ -2,6 +2,7 @@ import { LotacaoUsuarioEnum } from "../enums/lotacao-usuario.enum";
 import { StatusParecerEnum } from "../enums/status-parecer.enum";
 import { StatusProjetoEnum } from "../enums/status-projeto.enum";
 import { IParecer } from "../interfaces/parecer.interface";
+import { IProgramaStatus, StatusPrograma, StatusProgramaLabel } from "../interfaces/programa.interface";
 import { IStatusProjeto } from '../interfaces/status-projeto.interface';
 
 export interface IStep<T> {
@@ -87,4 +88,49 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
                label: statusHistorico?.inicioEm ? StatusProjetoEnum.Elegivel : 'Conclusão'
             } as IStep<StatusProjetoEnum>;
     }
+} 
+
+export function gerarStepProgramaStatus(status: StatusPrograma, statusHistorico: IProgramaStatus | undefined, historicoPrograma: IProgramaStatus[]): IStep<StatusPrograma> {
+    const base = {
+        label: StatusProgramaLabel[status],
+        status: status,
+        dataInicio: statusHistorico?.inicioEm && new Date(statusHistorico.inicioEm) ,
+        dataFim: statusHistorico?.fimEm && new Date(statusHistorico?.fimEm),
+        nomePessoa: statusHistorico?.nomePessoa,
+        positivo: true,
+        isInativo() {
+            return !this.dataInicio;
+        },
+        isAtual() {
+            return !!this.dataInicio && !this.dataFim;
+        },
+        isFinalizado() {
+            return !!this.dataInicio && !!this.dataFim;
+        }
+    }
+    
+    switch (status) {
+        case StatusPrograma.SEM_STATUS:
+            return {...base} as IStep<StatusPrograma>;
+        case StatusPrograma.EDICAO:
+            return {...base} as IStep<StatusPrograma>;
+        case StatusPrograma.AGUARDANDO_ASSINATURAS:
+            return {...base} as IStep<StatusPrograma>;
+        case StatusPrograma.ASSINADO:
+            return {...base} as IStep<StatusPrograma>;
+        case StatusPrograma.AUTUADO:
+            return {
+                ...base,
+                dataInicio: historicoPrograma.find(h => h.status === StatusPrograma.ASSINADO)?.inicioEm
+                
+            } as IStep<StatusPrograma>;
+        case StatusPrograma.RECUSADO:
+            return {
+                ...base,
+                positivo: false
+            } as IStep<StatusPrograma>;
+
+
+    }
+
 } 

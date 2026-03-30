@@ -75,19 +75,7 @@ import { ConfirmationModalComponent } from '../../../shared/templates/confirmati
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
-
-interface IStep {
-  statusHistorico?: IProgramaStatus;
-  nome: string;
-  getStatusStep: () => StatusStepEnum;
-}
-
-enum StatusStepEnum {
-  INATIVO,
-  ATUAL,
-  FINALIZADO
-}
-
+import { gerarStepProgramaStatus, IStep } from '../../../core/utils/steps';
 @Component({
   selector: 'siscap-programa-form',
   standalone: false,
@@ -95,7 +83,6 @@ enum StatusStepEnum {
   styleUrl: './programa-form.component.scss',
 })
 export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
-  public StatusStepEnum = StatusStepEnum;
   
   private readonly _subscription: Subscription = new Subscription();
 
@@ -148,7 +135,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public statusProgramaAtual: StatusPrograma = StatusPrograma.EDICAO;
 
-  public statusSteps: IStep[] | undefined;
+  public statusSteps: IStep<StatusPrograma>[] | undefined;
 
   get orgaosSelecionados(): Array<IPapeisOrgaoProgramaDropdownOpcoes> {
     const orgaosSelecionadosIds: Array<number> = this.programaForm.controls['orgaosEnvolvidosList'].value;
@@ -193,58 +180,28 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.iniciarForm(programaModel);
 
-        
-        this.statusSteps = [
-          {
-            nome: StatusProgramaLabel[StatusPrograma.EDICAO],
-            statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.EDICAO),
-            
-            
-            getStatusStep: () => {
-              if(!programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.EDICAO)) return StatusStepEnum.INATIVO;
-              if(StatusPrograma.EDICAO != programaModel.statusPrograma) return StatusStepEnum.FINALIZADO;
-              return StatusStepEnum.ATUAL;
-            }
-          },{
-            nome: StatusProgramaLabel[StatusPrograma.AGUARDANDO_ASSINATURAS],
-            statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.AGUARDANDO_ASSINATURAS),
-            getStatusStep: () => {
-              if(!programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.AGUARDANDO_ASSINATURAS)) return StatusStepEnum.INATIVO;
-              if(StatusPrograma.AGUARDANDO_ASSINATURAS != programaModel.statusPrograma) return StatusStepEnum.FINALIZADO;
-              return StatusStepEnum.ATUAL;
-            }
-          }
-        ]
+        let statushistorico = programaModel.historicoStatus.sort((a, b) => String(a.inicioEm).localeCompare(String(b.inicioEm)))
 
-        if(programaModel.statusPrograma == StatusPrograma.RECUSADO) {
-          this.statusSteps.push(
-            {
-              nome: StatusProgramaLabel[StatusPrograma.RECUSADO],
-              statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.RECUSADO),
-              getStatusStep: () => StatusStepEnum.FINALIZADO
+        this.statusSteps = statushistorico.map(
+          h => gerarStepProgramaStatus(h.status, h, statushistorico)
+        )
+
+        if(![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel.statusPrograma) ){
+          const caminhoPerfeito = [
+            StatusPrograma.EDICAO,
+            StatusPrograma.AGUARDANDO_ASSINATURAS,
+            StatusPrograma.ASSINADO,
+            StatusPrograma.AUTUADO
+          ]
+
+          caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel.statusPrograma)+1).forEach(
+            status => {
+              this.statusSteps?.push(gerarStepProgramaStatus(status, undefined, statushistorico))
             }
           )
-        } else {
-          this.statusSteps.push(
-            {
-              nome: StatusProgramaLabel[StatusPrograma.ASSINADO],
-              statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.ASSINADO),
-              getStatusStep: () => {
-                if(!programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.ASSINADO)) return StatusStepEnum.INATIVO;
-                return StatusStepEnum.FINALIZADO;
-              }
-            },{
-              nome: StatusProgramaLabel[StatusPrograma.AUTUADO],
-              statusHistorico: programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.AUTUADO),
-              getStatusStep: () => {
-                if(programaModel.historicoStatus.find(sh => sh.status == StatusPrograma.AUTUADO)) return StatusStepEnum.FINALIZADO;
-                if(programaModel.statusPrograma == StatusPrograma.ASSINADO) return StatusStepEnum.ATUAL;
-                return StatusStepEnum.INATIVO;
-              }
-            }
-          )
+
         }
-
+        
         this._subscription.add( this._opcoesDropdownService
           .getOpcoesDicsElegiveisPrograma(response.idProjetoPropostoList.join(';'))
           .pipe(
@@ -469,20 +426,27 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => (this.idProjetoProposto = null), 0);
   }
 
-  public getIcon(status: StatusStepEnum) : string | null {
-    switch(status) {
-      case StatusStepEnum.INATIVO: return "pi-circle";
-      case StatusStepEnum.ATUAL: return "pi-exclamation-circle";
-      case StatusStepEnum.FINALIZADO: return "pi-check"
-    }
+  public getIcon(status: IStep<StatusPrograma>) : string | undefined {
+    
+    if(status.isInativo()) return "fa-regular fa-clock"
+
+    if(status.isAtual()) return "pi pi-refresh";
+
+    if(status.isFinalizado()) return "fa-solid " + (status.positivo ? 'check-icon fa-check' : 'refused-icon fa-xmark')
+    
+    return undefined;
   }
 
-  public getColor(status: StatusStepEnum) : string | null {
-    switch(status) {
-      case StatusStepEnum.INATIVO: return "gray"
-      case StatusStepEnum.ATUAL: return "orange"
-      case StatusStepEnum.FINALIZADO: return "green"
-    }
+  public getColor(status: IStep<StatusPrograma>) : string | undefined {
+
+    if(status.isInativo()) return "gray"
+
+    if(status.isAtual()) return "orange";
+ 
+    if(status.isFinalizado()) return status.positivo ? "green" : "red";
+    
+    return undefined;
+
   }
 
   public percentualCustoAdministrativoChangeEvent(event: any): void {
