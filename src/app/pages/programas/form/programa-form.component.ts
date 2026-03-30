@@ -76,6 +76,7 @@ import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { gerarStepProgramaStatus, IStep } from '../../../core/utils/steps';
+import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 @Component({
   selector: 'siscap-programa-form',
   standalone: false,
@@ -160,6 +161,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly _navegacaoService: NavegacaoService,
     private readonly _pessoasService: PessoasService,
     private readonly _usuarioService: UsuarioService,
+    private readonly _projetosService: ProjetosService
   ) {
 
     const [editar$, criar$] = partition(
@@ -409,14 +411,21 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
 
-    orgaosEnvolvidosList.patchValue([
-      ...orgaosEnvolvidosList.value,
-      ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === event.idOrganizacao) 
-          ? [] 
-          : [event.idOrganizacao])
-    ]);
+    this._projetosService.getById(event.id).subscribe(
+      projeto => {
+        const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
+
+        orgaosEnvolvidosList.patchValue([
+          ...orgaosEnvolvidosList.value,
+          ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === projeto.idOrganizacao) 
+                ? [] 
+                : [projeto.idOrganizacao])
+        ]);
+
+      }
+    )
+        
 
     this.idProjetoPropostoList.patchValue([
       ...this.idProjetoPropostoList.value,
