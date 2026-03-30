@@ -85,5 +85,12 @@ main {
 
     .p-timeline-event-content {
         width: 13rem;
+        max-width: unset;
+        transform: translateY(0.3rem);
+        padding-inline-end: 0.3rem;
+    }
+
+    .p-tooltip {
+        max-width: unset;
     }
 }

@@ -452,6 +452,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
+
+    orgaosEnvolvidosList.patchValue([
+      ...orgaosEnvolvidosList.value,
+      ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === event.idOrganizacao) 
+          ? [] 
+          : [event.idOrganizacao])
+    ]);
+
     this.idProjetoPropostoList.patchValue([
       ...this.idProjetoPropostoList.value,
       event.id,
@@ -540,6 +549,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
         valorEstimado: 0,
         idPrograma: null,
         parecerGEOCEnviado: false,
+        idOrganizacao: 0
       }
     );
   }
