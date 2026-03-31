@@ -1,0 +1,30 @@
+<form [formGroup]="programasPesquisaForm">
+  <div class="col-12 d-flex flex-column flex-md-row align-items-center justify-content-end">
+    <div class="col-12 col-md-3 col-lg-3 px-md-2 mb-2 mb-md-0">
+      <select
+        class="select-filtro-pesquisa"
+        name="status"
+        id="status"
+        formControlName="status"
+      >
+        <option
+          [value]="statusPrograma"
+          *ngFor="let statusPrograma of programasStatusOpcoes"
+        >
+          {{ statusPrograma }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-3">
+      <input
+        class="form-control"
+        type="text"
+        name="sigla_titulo"
+        id="sigla_titulo"
+        placeholder="Pesquisar"
+        formControlName="search"
+      />
+    </div>
+  </div>
+</form>

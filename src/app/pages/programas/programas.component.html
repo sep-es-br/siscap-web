@@ -3,9 +3,10 @@
 </div>
 
 <div class="row py-2" *ngIf="!loading">
-  <siscap-table-search
-    (filtroPesquisaOutput)="filtroPesquisaOutputEvent($event)"
-  ></siscap-table-search>
+  <siscap-programas-search
+    (pesquisarProgramas)="filtrarPesquisaProgramas($event)"
+  >
+  </siscap-programas-search>
 </div>
 
 <div
