@@ -17,8 +17,10 @@ import {
   Observable,
   of,
   partition,
+  Subject,
   Subscription,
   switchMap,
+  takeUntil,
   tap,
 } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -83,23 +85,10 @@ import { ProjetosService } from '../../../core/services/projetos/projetos.servic
   templateUrl: './programa-form.component.html',
   styleUrl: './programa-form.component.scss',
 })
-export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ProgramaFormComponent implements OnInit, OnDestroy {
+
+  private readonly _destroy$ = new Subject<any>();
   
-  private readonly _subscription: Subscription = new Subscription();
-
-  private readonly _atualizarPrograma$: Observable<IPrograma>;
-  private readonly _cadastrarPrograma$: Observable<number>;
-
-  private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getPessoasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getProjetosPropostosOpcoes$: Observable<
-    IProjetoPropostoOpcoesDropdown[]
-  >;
-  private readonly _getProgramasOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getAllOpcoes$: Observable<any>;
-
   private _idProgramaEdicao: number = 0;
 
   public loading: boolean = true;
@@ -164,180 +153,14 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly _projetosService: ProjetosService
   ) {
 
-    const [editar$, criar$] = partition(
-      this._programasService.idPrograma$,
-      (idPrograma: number) => idPrograma > 0
-    );
-
-    this._atualizarPrograma$ = editar$.pipe(
-      switchMap((idPrograma: number) =>
-        this._programasService.getById(idPrograma)
-      ),
-      tap((response: IPrograma) => {
-
-        // console.log(' response byId programa : ', response);
-
-        this.programaAtual = response;
-        const programaModel = new ProgramaModel(response);
-
-        this.iniciarForm(programaModel);
-
-        let statushistorico = programaModel.historicoStatus.sort((a, b) => String(a.inicioEm).localeCompare(String(b.inicioEm)))
-
-        this.statusSteps = statushistorico.map(
-          h => gerarStepProgramaStatus(h.status, h, statushistorico)
-        )
-
-        if(![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel.statusPrograma) ){
-          const caminhoPerfeito = [
-            StatusPrograma.EDICAO,
-            StatusPrograma.AGUARDANDO_ASSINATURAS,
-            StatusPrograma.ASSINADO,
-            StatusPrograma.AUTUADO
-          ]
-
-          caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel.statusPrograma)+1).forEach(
-            status => {
-              this.statusSteps?.push(gerarStepProgramaStatus(status, undefined, statushistorico))
-            }
-          )
-
-        }
-        
-        this._subscription.add( this._opcoesDropdownService
-          .getOpcoesDicsElegiveisPrograma(response.idProjetoPropostoList.join(';'))
-          .pipe(
-            tap((response: IProjetoPropostoOpcoesDropdown[]) => {
-              this.projetosPropostosOpcoes = response;
-            })
-          ).subscribe());
-
-        this._idProgramaEdicao = programaModel.id;
-        this.atualizarBotoes(this.programaAtual);
-        this.mostrarBotaoBaixarPrograma = true;
-        this.equipeCaptacao = programaModel.equipeCaptacao;
-        this.loading = false;
-      })
-    );
-
-    this._cadastrarPrograma$ = criar$.pipe(
-      tap(() => {
-        this.iniciarForm();
-
-        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario({
-            deveExibirBotaoSalvar: true,
-            deveExibirBotaoSolicitarAutorizacao: false,
-            deveExibirBotaoAutuar: false,
-          })
-        );
-
-        this.loading = false;
-      })
-    );
-
-    this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
-      .getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria)
-      .pipe(
-        tap(
-          (response: IOpcoesDropdown[]) => (this.organizacoesOpcoes = response)
-        )
-      );
-
-    this._getPessoasOpcoes$ = this._opcoesDropdownService
-      .getOpcoesPessoas()
-      .pipe(
-        tap(
-          (response: IOpcoesDropdownResponsavelProponente[]) =>
-            (this.pessoasOpcoes = response)
-        )
-      );
-
-    this._getTiposPapelOpcoes$ = this._opcoesDropdownService
-      .getOpcoesTiposPapel()
-      .pipe(
-        tap((response) => {
-          this.tiposPapelOpcoes = response;
-          const idsPermitidos = [
-            TipoPapelEnum.Gerente_de_Projeto,
-            // TipoPapelEnum.Redator,
-            TipoPapelEnum.Membro_do_Projeto
-          ];
-          this.tiposPapelOpcoesVisiveis = response.filter((papel) =>
-            idsPermitidos.includes(papel.id)
-          );
-        })
-      );
-
-    this._getProjetosPropostosOpcoes$ = this._opcoesDropdownService
-      .getOpcoesDicsElegiveisPrograma()
-      .pipe(
-        tap((response: IProjetoPropostoOpcoesDropdown[]) => {
-          this.projetosPropostosOpcoes = response;
-        })
-      );
-
-    this._getProgramasOpcoes$ = this._opcoesDropdownService
-      .getOpcoesProgramas()
-      .pipe(
-        tap((response: IOpcoesDropdown[]) => (this.programasOpcoes = response))
-      );
-
-    // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
-    this._getTiposValorOpcoes$ = this._opcoesDropdownService
-      .getOpcoesTiposValor()
-      .pipe(
-        tap(
-          (response: IOpcoesDropdown[]) =>
-            (this.tiposValorOpcoes = response.filter(
-              (tipoValor) => tipoValor.id <= 3
-            ))
-        )
-      );
-
-    this._getAllOpcoes$ = forkJoin([
-      this._getOrganizacoesOpcoes$,
-      this._getPessoasOpcoes$,
-      this._getTiposPapelOpcoes$,
-      this._getProjetosPropostosOpcoes$,
-      this._getProgramasOpcoes$,
-      this._getTiposValorOpcoes$
-    ]);
-
-    this._subscription.add(
-      this._breadcrumbService.executarAcaoBotao$.subscribe((acao) =>
+      this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
-      )
-    );
+      );
     
-  }
-
-  ngAfterViewInit(): void {
-    const orgaosController = this.getControl('orgaosEnvolvidosList');
-    if (orgaosController) {
-      if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator())) {
-        orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator());
-      }
-
-      orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator());
-      orgaosController.updateValueAndValidity();
-    }
   }
   
   ngOnInit(): void {
-    this._subscription.add(this._getAllOpcoes$.subscribe({
-      next: (res) => {
-        // É necessário fazer os passos abaixos pois no caso de Cadastrar Programa, o validator assícrono estava sendo
-        // criado antes da propriedade organizacoesOpcoes ser preenchida.
-        // Isso fazia com que o validator sempre retornava um erro, visto que não conseguia acessar a lista de opções p/
-        // fazer as verificações.
-
-        
-
-        this._subscription.add(this._atualizarPrograma$.subscribe());
-        this._subscription.add(this._cadastrarPrograma$.subscribe());
-
-         this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
+    this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
           error: (err) =>
             console.error(
               'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
@@ -345,19 +168,124 @@ export class ProgramaFormComponent implements OnInit, OnDestroy, AfterViewInit {
             ),
         });
 
-        // fixa tipo como valor estimado..
-        this.programaForm.patchValue({
-          valor: {
-            tipo: TipoValorEnum.Estimado,
-          },
-        });
+    forkJoin({
+      organizacoesOpcoes:  this._opcoesDropdownService.getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria),
+      pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
+      tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
+      projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
+      programasOpcoes: this._opcoesDropdownService.getOpcoesProgramas(),
+      tiposValorOpcoes: this._opcoesDropdownService.getOpcoesTiposValor()
+    }).subscribe(
+      ({
+        organizacoesOpcoes, 
+        pessoasOpcoes,
+        tiposPapelOpcoes,
+        projetosPropostosOpcoes,
+        programasOpcoes,
+        tiposValorOpcoes
+      }) => {
+        this.organizacoesOpcoes = organizacoesOpcoes;
+        this.pessoasOpcoes = pessoasOpcoes;
+        this.projetosPropostosOpcoes = projetosPropostosOpcoes;
+        this.programasOpcoes = programasOpcoes;
+        // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
+        this.tiposValorOpcoes = tiposValorOpcoes.filter( (tipoValor) => tipoValor.id <= 3 );
+
+
+        this.tiposPapelOpcoes = tiposPapelOpcoes;
+        const idsPermitidos = [
+          TipoPapelEnum.Gerente_de_Projeto,
+          // TipoPapelEnum.Redator,
+          TipoPapelEnum.Membro_do_Projeto
+        ];
+        this.tiposPapelOpcoesVisiveis = tiposPapelOpcoes.filter((papel) =>
+          idsPermitidos.includes(papel.id)
+        );
+
+        
+        this._programasService.idPrograma$.pipe(
+          takeUntil(this._destroy$),
+          switchMap(idPrograma => idPrograma > 0 ? this._programasService.getById(idPrograma) : of(undefined))
+        ).subscribe(
+          programa => {
+            
+            const programaModel = programa && new ProgramaModel(programa);
+            
+            this.iniciarForm(programaModel);
+
+            if(programa) {
+              // console.log(' response byId programa : ', response);
+
+              this.programaAtual = programa;
+
+              let statushistorico = programaModel!.historicoStatus.sort((a, b) => String(a.inicioEm).localeCompare(String(b.inicioEm)))
+
+              this.statusSteps = statushistorico.map(
+                h => gerarStepProgramaStatus(h.status, h, statushistorico)
+              )
+
+              if(![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel!.statusPrograma) ){
+                const caminhoPerfeito = [
+                  StatusPrograma.EDICAO,
+                  StatusPrograma.AGUARDANDO_ASSINATURAS,
+                  StatusPrograma.ASSINADO,
+                  StatusPrograma.AUTUADO
+                ]
+
+                caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel!.statusPrograma)+1).forEach(
+                  status => {
+                    this.statusSteps?.push(gerarStepProgramaStatus(status, undefined, statushistorico))
+                  }
+                )
+
+              }
+              
+              this._opcoesDropdownService
+                .getOpcoesDicsElegiveisPrograma(programa.idProjetoPropostoList.join(';'))
+                .pipe(
+                  takeUntil(this._destroy$),
+                  tap((response: IProjetoPropostoOpcoesDropdown[]) => {
+                    this.projetosPropostosOpcoes = response;
+                  })
+                ).subscribe();
+
+              this._idProgramaEdicao = programaModel!.id;
+              this.atualizarBotoes(this.programaAtual);
+              this.mostrarBotaoBaixarPrograma = true;
+              this.equipeCaptacao = programaModel!.equipeCaptacao;
+            } else {
+
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._programasService.gerarBotoesAcaoFormulario({
+                    deveExibirBotaoSalvar: true,
+                    deveExibirBotaoSolicitarAutorizacao: false,
+                    deveExibirBotaoAutuar: false,
+                  })
+                );
+
+            }
+            
+            // fixa tipo como valor estimado..
+            this.programaForm.patchValue({
+              valor: {
+                tipo: TipoValorEnum.Estimado,
+              },
+            });
+            
+            this.loading = false;
+          }
+
+        )
+
+
       }
-    }));
+    )
 
   }
 
   ngOnDestroy(): void {
-    this._subscription.unsubscribe();
+    this._destroy$.next(undefined);
+    this._destroy$.complete();
     this._programasService.idPrograma$.next(0);
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
