@@ -656,10 +656,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this._subscription.add(this._atualizarProjeto$.subscribe());
         })).subscribe());
       } else {
-
+        
         this._subscription.add(this._getAllOpcoes$.subscribe(
           () => {
-        this.iniciarForm().subscribe(() => {
+            this.iniciarForm().subscribe(() => {
 
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
@@ -672,7 +672,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.isLoadingPessoas = false;
 
         });
-      }
+          }
         ))
 
         
@@ -893,13 +893,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         dataEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.dataEnvio ?? null],
         guidDocumentoEdocs: [projetoFormModel?.parecerProjetoUsuario?.guidDocumentoEdocs ?? ''],
         guidUnidadeOrganizacao: [projetoFormModel?.parecerProjetoUsuario?.guidUnidadeOrganizacao ?? ''],
-        usuarioFezEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? '']
+        usuarioFezEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? ''],
+        elegivel: [projetoFormModel?.parecerProjetoUsuario.elegivel ?? null]
       }),
       pareceresProjeto: this._nnfb.array([]),
     });
 
     const mapSubObs : {[index: string]: Observable<string>} = {};
-    projetoFormModel?.pareceresProjeto?.forEach(parecer => {
+    projetoFormModel?.pareceresProjeto?.filter(p => p.usuarioFezEnvioParecer).forEach(parecer => {
         mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
                                                     .pipe(map(pessoa => pessoa.nome))
     })
@@ -1383,6 +1384,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return undefined;
   }
 
+  get isParecerGeoc() : boolean{
+    return (this.parecerProjetoUsuario.parecerLotacao ?? this.lotacaoUsuario) == LotacaoUsuarioEnum.SUBCAP;
+  }
+
   get demaisPareceres() {
     
     return [LotacaoUsuarioEnum.SUBEPP, LotacaoUsuarioEnum.SUBEO, ...(this.isSubeoSubeppEntranhados() ? [LotacaoUsuarioEnum.SUBCAP] : [])]
@@ -1751,10 +1756,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  public confirmarAssinarCapturarParecer() {
+  public confirmarAssinarCapturarParecer(elegivel? : boolean) {
     this.autuacaoAcionada = true;
     this.assinarAutuar = false;
     this.finalizadoProcessamentoIntegracao = false;
+    this.projetoForm.get("parecerProjetoUsuario")?.patchValue({
+      ...this.projetoForm.get("parecerProjetoUsuario")?.getRawValue(),
+      elegivel
+    });
     this.efetivarEnvioParecerProjetoForm(this.projetoForm);
   }
 

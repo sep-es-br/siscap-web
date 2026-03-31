@@ -864,7 +864,7 @@
   </div>
   <div class="modal-body">
     <p>Esta ação realizará automaticamente procedimentos no E-Docs, utilizando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
+      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}), esta ação não poderar ser desfeita: </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
@@ -897,11 +897,25 @@
         <span>{{ autuacaoAcionada || finalizadoProcessamentoIntegracao ? 'Fechar' : 'Cancelar' }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
-        (click)="confirmarAssinarCapturarParecer()" [disabled]="erroEmAlgumaFaseModalAutuacao">
-        <i class="fa-solid fa-paper-plane me-2"></i>
-        <span>Assinar e Capturar Parecer</span>
-      </button>
+      <ng-container *ngIf="isParecerGeoc, else naoGeoc">
+        <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
+          (click)="confirmarAssinarCapturarParecer(true)" [disabled]="erroEmAlgumaFaseModalAutuacao">
+          <i class="fa-solid fa-paper-plane me-2"></i>
+          <span>Julgar Elegível, Assinar e Capturar Parecer</span>
+        </button>
+        <button *ngIf="assinarAutuar" class="btn btn-danger icon-text-btn me-2"
+          (click)="confirmarAssinarCapturarParecer(false)" [disabled]="erroEmAlgumaFaseModalAutuacao">
+          <i class="fa-solid fa-paper-plane me-2"></i>
+          <span>Julgar Inelegível, Assinar e Capturar Parecer</span>
+        </button>
+      </ng-container>
+      <ng-template #naoGeoc>
+        <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
+          (click)="confirmarAssinarCapturarParecer()" [disabled]="erroEmAlgumaFaseModalAutuacao">
+          <i class="fa-solid fa-paper-plane me-2"></i>
+          <span>Assinar e Capturar Parecer</span>
+        </button>
+      </ng-template>
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none;">
         <span class="spinner-border spinner-border-sm me-2"></span>

@@ -13,7 +13,7 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { Jodit } from 'jodit';
-
+import { paste } from 'jodit/types/plugins/paste/paste';
 @Component({
   selector: 'siscap-projeto-parecer',
   standalone: true,
@@ -123,10 +123,9 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
             'bold',
             'italic',
             'underline',
-            '|',
-            'ul',
-            'ol',
           ],
+          askBeforePasteHTML: false,
+          processPasteHTML: true,
           cleanHTML: {
             removeEmptyElements: true,   // remove <p><br></p>
             fillEmptyParagraph: false,
@@ -137,15 +136,23 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
               i: 'i',
               em: 'i',
               u: 'u',
-              ul: 'ul',
-              ol: 'ol',
-              li: 'li',
               a: 'a',
               p: 'p',
               br: 'br'
             }
           }
         });
+
+        this.editor.events.on(['paste'], (event: any) => {
+          const html = event.clipboardData?.getData('text/html');
+
+          if (html) {
+            event.preventDefault();
+
+            const limpo = this.normalizeHtml(html);
+            this.editor?.selection.insertHTML(limpo);
+          }
+        })
 
         this.editor.events.on(['change'], () => this.updateFormControl());
         const textoParecer = this.parecerFormGroup.get('textoParecer');
@@ -163,11 +170,35 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
   }
 
   normalizeHtml(html: string): string {
-    return html
-      .replace(/<strong>/g, '<b>')
-      .replace(/<\/strong>/g, '</b>')
-      .replace(/<em>/g, '<i>')
-      .replace(/<\/em>/g, '</i>');
+    const container = document.createElement('div');
+    container.innerHTML = html;
+
+    // Converte <li> em <p> com bullet
+    container.querySelectorAll('li').forEach(li => {
+      const p = document.createElement('p');
+      p.textContent = '• ' + li.textContent?.trim();
+      li.replaceWith(p);
+    });
+
+    // Remove as tags <ul> e <ol>
+    container.querySelectorAll('ul, ol').forEach(el => {
+      el.replaceWith(...Array.from(el.childNodes));
+    });
+
+    // Substitui <strong>/<em> por <b>/<i>
+    container.querySelectorAll('strong').forEach(el => {
+      const b = document.createElement('b');
+      b.innerHTML = el.innerHTML;
+      el.replaceWith(b);
+    });
+
+    container.querySelectorAll('em').forEach(el => {
+      const i = document.createElement('i');
+      i.innerHTML = el.innerHTML;
+      el.replaceWith(i);
+    });
+
+    return container.innerHTML;
   }
 
   MAX_CHARS = 2000;
