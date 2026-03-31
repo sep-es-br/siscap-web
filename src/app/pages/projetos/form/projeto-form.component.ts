@@ -651,12 +651,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._projetosService.idProjeto$.pipe(take(1)).subscribe(idProjeto => {
       
       if (idProjeto > 0) {
-        this.carregarProjetoEditar(idProjeto);
         this._subscription.add(this._getAllOpcoes$.pipe(tap(() => {
+          this.carregarProjetoEditar(idProjeto);
           this._subscription.add(this._atualizarProjeto$.subscribe());
         })).subscribe());
       } else {
 
+        this._subscription.add(this._getAllOpcoes$.subscribe(
+          () => {
         this.iniciarForm().subscribe(() => {
 
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
@@ -670,6 +672,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.isLoadingPessoas = false;
 
         });
+      }
+        ))
+
+        
       }
       
     });
