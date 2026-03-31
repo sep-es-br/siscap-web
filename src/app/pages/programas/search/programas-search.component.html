@@ -8,10 +8,10 @@
         formControlName="status"
       >
         <option
-          [value]="statusPrograma"
+          [value]="statusPrograma.value"
           *ngFor="let statusPrograma of programasStatusOpcoes"
         >
-          {{ statusPrograma }}
+          {{ statusPrograma.label }}
         </option>
       </select>
     </div>
@@ -23,7 +23,7 @@
         name="sigla_titulo"
         id="sigla_titulo"
         placeholder="Pesquisar"
-        formControlName="search"
+        formControlName="porTermo"
       />
     </div>
   </div>
