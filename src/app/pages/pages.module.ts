@@ -43,7 +43,7 @@ import { PagesRoutingModule } from './pages-routing.module';
     NgbDropdownModule,
     NgbPaginationModule,
     NgbTooltipModule,
-    PagesRoutingModule,
+    PagesRoutingModule
   ],
   providers: [provideNgxMask()],
   exports: [

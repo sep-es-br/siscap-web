@@ -6,7 +6,7 @@ import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.ser
 import { ProgramasService } from '../../core/services/programas/programas.service';
 import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
-import { IProgramaTableData } from '../../core/interfaces/programa.interface';
+import { IProgramaFiltroPesquisa, IProgramaTableData, StatusPrograma } from '../../core/interfaces/programa.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
 import { IHttpGetRequestBody } from '../../core/interfaces/http-get-all-paged.interface';
 
@@ -30,7 +30,7 @@ export class ProgramasComponent implements OnInit, OnDestroy {
     sort: '',
   };
 
-  private termoPesquisaSimples: string = '';
+  private filtroAtual: IProgramaFiltroPesquisa = {};
 
   private readonly _programasList$: BehaviorSubject<Array<IProgramaTableData>> =
     new BehaviorSubject<Array<IProgramaTableData>>([]);
@@ -74,10 +74,15 @@ export class ProgramasComponent implements OnInit, OnDestroy {
     this.fetchPage();
   }
 
-  public filtroPesquisaOutputEvent(filtro: string): void {
-    this.termoPesquisaSimples = filtro;
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
+  }
 
-    if (!filtro) {
+  filtrarPesquisaProgramas(novoFiltro: IProgramaFiltroPesquisa) {
+    this.filtroAtual = novoFiltro;
+
+    if (!novoFiltro.porTermo || !novoFiltro.status) {
       this._pageConfig.sort = '';
       this.limparSortColumn();
     }
@@ -99,7 +104,7 @@ export class ProgramasComponent implements OnInit, OnDestroy {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
-    const searchFilter = { search: this.termoPesquisaSimples };
+    const searchFilter = { search: this.filtroAtual.porTermo, status: this.filtroAtual.status };
 
     this._programasService
       .getAllPaged(tempPageConfig, searchFilter)
@@ -126,10 +131,5 @@ export class ProgramasComponent implements OnInit, OnDestroy {
       this._r2.removeClass(el, 'asc');
       this._r2.removeClass(el, 'desc');
     });
-  }
-
-  ngOnDestroy(): void {
-    this._subscription.unsubscribe();
-    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

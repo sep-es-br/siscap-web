@@ -23,6 +23,10 @@ import {
   interval,
   takeUntil,
   filter,
+  startWith,
+  mergeAll,
+  forkJoin,
+  throwError,
 } from 'rxjs';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
@@ -85,12 +89,13 @@ import { IParecer } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
+import { gerarStepStatusProjeto, IStep } from '../../../core/utils/steps';
 
 @Component({
   selector: 'siscap-projeto-form',
   standalone: false,
   templateUrl: './projeto-form.component.html',
-  styleUrl: './projeto-form.component.scss',
+  styleUrl: './projeto-form.component.scss'
 })
 export class ProjetoFormComponent implements OnInit, OnDestroy {
 
@@ -104,7 +109,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getLocalidadesOpcoes$: Observable<ILocalidadeOpcoesDropdown[]>;
   private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getAllOpcoes$: Observable<IOpcoesDropdown[]>;
+  private readonly _getAllOpcoes$: Observable<any>;
   private readonly _getTiposMotivosArquivamentoOpcoes$: Observable<IMotivoArquivamentoOpcoesDropdown[]>;
 
   private _idProjetoEdicao: number = 0;
@@ -187,6 +192,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public exibeListaEtapasIntegracao: boolean = false;
 
+  public mapSubUser : {[index:string] : string} = {};
+
+  public statusSteps? : IStep<StatusProjetoEnum>[];
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -201,6 +210,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   // otimizacao carga agentes goves.. 
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
   input$ = new Subject<string>();
+
+  StatusParecerEnum = StatusParecerEnum;
 
   constructor(
     private readonly _nnfb: NonNullableFormBuilder,
@@ -270,14 +281,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.tiposMotivoArquivamentoOpcoes = response;
       }));
 
-    this._getAllOpcoes$ = concat(
+    this._getAllOpcoes$ = forkJoin([
       this._getOrganizacoesOpcoes$,
       this._getPlanosOpcoes$,
       this._getTiposValorOpcoes$,
       this._getTiposPapelOpcoes$,
       this._getLocalidadesOpcoes$,
       this._getTiposMotivosArquivamentoOpcoes$
-    ).pipe(
+    ]).pipe(
       finalize(
         () => (this._rateioService.localidadesOpcoes = this.localidadesOpcoes)
       )
@@ -328,137 +339,192 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             (status) => status != this.statusProjeto
           );
 
-          this.iniciarForm(projetoModel);
+          this.iniciarForm(projetoModel).subscribe(() => {
+            this._idProjetoEdicao = projetoModel.id;
 
-          this._idProjetoEdicao = projetoModel.id;
+            this.mostrarBotaoBaixarDic = !projetoModel.rascunho;
 
-          this.mostrarBotaoBaixarDic = !projetoModel.rascunho;
+            this.equipeProjeto = projetoModel.equipeElaboracao;
 
-          this.equipeProjeto = projetoModel.equipeElaboracao;
+            this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
 
-          this.isUsuarioProponenteResponsavel = projetoModel.subResponsavelProponente === this._usuarioService.usuarioPerfil.subNovo;
+            this.parecerProjetoUsuario = projetoModel.parecerProjetoUsuario;
+            this.lotacaoUsuario = projetoModel.lotacaoUsuario;
+            this.pareceresProjeto = projetoModel.pareceresProjeto;
 
-          this.parecerProjetoUsuario = projetoModel.parecerProjetoUsuario;
-          this.lotacaoUsuario = projetoModel.lotacaoUsuario;
-          this.pareceresProjeto = projetoModel.pareceresProjeto;
+            const caminhoFeliz = [
+              StatusProjetoEnum.Em_Elaboracao,
+              StatusProjetoEnum.Em_Complementacao,
+              StatusProjetoEnum.Em_Analise,
+              StatusProjetoEnum.Parecer_SEP,
+              StatusProjetoEnum.Elegivel
+            ]
+            
+            this.statusSteps = [];
 
-          this.projetoForm.setControl('pareceresProjeto',
-            this._nnfb.array(projetoModel.pareceresProjeto || [])
-          );
+            projetoModel.historico.sort((s1, s2) =>{
+              return Date.parse(s1.inicioEm) - Date.parse(s2.inicioEm)
+            } ).forEach(
+              h => {
+                if(!this.statusSteps) return;
+                
+                if(h.status == StatusProjetoEnum.Parecer_SEP){
+                  this.statusSteps.push(gerarStepStatusProjeto(
+                    StatusProjetoEnum.Parecer_SEP, 
+                    h, 
+                    projetoModel.pareceresProjeto
+                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})), 
+                    true
+                  ));
+                }
 
-          // 
-          if (projetoModel.status === StatusProjetoEnum.Arquivado) {
-            this.mostrarBotaoBaixarDic = false;
-            this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-              this._projetosService.gerarBotoesAcaoFormularioArquivado()
-            );
-            setTimeout(() => this.trocarModo(false), 2000);
-            this.loading = false;
-            this.isLoadingPessoas = false;
-            return;
-          }
-
-          const emElaboracaoSemProtocolo =
-            projetoModel.status === StatusProjetoEnum.Em_Elaboracao &&
-            !projetoModel.protocoloEdocs;
-
-          if (emElaboracaoSemProtocolo && this.subProponenteDIC != projetoModel.subResponsavelProponente && this._usuarioService.usuarioPerfil.subNovo == projetoModel.subResponsavelProponente) {
-            this.mostrarBotaoPedirRevisaoDic = true
-          } else {
-            this.mostrarBotaoPedirRevisaoDic = false
-          }
-
-          if (this.podeResponderComplementacao) {
-            this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-              this._projetosService.gerarBotoesAcaoResponderComplementacao(this.podeEditar)
-            );
-            setTimeout(() => this.trocarModo(true), 2000);
-          } else {
-            if (this.isProponente) {
-              if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
-                );
-              } else if (projetoModel.protocoloEdocs) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
-                );
-              } else {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponente()
-                );
-                setTimeout(() => this.trocarModo(true), 2000);
+                this.statusSteps.push(gerarStepStatusProjeto(
+                  h.status, 
+                  h, 
+                  projetoModel.pareceresProjeto
+                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})), 
+                  false
+                )) ;
               }
-            } else {
-              if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
-                );
-                this.trocarModo(true);
-              } else if (projetoModel.protocoloEdocs) {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
-                );
-                this.trocarModo(false);
-              } else {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoFormulario()
-                );
-                setTimeout(() => this.trocarModo(true), 2000);
-              }
+            )
+
+            if(![StatusProjetoEnum.Elegivel, StatusProjetoEnum.Arquivado].includes(projetoModel.status as StatusProjetoEnum)) {
+              let indexUltimaEtapa = caminhoFeliz.findIndex(s => s == projetoModel.status);
+
+              if(projetoModel.status == StatusProjetoEnum.Em_Elaboracao) indexUltimaEtapa++;
+              
+              caminhoFeliz.slice(indexUltimaEtapa+1).forEach(
+                s => {
+                  if(!this.statusSteps) return;
+                  
+                  if(s == StatusProjetoEnum.Parecer_SEP){
+                    this.statusSteps.push(gerarStepStatusProjeto(StatusProjetoEnum.Parecer_SEP, undefined, projetoModel.pareceresProjeto, true));
+                  }
+
+                  this.statusSteps.push(gerarStepStatusProjeto(s, undefined, projetoModel.pareceresProjeto, false)) ;
+                }
+              )
             }
+            
+
+
+            this.projetoForm.setControl('pareceresProjeto',
+              this._nnfb.array(projetoModel.pareceresProjeto || [])
+            );
+
+            // 
+            if (projetoModel.status === StatusProjetoEnum.Arquivado) {
+              this.mostrarBotaoBaixarDic = false;
+              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                this._projetosService.gerarBotoesAcaoFormularioArquivado()
+              );
+              this.trocarModo(false);
+              this.loading = false;
+              this.isLoadingPessoas = false;
+              return;
+            }
+
+            const emElaboracaoSemProtocolo =
+              projetoModel.status === StatusProjetoEnum.Em_Elaboracao &&
+              !projetoModel.protocoloEdocs;
+
+            if (emElaboracaoSemProtocolo && this.subProponenteDIC != projetoModel.subResponsavelProponente && this._usuarioService.usuarioPerfil.subNovo == projetoModel.subResponsavelProponente) {
+              this.mostrarBotaoPedirRevisaoDic = true
+            } else {
+              this.mostrarBotaoPedirRevisaoDic = false
+            }
+
+            if (this.podeResponderComplementacao) {
+              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                this._projetosService.gerarBotoesAcaoResponderComplementacao(this.podeEditar)
+              );
+              this.trocarModo(true);
+            } else {
+              if (this.isProponente) {
+                if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnalise()
+                  );
+                } else if (projetoModel.protocoloEdocs) {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
+                  );
+                } else {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponente()
+                  );
+                  this.trocarModo(true);
+                }
+              } else {
+                if (emElaboracaoSemProtocolo && this.isUsuarioProponenteResponsavel) {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioUsuarioProponenteResponsavel()
+                  );
+                  this.trocarModo(true);
+                } else if (projetoModel.protocoloEdocs) {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormularioProponenteEmAnaliseAposAutuacao(this.podeSoilictarComplementacao)
+                  );
+                  this.trocarModo(false);
+                } else {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoFormulario()
+                  );
+                  this.trocarModo(true);
+                }
+              }
 
             if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
-
-              this.mostrarBotaoBaixarDic = false;
-
               const subeppSubeoEnviados = this.pareceresEstrategicoOrcamentarioForamEnviados();
 
-              const subeppSubeoEntranhados = this.pareceresEstrategicoOrcamentarioForamEntranhados();
+                const subeppSubeoEntranhados = this.pareceresEstrategicoOrcamentarioForamEntranhados();
 
-              this._breadcrumbService.listaItemsBreadcrumb$
+                this._breadcrumbService.listaItemsBreadcrumb$
 
-              const parecerSubcapGeoc = this.pareceresProjeto
-                .find(p => [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao))
+                const parecerSubcapGeoc = this.pareceresProjeto
+                  .find(p => [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao))
 
-              if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO) &&
-                (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0)) {
+                if ((this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO) &&
+                  (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0)) {
 
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
-                );
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
+                  );
 
-              } else if ( ( !parecerSubcapGeoc && subeppSubeoEntranhados) || 
-                ( parecerSubcapGeoc && parecerSubcapGeoc?.statusParecer !== StatusParecerEnum.Entranhado_Processo_Edocs ) ) {
+                } else if ( ( !parecerSubcapGeoc && subeppSubeoEntranhados) || 
+                  ( parecerSubcapGeoc && parecerSubcapGeoc?.statusParecer !== StatusParecerEnum.Entranhado_Processo_Edocs ) ) {
 
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoParecerGEOC()
-                );
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoParecerGEOC()
+                  );
 
-              } else if (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP && subeppSubeoEnviados && !subeppSubeoEntranhados) {
+                } else if (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP && subeppSubeoEnviados && !subeppSubeoEntranhados) {
 
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs()
-                );
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs()
+                  );
 
-              } else {
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoeAcaoVoltar()
-                );
+                } else {
+                  this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                    this._projetosService.gerarBotoeAcaoVoltar()
+                  );
+                }
+
+                () => this.trocarModo(true);
+
               }
-
-              setTimeout(() => this.trocarModo(true), 2000);
 
             }
 
-          }
+            // usa uma flag vinda da API informando se o DIC pode ser Editado.. 
+            this.trocarModo(this.podeEditar);
 
-          // usa uma flag vinda da API informando se o DIC pode ser Editado.. 
-          setTimeout(() => this.trocarModo(this.podeEditar), 2000);
+            this.loading = false;
+            this.isLoadingPessoas = false;
 
-          this.loading = false;
-          this.isLoadingPessoas = false;
-
+            
+          });
+          
         })
 
       );
@@ -525,9 +591,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public aguardandoParecer(): boolean {
 
-    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) || (this.statusProjeto == StatusProjetoEnum.Elegivel);
+    return (this.statusProjeto == StatusProjetoEnum.Parecer_SEP);
 
   }
+
+  public isProjetoElegivel() : boolean {
+    return this.statusProjeto == StatusProjetoEnum.Elegivel;
+  }
+  
 
   ngOnInit(): void {
 
@@ -578,29 +649,35 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._usuarioService.usuarioPerfil.idOrganizacoes;
 
     this._projetosService.idProjeto$.pipe(take(1)).subscribe(idProjeto => {
-
+      
       if (idProjeto > 0) {
         this.carregarProjetoEditar(idProjeto);
+        this._subscription.add(this._getAllOpcoes$.pipe(tap(() => {
+          this._subscription.add(this._atualizarProjeto$.subscribe());
+        })).subscribe());
       } else {
 
-        this.iniciarForm();
+        this.iniciarForm().subscribe(() => {
 
-        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
-        );
+          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+            this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
+          );
 
-        this.trocarModo(true);
+          this.trocarModo(true);
 
-        this.mostrarBotaoBaixarDic = false;
-        this.loading = false;
-        this.isLoadingPessoas = false;
+          this.mostrarBotaoBaixarDic = false;
+          this.loading = false;
+          this.isLoadingPessoas = false;
 
+        });
       }
+      
     });
 
-    this._subscription.add(this._getAllOpcoes$.subscribe());
-    this._subscription.add(this._atualizarProjeto$.subscribe());
-    this._subscription.add(this._cadastrarProjeto$.subscribe());
+
+    
+    
+    
 
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
@@ -608,7 +685,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  private carregarPessoasPorOrganizacao(): void {
+  private carregarPessoasPorOrganizacao(): Observable<IOpcoesDropdownResponsavelProponente[]> {
 
     const idOrganizacaoFormControl = this.projetoForm.get('idOrganizacao') as FormControl<number | null>;
 
@@ -621,9 +698,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.isLoadingPessoas = true;
 
-    this._pessoasService.buscarResponsavelPorIdOrganizacaoAC(valorIdOrganizacao)
-      .subscribe({
-        next: (response) => {
+    return this._pessoasService.buscarResponsavelPorIdOrganizacaoAC(valorIdOrganizacao)
+      .pipe(tap((response) => {
 
           this.pessoasOpcoes = response;
           this.isLoadingPessoas = false;
@@ -632,12 +708,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           const pessoa = this.pessoasOpcoes.find(p => p.agentePublicoSub === subResponsavelProponente);
           this.projetoForm.patchValue({ nomeResponsavelProponente: pessoa?.nome.toUpperCase() || ' - ' });
 
-        },
-        error: () => {
+        }),
+        catchError((err) => {
           this.pessoasOpcoes = [];
           this.isLoadingPessoas = false;
-        }
-      });
+          return throwError(() => err)
+        })
+      );
 
   }
 
@@ -698,15 +775,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public idIndicadorNgSelectChangeEvent(event: number): void {
     this.indicadoresService.idIndicadorIndicadoresValue$.next(event);
-    setTimeout(() => (this.idIndicadorIndicadores = null), 0);
+    setTimeout(() => (this.idIndicadorIndicadores = null));
   }
 
   public baixarDIC(): void {
     this._projetosService.baixarDIC(this._idProjetoEdicao);
   }
 
-  private iniciarForm(projetoFormModel?: ProjetoFormModel): void {
-
+  private iniciarForm(projetoFormModel?: ProjetoFormModel): Observable<any> {
+    
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
       : null;
@@ -815,14 +892,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       pareceresProjeto: this._nnfb.array([]),
     });
 
-    this.carregarPessoasPorOrganizacao();
+    const mapSubObs : {[index: string]: Observable<string>} = {};
+    projetoFormModel?.pareceresProjeto?.forEach(parecer => {
+        mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
+                                                    .pipe(map(pessoa => pessoa.nome))
+    })
 
-    this.projetoFormValueChanges();
+    return concat(
+      forkJoin(mapSubObs).pipe(tap(retorno => this.mapSubUser = retorno)),
+      this.carregarPessoasPorOrganizacao()
+    ).pipe(tap(() => {
+      this.projetoFormValueChanges();
 
-    this.valorFormValueChanges();
+      this.valorFormValueChanges();
 
-    if (this.isProponente && !projetoFormModel)
-      this.usuarioProponenteValoresIniciaisProjetoForm();
+      if (this.isProponente && !projetoFormModel)
+        this.usuarioProponenteValoresIniciaisProjetoForm();
+
+    }));
+
+    
 
   }
 
@@ -1206,6 +1295,30 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  public isSubcapGeoc(): boolean {
+    return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
+  }
+
+  public isGeocEditavel() : boolean {
+    const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
+      this.pareceresProjeto
+        .filter(p =>
+          [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
+        )
+        .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
+    return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && this.isSubeoSubeppEntranhados();
+  }
+
+  public isSubeoSubeppEntranhados() : boolean {
+    const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
+      this.pareceresProjeto
+        .filter(p =>
+          [LotacaoUsuarioEnum.SUBEO, LotacaoUsuarioEnum.SUBEPP].includes(p.parecerLotacao)
+        )
+        .every(p => p.statusParecer === StatusParecerEnum.Entranhado_Processo_Edocs);
+    return subeoSubeppEntranhados;
+  }
+
   private validarFormulario(form: FormGroup): boolean {
 
     for (const key in form.controls) {
@@ -1253,6 +1366,29 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     return true;
 
+  }
+
+  getLotacao(nLotacao: number) {
+    switch(nLotacao) {
+      case LotacaoUsuarioEnum.SUBCAP: return "GEOC";
+      case LotacaoUsuarioEnum.SUBEO: return "Orçamentário";
+      case LotacaoUsuarioEnum.SUBEPP: return "Estratégico";
+    }
+    return undefined;
+  }
+
+  get demaisPareceres() {
+    
+    return [LotacaoUsuarioEnum.SUBEPP, LotacaoUsuarioEnum.SUBEO, ...(this.isSubeoSubeppEntranhados() ? [LotacaoUsuarioEnum.SUBCAP] : [])]
+            .map(n => {
+              const parecer = this.pareceresProjeto.filter(p => p.parecerLotacao === n)[0]
+
+              return parecer ?? {
+                parecerLotacao: n
+              } as IParecer;
+
+            })
+            .filter(parecer =>!this.aguardandoParecer() || this.isProjetoElegivel() || parecer.parecerLotacao !== this.lotacaoUsuario)
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {

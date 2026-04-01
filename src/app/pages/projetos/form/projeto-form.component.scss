@@ -64,3 +64,32 @@
 .etapa-finalizada {
     font-weight: bold;
 }
+
+.parecerTexto {
+    text-indent: 2rem;
+}
+
+.parecerLabel {
+    font-weight: bold;
+}
+
+main {
+    display: flex;
+    gap: 1rem;
+}
+
+::ng-deep {
+    .p-timeline-event-opposite {
+        display: none;
+    }
+
+    .p-timeline-event-content {
+        max-width: unset;
+        transform: translateY(0.3rem);
+        padding-inline-end: 0.3rem;
+    }
+
+    .p-tooltip {
+        max-width: unset;
+    }
+}
