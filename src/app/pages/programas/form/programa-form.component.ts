@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -45,8 +45,10 @@ import { TBotaoAcao } from '../../../shared/components/botao/botao.config';
 import {
   IPrograma,
   IProgramaForm,
+  IProgramaStatus,
   StatusAssinaturaPrograma,
   StatusPrograma,
+  StatusProgramaLabel,
 } from '../../../core/interfaces/programa.interface';
 import {
   IProjetoPropostoOpcoesDropdown,
@@ -74,10 +76,9 @@ import { ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent } from '
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
 import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
-import { take } from 'lodash';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+import { gerarStepProgramaStatus, IStep } from '../../../core/utils/steps';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
-
 @Component({
   selector: 'siscap-programa-form',
   standalone: false,
@@ -86,8 +87,8 @@ import { ProjetosService } from '../../../core/services/projetos/projetos.servic
 })
 export class ProgramaFormComponent implements OnInit, OnDestroy {
 
-  private readonly _destroy$ = new Subject<undefined>();
-
+  private readonly _destroy$ = new Subject<any>();
+  
   private _idProgramaEdicao: number = 0;
 
   public loading: boolean = true;
@@ -124,6 +125,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public statusProgramaAtual: StatusPrograma = StatusPrograma.EDICAO;
 
+  public statusSteps: IStep<StatusPrograma>[] | undefined;
+
   get orgaosSelecionados(): Array<IPapeisOrgaoProgramaDropdownOpcoes> {
     const orgaosSelecionadosIds: Array<number> = this.programaForm.controls['orgaosEnvolvidosList'].value;
 
@@ -150,109 +153,134 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _projetosService: ProjetosService
   ) {
 
-    this._programasService.idPrograma$.pipe(
-      takeUntil(this._destroy$),
-      switchMap(idPrograma => {
-
-        return forkJoin({
-          programa: idPrograma === 0 ? of(undefined) : this._programasService.getById(idPrograma),
-          organizacoesOpcoes: this._opcoesDropdownService.getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria),
-          pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
-          tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
-          projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
-          programasOpcoes: this._opcoesDropdownService.getOpcoesProgramas(),
-          tiposValorOpcoes: this._opcoesDropdownService.getOpcoesTiposValor()
-        })        
-      })
-    ).subscribe(
-      ({
-        programa, 
-        organizacoesOpcoes, 
-        pessoasOpcoes, 
-        tiposPapelOpcoes, 
-        projetosPropostosOpcoes,
-        programasOpcoes,
-        tiposValorOpcoes
-      }) => {
-
-        this.organizacoesOpcoes = organizacoesOpcoes;
-        this.pessoasOpcoes = pessoasOpcoes;
-
-        this.tiposPapelOpcoes = tiposPapelOpcoes;
-          const idsPermitidos = [
-            TipoPapelEnum.Gerente_de_Projeto,
-            // TipoPapelEnum.Redator,
-            TipoPapelEnum.Membro_do_Projeto
-          ];
-          this.tiposPapelOpcoesVisiveis = tiposPapelOpcoes.filter((papel) =>
-            idsPermitidos.includes(papel.id)
-          );
-
-        this.projetosPropostosOpcoes = projetosPropostosOpcoes;
-        this.programasOpcoes = programasOpcoes;
-        this.tiposValorOpcoes = tiposValorOpcoes.filter(
-              (tipoValor) => tipoValor.id <= 3
-            )
-
-        let config;
-
-        if(programa) {
-          
-          this.programaAtual = programa;
-          const programaModel = new ProgramaModel(programa);
-
-          this.iniciarForm(programaModel);
-
-          this._idProgramaEdicao = programaModel.id;
-          config = this.atualizarBotoes(this.programaAtual);
-          this.mostrarBotaoBaixarPrograma = true;
-          this.equipeCaptacao = programaModel.equipeCaptacao;
-        } else {
-          this.iniciarForm();
-
-          config = {
-            deveExibirBotaoSolicitarAutorizacao: false,
-            deveExibirBotaoAutuar: false
-          };
-
-        }
-
-        this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-          this._programasService.gerarBotoesAcaoFormulario(config as { deveExibirBotaoSalvar: boolean; deveExibirBotaoSolicitarAutorizacao: boolean; deveExibirBotaoAutuar: boolean; })
-        );
-        this.loading = false;
-
-
-      }
-    )
-
-    this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
-      this.executarAcaoBreadcrumb(acao)
-    )
+      this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
+        this.executarAcaoBreadcrumb(acao)
+      );
     
   }
   
   ngOnInit(): void {
-    // É necessário fazer os passos abaixos pois no caso de Cadastrar Programa, o validator assícrono estava sendo
-    // criado antes da propriedade organizacoesOpcoes ser preenchida.
-    // Isso fazia com que o validator sempre retornava um erro, visto que não conseguia acessar a lista de opções p/
-    // fazer as verificações.
+    this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
+          error: (err) =>
+            console.error(
+              'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
+              err
+            ),
+        });
 
-    /* Talvez ainda seja nescessario ??? só talvez
-    const orgaosController = this.getControl('orgaosEnvolvidosList');
-    if (orgaosController) {
-      if (orgaosController.hasAsyncValidator(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes))) {
-        orgaosController.removeAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
+    forkJoin({
+      organizacoesOpcoes:  this._opcoesDropdownService.getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria),
+      pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
+      tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
+      projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
+      programasOpcoes: this._opcoesDropdownService.getOpcoesProgramas(),
+      tiposValorOpcoes: this._opcoesDropdownService.getOpcoesTiposValor()
+    }).subscribe(
+      ({
+        organizacoesOpcoes, 
+        pessoasOpcoes,
+        tiposPapelOpcoes,
+        projetosPropostosOpcoes,
+        programasOpcoes,
+        tiposValorOpcoes
+      }) => {
+        this.organizacoesOpcoes = organizacoesOpcoes;
+        this.pessoasOpcoes = pessoasOpcoes;
+        this.projetosPropostosOpcoes = projetosPropostosOpcoes;
+        this.programasOpcoes = programasOpcoes;
+        // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
+        this.tiposValorOpcoes = tiposValorOpcoes.filter( (tipoValor) => tipoValor.id <= 3 );
+
+
+        this.tiposPapelOpcoes = tiposPapelOpcoes;
+        const idsPermitidos = [
+          TipoPapelEnum.Gerente_de_Projeto,
+          // TipoPapelEnum.Redator,
+          TipoPapelEnum.Membro_do_Projeto
+        ];
+        this.tiposPapelOpcoesVisiveis = tiposPapelOpcoes.filter((papel) =>
+          idsPermitidos.includes(papel.id)
+        );
+
+        
+        this._programasService.idPrograma$.pipe(
+          takeUntil(this._destroy$),
+          switchMap(idPrograma => idPrograma > 0 ? this._programasService.getById(idPrograma) : of(undefined))
+        ).subscribe(
+          programa => {
+            
+            const programaModel = programa && new ProgramaModel(programa);
+            
+            this.iniciarForm(programaModel);
+
+            if(programa) {
+              // console.log(' response byId programa : ', response);
+
+              this.programaAtual = programa;
+
+              let statushistorico = programaModel!.historicoStatus.sort((a, b) => String(a.inicioEm).localeCompare(String(b.inicioEm)))
+
+              this.statusSteps = statushistorico.map(
+                h => gerarStepProgramaStatus(h.status, h, statushistorico)
+              )
+
+              if(![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel!.statusPrograma) ){
+                const caminhoPerfeito = [
+                  StatusPrograma.EDICAO,
+                  StatusPrograma.AGUARDANDO_ASSINATURAS,
+                  StatusPrograma.ASSINADO,
+                  StatusPrograma.AUTUADO
+                ]
+
+                caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel!.statusPrograma)+1).forEach(
+                  status => {
+                    this.statusSteps?.push(gerarStepProgramaStatus(status, undefined, statushistorico))
+                  }
+                )
+
+              }
+              
+              this._opcoesDropdownService
+                .getOpcoesDicsElegiveisPrograma(programa.idProjetoPropostoList.join(';'))
+                .pipe(
+                  takeUntil(this._destroy$),
+                  tap((response: IProjetoPropostoOpcoesDropdown[]) => {
+                    this.projetosPropostosOpcoes = response;
+                  })
+                ).subscribe();
+
+              this._idProgramaEdicao = programaModel!.id;
+              this.atualizarBotoes(this.programaAtual);
+              this.mostrarBotaoBaixarPrograma = true;
+              this.equipeCaptacao = programaModel!.equipeCaptacao;
+            } else {
+
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._programasService.gerarBotoesAcaoFormulario({
+                    deveExibirBotaoSalvar: true,
+                    deveExibirBotaoSolicitarAutorizacao: false,
+                    deveExibirBotaoAutuar: false,
+                  })
+                );
+
+            }
+            
+            // fixa tipo como valor estimado..
+            this.programaForm.patchValue({
+              valor: {
+                tipo: TipoValorEnum.Estimado,
+              },
+            });
+            
+            this.loading = false;
+          }
+
+        )
+
+
       }
+    )
 
-      orgaosController.addAsyncValidators(this.todosOrgaosPossuemTipoValidator(this.organizacoesOpcoes));
-      orgaosController.updateValueAndValidity();
-    }
-    */
-
-    
-
-   
   }
 
   ngOnDestroy(): void {
@@ -311,14 +339,21 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
 
-    orgaosEnvolvidosList.patchValue([
-      ...orgaosEnvolvidosList.value,
-      ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === event.idOrganizacao) 
-          ? [] 
-          : [event.idOrganizacao])
-    ])
+    this._projetosService.getById(event.id).subscribe(
+      projeto => {
+        const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
+
+        orgaosEnvolvidosList.patchValue([
+          ...orgaosEnvolvidosList.value,
+          ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === projeto.idOrganizacao) 
+                ? [] 
+                : [projeto.idOrganizacao])
+        ]);
+
+      }
+    )
+        
 
     this.idProjetoPropostoList.patchValue([
       ...this.idProjetoPropostoList.value,
@@ -326,6 +361,29 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     ]);
 
     setTimeout(() => (this.idProjetoProposto = null), 0);
+  }
+
+  public getIcon(status: IStep<StatusPrograma>) : string | undefined {
+    
+    if(status.isInativo()) return "fa-regular fa-clock"
+
+    if(status.isAtual()) return "pi pi-refresh";
+
+    if(status.isFinalizado()) return "fa-solid " + (status.positivo ? 'check-icon fa-check' : 'refused-icon fa-xmark')
+    
+    return undefined;
+  }
+
+  public getColor(status: IStep<StatusPrograma>) : string | undefined {
+
+    if(status.isInativo()) return "gray"
+
+    if(status.isAtual()) return "orange";
+ 
+    if(status.isFinalizado()) return status.positivo ? "green" : "red";
+    
+    return undefined;
+
   }
 
   public percentualCustoAdministrativoChangeEvent(event: any): void {
@@ -392,7 +450,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         valorEstimado: 0,
         idPrograma: null,
         parecerGEOCEnviado: false,
-        idOrganizacao: undefined
+        idOrganizacao: 0
       }
     );
   }
@@ -427,7 +485,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ]),
       orgaosEnvolvidosList: this._nnfb.control(
         programaModel?.orgaosEnvolvidosList ? programaModel.orgaosEnvolvidosList.map((org) => org.id) : [],
-        [Validators.required, Validators.minLength(1)],
+        [Validators.required, Validators.minLength(1)], [this.todosOrgaosPossuemTipoValidator()]
       ),
       equipeCaptacao: this.equipeService.construirEquipeFormArray(
         programaModel?.equipeCaptacao,
@@ -684,23 +742,24 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this.exibirLista = false;
   }
 
-    
-  private atualizarBotoes(programa: IPrograma) : any {
-
-    const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
-    // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
-
+  private atualizarBotoes(programa: IPrograma) {
     const deveExibirBotaoSalvar = (programa.statusPrograma && programa.statusPrograma === StatusPrograma.EDICAO) || !programa.statusPrograma;
     // Botão de Salvar Rascunho só aparece se o Programa é editável
     
-    const deveExibirBotaoSolicitarAutorizacao = ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
+    const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
+    // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
+
+    const deveExibirBotaoSolicitarAutorizacao = [StatusPrograma.AGUARDANDO_ASSINATURAS].includes(programa.statusPrograma) 
+                                              || ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
     // Botão de Solicitar Autorizações não deve aparecer se o Programa já foi Assinado, Autuado ou Recusado
 
-    return {
-      deveExibirBotaoSolicitarAutorizacao,
-      deveExibirBotaoAutuar,
-      deveExibirBotaoSalvar
-    };
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+      this._programasService.gerarBotoesAcaoFormulario({
+        deveExibirBotaoSalvar,
+        deveExibirBotaoSolicitarAutorizacao,
+        deveExibirBotaoAutuar,
+      })
+    );
   }
 
   public exportarPrograma() {
@@ -842,11 +901,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   /* Async Validator */
-  todosOrgaosPossuemTipoValidator(organizacoesOpcoes: Array<IPapeisOrgaoProgramaDropdownOpcoes>): AsyncValidatorFn {
+  todosOrgaosPossuemTipoValidator(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
       return of(control.value as Array<number>)
         .pipe(
           map(idsOrgaosSelecionados => {
+            const organizacoesOpcoes = this.organizacoesOpcoes;
+
             if (organizacoesOpcoes.length > 0) {
               const opcoesSelecionadas = organizacoesOpcoes.filter((org) => idsOrgaosSelecionados.includes(org.id));
               const algumOrgaoGestor = opcoesSelecionadas.some((org) => org.papel === PapelOrgaoPrograma.GESTOR);

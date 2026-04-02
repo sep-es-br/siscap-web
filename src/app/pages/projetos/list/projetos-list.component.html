@@ -55,7 +55,8 @@
           }}
         </td>
         <td (click)="$event.stopPropagation()">
-          <button class="btn border-none" (click)="deletarProjeto(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)">
+          <button class="btn border-none" (click)="deletarProjeto(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)"
+            title="Excluir">
             <i class="fa-solid fa-trash-can me-2"></i>
           </button>
         </td>

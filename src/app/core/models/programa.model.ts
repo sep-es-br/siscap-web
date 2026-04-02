@@ -1,5 +1,5 @@
 import { IEquipe } from '../interfaces/equipe.interface';
-import { IPrograma, IProgramaForm, IProgramaOrgaosEnvolvidos, StatusPrograma } from '../interfaces/programa.interface';
+import { IPrograma, IProgramaForm, IProgramaOrgaosEnvolvidos, IProgramaStatus, StatusPrograma } from '../interfaces/programa.interface';
 
 import { EquipeModel } from './equipe.model';
 import { ValorModel } from './valor.model';
@@ -17,6 +17,8 @@ export class ProgramaFormModel implements IProgramaForm {
   public valorCalculadoTotal: number;
   public nomeagente: string;
 
+  public historicoStatus: Array<IProgramaStatus>;
+
   constructor(programaForm?: IProgramaForm) {
     this.equipeCaptacao = this.construirEquipeCaptação(
       programaForm?.equipeCaptacao
@@ -32,6 +34,7 @@ export class ProgramaFormModel implements IProgramaForm {
     this.valorCalculadoTotal = programaForm?.valorCalculadoTotal ?? 0;
 
     this.nomeagente = programaForm?.nomeagente ?? '';
+    this.historicoStatus = programaForm?.historicoStatus ?? [];
   }
 
   private construirEquipeCaptação(equipeCaptacao?: IEquipe[]): EquipeModel[] {

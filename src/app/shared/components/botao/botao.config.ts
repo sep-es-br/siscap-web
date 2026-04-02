@@ -151,7 +151,7 @@ export abstract class BotoesConfig {
     capturarparecerGEOC: {
       classesCSS: ['btn-primary'],
       icone: ['fa-solid', 'fa-upload'],
-      texto: 'Enviar Parecer',
+      texto: 'Julgar e Enviar Parecer',
       acao: 'capturarparecerGEOC',
     },
     salvarAposElaboracao: {

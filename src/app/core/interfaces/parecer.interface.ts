@@ -12,5 +12,6 @@ export interface IParecer {
 	guidDocumentoEdocs: string;
 	usuarioFezEnvioParecer: string
 	parecerLotacao: LotacaoUsuarioEnum;
+	elegivel: boolean;
 
 }

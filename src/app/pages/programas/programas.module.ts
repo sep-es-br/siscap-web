@@ -44,7 +44,9 @@ import { ProgramasSearchComponent } from './search/programas-search.component';
     ProgramasRoutingModule,
     OrgaosPapeisFormComponent,
     NomeStatusProgramaPipe,
-  ],
+    TimelineModule,
+    TooltipModule
+],
   exports: [
     ProgramasComponent,
     ProgramasListComponent,

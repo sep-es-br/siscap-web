@@ -16,6 +16,7 @@ export interface IPrograma {
   valor: IValor;
   valorCalculadoTotal: number;
   nomeagente: string;
+  historicoStatus: Array<IProgramaStatus>;
 }
 
 export interface IProgramaForm extends Omit<IPrograma, 'id'> { }
@@ -62,6 +63,15 @@ export interface IProgramaAssinaturasForm extends IPrograma {
   listaDICSPropostos: Array<string>;
   assinaturaUsuarioAtual?: IProgramaAssinatura;
   demaisAssinaturas: Array<IProgramaAssinatura>;
+}
+
+export interface IProgramaStatus {
+  id: number;
+  status: StatusPrograma,
+  idPessoa: number,
+  nomePessoa: string,
+  inicioEm: Date,
+  fimEm: Date
 }
 
 export interface IProgramaOrgaosEnvolvidos {

@@ -651,13 +651,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._projetosService.idProjeto$.pipe(take(1)).subscribe(idProjeto => {
       
       if (idProjeto > 0) {
-        this.carregarProjetoEditar(idProjeto);
         this._subscription.add(this._getAllOpcoes$.pipe(tap(() => {
+          this.carregarProjetoEditar(idProjeto);
           this._subscription.add(this._atualizarProjeto$.subscribe());
         })).subscribe());
       } else {
-
-        this.iniciarForm().subscribe(() => {
+        
+        this._subscription.add(this._getAllOpcoes$.subscribe(
+          () => {
+            this.iniciarForm().subscribe(() => {
 
           this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
             this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
@@ -670,6 +672,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.isLoadingPessoas = false;
 
         });
+          }
+        ))
+
+        
       }
       
     });
@@ -887,13 +893,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         dataEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.dataEnvio ?? null],
         guidDocumentoEdocs: [projetoFormModel?.parecerProjetoUsuario?.guidDocumentoEdocs ?? ''],
         guidUnidadeOrganizacao: [projetoFormModel?.parecerProjetoUsuario?.guidUnidadeOrganizacao ?? ''],
-        usuarioFezEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? '']
+        usuarioFezEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? ''],
+        elegivel: [projetoFormModel?.parecerProjetoUsuario.elegivel ?? null]
       }),
       pareceresProjeto: this._nnfb.array([]),
     });
 
     const mapSubObs : {[index: string]: Observable<string>} = {};
-    projetoFormModel?.pareceresProjeto?.forEach(parecer => {
+    projetoFormModel?.pareceresProjeto?.filter(p => p.usuarioFezEnvioParecer).forEach(parecer => {
         mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
                                                     .pipe(map(pessoa => pessoa.nome))
     })
@@ -1354,12 +1361,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // valida se tem pelo menos uma acao ATIVA no form
     // e seja diferente do papel 'Redator'
-    const membrosEquipeAtivas = this.projetoForm.get('equipeElaboracao')?.value
+    const equipeElaboracao = this.projetoForm.get('equipeElaboracao')?.value as IEquipe[];
+    const membrosEquipeAtivas = equipeElaboracao
       .filter((membro: EquipeModel) => membro.idStatus === TipoStatusEnum.Ativo && membro.idPapel != TipoPapelEnum.Redator);
 
     if (membrosEquipeAtivas.length === 0) {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
         'Nenhum membro informado além do Redator.',
+      ]);
+      return false;
+    }
+
+    if (!equipeElaboracao.some(e => e.idPapel == TipoPapelEnum.Redator)){
+      this._toastService.showToast('warning', 'O formulário contém erros', [
+        'Nenhum membro Redator informado'
       ]);
       return false;
     }
@@ -1375,6 +1390,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       case LotacaoUsuarioEnum.SUBEPP: return "Estratégico";
     }
     return undefined;
+  }
+
+  get isParecerGeoc() : boolean{
+    return (this.parecerProjetoUsuario.parecerLotacao ?? this.lotacaoUsuario) == LotacaoUsuarioEnum.SUBCAP;
   }
 
   get demaisPareceres() {
@@ -1745,10 +1764,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  public confirmarAssinarCapturarParecer() {
+  public confirmarAssinarCapturarParecer(elegivel? : boolean) {
     this.autuacaoAcionada = true;
     this.assinarAutuar = false;
     this.finalizadoProcessamentoIntegracao = false;
+    this.projetoForm.get("parecerProjetoUsuario")?.patchValue({
+      ...this.projetoForm.get("parecerProjetoUsuario")?.getRawValue(),
+      elegivel
+    });
     this.efetivarEnvioParecerProjetoForm(this.projetoForm);
   }
 
