@@ -41,12 +41,12 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
         case StatusProjetoEnum.Em_Elaboracao:
             return {
                 ...base,
-                label: StatusProjetoEnum.Em_Elaboracao.replace('Em ', '')                
+                label: StatusProjetoEnum.Em_Elaboracao              
             } as IStep<StatusProjetoEnum>;
         case StatusProjetoEnum.Em_Analise:
             return {
                 ...base,
-                label: StatusProjetoEnum.Em_Analise.replace('Em ', '') 
+                label: StatusProjetoEnum.Em_Analise
             } as IStep<StatusProjetoEnum>;
         case StatusProjetoEnum.Arquivado:
             return {
@@ -80,7 +80,7 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
         case StatusProjetoEnum.Em_Complementacao:
             return {
                 ...base,
-                label: StatusProjetoEnum.Em_Complementacao.replace('Em ', '') 
+                label: StatusProjetoEnum.Em_Complementacao 
             } as IStep<StatusProjetoEnum>;
         case StatusProjetoEnum.Elegivel:
             return {
