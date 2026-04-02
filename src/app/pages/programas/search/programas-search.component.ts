@@ -14,7 +14,7 @@ export class ProgramasSearchComponent {
 
   programasPesquisaForm!: FormGroup;
 
-  programasStatusOpcoes: Array<{ value: StatusPrograma; label: string; }> = 
+  programasStatusOpcoes: Array<{ value: StatusPrograma; label: string; }> =
     Object
       .entries(StatusProgramaLabel)
       .map(([key, label]) => ({
@@ -25,14 +25,15 @@ export class ProgramasSearchComponent {
 
   constructor() {
     this.programasPesquisaForm = new FormGroup({
-      status: new FormControl('Status'),
-      porTermo: new FormControl(''),
+      status: new FormControl<number | null>(-1),
+      porTermo: new FormControl<string>(''),
     });
 
     this.programasPesquisaForm.valueChanges
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
       .subscribe(() => {
-        this.pesquisarProgramas.emit(this.programasPesquisaForm.getRawValue());
+        const filtro = this.programasPesquisaForm.getRawValue();
+        this.pesquisarProgramas.emit(filtro);
       });
   }
 }

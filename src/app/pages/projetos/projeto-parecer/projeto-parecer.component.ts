@@ -33,7 +33,7 @@ import { Jodit } from 'jodit';
 export class ProjetoParecerComponent implements OnInit, AfterViewInit{
 
   @ViewChild('editor') editorElement!: ElementRef<HTMLTextAreaElement>;
-  
+
   editor! : Jodit | undefined;
 
   textoLength = 0;
@@ -42,7 +42,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
   @Input() statusProjeto!: string;
   @Input() lotacaoUsuario!: number;
   @Input() pareceresProjeto!: IParecer[];
-  
+
 
   constructor(
     private fb: FormBuilder
@@ -92,10 +92,6 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
     }
 
     textoParecer?.updateValueAndValidity();
-
-
-    console.log(' this.isSubeep - ', this.isSubepp() )
-    console.log(' this.lotacaoUsuario - ', this.lotacaoUsuario )
 
   }
 
@@ -153,13 +149,13 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
         this.editor.value = textoParecer?.getRawValue();
 
         textoParecer?.valueChanges.subscribe(value => {
-          if(this.editor)  
+          if(this.editor)
             this.editor.value = value
         })
 
 
     })
-    
+
   }
 
   normalizeHtml(html: string): string {
@@ -199,7 +195,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
         if(!this.editor) return;
         this.editor.editor.scrollTop = this.editor.editor.scrollHeight;
       }, 0)
-      
+
       return;
     }
 
