@@ -1372,13 +1372,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    if (!equipeElaboracao.some(e => e.idPapel == TipoPapelEnum.Redator)){
-      this._toastService.showToast('warning', 'O formulário contém erros', [
-        'Nenhum membro Redator informado'
-      ]);
-      return false;
-    }
-
     return true;
 
   }
