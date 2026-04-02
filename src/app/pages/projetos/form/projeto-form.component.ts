@@ -1361,12 +1361,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // valida se tem pelo menos uma acao ATIVA no form
     // e seja diferente do papel 'Redator'
-    const membrosEquipeAtivas = this.projetoForm.get('equipeElaboracao')?.value
+    const equipeElaboracao = this.projetoForm.get('equipeElaboracao')?.value as IEquipe[];
+    const membrosEquipeAtivas = equipeElaboracao
       .filter((membro: EquipeModel) => membro.idStatus === TipoStatusEnum.Ativo && membro.idPapel != TipoPapelEnum.Redator);
 
     if (membrosEquipeAtivas.length === 0) {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
         'Nenhum membro informado além do Redator.',
+      ]);
+      return false;
+    }
+
+    if (!equipeElaboracao.some(e => e.idPapel == TipoPapelEnum.Redator)){
+      this._toastService.showToast('warning', 'O formulário contém erros', [
+        'Nenhum membro Redator informado'
       ]);
       return false;
     }
