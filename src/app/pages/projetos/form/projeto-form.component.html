@@ -335,7 +335,7 @@
       <div class="tab-pane fade" [ngClass]="{'show active': aguardandoParecer()}"  *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0" id="tab-pareceres" role="tabpanel" aria-labelledby="nav-pareceres">
 
         <div class="card" *ngIf="(aguardandoParecer() && (!isSubcapGeoc() || isSubeoSubeppEntranhados())) && !isProjetoElegivel()">
-          <div class="card-header d-flex flex-wrap align-content-center" id="parecerTituloAtual" 
+          <div class="card-header d-flex flex-wrap align-content-center" id="parecerTituloAtual"
                   data-bs-toggle="collapse" data-bs-target="#parecerAtual">
             <span style="display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; ">
                 @if(this.parecerProjetoUsuario.guidDocumentoEdocs) {
@@ -358,7 +358,7 @@
         </div>
 
           <div class="card" *ngFor="let parecer of demaisPareceres">
-            <div class="card-header d-flex flex-wrap align-content-center" id="parecerTitulo{{parecer.parecerLotacao}}" 
+            <div class="card-header d-flex flex-wrap align-content-center" id="parecerTitulo{{parecer.parecerLotacao}}"
                     data-bs-toggle="collapse" [attr.data-bs-target]="'#parecer' + parecer.parecerLotacao">
               <span style="display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; ">
                 @if(parecer.guidDocumentoEdocs) {
@@ -394,11 +394,11 @@
               </div>
             </div>
           </div>
-            
-        </div>
-          
 
-        
+        </div>
+
+
+
       </div>
     </div>
   </div>
@@ -863,8 +863,8 @@
     </h4>
   </div>
   <div class="modal-body">
-    <p>Esta ação realizará automaticamente procedimentos no E-Docs, utilizando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}), esta ação não poderar ser desfeita: </p>
+    <p>Essa ação confirmará a captura e assinatura no e-Docs. Após isso, o parecer não poderá mais ser editado. - {{
+      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}), esta ação não poderá ser desfeita: </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>

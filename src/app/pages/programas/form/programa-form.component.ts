@@ -88,7 +88,7 @@ import { ProjetosService } from '../../../core/services/projetos/projetos.servic
 export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   private readonly _destroy$ = new Subject<any>();
-  
+
   private _idProgramaEdicao: number = 0;
 
   public loading: boolean = true;
@@ -156,9 +156,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
         this.executarAcaoBreadcrumb(acao)
       );
-    
+
   }
-  
+
   ngOnInit(): void {
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
           error: (err) =>
@@ -177,7 +177,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       tiposValorOpcoes: this._opcoesDropdownService.getOpcoesTiposValor()
     }).subscribe(
       ({
-        organizacoesOpcoes, 
+        organizacoesOpcoes,
         pessoasOpcoes,
         tiposPapelOpcoes,
         projetosPropostosOpcoes,
@@ -202,15 +202,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           idsPermitidos.includes(papel.id)
         );
 
-        
+
         this._programasService.idPrograma$.pipe(
           takeUntil(this._destroy$),
           switchMap(idPrograma => idPrograma > 0 ? this._programasService.getById(idPrograma) : of(undefined))
         ).subscribe(
           programa => {
-            
+
             const programaModel = programa && new ProgramaModel(programa);
-            
+
             this.iniciarForm(programaModel);
 
             if(programa) {
@@ -239,7 +239,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
                 )
 
               }
-              
+
               this._opcoesDropdownService
                 .getOpcoesDicsElegiveisPrograma(programa.idProjetoPropostoList.join(';'))
                 .pipe(
@@ -264,14 +264,14 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
                 );
 
             }
-            
+
             // fixa tipo como valor estimado..
             this.programaForm.patchValue({
               valor: {
                 tipo: TipoValorEnum.Estimado,
               },
             });
-            
+
             this.loading = false;
           }
 
@@ -346,14 +346,14 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
         orgaosEnvolvidosList.patchValue([
           ...orgaosEnvolvidosList.value,
-          ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === projeto.idOrganizacao) 
-                ? [] 
+          ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === projeto.idOrganizacao)
+                ? []
                 : [projeto.idOrganizacao])
         ]);
 
       }
     )
-        
+
 
     this.idProjetoPropostoList.patchValue([
       ...this.idProjetoPropostoList.value,
@@ -364,13 +364,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   public getIcon(status: IStep<StatusPrograma>) : string | undefined {
-    
+
     if(status.isInativo()) return "fa-regular fa-clock"
 
     if(status.isAtual()) return "pi pi-refresh";
 
     if(status.isFinalizado()) return "fa-solid " + (status.positivo ? 'check-icon fa-check' : 'refused-icon fa-xmark')
-    
+
     return undefined;
   }
 
@@ -379,9 +379,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     if(status.isInativo()) return "gray"
 
     if(status.isAtual()) return "orange";
- 
+
     if(status.isFinalizado()) return status.positivo ? "green" : "red";
-    
+
     return undefined;
 
   }
@@ -745,11 +745,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private atualizarBotoes(programa: IPrograma) {
     const deveExibirBotaoSalvar = (programa.statusPrograma && programa.statusPrograma === StatusPrograma.EDICAO) || !programa.statusPrograma;
     // Botão de Salvar Rascunho só aparece se o Programa é editável
-    
+
     const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;
     // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
 
-    const deveExibirBotaoSolicitarAutorizacao = [StatusPrograma.AGUARDANDO_ASSINATURAS].includes(programa.statusPrograma) 
+    const deveExibirBotaoSolicitarAutorizacao = [StatusPrograma.AGUARDANDO_ASSINATURAS].includes(programa.statusPrograma)
                                               || ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
     // Botão de Solicitar Autorizações não deve aparecer se o Programa já foi Assinado, Autuado ou Recusado
 
@@ -834,7 +834,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       titulo: 'Confirmação',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal:
-        'Essa ação irá Autuar o Programa em seu estado atual. Os dados do Programa jamais poderão ser alterados a partir deste ponto.',
+        'Essa ação irá Autuar o Programa em seu estado atual. Os dados do Programa não poderão ser alterados a partir deste ponto.',
       textoSecundario: 'Tem certeza que deseja continuar?',
       textoPrincipalCustomClass: 'fw-bold',
     };
@@ -912,7 +912,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
               const opcoesSelecionadas = organizacoesOpcoes.filter((org) => idsOrgaosSelecionados.includes(org.id));
               const algumOrgaoGestor = opcoesSelecionadas.some((org) => org.papel === PapelOrgaoPrograma.GESTOR);
               const algumOrgaoSemPapel = opcoesSelecionadas.some((org) => !org.papel || org.papel === null);
-  
+
               if (!algumOrgaoGestor) {
                 return { precisaAoMenosUmOrgaoGestor: true };
               }
