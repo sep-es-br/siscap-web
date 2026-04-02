@@ -81,7 +81,7 @@ export interface IProgramaOrgaosEnvolvidos {
 }
 
 export const StatusProgramaLabel: Record<StatusPrograma, string> = {
-  [StatusPrograma.SEM_STATUS]: 'Sem Status',
+  [StatusPrograma.SEM_STATUS]: 'Status',
   [StatusPrograma.EDICAO]: 'Edição',
   [StatusPrograma.AGUARDANDO_ASSINATURAS]: 'Aguardando Assinaturas',
   [StatusPrograma.ASSINADO]: 'Assinado',
