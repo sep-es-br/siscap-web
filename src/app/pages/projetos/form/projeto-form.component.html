@@ -338,7 +338,7 @@
           <div class="card-header d-flex flex-wrap align-content-center" id="parecerTituloAtual" 
                   data-bs-toggle="collapse" data-bs-target="#parecerAtual">
             <span style="display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; ">
-                @if(this.parecerProjetoUsuario?.guidDocumentoEdocs) {
+                @if(this.parecerProjetoUsuario.guidDocumentoEdocs) {
                   <i class="fa-solid check-icon fa-check" [style.color]="'green'"></i>
                 } @else {
                   <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>

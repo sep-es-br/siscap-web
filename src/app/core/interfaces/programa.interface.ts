@@ -26,6 +26,11 @@ export interface IProgramaTableData extends Pick<IPrograma, 'id' | 'sigla' | 'ti
   tetoPrograma: number;
 }
 
+export interface IProgramaFiltroPesquisa {
+  status?: StatusPrograma;
+  porTermo?: string;
+}
+
 export enum StatusPrograma {
   SEM_STATUS = -1,
   EDICAO = 1,

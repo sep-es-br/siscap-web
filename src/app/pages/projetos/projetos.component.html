@@ -3,9 +3,9 @@
 </div>
 
 <div class="row pt-4 pb-2" *ngIf="!loading">
-  <siscap-projetos-pesquisa
+  <siscap-projetos-search
     (pesquisarProjetos)="redefinirFiltroPesquisa($event)" 
-  ></siscap-projetos-pesquisa>
+  ></siscap-projetos-search>
 </div>
 
 <div class="card shadow border-light p-3" *ngIf="!loading">

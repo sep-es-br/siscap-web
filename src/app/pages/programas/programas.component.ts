@@ -1,12 +1,24 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
-import { BehaviorSubject, finalize, Observable, Subscription, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  EMPTY,
+  finalize,
+  Observable,
+  Subscription,
+  tap,
+} from 'rxjs';
 
 import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
 import { ProgramasService } from '../../core/services/programas/programas.service';
 import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
-import { IProgramaTableData } from '../../core/interfaces/programa.interface';
+import {
+  IProgramaFiltroPesquisa,
+  IProgramaTableData,
+  StatusPrograma,
+} from '../../core/interfaces/programa.interface';
 import { IPaginacaoDados } from '../../core/interfaces/paginacao-dados.interface';
 import { IHttpGetRequestBody } from '../../core/interfaces/http-get-all-paged.interface';
 
@@ -30,7 +42,7 @@ export class ProgramasComponent implements OnInit, OnDestroy {
     sort: '',
   };
 
-  private termoPesquisaSimples: string = '';
+  private filtroAtual: IProgramaFiltroPesquisa = {};
 
   private readonly _programasList$: BehaviorSubject<Array<IProgramaTableData>> =
     new BehaviorSubject<Array<IProgramaTableData>>([]);
@@ -74,10 +86,15 @@ export class ProgramasComponent implements OnInit, OnDestroy {
     this.fetchPage();
   }
 
-  public filtroPesquisaOutputEvent(filtro: string): void {
-    this.termoPesquisaSimples = filtro;
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
+    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
+  }
 
-    if (!filtro) {
+  filtrarPesquisaProgramas(novoFiltro: IProgramaFiltroPesquisa) {
+    this.filtroAtual = novoFiltro;
+
+    if (!novoFiltro.porTermo || !novoFiltro.status) {
       this._pageConfig.sort = '';
       this.limparSortColumn();
     }
@@ -99,26 +116,60 @@ export class ProgramasComponent implements OnInit, OnDestroy {
   }): void {
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
-    const searchFilter = { search: this.termoPesquisaSimples };
+    const searchFilter = {
+      search: this.filtroAtual?.porTermo == undefined ? '' : this.filtroAtual?.porTermo,
+      status: this.filtroAtual?.status == undefined ? -1 : this.filtroAtual?.status,
+    };
+
+    const cleanFilter = Object.fromEntries(
+      Object.entries(searchFilter).filter(
+        ([_, v]) => v !== undefined && v !== null && v !== ''
+      )
+    );
 
     this._programasService
-      .getAllPaged(tempPageConfig, searchFilter)
+      .getAllPaged(tempPageConfig, cleanFilter)
       .pipe(
         tap((response) => {
-          this._programasList$.next(response.content);
+          this._programasList$.next(response?.content ?? []);
+
+          const pageable = response?.pageable;
+          const offset = pageable?.offset ?? 0;
 
           this.paginacaoDados = {
-            paginaAtual: response.pageable.pageNumber + 1,
-            itensPorPagina: response.pageable.pageSize,
-            primeiroItemPagina: response.pageable.offset + 1,
-            ultimoItemPagina:
-              response.pageable.offset + response.numberOfElements,
-            totalRegistros: response.totalElements,
+            paginaAtual: (pageable?.pageNumber ?? 0) + 1,
+            itensPorPagina: pageable?.pageSize ?? 0,
+            primeiroItemPagina: offset + 1,
+            ultimoItemPagina: offset + (response?.numberOfElements ?? 0),
+            totalRegistros: response?.totalElements ?? 0,
           };
+        }),
+        catchError((error) => {
+          console.error('Erro ao buscar programas:', error);
+          this._programasList$.next([]);
+          return EMPTY;
         }),
         finalize(() => (this.loading = false))
       )
       .subscribe();
+    // this._programasService
+    //   .getAllPaged(tempPageConfig, searchFilter)
+    //   .pipe(
+    //     tap((response) => {
+    //       this._programasList$.next(response.content);
+    //       console.log('dados passados', response.content);
+    //       this.paginacaoDados = {
+    //         paginaAtual: response.pageable.pageNumber + 1,
+    //         itensPorPagina: response.pageable.pageSize,
+    //         primeiroItemPagina: response.pageable.offset + 1,
+    //         ultimoItemPagina:
+    //           response.pageable.offset + response.numberOfElements,
+    //         totalRegistros: response.totalElements,
+    //       };
+    //     }),
+    //     finalize(() => (this.loading = false))
+    //   )
+    //   .subscribe();
   }
 
   private limparSortColumn(): void {
@@ -126,10 +177,5 @@ export class ProgramasComponent implements OnInit, OnDestroy {
       this._r2.removeClass(el, 'asc');
       this._r2.removeClass(el, 'desc');
     });
-  }
-
-  ngOnDestroy(): void {
-    this._subscription.unsubscribe();
-    this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
 }

@@ -11,16 +11,14 @@ import { IProjetoFiltroPesquisa } from '../../../core/interfaces/projeto.interfa
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { TEMPO_INPUT_USUARIO } from '../../../core/utils/constants';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
-import { NumericDictionary } from 'lodash';
 
 @Component({
-  selector: 'siscap-projetos-pesquisa',
+  selector: 'siscap-projetos-search',
   standalone: false,
   templateUrl: './projetos-search.component.html',
   styleUrl: './projetos-search.component.scss',
 })
-export class ProjetosPesquisaComponent implements OnInit {
-
+export class ProjetosSearchComponent implements OnInit {
   private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private usuario_IdOrganizacoes: number[] = [];
 
@@ -48,15 +46,19 @@ export class ProjetosPesquisaComponent implements OnInit {
     this.isSubcap = this._usuarioService.usuarioPerfil.isSubcap;
     this.usuario_IdOrganizacoes =
       this._usuarioService.usuarioPerfil.idOrganizacoes;
-    
+
     this.statusProjetoOpcoes = ['Status', ...Object.values(StatusProjetoEnum)];
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes()
       .pipe(
         tap((response) => {
-          if (!this.isSubcap && this.isProponente && this.usuario_IdOrganizacoes.length > 0) {
-            const organizacoesOpcoesFiltradas = response.filter( (organizacao) =>
+          if (
+            !this.isSubcap &&
+            this.isProponente &&
+            this.usuario_IdOrganizacoes.length > 0
+          ) {
+            const organizacoesOpcoesFiltradas = response.filter((organizacao) =>
               this.usuario_IdOrganizacoes.includes(organizacao.id)
             );
             this.organizacoesOpcoes = organizacoesOpcoesFiltradas;
@@ -82,7 +84,6 @@ export class ProjetosPesquisaComponent implements OnInit {
     });
 
     this.projetoPesquisaFormValueChanges();
-
   }
 
   ngOnInit(): void {
@@ -91,9 +92,13 @@ export class ProjetosPesquisaComponent implements OnInit {
     this.pesquisarProjetos.emit(this.projetosPesquisaForm.value);
 
     if (this.podeSelecionarOrganizacao()) {
-      this.projetosPesquisaForm.get('idOrganizacao')?.enable({ emitEvent: false });
+      this.projetosPesquisaForm
+        .get('idOrganizacao')
+        ?.enable({ emitEvent: false });
     } else {
-      this.projetosPesquisaForm.get('idOrganizacao')?.disable({ emitEvent: false });
+      this.projetosPesquisaForm
+        .get('idOrganizacao')
+        ?.disable({ emitEvent: false });
     }
   }
 
@@ -101,14 +106,11 @@ export class ProjetosPesquisaComponent implements OnInit {
     this.projetosPesquisaForm.valueChanges
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
       .subscribe(() => {
-        this.pesquisarProjetos.emit(
-          this.projetosPesquisaForm.getRawValue()
-        );
+        this.pesquisarProjetos.emit(this.projetosPesquisaForm.getRawValue());
       });
   }
 
   public podeSelecionarOrganizacao(): boolean {
     return this.isSubcap;
   }
-
 }
