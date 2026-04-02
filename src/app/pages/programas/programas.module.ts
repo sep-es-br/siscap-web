@@ -21,6 +21,8 @@ import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas
 import { OrgaosPapeisFormComponent } from '../../shared/components/orgaos-papeis-form/orgaos-papeis-form.component';
 import { NomeStatusProgramaPipe } from '../../shared/pipes/programa-status/programa-status.pipe';
 import { ProgramasSearchComponent } from './search/programas-search.component';
+import { TooltipModule } from 'primeng/tooltip';
+import { TimelineModule } from 'primeng/timeline';
 
 @NgModule({
   declarations: [
