@@ -38,10 +38,10 @@
         }
       </span>
       <ng-template #tooltipContent>
-          <p class="my-0 text-nowrap">Iniciado em: {{event.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
+          <p class="my-0 text-nowrap">Desde: {{event.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
           <ng-container *ngIf="event.dataFim">
-            <p class="my-0 text-nowrap">Finalizado em: {{event.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
-            <p class="my-0 text-nowrap">Finalizado por:  {{event.nomePessoa}}</p>
+            <p class="my-0 text-nowrap">Até: {{event.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
+            <p class="my-0 text-nowrap">Por:  {{event.nomePessoa}}</p>
           </ng-container>
       </ng-template>
     </ng-template>
