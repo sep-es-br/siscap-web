@@ -117,6 +117,10 @@ export class ProgramasListComponent implements OnDestroy{
     this.dispararModalDeletar(programaTableData!);
   }
 
+  podeExcluir(programa: IProgramaTableData) {
+    return ![StatusPrograma.EDICAO].includes(programa.statusPrograma)
+  }
+
   private dispararModalDeletar(programaTableData: IProgramaTableData): void {
     const modalRef = this._ngbModalService.open(DeleteModalComponent, {
       centered: true,
