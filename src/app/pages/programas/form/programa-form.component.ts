@@ -80,6 +80,7 @@ import { PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { gerarStepProgramaStatus, IStep } from '../../../core/utils/steps';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
+import { EquipeFormType } from '../../../core/types/form/equipe-form.type';
 @Component({
   selector: 'siscap-programa-form',
   standalone: false,
@@ -365,15 +366,22 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
                 membro.idStatus === TipoStatusEnum.Ativo
             ) ||
             this._usuarioService.usuarioPerfil.subNovo === equipePessoa.subPessoa;
-
+          
+          console.log('fora: ' + equipePessoa?.nome);
           if (!jaExiste) {
-
+            console.log('dentro: ' + equipePessoa?.nome)
             this._pessoasService.buscarAgenteGovesPorSub(equipePessoa.subPessoa!).subscribe(opt => {
+              console.log('dentro do subscribe' + opt?.nome);
               this.equipeService.idMembroNgSelectValue$.next(opt);
-            })
+            });
 
           } 
+
         }
+
+        
+
+        
         
 
       }
