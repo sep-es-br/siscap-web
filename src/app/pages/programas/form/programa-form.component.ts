@@ -17,6 +17,7 @@ import {
   Observable,
   of,
   partition,
+  shareReplay,
   Subject,
   Subscription,
   switchMap,
@@ -90,6 +91,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private readonly _destroy$ = new Subject<any>();
 
   private _idProgramaEdicao: number = 0;
+  private _agentesCache$!: Observable<IOpcoesDropdownResponsavelProponente[]>;
 
   public loading: boolean = true;
 
@@ -160,7 +162,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
+    this._pessoasService.buscarTodosAgentesPublicosGoves()
+    .subscribe({
+          next: () => {
+            this._agentesCache$ = this._pessoasService.buscarAgentesPorTermo('').pipe(shareReplay(1))
+          },
           error: (err) =>
             console.error(
               'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
@@ -350,6 +356,25 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
                 ? []
                 : [projeto.idOrganizacao])
         ]);
+
+        for(let equipePessoa of projeto.equipeElaboracao){
+          const jaExiste =
+            this.equipeService.equipeFormArray.value.some(
+              (membro) =>
+                membro.subPessoa === equipePessoa.subPessoa &&
+                membro.idStatus === TipoStatusEnum.Ativo
+            ) ||
+            this._usuarioService.usuarioPerfil.subNovo === equipePessoa.subPessoa;
+
+          if (!jaExiste) {
+
+            this._pessoasService.buscarAgenteGovesPorSub(equipePessoa.subPessoa!).subscribe(opt => {
+              this.equipeService.idMembroNgSelectValue$.next(opt);
+            })
+
+          } 
+        }
+        
 
       }
     )
