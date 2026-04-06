@@ -367,11 +367,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
             ) ||
             this._usuarioService.usuarioPerfil.subNovo === equipePessoa.subPessoa;
           
-          console.log('fora: ' + equipePessoa?.nome);
           if (!jaExiste) {
-            console.log('dentro: ' + equipePessoa?.nome)
             this._pessoasService.buscarAgenteGovesPorSub(equipePessoa.subPessoa!).subscribe(opt => {
-              console.log('dentro do subscribe' + opt?.nome);
               this.equipeService.idMembroNgSelectValue$.next(opt);
             });
 
