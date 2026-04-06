@@ -20,9 +20,9 @@ export class UsuarioService {
   public get usuarioPerfil(): UsuarioPerfilModel {
     return new UsuarioPerfilModel(
       sessionStorage.getItem('usuario-perfil')
-        ? (JSON.parse(
-            sessionStorage.getItem('usuario-perfil') as string
-          ) as IUsuario)
+        ? (
+            JSON.parse(sessionStorage.getItem('usuario-perfil') as string)
+          )
         : undefined
     );
   }

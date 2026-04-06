@@ -12,6 +12,7 @@ export class UsuarioPerfilModel implements IUsuarioPerfil {
   public isSubcap: boolean;
   public isSubeo: boolean;
   public isSubepp: boolean;
+  public nomeLotacaoUsuario: string;
 
   constructor(usuario?: IUsuario) {
     // console.log("usuario : ", usuario)
@@ -26,5 +27,6 @@ export class UsuarioPerfilModel implements IUsuarioPerfil {
     this.isSubcap = usuario?.isSubcap ?? false;
     this.isSubeo = usuario?.isSubeo ?? false;
     this.isSubepp = usuario?.isSubepp ?? false;
+    this.nomeLotacaoUsuario = usuario?.nomeLotacaoUsuario ?? '';
   }
 }
