@@ -44,4 +44,11 @@ button.accordion-button {
       color: #CCC;
     }
   }
+
+  button {
+    &:disabled {
+      border: none;
+      color: #CCC;
+    }
+  }
 }

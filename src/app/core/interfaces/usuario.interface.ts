@@ -11,6 +11,7 @@ export interface IUsuario {
   isSubcap: boolean;
   isSubeo: boolean;
   isSubepp: boolean;
+  nomeLotacaoUsuario: string;
 }
 
 export interface IUsuarioPerfil extends Omit<IUsuario, 'token'> {}

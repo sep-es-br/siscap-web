@@ -67,6 +67,7 @@
             <button
               class="btn border-none"
               (click)="tableActionOutputEvent({ acao: 'deletar', id: programa.id})"
+              [disabled]="podeExcluir(programa)"
               title="Excluir"
             >
               <i class="fa-solid fa-trash-can"></i>

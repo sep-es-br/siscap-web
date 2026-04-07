@@ -38,10 +38,10 @@
         }
       </span>
       <ng-template #tooltipContent>
-          <p class="my-0 text-nowrap">Iniciado em: {{event.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
+          <p class="my-0 text-nowrap">Desde: {{event.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
           <ng-container *ngIf="event.dataFim">
-            <p class="my-0 text-nowrap">Finalizado em: {{event.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
-            <p class="my-0 text-nowrap">Finalizado por:  {{event.nomePessoa}}</p>
+            <p class="my-0 text-nowrap">Até: {{event.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
+            <p class="my-0 text-nowrap">Por:  {{event.nomePessoa}}</p>
           </ng-container>
       </ng-template>
     </ng-template>
@@ -489,7 +489,7 @@
 
   <div class="modal-body">
     <p>Esta ação realizará automaticamente procedimentos no E-Docs, utilizando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
+      nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}): </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
@@ -611,7 +611,7 @@
   <div class="modal-body">
 
     <p>Esta ação realizará automaticamente os seguintes procedimentos no E-Docs, utilizando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
+      nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}): </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
@@ -864,7 +864,7 @@
   </div>
   <div class="modal-body">
     <p>Essa ação confirmará a captura e assinatura no e-Docs usando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}). Após isso, o parecer não poderá mais ser editado. </p>
+      nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}). Após isso, o parecer não poderá mais ser editado. </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
@@ -940,7 +940,7 @@
   </div>
   <div class="modal-body">
     <p>Esta ação realizará automaticamente procedimentos no E-docs, utilizando a sua identidade - {{
-      nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}): </p>
+      nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}): </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>

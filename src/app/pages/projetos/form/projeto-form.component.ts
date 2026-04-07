@@ -196,6 +196,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public statusSteps? : IStep<StatusProjetoEnum>[];
 
+  public nomeUsuario: string = '';
+  public lotacaoPrioritariaUsuario: string = '';
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -351,6 +354,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.parecerProjetoUsuario = projetoModel.parecerProjetoUsuario;
             this.lotacaoUsuario = projetoModel.lotacaoUsuario;
             this.pareceresProjeto = projetoModel.pareceresProjeto;
+
+            this.nomeUsuario = this._usuarioService.usuarioPerfil.nome;
+            this.lotacaoPrioritariaUsuario = this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
 
             const caminhoFeliz = [
               StatusProjetoEnum.Em_Elaboracao,
@@ -1368,13 +1374,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     if (membrosEquipeAtivas.length === 0) {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
         'Nenhum membro informado além do Redator.',
-      ]);
-      return false;
-    }
-
-    if (!equipeElaboracao.some(e => e.idPapel == TipoPapelEnum.Redator)){
-      this._toastService.showToast('warning', 'O formulário contém erros', [
-        'Nenhum membro Redator informado'
       ]);
       return false;
     }
