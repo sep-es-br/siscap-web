@@ -287,9 +287,9 @@ export const COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO: Record<string, string> =
     arranjosInstitucionais:
       '(i) Informar o órgão executor principal do programa ou DIC e demais órgãos participantes, se existentes. (ii) informar a capacidade das instituições proponentes, em particular do órgão executor, para a implementação das ações do programa ou projeto, como qualificação e experiência da equipe técnica e recursos e estruturas disponíveis. (iii) Apontar se haverá repasse de recursos entre os órgãos participantes.',
     nomeIndicador:
-      'Preferencialmente deverão ser considerados os indicadores-chave nacionais constantes do Plano Plurianual 2024-2027 (Anexo I da Lei nº 14.820, de 2024), além de outros indicadores relacionados ao DIC.',
+      'Preferencialmente deverão ser considerados os indicadores-chave nacionais constantes do Plano Plurianual 2024-2027, além de outros indicadores relacionados ao DIC.',
     descricaoIndicador:
-      'Descrever cada indicador de forma específica e estabelecer as fórmulas de cálculo adequadas. Fazer referência aos objetivos específicos pertinentes ao indicador e às áreas estratégicas relacionadas no Anexo II da Lei 14.820/2024. Empregar preferencialmente o modelo SMART para a definição de indicadores.',
+      'Descrever cada indicador de forma específica e estabelecer as fórmulas de cálculo adequadas. Fazer referência aos objetivos específicos pertinentes ao indicador e às áreas estratégicas relacionadas. Empregar preferencialmente o modelo SMART para a definição de indicadores.',
     descricaoMeta:
       'Apontar o resultado específico e determinado a ser alcançado, cuja implementação será medida por meio do indicador. A meta deverá estar relacionada aos objetivos e aos resultados esperados e sua consecução relacionada ao tempo de implantação do projeto.',
     idResponsavelProponente: 'Pessoa que responde pelo órgão de origem.',
