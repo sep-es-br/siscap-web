@@ -52,14 +52,14 @@
             id="textoParecer"
             class="form-control"
             rows="8"
-            maxlength="2000"
+            maxlength="10000"
             placeholder="Digite aqui o texto do parecer..."
             [disabled]="isEnviado()"
           >
           </textarea>
 
           <small class="text-muted d-block text-end ">
-            {{ this.textoLength }}/2000 caracteres
+            {{ this.textoLength }}/10.000 caracteres
           </small>
         </div>
       </div>

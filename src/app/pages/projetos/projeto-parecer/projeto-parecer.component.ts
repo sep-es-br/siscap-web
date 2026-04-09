@@ -197,7 +197,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
     return container.innerHTML;
   }
 
-  MAX_CHARS = 2000;
+  MAX_CHARS = 10000;
 
   updateFormControl() {
     if(!this.editor) return;
