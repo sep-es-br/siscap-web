@@ -953,12 +953,15 @@
 <ng-template #entranharPareceresEdocsProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Confirmação Entranhamento Pareceres ao Processo E-Docs
+      Entranhamento de pareceres
     </h4>
   </div>
   <div class="modal-body">
-    <p>Esta ação realizará automaticamente procedimentos no E-docs, utilizando a sua identidade - {{
-      nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}): </p>
+    <p>Esta ação efetuará o entranhamento dos pareceres orçamentário e estratégico ao processo {{ processoEdocsProtocolo }} utilizando a sua identidade - {{
+        nomeUsuario }} ({{ lotacaoPrioritariaUsuario }})
+
+
+      Esta ação realizará automaticamente procedimentos no E-docs, utilizando a sua identidade - : </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>

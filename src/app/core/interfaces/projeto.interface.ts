@@ -40,7 +40,7 @@ export interface IProjeto {
   nomeProponenteResponsavel: string;
   podeEditar: boolean;
   podeSolicitarComplementacao: boolean;
-  podeResponderComplementacao: boolean; 
+  podeResponderComplementacao: boolean;
   enviarProjetoPedirParecer: boolean;
   camposComplementar: Array<IEstruturaCamposComplementarProjeto>;
   parecerProjetoUsuario: IParecer;
@@ -48,7 +48,7 @@ export interface IProjeto {
   pareceresProjeto: Array<IParecer>;
   subProponente: string;
   nomeProponente: string;
-  historico: Array<IStatusProjeto >
+  historico: Array<IStatusProjeto >,
 }
 
 export interface IProjetoForm

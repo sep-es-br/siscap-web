@@ -198,6 +198,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public nomeUsuario: string = '';
   public lotacaoPrioritariaUsuario: string = '';
+  public processoEdocsProtocolo: string = '';
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -340,7 +341,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.podeResponderComplementacao = projetoModel.podeResponderComplementacao;
           this.camposComplementarProjeto = projetoModel.camposComplementar;
           this.subProponenteDIC = projetoModel.subProponente;
-          this.nomeProponenteDIC = projetoModel.nomeProponente
+          this.nomeProponenteDIC = projetoModel.nomeProponente;
+          this.processoEdocsProtocolo = projetoModel.protocoloEdocs;
 
           this.statusProjetoOpcoes = Object.values(StatusProjetoEnum).filter(
             (status) => status != this.statusProjeto

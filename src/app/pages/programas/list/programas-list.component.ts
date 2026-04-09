@@ -205,12 +205,14 @@ export class ProgramasListComponent implements OnDestroy{
             this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
             const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === this.currentPolling.idPrograma);
               if (programaNaLista) {
-                programaNaLista.statusPrograma = StatusPrograma.AGUARDANDO_ASSINATURAS;
-              }
+                programaNaLista.statusPrograma = StatusPrograma.AGUARDANDO_ASSINATURAS
+              };
+            this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
 
           } else if (faseAutuacaoConfirmada) {
             this._toastService.showToast('success', 'A Autuação foi realizada com sucesso!');
-            
+            this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
+
           } else if (faseAutorizacaoErro) {
             const errorMessage = (
               faseAutorizacaoErro.msgAlertaExibir &&
@@ -219,6 +221,7 @@ export class ProgramasListComponent implements OnDestroy{
               ? faseAutorizacaoErro.msgAlertaExibir
               : 'Ocorreu um erro ao tentar processar as Autorizações!';
             this._toastService.showToast('error', errorMessage);
+            this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           } else if (faseAutuacaoErro) {
             const errorMessage = (
               faseAutuacaoErro.msgAlertaExibir &&
@@ -227,6 +230,7 @@ export class ProgramasListComponent implements OnDestroy{
               ? faseAutuacaoErro.msgAlertaExibir
               : 'Ocorreu um erro ao tentar Autuar o programa!';
             this._toastService.showToast('error', errorMessage);
+            this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           }
 
           if (faseAutuacaoConfirmada) {
@@ -271,6 +275,6 @@ export class ProgramasListComponent implements OnDestroy{
   }
 
   acessarAssinaturasPrograma(idPrograma: number) {
-    this._router.navigateByUrl(`/main/programas/${idPrograma}/assinaturas`); 
+    this._router.navigateByUrl(`/main/programas/${idPrograma}/assinaturas`);
   }
 }
