@@ -94,3 +94,49 @@ main {
         max-width: unset;
     }
 }
+
+p-timeline {
+  width: fit-content;
+}
+
+div[ngbAccordionItem] {
+  background-color: unset;
+  border: none;
+
+  [ngbAccordionButton] {
+    border: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color);
+  }
+
+  div[ngbAccordionCollapse] {
+    position: absolute;
+    z-index: 10;
+  }
+
+  div[ngbAccordionBody] {
+    background-color: white;
+    border: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color);
+  }
+
+
+
+
+  @media screen and (min-width: 1200px) {
+    background-color: unset;
+    border: unset;
+
+    div[ngbAccordionBody] {
+      padding: unset;
+    }
+
+    div[ngbAccordionCollapse] {
+      position: unset;
+      z-index: unset;
+    }
+
+    div[ngbAccordionBody] {
+      background-color: unset;
+      border: unset;
+    }
+
+  }
+}

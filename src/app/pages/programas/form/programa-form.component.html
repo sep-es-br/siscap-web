@@ -11,32 +11,46 @@
       </button>
     }
   </div>
-  
-  <div class="programa-form justify-content-end">
-    <p-timeline *ngIf="statusSteps" [value]="statusSteps" align="right">
-      <ng-template pTemplate="content" let-step>
-        <span class="text-nowrap" >
-              {{step.label}}
-        </span>
-        
-      </ng-template>
-      <ng-template pTemplate="marker" let-step>
-        <span [style.borderColor]="getColor(step)"
-            [pTooltip]="tooltipContent"
-            [tooltipDisabled]="step.isInativo()"
-            tooltipPosition="right">
-          <i [ngClass]="getIcon(step)" [style.color]="getColor(step) "></i>
-        </span>
 
-        <ng-template #tooltipContent>
-            <p class="my-0">Desde: {{step.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
-            <ng-container *ngIf="step.isFinalizado()">
-              <p class="my-0">Até: {{step.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
-              <p class="my-0">Por: {{step.nomePessoa}}</p>
-            </ng-container>
-        </ng-template>
-      </ng-template>
-    </p-timeline>
+  <div class="programa-form d-flex flex-column flex-xl-row justify-content-end">
+    <div ngbAccordion *ngIf="statusSteps" class="align-self-start">
+      <div ngbAccordionItem [collapsed]="isMobile()">
+        <h4 ngbAccordionHeader class="d-xl-none">
+          <button ngbAccordionButton class="w-auto flex-row-reverse">Progresso</button>
+
+        </h4>
+        <div ngbAccordionCollapse>
+          <div ngbAccordionBody>
+            <ng-template>
+              <p-timeline *ngIf="statusSteps" [value]="statusSteps" align="right">
+                <ng-template pTemplate="content" let-step>
+                  <span class="text-nowrap" >
+                        {{step.label}}
+                  </span>
+
+                </ng-template>
+                <ng-template pTemplate="marker" let-step>
+                  <span [style.borderColor]="getColor(step)"
+                      [pTooltip]="tooltipContent"
+                      [tooltipDisabled]="step.isInativo()"
+                      tooltipPosition="right">
+                    <i [ngClass]="getIcon(step)" [style.color]="getColor(step) "></i>
+                  </span>
+
+                  <ng-template #tooltipContent>
+                      <p class="my-0">Desde: {{step.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
+                      <ng-container *ngIf="step.isFinalizado()">
+                        <p class="my-0">Até: {{step.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
+                        <p class="my-0">Por: {{step.nomePessoa}}</p>
+                      </ng-container>
+                  </ng-template>
+                </ng-template>
+              </p-timeline>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="card col-12">
       <div class="card-body">
         <form [formGroup]="programaForm">
@@ -76,7 +90,7 @@
                 [readonly]="!isProgramaAtualEditavel"
               />
             </div>
-  
+
             <div class="col-12">
               <label for="orgaosEnvolvidos" class="col-12 form-label">
                 <validation-message [control]="getControl('orgaosEnvolvidosList')">
@@ -108,14 +122,14 @@
               >
               </siscap-orgaos-papeis-form>
             </div>
-  
+
             <div class="col-12">
               <label for="membroEquipeCaptacao" class="col-12 form-label">
                 <validation-message [control]="getControl('equipeCaptacao')">
                   Equipe de Captação
                 </validation-message>
               </label>
-  
+
               <div class="input-group">
                 <input
                   class="form-control"
@@ -146,7 +160,7 @@
                   }
                 </button>
               </div>
-  
+
               @if (exibirLista && pessoasOpcoesGoves.length > 0) {
                 <div class="card resultados-container" style="max-height: 300px; margin-top: 6px; margin-bottom: 6px;">
                   <div class="card-body p-0">
@@ -175,7 +189,7 @@
               >
               </siscap-equipe-form>
             </div>
-  
+
             <div class="col-12">
               <label for="idProjetoProposto" class="col-12 form-label">
                 <validation-message [control]="getControl('idProjetoPropostoList')">
@@ -183,7 +197,7 @@
                   <form-helper-tooltip [texto]="projetoTooltip['dicelegivel']"></form-helper-tooltip>
                 </validation-message>
               </label>
-  
+
               <ng-select
                 id="idProjetoProposto"
                 name="idProjetoProposto"
@@ -201,7 +215,7 @@
                 }
               </ng-select>
             </div>
-  
+
             <div class="col-12 my-2">
               @if (idProjetoPropostoList.value.length > 0) {
                 <div class="card">
@@ -248,11 +262,11 @@
                 </div>
               }
             </div>
-  
+
             <div class="col-12">
               <siscap-valor-form [moedasList]="moedasList" [tiposValorOpcoes]="tiposValorOpcoes" [contextoValor]="'PROGRAMA'" ></siscap-valor-form>
             </div>
-  
+
             <div class="col-12 col-md-4 col-lg-2">
               <label for="percentual-custo-administrativo" class="col-12 form-label">
                 % Custos Administrativos
@@ -273,7 +287,7 @@
                 (blur)="percentualCustoAdministrativoChangeEvent($event)"
               />
             </div>
-  
+
             <div id="valor-col" class="col-12 col-md-4 col-lg-7">
               <label for="valor-total-calculado-programa" class="col-12 form-label">
                 Valor Total Estimado

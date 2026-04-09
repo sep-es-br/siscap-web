@@ -5,9 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
-  NgbAlertModule,
-  NgbPaginationModule,
-  NgbTooltipModule,
+    NgbAccordionBody, NgbAccordionButton, NgbAccordionCollapse, NgbAccordionDirective, NgbAccordionHeader,
+    NgbAccordionItem,
+    NgbAlertModule,
+    NgbPaginationModule,
+    NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { SharedModule } from '../../shared/shared.module';
@@ -32,23 +34,29 @@ import { TimelineModule } from 'primeng/timeline';
     ProgramaAssinaturasComponent,
     ProgramasSearchComponent,
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    NgSelectModule,
-    NgxMaskDirective,
-    NgxMaskPipe,
-    NgbPaginationModule,
-    NgbAlertModule,
-    NgbTooltipModule,
-    ProgramasRoutingModule,
-    OrgaosPapeisFormComponent,
-    NomeStatusProgramaPipe,
-    TimelineModule,
-    TooltipModule
-],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SharedModule,
+        NgSelectModule,
+        NgxMaskDirective,
+        NgxMaskPipe,
+        NgbPaginationModule,
+        NgbAlertModule,
+        NgbTooltipModule,
+        ProgramasRoutingModule,
+        OrgaosPapeisFormComponent,
+        NomeStatusProgramaPipe,
+        TimelineModule,
+        TooltipModule,
+        NgbAccordionBody,
+        NgbAccordionButton,
+        NgbAccordionCollapse,
+        NgbAccordionDirective,
+        NgbAccordionHeader,
+        NgbAccordionItem
+    ],
   exports: [
     ProgramasComponent,
     ProgramasListComponent,

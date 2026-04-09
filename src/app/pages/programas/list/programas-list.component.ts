@@ -118,7 +118,7 @@ export class ProgramasListComponent implements OnDestroy{
   }
 
   podeExcluir(programa: IProgramaTableData) {
-    return ![StatusPrograma.EDICAO].includes(programa.statusPrograma)
+    return ![StatusPrograma.ELABORACAO].includes(programa.statusPrograma)
   }
 
   private dispararModalDeletar(programaTableData: IProgramaTableData): void {

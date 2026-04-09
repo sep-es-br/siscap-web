@@ -33,7 +33,7 @@ export interface IProgramaFiltroPesquisa {
 
 export enum StatusPrograma {
   SEM_STATUS = -1,
-  EDICAO = 1,
+  ELABORACAO = 1,
   AGUARDANDO_ASSINATURAS = 2,
   ASSINADO = 3,
   AUTUADO = 4,
@@ -82,7 +82,7 @@ export interface IProgramaOrgaosEnvolvidos {
 
 export const StatusProgramaLabel: Record<StatusPrograma, string> = {
   [StatusPrograma.SEM_STATUS]: 'Status',
-  [StatusPrograma.EDICAO]: 'Edição',
+  [StatusPrograma.ELABORACAO]: 'Elaboração',
   [StatusPrograma.AGUARDANDO_ASSINATURAS]: 'Aguardando Assinaturas',
   [StatusPrograma.ASSINADO]: 'Assinado',
   [StatusPrograma.AUTUADO]: 'Autuado',

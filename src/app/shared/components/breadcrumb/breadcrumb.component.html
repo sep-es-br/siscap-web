@@ -14,12 +14,6 @@
     >
       <h1 class="current-page-title mb-0 text-truncate">
         {{ paginaAtual.titulo }}
-        <span
-          *ngIf="isProponente && paginaAtual.caminho == 'projetos'"
-          class="titulo-projetos-proponente"
-        >
-          (Documento Inicial de Captação)
-        </span>
       </h1>
 
       <nav [ngClass]="{ invisible: isProponente }">
@@ -40,7 +34,7 @@
           </ng-container>
         </ol>
       </nav>
-      
+
     </div>
 
     <div

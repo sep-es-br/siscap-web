@@ -126,7 +126,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   public programaAtual!: IPrograma;
 
-  public statusProgramaAtual: StatusPrograma = StatusPrograma.EDICAO;
+  public statusProgramaAtual: StatusPrograma = StatusPrograma.ELABORACAO;
 
   public statusSteps: IStep<StatusPrograma>[] | undefined;
 
@@ -137,7 +137,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   get isProgramaAtualEditavel(): boolean {
-    return this.statusProgramaAtual === StatusPrograma.EDICAO;
+    return this.statusProgramaAtual === StatusPrograma.ELABORACAO;
   }
 
   constructor(
@@ -160,6 +160,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.executarAcaoBreadcrumb(acao)
       );
 
+  }
+
+
+  isMobile(){
+    return window.innerWidth < 1200;
   }
 
   ngOnInit(): void {
@@ -233,7 +238,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
               if(![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel!.statusPrograma) ){
                 const caminhoPerfeito = [
-                  StatusPrograma.EDICAO,
+                  StatusPrograma.ELABORACAO,
                   StatusPrograma.AGUARDANDO_ASSINATURAS,
                   StatusPrograma.ASSINADO,
                   StatusPrograma.AUTUADO
@@ -366,20 +371,20 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
                 membro.idStatus === TipoStatusEnum.Ativo
             ) ||
             this._usuarioService.usuarioPerfil.subNovo === equipePessoa.subPessoa;
-          
+
           if (!jaExiste) {
             this._pessoasService.buscarAgenteGovesPorSub(equipePessoa.subPessoa!).subscribe(opt => {
               this.equipeService.idMembroNgSelectValue$.next(opt);
             });
 
-          } 
+          }
 
         }
 
-        
 
-        
-        
+
+
+
 
       }
     )
@@ -440,7 +445,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       valorTotalCalculadoPrograma = somatorioValorProjetosPropostos;
     }
 
-    if (this.statusProgramaAtual === StatusPrograma.EDICAO) {
+    if (this.statusProgramaAtual === StatusPrograma.ELABORACAO) {
       valorTotalCalculadoProgramaFormGroupControl.patchValue(
         valorTotalCalculadoPrograma ? valorTotalCalculadoPrograma : 0
       );
@@ -500,7 +505,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.statusProgramaAtual = programaModel?.statusPrograma ?? StatusPrograma.EDICAO;
+    this.statusProgramaAtual = programaModel?.statusPrograma ?? StatusPrograma.ELABORACAO;
 
     const deveExibirRedatorNaListaDaEquipe: boolean = false;
 
@@ -585,7 +590,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           valorTotalCalculadoPrograma = somatorioValorProjetosPropostos;
         }
 
-        if (this.statusProgramaAtual === StatusPrograma.EDICAO) {
+        if (this.statusProgramaAtual === StatusPrograma.ELABORACAO) {
           valorFormGroupQuantiaFormControl.patchValue(
             somatorioValorProjetosPropostos
               ? somatorioValorProjetosPropostos
@@ -773,7 +778,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private atualizarBotoes(programa: IPrograma) {
-    const deveExibirBotaoSalvar = (programa.statusPrograma && programa.statusPrograma === StatusPrograma.EDICAO) || !programa.statusPrograma;
+    const deveExibirBotaoSalvar = (programa.statusPrograma && programa.statusPrograma === StatusPrograma.ELABORACAO) || !programa.statusPrograma;
     // Botão de Salvar Rascunho só aparece se o Programa é editável
 
     const deveExibirBotaoAutuar = programa.statusPrograma === StatusPrograma.ASSINADO;

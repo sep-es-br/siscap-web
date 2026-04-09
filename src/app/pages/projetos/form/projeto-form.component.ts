@@ -210,7 +210,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   @ViewChild('efetivarParecerProjetoModal') efetivarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('entranharPareceresEdocsProjetoModal') entranharPareceresEdocsProjetoModalTemplate: TemplateRef<any> | undefined;
 
-  // otimizacao carga agentes goves.. 
+  // otimizacao carga agentes goves..
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
   input$ = new Subject<string>();
 
@@ -305,6 +305,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+  isMobile(){
+    return window.innerWidth < 1200;
+  }
+
   private carregarProjetoEditar(idProjeto: number): void {
 
     this._atualizarProjeto$ = this._projetosService
@@ -365,7 +369,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               StatusProjetoEnum.Parecer_SEP,
               StatusProjetoEnum.Elegivel
             ]
-            
+
             this.statusSteps = [];
 
             projetoModel.historico.sort((s1, s2) =>{
@@ -373,22 +377,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             } ).forEach(
               h => {
                 if(!this.statusSteps) return;
-                
+
                 if(h.status == StatusProjetoEnum.Parecer_SEP){
                   this.statusSteps.push(gerarStepStatusProjeto(
-                    StatusProjetoEnum.Parecer_SEP, 
-                    h, 
+                    StatusProjetoEnum.Parecer_SEP,
+                    h,
                     projetoModel.pareceresProjeto
-                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})), 
+                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})),
                     true
                   ));
                 }
 
                 this.statusSteps.push(gerarStepStatusProjeto(
-                  h.status, 
-                  h, 
+                  h.status,
+                  h,
                   projetoModel.pareceresProjeto
-                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})), 
+                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})),
                   false
                 )) ;
               }
@@ -398,11 +402,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               let indexUltimaEtapa = caminhoFeliz.findIndex(s => s == projetoModel.status);
 
               if(projetoModel.status == StatusProjetoEnum.Em_Elaboracao) indexUltimaEtapa++;
-              
+
               caminhoFeliz.slice(indexUltimaEtapa+1).forEach(
                 s => {
                   if(!this.statusSteps) return;
-                  
+
                   if(s == StatusProjetoEnum.Parecer_SEP){
                     this.statusSteps.push(gerarStepStatusProjeto(StatusProjetoEnum.Parecer_SEP, undefined, projetoModel.pareceresProjeto, true));
                   }
@@ -411,14 +415,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 }
               )
             }
-            
+
 
 
             this.projetoForm.setControl('pareceresProjeto',
               this._nnfb.array(projetoModel.pareceresProjeto || [])
             );
 
-            // 
+            //
             if (projetoModel.status === StatusProjetoEnum.Arquivado) {
               this.mostrarBotaoBaixarDic = false;
               this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
@@ -497,7 +501,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                     this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
                   );
 
-                } else if ( ( !parecerSubcapGeoc && subeppSubeoEntranhados) || 
+                } else if ( ( !parecerSubcapGeoc && subeppSubeoEntranhados) ||
                   ( parecerSubcapGeoc && parecerSubcapGeoc?.statusParecer !== StatusParecerEnum.Entranhado_Processo_Edocs ) ) {
 
                   this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
@@ -522,15 +526,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             }
 
-            // usa uma flag vinda da API informando se o DIC pode ser Editado.. 
+            // usa uma flag vinda da API informando se o DIC pode ser Editado..
             this.trocarModo(this.podeEditar);
 
             this.loading = false;
             this.isLoadingPessoas = false;
 
-            
+
           });
-          
+
         })
 
       );
@@ -604,7 +608,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public isProjetoElegivel() : boolean {
     return this.statusProjeto == StatusProjetoEnum.Elegivel;
   }
-  
+
 
   ngOnInit(): void {
 
@@ -655,14 +659,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._usuarioService.usuarioPerfil.idOrganizacoes;
 
     this._projetosService.idProjeto$.pipe(take(1)).subscribe(idProjeto => {
-      
+
       if (idProjeto > 0) {
         this._subscription.add(this._getAllOpcoes$.pipe(tap(() => {
           this.carregarProjetoEditar(idProjeto);
           this._subscription.add(this._atualizarProjeto$.subscribe());
         })).subscribe());
       } else {
-        
+
         this._subscription.add(this._getAllOpcoes$.subscribe(
           () => {
             this.iniciarForm().subscribe(() => {
@@ -681,15 +685,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           }
         ))
 
-        
+
       }
-      
+
     });
 
 
-    
-    
-    
+
+
+
 
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
@@ -795,7 +799,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): Observable<any> {
-    
+
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(projetoFormModel?.valor)
       : null;
@@ -924,7 +928,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     }));
 
-    
+
 
   }
 
@@ -1396,7 +1400,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   get demaisPareceres() {
-    
+
     return [LotacaoUsuarioEnum.SUBEPP, LotacaoUsuarioEnum.SUBEO, ...(this.isSubeoSubeppEntranhados() ? [LotacaoUsuarioEnum.SUBCAP] : [])]
             .map(n => {
               const parecer = this.pareceresProjeto.filter(p => p.parecerLotacao === n)[0]

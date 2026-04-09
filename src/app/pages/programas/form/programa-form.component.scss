@@ -3,8 +3,8 @@ span.nome-projeto-proposto {
 }
 
 .input-readonly {
-  background-color: #e9ecef; 
-  pointer-events: none;  
+  background-color: #e9ecef;
+  pointer-events: none;
 }
 
 .programa-form {
@@ -23,16 +23,16 @@ span.nome-projeto-proposto {
 
     .p-timeline-event-separator {
       span {
-        display:flex; 
-        align-items:center; 
-        background-color: white; 
-        justify-content:center; 
-        width:2rem; height:2rem; 
-        border-radius:50%; 
-        border-width: 1px; 
+        display:flex;
+        align-items:center;
+        background-color: white;
+        justify-content:center;
+        width:2rem; height:2rem;
+        border-radius:50%;
+        border-width: 1px;
         border-style: solid;
       }
-       
+
     }
   }
 }
@@ -43,5 +43,52 @@ span.nome-projeto-proposto {
     p {
       text-wrap-mode: nowrap;
     }
+  }
+}
+
+
+p-timeline {
+  width: fit-content;
+}
+
+div[ngbAccordionItem] {
+  background-color: unset;
+  border: none;
+
+  [ngbAccordionButton] {
+    border: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color);
+  }
+
+  div[ngbAccordionCollapse] {
+    position: absolute;
+    z-index: 10;
+  }
+
+  div[ngbAccordionBody] {
+    background-color: white;
+    border: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color);
+  }
+
+
+
+
+  @media screen and (min-width: 1200px) {
+    background-color: unset;
+    border: unset;
+
+    div[ngbAccordionBody] {
+      padding: unset;
+    }
+
+    div[ngbAccordionCollapse] {
+      position: unset;
+      z-index: unset;
+    }
+
+    div[ngbAccordionBody] {
+      background-color: unset;
+      border: unset;
+    }
+
   }
 }

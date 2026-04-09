@@ -7,6 +7,7 @@ import { IStatusProjeto } from '../interfaces/status-projeto.interface';
 
 export interface IStep<T> {
     label: string;
+    labelOffset: string;
     status: T;
     dataInicio: Date;
     dataFim: Date;
@@ -36,12 +37,12 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
             return !!this.dataInicio && !!this.dataFim;
         }
     }
-    
+
     switch (status) {
         case StatusProjetoEnum.Em_Elaboracao:
             return {
                 ...base,
-                label: StatusProjetoEnum.Em_Elaboracao              
+                label: StatusProjetoEnum.Em_Elaboracao
             } as IStep<StatusProjetoEnum>;
         case StatusProjetoEnum.Em_Analise:
             return {
@@ -66,22 +67,23 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
             if(subeoSubepp){
                 return {
                     ...base,
-                    label: 'Parecer SUBEO/SUBEPP',
+                    label: 'Parecer Orçamentário<br/>Parecer Estratégico',
+                    labelOffset: '-1rem',
                     dataFim: (subeoDtEnvio && subeppDtEnvio) ? (subeoDtEnvio > subeppDtEnvio ? subeoDtEnvio : subeppDtEnvio) : undefined,
                     nomePessoa: (subeoDtEnvio && subeppDtEnvio) ? (subeoDtEnvio > subeppDtEnvio ? parecerSubeo.usuarioFezEnvioParecer : parecerSubepp.usuarioFezEnvioParecer) : undefined
                 } as IStep<StatusProjetoEnum>;
             } else {
                 return {
                     ...base,
-                    label: 'Parecer GEOC',
+                    label: 'Parecer Captação',
                     dataInicio: (subeoDtEnvio && subeppDtEnvio) ? (subeoDtEnvio > subeppDtEnvio ? subeoDtEnvio : subeppDtEnvio) : undefined,
                 } as IStep<StatusProjetoEnum>;
             }
-                
+
         case StatusProjetoEnum.Em_Complementacao:
             return {
                 ...base,
-                label: StatusProjetoEnum.Em_Complementacao 
+                label: StatusProjetoEnum.Em_Complementacao
             } as IStep<StatusProjetoEnum>;
         case StatusProjetoEnum.Elegivel:
             return {
@@ -89,7 +91,7 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
                label: statusHistorico?.inicioEm ? StatusProjetoEnum.Elegivel : 'Conclusão'
             } as IStep<StatusProjetoEnum>;
     }
-} 
+}
 
 export function gerarStepProgramaStatus(status: StatusPrograma, statusHistorico: IProgramaStatus | undefined, historicoPrograma: IProgramaStatus[]): IStep<StatusPrograma> {
     const base = {
@@ -109,11 +111,11 @@ export function gerarStepProgramaStatus(status: StatusPrograma, statusHistorico:
             return !!this.dataInicio && !!this.dataFim;
         }
     }
-    
+
     switch (status) {
         case StatusPrograma.SEM_STATUS:
             return {...base} as IStep<StatusPrograma>;
-        case StatusPrograma.EDICAO:
+        case StatusPrograma.ELABORACAO:
             return {...base} as IStep<StatusPrograma>;
         case StatusPrograma.AGUARDANDO_ASSINATURAS:
             return {...base} as IStep<StatusPrograma>;
@@ -123,7 +125,7 @@ export function gerarStepProgramaStatus(status: StatusPrograma, statusHistorico:
             return {
                 ...base,
                 dataInicio: historicoPrograma.find(h => h.status === StatusPrograma.ASSINADO)?.inicioEm
-                
+
             } as IStep<StatusPrograma>;
         case StatusPrograma.RECUSADO:
             return {
@@ -134,4 +136,4 @@ export function gerarStepProgramaStatus(status: StatusPrograma, statusHistorico:
 
     }
 
-} 
+}
