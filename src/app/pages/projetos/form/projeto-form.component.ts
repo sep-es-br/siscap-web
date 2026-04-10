@@ -1390,7 +1390,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   getLotacao(nLotacao: number) {
     switch(nLotacao) {
-      case LotacaoUsuarioEnum.SUBCAP: return "GEOC";
+      case LotacaoUsuarioEnum.SUBCAP: return "Captação";
       case LotacaoUsuarioEnum.SUBEO: return "Orçamentário";
       case LotacaoUsuarioEnum.SUBEPP: return "Estratégico";
     }
