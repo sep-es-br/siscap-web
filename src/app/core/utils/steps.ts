@@ -52,7 +52,6 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
         case StatusProjetoEnum.Arquivado:
             return {
                 ...base,
-                label: pareceres.some(p => p.parecerLotacao == LotacaoUsuarioEnum.SUBCAP) ? "Inelegível" : status,
                 positivo: false
             } as IStep<StatusProjetoEnum>;
         case StatusProjetoEnum.Parecer_SEP:
@@ -89,6 +88,11 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
             return {
                ...base,
                label: statusHistorico?.inicioEm ? StatusProjetoEnum.Elegivel : 'Conclusão'
+            } as IStep<StatusProjetoEnum>;
+        case StatusProjetoEnum.Inelegivel:
+            return {
+              ...base,
+              label: statusHistorico?.inicioEm ? StatusProjetoEnum.Inelegivel : 'Conclusão'
             } as IStep<StatusProjetoEnum>;
     }
 }

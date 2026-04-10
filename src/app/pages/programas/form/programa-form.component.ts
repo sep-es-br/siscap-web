@@ -816,7 +816,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     });
 
     modalRef.componentInstance.config = {
-      titulo: 'Confirmação',
+      titulo: 'Solicitar Autorização',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal: 'Essa ação enviará email aos gestores para autorização do programa.',
     };
@@ -866,7 +866,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     });
 
     modalRef.componentInstance.config = {
-      titulo: 'Confirmação',
+      titulo: 'Autuar Programa',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal:
         'Esta ação irá autuar um processo no E-Docs para o programa ' + this.programaAtual.titulo,

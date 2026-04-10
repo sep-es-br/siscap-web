@@ -4,5 +4,6 @@ export enum StatusProjetoEnum {
   Arquivado = 'Arquivado',
   Parecer_SEP = 'Parecer SEP',
   Em_Complementacao = 'Complementação',
-  Elegivel = 'Elegível'
+  Elegivel = 'Elegível',
+  Inelegivel = 'Inelegível'
 }

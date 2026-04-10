@@ -150,8 +150,8 @@ export abstract class BotoesConfig {
     },
     capturarparecerGEOC: {
       classesCSS: ['btn-primary'],
-      icone: ['fa-solid', 'fa-upload'],
-      texto: 'Julgar e Enviar Parecer',
+      icone: ['fa-solid', 'fa-gavel'],
+      texto: 'Concluir parecer',
       acao: 'capturarparecerGEOC',
     },
     salvarAposElaboracao: {
@@ -174,7 +174,7 @@ export abstract class BotoesConfig {
     },
     autuar: {
       classesCSS: ['btn-success'],
-      icone: ['fa-solid fa-lock'],
+      icone: ['fa-solid fa-folder-plus'],
       texto: 'Autuar Programa',
       acao: 'autuar',
     },

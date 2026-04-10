@@ -400,7 +400,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
             )
 
-            if(![StatusProjetoEnum.Elegivel, StatusProjetoEnum.Arquivado].includes(projetoModel.status as StatusProjetoEnum)) {
+            if(![StatusProjetoEnum.Elegivel, StatusProjetoEnum.Inelegivel, StatusProjetoEnum.Arquivado].includes(projetoModel.status as StatusProjetoEnum)) {
               let indexUltimaEtapa = caminhoFeliz.findIndex(s => s == projetoModel.status);
 
               if(projetoModel.status == StatusProjetoEnum.Em_Elaboracao) indexUltimaEtapa++;

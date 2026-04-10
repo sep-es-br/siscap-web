@@ -451,7 +451,7 @@
 <ng-template #enviarProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fs-4 text-center">
-      Confirmação de Envio
+      Salvar e Enviar
     </h4>
   </div>
   <div class="modal-body">
@@ -476,7 +476,7 @@
 <ng-template #enviarParecerProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fs-4 text-center">
-      Confirmação de Envio
+      Pedir Parecer
     </h4>
   </div>
   <div class="modal-body">
@@ -501,7 +501,7 @@
 
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Confirmação E-Docs
+      Assinar e Autuar
     </h4>
   </div>
 
@@ -622,7 +622,7 @@
 
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Confirmação Reentranhamento DIC E-Docs
+      Assinar e Autuar
     </h4>
   </div>
 
@@ -782,7 +782,7 @@
 <ng-template #confirmarArquivarProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Deseja arquivar o DIC?
+      Arquivar
     </h4>
   </div>
   <div class="modal-body py-3">
@@ -835,7 +835,7 @@
 <ng-template #informarComplementacoesProjetoModal let-modal>
   <div class="modal-header py-2 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-5 text-center">
-      Deseja enviar o DIC para complementação?
+      Complementar
     </h4>
   </div>
 
@@ -877,12 +877,16 @@
 <ng-template #efetivarParecerProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Confirmação Captura/Assinatura Parecer via E-Docs
+      {{ isParecerGeoc ? 'Concluir parecer' : 'Enviar Parecer' }}
     </h4>
   </div>
   <div class="modal-body">
-    <p>Essa ação confirmará a captura e assinatura no e-Docs usando a sua identidade - {{
+    <p *ngIf="!isParecerGeoc, else geocAviso">Essa ação confirmará a captura e assinatura no e-Docs usando a sua identidade - {{
       nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}). Após isso, o parecer não poderá mais ser editado. </p>
+    <ng-template #geocAviso>
+      <p>Esta ação concluirá o DIC definindo sua elegibilidade e assinando e capturando o parecer no E-Docs usando sua identidade - {{
+          nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}). Após isso, o processo {{processoEdocsProtocolo}} será encerrado no E-Docs. </p>
+    </ng-template>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
@@ -919,12 +923,14 @@
         <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
           (click)="confirmarAssinarCapturarParecer(true)" [disabled]="erroEmAlgumaFaseModalAutuacao">
           <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Julgar Elegível, Assinar e Capturar Parecer</span>
+          <span>Tornar Elegível,<br>
+            Assinar e Capturar Parecer</span>
         </button>
         <button *ngIf="assinarAutuar" class="btn btn-danger icon-text-btn me-2"
           (click)="confirmarAssinarCapturarParecer(false)" [disabled]="erroEmAlgumaFaseModalAutuacao">
           <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Julgar Inelegível, Assinar e Capturar Parecer</span>
+          <span>Tornar Inelegível,<br>
+            Assinar e Capturar Parecer</span>
         </button>
       </ng-container>
       <ng-template #naoGeoc>
@@ -953,7 +959,7 @@
 <ng-template #entranharPareceresEdocsProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Entranhamento de pareceres
+      Entranhar Pareceres
     </h4>
   </div>
   <div class="modal-body">
