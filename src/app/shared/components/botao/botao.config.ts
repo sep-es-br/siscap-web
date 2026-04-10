@@ -175,7 +175,7 @@ export abstract class BotoesConfig {
     autuar: {
       classesCSS: ['btn-success'],
       icone: ['fa-solid fa-lock'],
-      texto: 'Autuar',
+      texto: 'Autuar Programa',
       acao: 'autuar',
     },
     fechar: {

@@ -88,7 +88,7 @@
                     [disabled]="botaoDeAssinarDeveEstarDesabilitado"
                     (click)="dispararModalConfirmarAssinatura()"
                   >
-                    <i class="fa-solid fa-pencil"></i>
+                    <i class="fa-solid fa-pen-fancy"></i>
                     <span>Assinar</span>
                   </button>
                 </div>
@@ -139,7 +139,7 @@
                         Pendente
                       </span>
                     }
-    
+
                     @if (assinatura.dataAssinatura) {
                       <span class="data-assinatura">{{ assinatura.dataAssinatura | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
                     }

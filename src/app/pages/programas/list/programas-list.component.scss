@@ -38,6 +38,7 @@ button.accordion-button {
 }
 
 .acoes-botoes {
+  gap: 1rem;
   .botao-assinaturas {
     &.disabled {
       border: none;
@@ -46,9 +47,10 @@ button.accordion-button {
   }
 
   button {
-    &:disabled {
-      border: none;
-      color: #CCC;
+    all: unset;
+
+    &:disabled, &:disabled * {
+      visibility: hidden;
     }
   }
 }

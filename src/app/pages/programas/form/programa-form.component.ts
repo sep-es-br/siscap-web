@@ -869,8 +869,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       titulo: 'Confirmação',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal:
-        'Essa ação irá Autuar o Programa em seu estado atual. Os dados do Programa não poderão ser alterados a partir deste ponto.',
-      textoSecundario: 'Tem certeza que deseja continuar?',
+        'Esta ação irá autuar um processo no E-Docs para o programa ' + this.programaAtual.titulo,
       textoPrincipalCustomClass: 'fw-bold',
     };
 
