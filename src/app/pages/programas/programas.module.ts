@@ -25,6 +25,7 @@ import { NomeStatusProgramaPipe } from '../../shared/pipes/programa-status/progr
 import { ProgramasSearchComponent } from './search/programas-search.component';
 import { TooltipModule } from 'primeng/tooltip';
 import { TimelineModule } from 'primeng/timeline';
+import { ProgressoButtonComponent } from '../../shared/components/progresso-button/progresso-button.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { TimelineModule } from 'primeng/timeline';
         NgbAccordionCollapse,
         NgbAccordionDirective,
         NgbAccordionHeader,
-        NgbAccordionItem
+        NgbAccordionItem,
+        ProgressoButtonComponent
     ],
   exports: [
     ProgramasComponent,
