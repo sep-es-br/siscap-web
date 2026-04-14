@@ -1,13 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'siscap-projeto-indicadores',
   standalone: true,
-    imports: [
-      FormsModule,
-    ],
+  imports: [
+    CommonModule,
+    FormsModule,
+  ],
   templateUrl: './projeto-indicadores.component.html',
   styleUrls: ['./projeto-indicadores.component.scss']
 })
@@ -21,6 +23,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   indicadores: any[] = [];
   indicadoresFiltrados: any[] = [];
   indicadoresSelecionados: any[] = [];
+  gestao: any;
 
   // 🔎 filtros
   filtroTexto: string = '';
@@ -38,6 +41,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   private init(): void {
+    this.carregarGestaoAdministrativa();
     this.carregarIndicadores();
     this.syncComFormulario();
   }
@@ -55,6 +59,12 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.indicadoresFiltrados = this.indicadores;
 
     this.loading = false;
+  }
+
+  carregarGestaoAdministrativa(): any {
+    this.gestao = {
+      periodo: '2023-2026'
+    };
   }
 
   // ===============================
