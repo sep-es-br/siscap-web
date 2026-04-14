@@ -42,6 +42,10 @@
     <!-- LISTA DE INDICADORES -->
     <div class="card-body indicador-lista">
 
+        <div>
+            <div class="lista-indicadore-label">Selecione o indicador estratégico</div>
+        </div>
+
         <div *ngIf="!loading; else loadingTpl">
 
             <ng-container *ngIf="indicadoresFiltrados.length > 0; else vazio">
