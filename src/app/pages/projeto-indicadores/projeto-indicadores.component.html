@@ -16,7 +16,7 @@
         </button>
 
     </div>
-    
+
     <!-- FILTROS APLICADOS -->
     <div class="card-body border-bottom" *ngIf="filtrosAplicados.length > 0">
         <div class="d-flex flex-wrap gap-2">
@@ -65,6 +65,19 @@
 
             </ng-container>
 
+        </div>
+
+        <!-- Indicadores salvos -->
+        <div class="card" id="indicatorSection">
+            <div class="card-title" style="text-transform: uppercase; letter-spacing: 0.5px;">Indicadores Selecionados
+            </div>
+            <div id="indicatorsContainer">
+                <div class="no-indicators">Nenhum indicador selecionado.</div>
+            </div>
+            <div class="navigation-buttons">
+                <button class="nav-btn" onclick="window.history.back()">←</button>
+                <button class="nav-btn" id="avancarBtn" onclick="goToODS()">→</button>
+            </div>
         </div>
 
         <!-- LOADING -->
