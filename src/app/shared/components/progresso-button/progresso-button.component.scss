@@ -1,0 +1,50 @@
+.progresso-button-custom {
+  background-color: #ffffff !important;
+  border: 1px solid #d1d9e6 !important;
+  border-radius: 9px;
+  padding: 8px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+
+  span { color: #444; font-size: 0.85rem; font-weight: 500; }
+  &:hover { background-color: #f1f3f4 !important; border-color: #1a73e8 !important; }
+}
+
+/* DESBUGANDO O BALÃO */
+::ng-deep {
+  div[ngbAccordionCollapse] {
+    position: absolute;
+    z-index: 1050;
+    top: 50px; // Ajuste conforme a altura do seu header
+    left: 0;
+    min-width: 300px;
+
+    // Desktop: Vira uma lista comum, sem ser balão
+    @media screen and (min-width: 1200px) {
+      position: static !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  }
+
+  div[ngbAccordionBody] {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 15px;
+
+    @media screen and (min-width: 1200px) {
+      border: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      padding: 0 !important;
+    }
+  }
+}

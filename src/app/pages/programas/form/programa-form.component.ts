@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, HostListener } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -140,6 +140,15 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     return this.statusProgramaAtual === StatusPrograma.ELABORACAO;
   }
 
+    accordionCollapsed = true;
+    isMobile = window.innerWidth < 1200;
+
+    @HostListener('window:resize')
+    onResize() {
+      this.isMobile = window.innerWidth < 1200;
+    }
+
+
   constructor(
     public valorService: ValorService,
     private readonly _nnfb: NonNullableFormBuilder,
@@ -160,11 +169,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.executarAcaoBreadcrumb(acao)
       );
 
-  }
-
-
-  isMobile(){
-    return window.innerWidth < 1200;
   }
 
   ngOnInit(): void {

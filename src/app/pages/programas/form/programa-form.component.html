@@ -5,7 +5,10 @@
 } @else {
   <div class="d-flex justify-content-end align-items-center mb-3">
     @if (mostrarBotaoBaixarPrograma) {
-      <button class="btn btn-outline-primary icon-text-btn" (click)="exportarPrograma()">
+      <button
+        class="btn btn-outline-primary icon-text-btn"
+        (click)="exportarPrograma()"
+      >
         <i class="fa-solid fa-file-arrow-down"></i>
         <span>Baixar Programa</span>
       </button>
@@ -14,35 +17,50 @@
 
   <div class="programa-form d-flex flex-column flex-xl-row justify-content-end">
     <div ngbAccordion *ngIf="statusSteps" class="align-self-start">
-      <div ngbAccordionItem [collapsed]="isMobile()">
+      <div ngbAccordionItem [collapsed]="isMobile ? accordionCollapsed : false">
         <h4 ngbAccordionHeader class="d-xl-none">
-          <button ngbAccordionButton class="w-auto flex-row-reverse">Progresso</button>
-
+          <button
+            type="button"
+            app-progresso-button
+            ngbAccordionButton
+            [label]="'Progresso'"
+            icon="bi bi-clock"
+          ></button>
         </h4>
         <div ngbAccordionCollapse>
           <div ngbAccordionBody>
             <ng-template>
-              <p-timeline *ngIf="statusSteps" [value]="statusSteps" align="right">
+              <p-timeline
+                *ngIf="statusSteps"
+                [value]="statusSteps"
+                [align]="isMobile ? '' : 'right'"
+              >
                 <ng-template pTemplate="content" let-step>
-                  <span class="text-nowrap" >
-                        {{step.label}}
-                  </span>
-
+                  <span class="d-inline-block" [innerHTML]="step.label"></span>
                 </ng-template>
                 <ng-template pTemplate="marker" let-step>
-                  <span [style.borderColor]="getColor(step)"
-                      [pTooltip]="tooltipContent"
-                      [tooltipDisabled]="step.isInativo()"
-                      tooltipPosition="right">
-                    <i [ngClass]="getIcon(step)" [style.color]="getColor(step) "></i>
+                  <span
+                    [style.borderColor]="getColor(step)"
+                    [pTooltip]="tooltipContent"
+                    [tooltipDisabled]="step.isInativo()"
+                    tooltipPosition="right"
+                  >
+                    <i
+                      [ngClass]="getIcon(step)"
+                      [style.color]="getColor(step)"
+                    ></i>
                   </span>
 
                   <ng-template #tooltipContent>
-                      <p class="my-0">Desde: {{step.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
-                      <ng-container *ngIf="step.isFinalizado()">
-                        <p class="my-0">Até: {{step.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
-                        <p class="my-0">Por: {{step.nomePessoa}}</p>
-                      </ng-container>
+                    <p class="my-0">
+                      Desde: {{ step.dataInicio | date: "dd/MM/yyyy HH:mm" }}
+                    </p>
+                    <ng-container *ngIf="step.isFinalizado()">
+                      <p class="my-0">
+                        Até: {{ step.dataFim | date: "dd/MM/yyyy HH:mm" }}
+                      </p>
+                      <p class="my-0">Por: {{ step.nomePessoa }}</p>
+                    </ng-container>
                   </ng-template>
                 </ng-template>
               </p-timeline>
@@ -91,12 +109,15 @@
               />
             </div>
 
-
             <div class="col-12">
               <label for="idProjetoProposto" class="col-12 form-label">
-                <validation-message [control]="getControl('idProjetoPropostoList')">
+                <validation-message
+                  [control]="getControl('idProjetoPropostoList')"
+                >
                   Documento Inicial de Captação
-                  <form-helper-tooltip [texto]="projetoTooltip['dicelegivel']"></form-helper-tooltip>
+                  <form-helper-tooltip
+                    [texto]="projetoTooltip['dicelegivel']"
+                  ></form-helper-tooltip>
                 </validation-message>
               </label>
 
@@ -110,7 +131,12 @@
                 [ngModelOptions]="{ standalone: true }"
                 (change)="idProjetoPropostoNgSelectChangeEvent($event)"
               >
-                @for (projetoPropostoOpcao of filtrarOpcoesProjetosPropostos(projetosPropostosOpcoes); track projetoPropostoOpcao) {
+                @for (
+                  projetoPropostoOpcao of filtrarOpcoesProjetosPropostos(
+                    projetosPropostosOpcoes
+                  );
+                  track projetoPropostoOpcao
+                ) {
                   <ng-option [value]="projetoPropostoOpcao">
                     {{ projetoPropostoOpcao.nome }}
                   </ng-option>
@@ -122,30 +148,56 @@
               @if (idProjetoPropostoList.value.length > 0) {
                 <div class="card">
                   <div class="card-body row gy-2 mb-0">
-                    @for (idProjetoProposto of idProjetoPropostoList.value; track idProjetoProposto; let i = $index) {
+                    @for (
+                      idProjetoProposto of idProjetoPropostoList.value;
+                      track idProjetoProposto;
+                      let i = $index
+                    ) {
                       <div class="col-12 col-sm-6">
                         <div class="card">
-                          <div class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center">
-                            <div class="col-12 col-lg-5 pb-2 pb-lg-0 text-truncate" #projetoPropostoNomeTarget>
+                          <div
+                            class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center"
+                          >
+                            <div
+                              class="col-12 col-lg-5 pb-2 pb-lg-0 text-truncate"
+                              #projetoPropostoNomeTarget
+                            >
                               <span
                                 class="nome-projeto-proposto"
                                 placement="bottom"
                                 [positionTarget]="projetoPropostoNomeTarget"
-                                [ngbTooltip]="getProjetoPropostoOpcao(idProjetoProposto).nome"
+                                [ngbTooltip]="
+                                  getProjetoPropostoOpcao(idProjetoProposto)
+                                    .nome
+                                "
                               >
-                                {{ getProjetoPropostoOpcao(idProjetoProposto).nome }}
-                              </span>
-                            </div>
-                            <div class="col-12 col-md-5 d-inline-flex justify-content-center justify-content-md-start align-items-center">
-                              <span>
-                                {{ getProjetoPropostoOpcao(idProjetoProposto).valorEstimado
-                                | mask
-                                : "separator.2"
-                                  : { prefix: "R$ ", leadZero: true, thousandSeparator: ".", decimalMarker: "," }
+                                {{
+                                  getProjetoPropostoOpcao(idProjetoProposto)
+                                    .nome
                                 }}
                               </span>
                             </div>
-                            <div class="col-12 col-md-2 col-lg-1 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-start align-items-center">
+                            <div
+                              class="col-12 col-md-5 d-inline-flex justify-content-center justify-content-md-start align-items-center"
+                            >
+                              <span>
+                                {{
+                                  getProjetoPropostoOpcao(idProjetoProposto)
+                                    .valorEstimado
+                                    | mask
+                                      : "separator.2"
+                                      : {
+                                          prefix: "R$ ",
+                                          leadZero: true,
+                                          thousandSeparator: ".",
+                                          decimalMarker: ",",
+                                        }
+                                }}
+                              </span>
+                            </div>
+                            <div
+                              class="col-12 col-md-2 col-lg-1 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-start align-items-center"
+                            >
                               <button
                                 class="btn btn-outline-danger rounded-circle"
                                 type="button"
@@ -153,7 +205,9 @@
                                 [disabled]="!isProgramaAtualEditavel"
                                 (click)="removerProjetoPropostoDoPrograma(i)"
                               >
-                                <i class="fa-solid fa-close delete-btn-icon"></i>
+                                <i
+                                  class="fa-solid fa-close delete-btn-icon"
+                                ></i>
                               </button>
                             </div>
                           </div>
@@ -165,13 +219,19 @@
               }
             </div>
 
-
             <div class="col-12">
-              <siscap-valor-form [moedasList]="moedasList" [tiposValorOpcoes]="tiposValorOpcoes" [contextoValor]="'PROGRAMA'" ></siscap-valor-form>
+              <siscap-valor-form
+                [moedasList]="moedasList"
+                [tiposValorOpcoes]="tiposValorOpcoes"
+                [contextoValor]="'PROGRAMA'"
+              ></siscap-valor-form>
             </div>
 
             <div class="col-12 col-md-4 col-lg-2">
-              <label for="percentual-custo-administrativo" class="col-12 form-label">
+              <label
+                for="percentual-custo-administrativo"
+                class="col-12 form-label"
+              >
                 % Custos Administrativos
               </label>
               <input
@@ -192,7 +252,10 @@
             </div>
 
             <div id="valor-col" class="col-12 col-md-4 col-lg-7">
-              <label for="valor-total-calculado-programa" class="col-12 form-label">
+              <label
+                for="valor-total-calculado-programa"
+                class="col-12 form-label"
+              >
                 Valor Total Estimado
               </label>
               <input
@@ -207,13 +270,19 @@
                 readonly
                 [inputTransformFn]="rtlCurrencyInputTransformFn"
                 [outputTransformFn]="rtlCurrencyOutputTransformFn"
-                [prefix]="getSimboloMoeda(valorService.valorFormGroup.controls.moeda.value)"
+                [prefix]="
+                  getSimboloMoeda(
+                    valorService.valorFormGroup.controls.moeda.value
+                  )
+                "
               />
             </div>
 
             <div class="col-12">
               <label for="orgaosEnvolvidos" class="col-12 form-label">
-                <validation-message [control]="getControl('orgaosEnvolvidosList')">
+                <validation-message
+                  [control]="getControl('orgaosEnvolvidosList')"
+                >
                   Orgãos Envolvidos
                 </validation-message>
               </label>
@@ -266,7 +335,9 @@
                 <button
                   class="btn btn-outline-secondary"
                   type="button"
-                  [disabled]="isLoadingPessoasFiltroTermo || !isProgramaAtualEditavel"
+                  [disabled]="
+                    isLoadingPessoasFiltroTermo || !isProgramaAtualEditavel
+                  "
                   (click)="buscarAgentesPorTermo()"
                 >
                   @if (isLoadingPessoasFiltroTermo) {
@@ -282,9 +353,15 @@
               </div>
 
               @if (exibirLista && pessoasOpcoesGoves.length > 0) {
-                <div class="card resultados-container" style="max-height: 300px; margin-top: 6px; margin-bottom: 6px;">
+                <div
+                  class="card resultados-container"
+                  style="max-height: 300px; margin-top: 6px; margin-bottom: 6px"
+                >
                   <div class="card-body p-0">
-                    <ul class="list-group list-group-flush lista-rolavel" style="max-height: 300px; overflow-y: auto;">
+                    <ul
+                      class="list-group list-group-flush lista-rolavel"
+                      style="max-height: 300px; overflow-y: auto"
+                    >
                       @for (agente of pessoasOpcoesGoves; track agente) {
                         <li
                           class="list-group-item list-group-item-action cursor-pointer"
@@ -292,7 +369,9 @@
                         >
                           <div class="d-flex flex-column">
                             <span>{{ agente.nome }}</span>
-                            <small class="text-muted">{{ agente.papelPrioritario }}</small>
+                            <small class="text-muted">{{
+                              agente.papelPrioritario
+                            }}</small>
                           </div>
                         </li>
                       }
@@ -309,8 +388,6 @@
               >
               </siscap-equipe-form>
             </div>
-
-
           </div>
         </form>
       </div>
