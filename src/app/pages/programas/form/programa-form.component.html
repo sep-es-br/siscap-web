@@ -16,7 +16,7 @@
   </div>
 
   <div class="programa-form d-flex flex-column flex-xl-row justify-content-end">
-    <div ngbAccordion *ngIf="statusSteps" class="align-self-start">
+    <div ngbAccordion *ngIf="statusSteps" class="align-self-start" (clickOutside)="accordionCollapsed = true">
       <div ngbAccordionItem [collapsed]="isMobile ? accordionCollapsed : false">
         <h4 ngbAccordionHeader class="d-xl-none">
           <button
@@ -24,11 +24,12 @@
             app-progresso-button
             ngbAccordionButton
             [label]="'Progresso'"
+            class="btn-progresso"
             icon="bi bi-clock"
           ></button>
         </h4>
-        <div ngbAccordionCollapse>
-          <div ngbAccordionBody>
+        <div ngbAccordionCollapse class="btn-progresso">
+          <div ngbAccordionBody class="btn-progresso">
             <ng-template>
               <p-timeline
                 *ngIf="statusSteps"
