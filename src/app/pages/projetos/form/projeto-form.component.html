@@ -32,25 +32,28 @@
           <ng-template>
             <p-timeline [value]="statusSteps" align="right">
               <ng-template pTemplate="content" let-event>
-                <span class="text-nowrap d-inline-block" [innerHTML]="event.label" [style]="event.labelOffset && {transform: 'translateY(' + event.labelOffset + ')'}"></span>
+                <span class="text-nowrap d-inline-block" [innerHTML]="event.label"
+                  [style]="event.labelOffset && {transform: 'translateY(' + event.labelOffset + ')'}"></span>
               </ng-template>
               <ng-template pTemplate="marker" let-event>
-                <span [style.borderColor]="event.isInativo() ? 'gray' : event.isAtual() ? 'orange' : event.positivo ? 'green' : 'red'"
-                      [pTooltip]="tooltipContent" tooltipPosition="right" [tooltipDisabled]="event.isInativo()"
-                      style="display:flex; align-items:center; background-color: white; justify-content:center; width:2rem; height:2rem; border-radius:50%; border-width: 1px; border-style: solid; ">
+                <span
+                  [style.borderColor]="event.isInativo() ? 'gray' : event.isAtual() ? 'orange' : event.positivo ? 'green' : 'red'"
+                  [pTooltip]="tooltipContent" tooltipPosition="right" [tooltipDisabled]="event.isInativo()"
+                  style="display:flex; align-items:center; background-color: white; justify-content:center; width:2rem; height:2rem; border-radius:50%; border-width: 1px; border-style: solid; ">
                   @if (event.isInativo()) {
-                    <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>
+                  <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>
                   } @else if (event.isAtual()) {
-                    <i class="pi pi-refresh" [style.color]="'orange'"></i>
+                  <i class="pi pi-refresh" [style.color]="'orange'"></i>
                   } @else if (event.isFinalizado()) {
-                    <i class="fa-solid" [ngClass]="event.positivo ? 'check-icon fa-check' : 'refused-icon fa-xmark'" [style.color]="event.positivo ? 'green' : 'red'"></i>
+                  <i class="fa-solid" [ngClass]="event.positivo ? 'check-icon fa-check' : 'refused-icon fa-xmark'"
+                    [style.color]="event.positivo ? 'green' : 'red'"></i>
                   }
                 </span>
                 <ng-template #tooltipContent>
                   <p class="my-0 text-nowrap">Desde: {{event.dataInicio | date : 'dd/MM/yyyy HH:mm'}}</p>
                   <ng-container *ngIf="event.dataFim">
                     <p class="my-0 text-nowrap">Até: {{event.dataFim | date : 'dd/MM/yyyy HH:mm'}}</p>
-                    <p class="my-0 text-nowrap">Por:  {{event.nomePessoa}}</p>
+                    <p class="my-0 text-nowrap">Por: {{event.nomePessoa}}</p>
                   </ng-container>
                 </ng-template>
               </ng-template>
@@ -69,23 +72,30 @@
       <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
           <li class="nav-item" role="presentation">
-            <button class="nav-link" [ngClass]="{'active': !aguardandoParecer()}"  id="nav-propriedades" data-bs-toggle="tab" data-bs-target="#tab-propriedades" role="tab" aria-controls="propriedades" aria-selected="true"
-              >
+            <button class="nav-link" [ngClass]="{'active': !aguardandoParecer()}" id="nav-propriedades"
+              data-bs-toggle="tab" data-bs-target="#tab-propriedades" role="tab" aria-controls="propriedades"
+              aria-selected="true">
               DIC
             </button>
           </li>
-          <li class="nav-item" role="presentation"  *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0">
-            <button class="nav-link" [ngClass]="{'active': aguardandoParecer()}"  id="nav-pareceres" data-bs-toggle="tab" data-bs-target="#tab-pareceres" role="tab" aria-controls="pareceres" aria-selected="true"
-              >
+          <li class="nav-item" role="presentation" *ngIf="this.indicadoresProjeto.length > 0">
+            <button class="nav-link" id="nav-indicadores" data-bs-toggle="tab" data-bs-target="#tab-indicadores"
+              role="tab" aria-controls="propriedades" aria-selected="true">
+              Indicadores
+            </button>
+          </li>
+          <li class="nav-item" role="presentation" *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0">
+            <button class="nav-link" [ngClass]="{'active': aguardandoParecer()}" id="nav-pareceres" data-bs-toggle="tab"
+              data-bs-target="#tab-pareceres" role="tab" aria-controls="pareceres" aria-selected="true">
               Pareceres
             </button>
           </li>
-
         </ul>
 
       </div>
       <div class="card-body tab-content">
-        <div class="tab-pane fade" [ngClass]="{'show active': !aguardandoParecer()}" id="tab-propriedades" role="tabpanel" aria-labelledby="nav-propriedades">
+        <div class="tab-pane fade" [ngClass]="{'show active': !aguardandoParecer()}" id="tab-propriedades"
+          role="tabpanel" aria-labelledby="nav-propriedades">
           <form [formGroup]="projetoForm">
             <div class="row gy-2">
               <div class="col-12 col-md-3 mb-2 mb-md-0">
@@ -314,8 +324,8 @@
                       [texto]="mensagemComplementarCampo('arranjosInstitucionais')"></form-warning-tooltip>
                   </validation-message>
                 </label>
-                <textarea rows="5" class="form-control" id="arranjosInstitucionais" formControlName="arranjosInstitucionais"
-                  maxLength="2000"></textarea>
+                <textarea rows="5" class="form-control" id="arranjosInstitucionais"
+                  formControlName="arranjosInstitucionais" maxLength="2000"></textarea>
               </div>
 
               <div class="col-12">
@@ -349,59 +359,64 @@
             </div>
           </form>
 
-      </div>
-      <div class="tab-pane fade" [ngClass]="{'show active': aguardandoParecer()}"  *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0" id="tab-pareceres" role="tabpanel" aria-labelledby="nav-pareceres">
+        </div>
+        <div class="tab-pane fade" [ngClass]="{'show active': aguardandoParecer()}"
+          *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0" id="tab-pareceres" role="tabpanel"
+          aria-labelledby="nav-pareceres">
 
-        <div class="card" *ngIf="(aguardandoParecer() && (!isSubcapGeoc() || isSubeoSubeppEntranhados())) && !isProjetoElegivel()">
-          <div class="card-header d-flex flex-wrap align-content-center" id="parecerTituloAtual"
-                  data-bs-toggle="collapse" data-bs-target="#parecerAtual">
-            <span style="display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; ">
+          <div class="card"
+            *ngIf="(aguardandoParecer() && (!isSubcapGeoc() || isSubeoSubeppEntranhados())) && !isProjetoElegivel()">
+            <div class="card-header d-flex flex-wrap align-content-center" id="parecerTituloAtual"
+              data-bs-toggle="collapse" data-bs-target="#parecerAtual">
+              <span style="display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; ">
                 @if(this.parecerProjetoUsuario.guidDocumentoEdocs) {
-                  <i class="fa-solid check-icon fa-check" [style.color]="'green'"></i>
+                <i class="fa-solid check-icon fa-check" [style.color]="'green'"></i>
                 } @else {
-                  <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>
+                <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>
                 }
               </span>
               <h5 class="fw-bold text-primary m-0">
-                  Parecer {{getLotacao(lotacaoUsuario)}}
+                Parecer {{getLotacao(lotacaoUsuario)}}
               </h5>
-          </div>
-          <div id="parecerAtual" class="collapse show" aria-labelledby="parecerTituloAtual">
-            <div class="card-body mb-4">
-              <siscap-projeto-parecer [projetoForm]="projetoForm" [statusProjeto]="statusProjeto"
-                [lotacaoUsuario]="lotacaoUsuario" [pareceresProjeto]="pareceresProjeto" class="mb-4">
-              </siscap-projeto-parecer>
+            </div>
+            <div id="parecerAtual" class="collapse show" aria-labelledby="parecerTituloAtual">
+              <div class="card-body mb-4">
+                <siscap-projeto-parecer [projetoForm]="projetoForm" [statusProjeto]="statusProjeto"
+                  [lotacaoUsuario]="lotacaoUsuario" [pareceresProjeto]="pareceresProjeto" class="mb-4">
+                </siscap-projeto-parecer>
+              </div>
             </div>
           </div>
-        </div>
 
           <div class="card" *ngFor="let parecer of demaisPareceres">
             <div class="card-header d-flex flex-wrap align-content-center" id="parecerTitulo{{parecer.parecerLotacao}}"
-                    data-bs-toggle="collapse" [attr.data-bs-target]="'#parecer' + parecer.parecerLotacao">
+              data-bs-toggle="collapse" [attr.data-bs-target]="'#parecer' + parecer.parecerLotacao">
               <span style="display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; ">
                 @if(parecer.guidDocumentoEdocs) {
-                  <i class="fa-solid check-icon fa-check" [style.color]="'green'"></i>
+                <i class="fa-solid check-icon fa-check" [style.color]="'green'"></i>
                 } @else {
-                  <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>
+                <i class="pending-icon fa-regular fa-clock" [style.color]="'gray'"></i>
                 }
               </span>
               <h5 class="fw-bold text-primary m-0">
-                  Parecer {{getLotacao(parecer.parecerLotacao)}}
+                Parecer {{getLotacao(parecer.parecerLotacao)}}
               </h5>
             </div>
-            <div id="parecer{{parecer.parecerLotacao}}" class="collapse" [attr.aria-labelledby]="'parecerTitulo' + parecer.parecerLotacao">
+            <div id="parecer{{parecer.parecerLotacao}}" class="collapse"
+              [attr.aria-labelledby]="'parecerTitulo' + parecer.parecerLotacao">
               <div class="card-body mb-4">
-                <ng-container  *ngIf="parecer.id; else parecerPendente">
+                <ng-container *ngIf="parecer.id; else parecerPendente">
                   <p class="mb-0 parecerLabel">Parecer:</p>
                   <p class="text-justify parecerTexto" [innerHTML]="parecer.textoParecer"></p>
-                  <div *ngIf="parecer.statusParecer && parecer.statusParecer !== StatusParecerEnum.Pendente" class="row mt-2">
+                  <div *ngIf="parecer.statusParecer && parecer.statusParecer !== StatusParecerEnum.Pendente"
+                    class="row mt-2">
                     <div class="col-12">
                       <strong>Parecer enviado</strong> no dia
                       <span class="text-primary">{{ parecer.dataEnvio | date:'dd/MM/yyyy' }}</span>
                       às
                       <span class="text-primary">{{ parecer.dataEnvio | date:'HH:mm' }}</span>
                       por
-                      <span class="fw-semibold">{{  mapSubUser[parecer.usuarioFezEnvioParecer] }}</span>
+                      <span class="fw-semibold">{{ mapSubUser[parecer.usuarioFezEnvioParecer] }}</span>
                     </div>
                   </div>
                 </ng-container>
@@ -583,7 +598,8 @@
         </div>
       </div>
     </div>
-    <div *ngIf="finalizadoProcessamentoIntegracao" class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+    <div *ngIf="finalizadoProcessamentoIntegracao"
+      class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
       <span>PROCESSO AUTUADO E ENCAMINHADO COM SUCESSO!</span>
     </div>
   </div>
@@ -881,11 +897,14 @@
     </h4>
   </div>
   <div class="modal-body">
-    <p *ngIf="!isParecerGeoc, else geocAviso">Essa ação confirmará a captura e assinatura no e-Docs usando a sua identidade - {{
+    <p *ngIf="!isParecerGeoc, else geocAviso">Essa ação confirmará a captura e assinatura no e-Docs usando a sua
+      identidade - {{
       nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}). Após isso, o parecer não poderá mais ser editado. </p>
     <ng-template #geocAviso>
-      <p>Esta ação concluirá o DIC definindo sua elegibilidade e assinando e capturando o parecer no E-Docs usando sua identidade - {{
-          nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}). Após isso, o processo {{processoEdocsProtocolo}} será encerrado no E-Docs. </p>
+      <p>Esta ação concluirá o DIC definindo sua elegibilidade e assinando e capturando o parecer no E-Docs usando sua
+        identidade - {{
+        nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}). Após isso, o processo {{processoEdocsProtocolo}} será
+        encerrado no E-Docs. </p>
     </ng-template>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
@@ -908,7 +927,8 @@
           Assinatura e captura do parecer, gerado em PDF a partir dos dados informados neste formulário;
         </div>
       </div>
-      <div *ngIf="finalizadoProcessamentoIntegracao" class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+      <div *ngIf="finalizadoProcessamentoIntegracao"
+        class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
         <span>ASSINATURA E CAPTURA FINALIZADAS COM SUCESSO!</span>
       </div>
     </div>
@@ -963,8 +983,9 @@
     </h4>
   </div>
   <div class="modal-body">
-    <p>Esta ação efetuará o entranhamento dos pareceres orçamentário e estratégico ao processo {{ processoEdocsProtocolo }} utilizando a sua identidade - {{
-        nomeUsuario }} ({{ lotacaoPrioritariaUsuario }})
+    <p>Esta ação efetuará o entranhamento dos pareceres orçamentário e estratégico ao processo {{ processoEdocsProtocolo
+      }} utilizando a sua identidade - {{
+      nomeUsuario }} ({{ lotacaoPrioritariaUsuario }})
 
 
       Esta ação realizará automaticamente procedimentos no E-docs, utilizando a sua identidade - : </p>
@@ -988,7 +1009,8 @@
           [style.color]="aguardandoEntranhamento === FaseStatusEnum.FINALIZADA ? 'black' : '#cccccc'">
           Entranhamento dos pareceres capturados no E-Docs;</div>
       </div>
-      <div *ngIf="finalizadoProcessamentoIntegracao" class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+      <div *ngIf="finalizadoProcessamentoIntegracao"
+        class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
         <span>ENTRANHAMENTO PARECERES FINALIZADO COM SUCESSO!</span>
       </div>
     </div>

@@ -90,6 +90,7 @@ import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { gerarStepStatusProjeto, IStep } from '../../../core/utils/steps';
+import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -199,6 +200,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public nomeUsuario: string = '';
   public lotacaoPrioritariaUsuario: string = '';
   public processoEdocsProtocolo: string = '';
+
+  public indicadoresProjeto: IIndicadores[] = [];
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
