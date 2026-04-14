@@ -169,7 +169,7 @@ div[ngbAccordionItem] {
 
   div[ngbAccordionCollapse] {
     position: absolute;
-    z-index: 1000;
+    z-index: auto;
     top: 110%;
     right: auto;
     left: 0;
