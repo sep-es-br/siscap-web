@@ -148,7 +148,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this.isMobile = window.innerWidth < 1200;
     }
 
-
   constructor(
     public valorService: ValorService,
     private readonly _nnfb: NonNullableFormBuilder,

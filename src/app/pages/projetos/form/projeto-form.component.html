@@ -39,10 +39,11 @@
         app-progresso-button
         ngbAccordionButton
         [label]="'Progresso'"
+        class="btn-progresso"
         icon="bi bi-clock">
       </button>
     </h4>
-      <div ngbAccordionCollapse>
+      <div ngbAccordionCollapse class="btn-progresso">
         <div ngbAccordionBody>
           <ng-template>
             <p-timeline [value]="statusSteps" [align]="isMobile ? '' : 'right'">
