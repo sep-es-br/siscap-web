@@ -367,6 +367,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this.nomeUsuario = this._usuarioService.usuarioPerfil.nome;
             this.lotacaoPrioritariaUsuario = this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
 
+            this.indicadoresProjeto = projetoModel.indicadoresProjeto;
+
             const caminhoFeliz = [
               StatusProjetoEnum.Em_Elaboracao,
               StatusProjetoEnum.Em_Complementacao,

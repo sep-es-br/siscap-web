@@ -23,6 +23,7 @@ import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-for
 import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.component';
 import { TimelineModule } from 'primeng/timeline';
 import { TooltipModule } from 'primeng/tooltip';
+import { ProjetoIndicadoresComponent } from "../projeto-indicadores/projeto-indicadores.component";
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { TooltipModule } from 'primeng/tooltip';
     ProjetoParecerComponent,
     TimelineModule,
     TooltipModule,
-  ],
+    ProjetoIndicadoresComponent
+],
   exports: [
     ProjetosComponent,
     ProjetosListComponent,

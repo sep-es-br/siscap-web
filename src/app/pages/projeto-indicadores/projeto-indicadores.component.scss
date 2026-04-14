@@ -1,0 +1,37 @@
+.indicador-lista {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .indicador-item {
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  
+  .indicador-item:hover {
+    background: #f5f5f5;
+  }
+  
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  
+  /* badges (filtros) */
+  .badge {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  /* botão estilo mockup */
+  .btn-outline-secondary {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* input */
+  .form-control {
+    border-radius: 6px;
+  }

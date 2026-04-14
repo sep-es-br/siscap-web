@@ -1,0 +1,102 @@
+<div class="card">
+
+    <!-- HEADER -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Indicadores Estratégicos</h5>
+  
+      <button class="btn btn-outline-secondary btn-sm"
+        (click)="abrirModalFiltros()">
+        <i class="fa fa-filter me-1"></i>
+        Filtros
+      </button>
+    </div>
+  
+    <!-- FILTROS APLICADOS -->
+    <div class="card-body border-bottom" *ngIf="filtrosAplicados.length > 0">
+      <div class="d-flex flex-wrap gap-2">
+  
+        <span class="badge bg-light text-dark border"
+          *ngFor="let filtro of filtrosAplicados">
+  
+          {{ filtro.tipo }}: {{ filtro.valor }}
+  
+          <i class="fa fa-times ms-2 cursor-pointer"
+            (click)="removerFiltro(filtro)">
+          </i>
+  
+        </span>
+  
+      </div>
+    </div>
+  
+    <!-- BUSCA -->
+    <div class="card-body border-bottom">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar indicador..."
+        [(ngModel)]="filtroTexto"
+        (input)="filtrarIndicadores()"
+      />
+    </div>
+  
+    <!-- LISTA DE INDICADORES -->
+    <div class="card-body indicador-lista">
+  
+      <div *ngIf="!loading; else loadingTpl">
+  
+        <ng-container *ngIf="indicadoresFiltrados.length > 0; else vazio">
+  
+          <div class="indicador-item"
+            *ngFor="let indicador of indicadoresFiltrados">
+  
+            <label class="d-flex align-items-center w-100 cursor-pointer">
+  
+              <input
+                type="checkbox"
+                class="form-check-input me-2"
+                [checked]="isSelecionado(indicador)"
+                (change)="toggleIndicador(indicador)"
+              />
+  
+              <span>{{ indicador.nome }}</span>
+  
+            </label>
+  
+          </div>
+  
+        </ng-container>
+  
+      </div>
+  
+      <!-- LOADING -->
+      <ng-template #loadingTpl>
+        <div class="text-center text-muted py-3">
+          Carregando indicadores...
+        </div>
+      </ng-template>
+  
+      <!-- VAZIO -->
+      <ng-template #vazio>
+        <div class="text-center text-muted py-3">
+          Nenhum indicador encontrado
+        </div>
+      </ng-template>
+  
+    </div>
+  
+    <!-- FOOTER -->
+    <div class="card-footer d-flex justify-content-between align-items-center">
+  
+      <span class="text-primary cursor-pointer"
+        (click)="abrirModalNovoIndicador()">
+        + Criar novo indicador
+      </span>
+  
+      <span class="fw-semibold">
+        {{ indicadoresSelecionados.length }} selecionado(s)
+      </span>
+  
+    </div>
+  
+  </div>
