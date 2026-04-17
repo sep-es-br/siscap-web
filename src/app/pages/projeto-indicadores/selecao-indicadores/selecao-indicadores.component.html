@@ -1,0 +1,66 @@
+<div class="card selection-card">
+
+  <div class="card-header-main">
+    <p class="lista-label">SELECIONE O INDICADOR ESTRATÉGICO</p>
+
+    <div class="search-container" [class.expanded]="searchVisible">
+      <span class="p-input-icon-left p-input-icon-right w-100">
+        <i class="pi pi-search search-icon cursor-pointer" (click)="searchVisible = !searchVisible"></i>
+        <input 
+          [style.display]="searchVisible ? 'block' : 'none'" 
+          pInputText type="text" 
+          class="w-100 search-input" 
+          placeholder="Nome do indicador"
+          [(ngModel)]="filtroTexto" 
+          (ngModelChange)="filtrarIndicadores()" />
+        <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible"
+          (click)="filtroTexto=''; filtrarIndicadores()">
+        </i>
+      </span>
+    </div>
+  </div>
+
+  <div class="card-body indicador-lista">
+    <div class="indicador-item select-all">
+      <label class="indicador-label">
+        <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)">
+        </p-checkbox>
+        <span class="text-blue-primary">SELECIONAR TODOS</span>
+      </label>
+    </div>
+
+    <ng-container *ngIf="!loading; else loadingTpl">
+      <ng-container *ngIf="indicadoresFiltrados.length > 0; else vazio">
+
+        <div class="indicador-item" *ngFor="let indicador of indicadoresFiltrados">
+          <label class="indicador-label">
+            <p-checkbox [binary]="true" [ngModel]="isSelecionado(indicador)"
+              (ngModelChange)="toggleIndicador(indicador)">
+            </p-checkbox>
+            <span>{{ indicador.nome }}</span>
+          </label>
+        </div>
+
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <div class="card-footer-selection">
+    <span class="criar-novo-link">+ Criar um Indicador de Projeto Estratégico</span>
+  </div>
+
+</div>
+
+<ng-template #loadingTpl>
+  <div class="estado-vazio">
+    <i class="pi pi-spin pi-spinner"></i>
+    Carregando indicadores...
+  </div>
+</ng-template>
+
+<ng-template #vazio>
+  <div class="estado-vazio">
+    <i class="pi pi-inbox"></i>
+    Nenhum indicador encontrado
+  </div>
+</ng-template>

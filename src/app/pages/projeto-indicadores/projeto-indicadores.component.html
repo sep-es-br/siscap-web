@@ -1,115 +1,49 @@
+<!-- CARD: FILTROS -->
 <div class="card">
-
-    <!-- HEADER -->
-    <div class="card-body border-bottom d-flex justify-content-between align-items-center">
-
-        <div class="gestao-badge">
-            <div class="gestao-label">Gestão administrativa</div>
-            <div class="gestao-valor">{{ gestao?.periodo }}</div>
-        </div>
-
-        <button class="btn btn-outline-secondary btn-sm" (click)="abrirModalFiltros()">
-            <i class="fa fa-filter me-1"></i>
-            Filtros
-        </button>
-
+  <div class="card-header">
+    <div class="badges-container">
+      <app-indicador-chip
+        *ngFor="let chip of chips"
+        [label]="chip.label"
+        [value]="chip.value"
+        [removable]="chip.removable"
+        (onClick)="onChipClick(chip)"
+        (onRemove)="removeChip(chip)">
+      </app-indicador-chip>
     </div>
 
-    <!-- FILTROS -->
-    <div class="card-body border-bottom" *ngIf="filtrosAplicados.length > 0">
-        <div class="d-flex flex-wrap gap-2">
-            <span class="badge bg-light text-dark border" *ngFor="let filtro of filtrosAplicados">
-                {{ filtro.tipo }}: {{ filtro.valor }}
-                <i class="fa fa-times ms-2 cursor-pointer" (click)="removerFiltro(filtro)"></i>
-            </span>
-        </div>
-    </div>
+    <p-button 
+      label="Filtros" 
+      icon="pi pi-filter" 
+      styleClass="btn-filtros"
+      (click)="showModal = true">
+    </p-button>
+  </div>
 
-    <!-- BUSCA -->
-    <div class="card-body border-bottom">
-        <input type="text" class="form-control" placeholder="Buscar indicador..." [(ngModel)]="filtroTexto"
-            (input)="filtrarIndicadores()" />
-    </div>
-
-    <!-- LISTA -->
-    <div class="card-body indicador-lista">
-
-        <div class="lista-indicadore-label mb-2">
-            Selecione o indicador estratégico
-        </div>
-
-        <ng-container *ngIf="!loading; else loadingTpl">
-
-            <ng-container *ngIf="indicadoresFiltrados.length > 0; else vazio">
-
-                <div class="indicador-item" *ngFor="let indicador of indicadoresFiltrados">
-
-                    <label class="d-flex align-items-center w-100 cursor-pointer">
-
-                        <input type="checkbox" class="form-check-input me-2" [checked]="isSelecionado(indicador)"
-                            (change)="toggleIndicador(indicador)" />
-
-                        <span>{{ indicador.nome }}</span>
-
-                    </label>
-
-                </div>
-
-            </ng-container>
-
-        </ng-container>
-
-        <!-- SELECIONADOS -->
-        <div class="card mt-3 p-2">
-
-            <div class="fw-bold mb-2 text-uppercase">
-                Indicadores Selecionados
-            </div>
-
-            <div *ngIf="indicadoresSelecionados.length === 0" class="text-muted">
-                Nenhum indicador selecionado.
-            </div>
-
-            <div *ngFor="let item of indicadoresSelecionados">
-                {{ item.nome }}
-            </div>
-
-            <div class="d-flex justify-content-between mt-3">
-
-                <button class="btn btn-outline-secondary btn-sm" (click)="voltar()">←</button>
-
-                <button class="btn btn-primary btn-sm" (click)="irParaODS()">→</button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- FOOTER -->
-    <div class="card-footer d-flex justify-content-between align-items-center">
-
-        <span class="text-primary cursor-pointer" (click)="abrirModalNovoIndicador()">
-            + Criar novo indicador
-        </span>
-
-        <span class="fw-semibold">
-            {{ indicadoresSelecionados.length }} selecionado(s)
-        </span>
-
-    </div>
-
+  <p-dialog header="Filtros" [(visible)]="showModal" [modal]="true" [style]="{ width: '60vw' }" position="center">
+    <app-filtro-indicadores (apply)="onApply($event)" />
+  </p-dialog>
 </div>
 
-<!-- TEMPLATES -->
-<ng-template #loadingTpl>
-    <div class="text-center text-muted py-3">
-        Carregando indicadores...
-    </div>
-</ng-template>
 
-<ng-template #vazio>
-    <div class="text-center text-muted py-3">
-        Nenhum indicador encontrado
+<app-selecao-indicadores
+  [indicadores]="indicadores"
+  [selecionados]="indicadoresSelecionados"
+  [loading]="loading"
+  (selecionadosChange)="onSelecaoChange($event)">
+</app-selecao-indicadores>
+
+<!-- CARD: INDICADORES SELECIONADOS -->
+<div class="card">
+  <div class="card-selecionados">
+    <p class="lista-label">Indicadores Selecionados</p>
+
+    <p class="text-muted" *ngIf="indicadoresSelecionados.length === 0">
+      Nenhum indicador selecionado.
+    </p>
+
+    <div class="indicador-selecionado" *ngFor="let item of indicadoresSelecionados">
+      {{ item.nome }}
     </div>
-</ng-template>
+  </div>
+</div>
