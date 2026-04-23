@@ -116,8 +116,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
   public equipeCaptacao: IEquipe[] = [];
 
-  public nomeUsuario : string;
-  public lotacaoPrioritariaUsuario: string;
+  public nomeUsuario : string = '';
+  public lotacaoPrioritariaUsuario: string = '';
 
 public projetoTooltip: Record<string, string> =
       COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
