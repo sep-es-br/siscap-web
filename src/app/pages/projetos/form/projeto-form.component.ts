@@ -962,7 +962,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         Validators.required,
       ),
       equipeElaboracao: this.equipeService.construirEquipeFormArray(
-        projetoFormModel?.equipeElaboracao,
+        projetoFormModel?.equipeElaboracao, false
       ),
       nomeResponsavelProponente: this._nnfb.control(
         projetoFormModel?.nomeResponsavelProponente ?? null,

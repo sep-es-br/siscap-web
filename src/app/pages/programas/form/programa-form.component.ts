@@ -116,7 +116,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
   public equipeCaptacao: IEquipe[] = [];
 
-  public projetoTooltip: Record<string, string> =
+  public nomeUsuario : string;
+  public lotacaoPrioritariaUsuario: string;
+
+public projetoTooltip: Record<string, string> =
       COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
@@ -216,6 +219,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.tiposPapelOpcoesVisiveis = tiposPapelOpcoes.filter((papel) =>
           idsPermitidos.includes(papel.id)
         );
+
+        this.nomeUsuario = this._usuarioService.usuarioPerfil.nome;
+        this.lotacaoPrioritariaUsuario = this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
 
 
         this._programasService.idPrograma$.pipe(
@@ -821,7 +827,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.config = {
       titulo: 'Solicitar Autorização',
       headerCustomClass: 'bg-success-subtle',
-      textoPrincipal: 'Essa ação enviará email aos gestores para autorização do programa.',
+      textoPrincipal: 'Esta ação solicitará por e-mail autorização para o programa aos gestores',
     };
 
     modalRef.result.then(
@@ -872,7 +878,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       titulo: 'Autuar Programa',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal:
-        'Esta ação irá autuar um processo no E-Docs para o programa ' + this.programaAtual.titulo,
+        'Esta ação realizará a autuação de um processo no E-Docs para o programa de captação' +
+        `${this.programaAtual.titulo}, utilizando a sua identidade ${ this.nomeUsuario }(${ this.lotacaoPrioritariaUsuario })` ,
       textoPrincipalCustomClass: 'fw-bold',
     };
 

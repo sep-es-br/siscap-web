@@ -1183,10 +1183,9 @@
 
   <div class="modal-body">
     <p>
-      Esta ação realizará automaticamente os seguintes procedimentos no E-Docs,
-      utilizando a sua identidade - {{ nomeUsuario }} ({{
-        lotacaoPrioritariaUsuario
-      }}):
+      Esta ação realizará no E-Docs a assinatura do DIC e a autuação do processo
+      de elegibilidade do projeto, utilizando a sua identidade -
+       {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }})
     </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
@@ -1619,18 +1618,18 @@
 <ng-template #efetivarParecerProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      {{ isParecerGeoc ? "Concluir parecer" : "Enviar Parecer" }}
+      {{ isParecerGeoc ? "Concluir Parecer" : "Enviar Parecer" }}
     </h4>
   </div>
   <div class="modal-body">
     <p *ngIf="!isParecerGeoc; else geocAviso">
-      Essa ação confirmará a captura e assinatura no e-Docs usando a sua
-      identidade - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}). Após
-      isso, o parecer não poderá mais ser editado.
+      Esta ação realizará a captura e assinatura do parecer no E-Docs,
+      usando a sua identidade - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
+      Após isso, o parecer não poderá mais ser editado
     </p>
     <ng-template #geocAviso>
       <p>
-        Esta ação concluirá o DIC definindo sua elegibilidade e assinando e
+        Esta ação definirá a elegibilidade do DIC, assinando e
         capturando o parecer no E-Docs usando sua identidade -
         {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}). Após isso, o
         processo {{ processoEdocsProtocolo }} será encerrado no E-Docs.
@@ -1776,7 +1775,7 @@
   </div>
   <div class="modal-body">
     <p>
-      Esta ação efetuará o entranhamento dos pareceres orçamentário e
+      Esta ação realizará o entranhamento dos pareceres orçamentário e
       estratégico ao processo {{ processoEdocsProtocolo }} utilizando a sua
       identidade - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
     </p>

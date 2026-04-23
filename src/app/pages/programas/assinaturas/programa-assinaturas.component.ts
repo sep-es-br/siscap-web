@@ -223,7 +223,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
     });
 
     modalRef.componentInstance.config = {
-      titulo: 'Confirmar assinatura',
+      titulo: 'Assinar',
       textoPrincipal:
         'Sua confirmação autorizará o início dos procedimentos de captação de recursos deste programa.',
     };
@@ -248,9 +248,9 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
               .subscribe({
                 next: (res) => {
                   modalRef.close();
-  
+
                   this.dispararModalPollingPrograma();
-  
+
                   this.appStatus = AppStatus.SUCCESS;
                 },
                 error: (err) => {
@@ -398,7 +398,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
     }
 
     modalRef.componentInstance.config = {
-      titulo: 'Recusar assinatura',
+      titulo: 'Não Autorizo',
       textoPrincipal,
     };
 
