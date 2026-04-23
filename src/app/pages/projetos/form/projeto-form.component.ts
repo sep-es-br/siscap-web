@@ -884,8 +884,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           membro.subPessoa === event.agentePublicoSub &&
           membro.idStatus === TipoStatusEnum.Ativo,
       ) ||
-      event.agentePublicoSub === subResponsavelProponente.value ||
-      this._usuarioService.usuarioPerfil.subNovo === event.agentePublicoSub;
+      event.agentePublicoSub === subResponsavelProponente.value;
 
     if (jaExiste) {
       this._toastService.showToast('info', 'Pessoa já incluso na equipe');
