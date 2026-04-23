@@ -46,6 +46,8 @@ export class EquipeFormComponent implements OnDestroy {
 
   @Input() public statusProjeto: string = '';
 
+  @Input() public subProponente: string = '';
+
   public TipoStatusEnum = TipoStatusEnum;
 
   public isProponente: boolean = false;
@@ -65,7 +67,7 @@ export class EquipeFormComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.equipeService.equipeFormArray.clear();
   }
-  
+
   public getMembroNome(subPessoa: string | null | undefined): string {
     const nomePadrao = this.pessoasOpcoesGoves.find(p => p.agentePublicoSub === subPessoa)?.nome;
     if (!nomePadrao) {
@@ -108,7 +110,7 @@ export class EquipeFormComponent implements OnDestroy {
   }
 
   public removerMembroDaEquipe(index: number): void {
-    
+
     this.equipeService.construirExcluirMembroForm();
 
     const membroFormGroup = this.equipeService.equipeFormArray.at(index);
