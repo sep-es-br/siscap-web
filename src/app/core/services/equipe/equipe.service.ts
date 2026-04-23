@@ -94,7 +94,7 @@ export class EquipeService {
         const novoMembro: EquipeModel = {
           subPessoa: this._usuarioService.usuarioPerfil.subNovo,
           idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
-          idPapel: TipoPapelEnum.Gerente_de_Projeto,
+          idPapel: null,
           idStatus: TipoStatusEnum.Ativo,
           justificativa: null,
           nome: this._usuarioService.usuarioPerfil.nome,

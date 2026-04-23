@@ -883,8 +883,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         (membro) =>
           membro.subPessoa === event.agentePublicoSub &&
           membro.idStatus === TipoStatusEnum.Ativo,
-      ) ||
-      event.agentePublicoSub === subResponsavelProponente.value;
+      )
 
     if (jaExiste) {
       this._toastService.showToast('info', 'Pessoa já incluso na equipe');
@@ -961,7 +960,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         Validators.required,
       ),
       equipeElaboracao: this.equipeService.construirEquipeFormArray(
-        projetoFormModel?.equipeElaboracao, false
+        projetoFormModel?.equipeElaboracao
       ),
       nomeResponsavelProponente: this._nnfb.control(
         projetoFormModel?.nomeResponsavelProponente ?? null,
