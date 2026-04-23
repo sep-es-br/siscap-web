@@ -875,10 +875,10 @@ public projetoTooltip: Record<string, string> =
     });
 
     modalRef.componentInstance.config = {
-      titulo: 'Autuar Programa',
+      titulo: 'Autuar',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal:
-        'Esta ação realizará a autuação de um processo no E-Docs para o programa de captação' +
+        'Esta ação realizará a autuação de um processo no E-Docs para o programa de captação ' +
         `${this.programaAtual.titulo}, utilizando a sua identidade ${ this.nomeUsuario }(${ this.lotacaoPrioritariaUsuario })` ,
       textoPrincipalCustomClass: 'fw-bold',
     };
