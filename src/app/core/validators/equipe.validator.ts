@@ -17,7 +17,7 @@ function equipeValidator_MembroEquipeSemPapel(
     return false;
   }
 
-  return equipeControls.filter(m => m.getRawValue().idStatus !== TipoStatusEnum.Excluido).some(
+  return equipeControls.filter(m => m.getRawValue().idStatus == TipoStatusEnum.Ativo).some(
     (membroFormGroup) => !membroFormGroup.controls.idPapel.value
   );
 }
