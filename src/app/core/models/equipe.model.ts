@@ -3,7 +3,7 @@ import { IEquipe } from '../interfaces/equipe.interface';
 export class EquipeModel implements IEquipe {
   public subPessoa: string | null = null;
   public idPessoa: number = 0;
-  public idPapel: number = 0;
+  public idPapel: number | null = 0;
   public idStatus: number = 0;
   public justificativa: string | null = null;
   public nome: string | null;
