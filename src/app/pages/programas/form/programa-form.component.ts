@@ -827,7 +827,7 @@ public projetoTooltip: Record<string, string> =
     modalRef.componentInstance.config = {
       titulo: 'Solicitar Autorização',
       headerCustomClass: 'bg-success-subtle',
-      textoPrincipal: 'Esta ação solicitará por e-mail autorização para o programa aos gestores',
+      textoPrincipal: 'Esta ação solicitará por email autorização para o programa aos gestores',
     };
 
     modalRef.result.then(
