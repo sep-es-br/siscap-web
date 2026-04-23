@@ -255,6 +255,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   accordionCollapsed = true;
   isMobile = window.innerWidth < 1200;
+  subUsuario = '';
 
   @HostListener('window:resize')
   onResize() {
@@ -407,6 +408,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.nomeUsuario = this._usuarioService.usuarioPerfil.nome;
           this.lotacaoPrioritariaUsuario =
             this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
+          this.subUsuario = this._usuarioService.usuarioPerfil.subNovo;
 
           const caminhoFeliz = [
             StatusProjetoEnum.Em_Elaboracao,
