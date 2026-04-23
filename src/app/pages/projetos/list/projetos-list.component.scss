@@ -28,4 +28,10 @@
 
 button {
   all: unset;
+
+  &:disabled, &:disabled * {
+    visibility: hidden;
+  }
 }
+
+

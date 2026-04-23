@@ -17,7 +17,7 @@ function equipeValidator_MembroEquipeSemPapel(
     return false;
   }
 
-  return equipeControls.some(
+  return equipeControls.filter(m => m.getRawValue().idStatus == TipoStatusEnum.Ativo).some(
     (membroFormGroup) => !membroFormGroup.controls.idPapel.value
   );
 }
@@ -28,6 +28,7 @@ export function equipeValidator(): ValidatorFn {
       control as FormArray<FormGroup<EquipeFormType>>;
 
     if (equipeValidator_MembroEquipeSemPapel(equipeFormArray.controls)) {
+      console.log(equipeFormArray.controls);
       return { membroEquipeSemPapel: true };
     }
 

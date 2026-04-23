@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import {
   IPrograma,
@@ -30,7 +30,7 @@ import {
   templateUrl: './programa-assinaturas.component.html',
   styleUrl: './programa-assinaturas.component.scss',
 })
-export class ProgramaAssinaturasComponent {
+export class ProgramaAssinaturasComponent implements OnDestroy {
   appStatus: AppStatus = AppStatus.LOADING;
 
   programaAtual!: IProgramaAssinaturasForm;
@@ -56,13 +56,19 @@ export class ProgramaAssinaturasComponent {
 
   assinaturaPropria: boolean = false;
 
+  get botaoDeAssinarDeveEstarDesabilitado(): boolean {
+    // Desativa o botão de Assinar pro usuário caso algum outro assinante tenha recusado o Programa
+    return this.programaAtual.demaisAssinaturas.some((ass) => ass.statusAssinatura === StatusAssinaturaPrograma.RECUSADO);
+  }
+
   constructor(
     private route: ActivatedRoute,
     private _programasService: ProgramasService,
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _usuarioService: UsuarioService,
     private readonly _ngbModalService: NgbModal,
-    private readonly _toastService: ToastService
+    private readonly _toastService: ToastService,
+    private readonly _router: Router,
   ) {
     this.appStatus = AppStatus.LOADING;
 
@@ -156,6 +162,10 @@ export class ProgramaAssinaturasComponent {
     }
   }
 
+  ngOnDestroy(): void {
+    this._programasService.idPrograma$.next(0);
+  }
+
   atualizarAssinaturas(programa: IPrograma) {
     // Função chamada no início da execução do componente, e após realizar uma assinatura
 
@@ -213,7 +223,7 @@ export class ProgramaAssinaturasComponent {
     });
 
     modalRef.componentInstance.config = {
-      titulo: 'Confirmar assinatura',
+      titulo: 'Assinar',
       textoPrincipal:
         'Sua confirmação autorizará o início dos procedimentos de captação de recursos deste programa.',
     };
@@ -224,30 +234,38 @@ export class ProgramaAssinaturasComponent {
         if (result === 'confirmar') {
           this.appStatus = AppStatus.LOADING;
 
-          this._programasService
-            .assinarAutorizacaoPrograma(
-              this.programaAtual.id,
-              this.usuarioAtual.subNovo
-            )
-            .subscribe({
-              next: (res) => {
-                modalRef.close();
+          if (this.programaAtual.demaisAssinaturas.some((ass) => ass.statusAssinatura === StatusAssinaturaPrograma.RECUSADO)) {
+            // Verificação extra para garantir que o usuário não tente assinar um Programa que já foi recusado por outra pessoa
+            this._toastService.showToast(
+              'error',
+              'Impossível assinar o Programa pois um dos assinantes já o Recusou',
+            );
+          } else {
+            this._programasService
+              .assinarAutorizacaoPrograma(
+                this.programaAtual.id
+              )
+              .subscribe({
+                next: (res) => {
+                  modalRef.close();
 
-                this.dispararModalPollingPrograma();
+                  this.dispararModalPollingPrograma();
 
-                this.appStatus = AppStatus.SUCCESS;
+                  this.appStatus = AppStatus.SUCCESS;
+                },
+                error: (err) => {
+                  console.error(
+                    'Ocorreu um erro ao tentar assinar o programa!\n',
+                    err
+                  );
+                  this._toastService.showToast(
+                    'error',
+                    'Ocorreu um erro ao tentar assinar o Programa!'
+                  );
+                  this.appStatus = AppStatus.ERROR;
               },
-              error: (err) => {
-                console.error(
-                  'Ocorreu um erro ao tentar assinar o programa!\n',
-                  err
-                );
-                this._toastService.showToast(
-                  'error',
-                  'Ocorreu um erro ao tentar assinar o Programa!'
-                );
-              },
-            });
+              });
+          }
         }
       }
     );
@@ -363,5 +381,63 @@ export class ProgramaAssinaturasComponent {
             });
         },
       });
+  }
+
+  dispararModalRecusarAutorizacao() {
+    const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
+      centered: true,
+    });
+
+    let textoPrincipal = 'Sua recusa a assinar esse Programa o impossibilitará de ser Autuado.';
+
+    if (
+      this.programaAtual.assinaturaUsuarioAtual &&
+      this.programaAtual.assinaturaUsuarioAtual.textoAssinanteRecusa
+    ) {
+      textoPrincipal = this.programaAtual.assinaturaUsuarioAtual.textoAssinanteRecusa;
+    }
+
+    modalRef.componentInstance.config = {
+      titulo: 'Não Autorizo',
+      textoPrincipal,
+    };
+
+    modalRef.result.then(
+      (resolve) => { },
+      (result) => {
+        if (result === 'confirmar') {
+          this.appStatus = AppStatus.LOADING;
+
+          this._programasService.recusarAutorizacaoPrograma(this.programaAtual.id, this.usuarioAtual.subNovo).subscribe({
+            next: () => {
+              const assinaturaUsuario = this.programaAtual.programaAssinantesEdocsDto?.find((ass) => ass.idPessoa === this.usuarioAtual.idPessoa);
+              if (assinaturaUsuario) {
+                assinaturaUsuario.statusAssinatura = StatusAssinaturaPrograma.RECUSADO;
+                this.atualizarAssinaturas(this.programaAtual);
+              }
+
+              modalRef.close();
+              this.appStatus = AppStatus.SUCCESS;
+
+              this._toastService.showToast(
+                'success',
+                'Recusa registrada com sucesso',
+              );
+            },
+            error: (err) => {
+              console.error('Ocorreu um erro ao tentar recusar a assinatura do Programa!\n', err);
+              this._toastService.showToast(
+                'error',
+                'Ocorreu um erro ao tentar recusar a assinatura do Programa!',
+              );
+            }
+          });
+        }
+      }
+    );
+  }
+
+  voltarParaLista() {
+    this._router.navigateByUrl('/main/programas');
   }
 }

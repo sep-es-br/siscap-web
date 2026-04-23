@@ -9,6 +9,7 @@ export interface IProjetoPropostoOpcoesDropdown extends IOpcoesDropdown {
   valorEstimado: number;
   idPrograma: number | null;
   parecerGEOCEnviado: boolean;
+  idOrganizacao : number | undefined;
 
 }
 

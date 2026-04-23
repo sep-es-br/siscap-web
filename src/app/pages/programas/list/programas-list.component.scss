@@ -36,3 +36,21 @@ button.accordion-button {
     background: none;
   }
 }
+
+.acoes-botoes {
+  gap: 1rem;
+  .botao-assinaturas {
+    &.disabled {
+      border: none;
+      color: #CCC;
+    }
+  }
+
+  button {
+    all: unset;
+
+    &:disabled, &:disabled * {
+      visibility: hidden;
+    }
+  }
+}

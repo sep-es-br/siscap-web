@@ -88,19 +88,19 @@ export class EquipeService {
         equipeFormArray.push(this.construirMembroFormGroup(membro));
       });
     } else {
-    
+
       if (exibirRedator){
-        
+
         const novoMembro: EquipeModel = {
           subPessoa: this._usuarioService.usuarioPerfil.subNovo,
           idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
-          idPapel: TipoPapelEnum.Redator,
+          idPapel: null,
           idStatus: TipoStatusEnum.Ativo,
           justificativa: null,
           nome: this._usuarioService.usuarioPerfil.nome,
           papelNome: 'Elaborador'
         };
-        
+
         equipeFormArray.push(this.construirMembroFormGroup(novoMembro));
 
       }

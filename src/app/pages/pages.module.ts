@@ -21,6 +21,7 @@ import { HomeComponent } from '../pages/home/home.component';
 import { DashboardComponent } from './home/dashboard/dashboard.component';
 
 import { PagesRoutingModule } from './pages-routing.module';
+import { TimelineModule } from 'primeng/timeline';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,7 @@ import { PagesRoutingModule } from './pages-routing.module';
     NgbDropdownModule,
     NgbPaginationModule,
     NgbTooltipModule,
-    PagesRoutingModule,
+    PagesRoutingModule
   ],
   providers: [provideNgxMask()],
   exports: [

@@ -56,7 +56,7 @@ export const pollingEtapasConfig: Array<{
   { etapa: PollingEtapas.DESPACHAR_PROCESSO, descricao: 'Despachar Processo' },
   { etapa: PollingEtapas.AVOCAR, descricao: 'Avocar' },
   { etapa: PollingEtapas.DESENTRANHAR, descricao: 'Desentranhar' },
-  { etapa: PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, descricao: 'Solicitação de Assinaturas Pendente' },
+  { etapa: PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, descricao: 'Assinaturas Solicitadas' },
   { etapa: PollingEtapas.ASSINADO, descricao: 'Assinatura confirmada' },
   { etapa: PollingEtapas.ERRO_FASE, descricao: 'Ocorreu um erro' },
 ];

@@ -17,17 +17,20 @@ import { ProjetoFormComponent } from './form/projeto-form.component';
 
 import { SharedModule } from '../../shared/shared.module';
 import { ProjetosRoutingModule } from './projetos-routing.module';
-import { ProjetosPesquisaComponent } from './search/projetos-search.component';
-import { IndicadoresFormComponent } from "../../shared/components/indicadores-form/indicadores-form.component";
+import { ProjetosSearchComponent } from './search/projetos-search.component';
+import { IndicadoresFormComponent } from '../../shared/components/indicadores-form/indicadores-form.component';
 import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-form.component';
 import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.component';
+import { TimelineModule } from 'primeng/timeline';
+import { TooltipModule } from 'primeng/tooltip';
+import { ProgressoButtonComponent } from '../../shared/components/progresso-button/progresso-button.component';
 
 @NgModule({
   declarations: [
     ProjetosComponent,
     ProjetosListComponent,
     ProjetoFormComponent,
-    ProjetosPesquisaComponent,
+    ProjetosSearchComponent,
   ],
   imports: [
     CommonModule,
@@ -46,13 +49,17 @@ import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.compo
     ReactiveFormsModule,
     NgbAccordionModule,
     ReactiveFormsModule,
-    ProjetoParecerComponent
-],
+    ProjetoParecerComponent,
+    TimelineModule,
+    TooltipModule,
+    ProgressoButtonComponent
+  ],
   exports: [
     ProjetosComponent,
     ProjetosListComponent,
     ProjetoFormComponent,
-    ProjetosPesquisaComponent,
+    ProjetosSearchComponent
+
   ],
 })
 export class ProjetosModule {}

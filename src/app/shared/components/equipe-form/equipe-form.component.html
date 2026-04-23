@@ -9,7 +9,7 @@
       <div [hidden]="isMembroRemovido(i)" class="col-12 col-sm-6">
         <div class="card">
           <form [formGroup]="membroFormGroup">
-            <div 
+            <div
               class="card-body p-2 col-12 d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-center">
               <div class="col-12 col-lg pb-2 pb-lg-0 d-inline-flex justify-content-center justify-content-md-start" >
                 <span class="nome-membro">{{ membroFormGroup.value.nome }}</span>
@@ -21,16 +21,18 @@
                     id="papelSelect"
                     class="papel-select"
                     placeholder="-- Papel do membro --"
-                    [readonly]="isMembroRemovido(i) || isMembroRedator(i)"
+                    [readonly]="isMembroRemovido(i) || !isModoEdicao"
                     [clearable]="false"
-                    formControlName="idPapel" >
-                    <ng-option
-                      *ngFor="let tipoPapel of tiposPapelOpcoes"
-                      [value]="tipoPapel.id"
-                      [disabled]="papelDeveEstarDesabilitado(tipoPapel, i)"
-                    >
-                      {{ tipoPapel.nome }}
-                    </ng-option>
+                    formControlName="idPapel"
+                  >
+                    @for (tipoPapel of tiposPapelOpcoes; track tipoPapel) {
+                      <ng-option
+                        [value]="tipoPapel.id"
+                        [disabled]="papelDeveEstarDesabilitado(tipoPapel, i)"
+                      >
+                        {{ tipoPapel.nome }}
+                      </ng-option>
+                    }
                     <ng-template ng-label-tmp let-item="item">
                       {{ getPapelNome(item) }}
                     </ng-template>
@@ -41,8 +43,9 @@
                     type="button"
                     ngbTooltip="Excluir membro da equipe"
                     class="btn btn-outline-danger rounded-circle"
-                    [disabled]="desabilitarCampo(i)"
-                    (click)="removerMembroDaEquipe(i)">
+                    [disabled]="!isModoEdicao || membroFormGroup.getRawValue().subPessoa == subProponente"
+                    (click)="removerMembroDaEquipe(i)"
+                  >
                     <i class="fa-solid fa-close delete-btn-icon"></i>
                   </button>
                 </div>

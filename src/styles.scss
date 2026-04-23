@@ -18,6 +18,8 @@
 @import "./assets/plugins/keenicons/outline/style.css";
 @import "./assets/plugins/keenicons/solid/style.css";
 
+@import "primeicons/primeicons.css";
+
 /* Estilo global do componente QuillEditorComponente (ngx-quill) */
 
 quill-editor {
@@ -79,6 +81,7 @@ th {
 td {
   font-size: $small-3-font-size;
   vertical-align: middle;
+  min-height: 2.3125rem
 }
 
 /* Estilos de formulários */

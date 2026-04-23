@@ -122,7 +122,6 @@ export class ProjetosComponent implements OnInit, OnDestroy {
       .pipe(
         tap((response) => {
           this._projetosList$.next(response.content);
-
           this.paginacaoDados = {
             paginaAtual: response.pageable.pageNumber + 1,
             itensPorPagina: response.pageable.pageSize,

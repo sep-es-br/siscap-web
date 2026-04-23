@@ -3,8 +3,18 @@
     <loading-spinner></loading-spinner>
   </div>
 } @else {
-  <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-outline-primary icon-text-btn" (click)="exportarPrograma()">
+  <div class="d-flex flex-column flex-sm-row justify-content-end mb-3">
+    <button
+      class="btn btn-outline-danger icon-text-btn col-12 col-sm-3 mb-2 mb-sm-0 me-sm-2"
+      (click)="voltarParaLista()"
+    >
+      <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
+      <span>Voltar</span>
+    </button>
+    <button
+      class="btn btn-outline-primary icon-text-btn col-12 col-sm-3"
+      (click)="exportarPrograma()"
+    >
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Baixar Programa</span>
     </button>
@@ -68,10 +78,20 @@
                   Assinando
                 </span>
               } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1) {
-                <button class="btn btn-success icon-text-btn text-nowrap w-25 p-2" (click)="dispararModalConfirmarAssinatura()">
-                  <i class="fa-solid fa-pencil"></i>
-                  <span>Assinar</span>
-                </button>
+                <div class="d-flex flex-column flex-md-row align-items-center justify-content-center w-100 acoes-assinatura">
+                  <button class="botao-recusar btn btn-danger icon-text-btn text-nowrap p-2 mb-2 mb-md-0 me-md-1" (click)="dispararModalRecusarAutorizacao()">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span>Não Autorizo</span>
+                  </button>
+                  <button
+                    class="botao-assinar btn btn-success icon-text-btn text-nowrap p-2 ms-md-1"
+                    [disabled]="botaoDeAssinarDeveEstarDesabilitado"
+                    (click)="dispararModalConfirmarAssinatura()"
+                  >
+                    <i class="fa-solid fa-pen-fancy"></i>
+                    <span>Assinar</span>
+                  </button>
+                </div>
               } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 2) {
                 <span>
                   <i class="status-assinatura check-icon fa-solid fa-check"></i>
@@ -80,6 +100,11 @@
                 @if (programaAtual.assinaturaUsuarioAtual.dataAssinatura) {
                   <span class="data-assinatura">{{ programaAtual.assinaturaUsuarioAtual.dataAssinatura | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
                 }
+              } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 4) {
+                <span>
+                  <i class="status-assinatura refused-icon fa-solid fa-xmark"></i>
+                  Recusado
+                </span>
               }
             </div>
           </div>
@@ -91,11 +116,11 @@
         <div class="d-flex flex-wrap">
           @if (appStatus === 'Success' && programaAtual.demaisAssinaturas.length > 0) {
             @for (assinatura of programaAtual.demaisAssinaturas; track assinatura) {
-              <div class="assinatura-wrap col-12 col-sm-6 d-flex">
+              <div class="assinatura-wrap col-12 col-md-6 d-flex">
                 <div class="assinatura-box w-100 d-flex align-items-center p-4">
                   <div class="col-6 d-flex flex-column align-items-center">
                     <span class="nome-assinante">{{ assinatura.nomeAssinante }}</span>
-                    <span class="cargo-assinante">{{ assinatura.papelAssinante }}</span>
+                    <span class="cargo-assinante text-center">{{ assinatura.papelAssinante }}</span>
                   </div>
                   <div class="col-6 d-flex flex-column align-items-center">
                     @if (assinatura.statusAssinatura === 2) {
@@ -103,13 +128,18 @@
                         <i class="status-assinatura check-icon fa-solid fa-check"></i>
                         Assinado
                       </span>
+                    } @else if (assinatura.statusAssinatura === 4) {
+                      <span>
+                        <i class="status-assinatura refused-icon fa-solid fa-xmark"></i>
+                        Recusado
+                      </span>
                     } @else {
                       <span>
                         <i class="status-assinatura pending-icon fa-regular fa-clock"></i>
                         Pendente
                       </span>
                     }
-    
+
                     @if (assinatura.dataAssinatura) {
                       <span class="data-assinatura">{{ assinatura.dataAssinatura | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
                     }

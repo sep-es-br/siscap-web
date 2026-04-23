@@ -12,6 +12,7 @@ import { AcaoModel } from './acao.model';
 import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from '../interfaces/estrutura.campo.complementar.dic.interface';
 import { IParecer } from '../interfaces/parecer.interface';
 import { LotacaoUsuarioEnum } from '../enums/lotacao-usuario.enum';
+import { IStatusProjeto } from '../interfaces/status-projeto.interface';
 
 export class ProjetoFormModel implements IProjetoForm {
   public sigla: string;
@@ -52,6 +53,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public pareceresProjeto: Array<IParecer>;
   public subProponente: string;
   public nomeProponente: string;
+  public historico: Array<IStatusProjeto>;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -98,6 +100,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.pareceresProjeto = projetoForm?.pareceresProjeto ?? [];
     this.subProponente = projetoForm?.subProponente ?? '';
     this.nomeProponente = projetoForm?.nomeProponente ?? '';
+    this.historico = new Array();
   }
 
   private construirRateioModelArray(
@@ -148,5 +151,6 @@ export class ProjetoModel extends ProjetoFormModel implements IProjeto {
     this.id = projeto?.id ?? 0;
     this.idStatus = projeto?.idStatus ?? 0;
     this.status = projeto?.status ?? '';
+    this.historico = projeto?.historico ?? [];
   }
 }

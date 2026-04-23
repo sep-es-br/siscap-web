@@ -5,9 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
-  NgbAlertModule,
-  NgbPaginationModule,
-  NgbTooltipModule,
+    NgbAccordionBody, NgbAccordionButton, NgbAccordionCollapse, NgbAccordionDirective, NgbAccordionHeader,
+    NgbAccordionItem,
+    NgbAlertModule,
+    NgbPaginationModule,
+    NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { SharedModule } from '../../shared/shared.module';
@@ -19,6 +21,11 @@ import { ProgramasListComponent } from './list/programas-list.component';
 import { ProgramasRoutingModule } from './programas-routing.module';
 import { ProgramaAssinaturasComponent } from './assinaturas/programa-assinaturas.component';
 import { OrgaosPapeisFormComponent } from '../../shared/components/orgaos-papeis-form/orgaos-papeis-form.component';
+import { NomeStatusProgramaPipe } from '../../shared/pipes/programa-status/programa-status.pipe';
+import { ProgramasSearchComponent } from './search/programas-search.component';
+import { TooltipModule } from 'primeng/tooltip';
+import { TimelineModule } from 'primeng/timeline';
+import { ProgressoButtonComponent } from '../../shared/components/progresso-button/progresso-button.component';
 
 @NgModule({
   declarations: [
@@ -26,26 +33,38 @@ import { OrgaosPapeisFormComponent } from '../../shared/components/orgaos-papeis
     ProgramasListComponent,
     ProgramaFormComponent,
     ProgramaAssinaturasComponent,
+    ProgramasSearchComponent,
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    NgSelectModule,
-    NgxMaskDirective,
-    NgxMaskPipe,
-    NgbPaginationModule,
-    NgbAlertModule,
-    NgbTooltipModule,
-    ProgramasRoutingModule,
-    OrgaosPapeisFormComponent,
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SharedModule,
+        NgSelectModule,
+        NgxMaskDirective,
+        NgxMaskPipe,
+        NgbPaginationModule,
+        NgbAlertModule,
+        NgbTooltipModule,
+        ProgramasRoutingModule,
+        OrgaosPapeisFormComponent,
+        NomeStatusProgramaPipe,
+        TimelineModule,
+        TooltipModule,
+        NgbAccordionBody,
+        NgbAccordionButton,
+        NgbAccordionCollapse,
+        NgbAccordionDirective,
+        NgbAccordionHeader,
+        NgbAccordionItem,
+        ProgressoButtonComponent
+    ],
   exports: [
     ProgramasComponent,
     ProgramasListComponent,
     ProgramaFormComponent,
     ProgramaAssinaturasComponent,
+    ProgramasSearchComponent,
   ],
 })
 export class ProgramasModule {}
