@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import {
@@ -119,6 +119,9 @@ export class EquipeFormComponent implements OnDestroy {
       membroFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Excluido);
     else
       membroFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Inativo);
+
+    membroFormGroup.get('idPapel')?.removeValidators(Validators.required);
+    membroFormGroup.get('idPapel')?.updateValueAndValidity();
 
     this._toastService.showToast(
       'info',
