@@ -34,10 +34,13 @@
 
         <div class="indicador-item" *ngFor="let indicador of indicadoresFiltrados">
           <label class="indicador-label">
-            <p-checkbox [binary]="true" [ngModel]="isSelecionado(indicador)"
-              (ngModelChange)="toggleIndicador(indicador)">
+            <p-checkbox 
+              [binary]="true" 
+              [ngModel]="isSelecionado(indicador)"
+              (ngModelChange)="toggleIndicador(indicador)"
+              [ngModelOptions]="{ standalone: true }">
             </p-checkbox>
-            <span>{{ indicador.nome }}</span>
+            <span>{{ indicador.nomeIndicador }}</span>
           </label>
         </div>
 

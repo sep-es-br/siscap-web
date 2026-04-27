@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FiltroIndicadoresComponent } from "./filtro-indicadores/filtro-indicadores.component";
@@ -11,6 +11,9 @@ import { FilterService } from '../../core/services/filter-service/filter-service
 import { CheckboxModule } from 'primeng/checkbox';
 import { IndicadorChipComponent } from './indicador-chip/indicador-chip.component';
 import { SelecaoIndicadoresComponent } from './selecao-indicadores/selecao-indicadores.component';
+import { CatalogoIndicadorService } from '../../core/services/catalogo-indicadores/catalogo-indicador.service';
+import { switchMap, tap } from 'rxjs';
+import { IGestoesCatalogoExterno } from '../../core/interfaces/indicadores-catalogo-externo.interface';
 
 @Component({
   selector: 'siscap-projeto-indicadores',
@@ -32,7 +35,10 @@ import { SelecaoIndicadoresComponent } from './selecao-indicadores/selecao-indic
 })
 export class ProjetoIndicadoresComponent implements OnInit {
 
-  constructor(private filterService: FilterService) { }
+  constructor(private filterService: FilterService,
+    private catalogoIndicadorService: CatalogoIndicadorService,
+    private fb: FormBuilder
+  ) { }
 
   @Input() form!: FormGroup;
   @Input() isModoEdicao: boolean = false;
@@ -42,7 +48,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   indicadores: any[] = [];
   indicadoresFiltrados: any[] = [];
   indicadoresSelecionados: any[] = [];
-  gestao: any;
+  gestao: IGestoesCatalogoExterno | null = null;
 
   filtroTexto: string = '';
   filtrosAplicados: any[] = [];
@@ -62,60 +68,55 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   private init(): void {
+    
     this.loading = true;
 
-    // this.indicadorService.getGestaoAdministrativa()
-    //   .pipe(
-    //     tap(gestao => {
-    //       this.gestao = gestao;
-    //       this.initBaseChip();
-    //     }),
-    //     switchMap(gestao =>
-    //       this.indicadorService.getIndicadoresPorGestao(gestao.id)
-    //     )
-    //   )
-    //   .subscribe({
-    //     next: (indicadores) => {
-    //       this.indicadores = indicadores;
-    //       this.indicadoresFiltrados = indicadores;
-    //       this.syncComFormulario();
-    //     },
-    //     error: (err) => {
-    //       console.error('Erro ao carregar dados', err);
-    //     },
-    //     complete: () => {
-    //       this.loading = false;
-    //     }
-    //   });
+    this.catalogoIndicadorService.getGestoesIndicadoresCatalogoExternos()
+      .pipe(
+        tap( gestao => {
+          this.gestao = gestao[0];
+          this.initBaseChip();
+        }),
+        switchMap(gestao =>
+          this.catalogoIndicadorService.getIndicadoresPorGestaoCatalogoExternos(gestao[0].idGestao)
+        )
+      )
+      .subscribe({
+        next: (indicadores) => {
+          this.indicadores = indicadores;
+          this.indicadoresFiltrados = indicadores;
+          this.syncComFormulario();
+        },
+        error: (err) => {
+          console.error('Erro ao carregar dados', err);
+        },
+        complete: () => {
+          this.loading = false;
+        }
+      });
 
   }
 
-  carregarIndicadores(): void {
+  // carregarIndicadores(): void {
+  //   this.loading = true;
+  //   // // Simulation of data to match the image requirements
+  //   // this.indicadores = [
+  //   //   { id: 1, nome: 'NÚMERO DE MATRÍCULAS EM EDUCAÇÃO PROFISSIONAL' },
+  //   //   { id: 2, nome: 'TAXA DE EVASÃO TÉCNICO' },
+  //   //   { id: 3, nome: 'TAXA DE PROFESSORES EFETIVOS' },
+  //   //   { id: 4, nome: 'ÍNDICE DE EMPREGABILIDADE DE EGRESSOS' },
+  //   //   { id: 5, nome: 'INVESTIMENTO PÚBLICO EM CULTURA' },
+  //   //   { id: 6, nome: 'NÚMERO DE PROJETOS CULTURAIS APOIADOS' }
+  //   // ];
+  //   this.indicadoresFiltrados = this.indicadores;
+  //   this.loading = false;
+  // }
 
-    this.loading = true;
-
-    // // Simulation of data to match the image requirements
-    // this.indicadores = [
-    //   { id: 1, nome: 'NÚMERO DE MATRÍCULAS EM EDUCAÇÃO PROFISSIONAL' },
-    //   { id: 2, nome: 'TAXA DE EVASÃO TÉCNICO' },
-    //   { id: 3, nome: 'TAXA DE PROFESSORES EFETIVOS' },
-    //   { id: 4, nome: 'ÍNDICE DE EMPREGABILIDADE DE EGRESSOS' },
-    //   { id: 5, nome: 'INVESTIMENTO PÚBLICO EM CULTURA' },
-    //   { id: 6, nome: 'NÚMERO DE PROJETOS CULTURAIS APOIADOS' }
-    // ];
-
-    this.indicadoresFiltrados = this.indicadores;
-    this.loading = false;
-
-  }
-
-  carregarGestaoAdministrativa(): void {
-
-    // this.gestao = {
-    //   periodo: '2023-26'
-    // };
-
-  }
+  // carregarGestaoAdministrativa(): void {
+  //   // this.gestao = {
+  //   //   periodo: '2023-26'
+  //   // };
+  // }
 
   filtrarIndicadores(): void {
 
@@ -137,7 +138,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.initBaseChip();
     this.filterService.setFilter({});
   }
-
 
   removerFiltro(filtro: any): void {
     this.filtrosAplicados =
@@ -184,19 +184,33 @@ export class ProjetoIndicadoresComponent implements OnInit {
     }
   }
 
+  // private atualizarFormulario(): void {
+  //   if (!this.form) return;
+
+  //   this.form.get('indicadoresProjeto')?.setValue(
+  //     this.indicadoresSelecionados
+  //   );
+  // }
+
   private atualizarFormulario(): void {
     if (!this.form) return;
-
-    this.form.get('indicadoresProjeto')?.setValue(
-      this.indicadoresSelecionados
-    );
+  
+    const formArray = this.form.get('indicadoresProjeto') as FormArray;
+  
+    // limpa completamente
+    formArray.clear();
+  
+    // recria baseado na seleção
+    this.indicadoresSelecionados.forEach(indicador => {
+      formArray.push(this.fb.control(indicador));
+    });
   }
 
   initBaseChip() {
     this.chips = [
       {
         label: 'GESTÃO ADMINISTRATIVA',
-        value: this.gestao?.periodo || '2023-26',
+        value: this.gestao?.nomeGestao || '-',
         type: 'base',
         removable: false
       }

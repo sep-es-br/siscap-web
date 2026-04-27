@@ -11,14 +11,14 @@ export class CatalogoIndicadorService {
 
   constructor(private http: HttpClient) { }
 
-  private readonly _url = `${environment.apiUrl}/cartas-consulta`;
+  private readonly _url = `${environment.apiUrl}/catalogo-externo`;
 
   /**
    * Lista todas as gestões ativas
    * GET /catalogo-externo/gestao
    */
   getGestoesIndicadoresCatalogoExternos(): Observable<IGestoesCatalogoExterno[]> {
-    return this.http.get<IGestoesCatalogoExterno[]>(`${this._url}/gestao`);
+    return this.http.get<IGestoesCatalogoExterno[]>(`${this._url}/gestoes`);
   }
 
   /**
@@ -27,7 +27,7 @@ export class CatalogoIndicadorService {
    */
   getIndicadoresPorGestaoCatalogoExternos(idGestao: number): Observable<IIndicadoresCatalogoExterno[]> {
     return this.http.get<IIndicadoresCatalogoExterno[]>(
-      `${this._url}/gestao/${idGestao}/indicadores`
+      `${this._url}/gestoes/${idGestao}/indicadores`
     );
   }
 

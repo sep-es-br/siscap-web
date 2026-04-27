@@ -14,8 +14,10 @@ import { InputTextModule } from 'primeng/inputtext';
 export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   private _indicadores: any[] = [];
   @Input() set indicadores(value: any[]) {
+    //console.log('SET INPUT:', value);
     this._indicadores = value || [];
     this.filtrarIndicadores();
+    this.updateSelectAllState();
   }
   get indicadores() {
     return this._indicadores;
@@ -23,7 +25,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
   @Input() selecionados: any[] = [];
   @Input() loading: boolean = false;
-  
+
   @Output() selecionadosChange = new EventEmitter<any[]>();
 
   indicadoresFiltrados: any[] = [];
@@ -32,30 +34,36 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   selectAll: boolean = false;
 
   ngOnInit() {
-    this.indicadoresFiltrados = this.indicadores;
+    //this.indicadoresFiltrados = this.indicadores;
     this.updateSelectAllState();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['indicadores']) {
-      this.filtrarIndicadores();
-    }
-    if (changes['selecionados'] || changes['indicadores']) {
-      this.updateSelectAllState();
-    }
+    // if (changes['indicadores']) {
+    //   this.filtrarIndicadores();
+    // }
+    // if (changes['selecionados'] || changes['indicadores']) {
+    //   this.updateSelectAllState();
+    // }
   }
 
   filtrarIndicadores(): void {
+
+    //console.log('ANTES FILTRO:', this._indicadores);
+
     const termo = this.filtroTexto
       ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       : '';
 
     this.indicadoresFiltrados = this.indicadores.filter(i => {
-      const nomeNormalizado = i.nome?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const nomeNormalizado = i.nomeIndicador?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       return nomeNormalizado?.includes(termo);
     });
 
     this.updateSelectAllState();
+
+    //console.log('DEPOIS FILTRO:', this.indicadoresFiltrados);
+
   }
 
   toggleIndicador(indicador: any): void {
@@ -73,7 +81,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
   toggleSelectAll(event: any): void {
     let novasSelecoes = [...this.selecionados];
-    
+
     if (this.selectAll) {
       const novos = this.indicadoresFiltrados.filter(i => !this.isSelecionado(i));
       novasSelecoes = [...novasSelecoes, ...novos];
@@ -81,7 +89,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
       const idsFiltrados = this.indicadoresFiltrados.map(i => i.id);
       novasSelecoes = novasSelecoes.filter(i => !idsFiltrados.includes(i.id));
     }
-    
+
     this.selecionadosChange.emit(novasSelecoes);
   }
 
@@ -91,6 +99,6 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   isSelecionado(indicador: any): boolean {
-    return (this.selecionados || []).some(i => i.id === indicador.id);
+    return (this.selecionados || []).some(i => i.id === indicador.idIndicador);
   }
 }
