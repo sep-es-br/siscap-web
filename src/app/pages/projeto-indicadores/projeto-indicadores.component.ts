@@ -56,42 +56,69 @@ export class ProjetoIndicadoresComponent implements OnInit {
   ngOnInit(): void {
     this.init();
     this.initBaseChip();
-
     this.filterService.filter$.subscribe(f => {
       if (f) this.currentFilter = f;
     });
   }
 
   private init(): void {
-    this.carregarGestaoAdministrativa();
-    this.carregarIndicadores();
-    this.syncComFormulario();
+    this.loading = true;
+
+    // this.indicadorService.getGestaoAdministrativa()
+    //   .pipe(
+    //     tap(gestao => {
+    //       this.gestao = gestao;
+    //       this.initBaseChip();
+    //     }),
+    //     switchMap(gestao =>
+    //       this.indicadorService.getIndicadoresPorGestao(gestao.id)
+    //     )
+    //   )
+    //   .subscribe({
+    //     next: (indicadores) => {
+    //       this.indicadores = indicadores;
+    //       this.indicadoresFiltrados = indicadores;
+    //       this.syncComFormulario();
+    //     },
+    //     error: (err) => {
+    //       console.error('Erro ao carregar dados', err);
+    //     },
+    //     complete: () => {
+    //       this.loading = false;
+    //     }
+    //   });
+
   }
 
   carregarIndicadores(): void {
+
     this.loading = true;
 
-    // Simulation of data to match the image requirements
-    this.indicadores = [
-      { id: 1, nome: 'NÚMERO DE MATRÍCULAS EM EDUCAÇÃO PROFISSIONAL' },
-      { id: 2, nome: 'TAXA DE EVASÃO TÉCNICO' },
-      { id: 3, nome: 'TAXA DE PROFESSORES EFETIVOS' },
-      { id: 4, nome: 'ÍNDICE DE EMPREGABILIDADE DE EGRESSOS' },
-      { id: 5, nome: 'INVESTIMENTO PÚBLICO EM CULTURA' },
-      { id: 6, nome: 'NÚMERO DE PROJETOS CULTURAIS APOIADOS' }
-    ];
+    // // Simulation of data to match the image requirements
+    // this.indicadores = [
+    //   { id: 1, nome: 'NÚMERO DE MATRÍCULAS EM EDUCAÇÃO PROFISSIONAL' },
+    //   { id: 2, nome: 'TAXA DE EVASÃO TÉCNICO' },
+    //   { id: 3, nome: 'TAXA DE PROFESSORES EFETIVOS' },
+    //   { id: 4, nome: 'ÍNDICE DE EMPREGABILIDADE DE EGRESSOS' },
+    //   { id: 5, nome: 'INVESTIMENTO PÚBLICO EM CULTURA' },
+    //   { id: 6, nome: 'NÚMERO DE PROJETOS CULTURAIS APOIADOS' }
+    // ];
 
     this.indicadoresFiltrados = this.indicadores;
     this.loading = false;
+
   }
 
   carregarGestaoAdministrativa(): void {
-    this.gestao = {
-      periodo: '2023-26'
-    };
+
+    // this.gestao = {
+    //   periodo: '2023-26'
+    // };
+
   }
 
   filtrarIndicadores(): void {
+
     const termo = this.filtroTexto
       ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       : '';
@@ -100,6 +127,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
       const nomeNormalizado = i.nome?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       return nomeNormalizado?.includes(termo);
     });
+
   }
 
   limparFiltros(): void {
