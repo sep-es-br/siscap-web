@@ -3,7 +3,7 @@
 
 <!-- MODAL -->
 <div class="filter-modal show">
-    
+
     <!-- HEADER -->
     <div class="modal-header">
         <h2 class="card-title">Filtros</h2>
@@ -28,13 +28,16 @@
             <ng-container *ngFor="let label of labelsOrdenados">
                 <div class="filter-field">
                     <label class="filter-label">{{ label.nome }}</label>
-                    <p-multiSelect 
-                        [options]="label.valores" 
-                        optionLabel="valor" 
+                    <p-multiSelect
+                        [maxSelectedLabels]="2"
+                        [options]="label.valores"
+                        optionLabel="valor"
                         optionValue="idLabelValor"
-                        [(ngModel)]="filtro.labels[label.idLabel]" 
-                        defaultLabel="Selecionar..." 
-                        display="chip">
+                        [(ngModel)]="filtro.labels[label.idLabel]"
+                        defaultLabel="Selecionar..."
+                        display="chip"
+                        class="w-full"
+                        >
                     </p-multiSelect>
                 </div>
             </ng-container>

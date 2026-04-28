@@ -11,9 +11,12 @@
     </p-button>
   </div>
 
-  <p-dialog header="Filtros" [(visible)]="showModal" [modal]="true" [style]="{ width: '60vw' }" position="center">
-    <app-filtro-indicadores [gestao]="gestao" (apply)="onApply($event)" />
-  </p-dialog>
+  <app-filtro-indicadores
+    *ngIf="showModal"
+    [gestao]="gestao"
+    (apply)="onApply($event)"
+    (close)="showModal = false">
+  </app-filtro-indicadores>
 
 </div>
 

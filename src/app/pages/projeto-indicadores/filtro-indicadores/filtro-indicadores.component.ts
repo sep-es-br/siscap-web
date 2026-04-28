@@ -17,6 +17,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
 })
 export class FiltroIndicadoresComponent implements OnChanges {
   @Output() apply = new EventEmitter<any>();
+  @Output() close = new EventEmitter<void>();
+
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() desafios: any[] = [];
 
@@ -88,7 +90,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   }
 
   fechar() {
-    // fechar modal
+    this.close.emit();
   }
 
 }

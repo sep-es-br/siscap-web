@@ -2,10 +2,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FiltroIndicadoresComponent } from "./filtro-indicadores/filtro-indicadores.component";
+import { FiltroIndicadoresComponent } from './filtro-indicadores/filtro-indicadores.component';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { DialogModule } from 'primeng/dialog';
-import { Button } from "primeng/button";
+import { Button } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
 import { FilterService } from '../../core/services/filter-service/filter-service.service';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -14,6 +14,7 @@ import { SelecaoIndicadoresComponent } from './selecao-indicadores/selecao-indic
 import { CatalogoIndicadorService } from '../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { switchMap, tap } from 'rxjs';
 import { IGestoesCatalogoExterno } from '../../core/interfaces/indicadores-catalogo-externo.interface';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'siscap-projeto-indicadores',
@@ -28,18 +29,12 @@ import { IGestoesCatalogoExterno } from '../../core/interfaces/indicadores-catal
     ChipModule,
     CheckboxModule,
     IndicadorChipComponent,
-    SelecaoIndicadoresComponent
+    SelecaoIndicadoresComponent,
   ],
   templateUrl: './projeto-indicadores.component.html',
-  styleUrls: ['./projeto-indicadores.component.scss']
+  styleUrls: ['./projeto-indicadores.component.scss'],
 })
 export class ProjetoIndicadoresComponent implements OnInit {
-
-  constructor(private filterService: FilterService,
-    private catalogoIndicadorService: CatalogoIndicadorService,
-    private fb: FormBuilder
-  ) { }
-
   @Input() form!: FormGroup;
   @Input() isModoEdicao: boolean = false;
 
@@ -59,27 +54,36 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   currentFilter: any = {};
 
+  constructor(
+    private filterService: FilterService,
+    private catalogoIndicadorService: CatalogoIndicadorService,
+    private fb: FormBuilder,
+    private _ngbModalService: NgbModal,
+  ) {}
+
   ngOnInit(): void {
     this.init();
     this.initBaseChip();
-    this.filterService.filter$.subscribe(f => {
+    this.filterService.filter$.subscribe((f) => {
       if (f) this.currentFilter = f;
     });
   }
 
   private init(): void {
-    
     this.loading = true;
 
-    this.catalogoIndicadorService.getGestoesIndicadoresCatalogoExternos()
+    this.catalogoIndicadorService
+      .getGestoesIndicadoresCatalogoExternos()
       .pipe(
-        tap( gestao => {
+        tap((gestao) => {
           this.gestao = gestao[0];
           this.initBaseChip();
         }),
-        switchMap(gestao =>
-          this.catalogoIndicadorService.getIndicadoresPorGestaoCatalogoExternos(gestao[0].idGestao)
-        )
+        switchMap((gestao) =>
+          this.catalogoIndicadorService.getIndicadoresPorGestaoCatalogoExternos(
+            gestao[0].idGestao,
+          ),
+        ),
       )
       .subscribe({
         next: (indicadores) => {
@@ -92,9 +96,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
         },
         complete: () => {
           this.loading = false;
-        }
+        },
       });
-
   }
 
   // carregarIndicadores(): void {
@@ -119,16 +122,20 @@ export class ProjetoIndicadoresComponent implements OnInit {
   // }
 
   filtrarIndicadores(): void {
-
     const termo = this.filtroTexto
-      ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      ? this.filtroTexto
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
       : '';
 
-    this.indicadoresFiltrados = this.indicadores.filter(i => {
-      const nomeNormalizado = i.nome?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    this.indicadoresFiltrados = this.indicadores.filter((i) => {
+      const nomeNormalizado = i.nome
+        ?.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
       return nomeNormalizado?.includes(termo);
     });
-
   }
 
   limparFiltros(): void {
@@ -140,8 +147,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   removerFiltro(filtro: any): void {
-    this.filtrosAplicados =
-      this.filtrosAplicados.filter(f => f !== filtro);
+    this.filtrosAplicados = this.filtrosAplicados.filter((f) => f !== filtro);
 
     // sincroniza com o estado global também
     if (this.currentFilter?.[filtro.node]) {
@@ -155,7 +161,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.filterService.setFilter(this.currentFilter);
 
     // atualiza chips também
-    this.chips = this.chips.filter(c => c !== filtro);
+    this.chips = this.chips.filter((c) => c !== filtro);
   }
 
   onSelecaoChange(novos: any[]): void {
@@ -164,12 +170,13 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   isSelecionado(indicador: any): boolean {
-    return this.indicadoresSelecionados.some(i => i.id === indicador.id);
+    return this.indicadoresSelecionados.some((i) => i.id === indicador.id);
   }
 
   removerIndicador(indicador: any): void {
-    this.indicadoresSelecionados =
-      this.indicadoresSelecionados.filter(i => i !== indicador);
+    this.indicadoresSelecionados = this.indicadoresSelecionados.filter(
+      (i) => i !== indicador,
+    );
 
     this.atualizarFormulario();
   }
@@ -194,14 +201,14 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private atualizarFormulario(): void {
     if (!this.form) return;
-  
+
     const formArray = this.form.get('indicadoresProjeto') as FormArray;
-  
+
     // limpa completamente
     formArray.clear();
-  
+
     // recria baseado na seleção
-    this.indicadoresSelecionados.forEach(indicador => {
+    this.indicadoresSelecionados.forEach((indicador) => {
       formArray.push(this.fb.control(indicador));
     });
   }
@@ -212,9 +219,13 @@ export class ProjetoIndicadoresComponent implements OnInit {
         label: 'GESTÃO ADMINISTRATIVA',
         value: this.gestao?.nomeGestao || '-',
         type: 'base',
-        removable: false
-      }
+        removable: false,
+      },
     ];
+  }
+
+  openModalFilterIndicator() {
+    this.showModal = true;
   }
 
   onApply(filter: any) {
@@ -223,7 +234,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.currentFilter = filter;
 
     const dynamicChips = this.mapToChips(filter);
-    const baseChip = this.chips.find(c => c.type === 'base');
+    const baseChip = this.chips.find((c) => c.type === 'base');
 
     this.chips = [baseChip, ...dynamicChips];
 
@@ -233,12 +244,12 @@ export class ProjetoIndicadoresComponent implements OnInit {
   mapToChips(filter: any): any[] {
     const chips: any[] = [];
 
-    Object.keys(filter || {}).forEach(nodeKey => {
+    Object.keys(filter || {}).forEach((nodeKey) => {
       if (nodeKey === 'Administration') return;
 
       const node = filter[nodeKey];
 
-      Object.keys(node || {}).forEach(field => {
+      Object.keys(node || {}).forEach((field) => {
         const value = node[field];
 
         if (value && value !== '' && value !== 0) {
@@ -248,7 +259,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
             type: 'filter',
             removable: true,
             node: nodeKey,
-            field
+            field,
           });
         }
       });
@@ -260,7 +271,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   removeChip(chip: any) {
     if (!chip.removable) return;
 
-    this.chips = this.chips.filter(c => c !== chip);
+    this.chips = this.chips.filter((c) => c !== chip);
 
     if (this.currentFilter?.[chip.node]) {
       delete this.currentFilter[chip.node][chip.field];
@@ -282,7 +293,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.showModal = true;
   }
 
-  voltar() { }
+  voltar() {}
 
-  irParaODS() { }
+  irParaODS() {}
 }
