@@ -2,33 +2,22 @@
 <div class="card">
   <div class="card-header">
     <div class="badges-container">
-      <app-indicador-chip
-        *ngFor="let chip of chips"
-        [label]="chip.label"
-        [value]="chip.value"
-        [removable]="chip.removable"
-        (onClick)="onChipClick(chip)"
-        (onRemove)="removeChip(chip)">
+      <app-indicador-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value"
+        [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)">
       </app-indicador-chip>
     </div>
 
-    <p-button 
-      label="Filtros" 
-      icon="pi pi-filter" 
-      styleClass="btn-filtros"
-      (click)="showModal = true">
+    <p-button label="Filtros" icon="pi pi-filter" styleClass="btn-filtros" (click)="showModal = true">
     </p-button>
   </div>
 
   <p-dialog header="Filtros" [(visible)]="showModal" [modal]="true" [style]="{ width: '60vw' }" position="center">
-    <app-filtro-indicadores (apply)="onApply($event)" />
+    <app-filtro-indicadores [gestao]="gestao" (apply)="onApply($event)" />
   </p-dialog>
+
 </div>
 
-<app-selecao-indicadores
-  [indicadores]="indicadores"
-  [selecionados]="indicadoresSelecionados"
-  [loading]="loading"
+<app-selecao-indicadores [indicadores]="indicadores" [selecionados]="indicadoresSelecionados" [loading]="loading"
   (selecionadosChange)="onSelecaoChange($event)">
 </app-selecao-indicadores>
 

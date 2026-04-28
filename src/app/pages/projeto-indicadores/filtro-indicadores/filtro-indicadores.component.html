@@ -1,1 +1,65 @@
-<p>filtro-indicadores works!</p>
+<!-- OVERLAY (fundo escuro) -->
+<div class="modal-overlay show" (click)="fechar()"></div>
+
+<!-- MODAL -->
+<div class="filter-modal show">
+    
+    <!-- HEADER -->
+    <div class="modal-header">
+        <h2 class="card-title">Filtros</h2>
+        <button class="close-modal" (click)="fechar()">✕</button>
+    </div>
+
+    <!-- BODY -->
+    <div class="filter-body">
+        <div class="filter-grid">
+
+            <!-- GESTÃO (linha inteira) -->
+            <div class="filter-field full-width">
+                <label class="filter-label">Gestão Administrativa</label>
+                <select class="filter-select" [(ngModel)]="filtro.idGestao">
+                    <option *ngIf="gestao" [value]="gestao.idGestao">
+                        {{ gestao.nomeGestao }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- LABELS DINÂMICOS -->
+            <ng-container *ngFor="let label of labelsOrdenados">
+                <div class="filter-field">
+                    <label class="filter-label">{{ label.nome }}</label>
+                    <p-multiSelect 
+                        [options]="label.valores" 
+                        optionLabel="valor" 
+                        optionValue="idLabelValor"
+                        [(ngModel)]="filtro.labels[label.idLabel]" 
+                        defaultLabel="Selecionar..." 
+                        display="chip">
+                    </p-multiSelect>
+                </div>
+            </ng-container>
+
+            <!-- DESAFIOS -->
+            <div class="filter-field">
+                <label class="filter-label">Desafios</label>
+                <select class="filter-select" [(ngModel)]="filtro.desafio">
+                    <option *ngFor="let d of desafios" [value]="d.id">
+                        {{ d.nome }}
+                    </option>
+                </select>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="modal-footer">
+        <button class="btn-restaurar" (click)="resetar()">
+            ↺ Restaurar Filtros
+        </button>
+        <button class="btn-filtrar" (click)="filtrar()">
+            ✓ Filtrar
+        </button>
+    </div>
+
+</div>
