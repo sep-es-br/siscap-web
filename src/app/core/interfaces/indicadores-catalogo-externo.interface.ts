@@ -1,3 +1,4 @@
+import { MetaDefinition } from "@angular/platform-browser";
 
 
 export interface IGestoesCatalogoExterno {
@@ -29,5 +30,13 @@ export interface IIndicadoresCatalogoExterno {
   nomeIndicador: string,
   unidadeMedida: string,
   polaridade: string,
-  medidoPor: string
+  medidoPor: string,
+  metasIndicador: IMetaIndicador[],
+  metasIndicadorProjeto: IMetaIndicador[]
+}
+
+export interface IMetaIndicador {
+  idMeta: number,
+  valorMeta: string,
+  anoMeta: string
 }

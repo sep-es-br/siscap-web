@@ -170,3 +170,102 @@
   color: var(--navy-dark);
   font-weight: 500;
 }
+
+.meta-section-label {
+  font-weight: 700;
+  color: #1a6fc4;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  display: block;
+  letter-spacing: 0.4px;
+  font-size: 12px;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+}
+
+.meta-section-label {
+  font-weight: 700;
+  color: #1a6fc4;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  display: block;
+  letter-spacing: 0.4px;
+  font-size: 12px;
+}
+
+.meta-year {
+  font-weight: 700;
+  color: #1a6fc4;
+  font-size: 10px
+}
+
+.meta-value {
+  font-weight: 700;
+  color: var(--navy-dark);
+  font-size: 13px
+}
+
+.meta-value-input {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: white;
+  text-align: right;
+  color: var(--navy-dark);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 6px 12px;
+  width: 80px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.meta-value-input::-webkit-outer-spin-button,
+.meta-value-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.meta-value-input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.meta-value-input[readonly] {
+  background-color: #fff !important;
+  border-color: #cbd5e1 !important;
+  color: var(--navy-dark) !important;
+  cursor: default;
+}
+
+.meta-value-input::placeholder {
+  color: #cbd5e1;
+  font-weight: 400;
+  font-size: 11px;
+  text-align: right;
+}
+
+.remove-indicator-btn {
+  cursor: pointer;
+  color: var(--red);
+  font-size: 16px;
+  font-weight: bold;
+  transition: transform .2s
+}
+
+.remove-indicator-btn:hover {
+  transform: scale(1.2)
+}
+
+#indicatorsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+  gap: 16px;
+  width: 100%;
+}

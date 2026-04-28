@@ -59,7 +59,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     private catalogoIndicadorService: CatalogoIndicadorService,
     private fb: FormBuilder,
     private _ngbModalService: NgbModal,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.init();
@@ -124,9 +124,9 @@ export class ProjetoIndicadoresComponent implements OnInit {
   filtrarIndicadores(): void {
     const termo = this.filtroTexto
       ? this.filtroTexto
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
       : '';
 
     this.indicadoresFiltrados = this.indicadores.filter((i) => {
@@ -293,7 +293,22 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.showModal = true;
   }
 
-  voltar() {}
+  removeIndicator(indicador: IIndicadoresCatalogoExterno, isChip: boolean = true): void {
 
-  irParaODS() {}
+    const index = this.indicadoresSelecionados.findIndex(
+      (i) => i.idIndicador === indicador.idIndicador
+    );
+
+    if (index !== -1) {
+      this.indicadoresSelecionados.splice(index, 1);
+    }
+
+  }
+
+
+
+  voltar() { }
+
+  irParaODS() { }
+
 }

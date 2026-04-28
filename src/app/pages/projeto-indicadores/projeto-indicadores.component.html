@@ -38,19 +38,46 @@
 
           <div class="indicator-header"
             style="border-bottom: 2px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px;">
-            <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">{{item.nomeIndicador }}</div>
-            <div class="remove-indicator-btn" onclick="removeIndicator( item.nomeIndicador ,false)" style="font-size: 20px;">✖</div>
+            <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">
+              {{item.nomeIndicador }}</div>
+            <div class="remove-indicator-btn" (click)="removeIndicator(item,false)" style="font-size: 20px;">✖</div>
           </div>
 
           <div class="indicator-details">
 
-            <div class="detail-row" style="margin-bottom: 8px;"><span class="detail-label" style="color: #1a6fc4; font-weight: 800;">FONTE:</span><span class="detail-value" style="font-weight: 600;">{{item.medidoPor }}</span></div>
-            
+            <div class="detail-row" style="margin-bottom: 8px;"><span class="detail-label"
+                style="color: #1a6fc4; font-weight: 800;">FONTE:</span><span class="detail-value"
+                style="font-weight: 600;">{{item.medidoPor }}</span></div>
+
             <div class="detail-row" style="margin-bottom: 15px;">
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE MEDIDA:</span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE
+                MEDIDA:</span>
               <span class="detail-value" style="font-weight: 600; margin-right:24px;">{{item.unidadeMedida}}</span>
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE REFERÊNCIA:</span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE  REFERÊNCIA:</span>
               <span class="detail-value" style="font-weight: 600;">DEFINIR AINDA!!</span>
+            </div>
+
+            <span class="meta-section-label"
+              style="color: #1a6fc4; font-weight: 800; margin-top: 15px; margin-bottom: 10px;">META:</span>
+            <div class="mindicador-selecionado" *ngFor="let metaItem of item.metasIndicador">
+              <div class="meta-item"
+                style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                <span class="meta-year"
+                  style="color: #1a6fc4; font-weight: 700; font-size: 13px;">metaItem.anoMeta</span>
+                <span style="font-weight: 700; color: var(--navy-dark); font-size: 14px;">metaItem.valorMeta</span>
+              </div>
+            </div>
+
+            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO PROJETO:</span>
+            <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="mindicador-selecionado" *ngFor="let metaProjeto of item.metasIndicadorProjeto">
+                <div class="meta-item"
+                  style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                  <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">2023</span>
+                  <input type="number" class="meta-value-input" data-ind-id="1" data-year=metaItem.anoMeta value=""
+                    placeholder="Digite a meta">
+                </div>
+              </div>
             </div>
 
           </div>
@@ -58,9 +85,6 @@
         </div>
 
       </div>
-
-
     </div>
-
   </div>
 </div>
