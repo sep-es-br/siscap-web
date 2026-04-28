@@ -11,11 +11,8 @@
     </p-button>
   </div>
 
-  <app-filtro-indicadores
-    *ngIf="showModal"
-    [gestao]="gestao"
-    (apply)="onApply($event)"
-    (close)="showModal = false">
+  <app-filtro-indicadores *ngIf="showModal" [gestao]="gestao" [desafios]="gestao?.desafios || []"
+    (apply)="onApply($event)" (close)="showModal = false">
   </app-filtro-indicadores>
 
 </div>
@@ -27,14 +24,43 @@
 <!-- CARD: INDICADORES SELECIONADOS -->
 <div class="card">
   <div class="card-selecionados">
+
     <p class="lista-label">Indicadores Selecionados</p>
 
     <p class="text-muted" *ngIf="indicadoresSelecionados.length === 0">
       Nenhum indicador selecionado.
     </p>
 
-    <div class="indicador-selecionado" *ngFor="let item of indicadoresSelecionados">
-      {{ item.nome }}
+    <div id="indicatorsContainer">
+
+      <div class="indicador-selecionado" *ngFor="let item of indicadoresSelecionados">
+        <div class="indicator-card" style="border: 2px solid #1a6fc4; padding: 20px;">
+
+          <div class="indicator-header"
+            style="border-bottom: 2px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px;">
+            <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">{{item.nomeIndicador }}</div>
+            <div class="remove-indicator-btn" onclick="removeIndicator( item.nomeIndicador ,false)" style="font-size: 20px;">✖</div>
+          </div>
+
+          <div class="indicator-details">
+
+            <div class="detail-row" style="margin-bottom: 8px;"><span class="detail-label" style="color: #1a6fc4; font-weight: 800;">FONTE:</span><span class="detail-value" style="font-weight: 600;">{{item.medidoPor }}</span></div>
+            
+            <div class="detail-row" style="margin-bottom: 15px;">
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE MEDIDA:</span>
+              <span class="detail-value" style="font-weight: 600; margin-right:24px;">{{item.unidadeMedida}}</span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE REFERÊNCIA:</span>
+              <span class="detail-value" style="font-weight: 600;">DEFINIR AINDA!!</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
     </div>
+
   </div>
 </div>

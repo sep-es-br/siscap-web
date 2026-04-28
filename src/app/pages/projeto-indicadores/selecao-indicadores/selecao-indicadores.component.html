@@ -31,7 +31,6 @@
 
     <ng-container *ngIf="!loading; else loadingTpl">
       <ng-container *ngIf="indicadoresFiltrados.length > 0; else vazio">
-
         <div class="indicador-item" *ngFor="let indicador of indicadoresFiltrados">
           <label class="indicador-label">
             <p-checkbox 
@@ -43,9 +42,9 @@
             <span>{{ indicador.nomeIndicador }}</span>
           </label>
         </div>
-
       </ng-container>
     </ng-container>
+    
   </div>
 
   <div class="card-footer-selection">

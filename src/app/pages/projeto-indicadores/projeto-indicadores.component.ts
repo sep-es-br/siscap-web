@@ -13,7 +13,7 @@ import { IndicadorChipComponent } from './indicador-chip/indicador-chip.componen
 import { SelecaoIndicadoresComponent } from './selecao-indicadores/selecao-indicadores.component';
 import { CatalogoIndicadorService } from '../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { switchMap, tap } from 'rxjs';
-import { IGestoesCatalogoExterno } from '../../core/interfaces/indicadores-catalogo-externo.interface';
+import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../core/interfaces/indicadores-catalogo-externo.interface';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -42,7 +42,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   indicadores: any[] = [];
   indicadoresFiltrados: any[] = [];
-  indicadoresSelecionados: any[] = [];
+  indicadoresSelecionados: IIndicadoresCatalogoExterno[] = [];
   gestao: IGestoesCatalogoExterno | null = null;
 
   filtroTexto: string = '';
@@ -164,13 +164,13 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.chips = this.chips.filter((c) => c !== filtro);
   }
 
-  onSelecaoChange(novos: any[]): void {
+  onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
     this.indicadoresSelecionados = novos;
     this.atualizarFormulario();
   }
 
-  isSelecionado(indicador: any): boolean {
-    return this.indicadoresSelecionados.some((i) => i.id === indicador.id);
+  isSelecionado(indicador: IIndicadoresCatalogoExterno): boolean {
+    return this.indicadoresSelecionados.some((i) => i.idIndicador === indicador.idIndicador);
   }
 
   removerIndicador(indicador: any): void {

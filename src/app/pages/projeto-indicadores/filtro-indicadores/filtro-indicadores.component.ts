@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
-import { IGestoesCatalogoExterno, Label } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
+import { Desafio, IGestoesCatalogoExterno, Label } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MultiSelectModule } from 'primeng/multiselect';
@@ -20,7 +20,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   @Output() close = new EventEmitter<void>();
 
   @Input() gestao: IGestoesCatalogoExterno | null = null;
-  @Input() desafios: any[] = [];
+  @Input() desafios: Desafio[] = [];
 
   gestaoSelecionada!: IGestoesCatalogoExterno;
   labelsOrdenados: Label[] = [];
