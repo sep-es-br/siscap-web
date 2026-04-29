@@ -23,6 +23,7 @@
 
 <!-- CARD: INDICADORES SELECIONADOS -->
 <div class="card">
+
   <div class="card-selecionados">
 
     <p class="lista-label">Indicadores Selecionados</p>
@@ -34,13 +35,14 @@
     <div id="indicatorsContainer">
 
       <div class="indicador-selecionado" *ngFor="let item of indicadoresSelecionados">
+        
         <div class="indicator-card" style="border: 2px solid #1a6fc4; padding: 20px;">
 
           <div class="indicator-header"
             style="border-bottom: 2px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px;">
             <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">
               {{item.nomeIndicador }}</div>
-            <div class="remove-indicator-btn" (click)="removeIndicator(item,false)" style="font-size: 20px;">✖</div>
+            <div class="remove-indicator-btn" (click)="removeIndicator( item, false )" style="font-size: 20px;">✖</div>
           </div>
 
           <div class="indicator-details">

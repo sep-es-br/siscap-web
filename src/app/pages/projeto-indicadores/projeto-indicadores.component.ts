@@ -12,7 +12,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { IndicadorChipComponent } from './indicador-chip/indicador-chip.component';
 import { SelecaoIndicadoresComponent } from './selecao-indicadores/selecao-indicadores.component';
 import { CatalogoIndicadorService } from '../../core/services/catalogo-indicadores/catalogo-indicador.service';
-import { switchMap, tap } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs';
 import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../core/interfaces/indicadores-catalogo-externo.interface';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -40,8 +40,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   showModal: boolean = false;
 
-  indicadores: any[] = [];
-  indicadoresFiltrados: any[] = [];
+  indicadores: IIndicadoresCatalogoExterno[] = [];
+  indicadoresFiltrados: IIndicadoresCatalogoExterno[] = [];
   indicadoresSelecionados: IIndicadoresCatalogoExterno[] = [];
   gestao: IGestoesCatalogoExterno | null = null;
 
@@ -84,6 +84,13 @@ export class ProjetoIndicadoresComponent implements OnInit {
             gestao[0].idGestao,
           ),
         ),
+        map((indicadores) =>
+          indicadores.map((item) => ({
+            ...item,
+            metasIndicador: item.metasIndicador ?? [],
+            metasIndicadorProjeto: []
+          }))
+        )
       )
       .subscribe({
         next: (indicadores) => {
@@ -100,27 +107,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
       });
   }
 
-  // carregarIndicadores(): void {
-  //   this.loading = true;
-  //   // // Simulation of data to match the image requirements
-  //   // this.indicadores = [
-  //   //   { id: 1, nome: 'NÚMERO DE MATRÍCULAS EM EDUCAÇÃO PROFISSIONAL' },
-  //   //   { id: 2, nome: 'TAXA DE EVASÃO TÉCNICO' },
-  //   //   { id: 3, nome: 'TAXA DE PROFESSORES EFETIVOS' },
-  //   //   { id: 4, nome: 'ÍNDICE DE EMPREGABILIDADE DE EGRESSOS' },
-  //   //   { id: 5, nome: 'INVESTIMENTO PÚBLICO EM CULTURA' },
-  //   //   { id: 6, nome: 'NÚMERO DE PROJETOS CULTURAIS APOIADOS' }
-  //   // ];
-  //   this.indicadoresFiltrados = this.indicadores;
-  //   this.loading = false;
-  // }
-
-  // carregarGestaoAdministrativa(): void {
-  //   // this.gestao = {
-  //   //   periodo: '2023-26'
-  //   // };
-  // }
-
   filtrarIndicadores(): void {
     const termo = this.filtroTexto
       ? this.filtroTexto
@@ -130,12 +116,13 @@ export class ProjetoIndicadoresComponent implements OnInit {
       : '';
 
     this.indicadoresFiltrados = this.indicadores.filter((i) => {
-      const nomeNormalizado = i.nome
+      const nomeNormalizado = i.nomeIndicador
         ?.toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '');
       return nomeNormalizado?.includes(termo);
     });
+
   }
 
   limparFiltros(): void {
@@ -191,14 +178,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
     }
   }
 
-  // private atualizarFormulario(): void {
-  //   if (!this.form) return;
-
-  //   this.form.get('indicadoresProjeto')?.setValue(
-  //     this.indicadoresSelecionados
-  //   );
-  // }
-
   private atualizarFormulario(): void {
     if (!this.form) return;
 
@@ -211,7 +190,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.indicadoresSelecionados.forEach((indicador) => {
       formArray.push(this.fb.control(indicador));
     });
-    
+
   }
 
   initBaseChip() {
@@ -305,8 +284,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
     }
 
   }
-
-
 
   voltar() { }
 

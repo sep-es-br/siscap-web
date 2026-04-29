@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
+import { IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 
 @Component({
   selector: 'app-selecao-indicadores',
@@ -12,9 +13,8 @@ import { InputTextModule } from 'primeng/inputtext';
   styleUrls: ['./selecao-indicadores.component.scss']
 })
 export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
-  private _indicadores: any[] = [];
-  @Input() set indicadores(value: any[]) {
-    //console.log('SET INPUT:', value);
+  private _indicadores: IIndicadoresCatalogoExterno[] = [];
+  @Input() set indicadores(value: IIndicadoresCatalogoExterno[]) {
     this._indicadores = value || [];
     this.filtrarIndicadores();
     this.updateSelectAllState();
@@ -23,18 +23,17 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     return this._indicadores;
   }
 
-  @Input() selecionados: any[] = [];
+  @Input() selecionados: IIndicadoresCatalogoExterno[] = [];
   @Input() loading: boolean = false;
-
   @Output() selecionadosChange = new EventEmitter<any[]>();
 
-  indicadoresFiltrados: any[] = [];
+  indicadoresFiltrados: IIndicadoresCatalogoExterno[] = [];
   filtroTexto: string = '';
   searchVisible: boolean = false;
   selectAll: boolean = false;
 
   ngOnInit() {
-    //this.indicadoresFiltrados = this.indicadores;
+    this.indicadoresFiltrados = this.indicadores;
     this.updateSelectAllState();
   }
 
@@ -48,9 +47,6 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   filtrarIndicadores(): void {
-
-    //console.log('ANTES FILTRO:', this._indicadores);
-
     const termo = this.filtroTexto
       ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       : '';
@@ -61,17 +57,14 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     });
 
     this.updateSelectAllState();
-
-    //console.log('DEPOIS FILTRO:', this.indicadoresFiltrados);
-
   }
 
-  toggleIndicador(indicador: any): void {
+  toggleIndicador(indicador: IIndicadoresCatalogoExterno): void {
     let novasSelecoes = [...this.selecionados];
     const exists = this.isSelecionado(indicador);
 
     if (exists) {
-      novasSelecoes = novasSelecoes.filter(i => i.id !== indicador.id);
+      novasSelecoes = novasSelecoes.filter(i => i.idIndicador !== indicador.idIndicador);
     } else {
       novasSelecoes.push(indicador);
     }
@@ -86,8 +79,8 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
       const novos = this.indicadoresFiltrados.filter(i => !this.isSelecionado(i));
       novasSelecoes = [...novasSelecoes, ...novos];
     } else {
-      const idsFiltrados = this.indicadoresFiltrados.map(i => i.id);
-      novasSelecoes = novasSelecoes.filter(i => !idsFiltrados.includes(i.id));
+      const idsFiltrados = this.indicadoresFiltrados.map(i => i.idIndicador);
+      novasSelecoes = novasSelecoes.filter(i => !idsFiltrados.includes(i.idIndicador));
     }
 
     this.selecionadosChange.emit(novasSelecoes);
@@ -99,6 +92,6 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   isSelecionado(indicador: any): boolean {
-    return (this.selecionados || []).some(i => i.id === indicador.idIndicador);
+    return (this.selecionados || []).some(i => i.idIndicador === indicador.idIndicador);
   }
 }
