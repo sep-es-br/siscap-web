@@ -211,6 +211,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.indicadoresSelecionados.forEach((indicador) => {
       formArray.push(this.fb.control(indicador));
     });
+    
   }
 
   initBaseChip() {
