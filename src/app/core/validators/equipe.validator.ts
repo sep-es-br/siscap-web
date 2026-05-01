@@ -28,7 +28,7 @@ export function equipeValidator(): ValidatorFn {
       control as FormArray<FormGroup<EquipeFormType>>;
 
     if (equipeValidator_MembroEquipeSemPapel(equipeFormArray.controls)) {
-      console.log(equipeFormArray.controls);
+      //console.log(equipeFormArray.controls);
       return { membroEquipeSemPapel: true };
     }
 

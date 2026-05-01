@@ -18,6 +18,7 @@ export class CatalogoIndicadorService {
    * GET /catalogo-externo/gestao
    */
   getGestoesIndicadoresCatalogoExternos(): Observable<IGestoesCatalogoExterno[]> {
+    //console.log('GET', `${this._url}/gestoes`);
     return this.http.get<IGestoesCatalogoExterno[]>(`${this._url}/gestoes`);
   }
 
@@ -26,6 +27,7 @@ export class CatalogoIndicadorService {
    * GET /catalogo-externo/gestao/{idGestao}/indicadores
    */
   getIndicadoresPorGestaoCatalogoExternos(idGestao: number): Observable<IIndicadoresCatalogoExterno[]> {
+    //console.log('GET', `${this._url}/gestoes/${idGestao}/indicadores`);
     return this.http.get<IIndicadoresCatalogoExterno[]>(
       `${this._url}/gestoes/${idGestao}/indicadores`
     );

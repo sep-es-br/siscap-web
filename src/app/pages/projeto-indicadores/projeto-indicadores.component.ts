@@ -76,13 +76,18 @@ export class ProjetoIndicadoresComponent implements OnInit {
       .getGestoesIndicadoresCatalogoExternos()
       .pipe(
         tap((gestao) => {
+          // console.log('📌 Response GESTÃO:', gestao);
           this.gestao = gestao[0];
           this.initBaseChip();
         }),
         switchMap((gestao) =>
-          this.catalogoIndicadorService.getIndicadoresPorGestaoCatalogoExternos(
-            gestao[0].idGestao,
-          ),
+          this.catalogoIndicadorService
+            .getIndicadoresPorGestaoCatalogoExternos(gestao[0].idGestao)
+            .pipe(
+              tap((indicadores) => {
+                // console.log('📌 Response INDICADORES:', indicadores);
+              })
+            )
         ),
         map((indicadores) =>
           indicadores.map((item) => ({
@@ -94,6 +99,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
       )
       .subscribe({
         next: (indicadores) => {
+          // console.log('📌 Após MAP (final):', indicadores);
           this.indicadores = indicadores;
           this.indicadoresFiltrados = indicadores;
           this.syncComFormulario();
