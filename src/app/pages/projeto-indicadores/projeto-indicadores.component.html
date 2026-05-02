@@ -64,27 +64,36 @@
             <span class="meta-section-label"
               style="color: #1a6fc4; font-weight: 800; margin-top: 15px; margin-bottom: 10px;">META:</span>
 
+            <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
             <div class="mindicador-selecionado" *ngFor="let metaItem of item.metasIndicador">
-
-              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                <div class="meta-item" style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                  <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;"> {{ metaItem.anoMeta }}</span>
-                  <span style="font-weight: 700; color: var(--navy-dark); font-size: 14px;">{{ metaItem.valorMeta }}</span>
-                </div>
+              <div class="meta-item"
+                style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;"> {{
+                  metaItem.anoMeta }}</span>
+                <span style="font-weight: 700; color: var(--navy-dark); font-size: 14px;">{{ metaItem.valorMeta
+                  }}</span>
               </div>
-
             </div>
+          </div>
 
-            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO PROJETO:</span>
-            <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-              <div class="mindicador-selecionado" *ngFor="let metaProjeto of item.metasIndicadorProjeto">
-                <div class="meta-item"
-                  style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                  <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">2023</span>
-                  <input type="number" class="meta-value-input" data-ind-id="1" data-year=metaItem.anoMeta value=""
-                    placeholder="Digite a meta">
-                </div>
+          <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO
+            PROJETO:</span>
+          <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+
+            <div class="mindicador-selecionado" *ngFor="let metaProjeto of item.metasIndicadorProjeto">
+
+              <div class="meta-item"
+                style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+
+                <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{
+                  metaProjeto.anoMeta }}</span>
+
+                <!-- Input bindado -->
+                <input type="number" class="meta-value-input" [attr.data-year]="metaProjeto.anoMeta"
+                  [(ngModel)]="metaProjeto.valorMeta" placeholder="Digite a meta">
+
               </div>
+
             </div>
 
           </div>
@@ -92,6 +101,8 @@
         </div>
 
       </div>
+
     </div>
   </div>
+</div>
 </div>

@@ -13,8 +13,13 @@ import { IndicadorChipComponent } from './indicador-chip/indicador-chip.componen
 import { SelecaoIndicadoresComponent } from './selecao-indicadores/selecao-indicadores.component';
 import { CatalogoIndicadorService } from '../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { map, switchMap, tap } from 'rxjs';
-import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../core/interfaces/indicadores-catalogo-externo.interface';
+import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno, IMetaIndicador } from '../../core/interfaces/indicadores-catalogo-externo.interface';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+export interface IndicadorProjetoForm {
+  idIndicador: number;
+  metasIndicadorProjeto: IMetaIndicador[];
+}
 
 @Component({
   selector: 'siscap-projeto-indicadores',
@@ -93,7 +98,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
           indicadores.map((item) => ({
             ...item,
             metasIndicador: item.metasIndicador ?? [],
-            metasIndicadorProjeto: []
+            metasIndicadorProjeto: item.metasIndicadorProjeto ?? [],
           }))
         )
       )
@@ -158,7 +163,13 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
-    this.indicadoresSelecionados = novos;
+    // this.indicadoresSelecionados = novos;
+    // this.atualizarFormulario();
+    this.indicadoresSelecionados = novos.map(item => {
+      this.sincronizarMetasProjeto(item);
+      return item;
+    });
+
     this.atualizarFormulario();
   }
 
@@ -175,13 +186,38 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   private syncComFormulario(): void {
+
+    // if (!this.form) return;
+    // const valores = this.form.get('indicadoresProjeto')?.value;
+    // if (valores) {
+    //   this.indicadoresSelecionados = valores;
+    // }
+
     if (!this.form) return;
 
-    const valores = this.form.get('indicadoresProjeto')?.value;
+    const valores = this.form.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
 
-    if (valores) {
-      this.indicadoresSelecionados = valores;
-    }
+    if (!valores || valores.length === 0) return;
+
+    this.indicadoresSelecionados = this.indicadores
+      .filter(cat =>
+        valores.some( v => v.idIndicador === cat.idIndicador )
+      )
+      .map(cat => {
+        const doForm = valores.find( v => v.idIndicador === cat.idIndicador );
+
+        const item = {
+          ...cat,
+          metasIndicadorProjeto: doForm?.metasIndicadorProjeto || []
+        };
+
+        this.sincronizarMetasProjeto(item);
+
+        return item;
+      });
+
+    this.atualizarFormulario();
+
   }
 
   private atualizarFormulario(): void {
@@ -288,6 +324,42 @@ export class ProjetoIndicadoresComponent implements OnInit {
     if (index !== -1) {
       this.indicadoresSelecionados.splice(index, 1);
     }
+
+  }
+
+  sincronizarMetasProjeto(item: IIndicadoresCatalogoExterno) {
+
+    // const metasExternas = item.metasIndicador || [];
+    // const metasProjeto = item.metasIndicadorProjeto || [];
+
+    // item.metasIndicadorProjeto = metasExternas.map(metaExt => {
+    //   const existente = metasProjeto.find(
+    //     m => m.anoMeta === metaExt.anoMeta);
+
+    //   return existente || {
+    //     idFato: metaExt.idFato,
+    //     anoMeta: metaExt.anoMeta,
+    //     valorMeta: ''
+    //   };
+
+    // });
+
+    const metasExternas = item.metasIndicador || [];
+    const metasProjeto = item.metasIndicadorProjeto || [];
+
+    item.metasIndicadorProjeto = metasExternas.map(metaExt => {
+
+      const existente = metasProjeto.find(
+        m => m.anoMeta === metaExt.anoMeta
+      );
+
+      return existente || {
+        idFato: metaExt.idFato,
+        anoMeta: metaExt.anoMeta,
+        valorMeta:''
+      };
+
+    });
 
   }
 

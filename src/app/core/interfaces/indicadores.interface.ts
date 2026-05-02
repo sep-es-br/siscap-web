@@ -1,3 +1,5 @@
+import { IMetaIndicador } from "./indicadores-catalogo-externo.interface";
+
 export interface IIndicadores {
   idIndicador: number;
   tipoIndicador: string | null;
