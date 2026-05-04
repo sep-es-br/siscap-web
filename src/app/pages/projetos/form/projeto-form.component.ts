@@ -1424,9 +1424,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             .filter(parecer =>!this.aguardandoParecer() || this.isProjetoElegivel() || parecer.parecerLotacao !== this.lotacaoUsuario)
   }
 
-  private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
-
-    console.log('ANTES DE ENVIAR:', this.projetoForm.value);
+  private submitProjetoForm( form: FormGroup, isRascunho: boolean ): void {
 
     if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel ) {
 
@@ -1437,11 +1435,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      const payload = new ProjetoFormModel(this.projetoForm.getRawValue() as IProjetoForm);
+      const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
       payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
-
-      //console.log('PAYLOAD IF:', payload);
 
       this.atualizarProjeto(payload, isRascunho).subscribe();
 
@@ -1455,13 +1451,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         // Caso especifico de Projetos; moeda somente pode ser 'Real'
         form.get('valor.moeda')?.enable();
 
-        const payload = new ProjetoFormModel(form.value as IProjetoForm);
+        const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
         if (this.isProponente) {
-          payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+          payload.idOrganizacao = form.get('idOrganizacao')?.value;
         }
 
-        //console.log('PAYLOAD ELSE:', payload);
+        console.log('PAYLOAD SUBMIT:', payload);
 
         const requisicao = this._idProjetoEdicao
           ? this.atualizarProjeto(payload, isRascunho)

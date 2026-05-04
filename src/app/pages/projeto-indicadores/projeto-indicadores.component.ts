@@ -69,13 +69,12 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   ngOnInit(): void {
 
-    console.log('Form no filho:', this.form);
-
-    if (this.form) {
-      console.log('Controles do form:', this.form.controls);
-    } else {
-      console.error('Form NÃO foi recebido no filho');
-    }
+    // console.log('Form no filho:', this.form);
+    // if (this.form) {
+    //   console.log('Controles do form:', this.form.controls);
+    // } else {
+    //   console.error('Form NÃO foi recebido no filho');
+    // }
 
     this.init();
     this.initBaseChip();
@@ -223,7 +222,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private atualizarFormulario(): void {
 
-    console.log('>>> ENTROU NO atualizarFormulario');
+    // console.log('>>> ENTROU NO atualizarFormulario');
 
     const formArray = this.form.get('indicadoresProjeto') as FormArray;
 
@@ -251,8 +250,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
     });
 
     // 🔎 DEBUG AQUI
-    console.log('Após atualizarFormulario:', this.form.value);
-    console.log('Form válido:', this.form.valid);
+    // console.log('Após atualizarFormulario:', this.form.value);
+    // console.log('Form válido:', this.form.valid);
 
   }
 

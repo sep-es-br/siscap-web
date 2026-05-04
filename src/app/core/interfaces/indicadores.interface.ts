@@ -8,8 +8,9 @@ export interface IIndicadores {
   descricaoIndicador: string | null;
   descricaoMeta: string | null;
   idStatus: number;
-  idIndicadorCatalogoExterno: number | null;
-  metasIndicadorExterno: Array<{
+  idIndicadorExterno: number | null;
+  metas: Array<{
+    idFato: number | null;
     anoMeta: number | null;
     valorMeta: number | null;
   }>;

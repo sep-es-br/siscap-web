@@ -80,9 +80,9 @@ export class IndicadoresService {
       descricaoIndicador: this._nnfb.control(membro?.descricaoIndicador ?? null, [Validators.required]),
       descricaoMeta: this._nnfb.control(membro?.descricaoMeta ?? null, [Validators.required]),
       idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo,),
-      idIndicadorCatalogoExterno: this._nnfb.control(membro?.idIndicadorCatalogoExterno ?? null),
+      idIndicadorCatalogoExterno: this._nnfb.control(membro?.idIndicadorExterno ?? null),
       metasIndicadorExterno: this._nnfb.array<FormGroup<MetaIndicadorExternoFormType>>(
-        (membro?.metasIndicadorExterno ?? []).map(meta =>
+        (membro?.metas ?? []).map(meta =>
           this.construirMetaIndicadorExterno(meta)
         )
       )

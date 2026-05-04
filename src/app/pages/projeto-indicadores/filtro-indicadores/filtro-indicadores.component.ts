@@ -82,7 +82,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   }
 
   filtrar() {
-    console.log('FILTRO FINAL:', this.filtro);
+    // console.log('FILTRO FINAL:', this.filtro);
   }
 
   applyFilter() {
