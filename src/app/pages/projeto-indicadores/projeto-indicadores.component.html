@@ -26,15 +26,12 @@
 
   <div class="card-selecionados">
 
-    <p class="lista-label">Indicadores Selecionados</p>
-
-    <p class="text-muted" *ngIf="indicadoresSelecionados.length === 0">
-      Nenhum indicador selecionado.
-    </p>
+    <p class="lista-label">INDICADORES SELECIONADOS</p>
+    <p class="text-muted" *ngIf="indicadoresSelecionados.length === 0">Nenhum indicador selecionado.</p>
 
     <div id="indicatorsContainer">
 
-      <div class="indicador-selecionado" *ngFor="let item of indicadoresSelecionados">
+      <div class="indicador-selecionado" *ngFor="let item of indicadoresSelecionados; let i = index">
 
         <div class="indicator-card" style="border: 2px solid #1a6fc4; padding: 20px;">
 
@@ -42,7 +39,8 @@
             style="border-bottom: 2px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px;">
             <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">
               {{item.nomeIndicador }}</div>
-            <div class="remove-indicator-btn" (click)="removeIndicator( item, false )" style="font-size: 20px;">✖</div>
+            <button type="button" class="remove-indicator-btn" aria-label="Remover indicador"
+              (click)="removeIndicator(item, false)">✖</button>
           </div>
 
           <div class="indicator-details">
@@ -65,32 +63,40 @@
               style="color: #1a6fc4; font-weight: 800; margin-top: 15px; margin-bottom: 10px;">META:</span>
 
             <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-            <div class="mindicador-selecionado" *ngFor="let metaItem of item.metasIndicador">
-              <div class="meta-item"
-                style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;"> {{
-                  metaItem.anoMeta }}</span>
-                <span style="font-weight: 700; color: var(--navy-dark); font-size: 14px;">{{ metaItem.valorMeta
-                  }}</span>
+              <div class="mindicador-selecionado" *ngFor="let metaItem of item.metasIndicador">
+                <div class="meta-item"
+                  style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                  <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;"> {{
+                    metaItem.anoMeta }}</span>
+                  <span style="font-weight: 700; color: var(--navy-dark); font-size: 14px;">{{ metaItem.valorMeta
+                    }}</span>
+                </div>
+              </div>
+            </div>
+
+            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO PROJETO:</span>
+          
+          <!--           
+          <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="mindicador-selecionado" *ngFor="let metaProjeto of item.metasIndicadorProjeto">
+              <div class="meta-item" style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{ metaProjeto.anoMeta }}</span>
+                <input type="number" class="meta-value-input" [attr.data-year]="metaProjeto.anoMeta" [(ngModel)]="metaProjeto.valorMeta" placeholder="Digite a meta">
               </div>
             </div>
           </div>
+          -->
 
-          <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO
-            PROJETO:</span>
-          <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div [formGroup]="getIndicadorForm(i)">
 
-            <div class="mindicador-selecionado" *ngFor="let metaProjeto of item.metasIndicadorProjeto">
+              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;" formArrayName="metas">
 
-              <div class="meta-item"
-                style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-
-                <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{
-                  metaProjeto.anoMeta }}</span>
-
-                <!-- Input bindado -->
-                <input type="number" class="meta-value-input" [attr.data-year]="metaProjeto.anoMeta"
-                  [(ngModel)]="metaProjeto.valorMeta" placeholder="Digite a meta">
+                <div class="mindicador-selecionado" *ngFor="let meta of getMetas(i).controls; let j = index" [formGroupName]="j">
+                  <div class="meta-item" style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                    <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{ meta.get('anoMeta')?.value }}</span>
+                    <input type="number" class="meta-value-input" formControlName="valorMeta" placeholder="Digite a meta">
+                  </div>
+                </div>
 
               </div>
 
@@ -101,8 +107,6 @@
         </div>
 
       </div>
-
     </div>
   </div>
-</div>
 </div>

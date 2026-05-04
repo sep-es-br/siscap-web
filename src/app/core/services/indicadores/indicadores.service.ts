@@ -9,7 +9,7 @@ import {
 
 import { Subject } from 'rxjs';
 import { IIndicadores } from '../../interfaces/indicadores.interface';
-import { IndicadoresFormType } from '../../types/form/indicadores-form.type';
+import { IndicadoresFormType, MetaIndicadorExternoFormType } from '../../types/form/indicadores-form.type';
 import { TipoStatusEnum } from '../../enums/tipo-status.enum';
 
 @Injectable({
@@ -56,13 +56,13 @@ export class IndicadoresService {
   }
 
   constructor(private _nnfb: NonNullableFormBuilder) {
-    
+
   }
 
   public construirindicadoresFormArray(
     indicadores?: Array<IIndicadores>
   ): FormArray<FormGroup<IndicadoresFormType>> {
-    const indicadoresFormArray = this._nnfb.array<FormGroup<IndicadoresFormType>>([], );
+    const indicadoresFormArray = this._nnfb.array<FormGroup<IndicadoresFormType>>([],);
     if (indicadores) {
       indicadores.forEach((indicador) => {
         indicadoresFormArray.push(this.construirIndicadorFormGroup(indicador));
@@ -72,19 +72,32 @@ export class IndicadoresService {
     this.indicadoresFormArraySnapshot = this.indicadoresFormArray.value as Array<IIndicadores>;
     return this.indicadoresFormArray;
   }
-  
+
   public construirIndicadorFormGroup(membro?: IIndicadores): FormGroup<IndicadoresFormType> {
     return this._nnfb.group<IndicadoresFormType>({
       idIndicador: this._nnfb.control(membro?.idIndicador ?? 0, [Validators.required]),
       tipoIndicador: this._nnfb.control(membro?.tipoIndicador ?? null, [Validators.required]),
       descricaoIndicador: this._nnfb.control(membro?.descricaoIndicador ?? null, [Validators.required]),
       descricaoMeta: this._nnfb.control(membro?.descricaoMeta ?? null, [Validators.required]),
-      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, ),
+      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo,),
+      idIndicadorCatalogoExterno: this._nnfb.control(membro?.idIndicadorCatalogoExterno ?? null),
+      metasIndicadorExterno: this._nnfb.array<FormGroup<MetaIndicadorExternoFormType>>(
+        (membro?.metasIndicadorExterno ?? []).map(meta =>
+          this.construirMetaIndicadorExterno(meta)
+        )
+      )
     });
   }
-  
+
   public removerIndicador(index: number): void {
     this.indicadoresFormArray.removeAt(index);
+  }
+
+  private construirMetaIndicadorExterno(meta?: any): FormGroup<MetaIndicadorExternoFormType> {
+    return this._nnfb.group({
+      valorMeta: this._nnfb.control(meta?.valorMeta ?? null, Validators.required),
+      anoMeta: this._nnfb.control(meta?.anoMeta ?? null, Validators.required),
+    });
   }
 
 }

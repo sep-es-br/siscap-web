@@ -619,6 +619,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
+    // this.projetoForm.valueChanges.subscribe(valor => {
+    //   console.log('PAI recebeu mudança:', valor);
+    // });
+
     const camposPedidoComplementacao: Record<string, string> = {
       sigla: 'Sigla',
       titulo: 'Título',
@@ -1422,6 +1426,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
+    console.log('ANTES DE ENVIAR:', this.projetoForm.value);
+
     if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel ) {
 
       const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
@@ -1434,6 +1440,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const payload = new ProjetoFormModel(this.projetoForm.getRawValue() as IProjetoForm);
 
       payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
+
+      //console.log('PAYLOAD IF:', payload);
 
       this.atualizarProjeto(payload, isRascunho).subscribe();
 
@@ -1452,6 +1460,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         if (this.isProponente) {
           payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
         }
+
+        //console.log('PAYLOAD ELSE:', payload);
 
         const requisicao = this._idProjetoEdicao
           ? this.atualizarProjeto(payload, isRascunho)
