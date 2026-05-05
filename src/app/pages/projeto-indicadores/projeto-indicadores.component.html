@@ -76,17 +76,6 @@
 
             <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO PROJETO:</span>
           
-          <!--           
-          <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div class="mindicador-selecionado" *ngFor="let metaProjeto of item.metasIndicadorProjeto">
-              <div class="meta-item" style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{ metaProjeto.anoMeta }}</span>
-                <input type="number" class="meta-value-input" [attr.data-year]="metaProjeto.anoMeta" [(ngModel)]="metaProjeto.valorMeta" placeholder="Digite a meta">
-              </div>
-            </div>
-          </div>
-          -->
-
             <div [formGroup]="getIndicadorForm(i)">
 
               <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;" formArrayName="metas">

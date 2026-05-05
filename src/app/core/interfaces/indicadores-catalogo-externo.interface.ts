@@ -32,7 +32,7 @@ export interface IIndicadoresCatalogoExterno {
   polaridade: string,
   medidoPor: string,
   metasIndicador: IMetaIndicador[],
-  metasIndicadorProjeto: IMetaIndicador[],
+  metas: IMetaIndicador[],
   maiorAnoInidicador: number,
   maiorMetaIndicador: string
 }
@@ -40,5 +40,5 @@ export interface IIndicadoresCatalogoExterno {
 export interface IMetaIndicador {
   idFato: number,
   valorMeta: string,
-  anoMeta: string
+  anoMeta: number
 }

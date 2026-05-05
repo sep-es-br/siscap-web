@@ -108,7 +108,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
           indicadores.map((item) => ({
             ...item,
             metasIndicador: item.metasIndicador ?? [],
-            metasIndicadorProjeto: item.metasIndicadorProjeto ?? [],
+            metasIndicadorProjeto: item.metas ?? [],
           }))
         )
       )
@@ -223,19 +223,41 @@ export class ProjetoIndicadoresComponent implements OnInit {
   private atualizarFormulario(): void {
 
     // console.log('>>> ENTROU NO atualizarFormulario');
+    // const formArray = this.form.get('indicadoresProjeto') as FormArray;
+    // formArray.clear(); // importante para resetar o estado do formulário e evitar dados obsoletos
+    // this.indicadoresSelecionados.forEach((indicador) => {
+    //   const metasFormArray = this.fb.array(
+    //     (indicador.metas || []).map(meta =>
+    //       this.fb.group({
+    //         idFato: [meta.idFato],
+    //         anoMeta: [meta.anoMeta],
+    //         valorMeta: [meta.valorMeta ?? '', Validators.required]
+    //       })
+    //     )
+    //   );
+    //   formArray.push(
+    //     this.fb.group({
+    //       idIndicadorExterno: [indicador.idIndicador],
+    //       metas: metasFormArray
+    //     })
+    //   );
+    // });
 
     const formArray = this.form.get('indicadoresProjeto') as FormArray;
+    formArray.clear();
 
-    formArray.clear(); // importante para resetar o estado do formulário e evitar dados obsoletos
+    const fonte = this.modoEdicao
+      ? this.projeto.indicadores // 🔥 dados com metas do banco
+      : this.indicadoresSelecionados; // 🔥 catálogo
 
-    this.indicadoresSelecionados.forEach((indicador) => {
+    fonte.forEach((indicador) => {
 
       const metasFormArray = this.fb.array(
-        (indicador.metasIndicadorProjeto || []).map(meta =>
+        (indicador.metas || []).map(meta =>
           this.fb.group({
             idFato: [meta.idFato],
             anoMeta: [meta.anoMeta],
-            valorMeta: [meta.valorMeta || '', Validators.required]
+            valorMeta: [meta.valorMeta ?? '', Validators.required]
           })
         )
       );
@@ -351,16 +373,20 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   sincronizarMetasProjeto(item: IIndicadoresCatalogoExterno) {
 
-    const metasExternas = item.metasIndicador || [];
-    const metasProjeto = item.metasIndicadorProjeto || [];
+    const metasExternas = item.metasIndicador ?? [];
+    const metasProjeto: IMetaIndicador[] = item.metas ?? [];
 
-    item.metasIndicadorProjeto = metasExternas.map(metaExt => {
+    item.metas = metasExternas.map(metaExt => {
 
       const existente = metasProjeto.find(
         m => m.anoMeta === metaExt.anoMeta
       );
 
-      return existente || {
+      if (existente) {
+        return existente;
+      }
+
+      return {
         idFato: metaExt.idFato,
         anoMeta: metaExt.anoMeta,
         valorMeta: ''
