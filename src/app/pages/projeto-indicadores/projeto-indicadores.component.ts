@@ -18,6 +18,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export interface IndicadorProjetoForm {
   idIndicador: number;
+  idIndicadorCatalogoExterno: number;
   metasIndicadorProjeto: IMetaIndicador[];
 }
 
@@ -64,27 +65,18 @@ export class ProjetoIndicadoresComponent implements OnInit {
     private filterService: FilterService,
     private catalogoIndicadorService: CatalogoIndicadorService,
     private fb: FormBuilder,
-    private _ngbModalService: NgbModal,
   ) { }
 
   ngOnInit(): void {
-
-    // console.log('Form no filho:', this.form);
-    // if (this.form) {
-    //   console.log('Controles do form:', this.form.controls);
-    // } else {
-    //   console.error('Form NÃO foi recebido no filho');
-    // }
-
     this.init();
     this.initBaseChip();
     this.filterService.filter$.subscribe((f) => {
       if (f) this.currentFilter = f;
     });
-
   }
 
   private init(): void {
+
     this.loading = true;
 
     this.catalogoIndicadorService
@@ -107,14 +99,12 @@ export class ProjetoIndicadoresComponent implements OnInit {
         map((indicadores) =>
           indicadores.map((item) => ({
             ...item,
-            metasIndicador: item.metasIndicador ?? [],
-            metasIndicadorProjeto: item.metas ?? [],
+            metasIndicador: item.metasIndicador ?? []
           }))
         )
       )
       .subscribe({
         next: (indicadores) => {
-          // console.log('📌 Após MAP (final):', indicadores);
           this.indicadores = indicadores;
           this.indicadoresFiltrados = indicadores;
           this.syncComFormulario();
@@ -149,7 +139,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
   limparFiltros(): void {
     this.filtroTexto = '';
     this.indicadoresFiltrados = this.indicadores;
-
     this.initBaseChip();
     this.filterService.setFilter({});
   }
@@ -170,11 +159,12 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     // atualiza chips também
     this.chips = this.chips.filter((c) => c !== filtro);
+
   }
 
   onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
     this.indicadoresSelecionados = novos.map(item => {
-      this.sincronizarMetasProjeto(item);
+      this.sincronizarMetasProjeto(item, this.isModoEdicao);
       return item;
     });
 
@@ -197,23 +187,24 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     if (!this.form) return;
 
-    const valores = this.form.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
+    const indicadoresProjeto = this.form.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
+
+    console.log('>>> indicadoresProjeto do formulário: ', indicadoresProjeto);
 
     this.indicadoresSelecionados = this.indicadores
       .filter(cat =>
-        valores.some(v => v.idIndicador === cat.idIndicador)
+        indicadoresProjeto.some(v => v.idIndicadorCatalogoExterno === cat.idIndicador)
       )
       .map(cat => {
-        const doForm = valores.find(v => v.idIndicador === cat.idIndicador);
 
+        const doForm = indicadoresProjeto.find(v => v.idIndicadorCatalogoExterno === cat.idIndicador);
         const item = {
           ...cat,
           metasIndicadorProjeto: doForm?.metasIndicadorProjeto || []
         };
-
-        this.sincronizarMetasProjeto(item);
-
+        this.sincronizarMetasProjeto(item, this.isModoEdicao);
         return item;
+
       });
 
     this.atualizarFormulario();
@@ -222,38 +213,14 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private atualizarFormulario(): void {
 
-    // console.log('>>> ENTROU NO atualizarFormulario');
-    // const formArray = this.form.get('indicadoresProjeto') as FormArray;
-    // formArray.clear(); // importante para resetar o estado do formulário e evitar dados obsoletos
-    // this.indicadoresSelecionados.forEach((indicador) => {
-    //   const metasFormArray = this.fb.array(
-    //     (indicador.metas || []).map(meta =>
-    //       this.fb.group({
-    //         idFato: [meta.idFato],
-    //         anoMeta: [meta.anoMeta],
-    //         valorMeta: [meta.valorMeta ?? '', Validators.required]
-    //       })
-    //     )
-    //   );
-    //   formArray.push(
-    //     this.fb.group({
-    //       idIndicadorExterno: [indicador.idIndicador],
-    //       metas: metasFormArray
-    //     })
-    //   );
-    // });
-
     const formArray = this.form.get('indicadoresProjeto') as FormArray;
+
     formArray.clear();
 
-    const fonte = this.modoEdicao
-      ? this.projeto.indicadores // 🔥 dados com metas do banco
-      : this.indicadoresSelecionados; // 🔥 catálogo
-
-    fonte.forEach((indicador) => {
+    this.indicadoresSelecionados.forEach((indicador) => {
 
       const metasFormArray = this.fb.array(
-        (indicador.metas || []).map(meta =>
+        (indicador.metasIndicadorProjeto || []).map(meta =>
           this.fb.group({
             idFato: [meta.idFato],
             anoMeta: [meta.anoMeta],
@@ -265,15 +232,11 @@ export class ProjetoIndicadoresComponent implements OnInit {
       formArray.push(
         this.fb.group({
           idIndicadorExterno: [indicador.idIndicador],
-          metas: metasFormArray
+          metasIndicadorProjeto: metasFormArray
         })
       );
 
     });
-
-    // 🔎 DEBUG AQUI
-    // console.log('Após atualizarFormulario:', this.form.value);
-    // console.log('Form válido:', this.form.valid);
 
   }
 
@@ -371,12 +334,17 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   }
 
-  sincronizarMetasProjeto(item: IIndicadoresCatalogoExterno) {
+  sincronizarMetasProjeto(item: IIndicadoresCatalogoExterno, isModoEdicao: boolean): void {
 
     const metasExternas = item.metasIndicador ?? [];
-    const metasProjeto: IMetaIndicador[] = item.metas ?? [];
+    const metasProjeto: IMetaIndicador[] = item.metasIndicadorProjeto ?? [];
 
-    item.metas = metasExternas.map(metaExt => {
+    if (isModoEdicao && metasProjeto.length > 0) {
+      item.metasIndicadorProjeto = metasProjeto;
+      return;
+    }
+
+    item.metasIndicadorProjeto = metasExternas.map(metaExt => {
 
       const existente = metasProjeto.find(
         m => m.anoMeta === metaExt.anoMeta
@@ -405,7 +373,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   getMetas(index: number): FormArray {
-    return this.getIndicadorForm(index).get('metas') as FormArray;
+    return this.getIndicadorForm(index).get('metasIndicadorProjeto') as FormArray;
   }
 
   voltar() { }

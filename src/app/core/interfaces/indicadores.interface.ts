@@ -9,7 +9,7 @@ export interface IIndicadores {
   descricaoMeta: string | null;
   idStatus: number;
   idIndicadorExterno: number | null;
-  metas: Array<{
+  metasIndicadorProjeto: Array<{
     idFato: number | null;
     anoMeta: number | null;
     valorMeta: number | null;

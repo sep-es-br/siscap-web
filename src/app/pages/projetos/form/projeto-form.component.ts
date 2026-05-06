@@ -619,10 +619,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    // this.projetoForm.valueChanges.subscribe(valor => {
-    //   console.log('PAI recebeu mudança:', valor);
-    // });
-
     const camposPedidoComplementacao: Record<string, string> = {
       sigla: 'Sigla',
       titulo: 'Título',
@@ -672,10 +668,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._projetosService.idProjeto$.pipe(take(1)).subscribe(idProjeto => {
 
       if (idProjeto > 0) {
+        
         this._subscription.add(this._getAllOpcoes$.pipe(tap(() => {
           this.carregarProjetoEditar(idProjeto);
           this._subscription.add(this._atualizarProjeto$.subscribe());
         })).subscribe());
+
       } else {
 
         this._subscription.add(this._getAllOpcoes$.subscribe(
@@ -700,11 +698,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }
 
     });
-
-
-
-
-
 
     this._pessoasService.buscarTodosAgentesPublicosGoves().subscribe({
       error: (err) => console.error('Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :', err)
@@ -1457,7 +1450,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           payload.idOrganizacao = form.get('idOrganizacao')?.value;
         }
 
-        // console.log('PAYLOAD SUBMIT:', payload);
+        console.log('PAYLOAD SUBMIT:', payload);
 
         const requisicao = this._idProjetoEdicao
           ? this.atualizarProjeto(payload, isRascunho)

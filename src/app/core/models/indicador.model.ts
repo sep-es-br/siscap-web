@@ -11,7 +11,7 @@ export class IndicadorModel implements IIndicadores {
   
   // novos campos
   public idIndicadorExterno: number | null = null;
-  public metas: Array<{
+  public metasIndicadorProjeto: Array<{
     idFato: number | null;
     anoMeta: number | null;
     valorMeta: number | null;
@@ -24,7 +24,7 @@ export class IndicadorModel implements IIndicadores {
     this.descricaoMeta = indicadores?.descricaoMeta ?? null;
     this.idStatus = indicadores?.idStatus ?? 0;
     this.idIndicadorExterno = indicadores?.idIndicadorExterno ?? null;
-    this.metas = indicadores?.metas ?? [];
+    this.metasIndicadorProjeto = indicadores?.metasIndicadorProjeto ?? [];
   }
   
 

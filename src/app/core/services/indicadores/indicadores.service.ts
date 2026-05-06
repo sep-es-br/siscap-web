@@ -82,7 +82,7 @@ export class IndicadoresService {
       idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo,),
       idIndicadorCatalogoExterno: this._nnfb.control(membro?.idIndicadorExterno ?? null),
       metasIndicadorExterno: this._nnfb.array<FormGroup<MetaIndicadorExternoFormType>>(
-        (membro?.metas ?? []).map(meta =>
+        (membro?.metasIndicadorProjeto ?? []).map(meta =>
           this.construirMetaIndicadorExterno(meta)
         )
       )
