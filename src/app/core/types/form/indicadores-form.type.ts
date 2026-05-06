@@ -23,7 +23,8 @@ export type IndicadoresFormTypeValue = Array<
 >;
 
 export type MetaIndicadorExternoFormType = {
+  idFato: FormControl<number | null>;
   anoMeta: FormControl<number | null>;
-  valorMeta: FormControl<number | null>;
+  valorMeta: FormControl<string | null>;
 };
 

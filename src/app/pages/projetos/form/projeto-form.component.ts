@@ -319,7 +319,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+           console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -1438,10 +1438,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       if (this.validarFormulario(form)) {
 
-        // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
         form.get('valor.tipo')?.enable();
 
-        // Caso especifico de Projetos; moeda somente pode ser 'Real'
         form.get('valor.moeda')?.enable();
 
         const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);

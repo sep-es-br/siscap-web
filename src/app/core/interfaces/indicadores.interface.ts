@@ -12,6 +12,6 @@ export interface IIndicadores {
   metasIndicadorProjeto: Array<{
     idFato: number | null;
     anoMeta: number | null;
-    valorMeta: number | null;
+    valorMeta: string | null;
   }>;
 }

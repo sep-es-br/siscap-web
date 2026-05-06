@@ -9,12 +9,11 @@ export class IndicadorModel implements IIndicadores {
   public descricaoMeta: string | null = null;
   public idStatus: number = 0;
   
-  // novos campos
   public idIndicadorExterno: number | null = null;
   public metasIndicadorProjeto: Array<{
     idFato: number | null;
     anoMeta: number | null;
-    valorMeta: number | null;
+    valorMeta: string | null;
   }>;
 
   constructor(indicadores?: IIndicadores) {
@@ -22,7 +21,7 @@ export class IndicadorModel implements IIndicadores {
     this.tipoIndicador = indicadores?.tipoIndicador ?? null;
     this.descricaoIndicador = indicadores?.descricaoIndicador ?? null;
     this.descricaoMeta = indicadores?.descricaoMeta ?? null;
-    this.idStatus = indicadores?.idStatus ?? 0;
+    this.idStatus = indicadores?.idStatus ?? 1;
     this.idIndicadorExterno = indicadores?.idIndicadorExterno ?? null;
     this.metasIndicadorProjeto = indicadores?.metasIndicadorProjeto ?? [];
   }

@@ -26,6 +26,7 @@ export interface Desafio {
 }
 
 export interface IIndicadoresCatalogoExterno {
+  idIndicadorProjeto?: number,
   idIndicador: number,
   nomeIndicador: string,
   unidadeMedida: string,
@@ -39,6 +40,6 @@ export interface IIndicadoresCatalogoExterno {
 
 export interface IMetaIndicador {
   idFato: number,
-  valorMeta: string,
-  anoMeta: number
+  anoMeta: number,
+  valorMeta: string
 }

@@ -95,6 +95,7 @@ export class IndicadoresService {
 
   private construirMetaIndicadorExterno(meta?: any): FormGroup<MetaIndicadorExternoFormType> {
     return this._nnfb.group({
+      idFato: this._nnfb.control(meta?.idFato ?? null, Validators.required),
       valorMeta: this._nnfb.control(meta?.valorMeta ?? null, Validators.required),
       anoMeta: this._nnfb.control(meta?.anoMeta ?? null, Validators.required),
     });
