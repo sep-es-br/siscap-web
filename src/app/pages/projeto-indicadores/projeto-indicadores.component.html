@@ -1,13 +1,15 @@
 <!-- CARD: FILTROS -->
 <div class="card">
+
   <div class="card-header">
     <div class="badges-container">
       <app-indicador-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value"
         [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)">
       </app-indicador-chip>
     </div>
-
-    <p-button label="Filtros" icon="pi pi-filter" styleClass="btn-filtros" (click)="showModal = true">
+    <p-button styleClass="btn-filtros" (click)="showModal = true">
+      <span>Filtros</span>
+      <span style="font-size:14px">▽</span>
     </p-button>
   </div>
 

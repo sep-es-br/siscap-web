@@ -265,6 +265,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   onApply(filter: any) {
 
+    console.log('Filtro aplicado:', filter);
+
     this.showModal = false;
 
     this.currentFilter = filter;
@@ -377,6 +379,30 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   getMetas(index: number): FormArray {
     return this.getIndicadorForm(index).get('metasIndicadorProjeto') as FormArray;
+  }
+
+  private aplicarFiltros(): void {
+
+    this.indicadoresBI = this.indicadoresSelecionados.filter( indicador => {
+  
+      // exemplo filtro labels
+      const filtrosLabels = this.currentFilter.labels;
+  
+      return Object.entries(filtrosLabels).every(([idLabel, valores]) => {
+  
+        if (!valores || (valores as number[]).length === 0) {
+          return true;
+        }
+  
+        return indicador.labels?.some(label =>
+          label.idLabel === Number(idLabel)
+          && (valores as number[]).includes(label.idLabelValor)
+        );
+  
+      });
+  
+    });
+  
   }
 
   voltar() { }

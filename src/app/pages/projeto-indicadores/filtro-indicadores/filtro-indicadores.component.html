@@ -45,11 +45,22 @@
             <!-- DESAFIOS -->
             <div class="filter-field">
                 <label class="filter-label">Desafios</label>
-                <select class="filter-select" [(ngModel)]="filtro.desafio">
+                <!-- <select class="filter-select" [(ngModel)]="filtro.desafio">
                     <option *ngFor="let d of desafios" [value]="d.id">
                         {{ d.nome }}
                     </option>
-                </select>
+                </select> -->
+                <p-multiSelect
+                    [maxSelectedLabels]="2"
+                    [options]="desafios"
+                    optionLabel="nome"
+                    optionValue="id"
+                    [(ngModel)]="filtro.desafio.id"
+                    defaultLabel="Selecionar..."
+                    display="chip"
+                    class="w-full"
+                    >
+                </p-multiSelect>
             </div>
 
         </div>
@@ -58,10 +69,10 @@
     <!-- FOOTER -->
     <div class="modal-footer">
         <button class="btn-restaurar" (click)="resetar()">
-            ↺ Restaurar Filtros
+            RESTAURAR FILTROS
         </button>
-        <button class="btn-filtrar" (click)="filtrar()">
-            ✓ Filtrar
+        <button class="btn-filtrar" (click)="applyFilter()">
+            FILTRAR
         </button>
     </div>
 

@@ -28,8 +28,14 @@ export class FiltroIndicadoresComponent implements OnChanges {
   filtro: any = {
     idGestao: null,
     labels: {},
-    desafio: null
+    desafio: {}
   };
+
+  ngOnInit() {
+    // console.log('Desafios recebidos:', this.desafios);
+    // console.log('Labels gestão:', this.gestao?.labels);
+    // console.log('Valores labels gestão:', this.gestao?.labels?.flatMap(label => label.valores));
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
 
@@ -59,14 +65,17 @@ export class FiltroIndicadoresComponent implements OnChanges {
     }
 
     this.atualizarLabels();
+
   }
 
   private atualizarLabels() {
+
     this.labelsOrdenados = [...(this.gestaoSelecionada?.labels || [])]
       .sort((a, b) => a.ordem - b.ordem);
 
     // reset dos filtros dinâmicos
     this.filtro.labels = {};
+
   }
 
   // onChangeLabel(idLabel: number, valor: number) {
@@ -86,7 +95,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   }
 
   applyFilter() {
-    this.apply.emit('filtro aplicaodo');
+    this.apply.emit(this.filtro);
   }
 
   fechar() {
