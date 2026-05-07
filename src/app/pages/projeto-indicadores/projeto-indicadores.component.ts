@@ -195,11 +195,11 @@ export class ProjetoIndicadoresComponent implements OnInit {
     const indicadoresProjeto = this.form.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
 
     this.indicadoresSelecionados = this.indicadoresBI
-      .filter(cat =>
-        indicadoresProjeto.some(v => v.idIndicadorCatalogoExterno === cat.idIndicador)
+      .filter( indicadorBI =>
+        indicadoresProjeto.some(v => v.idIndicadorCatalogoExterno === indicadorBI.idIndicador )
       )
-      .map(cat => {
-        const doForm = indicadoresProjeto.find(v => v.idIndicadorCatalogoExterno === cat.idIndicador);
+      .map( cat => {
+        const doForm = indicadoresProjeto.find( v => v.idIndicadorCatalogoExterno === cat.idIndicador );
         const item = {
           ...cat,
           idIndicadorProjeto: doForm?.idIndicador,
@@ -224,6 +224,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     this.indicadoresSelecionados.forEach( (indicador) => {
 
+      // console.log( '🔄 Sincronizando metas para indicador:', indicador );
+
       const metasProjetoArray = this.fb.array(
         (indicador.metasIndicadorProjeto || []).map(meta =>
           this.fb.group({
@@ -236,7 +238,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
       formArrayIndicadoresProjeto.push(
         this.fb.group({
-          idIndicador: indicador.idIndicadorProjeto ?? 0,
+          idIndicador: indicador.idIndicadorProjeto ?? null,
           idIndicadorExterno: [indicador.idIndicador],
           metasIndicadorProjeto: metasProjetoArray
         })
@@ -349,24 +351,9 @@ export class ProjetoIndicadoresComponent implements OnInit {
     const metasExternas = item.metasIndicador ?? [];
     const metasProjeto: IMetaIndicador[] = item.metasIndicadorProjeto ?? [];
 
-    // if (isModoEdicao && metasProjeto.length > 0) {
-    //   item.metasIndicadorProjeto = metasExternas.map( metaExt => {
-    //     const existente = metasProjeto.find(
-    //       m => m.anoMeta === metaExt.anoMeta
-    //     );
-    //     console.log('>>> Sincronizando meta para o ano: ', metaExt.anoMeta, ' - existente no projeto? ', !!existente, metaExt);
-    //     return {
-    //       idFato: metaExt.idFato,
-    //       anoMeta: metaExt.anoMeta,
-    //       valorMeta: existente?.valorMeta ?? ''
-    //     };
-    //   });
-    //   return;
-    // }
-
     item.metasIndicadorProjeto = metasExternas.map(metaExt => {
       const existente = metasProjeto.find(
-        m => m.anoMeta === metaExt.anoMeta
+        m => m.idFato === metaExt.idFato
       );
       if (existente) {
         return existente;
