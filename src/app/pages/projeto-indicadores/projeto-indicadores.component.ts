@@ -326,17 +326,17 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   onApply(filter: any): void {
 
-    console.log('Filtro aplicado:', filter);
-
     this.showModal = false;
 
     const filtroFormatado: IFiltroIndicador = {
-      // labels: filter.labels?.map((l: any) => l.idLabel),
-      // labelValores: filter.labelValores?.map(  (lv: any) => lv.idLabelValor ),
-      // desafios: filter.desafios?.map( (d: any) => d.idDesafio )
-      labels: filter.labels ?? [],
-      labelValores: filter.labelValores ?? [],
-      desafios: filter.desafios ?? []
+      idGestao: filter.idGestao,
+      labels: Object.entries(filter.labels ?? {})
+        .filter(([_, valores]) => Array.isArray(valores) && valores.length > 0)
+        .map(([idLabel, idLabelValores]) => ({
+          idLabel: Number(idLabel),
+          idLabelValores: idLabelValores as number[]
+        })),
+      desafios: filter.desafio?.id ?? []
     };
 
     this.currentFilter = filtroFormatado;
@@ -345,25 +345,17 @@ export class ProjetoIndicadoresComponent implements OnInit {
     // const baseChip = this.chips.find((c) => c.type === 'base');
     // this.chips = [baseChip, ...dynamicChips];
 
-    console.log('Filtro formatado:', filtroFormatado);
-
     this.filterService.setFilter(filtroFormatado);
 
   }
 
   // mapToChips(filter: IFiltroIndicador): any[] {
-
   //   const chips: any[] = [];
-
   //   Object.keys(filter || {}).forEach((nodeKey) => {
-
   //     if (nodeKey === 'Administration') return;
-
   //     const node = filter[nodeKey];
-
   //     Object.keys(node || {}).forEach((field) => {
   //       const value = node[field];
-
   //       if (value && value !== '' && value !== 0) {
   //         chips.push({
   //           label: field.toUpperCase(),
@@ -376,9 +368,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   //       }
   //     });
   //   });
-
   //   return chips;
-
   // }
 
   removeChip(chip: any) {

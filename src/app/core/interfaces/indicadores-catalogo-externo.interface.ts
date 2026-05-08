@@ -45,7 +45,12 @@ export interface IMetaIndicador {
 }
 
 export interface IFiltroIndicador {
-  labels?: number[];
-  labelValores?: number[];
+  idGestao: number;
+  labels?: IFiltroLabel[];
   desafios?: number[];
+}
+
+export interface IFiltroLabel {
+  idLabel: number;
+  idLabelValores: number[];
 }

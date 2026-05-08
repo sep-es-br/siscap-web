@@ -94,4 +94,10 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   isSelecionado(indicador: any): boolean {
     return (this.selecionados || []).some(i => i.idIndicador === indicador.idIndicador);
   }
+
+  showNewIndicatorForm(): void {
+    // Lógica para exibir o formulário de criação de um novo indicador
+    alert('Exibir formulário para criar um novo indicador de projeto estratégico');
+  }
+
 }

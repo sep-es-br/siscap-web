@@ -18,7 +18,6 @@ export class CatalogoIndicadorService {
    * GET /catalogo-externo/gestao
    */
   getGestoesIndicadoresCatalogoExternos(): Observable<IGestoesCatalogoExterno[]> {
-    //console.log('GET', `${this._url}/gestoes`);
     return this.http.get<IGestoesCatalogoExterno[]>(`${this._url}/gestoes`);
   }
 
@@ -27,40 +26,9 @@ export class CatalogoIndicadorService {
    * GET /catalogo-externo/gestao/{idGestao}/indicadores
    */
   getIndicadoresPorGestaoCatalogoExternos(idGestao: number, filtro?: IFiltroIndicador): Observable<IIndicadoresCatalogoExterno[]> {
-    
-    let params = new HttpParams();
-
-    if (filtro?.labels?.length) {
-      filtro.labels.forEach((id: number) => {
-        params = params.append('label', id);
-      });
-    }
-
-    if (filtro?.labelValores?.length) {
-      filtro.labelValores.forEach((id: number) => {
-        params = params.append('lableValor', id);
-      });
-    }
-
-    if (filtro?.desafios?.length) {
-      filtro.desafios.forEach((id: number) => {
-        params = params.append('desafio', id);
-      });
-    }
-
-    console.log('PARAMETROS :', { params });
-
-    return this.http.get<IIndicadoresCatalogoExterno[]>(
-      `${this._url}/gestoes/${idGestao}/indicadores`,
-      { params }
+    return this.http.post<IIndicadoresCatalogoExterno[]>(
+      `${this._url}/gestoes/${idGestao}/indicadores`, filtro 
     );
-
   }
-
-  // getIndicadoresPorFiltroCatalogoExternos(filtro: any): Observable<IIndicadoresCatalogoExterno[]> {
-  //   return this.http.get<IIndicadoresCatalogoExterno[]>(
-  //     `${this._url}/gestoes/indicadores?filtro=${filtro}`
-  //   );
-  // }
 
 }
