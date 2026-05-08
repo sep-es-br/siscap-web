@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
-import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../interfaces/indicadores-catalogo-externo.interface';
+import { IFiltroIndicador, IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../interfaces/indicadores-catalogo-externo.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -26,11 +26,41 @@ export class CatalogoIndicadorService {
    * Lista indicadores por gestão
    * GET /catalogo-externo/gestao/{idGestao}/indicadores
    */
-  getIndicadoresPorGestaoCatalogoExternos(idGestao: number): Observable<IIndicadoresCatalogoExterno[]> {
-    //console.log('GET', `${this._url}/gestoes/${idGestao}/indicadores`);
+  getIndicadoresPorGestaoCatalogoExternos(idGestao: number, filtro?: IFiltroIndicador): Observable<IIndicadoresCatalogoExterno[]> {
+    
+    let params = new HttpParams();
+
+    if (filtro?.labels?.length) {
+      filtro.labels.forEach((id: number) => {
+        params = params.append('label', id);
+      });
+    }
+
+    if (filtro?.labelValores?.length) {
+      filtro.labelValores.forEach((id: number) => {
+        params = params.append('lableValor', id);
+      });
+    }
+
+    if (filtro?.desafios?.length) {
+      filtro.desafios.forEach((id: number) => {
+        params = params.append('desafio', id);
+      });
+    }
+
+    console.log('PARAMETROS :', { params });
+
     return this.http.get<IIndicadoresCatalogoExterno[]>(
-      `${this._url}/gestoes/${idGestao}/indicadores`
+      `${this._url}/gestoes/${idGestao}/indicadores`,
+      { params }
     );
+
   }
+
+  // getIndicadoresPorFiltroCatalogoExternos(filtro: any): Observable<IIndicadoresCatalogoExterno[]> {
+  //   return this.http.get<IIndicadoresCatalogoExterno[]>(
+  //     `${this._url}/gestoes/indicadores?filtro=${filtro}`
+  //   );
+  // }
 
 }

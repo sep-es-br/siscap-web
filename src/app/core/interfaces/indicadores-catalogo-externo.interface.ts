@@ -43,3 +43,9 @@ export interface IMetaIndicador {
   anoMeta: number,
   valorMeta: string
 }
+
+export interface IFiltroIndicador {
+  labels?: number[];
+  labelValores?: number[];
+  desafios?: number[];
+}

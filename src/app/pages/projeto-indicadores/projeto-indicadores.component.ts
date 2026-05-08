@@ -12,8 +12,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { IndicadorChipComponent } from './indicador-chip/indicador-chip.component';
 import { SelecaoIndicadoresComponent } from './selecao-indicadores/selecao-indicadores.component';
 import { CatalogoIndicadorService } from '../../core/services/catalogo-indicadores/catalogo-indicador.service';
-import { map, switchMap, tap } from 'rxjs';
-import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno, IMetaIndicador } from '../../core/interfaces/indicadores-catalogo-externo.interface';
+import { BehaviorSubject, filter, map, switchMap, tap } from 'rxjs';
+import { IFiltroIndicador, IGestoesCatalogoExterno, IIndicadoresCatalogoExterno, IMetaIndicador } from '../../core/interfaces/indicadores-catalogo-externo.interface';
 
 export interface IndicadorProjetoForm {
   idIndicador: number;
@@ -49,6 +49,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
   @Input() form!: FormGroup;
   @Input() isModoEdicao: boolean = false;
 
+  private reloadIndicadores$ = new BehaviorSubject<void>(undefined);
+
   showModal: boolean = false;
 
   indicadoresBI: IIndicadoresCatalogoExterno[] = [];
@@ -72,54 +74,113 @@ export class ProjetoIndicadoresComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+
     this.init();
+
     this.initBaseChip();
-    this.filterService.filter$.subscribe((f) => {
-      if (f) this.currentFilter = f;
-    });
+
+    this.filterService.filter$
+      .pipe(
+        filter((f): f is IFiltroIndicador => f !== null),
+        switchMap((filter) => {
+          return this.catalogoIndicadorService
+            .getIndicadoresPorGestaoCatalogoExternos(this.gestao?.idGestao || -1, filter);
+        })
+      )
+      .subscribe((indicadores) => {
+        this.indicadoresBI = indicadores;
+        this.indicadoresFiltrados = indicadores;
+      });
+
   }
 
   private init(): void {
 
     this.loading = true;
 
-    this.catalogoIndicadorService
-      .getGestoesIndicadoresCatalogoExternos()
+    this.reloadIndicadores$
       .pipe(
+
+        switchMap(() =>
+          this.catalogoIndicadorService
+            .getGestoesIndicadoresCatalogoExternos()
+        ),
+
         tap((gestao) => {
-          // console.log('📌 Response GESTÃO:', gestao);
           this.gestao = gestao[0];
           this.initBaseChip();
         }),
+
         switchMap((gestao) =>
           this.catalogoIndicadorService
-            .getIndicadoresPorGestaoCatalogoExternos(gestao[0].idGestao)
-            .pipe(
-              tap((indicadores) => {
-                // console.log('📌 Response INDICADORES:', indicadores);
-              })
+            .getIndicadoresPorGestaoCatalogoExternos(
+              this.gestao?.idGestao || 0
             )
         ),
+
         map((indicadores) =>
           indicadores.map((item) => ({
             ...item,
             metasIndicador: item.metasIndicador ?? []
           }))
         )
+
       )
       .subscribe({
         next: (indicadores) => {
           this.indicadoresBI = indicadores;
           this.indicadoresFiltrados = indicadores;
           this.syncComFormulario();
-        },
-        error: (err) => {
-          console.error('Erro ao carregar dados', err);
-        },
-        complete: () => {
           this.loading = false;
         },
+
+        error: (err) => {
+          console.error('Erro ao carregar dados', err);
+          this.loading = false;
+        }
       });
+
+    // dispara primeira carga
+    this.reloadIndicadores$.next();
+
+    // this.catalogoIndicadorService
+    //   .getGestoesIndicadoresCatalogoExternos()
+    //   .pipe(
+    //     tap((gestao) => {
+    //       // console.log('📌 Response GESTÃO:', gestao);
+    //       this.gestao = gestao[0];
+    //       this.initBaseChip();
+    //     }),
+    //     switchMap((gestao) =>
+    //       this.catalogoIndicadorService
+    //         .getIndicadoresPorGestaoCatalogoExternos(gestao[0].idGestao)
+    //         .pipe(
+    //           tap((indicadores) => {
+    //             // console.log('📌 Response INDICADORES:', indicadores);
+    //           })
+    //         )
+    //     ),
+    //     map((indicadores) =>
+    //       indicadores.map((item) => ({
+    //         ...item,
+    //         metasIndicador: item.metasIndicador ?? []
+    //       }))
+    //     )
+    //   )
+    //   .subscribe({
+    //     next: (indicadores) => {
+    //       this.indicadoresBI = indicadores;
+    //       this.indicadoresFiltrados = indicadores;
+    //       this.syncComFormulario();
+    //     },
+    //     error: (err) => {
+    //       console.error('Erro ao carregar dados', err);
+    //     },
+    //     complete: () => {
+    //       this.loading = false;
+    //     },
+    //   });
+
   }
 
   filtrarIndicadores(): void {
@@ -144,7 +205,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.filtroTexto = '';
     this.indicadoresFiltrados = this.indicadoresBI;
     this.initBaseChip();
-    this.filterService.setFilter({});
+    // this.filterService.setFilter({});
   }
 
   removerFiltro(filtro: any): void {
@@ -158,19 +219,19 @@ export class ProjetoIndicadoresComponent implements OnInit {
       }
     }
 
-    this.filterService.setFilter(this.currentFilter);
+    // this.filterService.setFilter(this.currentFilter);
 
     this.chips = this.chips.filter((c) => c !== filtro);
 
   }
 
   onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
-    
+
     this.indicadoresSelecionados = novos.map(item => {
       this.sincronizarMetasProjeto(item, this.isModoEdicao);
       return item;
     });
-    
+
     this.atualizarFormulario();
 
   }
@@ -195,11 +256,11 @@ export class ProjetoIndicadoresComponent implements OnInit {
     const indicadoresProjeto = this.form.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
 
     this.indicadoresSelecionados = this.indicadoresBI
-      .filter( indicadorBI =>
-        indicadoresProjeto.some(v => v.idIndicadorCatalogoExterno === indicadorBI.idIndicador )
+      .filter(indicadorBI =>
+        indicadoresProjeto.some(v => v.idIndicadorCatalogoExterno === indicadorBI.idIndicador)
       )
-      .map( cat => {
-        const doForm = indicadoresProjeto.find( v => v.idIndicadorCatalogoExterno === cat.idIndicador );
+      .map(cat => {
+        const doForm = indicadoresProjeto.find(v => v.idIndicadorCatalogoExterno === cat.idIndicador);
         const item = {
           ...cat,
           idIndicadorProjeto: doForm?.idIndicador,
@@ -208,7 +269,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
               ? doForm.metasIndicadorExterno
               : cat.metasIndicadorProjeto ?? []
         };
-        this.sincronizarMetasProjeto( item, this.isModoEdicao );
+        this.sincronizarMetasProjeto(item, this.isModoEdicao);
         return item;
       });
 
@@ -222,7 +283,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     formArrayIndicadoresProjeto.clear();
 
-    this.indicadoresSelecionados.forEach( (indicador) => {
+    this.indicadoresSelecionados.forEach((indicador) => {
 
       // console.log( '🔄 Sincronizando metas para indicador:', indicador );
 
@@ -263,51 +324,65 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.showModal = true;
   }
 
-  onApply(filter: any) {
+  onApply(filter: any): void {
 
     console.log('Filtro aplicado:', filter);
 
     this.showModal = false;
 
-    this.currentFilter = filter;
+    const filtroFormatado: IFiltroIndicador = {
+      // labels: filter.labels?.map((l: any) => l.idLabel),
+      // labelValores: filter.labelValores?.map(  (lv: any) => lv.idLabelValor ),
+      // desafios: filter.desafios?.map( (d: any) => d.idDesafio )
+      labels: filter.labels ?? [],
+      labelValores: filter.labelValores ?? [],
+      desafios: filter.desafios ?? []
+    };
 
-    const dynamicChips = this.mapToChips(filter);
-    const baseChip = this.chips.find((c) => c.type === 'base');
+    this.currentFilter = filtroFormatado;
 
-    this.chips = [baseChip, ...dynamicChips];
+    // const dynamicChips = this.mapToChips(filtroFormatado);
+    // const baseChip = this.chips.find((c) => c.type === 'base');
+    // this.chips = [baseChip, ...dynamicChips];
 
-    this.filterService.setFilter(filter);
+    console.log('Filtro formatado:', filtroFormatado);
+
+    this.filterService.setFilter(filtroFormatado);
 
   }
 
-  mapToChips(filter: any): any[] {
-    const chips: any[] = [];
+  // mapToChips(filter: IFiltroIndicador): any[] {
 
-    Object.keys(filter || {}).forEach((nodeKey) => {
-      if (nodeKey === 'Administration') return;
+  //   const chips: any[] = [];
 
-      const node = filter[nodeKey];
+  //   Object.keys(filter || {}).forEach((nodeKey) => {
 
-      Object.keys(node || {}).forEach((field) => {
-        const value = node[field];
+  //     if (nodeKey === 'Administration') return;
 
-        if (value && value !== '' && value !== 0) {
-          chips.push({
-            label: field.toUpperCase(),
-            value: value,
-            type: 'filter',
-            removable: true,
-            node: nodeKey,
-            field,
-          });
-        }
-      });
-    });
+  //     const node = filter[nodeKey];
 
-    return chips;
-  }
+  //     Object.keys(node || {}).forEach((field) => {
+  //       const value = node[field];
+
+  //       if (value && value !== '' && value !== 0) {
+  //         chips.push({
+  //           label: field.toUpperCase(),
+  //           value: value,
+  //           type: 'filter',
+  //           removable: true,
+  //           node: nodeKey,
+  //           field,
+  //         });
+  //       }
+  //     });
+  //   });
+
+  //   return chips;
+
+  // }
 
   removeChip(chip: any) {
+
     if (!chip.removable) return;
 
     this.chips = this.chips.filter((c) => c !== chip);
@@ -320,7 +395,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
       }
     }
 
-    this.filterService.setFilter(this.currentFilter);
+    // this.filterService.setFilter(this.currentFilter);
+
   }
 
   onChipClick(chip: any) {
@@ -348,7 +424,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   }
 
-  sincronizarMetasProjeto( item: IIndicadoresCatalogoExterno, isModoEdicao: boolean): void {
+  sincronizarMetasProjeto(item: IIndicadoresCatalogoExterno, isModoEdicao: boolean): void {
 
     const metasExternas = item.metasIndicador ?? [];
     const metasProjeto: IMetaIndicador[] = item.metasIndicadorProjeto ?? [];
@@ -383,26 +459,22 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private aplicarFiltros(): void {
 
-    this.indicadoresBI = this.indicadoresSelecionados.filter( indicador => {
-  
-      // exemplo filtro labels
+    this.indicadoresBI = this.indicadoresSelecionados.filter(indicador => {
+
       const filtrosLabels = this.currentFilter.labels;
-  
-      return Object.entries(filtrosLabels).every(([idLabel, valores]) => {
-  
-        if (!valores || (valores as number[]).length === 0) {
-          return true;
-        }
-  
-        return indicador.labels?.some(label =>
-          label.idLabel === Number(idLabel)
-          && (valores as number[]).includes(label.idLabelValor)
-        );
-  
-      });
-  
+
+      // return Object.entries(filtrosLabels).every(([idLabel, valores]) => {
+      //   if (!valores || (valores as number[]).length === 0) {
+      //     return true;
+      //   }
+      //   // return indicador.labels?.some( label =>
+      //   //   label.idLabel === Number(idLabel)
+      //   //   && (valores as number[]).includes(label.idLabelValor)
+      //   // );
+      // });
+
     });
-  
+
   }
 
   voltar() { }
