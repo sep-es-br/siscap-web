@@ -18,7 +18,7 @@ import { TemplatesModule } from '../../../shared/templates/templates.module';
   selector: 'siscap-indicador-avulso',
   standalone: true,
   imports: [CommonModule,
-    ReactiveFormsModule,TemplatesModule],
+    ReactiveFormsModule, TemplatesModule],
   templateUrl: './indicador-avulso.component.html',
   styleUrl: './indicador-avulso.component.scss'
 })
@@ -46,7 +46,7 @@ export class IndicadorAvulsoComponent {
     this.formIndicador = this.fb.group({
       nomeIndicador: ['', Validators.required],
       fonteIndicador: ['', Validators.required],
-      medidoPor: ['', Validators.required],
+      medidoPor: [''],
       unidadeMedida: ['', Validators.required],
       basedeReferencia: ['', Validators.required],
       metasIndicador: this.fb.array([]),
@@ -95,16 +95,28 @@ export class IndicadorAvulsoComponent {
 
   salvar(): void {
 
+    console.log('Formulário do indicador avulso:', this.formIndicador.value);
+
     if (this.formIndicador.invalid) {
       this.formIndicador.markAllAsTouched();
       return;
     }
 
+    console.log('apos validar form');
+
     this.loading = true;
 
-    this.indicadoresAvulsos.push(
-      this.formIndicador
+    const indicadorForm = this.criarFormIndicadorComDados(
+      this.formIndicador.getRawValue()
     );
+
+    this.indicadoresAvulsos.push(indicadorForm);
+
+    this.loading = false;
+
+    console.log('Indicador avulso salvo:', indicadorForm.value);
+
+    this.close.emit();
 
   }
 
@@ -150,7 +162,7 @@ export class IndicadorAvulsoComponent {
   get metasIndicador(): FormArray {
     return this.formIndicador.get('metasIndicador') as FormArray;
   }
-  
+
   get metasIndicadorProjeto(): FormArray {
     return this.formIndicador.get('metasIndicadorProjeto') as FormArray;
   }
@@ -161,6 +173,36 @@ export class IndicadorAvulsoComponent {
 
   getMetaIndicadorControl(index: number): AbstractControl {
     return this.metasIndicador.at(index).get('valorMeta')!;
+  }
+
+  private criarFormIndicadorComDados(dados: any): FormGroup {
+
+    return this.fb.group({
+      nomeIndicador: [dados.nomeIndicador, Validators.required],
+      fonteIndicador: [dados.fonteIndicador, Validators.required],
+      medidoPor: [dados.medidoPor, Validators.required],
+      unidadeMedida: [dados.unidadeMedida, Validators.required],
+      basedeReferencia: [dados.basedeReferencia, Validators.required],
+
+      metasIndicador: this.fb.array(
+        dados.metasIndicador.map((meta: any) =>
+          this.fb.group({
+            anoMeta: [meta.anoMeta],
+            valorMeta: [meta.valorMeta, Validators.required]
+          })
+        )
+      ),
+
+      metasIndicadorProjeto: this.fb.array(
+        dados.metasIndicadorProjeto.map((meta: any) =>
+          this.fb.group({
+            anoMeta: [meta.anoMeta],
+            valorMeta: [meta.valorMeta, Validators.required]
+          })
+        )
+      )
+    });
+
   }
 
 }
