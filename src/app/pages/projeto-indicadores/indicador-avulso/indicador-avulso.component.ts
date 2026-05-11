@@ -95,14 +95,10 @@ export class IndicadorAvulsoComponent {
 
   salvar(): void {
 
-    console.log('Formulário do indicador avulso:', this.formIndicador.value);
-
     if (this.formIndicador.invalid) {
       this.formIndicador.markAllAsTouched();
       return;
     }
-
-    console.log('apos validar form');
 
     this.loading = true;
 
@@ -113,8 +109,6 @@ export class IndicadorAvulsoComponent {
     this.indicadoresAvulsos.push(indicadorForm);
 
     this.loading = false;
-
-    console.log('Indicador avulso salvo:', indicadorForm.value);
 
     this.close.emit();
 
@@ -151,12 +145,11 @@ export class IndicadorAvulsoComponent {
   }
 
   fechar() {
-    console.log('Fechando modal de indicador avulso');
     this.close.emit();
   }
 
   get indicadoresAvulsos(): FormArray {
-    return this.formProjeto.get('indicadoresAvulsos') as FormArray;
+    return this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
   }
 
   get metasIndicador(): FormArray {
