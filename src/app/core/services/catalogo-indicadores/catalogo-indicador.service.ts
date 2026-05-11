@@ -31,4 +31,8 @@ export class CatalogoIndicadorService {
     );
   }
 
+  salvarIndicadorAvulso(indicador: any): Observable<any> {
+    return this.http.post(`${this._url}/indicadores/avulso`, indicador);
+  }
+
 }

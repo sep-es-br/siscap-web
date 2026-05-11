@@ -49,6 +49,8 @@
     </div>
   </div>
 
+  <siscap-indicador-avulso *ngIf="showModalIndicadorAvulso" [gestao]="gestao" (close)="showModalIndicadorAvulso = false"></siscap-indicador-avulso>
+
 </div>
 
 <ng-template #loadingTpl>

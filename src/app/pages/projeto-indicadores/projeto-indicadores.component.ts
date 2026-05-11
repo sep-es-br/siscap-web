@@ -108,6 +108,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
         tap((gestao) => {
           this.gestao = gestao[0];
+          //console.log('📌 GESTÃO SELECIONADA:', this.gestao);
           this.initBaseChip();
         }),
 

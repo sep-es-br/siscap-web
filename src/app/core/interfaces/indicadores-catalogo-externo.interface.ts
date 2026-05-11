@@ -6,6 +6,8 @@ export interface IGestoesCatalogoExterno {
   nomeGestao: string;
   labels: Label[];
   desafios: Desafio[];
+  doAno: number;
+  ateAno: number;
 }
 
 export interface Label {

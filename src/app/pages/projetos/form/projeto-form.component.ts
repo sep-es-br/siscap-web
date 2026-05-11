@@ -911,6 +911,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         elegivel: [projetoFormModel?.parecerProjetoUsuario.elegivel ?? null]
       }),
       pareceresProjeto: this._nnfb.array([]),
+      indicadoresAvulsosProjeto: this.indicadoresService.construirindicadoresAvulsosFormArray(
+        projetoFormModel?.indicadoresAvulsosProjeto
+      ),
     });
 
     const mapSubObs : {[index: string]: Observable<string>} = {};

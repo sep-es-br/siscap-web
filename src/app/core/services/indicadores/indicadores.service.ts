@@ -11,6 +11,8 @@ import { Subject } from 'rxjs';
 import { IIndicadores } from '../../interfaces/indicadores.interface';
 import { IndicadoresFormType, MetaIndicadorExternoFormType } from '../../types/form/indicadores-form.type';
 import { TipoStatusEnum } from '../../enums/tipo-status.enum';
+import { IIndicadorAvulso } from '../../interfaces/indicador-avulso.interface';
+import { IndicadorAvulsoFormType, MetaIndicadorAvulsoFormType } from '../../types/form/indicador-avulso-form.type';
 
 @Injectable({
   providedIn: 'root',
@@ -96,6 +98,46 @@ export class IndicadoresService {
   private construirMetaIndicadorExterno(meta?: any): FormGroup<MetaIndicadorExternoFormType> {
     return this._nnfb.group({
       idFato: this._nnfb.control(meta?.idFato ?? null, Validators.required),
+      valorMeta: this._nnfb.control(meta?.valorMeta ?? null, Validators.required),
+      anoMeta: this._nnfb.control(meta?.anoMeta ?? null, Validators.required),
+    });
+  }
+
+  public construirindicadoresAvulsosFormArray(
+    indicadores?: Array<IIndicadorAvulso>
+  ): FormArray<FormGroup<IndicadorAvulsoFormType>> {
+    const indicadoresAvulsosFormArray = this._nnfb.array<FormGroup<IndicadorAvulsoFormType>>([],);
+    if (indicadores) {
+      indicadores.forEach((indicador) => {
+        indicadoresAvulsosFormArray.push(this.construirIndicadorAvulsoFormGroup(indicador));
+      });
+    }
+    return indicadoresAvulsosFormArray;
+  }
+
+  construirIndicadorAvulsoFormGroup(indicador: IIndicadorAvulso): FormGroup<IndicadorAvulsoFormType> {
+    return this._nnfb.group<IndicadorAvulsoFormType>({
+      idIndicador: this._nnfb.control(indicador?.idIndicador ?? 0, [Validators.required]),
+      nomeIndicador: this._nnfb.control(indicador?.nomeIndicador ?? null, [Validators.required]),
+      fonteIndicador: this._nnfb.control(indicador?.fonteIndicador ?? null, [Validators.required]),
+      medidoPor: this._nnfb.control(indicador?.medidoPor ?? null, [Validators.required]),
+      unidadeMedida: this._nnfb.control(indicador?.unidadeMedida ?? null, [Validators.required]),
+      basedeReferencia: this._nnfb.control(indicador?.basedeReferencia ?? null, [Validators.required]),
+      metasIndicadorProjeto: this._nnfb.array<FormGroup<MetaIndicadorAvulsoFormType>>(
+        (indicador?.metasIndicadorAvulsoProjeto ?? []).map(meta =>
+          this.construirMetaIndicadorAvulso(meta)
+        )
+      ),
+      metasIndicador: this._nnfb.array<FormGroup<MetaIndicadorAvulsoFormType>>(
+        (indicador?.metasIndicadorAvulsoProjeto ?? []).map(meta =>
+          this.construirMetaIndicadorAvulso(meta)
+        )
+      )
+    });
+  }
+
+  construirMetaIndicadorAvulso(meta: { anoMeta: number | null; valorMeta: string | null; }): any {
+    return this._nnfb.group({
       valorMeta: this._nnfb.control(meta?.valorMeta ?? null, Validators.required),
       anoMeta: this._nnfb.control(meta?.anoMeta ?? null, Validators.required),
     });

@@ -1,0 +1,61 @@
+<div class="modal-overlay show" (click)="fechar()"></div>
+
+<div id="newIndicatorModal" class="indicator-form-modal show">
+
+    <div class="modal-header">
+        <div class="card-title" style="text-transform: uppercase;">CRIAR UM INDICADOR DE PROJETO</div>
+        <button class="close-modal" (click)="fechar()">✕</button>
+    </div>
+
+    <div class="filter-scroll" style="max-height:70vh; overflow-y:auto; padding-right:10px;">
+        <div class="form-row"><label>NOME DO INDICADOR *</label><input type="text" id="fName"
+                placeholder="Ex: Taxa de Alfabetização"></div>
+        <div class="form-row"><label>FONTE</label><input type="text" id="fOrgao"
+                placeholder="Ex: Secretaria de Educação">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-row"><label>UNIDADE DE MEDIDA</label><input type="text" id="fUnidade" placeholder="Ex: %">
+            </div>
+            <div class="form-row"><label>BASE DE REFERÊNCIA</label><input type="text" id="fValorBase"
+                    placeholder="Ex: 25.000 (2022)"></div>
+        </div>
+
+        <div class="form-row"><label>META</label>
+            <div class="meta-years" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 20px;">
+                <div class="year-meta" *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index">
+
+                    <div class="year-label" style="font-size:11px; margin-bottom:4px;">
+                        {{ (gestao?.doAno ?? 0) + i }}
+                    </div>
+
+                    <input type="number" [id]="'mp_' + ((gestao?.doAno ?? 0) + i)" style="width:100%; border-radius:6px;">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row"><label>META DO PROJETO</label>
+            <div class="meta-years" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+
+                <div class="year-meta"
+                    *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index">
+
+                    <div class="year-label" style="font-size:11px; margin-bottom:4px;">
+                        {{ (gestao?.doAno ?? 0) + i }}
+                    </div>
+
+                    <input type="number" [id]="'fmp_' + ((gestao?.doAno ?? 0) + i)"
+                        style="width:100%; border-radius:6px;">
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-actions" style="margin-top:24px;">
+            <button class="btn-secondary" onclick="fechar()">Cancelar</button>
+            <button class="btn-primary" onclick="saveNewIndicator()">Salvar</button>
+        </div>
+
+    </div>

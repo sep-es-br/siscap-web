@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
-import { IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
+import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
+import { IndicadorAvulsoComponent } from '../indicador-avulso/indicador-avulso.component';
 
 @Component({
   selector: 'app-selecao-indicadores',
   standalone: true,
-  imports: [CommonModule, FormsModule, CheckboxModule, InputTextModule],
+  imports: [CommonModule, FormsModule, CheckboxModule, InputTextModule, IndicadorAvulsoComponent],
   templateUrl: './selecao-indicadores.component.html',
   styleUrls: ['./selecao-indicadores.component.scss']
 })
@@ -19,19 +20,22 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     this.filtrarIndicadores();
     this.updateSelectAllState();
   }
+
   get indicadores() {
     return this._indicadores;
   }
 
   @Input() selecionados: IIndicadoresCatalogoExterno[] = [];
   @Input() loading: boolean = false;
+  @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Output() selecionadosChange = new EventEmitter<any[]>();
 
   indicadoresFiltrados: IIndicadoresCatalogoExterno[] = [];
   filtroTexto: string = '';
   searchVisible: boolean = false;
   selectAll: boolean = false;
-
+  showModalIndicadorAvulso: boolean = false;
+  
   ngOnInit() {
     this.indicadoresFiltrados = this.indicadores;
     this.updateSelectAllState();
@@ -96,8 +100,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   showNewIndicatorForm(): void {
-    // Lógica para exibir o formulário de criação de um novo indicador
-    alert('Exibir formulário para criar um novo indicador de projeto estratégico');
+    this.showModalIndicadorAvulso = true;
   }
 
 }
