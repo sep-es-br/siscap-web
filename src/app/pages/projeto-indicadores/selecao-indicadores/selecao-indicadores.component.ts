@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormGroup, FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
@@ -15,6 +15,7 @@ import { IndicadorAvulsoComponent } from '../indicador-avulso/indicador-avulso.c
 })
 export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   private _indicadores: IIndicadoresCatalogoExterno[] = [];
+  @Input() form!: FormGroup;
   @Input() set indicadores(value: IIndicadoresCatalogoExterno[]) {
     this._indicadores = value || [];
     this.filtrarIndicadores();
@@ -37,6 +38,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   showModalIndicadorAvulso: boolean = false;
   
   ngOnInit() {
+    console.log('Form recebido em SelecaoIndicadoresComponent:', this.form);
     this.indicadoresFiltrados = this.indicadores;
     this.updateSelectAllState();
   }

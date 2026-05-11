@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormGroup,
@@ -11,22 +12,24 @@ import { CommonModule } from '@angular/common';
 import { IGestoesCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 import { finalize } from 'rxjs/internal/operators/finalize';
 import { CatalogoIndicadorService } from '../../../core/services/catalogo-indicadores/catalogo-indicador.service';
+import { TemplatesModule } from '../../../shared/templates/templates.module';
 
 @Component({
   selector: 'siscap-indicador-avulso',
   standalone: true,
   imports: [CommonModule,
-    ReactiveFormsModule],
+    ReactiveFormsModule,TemplatesModule],
   templateUrl: './indicador-avulso.component.html',
   styleUrl: './indicador-avulso.component.scss'
 })
 export class IndicadorAvulsoComponent {
   @Input() gestao: IGestoesCatalogoExterno | null = null;
+  @Input() formProjeto!: FormGroup;
   @Output() close = new EventEmitter<void>();
 
   loading: boolean = false;
 
-  form!: FormGroup;
+  formIndicador!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -40,8 +43,7 @@ export class IndicadorAvulsoComponent {
   }
 
   private criarFormulario(): void {
-
-    this.form = this.fb.group({
+    this.formIndicador = this.fb.group({
       nomeIndicador: ['', Validators.required],
       fonteIndicador: ['', Validators.required],
       medidoPor: ['', Validators.required],
@@ -50,7 +52,6 @@ export class IndicadorAvulsoComponent {
       metasIndicador: this.fb.array([]),
       metasIndicadorProjeto: this.fb.array([])
     });
-
   };
 
   private preencherMetasPorIntervaloGestao(): void {
@@ -85,39 +86,28 @@ export class IndicadorAvulsoComponent {
   }
 
   getMetasIndicador(): FormArray {
-    return this.form.get('metasIndicador') as FormArray;
+    return this.formIndicador.get('metasIndicador') as FormArray;
   }
 
   getMetasProjeto(): FormArray {
-    return this.form.get('metasIndicadorProjeto') as FormArray;
+    return this.formIndicador.get('metasIndicadorProjeto') as FormArray;
   }
 
   salvar(): void {
 
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+    if (this.formIndicador.invalid) {
+      this.formIndicador.markAllAsTouched();
       return;
     }
 
     this.loading = true;
 
-    // this.catalogoIndicadorService
-    //   .salvarIndicadorAvulso(this.form.getRawValue())
-    //   .pipe(finalize(() => this.loading = false))
-    //   .subscribe({
-    //     next: (response) => {
-    //       this.close.emit(response);
-    //     },
-    //     error: (err) => {
-    //       console.error(err);
-    //     }
-    //   });
+    this.indicadoresAvulsos.push(
+      this.formIndicador
+    );
 
   }
 
-  // =========================================================
-  // META INDICADOR
-  // =========================================================
   adicionarMetaIndicador(): void {
 
     const metaForm = this.fb.group({
@@ -133,9 +123,6 @@ export class IndicadorAvulsoComponent {
     this.getMetasIndicador().removeAt(index);
   }
 
-  // =========================================================
-  // META PROJETO
-  // =========================================================
   adicionarMetaProjeto(): void {
 
     const metaProjetoForm = this.fb.group({
@@ -152,7 +139,28 @@ export class IndicadorAvulsoComponent {
   }
 
   fechar() {
+    console.log('Fechando modal de indicador avulso');
     this.close.emit();
+  }
+
+  get indicadoresAvulsos(): FormArray {
+    return this.formProjeto.get('indicadoresAvulsos') as FormArray;
+  }
+
+  get metasIndicador(): FormArray {
+    return this.formIndicador.get('metasIndicador') as FormArray;
+  }
+  
+  get metasIndicadorProjeto(): FormArray {
+    return this.formIndicador.get('metasIndicadorProjeto') as FormArray;
+  }
+
+  getControl(controlName: string): AbstractControl {
+    return this.formIndicador.get(controlName)!;
+  }
+
+  getMetaIndicadorControl(index: number): AbstractControl {
+    return this.metasIndicador.at(index).get('valorMeta')!;
   }
 
 }
