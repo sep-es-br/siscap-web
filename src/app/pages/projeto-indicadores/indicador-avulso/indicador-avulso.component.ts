@@ -26,7 +26,7 @@ export class IndicadorAvulsoComponent {
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() formProjeto!: FormGroup;
   @Output() close = new EventEmitter<void>();
-
+  
   loading: boolean = false;
 
   formIndicador!: FormGroup;
@@ -37,7 +37,6 @@ export class IndicadorAvulsoComponent {
   ) { }
 
   ngOnInit(): void {
-    // console.log('Gestão recebida:', this.gestao);
     this.criarFormulario();
     this.preencherMetasPorIntervaloGestao();
   }

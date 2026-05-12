@@ -14,31 +14,32 @@ import { IndicadorAvulsoComponent } from '../indicador-avulso/indicador-avulso.c
   styleUrls: ['./selecao-indicadores.component.scss']
 })
 export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
+  
   private _indicadores: IIndicadoresCatalogoExterno[] = [];
+
   @Input() form!: FormGroup;
   @Input() set indicadores(value: IIndicadoresCatalogoExterno[]) {
     this._indicadores = value || [];
     this.filtrarIndicadores();
     this.updateSelectAllState();
   }
-
-  get indicadores() {
-    return this._indicadores;
-  }
-
   @Input() selecionados: IIndicadoresCatalogoExterno[] = [];
   @Input() loading: boolean = false;
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Output() selecionadosChange = new EventEmitter<any[]>();
+
+  get indicadores() {
+    return this._indicadores;
+  }
 
   indicadoresFiltrados: IIndicadoresCatalogoExterno[] = [];
   filtroTexto: string = '';
   searchVisible: boolean = false;
   selectAll: boolean = false;
   showModalIndicadorAvulso: boolean = false;
-  
+
   ngOnInit() {
-    console.log('Form recebido em SelecaoIndicadoresComponent:', this.form);
+    console.log('Indicadores selecionados recebidos no componente de seleção:', this.selecionados);
     this.indicadoresFiltrados = this.indicadores;
     this.updateSelectAllState();
   }
@@ -103,6 +104,24 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
   showNewIndicatorForm(): void {
     this.showModalIndicadorAvulso = true;
+  }
+
+  onCloseModalIndicadorAvulso(): void {
+
+    this.showModalIndicadorAvulso = false;
+
+    const indicadoresAvulsos =
+      this.form.get('indicadoresAvulsosProjeto')?.value ?? [];
+
+    console.log('Indicadores avulsos do formulário:', indicadoresAvulsos);
+
+    this.selecionados = indicadoresAvulsos;
+
+    console.log(
+      'Modal fechada. Indicadores avulsos:',
+      this.selecionados
+    );
+
   }
 
 }

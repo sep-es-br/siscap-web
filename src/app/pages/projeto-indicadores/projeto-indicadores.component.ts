@@ -46,7 +46,7 @@ export interface IndicadorProjetoForm {
   styleUrls: ['./projeto-indicadores.component.scss'],
 })
 export class ProjetoIndicadoresComponent implements OnInit {
-  @Input() form!: FormGroup;
+  @Input() formProjeto!: FormGroup;
   @Input() isModoEdicao: boolean = false;
 
   private reloadIndicadores$ = new BehaviorSubject<void>(undefined);
@@ -108,7 +108,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
         tap((gestao) => {
           this.gestao = gestao[0];
-          //console.log('📌 GESTÃO SELECIONADA:', this.gestao);
           this.initBaseChip();
         }),
 
@@ -143,44 +142,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     // dispara primeira carga
     this.reloadIndicadores$.next();
-
-    // this.catalogoIndicadorService
-    //   .getGestoesIndicadoresCatalogoExternos()
-    //   .pipe(
-    //     tap((gestao) => {
-    //       // console.log('📌 Response GESTÃO:', gestao);
-    //       this.gestao = gestao[0];
-    //       this.initBaseChip();
-    //     }),
-    //     switchMap((gestao) =>
-    //       this.catalogoIndicadorService
-    //         .getIndicadoresPorGestaoCatalogoExternos(gestao[0].idGestao)
-    //         .pipe(
-    //           tap((indicadores) => {
-    //             // console.log('📌 Response INDICADORES:', indicadores);
-    //           })
-    //         )
-    //     ),
-    //     map((indicadores) =>
-    //       indicadores.map((item) => ({
-    //         ...item,
-    //         metasIndicador: item.metasIndicador ?? []
-    //       }))
-    //     )
-    //   )
-    //   .subscribe({
-    //     next: (indicadores) => {
-    //       this.indicadoresBI = indicadores;
-    //       this.indicadoresFiltrados = indicadores;
-    //       this.syncComFormulario();
-    //     },
-    //     error: (err) => {
-    //       console.error('Erro ao carregar dados', err);
-    //     },
-    //     complete: () => {
-    //       this.loading = false;
-    //     },
-    //   });
 
   }
 
@@ -220,8 +181,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
       }
     }
 
-    // this.filterService.setFilter(this.currentFilter);
-
     this.chips = this.chips.filter((c) => c !== filtro);
 
   }
@@ -252,9 +211,9 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private syncComFormulario(): void {
 
-    if (!this.form) return;
+    if (!this.formProjeto) return;
 
-    const indicadoresProjeto = this.form.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
+    const indicadoresProjeto = this.formProjeto.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
 
     this.indicadoresSelecionados = this.indicadoresBI
       .filter(indicadorBI =>
@@ -280,13 +239,11 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private atualizarFormulario(): void {
 
-    const formArrayIndicadoresProjeto = this.form.get('indicadoresProjeto') as FormArray;
+    const formArrayIndicadoresProjeto = this.formProjeto.get('indicadoresProjeto') as FormArray;
 
     formArrayIndicadoresProjeto.clear();
 
     this.indicadoresSelecionados.forEach((indicador) => {
-
-      // console.log( '🔄 Sincronizando metas para indicador:', indicador );
 
       const metasProjetoArray = this.fb.array(
         (indicador.metasIndicadorProjeto || []).map(meta =>
@@ -407,7 +364,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     if (index !== -1) {
       this.indicadoresSelecionados.splice(index, 1);
-      const formArray = this.form.get('indicadoresProjeto') as FormArray;
+      const formArray = this.formProjeto.get('indicadoresProjeto') as FormArray;
       formArray.removeAt(index);
     }
 
@@ -437,7 +394,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   getIndicadores(): FormArray {
-    return this.form.get('indicadoresProjeto') as FormArray;
+    return this.formProjeto.get('indicadoresProjeto') as FormArray;
   }
 
   getIndicadorForm(index: number): FormGroup {
@@ -448,24 +405,23 @@ export class ProjetoIndicadoresComponent implements OnInit {
     return this.getIndicadorForm(index).get('metasIndicadorProjeto') as FormArray;
   }
 
-  private aplicarFiltros(): void {
+  // private aplicarFiltros(): void {
+  //   this.indicadoresBI = this.indicadoresSelecionados.filter(indicador => {
+  //     const filtrosLabels = this.currentFilter.labels;
+  //     // return Object.entries(filtrosLabels).every(([idLabel, valores]) => {
+  //     //   if (!valores || (valores as number[]).length === 0) {
+  //     //     return true;
+  //     //   }
+  //     //   // return indicador.labels?.some( label =>
+  //     //   //   label.idLabel === Number(idLabel)
+  //     //   //   && (valores as number[]).includes(label.idLabelValor)
+  //     //   // );
+  //     // });
+  //   });
+  // }
 
-    this.indicadoresBI = this.indicadoresSelecionados.filter(indicador => {
-
-      const filtrosLabels = this.currentFilter.labels;
-
-      // return Object.entries(filtrosLabels).every(([idLabel, valores]) => {
-      //   if (!valores || (valores as number[]).length === 0) {
-      //     return true;
-      //   }
-      //   // return indicador.labels?.some( label =>
-      //   //   label.idLabel === Number(idLabel)
-      //   //   && (valores as number[]).includes(label.idLabelValor)
-      //   // );
-      // });
-
-    });
-
+  getIndicadoresAvulsos(): FormArray {
+    return this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
   }
 
   voltar() { }
