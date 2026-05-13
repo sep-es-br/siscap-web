@@ -935,8 +935,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     }));
 
-
-
   }
 
   private usuarioProponenteValoresIniciaisProjetoForm(): void {

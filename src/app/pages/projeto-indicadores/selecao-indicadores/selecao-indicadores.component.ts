@@ -39,7 +39,6 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   showModalIndicadorAvulso: boolean = false;
 
   ngOnInit() {
-    console.log('Indicadores selecionados recebidos no componente de seleção:', this.selecionados);
     this.indicadoresFiltrados = this.indicadores;
     this.updateSelectAllState();
   }
@@ -113,14 +112,10 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     const indicadoresAvulsos =
       this.form.get('indicadoresAvulsosProjeto')?.value ?? [];
 
-    console.log('Indicadores avulsos do formulário:', indicadoresAvulsos);
+    this.selecionados.push(...indicadoresAvulsos);
 
-    this.selecionados = indicadoresAvulsos;
+    this.selecionadosChange.emit(this.selecionados);
 
-    console.log(
-      'Modal fechada. Indicadores avulsos:',
-      this.selecionados
-    );
 
   }
 

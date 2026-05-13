@@ -26,7 +26,7 @@ export class IndicadorAvulsoComponent {
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() formProjeto!: FormGroup;
   @Output() close = new EventEmitter<void>();
-  
+
   loading: boolean = false;
 
   formIndicador!: FormGroup;
@@ -39,18 +39,24 @@ export class IndicadorAvulsoComponent {
   ngOnInit(): void {
     this.criarFormulario();
     this.preencherMetasPorIntervaloGestao();
+    this.monitorarBaseReferencia();
   }
 
   private criarFormulario(): void {
+
     this.formIndicador = this.fb.group({
       nomeIndicador: ['', Validators.required],
-      fonteIndicador: ['', Validators.required],
-      medidoPor: [''],
+      fonteIndicador: [''],
+      medidoPor: ['', Validators.required],
       unidadeMedida: ['', Validators.required],
       basedeReferencia: ['', Validators.required],
+      polaridade: [''],
       metasIndicador: this.fb.array([]),
-      metasIndicadorProjeto: this.fb.array([])
+      metasIndicadorProjeto: this.fb.array([]),
+      maiorAnoInidicador: [null],
+      maiorMetaIndicador: ['']
     });
+
   };
 
   private preencherMetasPorIntervaloGestao(): void {
@@ -95,48 +101,30 @@ export class IndicadorAvulsoComponent {
   salvar(): void {
 
     if (this.formIndicador.invalid) {
-      this.formIndicador.markAllAsTouched();
+      Object.keys(this.formIndicador.controls).forEach(campo => {
+        this.formIndicador.markAllAsTouched();
+        const control = this.formIndicador.get(campo);
+        if (control?.invalid) {
+          console.log(`Campo inválido: ${campo}`);
+          console.log('Erros:', control.errors);
+          console.log('Valor atual:', control.value);
+        }
+      });
       return;
     }
 
     this.loading = true;
-
-    const indicadorForm = this.criarFormIndicadorComDados(
-      this.formIndicador.getRawValue()
-    );
-
-    this.indicadoresAvulsos.push(indicadorForm);
-
+    
+    this.indicadoresAvulsos.push(this.formIndicador);
+    
     this.loading = false;
 
     this.close.emit();
 
   }
 
-  adicionarMetaIndicador(): void {
-
-    const metaForm = this.fb.group({
-      anoMeta: [null, Validators.required],
-      valorMeta: [null, Validators.required]
-    });
-
-    this.getMetasIndicador().push(metaForm);
-
-  }
-
   removerMetaIndicador(index: number): void {
     this.getMetasIndicador().removeAt(index);
-  }
-
-  adicionarMetaProjeto(): void {
-
-    const metaProjetoForm = this.fb.group({
-      anoMeta: [null, Validators.required],
-      valorMeta: [null, Validators.required]
-    });
-
-    this.getMetasProjeto().push(metaProjetoForm);
-
   }
 
   removerMetaProjeto(index: number): void {
@@ -169,13 +157,17 @@ export class IndicadorAvulsoComponent {
 
   private criarFormIndicadorComDados(dados: any): FormGroup {
 
+    console.log(dados.metasIndicadorProjeto);
+
     return this.fb.group({
       nomeIndicador: [dados.nomeIndicador, Validators.required],
-      fonteIndicador: [dados.fonteIndicador, Validators.required],
+      fonteIndicador: [dados.fonteIndicador],
       medidoPor: [dados.medidoPor, Validators.required],
       unidadeMedida: [dados.unidadeMedida, Validators.required],
       basedeReferencia: [dados.basedeReferencia, Validators.required],
-
+      polaridade: [dados.polaridade],
+      maiorAnoIndicador: [dados.maiorAnoIndicador],
+      maiorMetaIndicador: [dados.maiorMetaIndicador],
       metasIndicador: this.fb.array(
         dados.metasIndicador.map((meta: any) =>
           this.fb.group({
@@ -184,7 +176,6 @@ export class IndicadorAvulsoComponent {
           })
         )
       ),
-
       metasIndicadorProjeto: this.fb.array(
         dados.metasIndicadorProjeto.map((meta: any) =>
           this.fb.group({
@@ -196,5 +187,43 @@ export class IndicadorAvulsoComponent {
     });
 
   }
+
+  private monitorarBaseReferencia(): void {
+    this.getMetasIndicador()
+      .valueChanges
+      .subscribe(() => {
+        this.atualizarBaseReferencia();
+      });
+  }
+
+  private atualizarBaseReferencia(): void {
+
+    const metas = this.getMetasIndicador().value;
+
+    if (!metas || metas.length === 0) {
+      this.formIndicador
+        .get('basedeReferencia')
+        ?.setValue('');
+      return;
+    }
+
+    let maiorMeta = null;
+
+    for (const meta of metas) {
+      if (!maiorMeta || meta.anoMeta > maiorMeta.anoMeta) {
+        maiorMeta = meta;
+      }
+    }
+
+    const valor = maiorMeta?.valorMeta
+      ? `${maiorMeta.valorMeta} (${maiorMeta.anoMeta})`
+      : '';
+
+    this.formIndicador
+      .get('basedeReferencia')
+      ?.setValue(valor, { emitEvent: false });
+
+  }
+
 
 }

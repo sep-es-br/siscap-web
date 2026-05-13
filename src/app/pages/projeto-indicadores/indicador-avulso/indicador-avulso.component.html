@@ -12,8 +12,7 @@
         <div class="filter-scroll" style="max-height:70vh; overflow-y:auto; padding-right:10px;">
 
             <div class="form-row"><label><validation-message [control]="getControl('nomeIndicador')">NOME DO INDICADOR *</validation-message></label><input type="text" formControlName="nomeIndicador" id="fName" placeholder="Ex: Taxa de Alfabetização"></div>
-            
-            <div class="form-row"><label><validation-message [control]="getControl('fonteIndicador')">FONTE</validation-message></label><input type="text" formControlName="fonteIndicador" id="fOrgao" placeholder="Ex: Secretaria de Educação"></div>
+            <div class="form-row"><label><validation-message [control]="getControl('medidoPor')">FONTE</validation-message></label><input type="text" formControlName="medidoPor" id="fOrgao" placeholder="Ex: Secretaria de Educação"></div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div class="form-row"><label><validation-message [control]="getControl('unidadeMedida')">UNIDADE DE MEDIDA</validation-message></label><input type="text"  formControlName="unidadeMedida" id="fUnidade" placeholder="Ex: %"></div>
