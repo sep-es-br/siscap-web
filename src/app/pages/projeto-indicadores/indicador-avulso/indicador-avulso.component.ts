@@ -113,6 +113,8 @@ export class IndicadorAvulsoComponent {
       return;
     }
 
+    console.log("FormIndicador",this.formIndicador.value)
+
     this.loading = true;
     
     this.indicadoresAvulsos.push(this.formIndicador);
