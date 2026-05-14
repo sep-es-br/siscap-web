@@ -33,17 +33,12 @@ export class IndicadorAvulsoComponent {
 
   constructor(
     private fb: FormBuilder,
-    // private catalogoIndicadorService: CatalogoIndicadorService,
   ) { }
 
   ngOnInit(): void {
-
     this.criarFormulario();
     this.preencherMetasPorIntervaloGestao();
     this.monitorarBaseReferencia();
-
-    this.monitorarIndicadoresProjeto();
-
   }
 
   private criarFormulario(): void {
@@ -115,8 +110,6 @@ export class IndicadorAvulsoComponent {
       return;
     }
 
-    console.log("FormIndicador", this.formIndicador.value)
-
     this.loading = true;
 
     this.indicadoresAvulsos.push(this.formIndicador);
@@ -159,37 +152,6 @@ export class IndicadorAvulsoComponent {
     return this.metasIndicadorAvulsoGeral.at(index).get('valorMeta')!;
   }
 
-  // private criarFormIndicadorComDados(dados: any): FormGroup {
-
-  //   return this.fb.group({
-  //     nomeIndicador: [dados.nomeIndicador, Validators.required],
-  //     fonteIndicador: [dados.fonteIndicador],
-  //     medidoPor: [dados.medidoPor, Validators.required],
-  //     unidadeMedida: [dados.unidadeMedida, Validators.required],
-  //     basedeReferencia: [dados.basedeReferencia, Validators.required],
-  //     polaridade: [dados.polaridade],
-  //     maiorAnoIndicador: [dados.maiorAnoIndicador],
-  //     maiorMetaIndicador: [dados.maiorMetaIndicador],
-  //     metasIndicador: this.fb.array(
-  //       dados.metasIndicador.map((meta: any) =>
-  //         this.fb.group({
-  //           anoMeta: [meta.anoMeta],
-  //           valorMeta: [meta.valorMeta, Validators.required]
-  //         })
-  //       )
-  //     ),
-  //     metasIndicadorAvulsoProjeto: this.fb.array(
-  //       dados.metasIndicadorAvulsoProjeto.map((meta: any) =>
-  //         this.fb.group({
-  //           anoMeta: [meta.anoMeta],
-  //           valorMeta: [meta.valorMeta, Validators.required]
-  //         })
-  //       )
-  //     )
-  //   });
-
-  // }
-
   private monitorarBaseReferencia(): void {
     this.getMetasIndicadorAvulsoGeral()
       .valueChanges
@@ -226,38 +188,5 @@ export class IndicadorAvulsoComponent {
       ?.setValue(valor, { emitEvent: false });
 
   }
-
-  private monitorarIndicadoresProjeto(): void {
-
-    // const indicadoresProjeto =
-    //   this.formProjeto.get('indicadoresProjeto') as FormArray;
-
-    // if (!indicadoresProjeto) {
-    //   console.warn('indicadoresProjeto não encontrado');
-    //   return;
-    // }
-
-    // // MONITORA ALTERAÇÃO DE VALOR
-    // indicadoresProjeto.valueChanges.subscribe(value => {
-    //   console.log('ALTEROU indicadoresProjeto:', value);
-    //   console.trace('STACK ALTERAÇÃO indicadoresProjeto');
-    // });
-
-    // // MONITORA PUSH
-    // const pushOriginal = indicadoresProjeto.push.bind(indicadoresProjeto);
-
-    // indicadoresProjeto.push = (control: any) => {
-
-    //   console.error('PUSH DETECTADO EM indicadoresProjeto');
-    //   console.log('CONTROL:', control);
-
-    //   console.trace('ORIGEM DO PUSH');
-
-    //   return pushOriginal(control);
-
-    // };
-
-  }
-
 
 }
