@@ -109,10 +109,10 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
     this.showModalIndicadorAvulso = false;
 
-    const indicadoresAvulsos =
-      this.form.get('indicadoresAvulsosProjeto')?.value ?? [];
+    // const indicadoresAvulsos =
+    //   this.form.get('indicadoresAvulsosProjeto')?.value ?? [];
 
-    this.selecionados.push(...indicadoresAvulsos);
+    // this.selecionados.push(...indicadoresAvulsos);
 
     this.selecionadosChange.emit(this.selecionados);
 

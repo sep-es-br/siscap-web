@@ -33,17 +33,20 @@ export class IndicadorAvulsoComponent {
 
   constructor(
     private fb: FormBuilder,
-    private catalogoIndicadorService: CatalogoIndicadorService,
+    // private catalogoIndicadorService: CatalogoIndicadorService,
   ) { }
 
   ngOnInit(): void {
+
     this.criarFormulario();
     this.preencherMetasPorIntervaloGestao();
     this.monitorarBaseReferencia();
+
+    this.monitorarIndicadoresProjeto();
+
   }
 
   private criarFormulario(): void {
-
     this.formIndicador = this.fb.group({
       nomeIndicador: ['', Validators.required],
       fonteIndicador: [''],
@@ -51,12 +54,11 @@ export class IndicadorAvulsoComponent {
       unidadeMedida: ['', Validators.required],
       basedeReferencia: ['', Validators.required],
       polaridade: [''],
-      metasIndicador: this.fb.array([]),
-      metasIndicadorProjeto: this.fb.array([]),
+      metasIndicadorAvulsoGeral: this.fb.array([]),
+      metasIndicadorAvulsoProjeto: this.fb.array([]),
       maiorAnoInidicador: [null],
       maiorMetaIndicador: ['']
     });
-
   };
 
   private preencherMetasPorIntervaloGestao(): void {
@@ -71,7 +73,7 @@ export class IndicadorAvulsoComponent {
     for (let ano = anoInicio; ano <= anoFim; ano++) {
 
       // META DO INDICADOR
-      this.getMetasIndicador().push(
+      this.getMetasIndicadorAvulsoGeral().push(
         this.fb.group({
           anoMeta: [ano],
           valorMeta: [null, Validators.required]
@@ -90,12 +92,12 @@ export class IndicadorAvulsoComponent {
 
   }
 
-  getMetasIndicador(): FormArray {
-    return this.formIndicador.get('metasIndicador') as FormArray;
+  getMetasIndicadorAvulsoGeral(): FormArray {
+    return this.formIndicador.get('metasIndicadorAvulsoGeral') as FormArray;
   }
 
   getMetasProjeto(): FormArray {
-    return this.formIndicador.get('metasIndicadorProjeto') as FormArray;
+    return this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
   }
 
   salvar(): void {
@@ -113,20 +115,20 @@ export class IndicadorAvulsoComponent {
       return;
     }
 
-    console.log("FormIndicador",this.formIndicador.value)
+    console.log("FormIndicador", this.formIndicador.value)
 
     this.loading = true;
-    
+
     this.indicadoresAvulsos.push(this.formIndicador);
-    
+
     this.loading = false;
 
     this.close.emit();
 
   }
 
-  removerMetaIndicador(index: number): void {
-    this.getMetasIndicador().removeAt(index);
+  removerMetaIndicadorAvulsoGeral(index: number): void {
+    this.getMetasIndicadorAvulsoGeral().removeAt(index);
   }
 
   removerMetaProjeto(index: number): void {
@@ -141,12 +143,12 @@ export class IndicadorAvulsoComponent {
     return this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
   }
 
-  get metasIndicador(): FormArray {
-    return this.formIndicador.get('metasIndicador') as FormArray;
+  get metasIndicadorAvulsoGeral(): FormArray {
+    return this.formIndicador.get('metasIndicadorAvulsoGeral') as FormArray;
   }
 
-  get metasIndicadorProjeto(): FormArray {
-    return this.formIndicador.get('metasIndicadorProjeto') as FormArray;
+  get metasIndicadorAvulsoProjeto(): FormArray {
+    return this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
   }
 
   getControl(controlName: string): AbstractControl {
@@ -154,44 +156,42 @@ export class IndicadorAvulsoComponent {
   }
 
   getMetaIndicadorControl(index: number): AbstractControl {
-    return this.metasIndicador.at(index).get('valorMeta')!;
+    return this.metasIndicadorAvulsoGeral.at(index).get('valorMeta')!;
   }
 
-  private criarFormIndicadorComDados(dados: any): FormGroup {
+  // private criarFormIndicadorComDados(dados: any): FormGroup {
 
-    console.log(dados.metasIndicadorProjeto);
+  //   return this.fb.group({
+  //     nomeIndicador: [dados.nomeIndicador, Validators.required],
+  //     fonteIndicador: [dados.fonteIndicador],
+  //     medidoPor: [dados.medidoPor, Validators.required],
+  //     unidadeMedida: [dados.unidadeMedida, Validators.required],
+  //     basedeReferencia: [dados.basedeReferencia, Validators.required],
+  //     polaridade: [dados.polaridade],
+  //     maiorAnoIndicador: [dados.maiorAnoIndicador],
+  //     maiorMetaIndicador: [dados.maiorMetaIndicador],
+  //     metasIndicador: this.fb.array(
+  //       dados.metasIndicador.map((meta: any) =>
+  //         this.fb.group({
+  //           anoMeta: [meta.anoMeta],
+  //           valorMeta: [meta.valorMeta, Validators.required]
+  //         })
+  //       )
+  //     ),
+  //     metasIndicadorAvulsoProjeto: this.fb.array(
+  //       dados.metasIndicadorAvulsoProjeto.map((meta: any) =>
+  //         this.fb.group({
+  //           anoMeta: [meta.anoMeta],
+  //           valorMeta: [meta.valorMeta, Validators.required]
+  //         })
+  //       )
+  //     )
+  //   });
 
-    return this.fb.group({
-      nomeIndicador: [dados.nomeIndicador, Validators.required],
-      fonteIndicador: [dados.fonteIndicador],
-      medidoPor: [dados.medidoPor, Validators.required],
-      unidadeMedida: [dados.unidadeMedida, Validators.required],
-      basedeReferencia: [dados.basedeReferencia, Validators.required],
-      polaridade: [dados.polaridade],
-      maiorAnoIndicador: [dados.maiorAnoIndicador],
-      maiorMetaIndicador: [dados.maiorMetaIndicador],
-      metasIndicador: this.fb.array(
-        dados.metasIndicador.map((meta: any) =>
-          this.fb.group({
-            anoMeta: [meta.anoMeta],
-            valorMeta: [meta.valorMeta, Validators.required]
-          })
-        )
-      ),
-      metasIndicadorProjeto: this.fb.array(
-        dados.metasIndicadorProjeto.map((meta: any) =>
-          this.fb.group({
-            anoMeta: [meta.anoMeta],
-            valorMeta: [meta.valorMeta, Validators.required]
-          })
-        )
-      )
-    });
-
-  }
+  // }
 
   private monitorarBaseReferencia(): void {
-    this.getMetasIndicador()
+    this.getMetasIndicadorAvulsoGeral()
       .valueChanges
       .subscribe(() => {
         this.atualizarBaseReferencia();
@@ -200,7 +200,7 @@ export class IndicadorAvulsoComponent {
 
   private atualizarBaseReferencia(): void {
 
-    const metas = this.getMetasIndicador().value;
+    const metas = this.getMetasIndicadorAvulsoGeral().value;
 
     if (!metas || metas.length === 0) {
       this.formIndicador
@@ -224,6 +224,38 @@ export class IndicadorAvulsoComponent {
     this.formIndicador
       .get('basedeReferencia')
       ?.setValue(valor, { emitEvent: false });
+
+  }
+
+  private monitorarIndicadoresProjeto(): void {
+
+    // const indicadoresProjeto =
+    //   this.formProjeto.get('indicadoresProjeto') as FormArray;
+
+    // if (!indicadoresProjeto) {
+    //   console.warn('indicadoresProjeto não encontrado');
+    //   return;
+    // }
+
+    // // MONITORA ALTERAÇÃO DE VALOR
+    // indicadoresProjeto.valueChanges.subscribe(value => {
+    //   console.log('ALTEROU indicadoresProjeto:', value);
+    //   console.trace('STACK ALTERAÇÃO indicadoresProjeto');
+    // });
+
+    // // MONITORA PUSH
+    // const pushOriginal = indicadoresProjeto.push.bind(indicadoresProjeto);
+
+    // indicadoresProjeto.push = (control: any) => {
+
+    //   console.error('PUSH DETECTADO EM indicadoresProjeto');
+    //   console.log('CONTROL:', control);
+
+    //   console.trace('ORIGEM DO PUSH');
+
+    //   return pushOriginal(control);
+
+    // };
 
   }
 

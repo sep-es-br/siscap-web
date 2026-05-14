@@ -10,7 +10,7 @@ export class IndicadorAvulsoModel implements IIndicadorAvulso {
   public medidoPor: string | null;
   public unidadeMedida: string | null;
   public basedeReferencia: string | null;
-  public metasIndicadorProjeto: Array<{
+  public metasIndicadorAvulsoGeral: Array<{
     idFato: number | null;
     anoMeta: number | null;
     valorMeta: string | null;
@@ -27,7 +27,7 @@ export class IndicadorAvulsoModel implements IIndicadorAvulso {
     this.medidoPor = indicadores?.medidoPor ?? null;
     this.unidadeMedida = indicadores?.unidadeMedida ?? null;
     this.basedeReferencia = indicadores?.basedeReferencia ?? null;
-    this.metasIndicadorProjeto = indicadores?.metasIndicadorProjeto ?? [];
+    this.metasIndicadorAvulsoGeral = indicadores?.metasIndicadorAvulsoGeral ?? [];
     this.metasIndicadorAvulsoProjeto = indicadores?.metasIndicadorAvulsoProjeto ?? [];
   }
   
