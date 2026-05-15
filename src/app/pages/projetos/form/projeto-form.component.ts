@@ -594,12 +594,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
               if (
                 (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP ||
-                  this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO) &&
-                (!this.parecerProjetoUsuario.guidDocumentoEdocs ||
-                  this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0)
+                  this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP ) &&
+                (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0 )
               ) {
+                const isSubcap: boolean = this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario(),
+                  this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario(isSubcap),
                 );
               } else if (
                 (!parecerSubcapGeoc && subeppSubeoEntranhados) ||
