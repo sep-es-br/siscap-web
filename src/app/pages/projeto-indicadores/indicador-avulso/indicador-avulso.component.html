@@ -11,20 +11,32 @@
 
         <div class="filter-scroll" style="max-height:70vh; overflow-y:auto; padding-right:10px;">
 
-            <div class="form-row"><label><validation-message [control]="getControl('nomeIndicador')">NOME DO INDICADOR *</validation-message></label><input type="text" formControlName="nomeIndicador" id="fName" placeholder="Ex: Taxa de Alfabetização"></div>
-            <div class="form-row"><label><validation-message [control]="getControl('medidoPor')">FONTE</validation-message></label><input type="text" formControlName="medidoPor" id="fOrgao" placeholder="Ex: Secretaria de Educação"></div>
+            <div class="form-row"><label><validation-message [control]="getControl('nomeIndicador')">NOME DO INDICADOR
+                        *</validation-message></label><input type="text" formControlName="nomeIndicador" id="fName"
+                    placeholder="Ex: Taxa de Alfabetização"></div>
+            <div class="form-row"><label><validation-message
+                        [control]="getControl('medidoPor')">FONTE</validation-message></label><input type="text"
+                    formControlName="medidoPor" id="fOrgao" placeholder="Ex: Secretaria de Educação"></div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                <div class="form-row"><label><validation-message [control]="getControl('unidadeMedida')">UNIDADE DE MEDIDA</validation-message></label><input type="text"  formControlName="unidadeMedida" id="fUnidade" placeholder="Ex: %"></div>
-                <div class="form-row"><label><validation-message [control]="getControl('basedeReferencia')">BASE DE REFERÊNCIA</validation-message></label><input type="text" formControlName="basedeReferencia" id="fValorBase" placeholder="Ex: 25.000 (2022)"></div>
+                <div class="form-row"><label><validation-message [control]="getControl('unidadeMedida')">UNIDADE DE
+                            MEDIDA</validation-message></label><input type="text" formControlName="unidadeMedida"
+                        id="fUnidade" placeholder="Ex: %"></div>
+                <div class="form-row"><label><validation-message [control]="getControl('basedeReferencia')">BASE DE
+                            REFERÊNCIA</validation-message></label><input type="text" formControlName="basedeReferencia"
+                        id="fValorBase" placeholder="Ex: 25.000 (2022)"></div>
             </div>
 
             <div class="form-row"><label>META</label>
                 <div formArrayName="metasIndicadorAvulsoGeral">
-                    <div class="meta-years" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 20px;">
-                        <div class="year-meta" *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index" [formGroupName]="i">
+                    <div class="meta-years"
+                        style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 20px;">
+                        <div class="year-meta"
+                            *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index"
+                            [formGroupName]="i">
                             <div class="year-label" style="font-size:11px; margin-bottom:4px;">
-                                <validation-message [control]="getMetaIndicadorControl(i)"> {{ (gestao?.doAno ?? 0) + i }} </validation-message>
+                                <validation-message [control]="getMetaIndicadorControl(i)"> {{ (gestao?.doAno ?? 0) + i
+                                    }} </validation-message>
                             </div>
                             <input type="number" formControlName="valorMeta" style="width:100%; border-radius:6px;">
                         </div>
@@ -35,9 +47,12 @@
             <div class="form-row"><label>META DO PROJETO</label>
                 <div formArrayName="metasIndicadorAvulsoProjeto">
                     <div class="meta-years" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                        <div class="year-meta" *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index" [formGroupName]="i">
+                        <div class="year-meta"
+                            *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index"
+                            [formGroupName]="i">
                             <div class="year-label" style="font-size:11px; margin-bottom:4px;">
-                                <validation-message [control]="getMetaIndicadorControl(i)"> {{ (gestao?.doAno ?? 0) + i }} </validation-message>
+                                <validation-message [control]="getMetaIndicadorControl(i)"> {{ (gestao?.doAno ?? 0) + i
+                                    }} </validation-message>
                             </div>
                             <input type="number" formControlName="valorMeta" style="width:100%; border-radius:6px;">
                         </div>
@@ -47,9 +62,16 @@
 
             <div class="form-actions" style="margin-top:24px;">
                 <button class="btn-secondary" (click)="fechar()">Cancelar</button>
-                <button class="btn-primary" (click)="salvar()">Salvar</button>
+                <button class="btn-primary" (click)="salvar()">Adicionar</button>
             </div>
 
         </div>
 
     </form>
+
+    <ng-template *ngIf="!loading">
+        <div class="estado-vazio">
+            <i class="pi pi-spin pi-spinner"></i>
+            Adicionando indicador projeto...
+        </div>
+    </ng-template>

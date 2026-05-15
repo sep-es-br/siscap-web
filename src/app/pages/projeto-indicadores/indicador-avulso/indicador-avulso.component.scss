@@ -154,3 +154,16 @@
     display: none;
     backdrop-filter: blur(4px);
 }
+
+.estado-vazio {
+    text-align: center;
+    padding: 20px 0;
+    color: #98a2b3;
+    font-size: 13px;
+  
+    i {
+      font-size: 18px;
+      margin-bottom: 6px;
+      display: block;
+    }
+  }

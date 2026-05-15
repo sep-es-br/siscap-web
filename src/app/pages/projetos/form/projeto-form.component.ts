@@ -912,9 +912,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         elegivel: [projetoFormModel?.parecerProjetoUsuario.elegivel ?? null]
       }),
       pareceresProjeto: this._nnfb.array([]),
-      indicadoresAvulsosProjeto: this.indicadoresService.construirindicadoresAvulsosFormArray(
-        projetoFormModel?.indicadoresAvulsosProjeto
-      ),
+      indicadoresAvulsosProjeto: this.indicadoresService.construirindicadoresAvulsosFormArray(projetoFormModel?.indicadoresAvulsosProjeto),
     });
 
     const mapSubObs: { [index: string]: Observable<string> } = {};
@@ -1420,44 +1418,29 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   // private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
-
   //   if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel) {
-
   //     const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
-
   //     if (parecerControl.invalid) {
   //       parecerControl.markAllAsTouched();
   //       return;
   //     }
-
   //     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
-
   //     payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
-
   //     this.atualizarProjeto(payload, isRascunho).subscribe();
-
   //   } else {
-
   //     if (this.validarFormulario(form)) {
-
   //       form.get('valor.tipo')?.enable();
-
   //       form.get('valor.moeda')?.enable();
-
   //       const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
-
   //       if (this.isProponente) {
   //         payload.idOrganizacao = form.get('idOrganizacao')?.value;
   //       }
-
   //       // transformacao no payload..
   //       const formValue = this.projetoForm.getRawValue();
-
   //       const indicadoresAvulsosPayload =
   //         formValue.indicadoresAvulsosProjeto.map(
   //           (indicador: IIndicadorAvulso) => ({
   //             id: indicador.idIndicador ?? null,
-
   //             indicadorAvulso: {
   //               id: indicador.idIndicador ?? null,
   //               nomeIndicador: indicador.nomeIndicador,
@@ -1468,30 +1451,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   //               metasIndicadorAvulsoGeral:
   //                 indicador.metasIndicadorAvulsoGeral
   //             },
-
   //             metasProjeto:
   //               indicador.metasIndicadorAvulsoProjeto
   //           })
   //         );
-
   //       const payloadNovo = {
   //         ...formValue,
   //         indicadoresAvulsosProjeto: indicadoresAvulsosPayload
   //       };
-
   //       console.log('PAYLOAD ANTIGO:', JSON.stringify(payload, null, 2));
   //       console.log('PAYLOAD SUBMIT (NOVO):', payloadNovo);
-
   //       // const requisicao = this._idProjetoEdicao
   //       //   ? this.atualizarProjeto(payloadNovo, isRascunho)
   //       //   : this.cadastrarProjeto(payloadNovo, isRascunho);
-
   //       // requisicao.subscribe();
-
   //     }
-
   //   }
-
   // }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
@@ -1536,10 +1511,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         payload.indicadoresAvulsosProjeto =
           this.projetoForm.getRawValue()
             .indicadoresAvulsosProjeto
+            .filter((indicador: IIndicadorAvulso) =>
+              indicador?.nomeIndicador?.trim())
             .map((indicador: IIndicadorAvulso) => ({
-
               id: indicador.idIndicador ?? null,
-
               indicadorAvulso: {
                 id: indicador.idIndicador ?? null,
                 nomeIndicador: indicador.nomeIndicador,
@@ -1550,13 +1525,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 metasIndicadorAvulsoGeral:
                   indicador.metasIndicadorAvulsoGeral
               },
-
               metasProjeto:
                 indicador.metasIndicadorAvulsoProjeto
-
             }));
 
-       
         const requisicao = this._idProjetoEdicao
           ? this.atualizarProjeto(payload, isRascunho)
           : this.cadastrarProjeto(payload, isRascunho);

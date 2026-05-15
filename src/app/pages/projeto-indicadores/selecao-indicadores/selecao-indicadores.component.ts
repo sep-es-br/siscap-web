@@ -18,16 +18,16 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   private _indicadores: IIndicadoresCatalogoExterno[] = [];
 
   @Input() form!: FormGroup;
+  @Input() selecionados: IIndicadoresCatalogoExterno[] = [];
+  @Input() loading: boolean = false;
+  @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() set indicadores(value: IIndicadoresCatalogoExterno[]) {
     this._indicadores = value || [];
     this.filtrarIndicadores();
     this.updateSelectAllState();
   }
-  @Input() selecionados: IIndicadoresCatalogoExterno[] = [];
-  @Input() loading: boolean = false;
-  @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Output() selecionadosChange = new EventEmitter<any[]>();
-
+  
   get indicadores() {
     return this._indicadores;
   }
@@ -52,17 +52,33 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     // }
   }
 
+  // filtrarIndicadores(): void {
+  //   const termo = this.filtroTexto
+  //     ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  //     : '';
+  //   this.indicadoresFiltrados = this.indicadores.filter(i => {
+  //     const nomeNormalizado = i.nomeIndicador?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  //     return nomeNormalizado?.includes(termo);
+  //   });
+  //   this.updateSelectAllState();
+  // }
+
   filtrarIndicadores(): void {
+    
     const termo = this.filtroTexto
       ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       : '';
-
-    this.indicadoresFiltrados = this.indicadores.filter(i => {
-      const nomeNormalizado = i.nomeIndicador?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    this.indicadoresFiltrados = this.montarIndicadoresExibicao().filter(i => {
+      const nomeNormalizado = i.nomeIndicador
+        ?.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
       return nomeNormalizado?.includes(termo);
     });
-
+    
     this.updateSelectAllState();
+
   }
 
   toggleIndicador(indicador: IIndicadoresCatalogoExterno): void {
@@ -106,17 +122,27 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   onCloseModalIndicadorAvulso(): void {
-
     this.showModalIndicadorAvulso = false;
-
-    // const indicadoresAvulsos =
-    //   this.form.get('indicadoresAvulsosProjeto')?.value ?? [];
-
-    // this.selecionados.push(...indicadoresAvulsos);
-
+    this.filtrarIndicadores();
     this.selecionadosChange.emit(this.selecionados);
+  }
 
-
+  private montarIndicadoresExibicao(): any[] {
+    const indicadoresCatalogo = this.indicadores || [];
+  
+    const indicadoresAvulsos =
+      this.form?.get('indicadoresAvulsosProjeto')?.value ?? [];
+  
+    const avulsosParaLista = indicadoresAvulsos.map((avulso: any) => ({
+      idIndicador: `avulso-${avulso.idIndicador ?? avulso.nomeIndicador}`,
+      nomeIndicador: avulso.nomeIndicador,
+      avulso: true
+    }));
+  
+    return [
+      ...indicadoresCatalogo,
+      ...avulsosParaLista
+    ];
   }
 
 }

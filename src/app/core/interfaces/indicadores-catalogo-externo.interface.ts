@@ -37,7 +37,8 @@ export interface IIndicadoresCatalogoExterno {
   metasIndicador: IMetaIndicador[],
   metasIndicadorProjeto: IMetaIndicador[],
   maiorAnoInidicador: number,
-  maiorMetaIndicador: string
+  maiorMetaIndicador: string,
+  avulso?: boolean;
 }
 
 export interface IMetaIndicador {

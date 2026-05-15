@@ -103,26 +103,22 @@ export class IndicadoresService {
     });
   }
 
-  public construirindicadoresAvulsosFormArray(
-    indicadores?: Array<IIndicadorAvulso>
-  ): FormArray<FormGroup<IndicadorAvulsoFormType>> {
-    const indicadoresAvulsosFormArray = this._nnfb.array<FormGroup<IndicadorAvulsoFormType>>([],);
-    if (indicadores) {
-      indicadores.forEach((indicador) => {
-        indicadoresAvulsosFormArray.push(this.construirIndicadorAvulsoFormGroup(indicador));
-      });
-    }
-    return indicadoresAvulsosFormArray;
+  public construirindicadoresAvulsosFormArray(indicadores?: Array<IIndicadorAvulso>): FormArray<FormGroup<IndicadorAvulsoFormType>> {
+    return this._nnfb.array<FormGroup<IndicadorAvulsoFormType>>(
+      (indicadores ?? []).map(indicador =>
+        this.construirIndicadorAvulsoFormGroup(indicador)
+      )
+    );
   }
 
   construirIndicadorAvulsoFormGroup(indicador: IIndicadorAvulso): FormGroup<IndicadorAvulsoFormType> {
     return this._nnfb.group<IndicadorAvulsoFormType>({
-      idIndicador: this._nnfb.control(indicador?.idIndicador ?? 0, [Validators.required]),
-      nomeIndicador: this._nnfb.control(indicador?.nomeIndicador ?? null, [Validators.required]),
-      fonteIndicador: this._nnfb.control(indicador?.fonteIndicador ?? null, [Validators.required]),
-      medidoPor: this._nnfb.control(indicador?.medidoPor ?? null, [Validators.required]),
-      unidadeMedida: this._nnfb.control(indicador?.unidadeMedida ?? null, [Validators.required]),
-      basedeReferencia: this._nnfb.control(indicador?.basedeReferencia ?? null, [Validators.required]),
+      idIndicador: this._nnfb.control(indicador?.idIndicador ?? 0),
+      nomeIndicador: this._nnfb.control(indicador?.nomeIndicador ?? null),
+      fonteIndicador: this._nnfb.control(indicador?.fonteIndicador ?? null),
+      medidoPor: this._nnfb.control(indicador?.medidoPor ?? null),
+      unidadeMedida: this._nnfb.control(indicador?.unidadeMedida ?? null),
+      basedeReferencia: this._nnfb.control(indicador?.basedeReferencia ?? null),
       metasIndicadorProjeto: this._nnfb.array<FormGroup<MetaIndicadorAvulsoFormType>>(
         (indicador?.metasIndicadorAvulsoProjeto ?? []).map(meta =>
           this.construirMetaIndicadorAvulso(meta)
@@ -138,8 +134,8 @@ export class IndicadoresService {
 
   construirMetaIndicadorAvulso(meta: { anoMeta: number | null; valorMeta: string | null; }): any {
     return this._nnfb.group({
-      valorMeta: this._nnfb.control(meta?.valorMeta ?? null, Validators.required),
-      anoMeta: this._nnfb.control(meta?.anoMeta ?? null, Validators.required),
+      valorMeta: this._nnfb.control(meta?.valorMeta ?? null),
+      anoMeta: this._nnfb.control(meta?.anoMeta ?? null),
     });
   }
 
