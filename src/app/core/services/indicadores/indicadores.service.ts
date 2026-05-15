@@ -64,7 +64,7 @@ export class IndicadoresService {
   public construirindicadoresFormArray(
     indicadores?: Array<IIndicadores>
   ): FormArray<FormGroup<IndicadoresFormType>> {
-    const indicadoresFormArray = this._nnfb.array<FormGroup<IndicadoresFormType>>([],);
+    const indicadoresFormArray = this._nnfb.array<FormGroup<IndicadoresFormType>>([],[Validators.required, Validators.minLength(1),]);
     if (indicadores) {
       indicadores.forEach((indicador) => {
         indicadoresFormArray.push(this.construirIndicadorFormGroup(indicador));

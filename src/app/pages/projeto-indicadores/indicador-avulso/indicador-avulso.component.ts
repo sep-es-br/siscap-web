@@ -26,6 +26,7 @@ export class IndicadorAvulsoComponent {
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() formProjeto!: FormGroup;
   @Output() close = new EventEmitter<void>();
+  @Output() indicadorCriado = new EventEmitter<void>();
 
   loading: boolean = false;
 
@@ -113,6 +114,8 @@ export class IndicadorAvulsoComponent {
     this.loading = true;
 
     this.indicadoresAvulsos.push(this.formIndicador);
+
+    this.indicadorCriado.emit(this.formIndicador.getRawValue());
 
     this.loading = false;
 

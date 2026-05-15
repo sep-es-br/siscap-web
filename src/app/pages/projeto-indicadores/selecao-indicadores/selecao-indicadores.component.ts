@@ -14,7 +14,7 @@ import { IndicadorAvulsoComponent } from '../indicador-avulso/indicador-avulso.c
   styleUrls: ['./selecao-indicadores.component.scss']
 })
 export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
-  
+
   private _indicadores: IIndicadoresCatalogoExterno[] = [];
 
   @Input() form!: FormGroup;
@@ -27,7 +27,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     this.updateSelectAllState();
   }
   @Output() selecionadosChange = new EventEmitter<any[]>();
-  
+
   get indicadores() {
     return this._indicadores;
   }
@@ -64,11 +64,11 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   // }
 
   filtrarIndicadores(): void {
-    
+
     const termo = this.filtroTexto
       ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       : '';
-    
+
     this.indicadoresFiltrados = this.montarIndicadoresExibicao().filter(i => {
       const nomeNormalizado = i.nomeIndicador
         ?.toLowerCase()
@@ -76,7 +76,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
         .replace(/[\u0300-\u036f]/g, "");
       return nomeNormalizado?.includes(termo);
     });
-    
+
     this.updateSelectAllState();
 
   }
@@ -129,20 +129,44 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
   private montarIndicadoresExibicao(): any[] {
     const indicadoresCatalogo = this.indicadores || [];
-  
+
     const indicadoresAvulsos =
       this.form?.get('indicadoresAvulsosProjeto')?.value ?? [];
-  
+
     const avulsosParaLista = indicadoresAvulsos.map((avulso: any) => ({
       idIndicador: `avulso-${avulso.idIndicador ?? avulso.nomeIndicador}`,
       nomeIndicador: avulso.nomeIndicador,
       avulso: true
     }));
-  
+
     return [
       ...indicadoresCatalogo,
       ...avulsosParaLista
     ];
+  }
+
+  onIndicadorAvulsoCriado(indicador: any): void {
+
+    console.log("Indicador Avulso Criado : ", indicador)
+
+    this.selecionados = [
+      ...this.selecionados,
+      {
+        ...indicador,
+        nomeIndicador: indicador.nomeIndicador,
+        fonteIndicador: indicador.fonteIndicador,
+        unidadeMedida: indicador.unidadeMedida,
+        basedeReferencia: indicador.basedeReferencia,
+        metasIndicador: indicador.metasIndicadorAvulsoGeral,
+        metasIndicadorProjeto: indicador.metasIndicadorAvulsoProjeto,
+        avulso: true
+      }
+    ];
+
+    this.filtrarIndicadores();
+
+    this.selecionadosChange.emit([...this.selecionados]);
+
   }
 
 }

@@ -82,6 +82,7 @@
             <button class="nav-link" id="nav-indicadores" data-bs-toggle="tab" data-bs-target="#tab-indicadores"
               role="tab" aria-controls="propriedades" aria-selected="true">
               Indicadores
+              <span *ngIf="getControl('indicadoresProjeto')?.invalid && getControl('indicadoresProjeto')?.touched" class="text-danger">*</span>
             </button>
           </li>
           <li class="nav-item" role="presentation" *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0">
@@ -362,7 +363,9 @@
         </div>
 
         <div class="tab-pane fade" id="tab-indicadores" role="tabpanel" aria-labelledby="nav-indicadores">
-          <siscap-projeto-indicadores [formProjeto]="projetoForm" [isModoEdicao]="isModoEdicao"></siscap-projeto-indicadores>
+          <validation-message [control]="getControl('indicadoresProjeto')"></validation-message>
+          <siscap-projeto-indicadores [formProjeto]="projetoForm"
+            [isModoEdicao]="isModoEdicao"></siscap-projeto-indicadores>
         </div>
 
         <div class="tab-pane fade" [ngClass]="{'show active': aguardandoParecer()}"

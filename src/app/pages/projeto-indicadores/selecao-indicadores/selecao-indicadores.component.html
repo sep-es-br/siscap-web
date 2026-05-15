@@ -48,7 +48,10 @@
     </div>
   </div>
 
-  <siscap-indicador-avulso *ngIf="showModalIndicadorAvulso" [gestao]="gestao" [formProjeto]="form" 
+  <siscap-indicador-avulso *ngIf="showModalIndicadorAvulso" 
+    [gestao]="gestao" 
+    [formProjeto]="form"
+    (indicadorCriado)="onIndicadorAvulsoCriado($event)"
     (close)="onCloseModalIndicadorAvulso()"></siscap-indicador-avulso>
 
 </div>
