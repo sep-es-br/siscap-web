@@ -91,6 +91,7 @@ import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { gerarStepStatusProjeto, IStep } from '../../../core/utils/steps';
 import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
+import { IIndicadorAvulso } from '../../../core/interfaces/indicador-avulso.interface';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -193,9 +194,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public exibeListaEtapasIntegracao: boolean = false;
 
-  public mapSubUser : {[index:string] : string} = {};
+  public mapSubUser: { [index: string]: string } = {};
 
-  public statusSteps? : IStep<StatusProjetoEnum>[];
+  public statusSteps?: IStep<StatusProjetoEnum>[];
 
   public nomeUsuario: string = '';
   public lotacaoPrioritariaUsuario: string = '';
@@ -309,7 +310,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  isMobile(){
+  isMobile() {
     return window.innerWidth < 1200;
   }
 
@@ -319,7 +320,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .getById(idProjeto)
       .pipe(
         tap((response: IProjeto) => {
-           // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+          // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
         }),
         map<IProjeto, ProjetoModel>((response: IProjeto) => new ProjetoModel(response)),
         catchError((error) => {
@@ -379,18 +380,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
             this.statusSteps = [];
 
-            projetoModel.historico.sort((s1, s2) =>{
+            projetoModel.historico.sort((s1, s2) => {
               return Date.parse(s1.inicioEm) - Date.parse(s2.inicioEm)
-            } ).forEach(
+            }).forEach(
               h => {
-                if(!this.statusSteps) return;
+                if (!this.statusSteps) return;
 
-                if(h.status == StatusProjetoEnum.Parecer_SEP){
+                if (h.status == StatusProjetoEnum.Parecer_SEP) {
                   this.statusSteps.push(gerarStepStatusProjeto(
                     StatusProjetoEnum.Parecer_SEP,
                     h,
                     projetoModel.pareceresProjeto
-                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})),
+                      .map(p => ({ ...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer] })),
                     true
                   ));
                 }
@@ -399,26 +400,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                   h.status,
                   h,
                   projetoModel.pareceresProjeto
-                              .map(p => ({...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer]})),
+                    .map(p => ({ ...p, usuarioFezEnvioParecer: this.mapSubUser[p.usuarioFezEnvioParecer] })),
                   false
-                )) ;
+                ));
               }
             )
 
-            if(![StatusProjetoEnum.Elegivel, StatusProjetoEnum.Inelegivel, StatusProjetoEnum.Arquivado].includes(projetoModel.status as StatusProjetoEnum)) {
+            if (![StatusProjetoEnum.Elegivel, StatusProjetoEnum.Inelegivel, StatusProjetoEnum.Arquivado].includes(projetoModel.status as StatusProjetoEnum)) {
               let indexUltimaEtapa = caminhoFeliz.findIndex(s => s == projetoModel.status);
 
-              if(projetoModel.status == StatusProjetoEnum.Em_Elaboracao) indexUltimaEtapa++;
+              if (projetoModel.status == StatusProjetoEnum.Em_Elaboracao) indexUltimaEtapa++;
 
-              caminhoFeliz.slice(indexUltimaEtapa+1).forEach(
+              caminhoFeliz.slice(indexUltimaEtapa + 1).forEach(
                 s => {
-                  if(!this.statusSteps) return;
+                  if (!this.statusSteps) return;
 
-                  if(s == StatusProjetoEnum.Parecer_SEP){
+                  if (s == StatusProjetoEnum.Parecer_SEP) {
                     this.statusSteps.push(gerarStepStatusProjeto(StatusProjetoEnum.Parecer_SEP, undefined, projetoModel.pareceresProjeto, true));
                   }
 
-                  this.statusSteps.push(gerarStepStatusProjeto(s, undefined, projetoModel.pareceresProjeto, false)) ;
+                  this.statusSteps.push(gerarStepStatusProjeto(s, undefined, projetoModel.pareceresProjeto, false));
                 }
               )
             }
@@ -491,8 +492,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 }
               }
 
-            if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
-              const subeppSubeoEnviados = this.pareceresEstrategicoOrcamentarioForamEnviados();
+              if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
+                const subeppSubeoEnviados = this.pareceresEstrategicoOrcamentarioForamEnviados();
 
                 const subeppSubeoEntranhados = this.pareceresEstrategicoOrcamentarioForamEntranhados();
 
@@ -508,8 +509,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                     this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario()
                   );
 
-                } else if ( ( !parecerSubcapGeoc && subeppSubeoEntranhados) ||
-                  ( parecerSubcapGeoc && parecerSubcapGeoc?.statusParecer !== StatusParecerEnum.Entranhado_Processo_Edocs ) ) {
+                } else if ((!parecerSubcapGeoc && subeppSubeoEntranhados) ||
+                  (parecerSubcapGeoc && parecerSubcapGeoc?.statusParecer !== StatusParecerEnum.Entranhado_Processo_Edocs)) {
 
                   this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                     this._projetosService.gerarBotoesAcaoParecerGEOC()
@@ -612,7 +613,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  public isProjetoElegivel() : boolean {
+  public isProjetoElegivel(): boolean {
     return this.statusProjeto == StatusProjetoEnum.Elegivel;
   }
 
@@ -668,7 +669,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._projetosService.idProjeto$.pipe(take(1)).subscribe(idProjeto => {
 
       if (idProjeto > 0) {
-        
+
         this._subscription.add(this._getAllOpcoes$.pipe(tap(() => {
           this.carregarProjetoEditar(idProjeto);
           this._subscription.add(this._atualizarProjeto$.subscribe());
@@ -680,17 +681,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           () => {
             this.iniciarForm().subscribe(() => {
 
-          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
-          );
+              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                this.isProponente ? this._projetosService.gerarBotoesAcaoFormularioProponente() : this._projetosService.gerarBotoesAcaoFormulario()
+              );
 
-          this.trocarModo(true);
+              this.trocarModo(true);
 
-          this.mostrarBotaoBaixarDic = false;
-          this.loading = false;
-          this.isLoadingPessoas = false;
+              this.mostrarBotaoBaixarDic = false;
+              this.loading = false;
+              this.isLoadingPessoas = false;
 
-        });
+            });
           }
         ))
 
@@ -721,14 +722,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return this._pessoasService.buscarResponsavelPorIdOrganizacaoAC(valorIdOrganizacao)
       .pipe(tap((response) => {
 
-          this.pessoasOpcoes = response;
-          this.isLoadingPessoas = false;
+        this.pessoasOpcoes = response;
+        this.isLoadingPessoas = false;
 
-          const subResponsavelProponente = this.projetoForm.get('subResponsavelProponente')?.value
-          const pessoa = this.pessoasOpcoes.find(p => p.agentePublicoSub === subResponsavelProponente);
-          this.projetoForm.patchValue({ nomeResponsavelProponente: pessoa?.nome.toUpperCase() || ' - ' });
+        const subResponsavelProponente = this.projetoForm.get('subResponsavelProponente')?.value
+        const pessoa = this.pessoasOpcoes.find(p => p.agentePublicoSub === subResponsavelProponente);
+        this.projetoForm.patchValue({ nomeResponsavelProponente: pessoa?.nome.toUpperCase() || ' - ' });
 
-        }),
+      }),
         catchError((err) => {
           this.pessoasOpcoes = [];
           this.isLoadingPessoas = false;
@@ -916,10 +917,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
     });
 
-    const mapSubObs : {[index: string]: Observable<string>} = {};
+    const mapSubObs: { [index: string]: Observable<string> } = {};
     projetoFormModel?.pareceresProjeto?.filter(p => p.usuarioFezEnvioParecer).forEach(parecer => {
-        mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
-                                                    .pipe(map(pessoa => pessoa.nome))
+      mapSubObs[parecer.usuarioFezEnvioParecer] = this._pessoasService.buscarMeuPerfil(parecer.usuarioFezEnvioParecer)
+        .pipe(map(pessoa => pessoa.nome))
     })
 
     return concat(
@@ -1303,7 +1304,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       'parecerProjetoUsuario.guidDocumentoEdocs'
     ) as FormControl<string | null>;
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel ) {
+    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel) {
 
       setTimeout(() => {
         const idDocumentoEdocsParecer = idDocumentoEdocsFormControl?.value ?? '';
@@ -1321,7 +1322,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
   }
 
-  public isGeocEditavel() : boolean {
+  public isGeocEditavel(): boolean {
     const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
       this.pareceresProjeto
         .filter(p =>
@@ -1331,7 +1332,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return this.statusProjeto === StatusProjetoEnum.Parecer_SEP && this.isSubeoSubeppEntranhados();
   }
 
-  public isSubeoSubeppEntranhados() : boolean {
+  public isSubeoSubeppEntranhados(): boolean {
     const subeoSubeppEntranhados = this.pareceresProjeto.length > 0 &&
       this.pareceresProjeto
         .filter(p =>
@@ -1392,7 +1393,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   getLotacao(nLotacao: number) {
-    switch(nLotacao) {
+    switch (nLotacao) {
       case LotacaoUsuarioEnum.SUBCAP: return "Captação";
       case LotacaoUsuarioEnum.SUBEO: return "Orçamentário";
       case LotacaoUsuarioEnum.SUBEPP: return "Estratégico";
@@ -1400,38 +1401,119 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return undefined;
   }
 
-  get isParecerGeoc() : boolean{
+  get isParecerGeoc(): boolean {
     return (this.parecerProjetoUsuario.parecerLotacao ?? this.lotacaoUsuario) == LotacaoUsuarioEnum.SUBCAP;
   }
 
   get demaisPareceres() {
 
     return [LotacaoUsuarioEnum.SUBEPP, LotacaoUsuarioEnum.SUBEO, ...(this.isSubeoSubeppEntranhados() ? [LotacaoUsuarioEnum.SUBCAP] : [])]
-            .map(n => {
-              const parecer = this.pareceresProjeto.filter(p => p.parecerLotacao === n)[0]
+      .map(n => {
+        const parecer = this.pareceresProjeto.filter(p => p.parecerLotacao === n)[0]
 
-              return parecer ?? {
-                parecerLotacao: n
-              } as IParecer;
+        return parecer ?? {
+          parecerLotacao: n
+        } as IParecer;
 
-            })
-            .filter(parecer =>!this.aguardandoParecer() || this.isProjetoElegivel() || parecer.parecerLotacao !== this.lotacaoUsuario)
+      })
+      .filter(parecer => !this.aguardandoParecer() || this.isProjetoElegivel() || parecer.parecerLotacao !== this.lotacaoUsuario)
   }
 
-  private submitProjetoForm( form: FormGroup, isRascunho: boolean ): void {
+  // private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
-    if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel ) {
+  //   if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel) {
 
-      const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
+  //     const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
+
+  //     if (parecerControl.invalid) {
+  //       parecerControl.markAllAsTouched();
+  //       return;
+  //     }
+
+  //     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+
+  //     payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
+
+  //     this.atualizarProjeto(payload, isRascunho).subscribe();
+
+  //   } else {
+
+  //     if (this.validarFormulario(form)) {
+
+  //       form.get('valor.tipo')?.enable();
+
+  //       form.get('valor.moeda')?.enable();
+
+  //       const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+
+  //       if (this.isProponente) {
+  //         payload.idOrganizacao = form.get('idOrganizacao')?.value;
+  //       }
+
+  //       // transformacao no payload..
+  //       const formValue = this.projetoForm.getRawValue();
+
+  //       const indicadoresAvulsosPayload =
+  //         formValue.indicadoresAvulsosProjeto.map(
+  //           (indicador: IIndicadorAvulso) => ({
+  //             id: indicador.idIndicador ?? null,
+
+  //             indicadorAvulso: {
+  //               id: indicador.idIndicador ?? null,
+  //               nomeIndicador: indicador.nomeIndicador,
+  //               unidadeMedida: indicador.unidadeMedida,
+  //               fonteIndicador: indicador.fonteIndicador,
+  //               medidoPor: indicador.medidoPor,
+  //               baseReferencia: indicador.basedeReferencia,
+  //               metasIndicadorAvulsoGeral:
+  //                 indicador.metasIndicadorAvulsoGeral
+  //             },
+
+  //             metasProjeto:
+  //               indicador.metasIndicadorAvulsoProjeto
+  //           })
+  //         );
+
+  //       const payloadNovo = {
+  //         ...formValue,
+  //         indicadoresAvulsosProjeto: indicadoresAvulsosPayload
+  //       };
+
+  //       console.log('PAYLOAD ANTIGO:', JSON.stringify(payload, null, 2));
+  //       console.log('PAYLOAD SUBMIT (NOVO):', payloadNovo);
+
+  //       // const requisicao = this._idProjetoEdicao
+  //       //   ? this.atualizarProjeto(payloadNovo, isRascunho)
+  //       //   : this.cadastrarProjeto(payloadNovo, isRascunho);
+
+  //       // requisicao.subscribe();
+
+  //     }
+
+  //   }
+
+  // }
+
+  private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
+
+    if (
+      this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
+      this.statusProjeto === StatusProjetoEnum.Elegivel
+    ) {
+
+      const parecerControl =
+        this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
 
       if (parecerControl.invalid) {
         parecerControl.markAllAsTouched();
         return;
       }
 
-      const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+      const payload =
+        new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
-      payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
+      payload.parecerProjetoUsuario =
+        this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
 
       this.atualizarProjeto(payload, isRascunho).subscribe();
 
@@ -1440,17 +1522,41 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       if (this.validarFormulario(form)) {
 
         form.get('valor.tipo')?.enable();
-
         form.get('valor.moeda')?.enable();
 
-        const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+        const payload =
+          new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
         if (this.isProponente) {
-          payload.idOrganizacao = form.get('idOrganizacao')?.value;
+          payload.idOrganizacao =
+            form.get('idOrganizacao')?.value;
         }
 
-        console.log('PAYLOAD SUBMIT:', payload);
+        // transforma SOMENTE os indicadores avulsos
+        payload.indicadoresAvulsosProjeto =
+          this.projetoForm.getRawValue()
+            .indicadoresAvulsosProjeto
+            .map((indicador: IIndicadorAvulso) => ({
 
+              id: indicador.idIndicador ?? null,
+
+              indicadorAvulso: {
+                id: indicador.idIndicador ?? null,
+                nomeIndicador: indicador.nomeIndicador,
+                unidadeMedida: indicador.unidadeMedida,
+                fonteIndicador: indicador.fonteIndicador,
+                medidoPor: indicador.medidoPor,
+                baseDeReferencia: indicador.basedeReferencia,
+                metasIndicadorAvulsoGeral:
+                  indicador.metasIndicadorAvulsoGeral
+              },
+
+              metasProjeto:
+                indicador.metasIndicadorAvulsoProjeto
+
+            }));
+
+       
         const requisicao = this._idProjetoEdicao
           ? this.atualizarProjeto(payload, isRascunho)
           : this.cadastrarProjeto(payload, isRascunho);
@@ -1772,7 +1878,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  public confirmarAssinarCapturarParecer(elegivel? : boolean) {
+  public confirmarAssinarCapturarParecer(elegivel?: boolean) {
     this.autuacaoAcionada = true;
     this.assinarAutuar = false;
     this.finalizadoProcessamentoIntegracao = false;
