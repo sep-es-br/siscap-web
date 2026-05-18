@@ -1507,6 +1507,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             form.get('idOrganizacao')?.value;
         }
 
+        // 
+        payload.indicadoresProjeto = this.projetoForm.getRawValue()
+          .indicadoresProjeto
+          .filter((indicador: IIndicadores) => indicador.idIndicador !== null &&
+            indicador.idIndicador !== undefined &&
+            indicador.idIndicador !== 0)
+          .map((indicador: IIndicadores) => ({
+            idIndicador: indicador.idIndicador,
+            tipoIndicador: indicador.tipoIndicador ?? null,
+            descricaoIndicador: indicador.descricaoIndicador ?? null,
+            descricaoMeta: indicador.descricaoMeta ?? null,
+            idStatus: indicador.idStatus ?? 1,
+            idIndicadorExterno: indicador.idIndicadorExterno,
+            metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
+              idFato: meta.idFato,
+              anoMeta: meta.anoMeta,
+              valorMeta: meta.valorMeta
+            })) ?? []
+          }));
+
         // transforma SOMENTE os indicadores avulsos
         payload.indicadoresAvulsosProjeto =
           this.projetoForm.getRawValue()
@@ -1526,8 +1546,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                   indicador.metasIndicadorAvulsoGeral
               },
               metasProjeto:
-                indicador.metasIndicadorAvulsoProjeto
+                indicador.metasIndicadorAvulsoProjeto,
+              metasIndicadorAvulsoGeral:
+                indicador.metasIndicadorAvulsoGeral
             }));
+
+        console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
         const requisicao = this._idProjetoEdicao
           ? this.atualizarProjeto(payload, isRascunho)
