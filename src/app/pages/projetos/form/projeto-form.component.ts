@@ -594,12 +594,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
               if (
                 (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP ||
-                  this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO || this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP ) &&
+                  this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO ) &&
                 (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0 )
               ) {
-                const isSubcap: boolean = this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP;
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario(isSubcap),
+                  this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario(),
                 );
               } else if (
                 (!parecerSubcapGeoc && subeppSubeoEntranhados) ||
@@ -618,13 +617,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs(),
                 );
-              } else {
+              } else if(
+                this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP
+              ) {
+                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                  this._projetosService.gerarBotoeAcaoVoltarContextoParecerSep(),
+                );
+              }
+              else {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoeAcaoVoltar(),
                 );
               }
 
               () => this.trocarModo(true);
+
             }
           }
 

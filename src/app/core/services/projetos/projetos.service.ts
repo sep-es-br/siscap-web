@@ -143,23 +143,12 @@ export class ProjetosService extends BaseHttpService<
     return [botaoCancelar];
   }
 
-  public gerarBotoesAcaoParecerEstrategicoOrcamentario(isSubcap: boolean): Array<BotaoPropriedadesModel> {
-    
+  public gerarBotoesAcaoParecerEstrategicoOrcamentario(): Array<BotaoPropriedadesModel> {
     const botoes = [
-      BotoesConfig.gerarBotaoPropriedades('cancelar')
-    ];
-    
-    botoes.push(
+      BotoesConfig.gerarBotaoPropriedades('cancelar'),
       BotoesConfig.gerarBotaoPropriedades('salvarparecer'),
       BotoesConfig.gerarBotaoPropriedades('efetivarparecerestrategicoorcamentario')
-    );
-
-    if (isSubcap) {
-      botoes.push(
-        BotoesConfig.gerarBotaoPropriedades('parecerestrategicoorcamentario')
-      );
-    }
-
+    ];
     return botoes;
   }
 
@@ -180,6 +169,12 @@ export class ProjetosService extends BaseHttpService<
     const botaoEntranharPareceres = BotoesConfig.gerarBotaoPropriedades('entranharParecerGEOCdocs');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     return [botaoCancelar, botaoEntranharPareceres];
+  }
+
+  public gerarBotoeAcaoVoltarContextoParecerSep(): Array<BotaoPropriedadesModel> {
+    const botaoSolicitarParecer = BotoesConfig.gerarBotaoPropriedades('parecerestrategicoorcamentario');
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    return [botaoVoltar, botaoSolicitarParecer];
   }
 
   public construirProjetoModelRateio(
