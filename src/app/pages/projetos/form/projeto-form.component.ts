@@ -607,7 +607,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                     StatusParecerEnum.Entranhado_Processo_Edocs)
               ) {
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._projetosService.gerarBotoesAcaoParecerGEOC(),
+                  this._projetosService.gerarBotoesAcaoParecerGEOC(this.lotacaoUsuario),
                 );
               } else if (
                 this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP &&

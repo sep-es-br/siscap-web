@@ -23,6 +23,7 @@ import { environment } from '../../../../environments/environment';
 import { IProjetoIntegracaoEdocsFases } from '../../interfaces/projeto-integracao-edcos-fases.interface';
 import { IEstruturaCamposComplementar } from '../../interfaces/estrutura.campo.complementar.dic.interface';
 import { FilesService } from '../files/files.service';
+import { LotacaoUsuarioEnum } from '../../enums/lotacao-usuario.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -152,11 +153,19 @@ export class ProjetosService extends BaseHttpService<
     return botoes;
   }
 
-  public gerarBotoesAcaoParecerGEOC(): Array<BotaoPropriedadesModel> {
-    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
-    const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('capturarparecerGEOC');
-    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    return [botaoCancelar, botaoSalvar, botaoEnviar];
+  public gerarBotoesAcaoParecerGEOC( lotacaoUsuario: LotacaoUsuarioEnum ): Array<BotaoPropriedadesModel> {
+    
+    const botoes = [
+      BotoesConfig.gerarBotaoPropriedades('cancelar'),
+      BotoesConfig.gerarBotaoPropriedades('salvarparecer'),
+      BotoesConfig.gerarBotaoPropriedades('capturarparecerGEOC'),
+    ];
+
+    if( lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP )
+      botoes.push(BotoesConfig.gerarBotaoPropriedades('efetivarparecerestrategicoorcamentario'))
+
+    return botoes;
+
   }
 
   public gerarBotoesAcaoEntgranharPareceresProcessoEdocs(): Array<BotaoPropriedadesModel> {
