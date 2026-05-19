@@ -380,4 +380,12 @@ export class ProjetosService extends BaseHttpService<
       `${this._url}/dic/edocs/fases/${idProjeto}`);
   }
 
+  public reEnviarEmailPedidoParecerProjeto(id: number): 
+    Observable<void> {
+    return this._http.post<void>(
+      `${this._url}/${id}/reenviar-email-pedido-parecer`,
+      {}
+    );
+  }
+
 }
