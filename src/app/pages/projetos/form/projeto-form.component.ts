@@ -579,70 +579,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               }
             }
 
-            //   if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
-
-            //     const subeppSubeoEnviados =
-            //       this.pareceresEstrategicoOrcamentarioForamEnviados();
-
-            //     const subeppSubeoEntranhados =
-            //       this.pareceresEstrategicoOrcamentarioForamEntranhados();
-
-            //     this._breadcrumbService.listaItemsBreadcrumb$;
-
-            //     const parecerSubcapGeoc = this.pareceresProjeto.find((p) =>
-            //       [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao),
-            //     );
-
-            //     if (
-            //       (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP ||
-            //         this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEO ) &&
-            //       (!this.parecerProjetoUsuario.guidDocumentoEdocs || this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0 )
-            //     ) {
-            //       this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            //         this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario(),
-            //       );
-            //     } else if (
-            //       (!parecerSubcapGeoc && subeppSubeoEntranhados) ||
-            //       (parecerSubcapGeoc &&
-            //         parecerSubcapGeoc?.statusParecer !==
-            //           StatusParecerEnum.Entranhado_Processo_Edocs)
-            //     ) {
-            //       this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            //         this._projetosService.gerarBotoesAcaoParecerGEOC(this.lotacaoUsuario),
-            //       );
-            //     } else if (
-            //       this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP &&
-            //       subeppSubeoEnviados &&
-            //       !subeppSubeoEntranhados
-            //     ) {
-            //       this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            //         this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs(),
-            //       );
-            //     } else if(
-            //       this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP
-            //     ) {
-            //       this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            //         this._projetosService.gerarBotoeAcaoVoltarContextoParecerSep(),
-            //       );
-            //     }
-            //     else {
-            //       this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-            //         this._projetosService.gerarBotoeAcaoVoltar(),
-            //       );
-            //     }
-
-            //     () => this.trocarModo(true);
-
-            //   }
-            // }
-
             if (projetoModel.status === StatusProjetoEnum.Parecer_SEP) {
-
-              console.log('[Parecer_SEP] Entrou na lógica Parecer_SEP');
-              console.log('[Parecer_SEP] lotacaoUsuario:', this.lotacaoUsuario);
-              console.log('[Parecer_SEP] parecerProjetoUsuario:', this.parecerProjetoUsuario);
-              console.log('[Parecer_SEP] guidDocumentoEdocs:', this.parecerProjetoUsuario?.guidDocumentoEdocs);
-              console.log('[Parecer_SEP] pareceresProjeto:', this.pareceresProjeto);
 
               const subeppSubeoEnviados =
                 this.pareceresEstrategicoOrcamentarioForamEnviados();
@@ -650,15 +587,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               const subeppSubeoEntranhados =
                 this.pareceresEstrategicoOrcamentarioForamEntranhados();
 
-              console.log('[Parecer_SEP] subeppSubeoEnviados:', subeppSubeoEnviados);
-              console.log('[Parecer_SEP] subeppSubeoEntranhados:', subeppSubeoEntranhados);
-
               const parecerSubcapGeoc = this.pareceresProjeto.find((p) =>
                 [LotacaoUsuarioEnum.SUBCAP].includes(p.parecerLotacao),
               );
-
-              console.log('[Parecer_SEP] parecerSubcapGeoc encontrado:', parecerSubcapGeoc);
-              console.log('[Parecer_SEP] status parecerSubcapGeoc:', parecerSubcapGeoc?.statusParecer);
 
               if (
                 (this.lotacaoUsuario == LotacaoUsuarioEnum.SUBEPP ||
@@ -666,8 +597,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 (!this.parecerProjetoUsuario.guidDocumentoEdocs ||
                   this.parecerProjetoUsuario.guidDocumentoEdocs.length == 0)
               ) {
-                console.log('[Parecer_SEP] ENTROU NO IF 1: SUBEPP/SUBEO sem guidDocumentoEdocs');
-
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoParecerEstrategicoOrcamentario(),
                 );
@@ -679,15 +608,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 )
               ) {
 
-                console.log('[Parecer_SEP] ENTROU NO IF 2: gerar botões GEOC');
-                console.log('[Parecer_SEP] Motivo IF 2:', {
-                  semParecerSubcapGeoc: !parecerSubcapGeoc,
-                  subeppSubeoEntranhados,
-                  temParecerSubcapGeoc: !!parecerSubcapGeoc,
-                  statusParecerSubcapGeoc: parecerSubcapGeoc?.statusParecer,
-                  statusEsperado: StatusParecerEnum.Entranhado_Processo_Edocs,
-                });
-
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoParecerGEOC(this.lotacaoUsuario),
                 );
@@ -697,13 +617,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 subeppSubeoEnviados &&
                 !subeppSubeoEntranhados
               ) {
-                console.log('[Parecer_SEP] ENTROU NO IF 3: SUBCAP pode entranhar pareceres');
-                console.log('[Parecer_SEP] Condições IF 3:', {
-                  lotacaoUsuario: this.lotacaoUsuario,
-                  subeppSubeoEnviados,
-                  subeppSubeoEntranhados,
-                });
-
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoesAcaoEntgranharPareceresProcessoEdocs(),
                 );
@@ -711,28 +624,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               } else if (
                 this.lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP
               ) {
-                console.log('[Parecer_SEP] ENTROU NO IF 4: SUBCAP voltar contexto Parecer SEP');
-
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoeAcaoVoltarContextoParecerSep(),
                 );
-
               } else {
-                console.log('[Parecer_SEP] ENTROU NO ELSE FINAL: gerar botão voltar padrão');
-                console.log('[Parecer_SEP] Estado final:', {
-                  lotacaoUsuario: this.lotacaoUsuario,
-                  subeppSubeoEnviados,
-                  subeppSubeoEntranhados,
-                  parecerSubcapGeoc,
-                  guidDocumentoEdocs: this.parecerProjetoUsuario?.guidDocumentoEdocs,
-                });
-
                 this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
                   this._projetosService.gerarBotoeAcaoVoltar(),
                 );
               }
-
-              console.log('[Parecer_SEP] Finalizou lógica Parecer_SEP');
 
               () => this.trocarModo(true);
 
@@ -1693,7 +1592,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private reenviarEmailPedidoParecer(): Observable<void> {
-    console.log("chegou nesse ponto..")
     return this._projetosService
       .reEnviarEmailPedidoParecerProjeto(this._idProjetoEdicao)
       .pipe(
@@ -1963,15 +1861,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     modalRef.result.then((result) => {
       if (result === 'confirmado') {
 
-        this.reenviarEmailPedidoParecer().subscribe({
-          error: (error) => {
-            console.error('[Reenvio Parecer] Erro:', error);
-            this._toastService.showToast(
-              'error',
-              'Erro ao reenviar e-mail de pedido de parecer.',
-            );
-          },
-        });
+        if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) {
+          this.reenviarEmailPedidoParecer().subscribe({
+            error: (error) => {
+              console.error('[Reenvio Parecer] Erro:', error);
+              this._toastService.showToast(
+                'error',
+                'Erro ao reenviar e-mail de pedido de parecer.',
+              );
+            },
+          });
+          return;
+        }
 
         this.submitProjetoForm(form, false);
 

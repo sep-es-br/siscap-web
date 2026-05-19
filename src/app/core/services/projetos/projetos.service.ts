@@ -161,9 +161,6 @@ export class ProjetosService extends BaseHttpService<
       BotoesConfig.gerarBotaoPropriedades('capturarparecerGEOC'),
     ];
 
-    if( lotacaoUsuario == LotacaoUsuarioEnum.SUBCAP )
-      botoes.push(BotoesConfig.gerarBotaoPropriedades('efetivarparecerestrategicoorcamentario'))
-
     return botoes;
 
   }
