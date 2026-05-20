@@ -21,6 +21,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() desafios: Desafio[] = [];
+  @Input() somenteLeitura: boolean = false;
 
   gestaoSelecionada!: IGestoesCatalogoExterno;
   labelsOrdenados: Label[] = [];
@@ -101,5 +102,9 @@ export class FiltroIndicadoresComponent implements OnChanges {
   fechar() {
     this.close.emit();
   }
+
+  // get issomenteLeitura(): boolean {
+  //   return this.somenteLeitura;
+  // }
 
 }

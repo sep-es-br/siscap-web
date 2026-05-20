@@ -14,6 +14,7 @@ import { SelecaoIndicadoresComponent } from './selecao-indicadores/selecao-indic
 import { CatalogoIndicadorService } from '../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { BehaviorSubject, filter, map, switchMap, tap } from 'rxjs';
 import { IFiltroIndicador, IGestoesCatalogoExterno, IIndicadoresCatalogoExterno, IMetaIndicador } from '../../core/interfaces/indicadores-catalogo-externo.interface';
+import { StatusProjetoEnum } from '../../core/enums/status-projeto.enum';
 
 export interface IndicadorProjetoForm {
   idIndicador: number;
@@ -48,6 +49,8 @@ export interface IndicadorProjetoForm {
 export class ProjetoIndicadoresComponent implements OnInit {
   @Input() formProjeto!: FormGroup;
   @Input() isModoEdicao: boolean = false;
+  @Input() isSubcap: boolean = false;
+  @Input() statusProjeto: string = '';
 
   private reloadIndicadores$ = new BehaviorSubject<void>(undefined);
 
@@ -74,6 +77,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+
+    console.log("Valores do Form vindo do pai : ", this.formProjeto.value);
 
     this.init();
 
@@ -167,7 +172,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.filtroTexto = '';
     this.indicadoresFiltrados = this.indicadoresBI;
     this.initBaseChip();
-    // this.filterService.setFilter({});
   }
 
   removerFiltro(filtro: any): void {
@@ -265,6 +269,12 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     });
 
+    if (this.somenteLeitura) {
+      this.formProjeto.get('indicadoresProjeto')?.disable({ emitEvent: false });
+    } else {
+      this.formProjeto.get('indicadoresProjeto')?.enable({ emitEvent: false });
+    }
+
   }
 
   initBaseChip() {
@@ -307,28 +317,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   }
 
-  // mapToChips(filter: IFiltroIndicador): any[] {
-  //   const chips: any[] = [];
-  //   Object.keys(filter || {}).forEach((nodeKey) => {
-  //     if (nodeKey === 'Administration') return;
-  //     const node = filter[nodeKey];
-  //     Object.keys(node || {}).forEach((field) => {
-  //       const value = node[field];
-  //       if (value && value !== '' && value !== 0) {
-  //         chips.push({
-  //           label: field.toUpperCase(),
-  //           value: value,
-  //           type: 'filter',
-  //           removable: true,
-  //           node: nodeKey,
-  //           field,
-  //         });
-  //       }
-  //     });
-  //   });
-  //   return chips;
-  // }
-
   removeChip(chip: any) {
 
     if (!chip.removable) return;
@@ -342,8 +330,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
         delete this.currentFilter[chip.node];
       }
     }
-
-    // this.filterService.setFilter(this.currentFilter);
 
   }
 
@@ -429,7 +415,24 @@ export class ProjetoIndicadoresComponent implements OnInit {
   irParaODS() { }
 
   get somenteLeitura(): boolean {
-    return this.formProjeto?.disabled ?? false;
+    return !this.podeEditarIndicadores;
+  }
+
+  get podeEditarIndicadores(): boolean {
+
+    const status = this.statusProjeto;
+
+    const isEmElaboracao =
+      status === StatusProjetoEnum.Em_Elaboracao;
+
+    const isEmAnalise =
+      status === StatusProjetoEnum.Em_Analise;
+
+    const podeEditar =
+      isEmElaboracao || (isEmAnalise && this.isSubcap);
+
+    return podeEditar;
+
   }
 
 }

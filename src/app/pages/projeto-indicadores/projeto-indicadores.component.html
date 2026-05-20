@@ -4,7 +4,7 @@
   <div class="card-header">
     <div class="badges-container">
       <app-indicador-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value"
-        [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)">
+        [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)" [somenteLeitura]="somenteLeitura">
       </app-indicador-chip>
     </div>
     <p-button styleClass="btn-filtros" (click)="showModal = true"  [disabled]="somenteLeitura">
@@ -14,12 +14,12 @@
   </div>
 
   <app-filtro-indicadores *ngIf="showModal" [gestao]="gestao" [desafios]="gestao?.desafios || []"
-    (apply)="onApply($event)" (close)="showModal = false"></app-filtro-indicadores>
+    (apply)="onApply($event)" (close)="showModal = false" [somenteLeitura]="somenteLeitura"></app-filtro-indicadores>
 
 </div>
 
 <app-selecao-indicadores [indicadores]="indicadoresBI" [gestao]="gestao" [form]="formProjeto" [selecionados]="indicadoresSelecionados" [loading]="loading"
-  (selecionadosChange)="onSelecaoChange($event)">
+  (selecionadosChange)="onSelecaoChange($event)" [somenteLeitura]="somenteLeitura">
 </app-selecao-indicadores>
 
 <!-- CARD: INDICADORES SELECIONADOS -->
@@ -75,8 +75,7 @@
               </div>
             </div>
 
-            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO
-              PROJETO:</span>
+            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO PROJETO:</span>
 
             <div [formGroup]="getIndicadorForm(i)">
 
@@ -89,8 +88,7 @@
                     style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
                     <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{
                       meta.get('anoMeta')?.value }}</span>
-                    <input type="number" class="meta-value-input" formControlName="valorMeta"
-                      placeholder="Digite a meta">
+                    <input type="number" class="meta-value-input" formControlName="valorMeta" placeholder="Digite a meta" >
                   </div>
                 </div>
 

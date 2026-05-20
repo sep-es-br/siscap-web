@@ -26,6 +26,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     this.filtrarIndicadores();
     this.updateSelectAllState();
   }
+  @Input() somenteLeitura: boolean = false;
   @Output() selecionadosChange = new EventEmitter<any[]>();
 
   get indicadores() {
@@ -168,5 +169,9 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     this.selecionadosChange.emit([...this.selecionados]);
 
   }
+
+  // get isSomenteLeitura(): boolean {
+  //   return this.somenteLeitura;
+  // }
 
 }

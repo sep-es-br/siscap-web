@@ -16,6 +16,8 @@ export class IndicadorChipComponent {
   @Output() onRemove = new EventEmitter<void>();
   @Output() onClick = new EventEmitter<void>();
 
+  @Input() somenteLeitura: boolean = false;
+
   handleRemove(event: MouseEvent) {
     if (this.removable) {
       event.stopPropagation();

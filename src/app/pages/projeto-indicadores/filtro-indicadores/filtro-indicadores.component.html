@@ -37,6 +37,7 @@
                         defaultLabel="Selecionar..."
                         display="chip"
                         class="w-full"
+                        [disabled]="somenteLeitura"
                         >
                     </p-multiSelect>
                 </div>
@@ -45,11 +46,6 @@
             <!-- DESAFIOS -->
             <div class="filter-field">
                 <label class="filter-label">Desafios</label>
-                <!-- <select class="filter-select" [(ngModel)]="filtro.desafio">
-                    <option *ngFor="let d of desafios" [value]="d.id">
-                        {{ d.nome }}
-                    </option>
-                </select> -->
                 <p-multiSelect
                     [maxSelectedLabels]="2"
                     [options]="desafios"
@@ -59,7 +55,7 @@
                     defaultLabel="Selecionar..."
                     display="chip"
                     class="w-full"
-                    >
+                    [disabled]="somenteLeitura" >
                 </p-multiSelect>
             </div>
 
