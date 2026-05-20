@@ -428,4 +428,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   irParaODS() { }
 
+  get somenteLeitura(): boolean {
+    return this.formProjeto?.disabled ?? false;
+  }
+
 }

@@ -7,7 +7,7 @@
         [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)">
       </app-indicador-chip>
     </div>
-    <p-button styleClass="btn-filtros" (click)="showModal = true">
+    <p-button styleClass="btn-filtros" (click)="showModal = true"  [disabled]="somenteLeitura">
       <span>Filtros</span>
       <span style="font-size:14px">▽</span>
     </p-button>
@@ -41,7 +41,7 @@
             <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">
               {{item.nomeIndicador }}</div>
             <button type="button" class="remove-indicator-btn" aria-label="Remover indicador"
-              (click)="removeIndicator(item, false)">✖</button>
+              (click)="removeIndicator(item, false)"  [disabled]="somenteLeitura">✖</button>
           </div>
 
           <div class="indicator-details">
