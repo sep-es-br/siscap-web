@@ -223,6 +223,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public lotacaoPrioritariaUsuario: string = '';
   public processoEdocsProtocolo: string = '';
 
+  public indicadoresProjeto: IIndicadores[] = [];
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -1596,59 +1598,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
       );
   }
-
-  // private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
-  //   if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel) {
-  //     const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
-  //     if (parecerControl.invalid) {
-  //       parecerControl.markAllAsTouched();
-  //       return;
-  //     }
-  //     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
-  //     payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
-  //     this.atualizarProjeto(payload, isRascunho).subscribe();
-  //   } else {
-  //     if (this.validarFormulario(form)) {
-  //       form.get('valor.tipo')?.enable();
-  //       form.get('valor.moeda')?.enable();
-  //       const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
-  //       if (this.isProponente) {
-  //         payload.idOrganizacao = form.get('idOrganizacao')?.value;
-  //       }
-  //       // transformacao no payload..
-  //       const formValue = this.projetoForm.getRawValue();
-  //       const indicadoresAvulsosPayload =
-  //         formValue.indicadoresAvulsosProjeto.map(
-  //           (indicador: IIndicadorAvulso) => ({
-  //             id: indicador.idIndicador ?? null,
-  //             indicadorAvulso: {
-  //               id: indicador.idIndicador ?? null,
-  //               nomeIndicador: indicador.nomeIndicador,
-  //               unidadeMedida: indicador.unidadeMedida,
-  //               fonteIndicador: indicador.fonteIndicador,
-  //               medidoPor: indicador.medidoPor,
-  //               baseReferencia: indicador.basedeReferencia,
-  //               metasIndicadorAvulsoGeral:
-  //                 indicador.metasIndicadorAvulsoGeral
-  //             },
-  //             metasProjeto:
-  //               indicador.metasIndicadorAvulsoProjeto
-  //           })
-  //         );
-  //       const payloadNovo = {
-  //         ...formValue,
-  //         indicadoresAvulsosProjeto: indicadoresAvulsosPayload
-  //       };
-  //       console.log('PAYLOAD ANTIGO:', JSON.stringify(payload, null, 2));
-  //       console.log('PAYLOAD SUBMIT (NOVO):', payloadNovo);
-  //       // const requisicao = this._idProjetoEdicao
-  //       //   ? this.atualizarProjeto(payloadNovo, isRascunho)
-  //       //   : this.cadastrarProjeto(payloadNovo, isRascunho);
-  //       // requisicao.subscribe();
-  //     }
-  //   }
-  // }
-
+  
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
@@ -1740,8 +1690,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      //if (this.validarFormulario(form)) {
-
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
 
@@ -1756,51 +1704,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresProjeto = indicadoresProjetoPayload;
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
 
-      // // 
-      // payload.indicadoresProjeto = this.projetoForm.getRawValue()
-      //   .indicadoresProjeto
-      //   .filter((indicador: IIndicadores) => indicador.idIndicador !== null &&
-      //     indicador.idIndicador !== undefined &&
-      //     indicador.idIndicador !== 0)
-      //   .map((indicador: IIndicadores) => ({
-      //     idIndicador: indicador.idIndicador,
-      //     tipoIndicador: indicador.tipoIndicador ?? null,
-      //     descricaoIndicador: indicador.descricaoIndicador ?? null,
-      //     descricaoMeta: indicador.descricaoMeta ?? null,
-      //     idStatus: indicador.idStatus ?? 1,
-      //     idIndicadorExterno: indicador.idIndicadorExterno,
-      //     metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
-      //       idFato: meta.idFato,
-      //       anoMeta: meta.anoMeta,
-      //       valorMeta: meta.valorMeta
-      //     })) ?? []
-      //   }));
-
-      // // transforma SOMENTE os indicadores avulsos
-      // payload.indicadoresAvulsosProjeto =
-      //   this.projetoForm.getRawValue()
-      //     .indicadoresAvulsosProjeto
-      //     .filter((indicador: IIndicadorAvulso) =>
-      //       indicador?.nomeIndicador?.trim())
-      //     .map((indicador: IIndicadorAvulso) => ({
-      //       id: indicador.idIndicador ?? null,
-      //       indicadorAvulso: {
-      //         id: indicador.idIndicador ?? null,
-      //         nomeIndicador: indicador.nomeIndicador,
-      //         unidadeMedida: indicador.unidadeMedida,
-      //         fonteIndicador: indicador.fonteIndicador,
-      //         medidoPor: indicador.medidoPor,
-      //         baseDeReferencia: indicador.basedeReferencia,
-      //         metasIndicadorAvulsoGeral:
-      //           indicador.metasIndicadorAvulsoGeral
-      //       },
-      //       metasProjeto:
-      //         indicador.metasIndicadorAvulsoProjeto,
-      //       metasIndicadorAvulsoGeral:
-      //         indicador.metasIndicadorAvulsoGeral
-      //     }));
-
-      console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho)
@@ -1808,9 +1712,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       requisicao.subscribe();
 
-      // }
-
     }
+
   }
 
   onSelecionarOrganizacao(organizacao: any) {
