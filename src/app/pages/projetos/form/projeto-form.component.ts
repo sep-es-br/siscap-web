@@ -161,8 +161,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public microrregioesOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoes: IOpcoesDropdown[] = [];
   public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
-  public tiposMotivoArquivamentoOpcoes: IMotivoArquivamentoOpcoesDropdown[] =
-    [];
+  public tiposMotivoArquivamentoOpcoes: IMotivoArquivamentoOpcoesDropdown[] = [];
 
   public indicadoresOpcoes: IOpcoesDropdown[] = [];
 
@@ -397,7 +396,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
           this.subUsuario = this._usuarioService.usuarioPerfil.subNovo;
 
-            this.indicadoresProjeto = projetoModel.indicadoresProjeto;
+          this.indicadoresProjeto = projetoModel.indicadoresProjeto;
 
           const caminhoFeliz = [
             StatusProjetoEnum.Em_Elaboracao,
