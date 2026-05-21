@@ -1,0 +1,203 @@
+/* ========== OVERLAY ========== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+.modal-overlay.show {
+    display: block;
+}
+
+/* ========== MODAL PRINCIPAL ========== */
+.filter-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 121dvh;
+    max-height: 80vh;
+    /* height: 52vh; */
+    /* overflow-y: auto; */
+    background: #ffffff;
+    border-radius: 16px;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.filter-modal.show {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========== HEADER ========== */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px 16px;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.close-modal {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #64748b;
+    transition: all 0.2s;
+}
+
+.close-modal:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+/* ========== BODY ========== */
+.filter-body {
+    padding: 0 32px 24px;
+}
+
+/* ========== GRID DE FILTROS ========== */
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Campo que ocupa linha inteira */
+// .filter-field.full-width {
+//     grid-column: 1 / -1;
+// }
+
+.filter-field {
+    display: flex;
+    flex-direction: column;
+}
+
+// .filter-label {
+//     font-size: 14px;
+//     font-weight: 600;
+//     color: #475569;
+//     margin-bottom: 8px;
+//     text-transform: uppercase;
+//     letter-spacing: 0.5px;
+// }
+
+/* ========== SELECT PADRÃO ========== */
+.filter-select {
+width: 100%;
+    padding: 10px 16px;
+    border: 1px solid #c8d3de;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #0a1a30;
+    background: #fcfdfe;
+    /* height: 48px; */
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23475569' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+}
+
+.filter-select:hover {
+    border-color: #cbd5e1;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ========== MULTISELECT PRIMENG ========== */
+:host ::ng-deep .p-multiselect {
+    width: 100% !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    min-height: 48px !important;
+    transition: all 0.2s !important;
+}
+
+:host ::ng-deep .p-multiselect:hover {
+    border-color: #cbd5e1 !important;
+}
+
+:host ::ng-deep .p-multiselect.p-focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+:host ::ng-deep .p-multiselect-label {
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+}
+
+:host ::ng-deep .p-multiselect-trigger {
+    width: 40px !important;
+}
+
+/* ========== FOOTER ========== */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 32px;
+    border-top: 1px solid #f1f5f9;
+    background: #f8fafc;
+    border-radius: 0 0 16px 16px;
+}
+
+.btn-restaurar {
+    background: #fff;
+    color: #f59e0b;
+    border: 2px solid #f59e0b;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-restaurar:hover {
+    background: #fffbeb;
+}
+
+.btn-filtrar {
+    background: #10b981;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-filtrar:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}

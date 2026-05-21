@@ -1,0 +1,177 @@
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormGroup, FormsModule } from '@angular/forms';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
+import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
+import { IndicadorAvulsoComponent } from '../indicador-avulso/indicador-avulso.component';
+
+@Component({
+  selector: 'app-selecao-indicadores',
+  standalone: true,
+  imports: [CommonModule, FormsModule, CheckboxModule, InputTextModule, IndicadorAvulsoComponent],
+  templateUrl: './selecao-indicadores.component.html',
+  styleUrls: ['./selecao-indicadores.component.scss']
+})
+export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
+
+  private _indicadores: IIndicadoresCatalogoExterno[] = [];
+
+  @Input() form!: FormGroup;
+  @Input() selecionados: IIndicadoresCatalogoExterno[] = [];
+  @Input() loading: boolean = false;
+  @Input() gestao: IGestoesCatalogoExterno | null = null;
+  @Input() set indicadores(value: IIndicadoresCatalogoExterno[]) {
+    this._indicadores = value || [];
+    this.filtrarIndicadores();
+    this.updateSelectAllState();
+  }
+  @Input() somenteLeitura: boolean = false;
+  @Output() selecionadosChange = new EventEmitter<any[]>();
+
+  get indicadores() {
+    return this._indicadores;
+  }
+
+  indicadoresFiltrados: IIndicadoresCatalogoExterno[] = [];
+  filtroTexto: string = '';
+  searchVisible: boolean = false;
+  selectAll: boolean = false;
+  showModalIndicadorAvulso: boolean = false;
+
+  ngOnInit() {
+    this.indicadoresFiltrados = this.indicadores;
+    this.updateSelectAllState();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // if (changes['indicadores']) {
+    //   this.filtrarIndicadores();
+    // }
+    // if (changes['selecionados'] || changes['indicadores']) {
+    //   this.updateSelectAllState();
+    // }
+  }
+
+  // filtrarIndicadores(): void {
+  //   const termo = this.filtroTexto
+  //     ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  //     : '';
+  //   this.indicadoresFiltrados = this.indicadores.filter(i => {
+  //     const nomeNormalizado = i.nomeIndicador?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  //     return nomeNormalizado?.includes(termo);
+  //   });
+  //   this.updateSelectAllState();
+  // }
+
+  filtrarIndicadores(): void {
+
+    const termo = this.filtroTexto
+      ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      : '';
+
+    this.indicadoresFiltrados = this.montarIndicadoresExibicao().filter(i => {
+      const nomeNormalizado = i.nomeIndicador
+        ?.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      return nomeNormalizado?.includes(termo);
+    });
+
+    this.updateSelectAllState();
+
+  }
+
+  toggleIndicador(indicador: IIndicadoresCatalogoExterno): void {
+    let novasSelecoes = [...this.selecionados];
+    const exists = this.isSelecionado(indicador);
+
+    if (exists) {
+      novasSelecoes = novasSelecoes.filter(i => i.idIndicador !== indicador.idIndicador);
+    } else {
+      novasSelecoes.push(indicador);
+    }
+
+    this.selecionadosChange.emit(novasSelecoes);
+  }
+
+  toggleSelectAll(event: any): void {
+    let novasSelecoes = [...this.selecionados];
+
+    if (this.selectAll) {
+      const novos = this.indicadoresFiltrados.filter(i => !this.isSelecionado(i));
+      novasSelecoes = [...novasSelecoes, ...novos];
+    } else {
+      const idsFiltrados = this.indicadoresFiltrados.map(i => i.idIndicador);
+      novasSelecoes = novasSelecoes.filter(i => !idsFiltrados.includes(i.idIndicador));
+    }
+
+    this.selecionadosChange.emit(novasSelecoes);
+  }
+
+  private updateSelectAllState(): void {
+    this.selectAll = this.indicadoresFiltrados.length > 0 &&
+      this.indicadoresFiltrados.every(i => this.isSelecionado(i));
+  }
+
+  isSelecionado(indicador: any): boolean {
+    return (this.selecionados || []).some(i => i.idIndicador === indicador.idIndicador);
+  }
+
+  showNewIndicatorForm(): void {
+    this.showModalIndicadorAvulso = true;
+  }
+
+  onCloseModalIndicadorAvulso(): void {
+    this.showModalIndicadorAvulso = false;
+    this.filtrarIndicadores();
+    this.selecionadosChange.emit(this.selecionados);
+  }
+
+  private montarIndicadoresExibicao(): any[] {
+    const indicadoresCatalogo = this.indicadores || [];
+
+    const indicadoresAvulsos =
+      this.form?.get('indicadoresAvulsosProjeto')?.value ?? [];
+
+    const avulsosParaLista = indicadoresAvulsos.map((avulso: any) => ({
+      idIndicador: `avulso-${avulso.idIndicador ?? avulso.nomeIndicador}`,
+      nomeIndicador: avulso.nomeIndicador,
+      avulso: true
+    }));
+
+    return [
+      ...indicadoresCatalogo,
+      ...avulsosParaLista
+    ];
+  }
+
+  onIndicadorAvulsoCriado(indicador: any): void {
+
+    console.log("Indicador Avulso Criado : ", indicador)
+
+    this.selecionados = [
+      ...this.selecionados,
+      {
+        ...indicador,
+        nomeIndicador: indicador.nomeIndicador,
+        fonteIndicador: indicador.fonteIndicador,
+        unidadeMedida: indicador.unidadeMedida,
+        basedeReferencia: indicador.basedeReferencia,
+        metasIndicador: indicador.metasIndicadorAvulsoGeral,
+        metasIndicadorProjeto: indicador.metasIndicadorAvulsoProjeto,
+        avulso: true
+      }
+    ];
+
+    this.filtrarIndicadores();
+
+    this.selecionadosChange.emit([...this.selecionados]);
+
+  }
+
+  // get isSomenteLeitura(): boolean {
+  //   return this.somenteLeitura;
+  // }
+
+}

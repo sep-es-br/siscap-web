@@ -1,0 +1,75 @@
+<!-- OVERLAY (fundo escuro) -->
+<div class="modal-overlay show" (click)="fechar()"></div>
+
+<!-- MODAL -->
+<div class="filter-modal show">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+        <h2 class="card-title">Filtros</h2>
+        <button class="close-modal" (click)="fechar()">✕</button>
+    </div>
+
+    <!-- BODY -->
+    <div class="filter-body">
+        <div class="filter-grid">
+
+            <!-- GESTÃO (linha inteira) -->
+            <div class="filter-field full-width">
+                <label class="filter-label">Gestão Administrativa</label>
+                <select class="filter-select" [(ngModel)]="filtro.idGestao">
+                    <option *ngIf="gestao" [value]="gestao.idGestao">
+                        {{ gestao.nomeGestao }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- LABELS DINÂMICOS -->
+            <ng-container *ngFor="let label of labelsOrdenados">
+                <div class="filter-field">
+                    <label class="filter-label">{{ label.nome }}</label>
+                    <p-multiSelect
+                        [maxSelectedLabels]="2"
+                        [options]="label.valores"
+                        optionLabel="valor"
+                        optionValue="idLabelValor"
+                        [(ngModel)]="filtro.labels[label.idLabel]"
+                        defaultLabel="Selecionar..."
+                        display="chip"
+                        class="w-full"
+                        [disabled]="somenteLeitura"
+                        >
+                    </p-multiSelect>
+                </div>
+            </ng-container>
+
+            <!-- DESAFIOS -->
+            <div class="filter-field">
+                <label class="filter-label">Desafios</label>
+                <p-multiSelect
+                    [maxSelectedLabels]="2"
+                    [options]="desafios"
+                    optionLabel="nome"
+                    optionValue="id"
+                    [(ngModel)]="filtro.desafio.id"
+                    defaultLabel="Selecionar..."
+                    display="chip"
+                    class="w-full"
+                    [disabled]="somenteLeitura" >
+                </p-multiSelect>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="modal-footer">
+        <button class="btn-restaurar" (click)="resetar()">
+            RESTAURAR FILTROS
+        </button>
+        <button class="btn-filtrar" (click)="applyFilter()">
+            FILTRAR
+        </button>
+    </div>
+
+</div>

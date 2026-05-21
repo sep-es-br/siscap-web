@@ -84,7 +84,7 @@
                       [style.color]="'gray'"
                     ></i>
                   } @else if (event.isAtual()) {
-                    <i class="pi pi-refresh" [style.color]="'orange'"></i>
+                  <i class="pi pi-refresh" [style.color]="'orange'"></i>
                   } @else if (event.isFinalizado()) {
                     <i
                       class="fa-solid"
@@ -134,21 +134,16 @@
               DIC
             </button>
           </li>
-          <li
-            class="nav-item"
-            role="presentation"
-            *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0"
-          >
-            <button
-              class="nav-link"
-              [ngClass]="{ active: aguardandoParecer() }"
-              id="nav-pareceres"
-              data-bs-toggle="tab"
-              data-bs-target="#tab-pareceres"
-              role="tab"
-              aria-controls="pareceres"
-              aria-selected="true"
-            >
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="nav-indicadores" data-bs-toggle="tab" data-bs-target="#tab-indicadores"
+              role="tab" aria-controls="propriedades" aria-selected="true">
+              Indicadores
+              <span *ngIf="getControl('indicadoresProjeto')?.invalid && getControl('indicadoresProjeto')?.touched" class="text-danger">*</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation" *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0">
+            <button class="nav-link" [ngClass]="{'active': aguardandoParecer()}" id="nav-pareceres" data-bs-toggle="tab"
+              data-bs-target="#tab-pareceres" role="tab" aria-controls="pareceres" aria-selected="true">
               Pareceres
             </button>
           </li>
@@ -438,15 +433,9 @@
                 ></textarea>
               </div>
 
-              <div class="col-12 mt-2">
-                <label
-                  for="membroIndicadorElaboracao"
-                  class="form-label col-12"
-                  [ngClass]="{
-                    'alerta-complementar-campo':
-                      deveComplementarCampo('indicadoresProjeto'),
-                  }"
-                >
+              <!-- <div class="col-12 mt-2">
+                <label for="membroIndicadorElaboracao" class="form-label col-12"
+                  [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('indicadoresProjeto') }">
                   Indicadores
                   <form-helper-tooltip
                     [texto]="projetoTooltip['nomeIndicador']"
@@ -458,7 +447,7 @@
                 </label>
                 <siscap-indicadores-form [isModoEdicao]="isModoEdicao">
                 </siscap-indicadores-form>
-              </div>
+              </div> -->
 
               <div class="col-12">
                 <label
@@ -703,43 +692,26 @@
               </div>
             </div>
           </form>
+
         </div>
-        <div
-          class="tab-pane fade"
-          [ngClass]="{ 'show active': aguardandoParecer() }"
-          *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0"
-          id="tab-pareceres"
-          role="tabpanel"
-          aria-labelledby="nav-pareceres"
-        >
-          <div
-            class="card"
-            *ngIf="
-              aguardandoParecer() &&
-              (!isSubcapGeoc() || isSubeoSubeppEntranhados()) &&
-              !isProjetoElegivel()
-            "
-          >
-            <div
-              class="card-header d-flex flex-wrap align-content-center"
-              id="parecerTituloAtual"
-              data-bs-toggle="collapse"
-              data-bs-target="#parecerAtual"
-            >
-              <span
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  width: 2rem;
-                  height: 2rem;
-                "
-              >
-                @if (this.parecerProjetoUsuario.guidDocumentoEdocs) {
-                  <i
-                    class="fa-solid check-icon fa-check"
-                    [style.color]="'green'"
-                  ></i>
+
+        <div class="tab-pane fade" id="tab-indicadores" role="tabpanel" aria-labelledby="nav-indicadores">
+          <validation-message [control]="getControl('indicadoresProjeto')"></validation-message>
+          <siscap-projeto-indicadores [formProjeto]="projetoForm"
+            [isModoEdicao]="isModoEdicao" [isSubcap]="isSubcapGeoc()" [statusProjeto]="statusProjeto"></siscap-projeto-indicadores>
+        </div>
+
+        <div class="tab-pane fade" [ngClass]="{'show active': aguardandoParecer()}"
+          *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0" id="tab-pareceres" role="tabpanel"
+          aria-labelledby="nav-pareceres">
+
+          <div class="card"
+            *ngIf="(aguardandoParecer() && (!isSubcapGeoc() || isSubeoSubeppEntranhados())) && !isProjetoElegivel()">
+            <div class="card-header d-flex flex-wrap align-content-center" id="parecerTituloAtual"
+              data-bs-toggle="collapse" data-bs-target="#parecerAtual">
+              <span style="display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; ">
+                @if(this.parecerProjetoUsuario.guidDocumentoEdocs) {
+                <i class="fa-solid check-icon fa-check" [style.color]="'green'"></i>
                 } @else {
                   <i
                     class="pending-icon fa-regular fa-clock"
@@ -807,6 +779,7 @@
               [attr.aria-labelledby]="'parecerTitulo' + parecer.parecerLotacao"
             >
               <div class="card-body mb-4">
+                <ng-container *ngIf="parecer.id; else parecerPendente">
                 <ng-container *ngIf="parecer.id; else parecerPendente">
                   <p class="mb-0 parecerLabel">Parecer:</p>
                   <p

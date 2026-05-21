@@ -13,6 +13,8 @@ import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } fro
 import { IParecer } from '../interfaces/parecer.interface';
 import { LotacaoUsuarioEnum } from '../enums/lotacao-usuario.enum';
 import { IStatusProjeto } from '../interfaces/status-projeto.interface';
+import { IIndicadorAvulso } from '../interfaces/indicador-avulso.interface';
+import { IndicadorAvulsoModel } from './indicador-avulso.model';
 
 export class ProjetoFormModel implements IProjetoForm {
   public sigla: string;
@@ -32,7 +34,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public nomeResponsavelProponente: string;
   public papelResponsavelProponente: string;
   public subResponsavelProponente: string;
-  public indicadoresProjeto: Array<IIndicadores>; 
+  public indicadoresProjeto: Array<IIndicadores>;
   public acoesProjeto: Array<IAcao>;
   public nomeagente: string;
   public pecasPlanejamento: string;
@@ -54,6 +56,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public subProponente: string;
   public nomeProponente: string;
   public historico: Array<IStatusProjeto>;
+  public indicadoresAvulsosProjeto: Array<IIndicadorAvulso>;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -101,6 +104,9 @@ export class ProjetoFormModel implements IProjetoForm {
     this.subProponente = projetoForm?.subProponente ?? '';
     this.nomeProponente = projetoForm?.nomeProponente ?? '';
     this.historico = new Array();
+    this.indicadoresAvulsosProjeto = this.construirIndicadoresAvulsosProjeto(
+      projetoForm?.indicadoresAvulsosProjeto
+    );
   }
 
   private construirRateioModelArray(
@@ -128,6 +134,14 @@ export class ProjetoFormModel implements IProjetoForm {
       return [];
     }
     return indicadoresProjeto.map((indicadores) => new IndicadorModel(indicadores));
+  }
+
+  private construirIndicadoresAvulsosProjeto(
+    indicadoresAvulsosProjeto?: Array<IIndicadorAvulso>): Array<IndicadorAvulsoModel> {
+    if (!indicadoresAvulsosProjeto) {
+      return [];
+    }
+    return indicadoresAvulsosProjeto.map((indicadorAvulso) => new IndicadorAvulsoModel(indicadorAvulso));
   }
 
   private construirAcoesProjeto(

@@ -108,6 +108,8 @@ import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { gerarStepStatusProjeto, IStep } from '../../../core/utils/steps';
+import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
+import { IIndicadorAvulso } from '../../../core/interfaces/indicador-avulso.interface';
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -164,7 +166,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public indicadoresOpcoes: IOpcoesDropdown[] = [];
 
-  public statusProjeto: string = '';
+  public statusProjeto: string = StatusProjetoEnum.Em_Elaboracao;;
   public statusProjetoNovo: string | null = null;
   public statusProjetoOpcoes: Array<string> = [];
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
@@ -222,36 +224,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public lotacaoPrioritariaUsuario: string = '';
   public processoEdocsProtocolo: string = '';
 
-  @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate:
-    | TemplateRef<any>
-    | undefined;
-  @ViewChild('autuarConfirmacaoProjetoModal')
-  confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
-  @ViewChild('confirmarRevisarProjetoModal')
-  confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
-  @ViewChild('confirmarArquivarProjetoModal')
-  confirmarArquivarProjetoModalTemplate: TemplateRef<any> | undefined;
-  @ViewChild('informarComplementacoesProjetoModal')
-  informarComplementacoesProjetoModalTemplate: TemplateRef<any> | undefined;
-  @ViewChild('autuarConfirmacaoReentramentoDicProjetoModal')
-  confirmarIntegracaoReentranharProjetoModalTemplate:
-    | TemplateRef<any>
-    | undefined;
-  @ViewChild('enviarParecerProjetoModal') enviarParecerProjetoModalTemplate:
-    | TemplateRef<any>
-    | undefined;
-
-  @ViewChild('efetivarParecerProjetoModal')
-  efetivarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
-  @ViewChild('entranharPareceresEdocsProjetoModal')
-  entranharPareceresEdocsProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('confirmarArquivarProjetoModal') confirmarArquivarProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('informarComplementacoesProjetoModal') informarComplementacoesProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('autuarConfirmacaoReentramentoDicProjetoModal') confirmarIntegracaoReentranharProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('enviarParecerProjetoModal') enviarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('efetivarParecerProjetoModal')  efetivarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('entranharPareceresEdocsProjetoModal')  entranharPareceresEdocsProjetoModalTemplate: TemplateRef<any> | undefined;
 
   // otimizacao carga agentes goves..
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
   input$ = new Subject<string>();
 
   StatusParecerEnum = StatusParecerEnum;
-
 
   accordionCollapsed = true;
   isMobile = window.innerWidth < 1200;
@@ -409,6 +396,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.lotacaoPrioritariaUsuario =
             this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
           this.subUsuario = this._usuarioService.usuarioPerfil.subNovo;
+
+            this.indicadoresProjeto = projetoModel.indicadoresProjeto;
 
           const caminhoFeliz = [
             StatusProjetoEnum.Em_Elaboracao,
@@ -794,6 +783,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               );
 
               this.trocarModo(true);
+              this.trocarModo(true);
 
               this.mostrarBotaoBaixarDic = false;
               this.loading = false;
@@ -1038,6 +1028,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         elegivel: [projetoFormModel?.parecerProjetoUsuario.elegivel ?? null],
       }),
       pareceresProjeto: this._nnfb.array([]),
+      indicadoresAvulsosProjeto: this.indicadoresService.construirindicadoresAvulsosFormArray(projetoFormModel?.indicadoresAvulsosProjeto),
     });
 
     const mapSubObs: { [index: string]: Observable<string> } = {};
@@ -1607,6 +1598,58 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
   }
 
+  // private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
+  //   if (this.statusProjeto === StatusProjetoEnum.Parecer_SEP || this.statusProjeto === StatusProjetoEnum.Elegivel) {
+  //     const parecerControl = this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
+  //     if (parecerControl.invalid) {
+  //       parecerControl.markAllAsTouched();
+  //       return;
+  //     }
+  //     const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+  //     payload.parecerProjetoUsuario = this.projetoForm.get('parecerProjetoUsuario')?.getRawValue();
+  //     this.atualizarProjeto(payload, isRascunho).subscribe();
+  //   } else {
+  //     if (this.validarFormulario(form)) {
+  //       form.get('valor.tipo')?.enable();
+  //       form.get('valor.moeda')?.enable();
+  //       const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+  //       if (this.isProponente) {
+  //         payload.idOrganizacao = form.get('idOrganizacao')?.value;
+  //       }
+  //       // transformacao no payload..
+  //       const formValue = this.projetoForm.getRawValue();
+  //       const indicadoresAvulsosPayload =
+  //         formValue.indicadoresAvulsosProjeto.map(
+  //           (indicador: IIndicadorAvulso) => ({
+  //             id: indicador.idIndicador ?? null,
+  //             indicadorAvulso: {
+  //               id: indicador.idIndicador ?? null,
+  //               nomeIndicador: indicador.nomeIndicador,
+  //               unidadeMedida: indicador.unidadeMedida,
+  //               fonteIndicador: indicador.fonteIndicador,
+  //               medidoPor: indicador.medidoPor,
+  //               baseReferencia: indicador.basedeReferencia,
+  //               metasIndicadorAvulsoGeral:
+  //                 indicador.metasIndicadorAvulsoGeral
+  //             },
+  //             metasProjeto:
+  //               indicador.metasIndicadorAvulsoProjeto
+  //           })
+  //         );
+  //       const payloadNovo = {
+  //         ...formValue,
+  //         indicadoresAvulsosProjeto: indicadoresAvulsosPayload
+  //       };
+  //       console.log('PAYLOAD ANTIGO:', JSON.stringify(payload, null, 2));
+  //       console.log('PAYLOAD SUBMIT (NOVO):', payloadNovo);
+  //       // const requisicao = this._idProjetoEdicao
+  //       //   ? this.atualizarProjeto(payloadNovo, isRascunho)
+  //       //   : this.cadastrarProjeto(payloadNovo, isRascunho);
+  //       // requisicao.subscribe();
+  //     }
+  //   }
+  // }
+
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
@@ -1631,25 +1674,143 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       this.atualizarProjeto(payload, isRascunho).subscribe();
     } else {
-      if (this.validarFormulario(form)) {
-        // Caso especifico de Projetos; tipo do valor somente pode ser 'Estimado'
-        form.get('valor.tipo')?.enable();
 
-        // Caso especifico de Projetos; moeda somente pode ser 'Real'
-        form.get('valor.moeda')?.enable();
+      const indicadoresProjetoPayload = this.projetoForm.getRawValue()
+        .indicadoresProjeto
+        .filter((indicador: IIndicadores) =>
+          indicador.idIndicadorExterno  !== null &&
+          indicador.idIndicadorExterno  !== undefined &&
+          indicador.idIndicadorExterno  !== 0
+        )
+        .map((indicador: IIndicadores) => ({
+          idIndicador: indicador.idIndicador,
+          tipoIndicador: indicador.tipoIndicador ?? null,
+          descricaoIndicador: indicador.descricaoIndicador ?? null,
+          descricaoMeta: indicador.descricaoMeta ?? null,
+          idStatus: indicador.idStatus ?? 1,
+          idIndicadorExterno: indicador.idIndicadorExterno,
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
+            idFato: meta.idFato,
+            anoMeta: meta.anoMeta,
+            valorMeta: meta.valorMeta
+          })) ?? []
+        }));
 
-        const payload = new ProjetoFormModel(form.value as IProjetoForm);
+      const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
+        .indicadoresAvulsosProjeto
+        .filter((indicador: IIndicadorAvulso) =>
+          indicador?.nomeIndicador?.trim()
+        )
+        .map((indicador: IIndicadorAvulso) => ({
+          id: indicador.idIndicador ?? null,
+          indicadorAvulso: {
+            id: indicador.idIndicador ?? null,
+            nomeIndicador: indicador.nomeIndicador,
+            unidadeMedida: indicador.unidadeMedida,
+            fonteIndicador: indicador.fonteIndicador,
+            medidoPor: indicador.medidoPor,
+            baseDeReferencia: indicador.basedeReferencia,
+            metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
+          },
+          metasProjeto: indicador.metasIndicadorAvulsoProjeto,
+          metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
+        }));
 
-        if (this.isProponente) {
-          payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
-        }
+      const temIndicador =
+        indicadoresProjetoPayload.length > 0;
 
-        const requisicao = this._idProjetoEdicao
-          ? this.atualizarProjeto(payload, isRascunho)
-          : this.cadastrarProjeto(payload, isRascunho);
-
-        requisicao.subscribe();
+      if (!temIndicador) {
+        this._toastService.showToast('warning', 'O formulário contém erros.', [
+          'Informe pelo menos um indicador.'
+        ]);
+        return;
       }
+
+      const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
+      const estavaDisabled = indicadoresProjetoControl?.disabled;
+
+      indicadoresProjetoControl?.disable({ emitEvent: false });
+
+      const formValido = this.validarFormulario(form);
+
+      if (!estavaDisabled) {
+        indicadoresProjetoControl?.enable({ emitEvent: false });
+      }
+
+      if (!formValido) {
+        return;
+      }
+
+      //if (this.validarFormulario(form)) {
+
+      form.get('valor.tipo')?.enable();
+      form.get('valor.moeda')?.enable();
+
+      const payload =
+        new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+
+      if (this.isProponente) {
+        payload.idOrganizacao =
+          form.get('idOrganizacao')?.value;
+      }
+
+      payload.indicadoresProjeto = indicadoresProjetoPayload;
+      payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
+
+      // // 
+      // payload.indicadoresProjeto = this.projetoForm.getRawValue()
+      //   .indicadoresProjeto
+      //   .filter((indicador: IIndicadores) => indicador.idIndicador !== null &&
+      //     indicador.idIndicador !== undefined &&
+      //     indicador.idIndicador !== 0)
+      //   .map((indicador: IIndicadores) => ({
+      //     idIndicador: indicador.idIndicador,
+      //     tipoIndicador: indicador.tipoIndicador ?? null,
+      //     descricaoIndicador: indicador.descricaoIndicador ?? null,
+      //     descricaoMeta: indicador.descricaoMeta ?? null,
+      //     idStatus: indicador.idStatus ?? 1,
+      //     idIndicadorExterno: indicador.idIndicadorExterno,
+      //     metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
+      //       idFato: meta.idFato,
+      //       anoMeta: meta.anoMeta,
+      //       valorMeta: meta.valorMeta
+      //     })) ?? []
+      //   }));
+
+      // // transforma SOMENTE os indicadores avulsos
+      // payload.indicadoresAvulsosProjeto =
+      //   this.projetoForm.getRawValue()
+      //     .indicadoresAvulsosProjeto
+      //     .filter((indicador: IIndicadorAvulso) =>
+      //       indicador?.nomeIndicador?.trim())
+      //     .map((indicador: IIndicadorAvulso) => ({
+      //       id: indicador.idIndicador ?? null,
+      //       indicadorAvulso: {
+      //         id: indicador.idIndicador ?? null,
+      //         nomeIndicador: indicador.nomeIndicador,
+      //         unidadeMedida: indicador.unidadeMedida,
+      //         fonteIndicador: indicador.fonteIndicador,
+      //         medidoPor: indicador.medidoPor,
+      //         baseDeReferencia: indicador.basedeReferencia,
+      //         metasIndicadorAvulsoGeral:
+      //           indicador.metasIndicadorAvulsoGeral
+      //       },
+      //       metasProjeto:
+      //         indicador.metasIndicadorAvulsoProjeto,
+      //       metasIndicadorAvulsoGeral:
+      //         indicador.metasIndicadorAvulsoGeral
+      //     }));
+
+      console.log('PAYLOAD SUBMIT (NOVO):', payload);
+
+      const requisicao = this._idProjetoEdicao
+        ? this.atualizarProjeto(payload, isRascunho)
+        : this.cadastrarProjeto(payload, isRascunho);
+
+      requisicao.subscribe();
+
+      // }
+
     }
   }
 
