@@ -232,8 +232,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   @ViewChild('informarComplementacoesProjetoModal') informarComplementacoesProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoReentramentoDicProjetoModal') confirmarIntegracaoReentranharProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('enviarParecerProjetoModal') enviarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
-  @ViewChild('efetivarParecerProjetoModal')  efetivarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
-  @ViewChild('entranharPareceresEdocsProjetoModal')  entranharPareceresEdocsProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('efetivarParecerProjetoModal') efetivarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
+  @ViewChild('entranharPareceresEdocsProjetoModal') entranharPareceresEdocsProjetoModalTemplate: TemplateRef<any> | undefined;
 
   // otimizacao carga agentes goves..
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
@@ -1030,6 +1030,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }),
       pareceresProjeto: this._nnfb.array([]),
       indicadoresAvulsosProjeto: this.indicadoresService.construirindicadoresAvulsosFormArray(projetoFormModel?.indicadoresAvulsosProjeto),
+      odsProjeto: this._nnfb.array([])
     });
 
     const mapSubObs: { [index: string]: Observable<string> } = {};
@@ -1598,8 +1599,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
       );
   }
-  
+
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
+
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
       this.statusProjeto === StatusProjetoEnum.Elegivel
@@ -1622,14 +1624,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         ?.getRawValue();
 
       this.atualizarProjeto(payload, isRascunho).subscribe();
+
     } else {
 
       const indicadoresProjetoPayload = this.projetoForm.getRawValue()
         .indicadoresProjeto
         .filter((indicador: IIndicadores) =>
-          indicador.idIndicadorExterno  !== null &&
-          indicador.idIndicadorExterno  !== undefined &&
-          indicador.idIndicadorExterno  !== 0
+          indicador.idIndicadorExterno !== null &&
+          indicador.idIndicadorExterno !== undefined &&
+          indicador.idIndicadorExterno !== 0
         )
         .map((indicador: IIndicadores) => ({
           idIndicador: indicador.idIndicador,
@@ -1692,6 +1695,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
+      
+      console.log('FORM VALUE RAW:', this.projetoForm.getRawValue());
+
+      const odsProjetoPayload = this.projetoForm.getRawValue()
+        .odsProjeto
+        ?.map((ods: any) => ({
+          idOdsProjeto: ods.idOdsProjeto ?? null,
+          odsId: ods.odsId,
+          odsOrdem: ods.odsOrdem,
+          odsNome: ods.odsNome,
+          odsDescricao: ods.odsDescricao
+        })) ?? [];
 
       const payload =
         new ProjetoFormModel(form.getRawValue() as IProjetoForm);
@@ -1703,8 +1718,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       payload.indicadoresProjeto = indicadoresProjetoPayload;
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
+      payload.odsProjeto = odsProjetoPayload;
 
-      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho)

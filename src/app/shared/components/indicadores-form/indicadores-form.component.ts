@@ -79,6 +79,8 @@ export class IndicadoresFormComponent {
       metasIndicadorExterno: this._nnfb.array<FormGroup<MetaIndicadorExternoFormType>>([])
     });
 
+    // console.log('Adicionando novo indicador:', novoIndicador.value);
+
     this.indicadoresFormArray.push(novoIndicador);
 
   }

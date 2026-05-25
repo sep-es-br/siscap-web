@@ -4,10 +4,11 @@
   <div class="card-header">
     <div class="badges-container">
       <app-indicador-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value"
-        [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)" [somenteLeitura]="somenteLeitura">
+        [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)"
+        [somenteLeitura]="somenteLeitura">
       </app-indicador-chip>
     </div>
-    <p-button styleClass="btn-filtros" (click)="showModal = true"  [disabled]="somenteLeitura">
+    <p-button styleClass="btn-filtros" (click)="showModal = true" [disabled]="somenteLeitura">
       <span>Filtros</span>
       <span style="font-size:14px">▽</span>
     </p-button>
@@ -18,8 +19,14 @@
 
 </div>
 
-<app-selecao-indicadores [indicadores]="indicadoresBI" [gestao]="gestao" [form]="formProjeto" [selecionados]="indicadoresSelecionados" [loading]="loading"
-  (selecionadosChange)="onSelecaoChange($event)" [somenteLeitura]="somenteLeitura">
+<app-selecao-indicadores 
+  [indicadores]="indicadoresBI" 
+  [gestao]="gestao" 
+  [form]="formProjeto"
+  [selecionados]="indicadoresSelecionados" 
+  [loading]="loading" 
+  [somenteLeitura]="somenteLeitura"
+  (selecionadosChange)="onSelecaoChange($event)" >
 </app-selecao-indicadores>
 
 <!-- CARD: INDICADORES SELECIONADOS -->
@@ -41,7 +48,7 @@
             <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">
               {{item.nomeIndicador }}</div>
             <button type="button" class="remove-indicator-btn" aria-label="Remover indicador"
-              (click)="removeIndicator(item, false)"  [disabled]="somenteLeitura">✖</button>
+              (click)="removeIndicator(item, false)" [disabled]="somenteLeitura">✖</button>
           </div>
 
           <div class="indicator-details">
@@ -75,7 +82,8 @@
               </div>
             </div>
 
-            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO PROJETO:</span>
+            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO
+              PROJETO:</span>
 
             <div [formGroup]="getIndicadorForm(i)">
 
@@ -88,7 +96,8 @@
                     style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
                     <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{
                       meta.get('anoMeta')?.value }}</span>
-                    <input type="number" class="meta-value-input" formControlName="valorMeta" placeholder="Digite a meta" >
+                    <input type="number" class="meta-value-input" formControlName="valorMeta"
+                      placeholder="Digite a meta">
                   </div>
                 </div>
 
@@ -101,6 +110,12 @@
         </div>
 
       </div>
+
     </div>
+
+  </div>
+  <div class="navigation-buttons">
+    <button class="nav-btn" onclick="window.history.back()">←</button>
+    <button class="nav-btn" id="avancarBtn" (click)="irParaODS()">→</button>
   </div>
 </div>

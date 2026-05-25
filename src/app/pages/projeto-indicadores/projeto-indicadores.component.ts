@@ -78,7 +78,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   ngOnInit(): void {
 
-    console.log("Valores do Form vindo do pai : ", this.formProjeto.value);
+    // console.log("Valores do Form vindo do pai : ", this.formProjeto.value);
 
     this.init();
 
@@ -95,6 +95,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
       .subscribe((indicadores) => {
         this.indicadoresBI = indicadores;
         this.indicadoresFiltrados = indicadores;
+        // console.log("Indicadores do BI: ", this.indicadoresBI);
       });
 
   }
@@ -135,6 +136,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
         next: (indicadores) => {
           this.indicadoresBI = indicadores;
           this.indicadoresFiltrados = indicadores;
+          // console.log("Indicadores do BI (1): ", this.indicadoresBI);
           this.syncComFormulario();
           this.loading = false;
         },
@@ -190,6 +192,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
+
+    // console.log('Recebido no ProjetoIndicadores:', novos);
 
     this.indicadoresSelecionados = novos.map(item => {
       this.sincronizarMetasProjeto(item, this.isModoEdicao);
@@ -247,7 +251,11 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     formArrayIndicadoresProjeto.clear();
 
-    this.indicadoresSelecionados.forEach((indicador) => {
+    this.indicadoresSelecionados.forEach( (indicador) => {
+
+      // console.log('Indicador antes de gravar no form:', indicador);
+      // console.log('ODS antes de gravar no form:', indicador.odsIndicador);
+      // console.log(Object.keys(indicador));
 
       const metasProjetoArray = this.fb.array(
         (indicador.metasIndicadorProjeto || []).map(meta =>
@@ -261,8 +269,11 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
       formArrayIndicadoresProjeto.push(
         this.fb.group({
-          idIndicador: indicador.idIndicadorProjeto ?? null,
+          idIndicador: [indicador.idIndicadorProjeto ?? null],
           idIndicadorExterno: [indicador.idIndicador],
+          idIndicadorCatalogoExterno: [indicador.idIndicador],
+          nomeIndicador: [indicador.nomeIndicador],
+          ods: [indicador.ods ?? []],
           metasIndicadorProjeto: metasProjetoArray
         })
       );
@@ -274,6 +285,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
     } else {
       this.formProjeto.get('indicadoresProjeto')?.enable({ emitEvent: false });
     }
+
+    formArrayIndicadoresProjeto.updateValueAndValidity({ emitEvent: true });
 
   }
 
@@ -412,7 +425,10 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   voltar() { }
 
-  irParaODS() { }
+  irParaODS() {
+    // console.log("Indicadores selecionados: ", this.indicadoresSelecionados);
+    if (this.indicadoresSelecionados.length === 0) { alert('Selecione pelo menos um indicador para avançar.'); return; }
+  }
 
   get somenteLeitura(): boolean {
     return !this.podeEditarIndicadores;

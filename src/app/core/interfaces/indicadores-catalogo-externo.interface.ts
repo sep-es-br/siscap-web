@@ -38,7 +38,19 @@ export interface IIndicadoresCatalogoExterno {
   metasIndicadorProjeto: IMetaIndicador[],
   maiorAnoInidicador: number,
   maiorMetaIndicador: string,
-  avulso?: boolean;
+  avulso?: boolean,
+  ods?: IOdsIndicadorExterno[];
+}
+
+export interface IOdsIndicadorExterno {
+  idOdsIndicadorExterno: number,
+  idOdsExterno: number,
+  odsId: number,
+  odsOrdem: number,
+  odsNome: string,
+  odsDescricao: string,
+  odsCor: string,
+  indicadoresVinculados: IIndicadoresCatalogoExterno[]
 }
 
 export interface IMetaIndicador {

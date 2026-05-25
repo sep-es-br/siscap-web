@@ -50,7 +50,11 @@ export interface IProjeto {
   subProponente: string;
   nomeProponente: string;
   historico: Array<IStatusProjeto >,
-  indicadoresAvulsosProjeto: Array<IIndicadorAvulso>;
+  indicadoresAvulsosProjeto: Array<IIndicadorAvulso>,
+  odsProjeto: Array<{
+    id: number | null;
+    idOdsIndicadorExterno: number;
+  }>;
 }
 
 export interface IProjetoForm

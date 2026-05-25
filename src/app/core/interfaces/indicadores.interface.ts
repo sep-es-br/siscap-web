@@ -14,4 +14,8 @@ export interface IIndicadores {
     anoMeta: number | null;
     valorMeta: string | null;
   }>;
+  ods: Array<{
+    id: number | null;
+    idOdsIndicadorExterno: number;
+  }>;
 }

@@ -57,6 +57,10 @@ export class ProjetoFormModel implements IProjetoForm {
   public nomeProponente: string;
   public historico: Array<IStatusProjeto>;
   public indicadoresAvulsosProjeto: Array<IIndicadorAvulso>;
+  public odsProjeto: Array<{
+    id: number | null;
+    idOdsIndicadorExterno: number;
+  }>;
 
   constructor(projetoForm?: IProjetoForm) {
     this.sigla = projetoForm?.sigla ?? '';
@@ -107,6 +111,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.indicadoresAvulsosProjeto = this.construirIndicadoresAvulsosProjeto(
       projetoForm?.indicadoresAvulsosProjeto
     );
+    this.odsProjeto = projetoForm?.odsProjeto ?? [];
   }
 
   private construirRateioModelArray(

@@ -83,7 +83,11 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   toggleIndicador(indicador: IIndicadoresCatalogoExterno): void {
+
+    // console.log('Indicador clicado:', indicador);
+
     let novasSelecoes = [...this.selecionados];
+    
     const exists = this.isSelecionado(indicador);
 
     if (exists) {
@@ -93,6 +97,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     }
 
     this.selecionadosChange.emit(novasSelecoes);
+
   }
 
   toggleSelectAll(event: any): void {
@@ -148,7 +153,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
   onIndicadorAvulsoCriado(indicador: any): void {
 
-    console.log("Indicador Avulso Criado : ", indicador)
+    // console.log("Indicador Avulso Criado : ", indicador)
 
     this.selecionados = [
       ...this.selecionados,

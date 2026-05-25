@@ -16,6 +16,11 @@ export class IndicadorModel implements IIndicadores {
     valorMeta: string | null;
   }>;
 
+  public ods: Array<{
+    id: number | null;
+    idOdsIndicadorExterno: number;
+  }>;
+
   constructor(indicadores?: IIndicadores) {
     this.idIndicador = indicadores?.idIndicador ?? 0;
     this.tipoIndicador = indicadores?.tipoIndicador ?? null;
@@ -24,7 +29,7 @@ export class IndicadorModel implements IIndicadores {
     this.idStatus = indicadores?.idStatus ?? 1;
     this.idIndicadorExterno = indicadores?.idIndicadorExterno ?? null;
     this.metasIndicadorProjeto = indicadores?.metasIndicadorProjeto ?? [];
+    this.ods = indicadores?.ods ?? [];
   }
   
-
 }

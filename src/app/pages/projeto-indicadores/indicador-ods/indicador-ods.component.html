@@ -1,0 +1,114 @@
+<div id="odsSection">
+
+    <!-- ── NOVO: Dropdown de ODS exclusivo desta página ── -->
+    <div class="ods-page-filter-bar" style="display:none;">
+        <span class="ods-page-filter-label">Filtrar / Adicionar por ODS:</span>
+        <select class="ods-page-filter-select" id="odsPageSelect"></select>
+        <button class="ods-page-filter-btn" onclick="addOdsFromPageDropdown()">+ Adicionar</button>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+        <div class="ods-section-header">
+            <div>
+                <div class="card-title" style="margin-bottom:2px;">ODS Sugeridas</div>
+                <div style="font-size:12px; color:var(--gray-text);">ODS identificadas a partir dos indicadores
+                    selecionados. Clique para adicionar à seleção.</div>
+            </div>
+            <div style="position: relative; display: flex; align-items: center; justify-content: flex-end;">
+                <button id="odsSearchToggleBtn" class="nav-btn" type="button" onclick="toggleOdsSuggestedSearch()"
+                    style="min-width: auto; width: 40px; height: 40px; padding: 0; font-size: 18px; border-radius: 50%; background: #f1f5f9; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">🔍</button>
+                <div id="odsSearchWrapper" style="display:none; position:absolute; right: 0; z-index: 10;">
+                    <div
+                        style="display: flex; align-items: center; border: 1px solid var(--blue); border-radius: 20px; background: white; width: 320px; padding: 4px 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                        <span style="color: var(--blue); font-size: 14px; margin-right: 8px;">🔍</span>
+                        <input id="odsSuggestedSearchInput" type="text" placeholder="Nome da ODS" autocomplete="off"
+                            style="border: none; outline: none; width: 100%; font-size: 13px; color: var(--navy-dark); background: transparent;"
+                            oninput="handleOdsSuggestedSearch(this.value)">
+                        <span onclick="closeOdsSuggestedSearch()"
+                            style="cursor: pointer; font-size: 12px; color: var(--gray-text); margin-left: 8px; padding: 4px;"
+                            title="Fechar Busca">✖</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ods-suggested-row" id="odsSuggestedRow">
+            <div class="ods-suggested-card" *ngFor="let ods of ods" (click)="adicionarOds(ods)"
+                [title]="'Clique para selecionar ' + ods.odsNome">
+                <div class="ods-sug-top" style="background:#9ca3af;"></div>
+                <div class="ods-sug-body">
+                    <div class="ods-sug-badge" style="background:#9ca3af;">
+                        {{ ods.odsOrdem || ods.odsId }}
+                    </div>
+                    <div class="ods-sug-name">
+                        {{ ods.odsNome }}
+                    </div>
+                    <div class="ods-sug-add">+ Adicionar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+        <div class="ods-section-header">
+            <div>
+                <div class="card-title" style="margin-bottom:2px;">ODS Selecionadas</div>
+                <div style="font-size:12px; color:var(--gray-text);">
+                    ODS confirmadas para este projeto. Clique em × para remover.
+                </div>
+            </div>
+        </div>
+
+        <div class="ods-selected-grid" id="odsSelectedGrid">
+            <div class="ods-sel-card" *ngFor="let ods of odsEscolhidas">
+                <div class="ods-sel-top" [style.background]="ods.odsCor"></div>
+                <div class="ods-sel-body">
+                    <div class="ods-sel-header">
+                        <div class="ods-sel-name-container">
+                            <div class="ods-sel-badge" [style.background]="ods.odsCor">
+                                {{ ods.odsOrdem }}
+                            </div>
+                            <div class="ods-sel-name">
+                                {{ ods.odsId }} - {{ ods.odsNome }}
+                            </div>
+                        </div>
+                        <button class="ods-sel-remove" type="button" (click)="removerOds(ods)" title="Remover">×</button>
+                    </div>
+                    <div class="ods-sel-desc">
+                        {{ ods.odsDescricao }}
+                    </div>
+                    <div class="ods-sel-indicators">
+                        <div class="ods-sel-ind-title">
+                            Indicadores Vinculados
+                        </div>
+                        <div class="ods-sel-ind-list">
+                            <div class="ods-sel-ind-item" *ngFor="let indicador of ods.indicadoresVinculados">
+                                {{ indicador.nomeIndicador }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="esg-section">
+        <label class="esg-label">
+            Impactos do Projeto no Âmbito Ambiental, Social e de Governança (ESG)
+            <span class="esg-required-badge">Obrigatório</span>
+        </label>
+        <div class="esg-subtitle">Descreva os impactos ambientais, sociais e de governança do projeto.</div>
+        <textarea class="esg-textarea" id="esgTextarea"
+            placeholder="Descreva como este projeto contribui para o meio ambiente, para a sociedade e para a boa governança..."
+            oninput="esgText = this.value; clearEsgError()"></textarea>
+        <div class="esg-error-msg" id="esgErrorMsg">⚠ O campo de impacto ESG é obrigatório para concluir o DIC.
+        </div>
+    </div>
+
+    <div class="navigation-buttons" style="margin-top:20px;">
+        <button class="nav-btn" onclick="goToDashboard()">←</button>
+        <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);"
+            onclick="concluirDIC()">→</button>
+    </div>
+
+</div>
