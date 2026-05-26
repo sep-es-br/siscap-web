@@ -1729,7 +1729,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       requisicao.subscribe();
 
     }
-
+    
   }
 
   onSelecionarOrganizacao(organizacao: any) {

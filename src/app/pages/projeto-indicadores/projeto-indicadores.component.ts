@@ -426,8 +426,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
   voltar() { }
 
   irParaODS() {
-    // console.log("Indicadores selecionados: ", this.indicadoresSelecionados);
-    if (this.indicadoresSelecionados.length === 0) { alert('Selecione pelo menos um indicador para avançar.'); return; }
+    const abaOds = document.getElementById('nav-ods-indicadores');
+    abaOds?.click();
   }
 
   get somenteLeitura(): boolean {
