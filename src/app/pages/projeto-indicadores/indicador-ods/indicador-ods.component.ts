@@ -29,7 +29,6 @@ export class IndicadorOdsComponent implements OnInit {
   ngOnInit(): void {
 
     // console.log('Formulário do projeto recebido:', this.formProjeto);
-
     this.formProjeto
       ?.get('indicadoresProjeto')
       ?.valueChanges
@@ -38,6 +37,26 @@ export class IndicadorOdsComponent implements OnInit {
       });
 
     this.montarOdsDisponiveis();
+
+  }
+
+  ngOnChanges(): void {
+    
+    if (!this.formProjeto) return;
+    
+    const odsProjeto = this.formProjeto.getRawValue().odsProjeto ?? [];
+
+    console.log('ODS do projeto (raw value):', odsProjeto);
+    
+    this.odsEscolhidas = odsProjeto.map((ods: any) => ({
+      idOdsProjeto: ods.idOdsProjeto ?? null,
+      odsId: ods.odsId,
+      odsOrdem: ods.odsOrdem,
+      odsNome: ods.odsNome,
+      odsDescricao: ods.odsDescricao
+    }));
+
+    console.log('Ods escolhidas atualizadas:', this.odsEscolhidas);
 
   }
 

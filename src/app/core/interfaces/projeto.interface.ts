@@ -54,6 +54,11 @@ export interface IProjeto {
   odsProjeto: Array<{
     id: number | null;
     idOdsIndicadorExterno: number;
+    idOdsProjeto: number | null;
+    odsId: number;
+    odsOrdem: number;
+    odsNome: string;
+    odsDescricao: string;
   }>;
 }
 

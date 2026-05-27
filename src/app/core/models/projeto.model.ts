@@ -60,6 +60,11 @@ export class ProjetoFormModel implements IProjetoForm {
   public odsProjeto: Array<{
     id: number | null;
     idOdsIndicadorExterno: number;
+    idOdsProjeto: number | null;
+    odsId: number;
+    odsOrdem: number;
+    odsNome: string;
+    odsDescricao: string;
   }>;
 
   constructor(projetoForm?: IProjetoForm) {

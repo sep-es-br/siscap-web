@@ -91,34 +91,23 @@
             </div>
         </div>
     </div>
-
-    <!-- <div class="esg-section">
-        <label class="esg-label">
+    
+    <div [formGroup]="formProjeto" class="row">
+        <div class="col-12">
+            <label
+            for="impactos"
+            class="form-label col-12">
+            <validation-message [control]="getControl('impactos')">
             Impactos do Projeto no Âmbito Ambiental, Social e de Governança (ESG)
+            </validation-message>
         </label>
-        <div class="esg-subtitle">Descreva os impactos ambientais, sociais e de governança do projeto.</div>
-        <textarea class="esg-textarea" id="esgTextarea"
-            placeholder="Descreva como este projeto contribui para o meio ambiente, para a sociedade e para a boa governança..."
-            oninput="esgText = this.value; clearEsgError()"></textarea>
-        <div class="esg-error-msg" id="esgErrorMsg">⚠ O campo de impacto ESG é obrigatório para concluir o DIC.
+        <textarea
+            rows="5"
+            class="form-control"
+            id="impactos"
+            formControlName="impactos"
+            maxLength="2000"></textarea>
         </div>
-    </div> -->
-
-    <div class="col-12">
-        <label
-        for="impactos"
-        class="form-label col-12">
-        <validation-message [control]="getControl('impactos')">
-        Impactos do Projeto no Âmbito Ambiental, Social e de Governança (ESG)
-        </validation-message>
-    </label>
-    <textarea
-        rows="5"
-        class="form-control"
-        id="impactos"
-        formControlName="impactos"
-        maxLength="2000"
-    ></textarea>
     </div>
 
     <div class="navigation-buttons" style="margin-top:20px;">
