@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IOdsIndicadorExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 import { CommonModule } from '@angular/common';
-import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
+import { TemplatesModule } from '../../../shared/templates/templates.module';
 
 @Component({
   selector: 'siscap-indicador-ods',
@@ -10,7 +10,8 @@ import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule],
+    ReactiveFormsModule,
+    TemplatesModule],
   templateUrl: './indicador-ods.component.html',
   styleUrl: './indicador-ods.component.scss'
 })
@@ -23,7 +24,7 @@ export class IndicadorOdsComponent implements OnInit {
   ods: IOdsIndicadorExterno[] = [];
   odsEscolhidas: IOdsIndicadorExterno[] = [];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
 
@@ -95,7 +96,7 @@ export class IndicadorOdsComponent implements OnInit {
   // }
 
   adicionarOds(ods: IOdsIndicadorExterno): void {
-    
+
     const odsProjeto = this.formProjeto.get('odsProjeto') as FormArray;
 
     const jaExiste = odsProjeto.value.some(
@@ -126,6 +127,10 @@ export class IndicadorOdsComponent implements OnInit {
 
   get indicadoresProjeto(): any[] {
     return this.formProjeto?.get('indicadoresProjeto')?.value ?? [];
+  }
+
+  public getControl(controlName: string): AbstractControl<any, any> {
+    return this.formProjeto.get(controlName) as AbstractControl<any, any>;
   }
 
 }
