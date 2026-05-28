@@ -82,22 +82,38 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
   }
 
-  toggleIndicador(indicador: IIndicadoresCatalogoExterno): void {
+  // toggleIndicador(indicador: IIndicadoresCatalogoExterno): void {
 
-    // console.log('Indicador clicado:', indicador);
+  //   let novasSelecoes = [...this.selecionados];
 
-    let novasSelecoes = [...this.selecionados];
-    
-    const exists = this.isSelecionado(indicador);
+  //   const exists = this.isSelecionado(indicador);
 
-    if (exists) {
-      novasSelecoes = novasSelecoes.filter(i => i.idIndicador !== indicador.idIndicador);
+  //   if (exists) {
+  //     novasSelecoes = novasSelecoes.filter(i => i.idIndicador !== indicador.idIndicador);
+  //   } else {
+  //     novasSelecoes.push(indicador);
+  //   }
+
+  //   this.selecionadosChange.emit(novasSelecoes);
+
+  // }
+
+  toggleIndicador(indicador: any): void {
+
+    if (this.isSelecionado(indicador)) {
+      this.selecionados = this.selecionados.filter(i =>
+        !this.mesmoIndicador(i, indicador)
+      );
     } else {
-      novasSelecoes.push(indicador);
+      const indicadorSelecionado = this.montarIndicadorSelecionado(indicador);
+
+      this.selecionados = [
+        ...this.selecionados,
+        indicadorSelecionado
+      ];
     }
 
-    this.selecionadosChange.emit(novasSelecoes);
-
+    this.selecionadosChange.emit([...this.selecionados]);
   }
 
   toggleSelectAll(event: any): void {
@@ -120,7 +136,9 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   isSelecionado(indicador: any): boolean {
-    return (this.selecionados || []).some(i => i.idIndicador === indicador.idIndicador);
+    return (this.selecionados || []).some(i =>
+      this.mesmoIndicador(i, indicador)
+    );
   }
 
   showNewIndicatorForm(): void {
@@ -172,6 +190,44 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     this.filtrarIndicadores();
 
     this.selecionadosChange.emit([...this.selecionados]);
+
+  }
+
+  private mesmoIndicador(a: any, b: any): boolean {
+
+    const aEhAvulso = a.avulso === true;
+    const bEhAvulso = b.avulso === true;
+
+    if (aEhAvulso || bEhAvulso) {
+      return (a.nomeIndicador ?? '').trim().toLowerCase()
+        === (b.nomeIndicador ?? '').trim().toLowerCase();
+    }
+
+    return a.idIndicador === b.idIndicador;
+  }
+
+  private montarIndicadorSelecionado(indicador: any): any {
+    if (indicador.avulso) {
+      return {
+        ...indicador,
+        nomeIndicador: indicador.nomeIndicador,
+        fonteIndicador: indicador.fonteIndicador,
+        unidadeMedida: indicador.unidadeMedida,
+        basedeReferencia: indicador.basedeReferencia,
+
+        metasIndicador: indicador.metasIndicador
+          ?? indicador.metasIndicadorAvulsoGeral
+          ?? [],
+
+        metasIndicadorProjeto: indicador.metasIndicadorProjeto
+          ?? indicador.metasIndicadorAvulsoProjeto
+          ?? [],
+
+        avulso: true
+      };
+    }
+
+    return indicador;
 
   }
 
