@@ -95,6 +95,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
         this.indicadoresFiltrados = indicadores;
       });
 
+      console.log('Indicadores filtrados:', this.indicadoresFiltrados);
+
   }
 
   private init(): void {
@@ -298,6 +300,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   // executado quando o filtro é aplicado no componente filho
   onApply(filter: any): void {
+
+    this.loading = true
 
     this.currentFilter = structuredClone(filter);
 

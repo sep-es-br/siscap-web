@@ -53,17 +53,6 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     // }
   }
 
-  // filtrarIndicadores(): void {
-  //   const termo = this.filtroTexto
-  //     ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-  //     : '';
-  //   this.indicadoresFiltrados = this.indicadores.filter(i => {
-  //     const nomeNormalizado = i.nomeIndicador?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  //     return nomeNormalizado?.includes(termo);
-  //   });
-  //   this.updateSelectAllState();
-  // }
-
   filtrarIndicadores(): void {
 
     const termo = this.filtroTexto
@@ -81,23 +70,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     this.updateSelectAllState();
 
   }
-
-  // toggleIndicador(indicador: IIndicadoresCatalogoExterno): void {
-
-  //   let novasSelecoes = [...this.selecionados];
-
-  //   const exists = this.isSelecionado(indicador);
-
-  //   if (exists) {
-  //     novasSelecoes = novasSelecoes.filter(i => i.idIndicador !== indicador.idIndicador);
-  //   } else {
-  //     novasSelecoes.push(indicador);
-  //   }
-
-  //   this.selecionadosChange.emit(novasSelecoes);
-
-  // }
-
+  
   toggleIndicador(indicador: any): void {
 
     if (this.isSelecionado(indicador)) {
