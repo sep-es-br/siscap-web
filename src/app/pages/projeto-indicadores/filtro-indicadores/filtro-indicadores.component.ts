@@ -92,10 +92,6 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   }
 
-  // onChangeLabel(idLabel: number, valor: number) {
-  //   this.filtro.labels[idLabel] = valor;
-  // }
-
   resetar() {
     this.filtro = {
       idGestao: this.gestaoSelecionada?.idGestao || null,
@@ -113,11 +109,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   applyFilter() {
     this.apply.emit(this.filtro);
   }
-
-  testeClick(): void {
-    console.log('botão clicou');
-  }
-
+  
   fechar() {
     this.close.emit();
   }

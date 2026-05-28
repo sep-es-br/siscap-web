@@ -24,17 +24,6 @@
                 </select>
             </div>
 
-            <!-- LABELS DINÂMICOS
-            <ng-container *ngFor="let label of labelsOrdenados">
-                <div class="filter-field">
-                    <label class="filter-label">{{ label.nome }}</label>
-                    <p-multiSelect [maxSelectedLabels]="2" [options]="label.valores" optionLabel="valor"
-                        optionValue="idLabelValor" [(ngModel)]="filtro.labels[label.idLabel]"
-                        defaultLabel="Selecionar..." display="chip" class="w-full" [disabled]="somenteLeitura">
-                    </p-multiSelect>
-                </div>
-            </ng-container> -->
-
             <!-- LABELS DINÂMICOS -->
             <ng-container *ngFor="let label of labelsOrdenados">
                 <div class="filter-field">

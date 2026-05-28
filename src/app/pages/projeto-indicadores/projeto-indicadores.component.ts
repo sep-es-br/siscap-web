@@ -78,8 +78,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // console.log("Valores do Form vindo do pai : ", this.formProjeto.value);
-
     this.init();
 
     this.initBaseChip();
@@ -95,7 +93,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
       .subscribe((indicadores) => {
         this.indicadoresBI = indicadores;
         this.indicadoresFiltrados = indicadores;
-        // console.log("Indicadores do BI: ", this.indicadoresBI);
       });
 
   }
@@ -136,7 +133,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
         next: (indicadores) => {
           this.indicadoresBI = indicadores;
           this.indicadoresFiltrados = indicadores;
-          // console.log("Indicadores do BI (1): ", this.indicadoresBI);
           this.syncComFormulario();
           this.loading = false;
         },
@@ -193,8 +189,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
-
-    // console.log('Recebido no ProjetoIndicadores:', novos);
 
     this.indicadoresSelecionados = novos.map(item => {
       this.sincronizarMetasProjeto(item, this.isModoEdicao);
@@ -253,10 +247,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
     formArrayIndicadoresProjeto.clear();
 
     this.indicadoresSelecionados.forEach( (indicador) => {
-
-      // console.log('Indicador antes de gravar no form:', indicador);
-      // console.log('ODS antes de gravar no form:', indicador.odsIndicador);
-      // console.log(Object.keys(indicador));
 
       const metasProjetoArray = this.fb.array(
         (indicador.metasIndicadorProjeto || []).map(meta =>
