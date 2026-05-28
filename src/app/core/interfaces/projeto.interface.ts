@@ -59,6 +59,7 @@ export interface IProjeto {
     odsOrdem: number;
     odsNome: string;
     odsDescricao: string;
+    odsCor: string;
   }>;
 }
 

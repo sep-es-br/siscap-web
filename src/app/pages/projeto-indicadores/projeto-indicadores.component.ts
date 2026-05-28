@@ -153,6 +153,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   filtrarIndicadores(): void {
+
     const termo = this.filtroTexto
       ? this.filtroTexto
         .toLowerCase()
@@ -305,7 +306,10 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.showModal = true;
   }
 
+  // executado quando o filtro é aplicado no componente filho
   onApply(filter: any): void {
+
+    this.currentFilter = structuredClone(filter);
 
     this.showModal = false;
 
@@ -319,12 +323,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
         })),
       desafios: filter.desafio?.id ?? []
     };
-
-    this.currentFilter = filtroFormatado;
-
-    // const dynamicChips = this.mapToChips(filtroFormatado);
-    // const baseChip = this.chips.find((c) => c.type === 'base');
-    // this.chips = [baseChip, ...dynamicChips];
 
     this.filterService.setFilter(filtroFormatado);
 

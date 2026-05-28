@@ -4,13 +4,17 @@ import { Desafio, IGestoesCatalogoExterno, Label } from '../../../core/interface
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-filtro-indicadores',
   standalone: true,
   imports: [FormsModule,
     CommonModule,
-    MultiSelectModule
+    MultiSelectModule,
+    CommonModule,
+    FormsModule,
+    NgSelectModule
   ],
   templateUrl: './filtro-indicadores.component.html',
   styleUrl: './filtro-indicadores.component.scss'
@@ -22,6 +26,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() desafios: Desafio[] = [];
   @Input() somenteLeitura: boolean = false;
+  @Input() filtroAtual: any = null;
 
   gestaoSelecionada!: IGestoesCatalogoExterno;
   labelsOrdenados: Label[] = [];
@@ -45,16 +50,24 @@ export class FiltroIndicadoresComponent implements OnChanges {
     }
 
   }
-
+  
   private inicializarGestao() {
-
     if (!this.gestao) return;
 
-    if (this.gestao !== null) {
-      this.gestaoSelecionada = this.gestao;
-    }
+    this.gestaoSelecionada = this.gestao;
 
-    this.filtro.idGestao = this.gestaoSelecionada.idGestao;
+    this.filtro = {
+      idGestao: this.gestaoSelecionada.idGestao,
+      labels: {},
+      desafio: {
+        id: []
+      },
+      ...(this.filtroAtual ? structuredClone(this.filtroAtual) : {})
+    };
+
+    this.filtro.labels ??= {};
+    this.filtro.desafio ??= { id: [] };
+    this.filtro.desafio.id ??= [];
 
     this.atualizarLabels();
   }
@@ -75,7 +88,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
       .sort((a, b) => a.ordem - b.ordem);
 
     // reset dos filtros dinâmicos
-    this.filtro.labels = {};
+    this.filtro.labels ??= {};
 
   }
 
@@ -87,7 +100,9 @@ export class FiltroIndicadoresComponent implements OnChanges {
     this.filtro = {
       idGestao: this.gestaoSelecionada?.idGestao || null,
       labels: {},
-      desafio: null
+      desafio: {
+        id: []
+      }
     };
   }
 
@@ -99,12 +114,39 @@ export class FiltroIndicadoresComponent implements OnChanges {
     this.apply.emit(this.filtro);
   }
 
+  testeClick(): void {
+    console.log('botão clicou');
+  }
+
   fechar() {
     this.close.emit();
   }
 
-  // get issomenteLeitura(): boolean {
-  //   return this.somenteLeitura;
-  // }
+  dropdownDesafioAberto = false;
+  buscaDesafio = '';
+
+  onDebug(ids: number[]): void {
+    console.log(ids);
+  }
+
+  abrirDropdownDesafio(): void {
+    this.dropdownDesafioAberto = !this.dropdownDesafioAberto;
+  }
+
+  desafiosFiltrados() {
+    const busca = this.buscaDesafio?.toLowerCase() ?? '';
+    return this.desafios.filter(d =>
+      d.nome.toLowerCase().includes(busca)
+    );
+  }
+
+  toggleDesafio(id: number): void {
+    const selecionados: number[] = this.filtro.desafio.id ?? [];
+    if (selecionados.includes(id)) {
+      this.filtro.desafio.id = selecionados.filter(x => x !== id);
+    } else {
+      this.filtro.desafio.id = [...selecionados, id];
+    }
+  }
 
 }

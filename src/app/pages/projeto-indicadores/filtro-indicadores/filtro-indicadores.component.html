@@ -24,42 +24,79 @@
                 </select>
             </div>
 
+            <!-- LABELS DINÂMICOS
+            <ng-container *ngFor="let label of labelsOrdenados">
+                <div class="filter-field">
+                    <label class="filter-label">{{ label.nome }}</label>
+                    <p-multiSelect [maxSelectedLabels]="2" [options]="label.valores" optionLabel="valor"
+                        optionValue="idLabelValor" [(ngModel)]="filtro.labels[label.idLabel]"
+                        defaultLabel="Selecionar..." display="chip" class="w-full" [disabled]="somenteLeitura">
+                    </p-multiSelect>
+                </div>
+            </ng-container> -->
+
             <!-- LABELS DINÂMICOS -->
             <ng-container *ngFor="let label of labelsOrdenados">
                 <div class="filter-field">
                     <label class="filter-label">{{ label.nome }}</label>
-                    <p-multiSelect
-                        [maxSelectedLabels]="2"
-                        [options]="label.valores"
-                        optionLabel="valor"
-                        optionValue="idLabelValor"
-                        [(ngModel)]="filtro.labels[label.idLabel]"
-                        defaultLabel="Selecionar..."
-                        display="chip"
-                        class="w-full"
-                        [disabled]="somenteLeitura"
-                        >
-                    </p-multiSelect>
+
+                    <ng-select [items]="label.valores" bindLabel="valor" bindValue="idLabelValor"
+                        [(ngModel)]="filtro.labels[label.idLabel]" [multiple]="true" [closeOnSelect]="false"
+                        [searchable]="true" [clearable]="true" placeholder="Selecionar..." class="select-filtro"
+                        [disabled]="somenteLeitura">
+
+                        <ng-template ng-multi-label-tmp let-items="items">
+                            <span class="custom-selected-label" *ngIf="items.length === 1">
+                                {{ items[0].valor }}
+                            </span>
+                            <span class="custom-selected-label" *ngIf="items.length > 1">
+                                {{ items.length }} selecionados
+                            </span>
+                        </ng-template>
+
+                        <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                            <div class="select-option-checkbox">
+                                <input type="checkbox" [checked]="item$.selected" tabindex="-1"
+                                    style="margin-right: 8px; pointer-events: none;" />
+                                <span>{{ item.valor }}</span>
+                            </div>
+                        </ng-template>
+
+                    </ng-select>
                 </div>
             </ng-container>
 
             <!-- DESAFIOS -->
             <div class="filter-field">
-                <label class="filter-label">Desafios</label>
-                <p-multiSelect
-                    [maxSelectedLabels]="2"
-                    [options]="desafios"
-                    optionLabel="nome"
-                    optionValue="id"
-                    [(ngModel)]="filtro.desafio.id"
-                    defaultLabel="Selecionar..."
-                    display="chip"
-                    class="w-full"
-                    [disabled]="somenteLeitura" >
-                </p-multiSelect>
+                <label class="filter-label">
+                    Desafios
+                </label>
+                <ng-select [items]="desafios" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.desafio.id"
+                    [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true"
+                    placeholder="Selecionar..." class="select-filtro" (ngModelChange)="onDebug($event)">
+
+                    <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                        <input type="checkbox" [checked]="item$.selected" tabindex="-1"
+                            style="margin-right: 8px; pointer-events: none;" />
+
+                        <span>{{ item.nome }}</span>
+                    </ng-template>
+
+                    <ng-template ng-multi-label-tmp let-items="items">
+                        <span class="custom-selected-label" *ngIf="items.length === 1">
+                            {{ items[0].nome }}
+                        </span>
+
+                        <span class="custom-selected-label" *ngIf="items.length > 1">
+                            {{ items.length }} selecionados
+                        </span>
+                    </ng-template>
+
+                </ng-select>
             </div>
 
         </div>
+
     </div>
 
     <!-- FOOTER -->
@@ -67,7 +104,7 @@
         <button class="btn-restaurar" (click)="resetar()">
             RESTAURAR FILTROS
         </button>
-        <button class="btn-filtrar" (click)="applyFilter()">
+        <button class="btn-filtrar" (click)="applyFilter();">
             FILTRAR
         </button>
     </div>

@@ -28,7 +28,6 @@ export class IndicadorOdsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // console.log('Formulário do projeto recebido:', this.formProjeto);
     this.formProjeto
       ?.get('indicadoresProjeto')
       ?.valueChanges
@@ -41,22 +40,19 @@ export class IndicadorOdsComponent implements OnInit {
   }
 
   ngOnChanges(): void {
-    
+
     if (!this.formProjeto) return;
-    
+
     const odsProjeto = this.formProjeto.getRawValue().odsProjeto ?? [];
 
-    console.log('ODS do projeto (raw value):', odsProjeto);
-    
     this.odsEscolhidas = odsProjeto.map((ods: any) => ({
       idOdsProjeto: ods.idOdsProjeto ?? null,
       odsId: ods.odsId,
       odsOrdem: ods.odsOrdem,
       odsNome: ods.odsNome,
-      odsDescricao: ods.odsDescricao
+      odsDescricao: ods.odsDescricao,
+      odsCor: ods.odsCor
     }));
-
-    console.log('Ods escolhidas atualizadas:', this.odsEscolhidas);
 
   }
 
@@ -91,29 +87,6 @@ export class IndicadorOdsComponent implements OnInit {
 
   }
 
-  // montarOdsDisponiveis(): void {
-
-  //   const indicadores = this.formProjeto?.get('indicadoresProjeto')?.value ?? [];
-  //   const todasOds = indicadores.flatMap((indicador: any) => indicador.ods ?? []);
-
-  //   const odsPorId = new Map<number, any>();
-
-  //   todasOds.forEach((ods: any) => {
-  //     if (!odsPorId.has(ods.odsId)) {
-  //       odsPorId.set(ods.odsId, ods);
-  //     }
-  //   });
-
-  //   this.ods = Array.from(odsPorId.values());
-
-  // }
-
-  // adicionarOds(ods: IOdsIndicadorExterno): void {
-  //   if (!this.odsEscolhidas.some(o => o.odsId === ods.odsId)) {
-  //     this.odsEscolhidas.push(ods);
-  //   }
-  // }
-
   adicionarOds(ods: IOdsIndicadorExterno): void {
 
     const odsProjeto = this.formProjeto.get('odsProjeto') as FormArray;
@@ -138,10 +111,24 @@ export class IndicadorOdsComponent implements OnInit {
     );
 
     this.odsEscolhidas = odsProjeto.value;
+
   }
 
   removerOds(ods: IOdsIndicadorExterno): void {
-    this.odsEscolhidas = this.odsEscolhidas.filter(o => o.odsId !== ods.odsId);
+
+    this.odsEscolhidas = this.odsEscolhidas
+      .filter(o => o.odsId !== ods.odsId);
+
+    const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
+
+    const index = odsProjetoArray.controls.findIndex(control =>
+      control.get('odsId')?.value === ods.odsId
+    );
+
+    if (index >= 0) {
+      odsProjetoArray.removeAt(index);
+    }
+
   }
 
   get indicadoresProjeto(): any[] {

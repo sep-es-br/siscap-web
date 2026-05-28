@@ -65,6 +65,7 @@ export class ProjetoFormModel implements IProjetoForm {
     odsOrdem: number;
     odsNome: string;
     odsDescricao: string;
+    odsCor: string;
   }>;
 
   constructor(projetoForm?: IProjetoForm) {

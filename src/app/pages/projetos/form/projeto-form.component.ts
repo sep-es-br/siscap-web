@@ -343,6 +343,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private carregarProjetoEditar(idProjeto: number): void {
+
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
         // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
@@ -359,16 +360,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return EMPTY;
       }),
       tap((projetoModel: ProjetoModel) => {
+
         this.mostrarBotaoPedirRevisaoDic = false;
 
         this.statusProjeto = projetoModel.status;
         this.lotacaoGestorProjeto = projetoModel.lotacaoProponenteResponsavel;
         this.nomeProponenteResponsavel = projetoModel.nomeProponenteResponsavel;
         this.podeEditar = projetoModel.podeEditar;
-        this.podeSoilictarComplementacao =
-          projetoModel.podeSolicitarComplementacao;
-        this.podeResponderComplementacao =
-          projetoModel.podeResponderComplementacao;
+        this.podeSoilictarComplementacao = projetoModel.podeSolicitarComplementacao;
+        this.podeResponderComplementacao = projetoModel.podeResponderComplementacao;
         this.camposComplementarProjeto = projetoModel.camposComplementar;
         this.subProponenteDIC = projetoModel.subProponente;
         this.nomeProponenteDIC = projetoModel.nomeProponente;
@@ -379,6 +379,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         );
 
         this.iniciarForm(projetoModel).subscribe(() => {
+
           this._idProjetoEdicao = projetoModel.id;
 
           this.mostrarBotaoBaixarDic = !projetoModel.rascunho;
@@ -399,6 +400,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.subUsuario = this._usuarioService.usuarioPerfil.subNovo;
 
           this.indicadoresProjeto = projetoModel.indicadoresProjeto;
+
+          // console.log('Ods´s do projeto carregado para edição:', projetoModel.odsProjeto );
 
           const caminhoFeliz = [
             StatusProjetoEnum.Em_Elaboracao,
@@ -1029,8 +1032,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         elegivel: [projetoFormModel?.parecerProjetoUsuario.elegivel ?? null],
       }),
       pareceresProjeto: this._nnfb.array([]),
+
       indicadoresAvulsosProjeto: this.indicadoresService.construirindicadoresAvulsosFormArray(projetoFormModel?.indicadoresAvulsosProjeto),
-      odsProjeto: this._nnfb.array([])
+
+      odsProjeto: this._nnfb.array(
+        projetoFormModel?.odsProjeto?.map((ods: any) =>
+          this._nnfb.group({
+            idOdsProjeto: this._nnfb.control(ods.idOdsProjeto ?? null),
+            odsId: this._nnfb.control(ods.odsId ?? null),
+            odsOrdem: this._nnfb.control(ods.odsOrdem ?? null),
+            odsNome: this._nnfb.control(ods.odsNome ?? null),
+            odsDescricao: this._nnfb.control(ods.odsDescricao ?? null),
+            odsCor: this._nnfb.control(ods.odsCor ?? null),
+          })
+        ) ?? []
+      )
+
     });
 
     const mapSubObs: { [index: string]: Observable<string> } = {};
@@ -1695,8 +1712,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
-      
-      console.log('FORM VALUE RAW:', this.projetoForm.getRawValue());
+
+      //console.log('FORM VALUE RAW:', this.projetoForm.getRawValue());
 
       const odsProjetoPayload = this.projetoForm.getRawValue()
         .odsProjeto
@@ -1729,7 +1746,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       requisicao.subscribe();
 
     }
-    
+
   }
 
   onSelecionarOrganizacao(organizacao: any) {

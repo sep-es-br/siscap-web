@@ -79,9 +79,7 @@
 
 /* ========== GRID DE FILTROS ========== */
 .filter-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
 /* Campo que ocupa linha inteira */
@@ -90,8 +88,7 @@
 // }
 
 .filter-field {
-    display: flex;
-    flex-direction: column;
+    min-width: 0;
 }
 
 // .filter-label {
@@ -200,4 +197,191 @@ width: 100%;
 .btn-filtrar:hover {
     background: #059669;
     transform: translateY(-1px);
+}
+
+:host ::ng-deep .multiselect-panel-filtros {
+  max-width: 520px !important;
+}
+
+:host ::ng-deep .multiselect-panel-filtros .p-multiselect-items-wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+:host ::ng-deep .multiselect-panel-filtros .p-multiselect-item {
+  white-space: normal;
+  line-height: 1.3;
+  align-items: flex-start;
+}
+
+:host ::ng-deep .multiselect-panel-filtros .p-multiselect-item span {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.filter-field {
+  position: relative;
+}
+
+.custom-multiselect {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: #fff;
+  color: #4b5563;
+}
+
+.multi-select-dropdown {
+  position: absolute;
+  z-index: 9999;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+}
+
+.multi-search {
+  width: 100%;
+  height: 36px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0 10px;
+  margin-bottom: 8px;
+}
+
+.multi-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 8px;
+  cursor: pointer;
+  color: #475569;
+  font-size: 14px;
+}
+
+.multi-option:hover {
+  background: #f1f5f9;
+}
+
+.multi-option span {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+/* ========== NG-SELECT DESAFIOS ========== */
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.filter-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+:host ::ng-deep .select-filtro {
+  width: 100%;
+  min-width: 0;
+}
+
+:host ::ng-deep .select-filtro .ng-select-container {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  height: 42px;
+  overflow: hidden;
+  border: 1px solid #c8d3de;
+  border-radius: 8px;
+}
+
+:host ::ng-deep .select-filtro .ng-value-container {
+  width: 100%;
+  min-width: 0;
+  flex-wrap: nowrap !important;
+  overflow: hidden;
+}
+
+:host ::ng-deep .select-filtro .ng-value {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+:host ::ng-deep .select-filtro .ng-input {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+:host ::ng-deep .select-filtro .custom-selected-label {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+:host ::ng-deep .select-filtro .ng-dropdown-panel {
+  max-width: 100%;
+}
+
+:host ::ng-deep .select-filtro .ng-dropdown-panel-items {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+:host ::ng-deep .select-filtro .ng-option {
+  white-space: normal !important;
+  line-height: 1.35;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+:host ::ng-deep .select-filtro .ng-option-label {
+  display: block;
+  max-width: 100%;
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+:host ::ng-deep .select-option-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+:host ::ng-deep .select-option-checkbox input {
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .select-option-checkbox span {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
