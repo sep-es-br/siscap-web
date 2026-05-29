@@ -88,6 +88,8 @@ export class IndicadorOdsComponent implements OnInit {
   }
 
   adicionarOds(ods: IOdsIndicadorExterno): void {
+    
+    if (!this.isModoEdicao) return;
 
     const odsProjeto = this.formProjeto.get('odsProjeto') as FormArray;
 

@@ -62,7 +62,7 @@
                 </label>
                 <ng-select [items]="desafios" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.desafio.id"
                     [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true"
-                    placeholder="Selecionar..." class="select-filtro" (ngModelChange)="onDebug($event)">
+                    placeholder="Selecionar..." class="select-filtro">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
                         <input type="checkbox" [checked]="item$.selected" tabindex="-1"

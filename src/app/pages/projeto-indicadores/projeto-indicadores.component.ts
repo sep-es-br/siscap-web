@@ -95,7 +95,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
         this.indicadoresFiltrados = indicadores;
       });
 
-      console.log('Indicadores filtrados:', this.indicadoresFiltrados);
+    // console.log('Indicadores filtrados:', this.indicadoresFiltrados);
 
   }
 
@@ -248,7 +248,14 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     formArrayIndicadoresProjeto.clear();
 
-    this.indicadoresSelecionados.forEach( (indicador) => {
+    this.indicadoresSelecionados.forEach((indicador) => {
+
+      console.log(
+        'Indicador:',
+        indicador.nomeIndicador,
+        'metasIndicadorProjeto:',
+        indicador.metasIndicadorProjeto
+      );
 
       const metasProjetoArray = this.fb.array(
         (indicador.metasIndicadorProjeto || []).map(meta =>
@@ -370,26 +377,29 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     item.metasIndicadorProjeto = metasExternas.map(metaExt => {
       const existente = metasProjeto.find(
-        m => m.idFato === metaExt.idFato
+        m => m.anoMeta === metaExt.anoMeta
       );
+
       if (existente) {
         return existente;
       }
+
       return {
         idFato: metaExt.idFato,
         anoMeta: metaExt.anoMeta,
         valorMeta: ''
       };
+      
     });
 
   }
 
-  getIndicadores(): FormArray {
-    return this.formProjeto.get('indicadoresProjeto') as FormArray;
-  }
-
   getIndicadorForm(index: number): FormGroup {
     return this.getIndicadores().at(index) as FormGroup;
+  }
+
+  getIndicadores(): FormArray {
+    return this.formProjeto.get('indicadoresProjeto') as FormArray;
   }
 
   getMetas(index: number): FormArray {

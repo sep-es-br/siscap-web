@@ -31,10 +31,12 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="ods-suggested-row" id="odsSuggestedRow">
-            <div class="ods-suggested-card" *ngFor="let ods of ods" (click)="adicionarOds(ods)"
-                [title]="'Clique para selecionar ' + ods.odsNome">
+            <div class="ods-suggested-card" *ngFor="let ods of ods" 
+                (click)="adicionarOds(ods)"
+                [title]="'Clique para selecionar ' + ods.odsNome" 
+                [class.disabled]="!isModoEdicao">
                 <div class="ods-sug-top" style="background:#9ca3af;"></div>
                 <div class="ods-sug-body">
                     <div class="ods-sug-badge" style="background:#9ca3af;">
@@ -47,6 +49,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     <div class="card" style="margin-bottom:16px;">

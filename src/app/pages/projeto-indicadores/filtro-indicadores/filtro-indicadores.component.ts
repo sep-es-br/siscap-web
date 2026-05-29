@@ -117,9 +117,9 @@ export class FiltroIndicadoresComponent implements OnChanges {
   dropdownDesafioAberto = false;
   buscaDesafio = '';
 
-  onDebug(ids: number[]): void {
-    console.log(ids);
-  }
+  // onDebug(ids: number[]): void {
+  //   // console.log(ids);
+  // }
 
   abrirDropdownDesafio(): void {
     this.dropdownDesafioAberto = !this.dropdownDesafioAberto;

@@ -91,10 +91,7 @@
               PROJETO:</span>
 
             <div [formGroup]="getIndicadorForm(i)">
-
-              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;"
-                formArrayName="metasIndicadorProjeto">
-
+              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;" formArrayName="metasIndicadorProjeto">
                 <div class="mindicador-selecionado" *ngFor="let meta of getMetas(i).controls; let j = index"
                   [formGroupName]="j">
                   <div class="meta-item"
@@ -105,7 +102,6 @@
                       placeholder="Digite a meta">
                   </div>
                 </div>
-
               </div>
 
             </div>

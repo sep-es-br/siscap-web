@@ -1665,6 +1665,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           })) ?? []
         }));
 
+      //console.log('INDICADORES PROJETO PAYLOAD:', indicadoresProjetoPayload);
+
       const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
         .indicadoresAvulsosProjeto
         .filter((indicador: IIndicadorAvulso) =>
@@ -1737,7 +1739,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
 
-      console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho)
