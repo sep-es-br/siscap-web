@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -28,6 +28,9 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
   @Input() somenteLeitura: boolean = false;
   @Output() selecionadosChange = new EventEmitter<any[]>();
+
+  @ViewChild('searchInput')
+  searchInput!: ElementRef<HTMLInputElement>;
 
   get indicadores() {
     return this._indicadores;
@@ -70,7 +73,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     this.updateSelectAllState();
 
   }
-  
+
   toggleIndicador(indicador: any): void {
 
     if (this.isSelecionado(indicador)) {
@@ -86,7 +89,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     }
 
     this.selecionadosChange.emit([...this.selecionados]);
-    
+
   }
 
   toggleSelectAll(event: any): void {
@@ -144,13 +147,12 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
   onIndicadorAvulsoCriado(indicador: any): void {
 
-    // console.log("Indicador Avulso Criado : ", indicador)
-
     this.selecionados = [
       ...this.selecionados,
       {
         ...indicador,
         nomeIndicador: indicador.nomeIndicador,
+        formulaCalculo: indicador.formulaCalculo,
         fonteIndicador: indicador.fonteIndicador,
         unidadeMedida: indicador.unidadeMedida,
         basedeReferencia: indicador.basedeReferencia,
@@ -204,8 +206,25 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
   }
 
-  // get isSomenteLeitura(): boolean {
-  //   return this.somenteLeitura;
-  // }
+  toggleSearch(): void {
+    if (this.somenteLeitura) {
+      return;
+    }
+    this.searchVisible = !this.searchVisible;
+    if (this.searchVisible) {
+      setTimeout(() => {
+        this.searchInput?.nativeElement.focus();
+      });
+    }
+  }
+
+  limparBusca(): void {
+    if (this.somenteLeitura) {
+      return;
+    }
+    this.filtroTexto = '';
+    this.filtrarIndicadores();
+    this.searchInput?.nativeElement.focus();
+  }
 
 }

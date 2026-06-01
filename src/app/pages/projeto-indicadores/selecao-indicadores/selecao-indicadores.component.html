@@ -2,12 +2,23 @@
 
   <div class="card-header-main">
     <p class="lista-label">SELECIONE O INDICADOR ESTRATÉGICO</p>
-    <div class="search-container" [class.expanded]="searchVisible">
+    <!-- <div class="search-container" [class.expanded]="searchVisible">
       <span class="p-input-icon-left p-input-icon-right w-100">
         <i class="pi pi-search search-icon cursor-pointer" (click)="!somenteLeitura && searchVisible = !searchVisible"></i>
         <input [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text" class="w-100 search-input"
           placeholder="Nome do indicador" [(ngModel)]="filtroTexto" (ngModelChange)="filtrarIndicadores()" [disabled]="somenteLeitura"/>
         <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="!somenteLeitura && filtroTexto=''; filtrarIndicadores()">
+        </i>
+      </span>
+    </div> -->
+    <div class="search-container" [class.expanded]="searchVisible">
+      <span class="p-input-icon-left p-input-icon-right w-100">
+        <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()">
+        </i>
+        <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
+          class="w-100 search-input" placeholder="Nome do indicador" [(ngModel)]="filtroTexto"
+          (ngModelChange)="filtrarIndicadores()" [disabled]="somenteLeitura" />
+        <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()">
         </i>
       </span>
     </div>
@@ -16,7 +27,8 @@
   <div class="card-body indicador-lista">
     <div class="indicador-item select-all">
       <label class="indicador-label">
-        <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)" [disabled]="somenteLeitura"></p-checkbox>
+        <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
+          [disabled]="somenteLeitura"></p-checkbox>
         <span class="text-blue-primary">SELECIONAR TODOS</span>
       </label>
     </div>
@@ -25,12 +37,12 @@
       <ng-container *ngIf="indicadoresFiltrados.length > 0; else vazio">
         <div class="indicador-item" *ngFor="let indicador of indicadoresFiltrados">
           <label class="indicador-label">
-            <p-checkbox [binary]="true" 
-              [ngModel]="isSelecionado(indicador)"
-              (ngModelChange)="toggleIndicador(indicador)" 
-              [ngModelOptions]="{ standalone: true }" [disabled]="somenteLeitura">
+            <p-checkbox [binary]="true" [ngModel]="isSelecionado(indicador)"
+              (ngModelChange)="toggleIndicador(indicador)" [ngModelOptions]="{ standalone: true }"
+              [disabled]="somenteLeitura">
             </p-checkbox>
-            <span>{{ indicador.nomeIndicador }} <small *ngIf="indicador.avulso" class="indicador-avulso-label"> (Indicador de projeto)</small> </span>
+            <span>{{ indicador.nomeIndicador }} <small *ngIf="indicador.avulso" class="indicador-avulso-label">
+                (Indicador de projeto)</small> </span>
           </label>
         </div>
       </ng-container>
@@ -42,15 +54,13 @@
     <div class="create-special-link"
       style="cursor:pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s;"
       title="Se não encontrar o indicador estratégico desejado, crie um novo"
-      (click)="!somenteLeitura && showNewIndicatorForm(); $event.stopPropagation()" onmouseover="this.style.background='#eef6ff'"
-      onmouseout="this.style.background='transparent'">
+      (click)="!somenteLeitura && showNewIndicatorForm(); $event.stopPropagation()"
+      onmouseover="this.style.background='#eef6ff'" onmouseout="this.style.background='transparent'">
       <span style="color:var(--blue); font-weight:700; font-size:12px;">+ Criar um Indicador de Projeto</span>
     </div>
   </div>
 
-  <siscap-indicador-avulso *ngIf="showModalIndicadorAvulso" 
-    [gestao]="gestao" 
-    [formProjeto]="form"
+  <siscap-indicador-avulso *ngIf="showModalIndicadorAvulso" [gestao]="gestao" [formProjeto]="form"
     (indicadorCriado)="onIndicadorAvulsoCriado($event)"
     (close)="onCloseModalIndicadorAvulso()"></siscap-indicador-avulso>
 

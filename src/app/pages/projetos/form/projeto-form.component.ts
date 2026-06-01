@@ -227,6 +227,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public indicadoresProjeto: IIndicadores[] = [];
 
+  private camposObrigatoriosDic = [
+    'sigla',
+    'titulo',
+    'idOrganizacao',
+    'subResponsavelProponente',
+    'equipeElaboracao',
+    'situacaoProblema',
+    'objetivo',
+    'objetivoEspecifico',
+    'solucoesPropostas',
+    'arranjosInstitucionais',
+    'pecasPlanejamento',
+    'acoesProjeto',
+    'rateio'
+  ];
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -2713,6 +2729,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public irParaIndicadores(): void {
 
+    if (!this.validarAbaDic()) {
+      this._toastService.showToast('error', 'Erro ao avançar', [
+          'Verifique os campos obrigatórios antes de continuar.',
+        ]);
+      return;
+    }
+
     const tabTrigger = document.getElementById('nav-indicadores');
 
     if (tabTrigger) {
@@ -2724,6 +2747,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       });
     }
 
+  }
+
+  private validarAbaDic(): boolean {
+    let valido = true;
+    this.camposObrigatoriosDic.forEach(nome => {
+      const control = this.projetoForm.get(nome);
+      if (control?.invalid) {
+        control.markAsTouched();
+        control.markAsDirty();
+        valido = false;
+      }
+    });
+    return valido;
   }
 
 }
