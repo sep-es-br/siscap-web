@@ -25,8 +25,10 @@
       <ng-container *ngIf="indicadoresFiltrados.length > 0; else vazio">
         <div class="indicador-item" *ngFor="let indicador of indicadoresFiltrados">
           <label class="indicador-label">
-            <p-checkbox [binary]="true" [ngModel]="isSelecionado(indicador)"
-              (ngModelChange)="toggleIndicador(indicador)" [ngModelOptions]="{ standalone: true }" [disabled]="somenteLeitura">
+            <p-checkbox [binary]="true" 
+              [ngModel]="isSelecionado(indicador)"
+              (ngModelChange)="toggleIndicador(indicador)" 
+              [ngModelOptions]="{ standalone: true }" [disabled]="somenteLeitura">
             </p-checkbox>
             <span>{{ indicador.nomeIndicador }} <small *ngIf="indicador.avulso" class="indicador-avulso-label"> (Indicador de projeto)</small> </span>
           </label>
@@ -42,7 +44,7 @@
       title="Se não encontrar o indicador estratégico desejado, crie um novo"
       (click)="!somenteLeitura && showNewIndicatorForm(); $event.stopPropagation()" onmouseover="this.style.background='#eef6ff'"
       onmouseout="this.style.background='transparent'">
-      <span style="color:var(--blue); font-weight:700; font-size:12px;">+ Criar um Indicador de Projeto Estratégico</span>
+      <span style="color:var(--blue); font-weight:700; font-size:12px;">+ Criar um Indicador de Projeto</span>
     </div>
   </div>
 

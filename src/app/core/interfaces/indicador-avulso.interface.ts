@@ -5,6 +5,7 @@ import { IMetaIndicador } from "./indicadores-catalogo-externo.interface";
 export interface IIndicadorAvulso {
   idIndicador: number;
   nomeIndicador: string | null;
+  formulaCalculo: string | null;
   fonteIndicador: string | null;
   medidoPor: string | null;
   unidadeMedida: string | null;

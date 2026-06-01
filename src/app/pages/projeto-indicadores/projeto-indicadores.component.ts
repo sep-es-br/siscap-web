@@ -15,6 +15,7 @@ import { CatalogoIndicadorService } from '../../core/services/catalogo-indicador
 import { BehaviorSubject, filter, map, switchMap, tap } from 'rxjs';
 import { IFiltroIndicador, IGestoesCatalogoExterno, IIndicadoresCatalogoExterno, IMetaIndicador } from '../../core/interfaces/indicadores-catalogo-externo.interface';
 import { StatusProjetoEnum } from '../../core/enums/status-projeto.enum';
+import { ToastService } from '../../core/services/toast/toast.service';
 
 export interface IndicadorProjetoForm {
   idIndicador: number;
@@ -26,6 +27,8 @@ export interface IndicadorProjetoForm {
   idIndicadorCatalogoExterno: number;
   metasIndicadorExterno: IMetaIndicador[];
 }
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'siscap-projeto-indicadores',
@@ -74,6 +77,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     private filterService: FilterService,
     private catalogoIndicadorService: CatalogoIndicadorService,
     private fb: FormBuilder,
+    private readonly _toastService: ToastService,
   ) { }
 
   ngOnInit(): void {
@@ -94,8 +98,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
         this.indicadoresBI = indicadores;
         this.indicadoresFiltrados = indicadores;
       });
-
-    // console.log('Indicadores filtrados:', this.indicadoresFiltrados);
 
   }
 
@@ -133,6 +135,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
       )
       .subscribe({
         next: (indicadores) => {
+          console.log('Indicadores crus:', indicadores);
           this.indicadoresBI = indicadores;
           this.indicadoresFiltrados = indicadores;
           this.syncComFormulario();
@@ -249,13 +252,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
     formArrayIndicadoresProjeto.clear();
 
     this.indicadoresSelecionados.forEach((indicador) => {
-
-      console.log(
-        'Indicador:',
-        indicador.nomeIndicador,
-        'metasIndicadorProjeto:',
-        indicador.metasIndicadorProjeto
-      );
 
       const metasProjetoArray = this.fb.array(
         (indicador.metasIndicadorProjeto || []).map(meta =>
@@ -389,7 +385,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
         anoMeta: metaExt.anoMeta,
         valorMeta: ''
       };
-      
+
     });
 
   }
@@ -406,29 +402,32 @@ export class ProjetoIndicadoresComponent implements OnInit {
     return this.getIndicadorForm(index).get('metasIndicadorProjeto') as FormArray;
   }
 
-  // private aplicarFiltros(): void {
-  //   this.indicadoresBI = this.indicadoresSelecionados.filter(indicador => {
-  //     const filtrosLabels = this.currentFilter.labels;
-  //     // return Object.entries(filtrosLabels).every(([idLabel, valores]) => {
-  //     //   if (!valores || (valores as number[]).length === 0) {
-  //     //     return true;
-  //     //   }
-  //     //   // return indicador.labels?.some( label =>
-  //     //   //   label.idLabel === Number(idLabel)
-  //     //   //   && (valores as number[]).includes(label.idLabelValor)
-  //     //   // );
-  //     // });
-  //   });
-  // }
-
   getIndicadoresAvulsos(): FormArray {
     return this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
   }
 
-  voltar() { }
+  voltarParaDic() {
+    const tabTrigger = document.getElementById('nav-propriedades');
+
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }
 
   irParaODS() {
-    const abaOds = document.getElementById('nav-ods-indicadores');
+    const indicadoresArray = this.formProjeto.get('indicadoresProjeto') as FormArray;
+    if (!indicadoresArray || indicadoresArray.length === 0) {
+      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+          'É obrigatório selecionar ao menos um indicador.',
+        ]);
+      return;
+    }
+    const abaOds = document.getElementById('nav-ods-indicadores')
     abaOds?.click();
   }
 

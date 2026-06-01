@@ -1,3 +1,24 @@
+:host {
+    --blue: #1a6fc4;
+    --blue-light: #e8f1fb;
+    --blue-mid: #d0e4f7;
+    --blue-dark: #0f4e8e;
+    --green: #3a8f47;
+    --green-light: #e6f5e9;
+    --red: #c0392b;
+    --gray-bg: #f2f5f8;
+    --gray-border: #c8d3de;
+    --gray-text: #5a6a7a;
+    --white: #ffffff;
+    --shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    --navy-dark: #0a1a30;
+    --navy-mid: #142845;
+}
+
+.aba-bloqueada {
+  pointer-events: none;
+}
+
 .accordion-content {
   padding: 8px 16px;
 }
@@ -302,63 +323,28 @@ div[ngbAccordionItem] {
   }
 }
 
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 24px
+}
 
+.nav-btn {
+  background: var(--white);
+  color: var(--navy-dark);
+  border: 1px solid var(--gray-border);
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .2s;
+}
 
-
-
-
-
-
-
-
-
-// div[ngbAccordionItem] {
-//   [ngbAccordionCollapse].btn-progresso {
-//     &.collapse.show {
-//       display: block !important;
-//       visibility: visible;
-//       opacity: 1;
-//       pointer-events: auto;
-//     }
-//   }
-
-//   [ngbAccordionButton].btn-progresso {
-//     background-color: #ffffff !important;
-//     border: 1px solid #d1d9e6 !important;
-//     border-radius: 9px;
-//     padding: 8px 20px;
-
-//     display: inline-flex;
-//     align-items: center;
-//     justify-content: center;
-//     gap: 10px;
-
-//     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-//     cursor: pointer;
-//     user-select: none;
-//     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05) !important;
-
-//     span {
-//       color: #444;
-//       font-size: 0.85rem;
-//       font-weight: 500;
-//       letter-spacing: 0.3px;
-//     }
-
-//     &:hover {
-//       background-color: #f1f3f4 !important;
-//       border-color: #1a73e8 !important;
-//       transform: translateY(-1px);
-//       box-shadow: 0 4px 10px rgba(26, 115, 232, 0.1) !important;
-//     }
-
-//     &:active {
-//       transform: scale(0.96);
-//     }
-
-//     &:not(.collapsed) {
-//       background-color: rgba(26, 115, 232, 0.1) !important;
-//       border-color: #1a73e8 !important;
-//     }
-//   }
-// }
+.nav-btn:hover {
+  background: var(--gray-bg);
+  border-color: var(--navy-dark)
+}

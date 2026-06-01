@@ -79,7 +79,6 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
       );
     } else {
       const indicadorSelecionado = this.montarIndicadorSelecionado(indicador);
-
       this.selecionados = [
         ...this.selecionados,
         indicadorSelecionado
@@ -87,6 +86,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     }
 
     this.selecionadosChange.emit([...this.selecionados]);
+    
   }
 
   toggleSelectAll(event: any): void {

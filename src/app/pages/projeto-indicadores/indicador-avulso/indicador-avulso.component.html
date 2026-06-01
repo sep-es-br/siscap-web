@@ -12,8 +12,16 @@
         <div class="filter-scroll" style="max-height:70vh; overflow-y:auto; padding-right:10px;">
 
             <div class="form-row"><label><validation-message [control]="getControl('nomeIndicador')">NOME DO INDICADOR
-                        </validation-message></label><input type="text" formControlName="nomeIndicador" id="fName"
+                    </validation-message></label><input type="text" formControlName="nomeIndicador" id="fName"
                     placeholder="Ex: Taxa de Alfabetização"></div>
+
+            <div class="form-row"><label><validation-message [control]="getControl('formulaCalculo')">FÓRMULA / METODOLOGIA DE CÁLCULO
+                    </validation-message></label>
+                <textarea formControlName="formulaCalculo" id="fFormula" rows="3"
+                    placeholder="Descreve a fórmula ou metodologia.">
+                </textarea>
+            </div>
+
             <div class="form-row"><label><validation-message
                         [control]="getControl('medidoPor')">FONTE</validation-message></label><input type="text"
                     formControlName="medidoPor" id="fOrgao" placeholder="Ex: Secretaria de Educação"></div>

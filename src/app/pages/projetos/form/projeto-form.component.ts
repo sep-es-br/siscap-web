@@ -111,6 +111,8 @@ import { gerarStepStatusProjeto, IStep } from '../../../core/utils/steps';
 import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
 import { IIndicadorAvulso } from '../../../core/interfaces/indicador-avulso.interface';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'siscap-projeto-form',
   standalone: false,
@@ -2708,4 +2710,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  public irParaIndicadores(): void {
+
+    const tabTrigger = document.getElementById('nav-indicadores');
+
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+  }
+
 }

@@ -45,6 +45,7 @@ export class IndicadorAvulsoComponent {
   private criarFormulario(): void {
     this.formIndicador = this.fb.group({
       nomeIndicador: ['', Validators.required],
+      formulaCalculo: ['', Validators.required],
       fonteIndicador: [''],
       medidoPor: ['', Validators.required],
       unidadeMedida: ['', Validators.required],
