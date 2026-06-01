@@ -58,23 +58,23 @@
 
           <div class="indicator-details">
 
+            <div *ngIf="item.avulso" class="detail-row" style="margin-bottom: 8px;"><span class="detail-label"
+              style="color: #1a6fc4; font-weight: 800;">FÓRMULA / METODOLOGIA DE CÁLCULO:</span><span class="detail-value"
+              style="font-weight: 600;">{{item.formulaCalculo }}</span></div>
+
             <div class="detail-row" style="margin-bottom: 8px;"><span class="detail-label"
                 style="color: #1a6fc4; font-weight: 800;">FONTE:</span><span class="detail-value"
                 style="font-weight: 600;">{{item.medidoPor }}</span></div>
 
             <div class="detail-row" style="margin-bottom: 15px;">
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE
-                MEDIDA:</span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE MEDIDA:</span>
               <span class="detail-value" style="font-weight: 600; margin-right:24px;">{{item.unidadeMedida}}</span>
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE
-                REFERÊNCIA:</span>
-              <span class="detail-value" style="font-weight: 600;"> {{ item?.maiorAnoInidicador }} ({{
-                item?.maiorMetaIndicador }}) </span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE REFERÊNCIA:</span>
+              <span class="detail-value" style="font-weight: 600;"> {{ item?.maiorAnoInidicador }} ({{item?.maiorMetaIndicador }}) </span>
             </div>
 
-            <span class="meta-section-label"
+            <!-- <span class="meta-section-label"
               style="color: #1a6fc4; font-weight: 800; margin-top: 15px; margin-bottom: 10px;">META:</span>
-
             <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
               <div class="mindicador-selecionado" *ngFor="let metaItem of item.metasIndicador">
                 <div class="meta-item"
@@ -85,11 +85,9 @@
                     }}</span>
                 </div>
               </div>
-            </div>
+            </div> -->
 
-            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO
-              PROJETO:</span>
-
+            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO PROJETO:</span>
             <div [formGroup]="getIndicadorForm(i)">
               <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;" formArrayName="metasIndicadorProjeto">
                 <div class="mindicador-selecionado" *ngFor="let meta of getMetas(i).controls; let j = index"
@@ -103,7 +101,6 @@
                   </div>
                 </div>
               </div>
-
             </div>
 
           </div>

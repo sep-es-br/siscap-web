@@ -35,7 +35,7 @@
                         id="fValorBase" placeholder="Ex: 25.000 (2022)"></div>
             </div>
 
-            <div class="form-row"><label>META</label>
+            <!-- <div class="form-row"><label>META</label>
                 <div formArrayName="metasIndicadorAvulsoGeral">
                     <div class="meta-years"
                         style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 20px;">
@@ -50,17 +50,14 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
+            </div> -->
+            
             <div class="form-row"><label>META DO PROJETO</label>
                 <div formArrayName="metasIndicadorAvulsoProjeto">
                     <div class="meta-years" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                        <div class="year-meta"
-                            *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index"
-                            [formGroupName]="i">
+                        <div class="year-meta" *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index" [formGroupName]="i">
                             <div class="year-label" style="font-size:11px; margin-bottom:4px;">
-                                <validation-message [control]="getMetaIndicadorControl(i)"> {{ (gestao?.doAno ?? 0) + i
-                                    }} </validation-message>
+                                <validation-message [control]="getMetaProjetoControl(i)"> {{ (gestao?.doAno ?? 0) + i }} </validation-message>
                             </div>
                             <input type="number" formControlName="valorMeta" style="width:100%; border-radius:6px;">
                         </div>

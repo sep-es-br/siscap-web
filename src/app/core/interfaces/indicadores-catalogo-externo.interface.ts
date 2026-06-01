@@ -32,6 +32,7 @@ export interface IIndicadoresCatalogoExterno {
   idIndicador: number,
   nomeIndicador: string,
   unidadeMedida: string,
+  formulaCalculo: string,
   polaridade: string,
   medidoPor: string,
   metasIndicador: IMetaIndicador[],

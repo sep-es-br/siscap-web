@@ -25,7 +25,8 @@ export interface IndicadorProjetoForm {
   idStatus: number
   idIndicadorExterno: number;
   idIndicadorCatalogoExterno: number;
-  metasIndicadorExterno: IMetaIndicador[];
+  // metasIndicadorExterno: IMetaIndicador[];
+  metasIndicadorProjeto: IMetaIndicador[];
 }
 
 declare var bootstrap: any;
@@ -125,17 +126,16 @@ export class ProjetoIndicadoresComponent implements OnInit {
             )
         ),
 
-        map((indicadores) =>
-          indicadores.map((item) => ({
-            ...item,
-            metasIndicador: item.metasIndicador ?? []
-          }))
-        )
+        // map((indicadores) =>
+        //   indicadores.map((item) => ({
+        //     ...item,
+        //     metasIndicador: item.metasIndicador ?? []
+        //   }))
+        // )
 
       )
       .subscribe({
         next: (indicadores) => {
-          console.log('Indicadores crus:', indicadores);
           this.indicadoresBI = indicadores;
           this.indicadoresFiltrados = indicadores;
           this.syncComFormulario();
@@ -195,10 +195,23 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
 
-    this.indicadoresSelecionados = novos.map(item => {
-      this.sincronizarMetasProjeto(item, this.isModoEdicao);
-      return item;
-    });
+    // this.indicadoresSelecionados = novos.map(item => {
+    //   this.sincronizarMetasProjeto(item, this.isModoEdicao);
+    //   return item;
+    // });
+
+    // this.indicadoresSelecionados = novos.map(item => ({
+    //   ...item,
+    //   metasIndicadorProjeto: item.metasIndicadorProjeto ?? []
+    // }));
+
+    this.indicadoresSelecionados = novos.map(item => ({
+      ...item,
+      metasIndicadorProjeto:
+        item.metasIndicadorProjeto?.length
+          ? item.metasIndicadorProjeto
+          : this.montarMetasProjetoVazias()
+    }));
 
     this.atualizarFormulario();
 
@@ -223,22 +236,48 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     const indicadoresProjeto = this.formProjeto.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
 
+    // this.indicadoresSelecionados = this.indicadoresBI
+    //   .filter(indicadorBI =>
+    //     indicadoresProjeto.some(v => v.idIndicadorCatalogoExterno === indicadorBI.idIndicador)
+    //   )
+    //   .map(cat => {
+    //     const doForm = indicadoresProjeto.find(v => v.idIndicadorCatalogoExterno === cat.idIndicador);
+    //     // const item = {
+    //     //   ...cat,
+    //     //   idIndicadorProjeto: doForm?.idIndicador,
+    //     //   metasIndicadorProjeto:
+    //     //     doForm?.metasIndicadorExterno?.length
+    //     //       ? doForm.metasIndicadorExterno
+    //     //       : cat.metasIndicadorProjeto ?? []
+    //     // };
+    //     //this.sincronizarMetasProjeto(item, this.isModoEdicao);
+    //     //return item;
+    //     return {
+    //       ...cat,
+    //       idIndicadorProjeto: doForm?.idIndicador,
+    //       metasIndicadorProjeto: doForm?.metasIndicadorProjeto ?? []
+    //     };
+    //   });
+    
     this.indicadoresSelecionados = this.indicadoresBI
       .filter(indicadorBI =>
-        indicadoresProjeto.some(v => v.idIndicadorCatalogoExterno === indicadorBI.idIndicador)
+        indicadoresProjeto.some(v =>
+          v.idIndicadorCatalogoExterno === indicadorBI.idIndicador
+        )
       )
       .map(cat => {
-        const doForm = indicadoresProjeto.find(v => v.idIndicadorCatalogoExterno === cat.idIndicador);
-        const item = {
+        const doForm = indicadoresProjeto.find(v =>
+          v.idIndicadorCatalogoExterno === cat.idIndicador
+        );
+
+        return {
           ...cat,
           idIndicadorProjeto: doForm?.idIndicador,
           metasIndicadorProjeto:
-            doForm?.metasIndicadorExterno?.length
-              ? doForm.metasIndicadorExterno
-              : cat.metasIndicadorProjeto ?? []
+            doForm?.metasIndicadorProjeto?.length
+              ? doForm.metasIndicadorProjeto
+              : this.montarMetasProjetoVazias()
         };
-        this.sincronizarMetasProjeto(item, this.isModoEdicao);
-        return item;
       });
 
     this.atualizarFormulario();
@@ -366,29 +405,25 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   }
 
-  sincronizarMetasProjeto(item: IIndicadoresCatalogoExterno, isModoEdicao: boolean): void {
-
-    const metasExternas = item.metasIndicador ?? [];
-    const metasProjeto: IMetaIndicador[] = item.metasIndicadorProjeto ?? [];
-
-    item.metasIndicadorProjeto = metasExternas.map(metaExt => {
-      const existente = metasProjeto.find(
-        m => m.anoMeta === metaExt.anoMeta
-      );
-
-      if (existente) {
-        return existente;
-      }
-
-      return {
-        idFato: metaExt.idFato,
-        anoMeta: metaExt.anoMeta,
-        valorMeta: ''
-      };
-
-    });
-
-  }
+  // sincronizarMetasProjeto(item: IIndicadoresCatalogoExterno, isModoEdicao: boolean): void {
+  //   const metasExternas = item.metasIndicador ?? [];
+  //   const metasProjeto: IMetaIndicador[] = item.metasIndicadorProjeto ?? [];
+  //   console.log('Metas externas:', metasExternas);
+  //   console.log('Metas do projeto antes da sincronização:', metasProjeto);
+  //   item.metasIndicadorProjeto = metasExternas.map(metaExt => {
+  //     const existente = metasProjeto.find(
+  //       m => m.anoMeta === metaExt.anoMeta
+  //     );
+  //     if (existente) {
+  //       return existente;
+  //     }
+  //     return {
+  //       idFato: metaExt.idFato,
+  //       anoMeta: metaExt.anoMeta,
+  //       valorMeta: ''
+  //     };
+  //   });
+  // }
 
   getIndicadorForm(index: number): FormGroup {
     return this.getIndicadores().at(index) as FormGroup;
@@ -423,8 +458,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
     const indicadoresArray = this.formProjeto.get('indicadoresProjeto') as FormArray;
     if (!indicadoresArray || indicadoresArray.length === 0) {
       this._toastService.showToast('error', 'Erro ao carregar projeto', [
-          'É obrigatório selecionar ao menos um indicador.',
-        ]);
+        'É obrigatório selecionar ao menos um indicador.',
+      ]);
       return;
     }
     const abaOds = document.getElementById('nav-ods-indicadores')
@@ -449,6 +484,26 @@ export class ProjetoIndicadoresComponent implements OnInit {
       isEmElaboracao || (isEmAnalise && this.isSubcap);
 
     return podeEditar;
+
+  }
+
+  private montarMetasProjetoVazias(): IMetaIndicador[] {
+
+    const doAno = this.gestao?.doAno ?? 0;
+    const ateAno = this.gestao?.ateAno ?? 0;
+
+    if (!doAno || !ateAno || ateAno < doAno) {
+      return [];
+    }
+
+    return Array.from(
+      { length: ateAno - doAno + 1 },
+      (_, index) => ({
+        idFato: null as any,
+        anoMeta: doAno + index,
+        valorMeta: ''
+      })
+    );
 
   }
 

@@ -25,6 +25,7 @@
   </div>
 
   <div class="card-body indicador-lista">
+    
     <div class="indicador-item select-all">
       <label class="indicador-label">
         <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
@@ -36,7 +37,7 @@
     <ng-container *ngIf="!loading; else loadingTpl">
       <ng-container *ngIf="indicadoresFiltrados.length > 0; else vazio">
         <div class="indicador-item" *ngFor="let indicador of indicadoresFiltrados">
-          <label class="indicador-label">
+          <label *ngIf="!indicador.avulso" class="indicador-label">
             <p-checkbox [binary]="true" [ngModel]="isSelecionado(indicador)"
               (ngModelChange)="toggleIndicador(indicador)" [ngModelOptions]="{ standalone: true }"
               [disabled]="somenteLeitura">

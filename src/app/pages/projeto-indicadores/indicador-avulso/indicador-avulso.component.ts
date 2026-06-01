@@ -39,7 +39,7 @@ export class IndicadorAvulsoComponent {
   ngOnInit(): void {
     this.criarFormulario();
     this.preencherMetasPorIntervaloGestao();
-    this.monitorarBaseReferencia();
+    //this.monitorarBaseReferencia();
   }
 
   private criarFormulario(): void {
@@ -51,7 +51,7 @@ export class IndicadorAvulsoComponent {
       unidadeMedida: ['', Validators.required],
       basedeReferencia: ['', Validators.required],
       polaridade: [''],
-      metasIndicadorAvulsoGeral: this.fb.array([]),
+      // metasIndicadorAvulsoGeral: this.fb.array([]),
       metasIndicadorAvulsoProjeto: this.fb.array([]),
       maiorAnoInidicador: [null],
       maiorMetaIndicador: ['']
@@ -70,12 +70,12 @@ export class IndicadorAvulsoComponent {
     for (let ano = anoInicio; ano <= anoFim; ano++) {
 
       // META DO INDICADOR
-      this.getMetasIndicadorAvulsoGeral().push(
-        this.fb.group({
-          anoMeta: [ano],
-          valorMeta: [null, Validators.required]
-        })
-      );
+      // this.getMetasIndicadorAvulsoGeral().push(
+      //   this.fb.group({
+      //     anoMeta: [ano],
+      //     valorMeta: [null, Validators.required]
+      //   })
+      // );
 
       // META DO PROJETO
       this.getMetasProjeto().push(
@@ -89,9 +89,9 @@ export class IndicadorAvulsoComponent {
 
   }
 
-  getMetasIndicadorAvulsoGeral(): FormArray {
-    return this.formIndicador.get('metasIndicadorAvulsoGeral') as FormArray;
-  }
+  // getMetasIndicadorAvulsoGeral(): FormArray {
+  //   return this.formIndicador.get('metasIndicadorAvulsoGeral') as FormArray;
+  // }
 
   getMetasProjeto(): FormArray {
     return this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
@@ -124,9 +124,9 @@ export class IndicadorAvulsoComponent {
 
   }
 
-  removerMetaIndicadorAvulsoGeral(index: number): void {
-    this.getMetasIndicadorAvulsoGeral().removeAt(index);
-  }
+  // removerMetaIndicadorAvulsoGeral(index: number): void {
+  //   this.getMetasIndicadorAvulsoGeral().removeAt(index);
+  // }
 
   removerMetaProjeto(index: number): void {
     this.getMetasProjeto().removeAt(index);
@@ -151,46 +151,44 @@ export class IndicadorAvulsoComponent {
   getControl(controlName: string): AbstractControl {
     return this.formIndicador.get(controlName)!;
   }
-
+  
   getMetaIndicadorControl(index: number): AbstractControl {
     return this.metasIndicadorAvulsoGeral.at(index).get('valorMeta')!;
   }
 
-  private monitorarBaseReferencia(): void {
-    this.getMetasIndicadorAvulsoGeral()
-      .valueChanges
-      .subscribe(() => {
-        this.atualizarBaseReferencia();
-      });
+  getMetaProjetoControl(index: number): AbstractControl {
+    const formArray = this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
+    return formArray.at(index).get('valorMeta') as AbstractControl;
   }
 
-  private atualizarBaseReferencia(): void {
+  // private monitorarBaseReferencia(): void {
+  //   this.getMetasIndicadorAvulsoGeral()
+  //     .valueChanges
+  //     .subscribe(() => {
+  //       this.atualizarBaseReferencia();
+  //     });
+  // }
 
-    const metas = this.getMetasIndicadorAvulsoGeral().value;
-
-    if (!metas || metas.length === 0) {
-      this.formIndicador
-        .get('basedeReferencia')
-        ?.setValue('');
-      return;
-    }
-
-    let maiorMeta = null;
-
-    for (const meta of metas) {
-      if (!maiorMeta || meta.anoMeta > maiorMeta.anoMeta) {
-        maiorMeta = meta;
-      }
-    }
-
-    const valor = maiorMeta?.valorMeta
-      ? `${maiorMeta.valorMeta} (${maiorMeta.anoMeta})`
-      : '';
-
-    this.formIndicador
-      .get('basedeReferencia')
-      ?.setValue(valor, { emitEvent: false });
-
-  }
+  // private atualizarBaseReferencia(): void {
+  //   const metas = this.getMetasIndicadorAvulsoGeral().value;
+  //   if (!metas || metas.length === 0) {
+  //     this.formIndicador
+  //       .get('basedeReferencia')
+  //       ?.setValue('');
+  //     return;
+  //   }
+  //   let maiorMeta = null;
+  //   for (const meta of metas) {
+  //     if (!maiorMeta || meta.anoMeta > maiorMeta.anoMeta) {
+  //       maiorMeta = meta;
+  //     }
+  //   }
+  //   const valor = maiorMeta?.valorMeta
+  //     ? `${maiorMeta.valorMeta} (${maiorMeta.anoMeta})`
+  //     : '';
+  //   this.formIndicador
+  //     .get('basedeReferencia')
+  //     ?.setValue(valor, { emitEvent: false });
+  // }
 
 }

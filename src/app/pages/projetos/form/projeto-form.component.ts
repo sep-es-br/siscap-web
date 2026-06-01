@@ -1698,11 +1698,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             unidadeMedida: indicador.unidadeMedida,
             fonteIndicador: indicador.fonteIndicador,
             medidoPor: indicador.medidoPor,
-            baseDeReferencia: indicador.basedeReferencia,
-            metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
+            baseDeReferencia: indicador.basedeReferencia
+            //metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
           },
-          metasProjeto: indicador.metasIndicadorAvulsoProjeto,
-          metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
+          metasProjeto: indicador.metasIndicadorAvulsoProjeto
+          //metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
         }));
 
       const temIndicador =
@@ -1757,7 +1757,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
 
-      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho)
