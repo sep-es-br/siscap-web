@@ -8,7 +8,6 @@ import { TemplatesModule } from '../../templates/templates.module';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { ToastService } from '../../../core/services/toast/toast.service';
-import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
 import { IndicadoresFormType, MetaIndicadorExternoFormType } from '../../../core/types/form/indicadores-form.type';
 
 @Component({
@@ -76,10 +75,8 @@ export class IndicadoresFormComponent {
       descricaoMeta: this._nnfb.control(null, [Validators.required]),
       idStatus: this._nnfb.control(TipoStatusEnum.Ativo,),
       idIndicadorCatalogoExterno: this._nnfb.control(null),
-      metasIndicadorExterno: this._nnfb.array<FormGroup<MetaIndicadorExternoFormType>>([])
+      metasIndicadorProjeto: this._nnfb.array<FormGroup<MetaIndicadorExternoFormType>>([])
     });
-
-    // console.log('Adicionando novo indicador:', novoIndicador.value);
 
     this.indicadoresFormArray.push(novoIndicador);
 

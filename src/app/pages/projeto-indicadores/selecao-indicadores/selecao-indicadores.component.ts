@@ -182,6 +182,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   private montarIndicadorSelecionado(indicador: any): any {
+    
     if (indicador.avulso) {
       return {
         ...indicador,
@@ -189,15 +190,12 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
         fonteIndicador: indicador.fonteIndicador,
         unidadeMedida: indicador.unidadeMedida,
         basedeReferencia: indicador.basedeReferencia,
-
         metasIndicador: indicador.metasIndicador
           ?? indicador.metasIndicadorAvulsoGeral
           ?? [],
-
         metasIndicadorProjeto: indicador.metasIndicadorProjeto
           ?? indicador.metasIndicadorAvulsoProjeto
           ?? [],
-
         avulso: true
       };
     }

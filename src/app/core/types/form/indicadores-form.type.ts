@@ -7,7 +7,7 @@ export type IndicadoresFormType = {
   descricaoMeta: FormControl<string | null>;
   idStatus: FormControl<number>;
   idIndicadorCatalogoExterno: FormControl<number | null>;
-  metasIndicadorExterno: FormArray<FormGroup<MetaIndicadorExternoFormType>>;
+  metasIndicadorProjeto: FormArray<FormGroup<MetaIndicadorExternoFormType>>;
 };
 
 export type IndicadoresFormTypeValue = Array<
@@ -18,12 +18,12 @@ export type IndicadoresFormTypeValue = Array<
     descricaoMeta: string | null;
     idStatus: number;
     idIndicadorCatalogoExterno: number | null;
-    metasIndicadorExterno: FormArray<FormGroup<MetaIndicadorExternoFormType>>;
+    metasIndicadorProjeto: FormArray<FormGroup<MetaIndicadorExternoFormType>>;
   }>
 >;
 
 export type MetaIndicadorExternoFormType = {
-  idFato: FormControl<number | null>;
+  id: FormControl<number | null>;
   anoMeta: FormControl<number | null>;
   valorMeta: FormControl<string | null>;
 };

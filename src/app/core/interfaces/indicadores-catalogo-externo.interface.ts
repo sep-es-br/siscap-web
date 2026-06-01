@@ -55,7 +55,7 @@ export interface IOdsIndicadorExterno {
 }
 
 export interface IMetaIndicador {
-  idFato: number,
+  id: number,
   anoMeta: number,
   valorMeta: string
 }

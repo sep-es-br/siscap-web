@@ -284,7 +284,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     public indicadoresService: IndicadoresService,
     public acoesService: AcoesService,
     private route: ActivatedRoute,
-    private router: Router,
     private cdr: ChangeDetectorRef,
     public parecerService: ParecerService,
   ) {
@@ -364,7 +363,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+        console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -419,7 +418,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this.indicadoresProjeto = projetoModel.indicadoresProjeto;
 
-          // console.log('Ods´s do projeto carregado para edição:', projetoModel.odsProjeto );
+          // console.log('Indicadores do projeto carregados:', this.indicadoresProjeto);
 
           const caminhoFeliz = [
             StatusProjetoEnum.Em_Elaboracao,
@@ -1676,8 +1675,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
           idIndicadorExterno: indicador.idIndicadorExterno,
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
-            idFato: meta.idFato,
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map( meta => ({
+            id: meta.id,
             anoMeta: meta.anoMeta,
             valorMeta: meta.valorMeta
           })) ?? []

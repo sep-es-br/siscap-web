@@ -14,24 +14,15 @@
     </p-button>
   </div>
 
-  <app-filtro-indicadores *ngIf="showModal" 
-    [gestao]="gestao" 
-    [desafios]="gestao?.desafios || []"
-    [filtroAtual]="currentFilter"
-    (apply)="onApply($event)" 
-    (close)="showModal = false" 
+  <app-filtro-indicadores *ngIf="showModal" [gestao]="gestao" [desafios]="gestao?.desafios || []"
+    [filtroAtual]="currentFilter" (apply)="onApply($event)" (close)="showModal = false"
     [somenteLeitura]="somenteLeitura"></app-filtro-indicadores>
 
 </div>
 
-<app-selecao-indicadores 
-  [indicadores]="indicadoresBI" 
-  [gestao]="gestao" 
-  [form]="formProjeto"
-  [selecionados]="indicadoresSelecionados" 
-  [loading]="loading" 
-  [somenteLeitura]="somenteLeitura"
-  (selecionadosChange)="onSelecaoChange($event)" >
+<app-selecao-indicadores [indicadores]="indicadoresBI" [gestao]="gestao" [form]="formProjeto"
+  [selecionados]="indicadoresSelecionados" [loading]="loading" [somenteLeitura]="somenteLeitura"
+  (selecionadosChange)="onSelecaoChange($event)">
 </app-selecao-indicadores>
 
 <!-- CARD: INDICADORES SELECIONADOS -->
@@ -51,7 +42,19 @@
           <div class="indicator-header"
             style="border-bottom: 2px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px;">
             <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">
-              {{item.nomeIndicador }}</div>
+              {{item.nomeIndicador }}
+
+              <span *ngIf="item.avulso" style="margin-left:8px;
+               padding:2px 8px;
+               border-radius:12px;
+               background:#f07613;
+               color:#f1f5f9;
+               font-size:11px;
+               font-weight:700;">
+                INDICADOR DE PROJETO
+              </span>
+
+            </div>
             <button type="button" class="remove-indicator-btn" aria-label="Remover indicador"
               (click)="removeIndicator(item, false)" [disabled]="somenteLeitura">✖</button>
           </div>
@@ -59,37 +62,67 @@
           <div class="indicator-details">
 
             <div *ngIf="item.avulso" class="detail-row" style="margin-bottom: 8px;"><span class="detail-label"
-              style="color: #1a6fc4; font-weight: 800;">FÓRMULA / METODOLOGIA DE CÁLCULO:</span><span class="detail-value"
-              style="font-weight: 600;">{{item.formulaCalculo }}</span></div>
+                style="color: #1a6fc4; font-weight: 800;">FÓRMULA / METODOLOGIA DE CÁLCULO:</span><span
+                class="detail-value" style="font-weight: 600;">{{item.formulaCalculo }}</span></div>
 
             <div class="detail-row" style="margin-bottom: 8px;"><span class="detail-label"
                 style="color: #1a6fc4; font-weight: 800;">FONTE:</span><span class="detail-value"
                 style="font-weight: 600;">{{item.medidoPor }}</span></div>
 
             <div class="detail-row" style="margin-bottom: 15px;">
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE MEDIDA:</span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE
+                MEDIDA:</span>
               <span class="detail-value" style="font-weight: 600; margin-right:24px;">{{item.unidadeMedida}}</span>
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE REFERÊNCIA:</span>
-              <span class="detail-value" style="font-weight: 600;"> {{ item?.maiorAnoInidicador }} ({{item?.maiorMetaIndicador }}) </span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE
+                REFERÊNCIA:</span>
+              <span class="detail-value" style="font-weight: 600;"> {{ item?.maiorAnoInidicador }}
+                ({{item?.maiorMetaIndicador }}) </span>
             </div>
 
-            <!-- <span class="meta-section-label"
-              style="color: #1a6fc4; font-weight: 800; margin-top: 15px; margin-bottom: 10px;">META:</span>
-            <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-              <div class="mindicador-selecionado" *ngFor="let metaItem of item.metasIndicador">
-                <div class="meta-item"
-                  style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                  <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;"> {{
-                    metaItem.anoMeta }}</span>
-                  <span style="font-weight: 700; color: var(--navy-dark); font-size: 14px;">{{ metaItem.valorMeta
-                    }}</span>
+            <!-- <span *ngIf="!item.avulso" class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META:</span>
+            <div [formGroup]="getIndicadorForm(i)">
+              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;" formArrayName="metasIndicadorProjeto">
+                <div class="mindicador-selecionado" *ngFor="let meta of getMetasIndicadorBi(i).controls; let j = index"
+                  [formGroupName]="j">
+                  <div class="meta-item"
+                    style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                    <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{
+                      meta.get('anoMeta')?.value }}</span>
+                    <input type="number" class="meta-value-input" formControlName="valorMeta">
+                  </div>
                 </div>
               </div>
             </div> -->
 
-            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO PROJETO:</span>
+            <span *ngIf="!item.avulso" class="meta-section-label"
+              style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">
+              META:
+            </span>
+
+            <div *ngIf="!item.avulso" class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+
+              <div class="mindicador-selecionado" *ngFor="let meta of getMetasIndicadorBi(i); let j = index">
+
+                <div class="meta-item"
+                  style="background: #f0f7ff; border: 1px solid #dbeafe; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+
+                  <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">
+                    {{ meta.anoMeta }}
+                  </span>
+
+                  <span class="meta-value-input">
+                    {{ meta.valorMeta }}
+                  </span>
+
+                </div>
+              </div>
+            </div>
+
+            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO
+              PROJETO:</span>
             <div [formGroup]="getIndicadorForm(i)">
-              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;" formArrayName="metasIndicadorProjeto">
+              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;"
+                formArrayName="metasIndicadorProjeto">
                 <div class="mindicador-selecionado" *ngFor="let meta of getMetas(i).controls; let j = index"
                   [formGroupName]="j">
                   <div class="meta-item"

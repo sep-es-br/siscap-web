@@ -11,7 +11,7 @@ export class IndicadorModel implements IIndicadores {
   
   public idIndicadorExterno: number | null = null;
   public metasIndicadorProjeto: Array<{
-    idFato: number | null;
+    id: number | null;
     anoMeta: number | null;
     valorMeta: string | null;
   }>;
