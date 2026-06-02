@@ -14,7 +14,8 @@
                 <div style="font-size:12px; color:var(--gray-text);">ODS identificadas a partir dos indicadores
                     selecionados. Clique para adicionar à seleção.</div>
             </div>
-            <div style="position: relative; display: flex; align-items: center; justify-content: flex-end;">
+
+            <div class="search-container" [class.expanded]="searchVisible">
                 <span class="p-input-icon-left p-input-icon-right w-100">
                     <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
                     <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
@@ -110,7 +111,7 @@
     </div>
 
     <div class="navigation-buttons" style="margin-top:20px;">
-        <button class="nav-btn" (click)="voltarParaIndicadores()">←</button>
+        <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);" (click)="voltarParaIndicadores()">←</button>
         <!-- <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);" (click)="concluirDIC()">→</button> -->
     </div>
 

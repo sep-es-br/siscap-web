@@ -201,12 +201,11 @@ export class IndicadorOdsComponent implements OnInit {
     this.atualizarOdsSugeridas();
   }
 
-  private buscarOdsProjetoAtual(odsId: number): any | null {
-    const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
-
-    return odsProjetoArray?.getRawValue()
-      ?.find((ods: any) => ods.odsId === odsId) ?? null;
-  }
+  // private buscarOdsProjetoAtual(odsId: number): any | null {
+  //   const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
+  //   return odsProjetoArray?.getRawValue()
+  //     ?.find((ods: any) => ods.odsId === odsId) ?? null;
+  // }
 
   private montarOdsEscolhida(
     odsGestao: IOdsGestao,
@@ -287,19 +286,16 @@ export class IndicadorOdsComponent implements OnInit {
   }
 
   filtrarOds(): void {
-
     const termo = this.filtroTexto
       ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       : '';
-
-    this.odsTodas = this.odsTodas.filter(o => {
+    this.ods = this.odsTodas.filter(o => {
       const nomeNormalizado = o.nomeOds
         ?.toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
       return nomeNormalizado?.includes(termo);
     });
-
   }
 
 

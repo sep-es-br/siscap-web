@@ -70,41 +70,24 @@
                 style="font-weight: 600;">{{item.medidoPor }}</span></div>
 
             <div class="detail-row" style="margin-bottom: 15px;">
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE
-                MEDIDA:</span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE MEDIDA:</span>
               <span class="detail-value" style="font-weight: 600; margin-right:24px;">{{item.unidadeMedida}}</span>
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE
-                REFERÊNCIA:</span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE REFERÊNCIA:</span>
               <span class="detail-value" style="font-weight: 600;"> {{ item?.maiorAnoInidicador }}
                 ({{item?.maiorMetaIndicador }}) </span>
             </div>
 
-            <span *ngIf="!item.avulso" class="meta-section-label"
-              style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">
-              META:
-            </span>
-
+            <span *ngIf="!item.avulso" class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META:</span>
             <div *ngIf="!item.avulso" class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-
               <div class="mindicador-selecionado" *ngFor="let meta of getMetasIndicadorBi(i); let j = index">
-
-                <div class="meta-item"
-                  style="background: #f0f7ff; border: 1px solid #dbeafe; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-
-                  <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">
-                    {{ meta.anoMeta }}
-                  </span>
-
-                  <span class="meta-value-input">
-                    {{ meta.valorMeta }}
-                  </span>
-
+                <div class="meta-item" style="background: #f0f7ff; border: 1px solid #dbeafe; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                  <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{ meta.anoMeta }}</span>
+                  <span style="font-weight: 700; color: var(--navy-dark); font-size: 14px;">{{ meta.valorMeta }}</span>
                 </div>
               </div>
             </div>
 
-            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO
-              PROJETO:</span>
+            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO PROJETO:</span>
             <div [formGroup]="getIndicadorForm(i)">
               <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;"
                 formArrayName="metasIndicadorProjeto">
@@ -131,7 +114,7 @@
 
   </div>
   <div class="navigation-buttons">
-    <button class="nav-btn" (click)="voltarParaDic()">←</button>
-    <button class="nav-btn" id="avancarBtn" (click)="irParaODS()">→</button>
+    <button class="nav-btn" id="voltarBtn" style="background:var(--blue); color:white; border-color:var(--blue);" (click)="voltarParaDic()">←</button>
+    <button class="nav-btn" id="avancarBtn" style="background:var(--blue); color:white; border-color:var(--blue);" (click)="irParaODS()">→</button>
   </div>
 </div>

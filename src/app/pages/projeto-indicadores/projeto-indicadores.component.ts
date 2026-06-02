@@ -79,22 +79,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     private fb: FormBuilder,
     private readonly _toastService: ToastService,
   ) { }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['formProjeto'] && this.formProjeto) {
-      // console.log(
-      //   'FORM PAI RECEBIDO NO @Input:',
-      //   JSON.parse(JSON.stringify(this.formProjeto.getRawValue()))
-      // );
-
-      // console.log(
-      //   'INDICADORES RECEBIDOS DO FORM PAI:',
-      //   JSON.parse(JSON.stringify(
-      //     this.formProjeto.get('indicadoresProjeto')?.getRawValue()
-      //   )));
-    }
-  }
-
+ 
   ngOnInit(): void {
 
     this.init();
@@ -112,6 +97,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
       .subscribe((indicadores) => {
         this.indicadoresBI = indicadores;
         this.indicadoresFiltrados = indicadores;
+        this.loading = false;
       });
 
   }
@@ -359,16 +345,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
     }
 
     formArray.updateValueAndValidity({ emitEvent: true });
-
-    console.log('Selecionados:', this.indicadoresSelecionados.map(i => i.idIndicador));
-
-    console.log(
-      'FormArray:',
-      formArray.getRawValue().map((i: any) => ({
-        idIndicadorExterno: i.idIndicadorExterno,
-        metas: i.metasIndicadorProjeto
-      }))
-    );
 
   }
 
