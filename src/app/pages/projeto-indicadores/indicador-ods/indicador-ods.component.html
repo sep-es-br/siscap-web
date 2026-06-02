@@ -15,23 +15,15 @@
                     selecionados. Clique para adicionar à seleção.</div>
             </div>
             <div style="position: relative; display: flex; align-items: center; justify-content: flex-end;">
-                <button id="odsSearchToggleBtn" class="nav-btn" type="button" onclick="toggleOdsSuggestedSearch()"
-                    style="min-width: auto; width: 40px; height: 40px; padding: 0; font-size: 18px; border-radius: 50%; 
-                    background: #f1f5f9; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">🔍</button>
-                <div id="odsSearchWrapper" style="display:none; position:absolute; right: 0; z-index: 10;">
-                    <div
-                        style="display: flex; align-items: center; border: 1px solid var(--blue); border-radius: 20px; 
-                        background: white; width: 320px; padding: 4px 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-                        <span style="color: var(--blue); font-size: 14px; margin-right: 8px;">🔍</span>
-                        <input id="odsSuggestedSearchInput" type="text" placeholder="Nome da ODS" autocomplete="off"
-                            style="border: none; outline: none; width: 100%; font-size: 13px; color: var(--navy-dark); background: transparent;"
-                            oninput="handleOdsSuggestedSearch(this.value)">
-                        <span onclick="closeOdsSuggestedSearch()"
-                            style="cursor: pointer; font-size: 12px; color: var(--gray-text); margin-left: 8px; padding: 4px;"
-                            title="Fechar Busca">✖</span>
-                    </div>
-                </div>
+                <span class="p-input-icon-left p-input-icon-right w-100">
+                    <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
+                    <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
+                    class="w-100 search-input" placeholder="Nome da ODS" [(ngModel)]="filtroTexto"
+                    (ngModelChange)="filtrarOds()" [disabled]="somenteLeitura"/>
+                    <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()"></i>
+                </span>
             </div>
+
         </div>
         
         <div class="ods-suggested-row" id="odsSuggestedRow">

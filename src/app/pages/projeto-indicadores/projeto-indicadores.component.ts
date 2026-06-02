@@ -82,17 +82,16 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['formProjeto'] && this.formProjeto) {
-      console.log(
-        'FORM PAI RECEBIDO NO @Input:',
-        JSON.parse(JSON.stringify(this.formProjeto.getRawValue()))
-      );
+      // console.log(
+      //   'FORM PAI RECEBIDO NO @Input:',
+      //   JSON.parse(JSON.stringify(this.formProjeto.getRawValue()))
+      // );
 
-      console.log(
-        'INDICADORES RECEBIDOS DO FORM PAI:',
-        JSON.parse(JSON.stringify(
-          this.formProjeto.get('indicadoresProjeto')?.getRawValue()
-        ))
-      );
+      // console.log(
+      //   'INDICADORES RECEBIDOS DO FORM PAI:',
+      //   JSON.parse(JSON.stringify(
+      //     this.formProjeto.get('indicadoresProjeto')?.getRawValue()
+      //   )));
     }
   }
 
@@ -553,7 +552,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     );
 
     return indicadorBi?.metasIndicador ?? [];
-    
+
   }
 
 }

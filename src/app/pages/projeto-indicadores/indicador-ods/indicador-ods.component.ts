@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { OdsService } from '../../../core/services/ods/ods.service';
 import { IOdsGestao } from '../../../core/interfaces/ods-gestao.interface';
+import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 
 declare var bootstrap: any;
 
@@ -28,6 +29,9 @@ export class IndicadorOdsComponent implements OnInit {
   odsTodas: IOdsGestao[] = [];
   ods: IOdsGestao[] = []; // sugeridas visíveis na tela
   odsEscolhidas: IOdsIndicadorExterno[] = [];
+  searchInput: any;
+  filtroTexto: string | undefined = '';
+  searchVisible: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -103,19 +107,6 @@ export class IndicadorOdsComponent implements OnInit {
 
   }
 
-  // removerOds(ods: IOdsIndicadorExterno): void {
-  //   this.odsEscolhidas = this.odsEscolhidas
-  //     .filter(o => o.odsId !== ods.odsId);
-  //   const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
-  //   const index = odsProjetoArray.controls.findIndex(control =>
-  //     control.get('odsId')?.value === ods.odsId
-  //   );
-  //   if (index >= 0) {
-  //     odsProjetoArray.removeAt(index);
-  //   }
-  //   this.atualizarOdsSugeridas();
-  // }
-
   removerOds(ods: IOdsIndicadorExterno): void {
     this.odsEscolhidas = this.odsEscolhidas
       .filter(o => o.odsId !== ods.odsId);
@@ -157,18 +148,42 @@ export class IndicadorOdsComponent implements OnInit {
 
   private sincronizarOdsComIndicadores(): void {
 
+    const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
+    const odsProjetoAtual = odsProjetoArray?.getRawValue() ?? [];
+
+    if (this.isModoEdicao && odsProjetoAtual.length > 0) {
+      this.odsEscolhidas = odsProjetoAtual.map((ods: any) => ({
+        idOdsProjeto: ods.idOdsProjeto ?? null,
+        idOdsIndicadorExterno: ods.idOdsIndicadorExterno ?? null,
+        idOdsExterno: ods.idOdsExterno ?? ods.odsId,
+        odsId: ods.odsId,
+        odsOrdem: ods.odsOrdem,
+        odsNome: ods.odsNome,
+        odsDescricao: ods.odsDescricao,
+        odsCor: ods.odsCor,
+        indicadoresVinculados: ods.indicadoresVinculados ?? []
+      }));
+      this.atualizarOdsSugeridas();
+      return;
+    }
+
     const indicadores = this.formProjeto.get('indicadoresProjeto')?.value ?? [];
     const odsPorId = new Map<number, IOdsIndicadorExterno>();
 
     indicadores.forEach((indicador: IIndicadoresCatalogoExterno) => {
       const odsDoIndicador = indicador.ods ?? [];
+
       odsDoIndicador.forEach((odsIndicador: IOdsIndicadorExterno) => {
         const odsId = odsIndicador.odsId;
+
         const odsCatalogo = this.odsTodas.find(o => o.odsId === odsId);
+
         if (!odsCatalogo) {
           return;
         }
+
         const existente = odsPorId.get(odsId);
+
         if (existente) {
           existente.indicadoresVinculados.push(indicador);
         } else {
@@ -182,10 +197,15 @@ export class IndicadorOdsComponent implements OnInit {
 
     this.odsEscolhidas = Array.from(odsPorId.values());
 
-    // this.formProjeto.get('odsProjeto')?.setValue(this.odsEscolhidas);
-    this.odsEscolhidas = Array.from(odsPorId.values());
     this.atualizarFormOdsProjeto();
     this.atualizarOdsSugeridas();
+  }
+
+  private buscarOdsProjetoAtual(odsId: number): any | null {
+    const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
+
+    return odsProjetoArray?.getRawValue()
+      ?.find((ods: any) => ods.odsId === odsId) ?? null;
   }
 
   private montarOdsEscolhida(
@@ -193,6 +213,7 @@ export class IndicadorOdsComponent implements OnInit {
     indicadoresVinculados: IIndicadoresCatalogoExterno[]
   ): IOdsIndicadorExterno {
     return {
+      idOdsProjeto: null as any,
       idOdsIndicadorExterno: null as any,
       idOdsExterno: odsGestao.odsId,
       odsId: odsGestao.odsId,
@@ -206,11 +227,13 @@ export class IndicadorOdsComponent implements OnInit {
 
   private atualizarFormOdsProjeto(): void {
     const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
-    odsProjetoArray.clear();
+    while (odsProjetoArray.length) {
+      odsProjetoArray.removeAt(0, { emitEvent: false });
+    }
     this.odsEscolhidas.forEach(ods => {
       odsProjetoArray.push(
         this.fb.group({
-          idOdsProjeto: [ods.odsId ?? null],
+          idOdsProjeto: [ods.idOdsProjeto ?? null],
           odsId: [ods.odsId],
           odsOrdem: [ods.odsOrdem],
           odsNome: [ods.odsNome],
@@ -231,7 +254,66 @@ export class IndicadorOdsComponent implements OnInit {
   }
 
   concluirDIC() {
-    
   }
+
+  limparBusca(): void {
+    if (this.somenteLeitura) {
+      return;
+    }
+    this.filtroTexto = '';
+    this.filtrarOds();
+    this.searchInput?.nativeElement.focus();
+  }
+
+  get somenteLeitura(): boolean {
+    return !this.podeEditarOds;
+  }
+
+  get podeEditarOds(): boolean {
+
+    const status = this.statusProjeto;
+
+    const isEmElaboracao =
+      status === StatusProjetoEnum.Em_Elaboracao;
+
+    const isEmAnalise =
+      status === StatusProjetoEnum.Em_Analise;
+
+    const podeEditar =
+      isEmElaboracao || (isEmAnalise && (this.isSubcap ?? false));
+
+    return podeEditar;
+
+  }
+
+  filtrarOds(): void {
+
+    const termo = this.filtroTexto
+      ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      : '';
+
+    this.odsTodas = this.odsTodas.filter(o => {
+      const nomeNormalizado = o.nomeOds
+        ?.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      return nomeNormalizado?.includes(termo);
+    });
+
+  }
+
+
+  toggleSearch(): void {
+    if (this.somenteLeitura) {
+      return;
+    }
+    this.searchVisible = !this.searchVisible;
+    if (this.searchVisible) {
+      setTimeout(() => {
+        this.searchInput?.nativeElement.focus();
+      });
+    }
+  }
+
 
 }

@@ -79,21 +79,6 @@
                 ({{item?.maiorMetaIndicador }}) </span>
             </div>
 
-            <!-- <span *ngIf="!item.avulso" class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META:</span>
-            <div [formGroup]="getIndicadorForm(i)">
-              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;" formArrayName="metasIndicadorProjeto">
-                <div class="mindicador-selecionado" *ngFor="let meta of getMetasIndicadorBi(i).controls; let j = index"
-                  [formGroupName]="j">
-                  <div class="meta-item"
-                    style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                    <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{
-                      meta.get('anoMeta')?.value }}</span>
-                    <input type="number" class="meta-value-input" formControlName="valorMeta">
-                  </div>
-                </div>
-              </div>
-            </div> -->
-
             <span *ngIf="!item.avulso" class="meta-section-label"
               style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">
               META:

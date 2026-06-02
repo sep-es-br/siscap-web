@@ -44,6 +44,7 @@ export interface IIndicadoresCatalogoExterno {
 }
 
 export interface IOdsIndicadorExterno {
+  idOdsProjeto: number | null,
   idOdsIndicadorExterno: number,
   idOdsExterno: number,
   odsId: number,

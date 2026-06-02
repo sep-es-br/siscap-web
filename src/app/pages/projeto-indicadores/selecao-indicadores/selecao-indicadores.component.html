@@ -2,24 +2,13 @@
 
   <div class="card-header-main">
     <p class="lista-label">SELECIONE O INDICADOR ESTRATÉGICO</p>
-    <!-- <div class="search-container" [class.expanded]="searchVisible">
-      <span class="p-input-icon-left p-input-icon-right w-100">
-        <i class="pi pi-search search-icon cursor-pointer" (click)="!somenteLeitura && searchVisible = !searchVisible"></i>
-        <input [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text" class="w-100 search-input"
-          placeholder="Nome do indicador" [(ngModel)]="filtroTexto" (ngModelChange)="filtrarIndicadores()" [disabled]="somenteLeitura"/>
-        <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="!somenteLeitura && filtroTexto=''; filtrarIndicadores()">
-        </i>
-      </span>
-    </div> -->
     <div class="search-container" [class.expanded]="searchVisible">
       <span class="p-input-icon-left p-input-icon-right w-100">
-        <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()">
-        </i>
+        <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
         <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
           class="w-100 search-input" placeholder="Nome do indicador" [(ngModel)]="filtroTexto"
           (ngModelChange)="filtrarIndicadores()" [disabled]="somenteLeitura" />
-        <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()">
-        </i>
+        <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()"></i>
       </span>
     </div>
   </div>
