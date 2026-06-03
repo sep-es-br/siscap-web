@@ -195,6 +195,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
 
+    console.log('Indicadores selecionados:', novos);
+
     this.indicadoresSelecionados = novos.map(item => ({
       ...item,
       metasIndicadorProjeto:
@@ -249,6 +251,9 @@ export class ProjetoIndicadoresComponent implements OnInit {
   private syncComFormulario(): void {
 
     if (!this.formProjeto) return;
+
+    console.log('Sincronizando indicadores selecionados com formulário...');
+    console.log('Form do pai:', this.formProjeto );
 
     const indicadoresProjeto =
       this.formProjeto.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];

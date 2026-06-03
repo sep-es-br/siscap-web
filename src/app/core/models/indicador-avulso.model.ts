@@ -1,9 +1,8 @@
-import { IEquipe } from '../interfaces/equipe.interface';
 import { IIndicadorAvulso } from '../interfaces/indicador-avulso.interface';
-import { IIndicadores } from '../interfaces/indicadores.interface';
 
 export class IndicadorAvulsoModel implements IIndicadorAvulso {
 
+  public id: number;
   public idIndicador: number;
   public nomeIndicador: string | null;
   public formulaCalculo: string | null;
@@ -12,18 +11,13 @@ export class IndicadorAvulsoModel implements IIndicadorAvulso {
   public unidadeMedida: string | null;
   public basedeReferencia: string | null;
 
-  // public metasIndicadorAvulsoGeral: Array<{
-  //   idFato: number | null;
-  //   anoMeta: number | null;
-  //   valorMeta: string | null;
-  // }>;
-
-  public metasIndicadorAvulsoProjeto: Array<{
+  public metasIndicadorProjeto: Array<{
     anoMeta: number | null;
     valorMeta: string | null;
   }>;
 
   constructor(indicadores?: IIndicadorAvulso) {
+    this.id = indicadores?.id ?? 0;
     this.idIndicador = indicadores?.idIndicador ?? 0;
     this.nomeIndicador = indicadores?.nomeIndicador ?? null;
     this.formulaCalculo = indicadores?.formulaCalculo ?? null;
@@ -31,8 +25,7 @@ export class IndicadorAvulsoModel implements IIndicadorAvulso {
     this.medidoPor = indicadores?.medidoPor ?? null;
     this.unidadeMedida = indicadores?.unidadeMedida ?? null;
     this.basedeReferencia = indicadores?.basedeReferencia ?? null;
-    // this.metasIndicadorAvulsoGeral = indicadores?.metasIndicadorAvulsoGeral ?? [];
-    this.metasIndicadorAvulsoProjeto = indicadores?.metasIndicadorAvulsoProjeto ?? [];
+    this.metasIndicadorProjeto = indicadores?.metasIndicadorProjeto ?? [];
   }
   
 

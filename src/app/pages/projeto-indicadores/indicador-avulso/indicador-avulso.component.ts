@@ -51,8 +51,8 @@ export class IndicadorAvulsoComponent {
       unidadeMedida: ['', Validators.required],
       basedeReferencia: ['', Validators.required],
       polaridade: [''],
-      // metasIndicadorAvulsoGeral: this.fb.array([]),
-      metasIndicadorAvulsoProjeto: this.fb.array([]),
+      metasIndicador: this.fb.array([]),
+      metasIndicadorProjeto: this.fb.array([]),
       maiorAnoInidicador: [null],
       maiorMetaIndicador: ['']
     });
@@ -94,7 +94,7 @@ export class IndicadorAvulsoComponent {
   // }
 
   getMetasProjeto(): FormArray {
-    return this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
+    return this.formIndicador.get('metasIndicadorProjeto') as FormArray;
   }
 
   salvar(): void {
@@ -145,7 +145,7 @@ export class IndicadorAvulsoComponent {
   }
 
   get metasIndicadorAvulsoProjeto(): FormArray {
-    return this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
+    return this.formIndicador.get('metasIndicadorProjeto') as FormArray;
   }
 
   getControl(controlName: string): AbstractControl {
@@ -157,7 +157,7 @@ export class IndicadorAvulsoComponent {
   }
 
   getMetaProjetoControl(index: number): AbstractControl {
-    const formArray = this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
+    const formArray = this.formIndicador.get('metasIndicadorProjeto') as FormArray;
     return formArray.at(index).get('valorMeta') as AbstractControl;
   }
 

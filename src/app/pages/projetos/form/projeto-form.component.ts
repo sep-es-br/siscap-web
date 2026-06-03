@@ -226,6 +226,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public processoEdocsProtocolo: string = '';
 
   public indicadoresProjeto: IIndicadores[] = [];
+  public indicadoresAvulsosProjeto: IIndicadores[] = [];
 
   private camposObrigatoriosDic = [
     'sigla',
@@ -1682,7 +1683,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           })) ?? []
         }));
 
-      //console.log('INDICADORES PROJETO PAYLOAD:', indicadoresProjetoPayload);
+      // console.log('INDICADORES PROJETO PAYLOAD:', indicadoresProjetoPayload);
 
       const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
         .indicadoresAvulsosProjeto
@@ -1698,10 +1699,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             fonteIndicador: indicador.fonteIndicador,
             medidoPor: indicador.medidoPor,
             baseDeReferencia: indicador.basedeReferencia
-            //metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
           },
-          metasProjeto: indicador.metasIndicadorAvulsoProjeto
-          //metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto
         }));
 
       const temIndicador =
@@ -1756,7 +1755,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
 
-      console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho)

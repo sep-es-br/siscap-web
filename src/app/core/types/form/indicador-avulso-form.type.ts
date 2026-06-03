@@ -7,7 +7,6 @@ export type IndicadorAvulsoFormType = {
   medidoPor: FormControl<string | null>;
   unidadeMedida: FormControl<string | null>;
   basedeReferencia: FormControl<string | null>;
-  metasIndicador: FormArray<FormGroup<MetaIndicadorAvulsoFormType>>;
   metasIndicadorProjeto: FormArray<FormGroup<MetaIndicadorAvulsoFormType>>;
 };
 
@@ -19,7 +18,6 @@ export type IndicadorAvulsoFormTypeValue = Array<
     medidoPor: string | null;
     unidadeMedida: string | null;
     basedeReferencia: string | null;
-    metasIndicador: FormArray<FormGroup<MetaIndicadorAvulsoFormType>>;
     metasIndicadorProjeto: FormArray<FormGroup<MetaIndicadorAvulsoFormType>>;
   }>
 >;

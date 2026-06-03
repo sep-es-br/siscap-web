@@ -156,8 +156,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
         fonteIndicador: indicador.fonteIndicador,
         unidadeMedida: indicador.unidadeMedida,
         basedeReferencia: indicador.basedeReferencia,
-        metasIndicador: indicador.metasIndicadorAvulsoGeral,
-        metasIndicadorProjeto: indicador.metasIndicadorAvulsoProjeto,
+        metasIndicadorProjeto: indicador.metasIndicadorProjeto,
         avulso: true
       }
     ];
@@ -194,7 +193,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
           ?? indicador.metasIndicadorAvulsoGeral
           ?? [],
         metasIndicadorProjeto: indicador.metasIndicadorProjeto
-          ?? indicador.metasIndicadorAvulsoProjeto
+          ?? indicador.metasIndicadorProjeto
           ?? [],
         avulso: true
       };
