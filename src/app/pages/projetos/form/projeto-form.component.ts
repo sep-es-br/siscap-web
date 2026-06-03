@@ -226,6 +226,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public processoEdocsProtocolo: string = '';
 
   public indicadoresProjeto: IIndicadores[] = [];
+  public indicadoresAvulsosProjeto: IIndicadores[] = [];
 
   private camposObrigatoriosDic = [
     'sigla',
@@ -322,7 +323,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.tiposPapelOpcoes = response;
           const idsPermitidos = [
             TipoPapelEnum.Gerente_de_Projeto,
-            // TipoPapelEnum.Redator,
             TipoPapelEnum.Membro_do_Projeto,
           ];
           this.tiposPapelOpcoesVisiveis = response.filter((papel) =>
@@ -363,7 +363,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+        console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -418,7 +418,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this.indicadoresProjeto = projetoModel.indicadoresProjeto;
 
-          // console.log('Indicadores do projeto carregados:', this.indicadoresProjeto);
+          console.log('Indicadores avulsos do projeto da api CONVERTIDO :', projetoModel.indicadoresAvulsosProjeto );
 
           const caminhoFeliz = [
             StatusProjetoEnum.Em_Elaboracao,
@@ -1682,8 +1682,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           })) ?? []
         }));
 
-      //console.log('INDICADORES PROJETO PAYLOAD:', indicadoresProjetoPayload);
-
       const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
         .indicadoresAvulsosProjeto
         .filter((indicador: IIndicadorAvulso) =>
@@ -1698,10 +1696,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             fonteIndicador: indicador.fonteIndicador,
             medidoPor: indicador.medidoPor,
             baseDeReferencia: indicador.basedeReferencia
-            //metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
           },
-          metasProjeto: indicador.metasIndicadorAvulsoProjeto
-          //metasIndicadorAvulsoGeral: indicador.metasIndicadorAvulsoGeral
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto
         }));
 
       const temIndicador =
@@ -1732,8 +1728,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
 
-      //console.log('FORM VALUE RAW:', this.projetoForm.getRawValue());
-
       const odsProjetoPayload = this.projetoForm.getRawValue()
         .odsProjeto
         ?.map((ods: any) => ({
@@ -1756,7 +1750,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
 
-      console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho)

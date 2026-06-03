@@ -94,6 +94,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.acoesProjeto = this.construirAcoesProjeto(
       projetoForm?.acoesProjeto
     );
+
     this.nomeagente = projetoForm?.nomeagente ?? '';
     this.pecasPlanejamento = projetoForm?.pecasPlanejamento ?? '';
     this.enviarProjetoGestor = projetoForm?.enviarProjetoGestor ?? false;
@@ -114,10 +115,13 @@ export class ProjetoFormModel implements IProjetoForm {
     this.subProponente = projetoForm?.subProponente ?? '';
     this.nomeProponente = projetoForm?.nomeProponente ?? '';
     this.historico = new Array();
+
     this.indicadoresAvulsosProjeto = this.construirIndicadoresAvulsosProjeto(
       projetoForm?.indicadoresAvulsosProjeto
     );
+
     this.odsProjeto = projetoForm?.odsProjeto ?? [];
+
   }
 
   private construirRateioModelArray(
@@ -152,6 +156,7 @@ export class ProjetoFormModel implements IProjetoForm {
     if (!indicadoresAvulsosProjeto) {
       return [];
     }
+    console.log('Construindo indicadores avulsos do projeto:', indicadoresAvulsosProjeto);
     return indicadoresAvulsosProjeto.map((indicadorAvulso) => new IndicadorAvulsoModel(indicadorAvulso));
   }
 

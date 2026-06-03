@@ -120,12 +120,12 @@ export class IndicadoresService {
       unidadeMedida: this._nnfb.control(indicador?.unidadeMedida ?? null),
       basedeReferencia: this._nnfb.control(indicador?.basedeReferencia ?? null),
       metasIndicadorProjeto: this._nnfb.array<FormGroup<MetaIndicadorAvulsoFormType>>(
-        (indicador?.metasIndicadorAvulsoProjeto ?? []).map(meta =>
+        (indicador?.metasIndicadorProjeto ?? []).map(meta =>
           this.construirMetaIndicadorAvulso(meta)
         )
       ),
       metasIndicador: this._nnfb.array<FormGroup<MetaIndicadorAvulsoFormType>>(
-        (indicador?.metasIndicadorAvulsoProjeto ?? []).map(meta =>
+        (indicador?.metasIndicadorProjeto ?? []).map(meta =>
           this.construirMetaIndicadorAvulso(meta)
         )
       )

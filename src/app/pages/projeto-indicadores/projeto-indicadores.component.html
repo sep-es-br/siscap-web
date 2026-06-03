@@ -39,11 +39,10 @@
 
         <div class="indicator-card" style="border: 2px solid #1a6fc4; padding: 20px;">
 
-          <div class="indicator-header"
-            style="border-bottom: 2px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px;">
+          <div class="indicator-header" style="border-bottom: 2px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px;">
+
             <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">
               {{item.nomeIndicador }}
-
               <span *ngIf="item.avulso" style="margin-left:8px;
                padding:2px 8px;
                border-radius:12px;
@@ -53,7 +52,6 @@
                font-weight:700;">
                 INDICADOR DE PROJETO
               </span>
-
             </div>
             <button type="button" class="remove-indicator-btn" aria-label="Remover indicador"
               (click)="removeIndicator(item, false)" [disabled]="somenteLeitura">✖</button>
@@ -73,8 +71,7 @@
               <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE MEDIDA:</span>
               <span class="detail-value" style="font-weight: 600; margin-right:24px;">{{item.unidadeMedida}}</span>
               <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE REFERÊNCIA:</span>
-              <span class="detail-value" style="font-weight: 600;"> {{ item?.maiorAnoInidicador }}
-                ({{item?.maiorMetaIndicador }}) </span>
+              <span class="detail-value" style="font-weight: 600;"> {{ item?.maiorAnoInidicador }} ({{item?.maiorMetaIndicador }}) </span>
             </div>
 
             <span *ngIf="!item.avulso" class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META:</span>

@@ -3,7 +3,7 @@ import { MetaIndicadorExternoFormType } from "../types/form/indicadores-form.typ
 import { IMetaIndicador } from "./indicadores-catalogo-externo.interface";
 
 export interface IIndicadorAvulso {
-  
+  id: number;
   idIndicador: number;
   nomeIndicador: string | null;
   formulaCalculo: string | null;
@@ -12,13 +12,8 @@ export interface IIndicadorAvulso {
   unidadeMedida: string | null;
   basedeReferencia: string | null;
   
-  // metasIndicadorAvulsoGeral: Array<{
-  //   idFato: number | null;
-  //   anoMeta: number | null;
-  //   valorMeta: string | null;
-  // }>;
-
-  metasIndicadorAvulsoProjeto: Array<{
+  metasIndicadorProjeto: Array<{
+    id: number;
     anoMeta: number | null;
     valorMeta: string | null;
   }>;
