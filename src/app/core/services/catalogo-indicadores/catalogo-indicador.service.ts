@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { IFiltroIndicador, IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../interfaces/indicadores-catalogo-externo.interface';
 
 @Injectable({
@@ -18,7 +18,12 @@ export class CatalogoIndicadorService {
    * GET /catalogo-externo/gestao
    */
   getGestoesIndicadoresCatalogoExternos(): Observable<IGestoesCatalogoExterno[]> {
-    return this.http.get<IGestoesCatalogoExterno[]>(`${this._url}/gestoes`);
+    return this.http.get<IGestoesCatalogoExterno[]>(`${this._url}/gestoes`)
+      .pipe(
+        tap((response: any) => {
+          // console.log('Resposta API Gestões:', response);
+        })
+      );
   }
 
   /**

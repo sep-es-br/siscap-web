@@ -32,14 +32,12 @@
                     <ng-select [items]="label.valores" bindLabel="valor" bindValue="idLabelValor"
                         [(ngModel)]="filtro.labels[label.idLabel]" [multiple]="true" [closeOnSelect]="false"
                         [searchable]="true" [clearable]="true" placeholder="Selecionar..." class="select-filtro"
-                        [disabled]="somenteLeitura">
+                        [disabled]="somenteLeitura || isLabelFilhoDisabled(label)"
+                        (change)="onValorLabelChange($event)">
 
-                        <ng-template ng-multi-label-tmp let-items="items">
-                            <span class="custom-selected-label" *ngIf="items.length === 1">
-                                {{ items[0].valor }}
-                            </span>
-                            <span class="custom-selected-label" *ngIf="items.length > 1">
-                                {{ items.length }} selecionados
+                        <ng-template ng-multi-label-tmp>
+                            <span class="custom-selected-label">
+                                {{ getTextoSelecionadosLabel(label.idLabel) }}
                             </span>
                         </ng-template>
 
@@ -62,12 +60,11 @@
                 </label>
                 <ng-select [items]="desafios" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.desafio.id"
                     [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true"
-                    placeholder="Selecionar..." class="select-filtro">
+                    placeholder="Selecionar..." class="select-filtro" 
+                    [disabled]="somenteLeitura || !isLabelsSelecionados()">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
-                        <input type="checkbox" [checked]="item$.selected" tabindex="-1"
-                            style="margin-right: 8px; pointer-events: none;" />
-
+                        <input type="checkbox" [checked]="item$.selected" tabindex="-1" style="margin-right: 8px; pointer-events: none;" />
                         <span>{{ item.nome }}</span>
                     </ng-template>
 
@@ -75,7 +72,6 @@
                         <span class="custom-selected-label" *ngIf="items.length === 1">
                             {{ items[0].nome }}
                         </span>
-
                         <span class="custom-selected-label" *ngIf="items.length > 1">
                             {{ items.length }} selecionados
                         </span>

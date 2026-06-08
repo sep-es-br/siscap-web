@@ -18,6 +18,7 @@ export interface Label {
 }
 
 export interface LabelValor {
+  idPai: number | null;
   idLabelValor: number;
   valor: string;
 }
