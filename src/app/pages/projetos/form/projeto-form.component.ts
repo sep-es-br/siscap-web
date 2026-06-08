@@ -226,7 +226,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public processoEdocsProtocolo: string = '';
 
   public indicadoresProjeto: IIndicadores[] = [];
-  public indicadoresAvulsosProjeto: IIndicadores[] = [];
+  public indicadoresAvulsosProjeto: IIndicadorAvulso[] = [];
 
   private camposObrigatoriosDic = [
     'sigla',
@@ -363,7 +363,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+        // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -417,8 +417,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.subUsuario = this._usuarioService.usuarioPerfil.subNovo;
 
           this.indicadoresProjeto = projetoModel.indicadoresProjeto;
-
-          console.log('Indicadores avulsos do projeto da api CONVERTIDO :', projetoModel.indicadoresAvulsosProjeto );
+          this.indicadoresAvulsosProjeto = projetoModel.indicadoresAvulsosProjeto;
 
           const caminhoFeliz = [
             StatusProjetoEnum.Em_Elaboracao,
@@ -930,6 +929,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): Observable<any> {
+
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(
         projetoFormModel?.valor,
@@ -1050,7 +1050,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }),
       pareceresProjeto: this._nnfb.array([]),
 
-      indicadoresAvulsosProjeto: this.indicadoresService.construirindicadoresAvulsosFormArray(projetoFormModel?.indicadoresAvulsosProjeto),
+      indicadoresAvulsosProjeto: 
+        this.indicadoresService.construirindicadoresAvulsosFormArray( projetoFormModel?.indicadoresAvulsosProjeto ),
 
       odsProjeto: this._nnfb.array(
         projetoFormModel?.odsProjeto?.map((ods: any) =>
@@ -1684,11 +1685,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
         .indicadoresAvulsosProjeto
-        .filter((indicador: IIndicadorAvulso) =>
-          indicador?.nomeIndicador?.trim()
-        )
+        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim() )
         .map((indicador: IIndicadorAvulso) => ({
-          id: indicador.idIndicador ?? null,
+          id: indicador.id ?? null,
+          idIndicadorAvulso: indicador.idIndicador ?? null,
           indicadorAvulso: {
             id: indicador.idIndicador ?? null,
             nomeIndicador: indicador.nomeIndicador,

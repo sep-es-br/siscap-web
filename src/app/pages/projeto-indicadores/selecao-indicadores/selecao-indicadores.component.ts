@@ -128,14 +128,25 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   private montarIndicadoresExibicao(): any[] {
+
     const indicadoresCatalogo = this.indicadores || [];
 
     const indicadoresAvulsos =
       this.form?.get('indicadoresAvulsosProjeto')?.value ?? [];
 
+    // const avulsosParaLista = indicadoresAvulsos.map((avulso: any) => ({
+    //   idIndicador: `avulso-${avulso.idIndicador ?? avulso.nomeIndicador}`,
+    //   nomeIndicador: avulso.nomeIndicador,
+    //   avulso: true
+    // }));
+
     const avulsosParaLista = indicadoresAvulsos.map((avulso: any) => ({
-      idIndicador: `avulso-${avulso.idIndicador ?? avulso.nomeIndicador}`,
-      nomeIndicador: avulso.nomeIndicador,
+      ...avulso,
+      id: avulso.id ?? null,
+      idIndicadorAvulso: avulso.idIndicadorAvulso ?? avulso.indicadorAvulso?.id,
+      idIndicador: `avulso-${avulso.idIndicadorAvulso ?? avulso.indicadorAvulso?.id ?? avulso.id ?? avulso.nomeIndicador}`,
+      nomeIndicador: avulso.indicadorAvulso?.nomeIndicador ?? avulso.nomeIndicador,
+      metasIndicadorProjeto: avulso.metasIndicadorProjeto ?? [],
       avulso: true
     }));
 
@@ -143,6 +154,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
       ...indicadoresCatalogo,
       ...avulsosParaLista
     ];
+
   }
 
   onIndicadorAvulsoCriado(indicador: any): void {
@@ -151,12 +163,13 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
       ...this.selecionados,
       {
         ...indicador,
+        // id: indicador.id ?? 0,
         nomeIndicador: indicador.nomeIndicador,
         formulaCalculo: indicador.formulaCalculo,
         fonteIndicador: indicador.fonteIndicador,
         unidadeMedida: indicador.unidadeMedida,
         basedeReferencia: indicador.basedeReferencia,
-        metasIndicador: indicador.metasIndicadorAvulsoGeral,
+        // metasIndicador: indicador.metasIndicadorAvulsoGeral,
         metasIndicadorProjeto: indicador.metasIndicadorAvulsoProjeto,
         avulso: true
       }
@@ -182,7 +195,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   private montarIndicadorSelecionado(indicador: any): any {
-    
+
     if (indicador.avulso) {
       return {
         ...indicador,

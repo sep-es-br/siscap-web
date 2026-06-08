@@ -82,6 +82,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
  
   ngOnInit(): void {
 
+    // console.log('Form do projeto vindo do pai:', this.formProjeto?.value);
+
     this.init();
 
     this.initBaseChip();
@@ -125,13 +127,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
               this.gestao?.idGestao || 0
             )
         ),
-
-        // map((indicadores) =>
-        //   indicadores.map((item) => ({
-        //     ...item,
-        //     metasIndicador: item.metasIndicador ?? []
-        //   }))
-        // )
 
       )
       .subscribe({
@@ -212,13 +207,19 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   removerIndicador(indicador: any): void {
-    console.log('Removendo indicador:', indicador);
     this.indicadoresSelecionados = this.indicadoresSelecionados.filter(
       (i) => i !== indicador,
     );
 
     this.atualizarFormulario();
 
+  }
+
+removeIndicadorAvulsoProjeto(item: any, i: number): void {
+    // this.indicadoresSelecionados = this.indicadoresSelecionados.filter(
+    //   (i) => i !== indicador,
+    // );
+    // this.atualizarFormulario();
   }
 
   // private syncComFormulario(): void {
@@ -442,6 +443,14 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   getIndicadoresAvulsos(): FormArray {
     return this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
+  }
+
+  getIndicadorAvulsoProjetoForm(index: number): FormGroup {
+    return this.getIndicadoresAvulsos().at(index) as FormGroup;
+  }
+
+  getMetasIndicadorAvulsoProjeto(index: number): FormArray {
+    return this.getIndicadorAvulsoProjetoForm(index).get('metasIndicadorProjeto') as FormArray;
   }
 
   voltarParaDic() {

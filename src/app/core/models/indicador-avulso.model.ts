@@ -1,6 +1,4 @@
-import { IEquipe } from '../interfaces/equipe.interface';
 import { IIndicadorAvulso } from '../interfaces/indicador-avulso.interface';
-import { IIndicadores } from '../interfaces/indicadores.interface';
 
 export class IndicadorAvulsoModel implements IIndicadorAvulso {
   public id: number;

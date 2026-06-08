@@ -113,6 +113,7 @@ export class IndicadoresService {
 
   construirIndicadorAvulsoFormGroup(indicador: IIndicadorAvulso): FormGroup<IndicadorAvulsoFormType> {
     return this._nnfb.group<IndicadorAvulsoFormType>({
+      id: this._nnfb.control(indicador?.id ?? null),
       idIndicador: this._nnfb.control(indicador?.idIndicador ?? 0),
       nomeIndicador: this._nnfb.control(indicador?.nomeIndicador ?? null),
       fonteIndicador: this._nnfb.control(indicador?.fonteIndicador ?? null),
