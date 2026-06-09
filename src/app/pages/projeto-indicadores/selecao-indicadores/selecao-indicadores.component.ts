@@ -134,12 +134,6 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     const indicadoresAvulsos =
       this.form?.get('indicadoresAvulsosProjeto')?.value ?? [];
 
-    // const avulsosParaLista = indicadoresAvulsos.map((avulso: any) => ({
-    //   idIndicador: `avulso-${avulso.idIndicador ?? avulso.nomeIndicador}`,
-    //   nomeIndicador: avulso.nomeIndicador,
-    //   avulso: true
-    // }));
-
     const avulsosParaLista = indicadoresAvulsos.map((avulso: any) => ({
       ...avulso,
       id: avulso.id ?? null,
@@ -159,21 +153,19 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
 
   onIndicadorAvulsoCriado(indicador: any): void {
 
-    this.selecionados = [
-      ...this.selecionados,
-      {
-        ...indicador,
-        // id: indicador.id ?? 0,
-        nomeIndicador: indicador.nomeIndicador,
-        formulaCalculo: indicador.formulaCalculo,
-        fonteIndicador: indicador.fonteIndicador,
-        unidadeMedida: indicador.unidadeMedida,
-        basedeReferencia: indicador.basedeReferencia,
-        // metasIndicador: indicador.metasIndicadorAvulsoGeral,
-        metasIndicadorProjeto: indicador.metasIndicadorAvulsoProjeto,
-        avulso: true
-      }
-    ];
+    // this.selecionados = [
+    //   ...this.selecionados,
+    //   {
+    //     ...indicador,
+    //     nomeIndicador: indicador.nomeIndicador,
+    //     formulaCalculo: indicador.formulaCalculo,
+    //     fonteIndicador: indicador.fonteIndicador,
+    //     unidadeMedida: indicador.unidadeMedida,
+    //     basedeReferencia: indicador.basedeReferencia,
+    //     metasIndicadorProjeto: indicador.metasIndicadorAvulsoProjeto,
+    //     avulso: true
+    //   }
+    // ];
 
     this.filtrarIndicadores();
 

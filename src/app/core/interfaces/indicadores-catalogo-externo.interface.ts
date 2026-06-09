@@ -26,6 +26,8 @@ export interface LabelValor {
 export interface Desafio {
   id: number;
   nome: string;
+  grupoId: number;
+  subGrupoId: number;
 }
 
 export interface IIndicadoresCatalogoExterno {

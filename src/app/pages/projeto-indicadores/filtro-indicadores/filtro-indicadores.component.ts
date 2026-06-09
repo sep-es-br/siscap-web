@@ -29,13 +29,21 @@ export class FiltroIndicadoresComponent implements OnChanges {
   @Input() filtroAtual: any = null;
 
   gestaoSelecionada!: IGestoesCatalogoExterno;
+
+  labelsOriginais: Label[] = [];
   labelsOrdenados: Label[] = [];
 
-  filtro: any = {
-    idGestao: null,
-    labels: {},
-    desafio: {}
-  };
+  listaDesafiosFiltrados : Desafio[] = [];
+
+  filtro: {
+    idGestao: number | null;
+    labels: Record<number, number[]>;
+    desafio: any;
+  } = {
+      idGestao: null,
+      labels: {},
+      desafio: {}
+    };
 
   ngOnInit() {
     // console.log('Desafios recebidos:', this.desafios);
@@ -52,6 +60,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   }
 
   private inicializarGestao() {
+
     if (!this.gestao) return;
 
     this.gestaoSelecionada = this.gestao;
@@ -70,6 +79,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
     this.filtro.desafio.id ??= [];
 
     this.atualizarLabels();
+
   }
 
   onChangeGestao(idGestao: number) {
@@ -84,12 +94,49 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   private atualizarLabels() {
 
-    this.labelsOrdenados = [...(this.gestaoSelecionada?.labels || [])]
-      .sort((a, b) => a.ordem - b.ordem);
+    this.labelsOriginais = this.gestaoSelecionada?.labels || [];
 
-    // reset dos filtros dinâmicos
-    this.filtro.labels ??= {};
+    this.labelsOrdenados = this.recalcularLabels(this.gestaoSelecionada?.labels || []);
 
+  }
+
+  private recalcularLabels(labels: Label[]): Label[] {
+
+    const idsSelecionados = Object.values(this.filtro.labels as Record<number, number[]>)
+      .flat()
+      .filter((id): id is number => id != null);
+
+    return labels.map(label => {
+
+      const labelEhRaiz = label.valores.every(v => v.idPai == null);
+
+      if (labelEhRaiz) {
+        return {
+          ...label,
+          valores: [...label.valores]
+        };
+      }
+
+      const valoresFiltrados = label.valores.filter(valor => {
+        if (valor.idPai == null) {
+          return true;
+        }
+
+        return idsSelecionados.includes(valor.idPai);
+      });
+
+      return {
+        ...label,
+        valores: valoresFiltrados
+      };
+
+    }).sort((a, b) => a.ordem - b.ordem);
+
+  }
+
+  private existePaiSelecionado(idPai: number): boolean {
+    return Object.values(this.filtro.labels)
+      .some(idsSelecionados => idsSelecionados?.includes(idPai));
   }
 
   resetar() {
@@ -117,10 +164,6 @@ export class FiltroIndicadoresComponent implements OnChanges {
   dropdownDesafioAberto = false;
   buscaDesafio = '';
 
-  // onDebug(ids: number[]): void {
-  //   // console.log(ids);
-  // }
-
   abrirDropdownDesafio(): void {
     this.dropdownDesafioAberto = !this.dropdownDesafioAberto;
   }
@@ -143,7 +186,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   getTextoSelecionadosLabel(idLabel: number): string {
 
-    console.log('Labels ordenados:', this.labelsOrdenados);
+    // console.log('Labels ordenados:', this.labelsOrdenados);
 
     const selecionados = this.filtro?.labels?.[idLabel] ?? [];
 
@@ -169,49 +212,42 @@ export class FiltroIndicadoresComponent implements OnChanges {
     if (!this.isLabelFilho(label)) {
       return false;
     }
-  
+
     const labelPai = this.getLabelPai(label);
-  
+
     if (!labelPai) {
       return true;
     }
-  
+
     const selecionadosPai =
       this.filtro.labels[labelPai.idLabel];
-  
+
     return !selecionadosPai || selecionadosPai.length === 0;
 
   }
 
   isLabelsSelecionados(): boolean {
-    return false
+    
+    const idsSelecionados = Object.values(this.filtro.labels as Record<number, number[]>)
+      .flat()
+      .filter((id): id is number => id != null);
+
+    if (idsSelecionados.length === 0) {
+      return false;
+    }
+
+    return true;
   }
 
   onValorLabelChange(label: LabelValor): void {
 
-    const idLabelValor = label.idLabelValor;
+    this.labelsOrdenados = this.recalcularLabels(this.labelsOriginais);
+    this.listaDesafiosFiltrados = this.recalcularDesafios();
 
-    this.labelsOrdenados.filter( l => l.valores.some(v => v.idLabelValor === idLabelValor));
-
-    // if (label.idPai = null) {
-    //   return;
-    // }
-    
-    // const selecionadosPai = this.filtro.labels[label.idLabel];
-    // if (selecionadosPai?.length) {
-    //   return;
-    // }
-    
-    // this.labelsOrdenados
-    //   .filter(filho => filho.idPai === label.idLabel)
-    //   .forEach(filho => {
-    //     this.filtro.labels[filho.idLabel] = [];
-    //   });
-    
   }
 
   isLabelFilho(label: Label): boolean {
-    return label.valores?.some( v => v.idPai != null);
+    return label.valores?.some(v => v.idPai != null);
   }
 
   getLabelPai(labelFilho: Label): any {
@@ -219,9 +255,26 @@ export class FiltroIndicadoresComponent implements OnChanges {
     const idsPai = labelFilho.valores
       .filter(v => v.idPai != null)
       .map(v => v.idPai);
-  
+
     return this.labelsOrdenados.find(label =>
       label.valores?.some(v => idsPai.includes(v.idLabelValor))
+    );
+
+  }
+
+  private recalcularDesafios(): Desafio[] {
+
+    const idsSelecionados = Object.values(this.filtro.labels as Record<number, number[]>)
+      .flat()
+      .filter((id): id is number => id != null);
+
+    if (idsSelecionados.length === 0) {
+      return this.desafios;
+    }
+
+    return this.desafios.filter(desafio =>
+      idsSelecionados.includes(desafio.grupoId) ||
+      idsSelecionados.includes(desafio.subGrupoId!)
     );
 
   }

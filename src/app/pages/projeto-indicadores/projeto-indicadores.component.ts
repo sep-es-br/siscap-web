@@ -79,7 +79,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     private fb: FormBuilder,
     private readonly _toastService: ToastService,
   ) { }
- 
+
   ngOnInit(): void {
 
     // console.log('Form do projeto vindo do pai:', this.formProjeto?.value);
@@ -207,6 +207,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   removerIndicador(indicador: any): void {
+
     this.indicadoresSelecionados = this.indicadoresSelecionados.filter(
       (i) => i !== indicador,
     );
@@ -215,37 +216,9 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   }
 
-removeIndicadorAvulsoProjeto(item: any, i: number): void {
-    // this.indicadoresSelecionados = this.indicadoresSelecionados.filter(
-    //   (i) => i !== indicador,
-    // );
-    // this.atualizarFormulario();
+  removeIndicadorAvulsoProjeto(index: number): void {
+    this.getIndicadoresAvulsos().removeAt(index);
   }
-
-  // private syncComFormulario(): void {
-  //   if (!this.formProjeto) return;
-  //   const indicadoresProjeto = this.formProjeto.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
-  //   this.indicadoresSelecionados = this.indicadoresBI
-  //     .filter(indicadorBI =>
-  //       indicadoresProjeto.some(v =>
-  //         v.idIndicadorCatalogoExterno === indicadorBI.idIndicador
-  //       )
-  //     )
-  //     .map(cat => {
-  //       const doForm = indicadoresProjeto.find(v =>
-  //         v.idIndicadorCatalogoExterno === cat.idIndicador
-  //       );
-  //       return {
-  //         ...cat,
-  //         idIndicadorProjeto: doForm?.idIndicador,
-  //         metasIndicadorProjeto:
-  //           doForm?.metasIndicadorProjeto?.length
-  //             ? doForm.metasIndicadorProjeto
-  //             : this.montarMetasProjetoVazias()
-  //       };
-  //     });
-  //   this.atualizarFormulario();
-  // }
 
   private syncComFormulario(): void {
 
@@ -305,16 +278,6 @@ removeIndicadorAvulsoProjeto(item: any, i: number): void {
           valorAtual?.metasIndicadorProjeto?.length
             ? valorAtual.metasIndicadorProjeto
             : indicador.metasIndicadorProjeto || [];
-
-        // const metasProjetoArray = this.fb.array(
-        //   metasBase.map((meta: any) =>
-        //     this.fb.group({
-        //       id: [meta.idFato],
-        //       anoMeta: [meta.anoMeta],
-        //       valorMeta: [meta.valorMeta ?? '', Validators.required]
-        //     })
-        //   )
-        // );
 
         const metasProjetoArray = this.fb.array(
           metasBase.map((meta: any) =>
@@ -467,15 +430,41 @@ removeIndicadorAvulsoProjeto(item: any, i: number): void {
   }
 
   irParaODS() {
+
     const indicadoresArray = this.formProjeto.get('indicadoresProjeto') as FormArray;
-    if (!indicadoresArray || indicadoresArray.length === 0) {
+    const indicadoresAvulsosArray = this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
+
+    const temIndicadores = indicadoresArray && indicadoresArray.length > 0;
+    const temIndicadoresAvulsos = indicadoresAvulsosArray && indicadoresAvulsosArray.length > 0;
+
+    if (!temIndicadores && !temIndicadoresAvulsos) {
       this._toastService.showToast('error', 'Erro ao carregar projeto', [
-        'É obrigatório selecionar ao menos um indicador.',
+        'É obrigatório informar ao menos um indicador.',
       ]);
       return;
     }
+
+    if (
+      indicadoresArray.getRawValue().some((i: any) =>
+        i.metasIndicadorProjeto.some((m: any) => !m.valorMeta)
+      ) ||
+      indicadoresAvulsosArray.getRawValue().some((i: any) =>
+        i.metasIndicadorProjeto.some((m: any) => !m.valorMeta)
+      )
+    ) {
+      this._toastService.showToast(
+        'error',
+        'Erro ao carregar projeto',
+        ['É obrigatório preencher todas as metas dos indicadores.']
+      );
+
+      return;
+    }
+
     const abaOds = document.getElementById('nav-ods-indicadores')
+
     abaOds?.click();
+
   }
 
   get somenteLeitura(): boolean {

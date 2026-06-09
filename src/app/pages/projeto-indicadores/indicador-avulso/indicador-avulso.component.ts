@@ -10,8 +10,6 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IGestoesCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
-import { finalize } from 'rxjs/internal/operators/finalize';
-import { CatalogoIndicadorService } from '../../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 
 @Component({
@@ -50,7 +48,7 @@ export class IndicadorAvulsoComponent {
       unidadeMedida: ['', Validators.required],
       basedeReferencia: ['', Validators.required],
       polaridade: [''],
-      metasIndicadorAvulsoProjeto: this.fb.array([]),
+      metasIndicadorProjeto: this.fb.array([]),
       maiorAnoInidicador: [null],
       maiorMetaIndicador: ['']
     });
@@ -80,7 +78,7 @@ export class IndicadorAvulsoComponent {
   }
 
   getMetasProjeto(): FormArray {
-    return this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
+    return this.formIndicador.get('metasIndicadorProjeto') as FormArray;
   }
 
   salvar(): void {
@@ -127,7 +125,7 @@ export class IndicadorAvulsoComponent {
   }
 
   get metasIndicadorAvulsoProjeto(): FormArray {
-    return this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
+    return this.formIndicador.get('metasIndicadorProjeto') as FormArray;
   }
 
   getControl(controlName: string): AbstractControl {
@@ -139,7 +137,7 @@ export class IndicadorAvulsoComponent {
   }
 
   getMetaProjetoControl(index: number): AbstractControl {
-    const formArray = this.formIndicador.get('metasIndicadorAvulsoProjeto') as FormArray;
+    const formArray = this.formIndicador.get('metasIndicadorProjeto') as FormArray;
     return formArray.at(index).get('valorMeta') as AbstractControl;
   }
 
