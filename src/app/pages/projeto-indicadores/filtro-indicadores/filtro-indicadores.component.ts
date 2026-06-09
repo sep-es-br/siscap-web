@@ -20,6 +20,7 @@ import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
   styleUrl: './filtro-indicadores.component.scss'
 })
 export class FiltroIndicadoresComponent implements OnChanges {
+
   @Output() apply = new EventEmitter<any>();
   @Output() close = new EventEmitter<void>();
 
@@ -33,16 +34,53 @@ export class FiltroIndicadoresComponent implements OnChanges {
   labelsOriginais: Label[] = [];
   labelsOrdenados: Label[] = [];
 
-  listaDesafiosFiltrados : Desafio[] = [];
+  listaDesafiosFiltrados: Desafio[] = [];
+
+  // filtro: {
+  //   idGestao: number | null;
+  //   labels: Record<number, number[]>;
+  //   desafio: any;
+  // } = {
+  //     idGestao: null,
+  //     labels: {},
+  //     desafio: {}
+  //   };
 
   filtro: {
+
     idGestao: number | null;
+
+    // continua igual para a filtragem
     labels: Record<number, number[]>;
     desafio: any;
+
+    // novo: somente para exibir chips
+    chips: {
+
+      labels: Array<{
+        idLabel: number;
+        nomeLabel: string;
+        valores: Array<{
+          idValor: number;
+          nomeValor: string;
+        }>;
+      }>;
+
+      desafio?: {
+        idDesafio: number;
+        nomeDesafio: string;
+      } | null;
+
+    };
   } = {
       idGestao: null,
       labels: {},
-      desafio: {}
+      desafio: [],
+
+      chips: {
+        labels: [],
+        desafio: null
+      }
     };
 
   ngOnInit() {
@@ -134,26 +172,23 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   }
 
-  private existePaiSelecionado(idPai: number): boolean {
-    return Object.values(this.filtro.labels)
-      .some(idsSelecionados => idsSelecionados?.includes(idPai));
-  }
-
   resetar() {
     this.filtro = {
       idGestao: this.gestaoSelecionada?.idGestao || null,
       labels: {},
       desafio: {
         id: []
+      },
+      chips: {
+        labels: [],
+        desafio: null
       }
     };
   }
-
-  filtrar() {
-    // console.log('FILTRO FINAL:', this.filtro);
-  }
-
+  
   applyFilter() {
+    this.montarChipsFiltro();
+    console.log('Aplicando filtro:', this.filtro);
     this.apply.emit(this.filtro);
   }
 
@@ -185,8 +220,6 @@ export class FiltroIndicadoresComponent implements OnChanges {
   }
 
   getTextoSelecionadosLabel(idLabel: number): string {
-
-    // console.log('Labels ordenados:', this.labelsOrdenados);
 
     const selecionados = this.filtro?.labels?.[idLabel] ?? [];
 
@@ -227,7 +260,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   }
 
   isLabelsSelecionados(): boolean {
-    
+
     const idsSelecionados = Object.values(this.filtro.labels as Record<number, number[]>)
       .flat()
       .filter((id): id is number => id != null);
@@ -242,6 +275,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   onValorLabelChange(label: LabelValor): void {
 
     this.labelsOrdenados = this.recalcularLabels(this.labelsOriginais);
+
     this.listaDesafiosFiltrados = this.recalcularDesafios();
 
   }
@@ -264,19 +298,60 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   private recalcularDesafios(): Desafio[] {
 
-    const idsSelecionados = Object.values(this.filtro.labels as Record<number, number[]>)
+    const idsSelecionados = Object.values(this.filtro.labels ?? {})
       .flat()
-      .filter((id): id is number => id != null);
+      .filter(id => id != null)
+      .map(id => Number(id));
 
     if (idsSelecionados.length === 0) {
       return this.desafios;
     }
 
-    return this.desafios.filter(desafio =>
-      idsSelecionados.includes(desafio.grupoId) ||
-      idsSelecionados.includes(desafio.subGrupoId!)
-    );
+    return this.desafios.filter(desafio => {
 
+      const grupoId = Number(desafio.grupoId);
+      const subGrupoId = desafio.subGrupoId != null ? Number(desafio.subGrupoId) : null;
+
+      if (idsSelecionados.includes(grupoId) && subGrupoId != null && idsSelecionados.includes(subGrupoId)) {
+        return true;
+      } else {
+        return false;
+      }
+
+    });
+
+  }
+
+  private montarChipsFiltro(): void {
+
+    this.filtro.chips = {
+      
+      labels: this.labelsOrdenados
+        .map(label => {
+          const idsSelecionados = this.filtro.labels[label.idLabel] ?? [];
+          const valores = label.valores
+            .filter(valor => idsSelecionados.includes(valor.idLabelValor))
+            .map(valor => ({
+              idValor: valor.idLabelValor,
+              nomeValor: valor.valor
+            }));
+  
+          return {
+            idLabel: label.idLabel,
+            nomeLabel: label.nome,
+            valores
+          };
+        })
+        .filter(chip => chip.valores.length > 0),
+  
+      desafio: this.desafiosFiltrados()
+        .filter(desafio => (this.filtro.desafio.id ?? []).includes(desafio.id))
+        .map(desafio => ({
+          idDesafio: desafio.id,
+          nomeDesafio: desafio.nome
+        }))[0] ?? null
+
+    };
   }
 
 }

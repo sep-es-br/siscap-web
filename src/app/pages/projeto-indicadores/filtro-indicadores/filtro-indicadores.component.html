@@ -58,7 +58,7 @@
                 <label class="filter-label">
                     Desafios
                 </label>
-                <ng-select [items]="desafios" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.desafio.id"
+                <ng-select [items]="listaDesafiosFiltrados" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.desafio.id"
                     [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true"
                     placeholder="Selecionar..." class="select-filtro" 
                     [disabled]="somenteLeitura || !isLabelsSelecionados()">

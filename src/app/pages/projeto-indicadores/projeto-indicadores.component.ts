@@ -334,6 +334,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     this.currentFilter = structuredClone(filter);
 
+    this.atualizarChipsFiltros();
+
     this.showModal = false;
 
     const filtroFormatado: IFiltroIndicador = {
@@ -526,6 +528,40 @@ export class ProjetoIndicadoresComponent implements OnInit {
     );
 
     return indicadorBi?.metasIndicador ?? [];
+
+  }
+
+  private atualizarChipsFiltros(): void {
+
+    this.chips = [
+
+      {
+        label: 'GESTÃO ADMINISTRATIVA',
+        value: this.gestao?.nomeGestao || '-',
+        type: 'base',
+        removable: false,
+      },
+   
+      ...(this.currentFilter?.chips?.labels ?? []).flatMap((labelChip: any) =>
+        labelChip.valores.map((valor: any) => ({
+          label: labelChip.nomeLabel,
+          value: valor.nomeValor,
+          type: 'filter',
+          removable: true,
+          idLabel: labelChip.idLabel,
+          idValor: valor.idValor
+        }))
+      ),
+
+      ...(this.currentFilter?.chips?.desafios ?? []).map((desafio: any) => ({
+        label: 'DESAFIO',
+        value: desafio.nomeDesafio,
+        type: 'filter',
+        removable: true,
+        idDesafio: desafio.idDesafio
+      }))
+
+    ];
 
   }
 
