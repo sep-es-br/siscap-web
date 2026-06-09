@@ -363,7 +363,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+        console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -1701,7 +1701,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }));
 
       const temIndicador =
-        indicadoresProjetoPayload.length > 0;
+        indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
 
       if (!temIndicador) {
         this._toastService.showToast('warning', 'O formulário contém erros.', [
@@ -1750,7 +1750,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
 
-      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho)

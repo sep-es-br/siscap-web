@@ -121,15 +121,18 @@ export class IndicadoresService {
       unidadeMedida: this._nnfb.control(indicador?.unidadeMedida ?? null),
       basedeReferencia: this._nnfb.control(indicador?.basedeReferencia ?? null),
       metasIndicadorProjeto: this._nnfb.array<FormGroup<MetaIndicadorAvulsoFormType>>(
-        (indicador?.metasIndicadorProjeto ?? []).map(meta =>
+        (indicador?.metasIndicadorProjeto ?? [])
+        .sort((a, b) => Number(a.anoMeta) - Number(b.anoMeta))
+        .map(meta =>
           this.construirMetaIndicadorAvulso(meta)
         )
       ),
     });
   }
 
-  construirMetaIndicadorAvulso(meta: { anoMeta: number | null; valorMeta: string | null; }): any {
+  construirMetaIndicadorAvulso(meta: { id: number | null; anoMeta: number | null; valorMeta: string | null; }): any {
     return this._nnfb.group({
+      id: this._nnfb.control(meta?.id ?? null),
       valorMeta: this._nnfb.control(meta?.valorMeta ?? null),
       anoMeta: this._nnfb.control(meta?.anoMeta ?? null),
     });

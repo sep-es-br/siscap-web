@@ -190,8 +190,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
 
-    console.log('Indicadores selecionados:', novos);
-
     this.indicadoresSelecionados = novos.map(item => ({
       ...item,
       metasIndicadorProjeto:
@@ -225,9 +223,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
   private syncComFormulario(): void {
 
     if (!this.formProjeto) return;
-
-    console.log('Sincronizando indicadores selecionados com formulário...');
-    console.log('Form do pai:', this.formProjeto );
 
     const indicadoresProjeto =
       this.formProjeto.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
@@ -285,7 +280,9 @@ export class ProjetoIndicadoresComponent implements OnInit {
             : indicador.metasIndicadorProjeto || [];
 
         const metasProjetoArray = this.fb.array(
-          metasBase.map((meta: any) =>
+          metasBase
+            .sort((a: { anoMeta: number; }, b: { anoMeta: number; }) => a.anoMeta - b.anoMeta)
+            .map((meta: any) =>
             this.fb.group({
               id: [meta.id ?? null],
               idFato: [meta.idFato ?? null],
@@ -394,8 +391,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
       const formArray = this.formProjeto.get('indicadoresProjeto') as FormArray;
       formArray.removeAt(index);
     }
-
-    // this.atualizarFormulario();
 
   }
 

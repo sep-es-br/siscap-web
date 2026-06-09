@@ -25,6 +25,7 @@ export type IndicadorAvulsoFormTypeValue = Array<
 >;
 
 export type MetaIndicadorAvulsoFormType = {
+  id: FormControl<number | null>;
   anoMeta: FormControl<number | null>;
   valorMeta: FormControl<string | null>;
 };
