@@ -79,8 +79,10 @@ export class ProjetoIndicadoresComponent implements OnInit {
     private fb: FormBuilder,
     private readonly _toastService: ToastService,
   ) { }
- 
+
   ngOnInit(): void {
+
+    // console.log('Form do projeto vindo do pai:', this.formProjeto?.value);
 
     this.init();
 
@@ -125,13 +127,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
               this.gestao?.idGestao || 0
             )
         ),
-
-        // map((indicadores) =>
-        //   indicadores.map((item) => ({
-        //     ...item,
-        //     metasIndicador: item.metasIndicador ?? []
-        //   }))
-        // )
 
       )
       .subscribe({
@@ -214,7 +209,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   removerIndicador(indicador: any): void {
-    console.log('Removendo indicador:', indicador);
+
     this.indicadoresSelecionados = this.indicadoresSelecionados.filter(
       (i) => i !== indicador,
     );
@@ -223,30 +218,9 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   }
 
-  // private syncComFormulario(): void {
-  //   if (!this.formProjeto) return;
-  //   const indicadoresProjeto = this.formProjeto.get('indicadoresProjeto')?.value as IndicadorProjetoForm[];
-  //   this.indicadoresSelecionados = this.indicadoresBI
-  //     .filter(indicadorBI =>
-  //       indicadoresProjeto.some(v =>
-  //         v.idIndicadorCatalogoExterno === indicadorBI.idIndicador
-  //       )
-  //     )
-  //     .map(cat => {
-  //       const doForm = indicadoresProjeto.find(v =>
-  //         v.idIndicadorCatalogoExterno === cat.idIndicador
-  //       );
-  //       return {
-  //         ...cat,
-  //         idIndicadorProjeto: doForm?.idIndicador,
-  //         metasIndicadorProjeto:
-  //           doForm?.metasIndicadorProjeto?.length
-  //             ? doForm.metasIndicadorProjeto
-  //             : this.montarMetasProjetoVazias()
-  //       };
-  //     });
-  //   this.atualizarFormulario();
-  // }
+  removeIndicadorAvulsoProjeto(index: number): void {
+    this.getIndicadoresAvulsos().removeAt(index);
+  }
 
   private syncComFormulario(): void {
 
@@ -310,16 +284,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
             ? valorAtual.metasIndicadorProjeto
             : indicador.metasIndicadorProjeto || [];
 
-        // const metasProjetoArray = this.fb.array(
-        //   metasBase.map((meta: any) =>
-        //     this.fb.group({
-        //       id: [meta.idFato],
-        //       anoMeta: [meta.anoMeta],
-        //       valorMeta: [meta.valorMeta ?? '', Validators.required]
-        //     })
-        //   )
-        // );
-
         const metasProjetoArray = this.fb.array(
           metasBase.map((meta: any) =>
             this.fb.group({
@@ -374,6 +338,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.loading = true
 
     this.currentFilter = structuredClone(filter);
+
+    this.atualizarChipsFiltros();
 
     this.showModal = false;
 
@@ -449,6 +415,14 @@ export class ProjetoIndicadoresComponent implements OnInit {
     return this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
   }
 
+  getIndicadorAvulsoProjetoForm(index: number): FormGroup {
+    return this.getIndicadoresAvulsos().at(index) as FormGroup;
+  }
+
+  getMetasIndicadorAvulsoProjeto(index: number): FormArray {
+    return this.getIndicadorAvulsoProjetoForm(index).get('metasIndicadorProjeto') as FormArray;
+  }
+
   voltarParaDic() {
     const tabTrigger = document.getElementById('nav-propriedades');
 
@@ -463,15 +437,41 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   irParaODS() {
+
     const indicadoresArray = this.formProjeto.get('indicadoresProjeto') as FormArray;
-    if (!indicadoresArray || indicadoresArray.length === 0) {
+    const indicadoresAvulsosArray = this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
+
+    const temIndicadores = indicadoresArray && indicadoresArray.length > 0;
+    const temIndicadoresAvulsos = indicadoresAvulsosArray && indicadoresAvulsosArray.length > 0;
+
+    if (!temIndicadores && !temIndicadoresAvulsos) {
       this._toastService.showToast('error', 'Erro ao carregar projeto', [
-        'É obrigatório selecionar ao menos um indicador.',
+        'É obrigatório informar ao menos um indicador.',
       ]);
       return;
     }
+
+    if (
+      indicadoresArray.getRawValue().some((i: any) =>
+        i.metasIndicadorProjeto.some((m: any) => !m.valorMeta)
+      ) ||
+      indicadoresAvulsosArray.getRawValue().some((i: any) =>
+        i.metasIndicadorProjeto.some((m: any) => !m.valorMeta)
+      )
+    ) {
+      this._toastService.showToast(
+        'error',
+        'Erro ao carregar projeto',
+        ['É obrigatório preencher todas as metas dos indicadores.']
+      );
+
+      return;
+    }
+
     const abaOds = document.getElementById('nav-ods-indicadores')
+
     abaOds?.click();
+
   }
 
   get somenteLeitura(): boolean {
@@ -533,6 +533,42 @@ export class ProjetoIndicadoresComponent implements OnInit {
     );
 
     return indicadorBi?.metasIndicador ?? [];
+
+  }
+
+  private atualizarChipsFiltros(): void {
+
+    console.log("Current filter:", this.currentFilter)
+
+    this.chips = [
+
+      {
+        label: 'GESTÃO ADMINISTRATIVA',
+        value: this.gestao?.nomeGestao || '-',
+        type: 'base',
+        removable: false,
+      },
+   
+      ...(this.currentFilter?.chips?.labels ?? []).flatMap((labelChip: any) =>
+        labelChip.valores.map((valor: any) => ({
+          label: labelChip.nomeLabel,
+          value: valor.nomeValor,
+          type: 'filter',
+          removable: true,
+          idLabel: labelChip.idLabel,
+          idValor: valor.idValor
+        }))
+      ),
+
+      ...(this.currentFilter?.chips?.desafio ?? []).map((desafio: any) => ({
+        label: 'DESAFIO',
+        value: desafio.nomeDesafio,
+        type: 'filter',
+        removable: true,
+        idDesafio: desafio.idDesafio
+      }))
+
+    ];
 
   }
 

@@ -11,7 +11,9 @@ export interface IIndicadorAvulso {
   medidoPor: string | null;
   unidadeMedida: string | null;
   basedeReferencia: string | null;
+  
   metasIndicadorProjeto: Array<{
+    id: number;
     anoMeta: number | null;
     valorMeta: string | null;
   }>;

@@ -1,11 +1,19 @@
-<div 
-  class="gestao-badge" 
+<div
+  [class]="type === 'base' ? 'gestao-badge' : 'filter-badge'"
   [class.removable]="removable"
   [class.disabled]="somenteLeitura"
   (click)="!somenteLeitura && handleClick()">
+
   <div class="chip-content">
     <span class="gestao-label">{{ label }}</span>
     <span class="gestao-year">{{ value }}</span>
   </div>
-  <i *ngIf="removable" class="pi pi-times remove-icon" [class.disabled]="somenteLeitura" (click)="!somenteLeitura && handleRemove($event)"></i>
+
+  <!-- <i
+    *ngIf="removable"
+    class="pi pi-times remove-icon"
+    [class.disabled]="somenteLeitura"
+    (click)="!somenteLeitura && handleRemove($event)">
+  </i> -->
+
 </div>

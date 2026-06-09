@@ -134,7 +134,7 @@ export class IndicadorOdsComponent implements OnInit {
 
   voltarParaIndicadores() {
     const tabTrigger = document.getElementById('nav-indicadores');
-    console.log(tabTrigger);
+    // console.log(tabTrigger);
 
     if (tabTrigger) {
       const tab = new bootstrap.Tab(tabTrigger);

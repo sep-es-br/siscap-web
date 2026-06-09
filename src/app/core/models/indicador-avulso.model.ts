@@ -1,7 +1,6 @@
 import { IIndicadorAvulso } from '../interfaces/indicador-avulso.interface';
 
 export class IndicadorAvulsoModel implements IIndicadorAvulso {
-
   public id: number;
   public idIndicador: number;
   public nomeIndicador: string | null;
@@ -12,6 +11,7 @@ export class IndicadorAvulsoModel implements IIndicadorAvulso {
   public basedeReferencia: string | null;
 
   public metasIndicadorProjeto: Array<{
+    id: number;
     anoMeta: number | null;
     valorMeta: string | null;
   }>;

@@ -1,6 +1,7 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 
 export type IndicadorAvulsoFormType = {
+  id: FormControl<number | null>;
   idIndicador: FormControl<number>;
   nomeIndicador: FormControl<string | null>;
   fonteIndicador: FormControl<string | null>;
@@ -12,6 +13,7 @@ export type IndicadorAvulsoFormType = {
 
 export type IndicadorAvulsoFormTypeValue = Array<
   Partial<{
+    id: number | null;
     idIndicador: number;
     nomeIndicador: string | null;
     fonteIndicador: string | null;

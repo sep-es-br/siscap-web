@@ -69,6 +69,7 @@ export class ProjetoFormModel implements IProjetoForm {
   }>;
 
   constructor(projetoForm?: IProjetoForm) {
+
     this.sigla = projetoForm?.sigla ?? '';
     this.titulo = projetoForm?.titulo ?? '';
     this.idOrganizacao = projetoForm?.idOrganizacao ?? 0;
@@ -94,6 +95,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.acoesProjeto = this.construirAcoesProjeto(
       projetoForm?.acoesProjeto
     );
+
     this.nomeagente = projetoForm?.nomeagente ?? '';
     this.pecasPlanejamento = projetoForm?.pecasPlanejamento ?? '';
     this.enviarProjetoGestor = projetoForm?.enviarProjetoGestor ?? false;
@@ -114,10 +116,11 @@ export class ProjetoFormModel implements IProjetoForm {
     this.subProponente = projetoForm?.subProponente ?? '';
     this.nomeProponente = projetoForm?.nomeProponente ?? '';
     this.historico = new Array();
-    this.indicadoresAvulsosProjeto = this.construirIndicadoresAvulsosProjeto(
-      projetoForm?.indicadoresAvulsosProjeto
-    );
+
+    this.indicadoresAvulsosProjeto = this.montarIndicadorAvulsoProjeto( projetoForm?.indicadoresAvulsosProjeto ?? [] );
+
     this.odsProjeto = projetoForm?.odsProjeto ?? [];
+
   }
 
   private construirRateioModelArray(
@@ -149,10 +152,13 @@ export class ProjetoFormModel implements IProjetoForm {
 
   private construirIndicadoresAvulsosProjeto(
     indicadoresAvulsosProjeto?: Array<IIndicadorAvulso>): Array<IndicadorAvulsoModel> {
+
     if (!indicadoresAvulsosProjeto) {
       return [];
     }
+
     return indicadoresAvulsosProjeto.map((indicadorAvulso) => new IndicadorAvulsoModel(indicadorAvulso));
+
   }
 
   private construirAcoesProjeto(
@@ -164,9 +170,38 @@ export class ProjetoFormModel implements IProjetoForm {
     return acoesProjeto.map((acoes) => new AcaoModel(acoes));
   }
 
-}
+  private montarIndicadorAvulsoProjeto(item: Array<any>): Array<IndicadorAvulsoModel> {
+
+    return item?.map( (indicadorAvulso) => ({
+
+      id: indicadorAvulso?.id ?? 0,
+
+      // aqui eu usaria o id do indicador avulso real
+      idIndicador: indicadorAvulso?.idIndicadorAvulso ?? indicadorAvulso?.indicadorAvulso?.id ?? 0,
+
+      nomeIndicador: indicadorAvulso?.indicadorAvulso?.nomeIndicador ?? null,
+      formulaCalculo: indicadorAvulso?.indicadorAvulso?.formulaCalculo ?? null,
+      fonteIndicador: indicadorAvulso?.indicadorAvulso?.fonteIndicador ?? null,
+      medidoPor: indicadorAvulso?.indicadorAvulso?.medidoPor ?? null,
+      unidadeMedida: indicadorAvulso?.indicadorAvulso?.unidadeMedida ?? null,
+
+      // atenção: API vem baseDeReferencia, interface usa basedeReferencia
+      basedeReferencia: indicadorAvulso?.indicadorAvulso?.baseDeReferencia ?? null,
+
+      metasIndicadorProjeto:
+        indicadorAvulso?.metasIndicadorProjeto?.map((meta: any) => ({
+          id: meta?.id ?? 0,
+          anoMeta: meta?.anoMeta ?? null,
+          valorMeta: meta?.valorMeta ?? null
+        })) ?? []
+      })) ?? [];
+
+    };
+
+  }
 
 export class ProjetoModel extends ProjetoFormModel implements IProjeto {
+
   public readonly id: number;
   public readonly idStatus: number;
   public readonly status: string;
@@ -178,4 +213,5 @@ export class ProjetoModel extends ProjetoFormModel implements IProjeto {
     this.status = projeto?.status ?? '';
     this.historico = projeto?.historico ?? [];
   }
+
 }

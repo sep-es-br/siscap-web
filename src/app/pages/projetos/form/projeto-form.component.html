@@ -20,6 +20,7 @@
     </button>
   </div>
 </div>
+
 <main class="d-flex flex-column flex-xl-row justify-content-end">
   <div ngbAccordion *ngIf="statusSteps" class="align-self-start">
     <div ngbAccordionItem [collapsed]="isMobile ? accordionCollapsed : false">
@@ -33,8 +34,6 @@
           <ng-template>
             <p-timeline [value]="statusSteps" [align]="isMobile ? '' : 'right'">
               <ng-template pTemplate="content" let-event>
-                <!-- <span class="d-inline-block" [innerHTML]="event.label"
-                  [style]="event.labelOffset && {transform: 'translateY(' + event.labelOffset + ')'}"></span> -->
                 <span class="d-inline-block" [innerHTML]="event.label"></span>
               </ng-template>
               <ng-template pTemplate="marker" let-event>
@@ -107,9 +106,8 @@
               data-bs-target="#tab-indicadores" 
               type="button">
               Indicadores
-              <validation-message [control]="getControl('indicadoresProjeto')"></validation-message>
-              <span *ngIf="getControl('indicadoresProjeto')?.invalid && getControl('indicadoresProjeto')?.touched"
-                class="text-danger"></span>
+              <!-- <validation-message [control]="getControl('indicadoresProjeto')"></validation-message> -->
+              <span *ngIf="getControl('indicadoresProjeto')?.invalid && getControl('indicadoresProjeto')?.touched" class="text-danger"></span>
             </button>
           </li>
 
@@ -390,36 +388,6 @@
                   formControlName="arranjosInstitucionais" maxLength="2000"></textarea>
               </div>
 
-              <!-- <div class="col-12">
-                <label
-                  for="impactos"
-                  class="form-label col-12"
-                  [ngClass]="{
-                    'alerta-complementar-campo':
-                      deveComplementarCampo('impactos'),
-                  }"
-                >
-                  <validation-message [control]="getControl('impactos')">
-                    Impactos do Projeto no Âmbito Ambiental, Social e de
-                    Governança (ESG)
-                    <form-helper-tooltip
-                      [texto]="projetoTooltip['impactos']"
-                    ></form-helper-tooltip>
-                    <form-warning-tooltip
-                      *ngIf="deveComplementarCampo('impactos')"
-                      [texto]="mensagemComplementarCampo('impactos')"
-                    ></form-warning-tooltip>
-                  </validation-message>
-                </label>
-                <textarea
-                  rows="5"
-                  class="form-control"
-                  id="impactos"
-                  formControlName="impactos"
-                  maxLength="2000"
-                ></textarea>
-              </div> -->
-
               <div class="col-12">
                 <label for="pecasPlanejamento" class="form-label col-12" [ngClass]="{
                     'alerta-complementar-campo':
@@ -441,7 +409,7 @@
           <div class="navigation-buttons">
             <button class="nav-btn" id="avancarIndicadores"
               style="background:var(--blue); color:white; border-color:var(--blue);" (click)="irParaIndicadores()">
-              →
+              <i class="pi pi-arrow-right"></i>
             </button>
           </div>
 
