@@ -533,6 +533,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private atualizarChipsFiltros(): void {
 
+    console.log("Current filter:", this.currentFilter)
+
     this.chips = [
 
       {
@@ -553,7 +555,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
         }))
       ),
 
-      ...(this.currentFilter?.chips?.desafios ?? []).map((desafio: any) => ({
+      ...(this.currentFilter?.chips?.desafio ?? []).map((desafio: any) => ({
         label: 'DESAFIO',
         value: desafio.nomeDesafio,
         type: 'filter',

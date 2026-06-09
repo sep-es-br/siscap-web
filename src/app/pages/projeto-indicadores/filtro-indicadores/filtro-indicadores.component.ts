@@ -36,16 +36,6 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   listaDesafiosFiltrados: Desafio[] = [];
 
-  // filtro: {
-  //   idGestao: number | null;
-  //   labels: Record<number, number[]>;
-  //   desafio: any;
-  // } = {
-  //     idGestao: null,
-  //     labels: {},
-  //     desafio: {}
-  //   };
-
   filtro: {
 
     idGestao: number | null;
@@ -66,10 +56,10 @@ export class FiltroIndicadoresComponent implements OnChanges {
         }>;
       }>;
 
-      desafio?: {
+      desafio?: Array<{
         idDesafio: number;
         nomeDesafio: string;
-      } | null;
+      }> | [];
 
     };
   } = {
@@ -79,7 +69,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
       chips: {
         labels: [],
-        desafio: null
+        desafio: []
       }
     };
 
@@ -181,14 +171,13 @@ export class FiltroIndicadoresComponent implements OnChanges {
       },
       chips: {
         labels: [],
-        desafio: null
+        desafio: []
       }
     };
   }
   
   applyFilter() {
     this.montarChipsFiltro();
-    console.log('Aplicando filtro:', this.filtro);
     this.apply.emit(this.filtro);
   }
 
@@ -349,7 +338,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
         .map(desafio => ({
           idDesafio: desafio.id,
           nomeDesafio: desafio.nome
-        }))[0] ?? null
+        }))
 
     };
   }

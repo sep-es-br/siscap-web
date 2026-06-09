@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 export class IndicadorChipComponent {
   @Input() label: string = '';
   @Input() value: string = '';
+  @Input() type: string = 'base';
   @Input() removable: boolean = false;
   
   @Output() onRemove = new EventEmitter<void>();
