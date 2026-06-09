@@ -106,9 +106,8 @@
               data-bs-target="#tab-indicadores" 
               type="button">
               Indicadores
-              <validation-message [control]="getControl('indicadoresProjeto')"></validation-message>
-              <span *ngIf="getControl('indicadoresProjeto')?.invalid && getControl('indicadoresProjeto')?.touched"
-                class="text-danger"></span>
+              <!-- <validation-message [control]="getControl('indicadoresProjeto')"></validation-message> -->
+              <span *ngIf="getControl('indicadoresProjeto')?.invalid && getControl('indicadoresProjeto')?.touched" class="text-danger"></span>
             </button>
           </li>
 
@@ -410,7 +409,7 @@
           <div class="navigation-buttons">
             <button class="nav-btn" id="avancarIndicadores"
               style="background:var(--blue); color:white; border-color:var(--blue);" (click)="irParaIndicadores()">
-              →
+              <i class="pi pi-arrow-right"></i>
             </button>
           </div>
 
