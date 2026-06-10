@@ -244,27 +244,27 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   isLabelFilhoDisabled(label: any): boolean {
 
-    const labelOriginal = this.labelsOriginais.find((l: any) => 
+    const labelOriginal = this.labelsOriginais.find((l: any) =>
       l.idLabel === label.idLabel || l.nome === label.nome
     );
-  
+
     if (!labelOriginal) {
       return false;
     }
-  
+
     const valores = labelOriginal.valores ?? [];
-  
+
     const temValores = valores.length > 0;
-  
+
     const ehFilho = temValores && valores.every((valor: any) =>
       valor.idPai != null
     );
-  
+
     // Pai/root nunca desabilita por hierarquia
     if (!ehFilho) {
       return false;
     }
-  
+
     const idsPaisDoLabelFilho: number[] = Array.from(
       new Set<number>(
         valores
@@ -272,16 +272,16 @@ export class FiltroIndicadoresComponent implements OnChanges {
           .filter((id: number) => !isNaN(id))
       )
     );
-  
+
     const idsSelecionados: number[] = Object.values(this.filtro.labels ?? {})
       .flat()
       .map((id: any) => Number(id))
       .filter((id: number) => !isNaN(id));
-  
+
     const temPaiSelecionado = idsPaisDoLabelFilho.some((idPai: number) =>
       idsSelecionados.includes(idPai)
     );
-  
+
     return !temPaiSelecionado;
 
   }
@@ -315,23 +315,26 @@ export class FiltroIndicadoresComponent implements OnChanges {
   // }
 
   isLabelsFilhosSelecionados(): boolean {
+    const idsSelecionados: number[] = Object.values(this.filtro.labels ?? {})
+      .flat()
+      .map((id: any) => Number(id))
+      .filter((id: number) => !isNaN(id));
+
+    if (!idsSelecionados.length) {
+      return false;
+    }
+
     const labelsFilhos = this.labelsOrdenados.filter((label: any) =>
       this.isLabelFilho(label)
     );
-  
-    if (!labelsFilhos.length) {
-      return true;
-    }
-  
+
     return labelsFilhos.every((label: any) => {
-      const disabled = this.isLabelFilhoDisabled(label);
-  
-      if (disabled) {
-        return true;
+      if (this.isLabelFilhoDisabled(label)) {
+        return false;
       }
-  
+
       const selecionados = this.filtro.labels?.[label.idLabel] ?? [];
-  
+
       return Array.isArray(selecionados) && selecionados.length > 0;
     });
   }
@@ -381,7 +384,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
       const idPai = Number(valor.idPai);
       return valor.idPai != null && !isNaN(idPai);
     });
-  
+
     return resultado;
   }
 
