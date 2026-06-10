@@ -29,11 +29,20 @@
                 <div class="filter-field">
                     <label class="filter-label">{{ label.nome }}</label>
 
-                    <ng-select [items]="label.valores" bindLabel="valor" bindValue="idLabelValor"
-                        [(ngModel)]="filtro.labels[label.idLabel]" [multiple]="true" [closeOnSelect]="false"
-                        [searchable]="true" [clearable]="true" placeholder="Selecionar..." class="select-filtro"
+                    <!-- <ng-select [items]="getValoresLabel(label)" -->
+
+                    <ng-select [items]="label.valores"
+                        bindLabel="valor"
+                        bindValue="idLabelValor"
+                        [(ngModel)]="filtro.labels[label.idLabel]"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        [clearable]="true"
+                        placeholder="Selecionar..."
+                        class="select-filtro"
                         [disabled]="somenteLeitura || isLabelFilhoDisabled(label)"
-                        (change)="onValorLabelChange($event)">
+                        (change)="onValorLabelChange(label, $event)">
 
                         <ng-template ng-multi-label-tmp>
                             <span class="custom-selected-label">
@@ -50,6 +59,7 @@
                         </ng-template>
 
                     </ng-select>
+
                 </div>
             </ng-container>
 
@@ -58,10 +68,17 @@
                 <label class="filter-label">
                     Desafios
                 </label>
-                <ng-select [items]="listaDesafiosFiltrados" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.desafio.id"
-                    [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true"
-                    placeholder="Selecionar..." class="select-filtro" 
-                    [disabled]="somenteLeitura || !isLabelsSelecionados()">
+                <ng-select [items]="listaDesafiosFiltrados" 
+                    bindLabel="nome" 
+                    bindValue="id" 
+                    [(ngModel)]="filtro.desafio.id"
+                    [multiple]="true" 
+                    [closeOnSelect]="false" 
+                    [searchable]="true" 
+                    [clearable]="true"
+                    placeholder="Selecionar..." 
+                    class="select-filtro" 
+                    [disabled]="somenteLeitura || !isLabelsFilhosSelecionados()">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
                         <input type="checkbox" [checked]="item$.selected" tabindex="-1" style="margin-right: 8px; pointer-events: none;" />

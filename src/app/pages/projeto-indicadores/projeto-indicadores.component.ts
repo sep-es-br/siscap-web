@@ -533,8 +533,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private atualizarChipsFiltros(): void {
 
-    console.log("Current filter:", this.currentFilter)
-
     this.chips = [
 
       {

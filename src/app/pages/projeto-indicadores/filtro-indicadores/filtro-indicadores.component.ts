@@ -175,7 +175,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
       }
     };
   }
-  
+
   applyFilter() {
     this.montarChipsFiltro();
     this.apply.emit(this.filtro);
@@ -229,39 +229,120 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   }
 
+  // isLabelFilhoDisabled(label: any): boolean {
+  //   if (!this.isLabelFilho(label) ) {
+  //     return false;
+  //   }
+  //   const labelPai = this.getLabelPai(label);
+  //   if (!labelPai) {
+  //     return true;
+  //   }
+  //   const selecionadosPai = 
+  //     this.filtro.labels[labelPai.idLabel];
+  //   return !selecionadosPai || selecionadosPai.length === 0;
+  // }
+
   isLabelFilhoDisabled(label: any): boolean {
 
-    if (!this.isLabelFilho(label)) {
+    const labelOriginal = this.labelsOriginais.find((l: any) => 
+      l.idLabel === label.idLabel || l.nome === label.nome
+    );
+  
+    if (!labelOriginal) {
       return false;
     }
+  
+    const valores = labelOriginal.valores ?? [];
+  
+    const temValores = valores.length > 0;
+  
+    const ehFilho = temValores && valores.every((valor: any) =>
+      valor.idPai != null
+    );
+  
+    // Pai/root nunca desabilita por hierarquia
+    if (!ehFilho) {
+      return false;
+    }
+  
+    const idsPaisDoLabelFilho: number[] = Array.from(
+      new Set<number>(
+        valores
+          .map((valor: any) => Number(valor.idPai))
+          .filter((id: number) => !isNaN(id))
+      )
+    );
+  
+    const idsSelecionados: number[] = Object.values(this.filtro.labels ?? {})
+      .flat()
+      .map((id: any) => Number(id))
+      .filter((id: number) => !isNaN(id));
+  
+    const temPaiSelecionado = idsPaisDoLabelFilho.some((idPai: number) =>
+      idsSelecionados.includes(idPai)
+    );
+  
+    return !temPaiSelecionado;
 
-    const labelPai = this.getLabelPai(label);
+  }
 
-    if (!labelPai) {
+  // getValoresLabel(label: any): any[] {
+  //   const labelOriginal = this.labelsOriginais.find(l => l.nome === label.nome);
+  //   if (!labelOriginal) {
+  //     return [];
+  //   }
+  //   const idsSelecionados: number[] = Object.values(this.filtro.labels ?? {})
+  //     .flat()
+  //     .map((id: any) => Number(id))
+  //     .filter((id: number) => !isNaN(id));
+  //   const ehFilho = (labelOriginal.valores ?? []).some((v: any) => v.idPai != null);
+  //   if (!ehFilho) {
+  //     return labelOriginal.valores ?? [];
+  //   }
+  //   return (labelOriginal.valores ?? []).filter((valor: any) =>
+  //     idsSelecionados.includes(Number(valor.idPai))
+  //   );
+  // }
+
+  // isLabelsSelecionados(): boolean {
+  //   const idsSelecionados = Object.values( this.filtro.labels as Record<number, number[]> )
+  //     .flat()
+  //     .filter( (id): id is number => id != null );
+  //   if (idsSelecionados.length === 0) {
+  //     return false;
+  //   }
+  //   return true;
+  // }
+
+  isLabelsFilhosSelecionados(): boolean {
+    const labelsFilhos = this.labelsOrdenados.filter((label: any) =>
+      this.isLabelFilho(label)
+    );
+  
+    if (!labelsFilhos.length) {
       return true;
     }
-
-    const selecionadosPai =
-      this.filtro.labels[labelPai.idLabel];
-
-    return !selecionadosPai || selecionadosPai.length === 0;
-
+  
+    return labelsFilhos.every((label: any) => {
+      const disabled = this.isLabelFilhoDisabled(label);
+  
+      if (disabled) {
+        return true;
+      }
+  
+      const selecionados = this.filtro.labels?.[label.idLabel] ?? [];
+  
+      return Array.isArray(selecionados) && selecionados.length > 0;
+    });
   }
 
-  isLabelsSelecionados(): boolean {
+  onValorLabelChange(label: any, selecionados: any[] | null): void {
 
-    const idsSelecionados = Object.values(this.filtro.labels as Record<number, number[]>)
-      .flat()
-      .filter((id): id is number => id != null);
+    const vazio = !selecionados || selecionados.length === 0;
 
-    if (idsSelecionados.length === 0) {
-      return false;
+    if (vazio) {
+      this.limparLabelsFilhos(label);
     }
-
-    return true;
-  }
-
-  onValorLabelChange(label: LabelValor): void {
 
     this.labelsOrdenados = this.recalcularLabels(this.labelsOriginais);
 
@@ -269,8 +350,39 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   }
 
-  isLabelFilho(label: Label): boolean {
-    return label.valores?.some(v => v.idPai != null);
+  private limparLabelsFilhos(labelPai: any): void {
+
+    const idsValoresPai = labelPai.valores.map((v: any) => v.idLabelValor);
+
+    this.labelsOrdenados.forEach(label => {
+
+      const ehFilhoDessePai = label.valores?.some((valor: any) =>
+        idsValoresPai.includes(valor.idPai)
+      );
+
+      if (ehFilhoDessePai) {
+
+        this.filtro.labels[label.idLabel] = [];
+
+        this.limparLabelsFilhos(label);
+
+      }
+
+    });
+
+  }
+
+  // isLabelFilho(label: Label): boolean {
+  //   return label.valores?.some(v => v.idPai != null);
+  // }
+
+  isLabelFilho(label: any): boolean {
+    const resultado = (label.valores ?? []).some((valor: any) => {
+      const idPai = Number(valor.idPai);
+      return valor.idPai != null && !isNaN(idPai);
+    });
+  
+    return resultado;
   }
 
   getLabelPai(labelFilho: Label): any {
@@ -314,7 +426,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   private montarChipsFiltro(): void {
 
     this.filtro.chips = {
-      
+
       labels: this.labelsOrdenados
         .map(label => {
           const idsSelecionados = this.filtro.labels[label.idLabel] ?? [];
@@ -324,7 +436,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
               idValor: valor.idLabelValor,
               nomeValor: valor.valor
             }));
-  
+
           return {
             idLabel: label.idLabel,
             nomeLabel: label.nome,
@@ -332,7 +444,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
           };
         })
         .filter(chip => chip.valores.length > 0),
-  
+
       desafio: this.desafiosFiltrados()
         .filter(desafio => (this.filtro.desafio.id ?? []).includes(desafio.id))
         .map(desafio => ({
