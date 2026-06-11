@@ -291,34 +291,6 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   }
 
-  // getValoresLabel(label: any): any[] {
-  //   const labelOriginal = this.labelsOriginais.find(l => l.nome === label.nome);
-  //   if (!labelOriginal) {
-  //     return [];
-  //   }
-  //   const idsSelecionados: number[] = Object.values(this.filtro.labels ?? {})
-  //     .flat()
-  //     .map((id: any) => Number(id))
-  //     .filter((id: number) => !isNaN(id));
-  //   const ehFilho = (labelOriginal.valores ?? []).some((v: any) => v.idPai != null);
-  //   if (!ehFilho) {
-  //     return labelOriginal.valores ?? [];
-  //   }
-  //   return (labelOriginal.valores ?? []).filter((valor: any) =>
-  //     idsSelecionados.includes(Number(valor.idPai))
-  //   );
-  // }
-
-  // isLabelsSelecionados(): boolean {
-  //   const idsSelecionados = Object.values( this.filtro.labels as Record<number, number[]> )
-  //     .flat()
-  //     .filter( (id): id is number => id != null );
-  //   if (idsSelecionados.length === 0) {
-  //     return false;
-  //   }
-  //   return true;
-  // }
-
   isLabelsFilhosSelecionados(): boolean {
     const idsSelecionados: number[] = Object.values(this.filtro.labels ?? {})
       .flat()
@@ -378,11 +350,9 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
     });
 
-  }
+    this.filtro.desafio = [];
 
-  // isLabelFilho(label: Label): boolean {
-  //   return label.valores?.some(v => v.idPai != null);
-  // }
+  }
 
   isLabelFilho(label: any): boolean {
     const resultado = (label.valores ?? []).some((valor: any) => {

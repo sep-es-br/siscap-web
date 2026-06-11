@@ -1292,6 +1292,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private executarAcaoBreadcrumb(acao: TBotaoAcao): void {
+
     switch (acao) {
       case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
@@ -1524,8 +1525,33 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private validarFormulario(form: FormGroup): boolean {
+
     for (const key in form.controls) {
       form.controls[key].markAllAsTouched();
+    }
+
+    const indicadoresProjeto = form.get('indicadoresProjeto');
+    const indicadoresAvulsosProjeto = form.get('indicadoresAvulsosProjeto');
+
+    const qtdIndicadoresProjeto = indicadoresProjeto?.value?.length ?? 0;
+    const qtdIndicadoresAvulsos = indicadoresAvulsosProjeto?.value?.length ?? 0;
+
+    const temIndicadorProjeto = qtdIndicadoresProjeto > 0;
+    const temIndicadorAvulso = qtdIndicadoresAvulsos > 0;
+
+    if (!temIndicadorProjeto && !temIndicadorAvulso) {
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
+        'É obrigatório informar ao menos um indicador.',
+      ]);
+      return false;
+    }
+
+    if (temIndicadorAvulso && indicadoresProjeto?.hasError('required')) {
+      const errors = { ...indicadoresProjeto.errors };
+      delete errors['required'];
+
+      indicadoresProjeto.setErrors(Object.keys(errors).length ? errors : null);
+      
     }
 
     if (form.invalid) {
@@ -1539,7 +1565,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
         'Por favor, verifique os campos.',
       ]);
+
       return false;
+
     }
 
     // valida se tem pelo menos uma acao ATIVA no form
@@ -1572,6 +1600,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     return true;
+
   }
 
   getLotacao(nLotacao: number) {

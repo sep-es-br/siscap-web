@@ -61,18 +61,23 @@ export class IndicadoresService {
 
   }
 
-  public construirindicadoresFormArray(
-    indicadores?: Array<IIndicadores>
-  ): FormArray<FormGroup<IndicadoresFormType>> {
-    const indicadoresFormArray = this._nnfb.array<FormGroup<IndicadoresFormType>>([],[Validators.required, Validators.minLength(1),]);
+  public construirindicadoresFormArray( indicadores?: Array<IIndicadores>)
+    : FormArray<FormGroup<IndicadoresFormType>> {
+
+    const indicadoresFormArray = this._nnfb.array<FormGroup<IndicadoresFormType>>([],
+      [Validators.required, Validators.minLength(1),]);
+    
     if (indicadores) {
       indicadores.forEach((indicador) => {
         indicadoresFormArray.push(this.construirIndicadorFormGroup(indicador));
       });
     }
+
     this.indicadoresFormArray = indicadoresFormArray;
     this.indicadoresFormArraySnapshot = this.indicadoresFormArray.value as Array<IIndicadores>;
+
     return this.indicadoresFormArray;
+
   }
 
   public construirIndicadorFormGroup(membro?: IIndicadores): FormGroup<IndicadoresFormType> {
