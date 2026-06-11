@@ -91,6 +91,7 @@
     <div class="card">
       <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
+          
           <li class="nav-item" role="presentation">
             <button class="nav-link" [ngClass]="{ active: !aguardandoParecer() }" id="nav-propriedades"
               data-bs-toggle="tab" data-bs-target="#tab-propriedades" role="tab" aria-controls="propriedades"
@@ -100,23 +101,24 @@
           </li>
 
           <li class="nav-item">
-            <button class="nav-link aba-bloqueada" 
+            <button class="nav-link"
               id="nav-indicadores" 
               data-bs-toggle="tab"
               data-bs-target="#tab-indicadores" 
-              type="button">
+              type="button" 
+              (click)="irParaIndicadores()">
               Indicadores
-              <!-- <validation-message [control]="getControl('indicadoresProjeto')"></validation-message> -->
               <span *ngIf="getControl('indicadoresProjeto')?.invalid && getControl('indicadoresProjeto')?.touched" class="text-danger"></span>
             </button>
           </li>
 
           <li class="nav-item">
-            <button class="nav-link aba-bloqueada" 
+            <button class="nav-link" 
               id="nav-ods-indicadores" 
               data-bs-toggle="tab"
               data-bs-target="#tab-ods-indicadores" 
-              type="button">
+              type="button"
+              (click)="irParaOds()">
               ODS
             </button>
           </li>

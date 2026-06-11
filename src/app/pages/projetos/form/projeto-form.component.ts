@@ -1651,9 +1651,74 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      const payload = new ProjetoFormModel(
-        this.projetoForm.getRawValue() as IProjetoForm,
-      );
+      const indicadoresProjetoPayload = this.projetoForm.getRawValue()
+        .indicadoresProjeto
+        .filter((indicador: IIndicadores) =>
+          indicador.idIndicadorExterno !== null &&
+          indicador.idIndicadorExterno !== undefined &&
+          indicador.idIndicadorExterno !== 0
+        )
+        .map((indicador: IIndicadores) => ({
+          idIndicador: indicador.idIndicador,
+          tipoIndicador: indicador.tipoIndicador ?? null,
+          descricaoIndicador: indicador.descricaoIndicador ?? null,
+          descricaoMeta: indicador.descricaoMeta ?? null,
+          idStatus: indicador.idStatus ?? 1,
+          idIndicadorExterno: indicador.idIndicadorExterno,
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
+            id: meta.id,
+            anoMeta: meta.anoMeta,
+            valorMeta: meta.valorMeta
+          })) ?? []
+        }));
+
+      const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
+        .indicadoresAvulsosProjeto
+        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
+        .map((indicador: IIndicadorAvulso) => ({
+          id: indicador.id ?? null,
+          idIndicadorAvulso: indicador.idIndicador ?? null,
+          indicadorAvulso: {
+            id: indicador.idIndicador ?? null,
+            nomeIndicador: indicador.nomeIndicador,
+            unidadeMedida: indicador.unidadeMedida,
+            fonteIndicador: indicador.fonteIndicador,
+            medidoPor: indicador.medidoPor,
+            baseDeReferencia: indicador.basedeReferencia
+          },
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto
+        }));
+
+
+      const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
+      const estavaDisabled = indicadoresProjetoControl?.disabled;
+
+      indicadoresProjetoControl?.disable({ emitEvent: false });
+
+      if (!estavaDisabled) {
+        indicadoresProjetoControl?.enable({ emitEvent: false });
+      }
+
+      const odsProjetoPayload = this.projetoForm.getRawValue()
+        .odsProjeto
+        ?.map((ods: any) => ({
+          idOdsProjeto: ods.idOdsProjeto ?? null,
+          odsId: ods.odsId,
+          odsOrdem: ods.odsOrdem,
+          odsNome: ods.odsNome,
+          odsDescricao: ods.odsDescricao
+        })) ?? [];
+
+      const payload =
+        new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+
+      payload.indicadoresProjeto = indicadoresProjetoPayload;
+      payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
+      payload.odsProjeto = odsProjetoPayload;
+
+      // const payload = new ProjetoFormModel(
+      //   this.projetoForm.getRawValue() as IProjetoForm,
+      // );
 
       payload.parecerProjetoUsuario = this.projetoForm
         .get('parecerProjetoUsuario')
@@ -2280,11 +2345,77 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.get('valor.tipo')?.enable();
     form.get('valor.moeda')?.enable();
 
-    const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+    const indicadoresProjetoPayload = this.projetoForm.getRawValue()
+      .indicadoresProjeto
+      .filter((indicador: IIndicadores) =>
+        indicador.idIndicadorExterno !== null &&
+        indicador.idIndicadorExterno !== undefined &&
+        indicador.idIndicadorExterno !== 0
+      )
+      .map((indicador: IIndicadores) => ({
+        idIndicador: indicador.idIndicador,
+        tipoIndicador: indicador.tipoIndicador ?? null,
+        descricaoIndicador: indicador.descricaoIndicador ?? null,
+        descricaoMeta: indicador.descricaoMeta ?? null,
+        idStatus: indicador.idStatus ?? 1,
+        idIndicadorExterno: indicador.idIndicadorExterno,
+        metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
+          id: meta.id,
+          anoMeta: meta.anoMeta,
+          valorMeta: meta.valorMeta
+        })) ?? []
+      }));
+
+    const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
+      .indicadoresAvulsosProjeto
+      .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
+      .map((indicador: IIndicadorAvulso) => ({
+        id: indicador.id ?? null,
+        idIndicadorAvulso: indicador.idIndicador ?? null,
+        indicadorAvulso: {
+          id: indicador.idIndicador ?? null,
+          nomeIndicador: indicador.nomeIndicador,
+          unidadeMedida: indicador.unidadeMedida,
+          fonteIndicador: indicador.fonteIndicador,
+          medidoPor: indicador.medidoPor,
+          baseDeReferencia: indicador.basedeReferencia
+        },
+        metasIndicadorProjeto: indicador.metasIndicadorProjeto
+      }));
+
+
+    const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
+    const estavaDisabled = indicadoresProjetoControl?.disabled;
+
+    indicadoresProjetoControl?.disable({ emitEvent: false });
+
+    if (!estavaDisabled) {
+      indicadoresProjetoControl?.enable({ emitEvent: false });
+    }
+
+    const odsProjetoPayload = this.projetoForm.getRawValue()
+      .odsProjeto
+      ?.map((ods: any) => ({
+        idOdsProjeto: ods.idOdsProjeto ?? null,
+        odsId: ods.odsId,
+        odsOrdem: ods.odsOrdem,
+        odsNome: ods.odsNome,
+        odsDescricao: ods.odsDescricao
+      })) ?? [];
+
+    const payload =
+      new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+
+    payload.indicadoresProjeto = indicadoresProjetoPayload;
+    payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
+    payload.odsProjeto = odsProjetoPayload;
+
+    //const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
 
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
     this.efetivarEnvioParecerProjetoAsync(payload);
+
   }
 
   private efetivarEntranhamentoPareceresProjetoForm(form: FormGroup): void {
@@ -2866,6 +2997,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     const tabTrigger = document.getElementById('nav-indicadores');
+
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+  }
+
+  public irParaOds(): void {
+
+    const tabTrigger = document.getElementById('nav-ods-indicadores');
 
     if (tabTrigger) {
       const tab = new bootstrap.Tab(tabTrigger);
