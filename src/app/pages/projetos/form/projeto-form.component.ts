@@ -1050,8 +1050,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }),
       pareceresProjeto: this._nnfb.array([]),
 
-      indicadoresAvulsosProjeto: 
-        this.indicadoresService.construirindicadoresAvulsosFormArray( projetoFormModel?.indicadoresAvulsosProjeto ),
+      indicadoresAvulsosProjeto:
+        this.indicadoresService.construirindicadoresAvulsosFormArray(projetoFormModel?.indicadoresAvulsosProjeto),
 
       odsProjeto: this._nnfb.array(
         projetoFormModel?.odsProjeto?.map((ods: any) =>
@@ -1641,6 +1641,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
       this.statusProjeto === StatusProjetoEnum.Elegivel
     ) {
+
       const parecerControl = this.projetoForm.get(
         'parecerProjetoUsuario',
       ) as FormGroup;
@@ -1676,7 +1677,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
           idIndicadorExterno: indicador.idIndicadorExterno,
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map( meta => ({
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
             id: meta.id,
             anoMeta: meta.anoMeta,
             valorMeta: meta.valorMeta
@@ -1685,7 +1686,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
         .indicadoresAvulsosProjeto
-        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim() )
+        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
         .map((indicador: IIndicadorAvulso) => ({
           id: indicador.id ?? null,
           idIndicadorAvulso: indicador.idIndicador ?? null,
@@ -1750,6 +1751,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
 
+      if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
+        return;
+      }
+
       // console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
@@ -1760,6 +1765,39 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     }
 
+  }
+
+  private validarIndicadores(indicadoresBiDIC: Array<IIndicadores>, indicadoresAvulsos: Array<IIndicadorAvulso>): boolean {
+
+    const indicadoresArray = indicadoresBiDIC;
+    const indicadoresAvulsosArray = indicadoresAvulsos;
+
+    const temIndicadores = indicadoresArray?.length > 0;
+    const temIndicadoresAvulsos = indicadoresAvulsosArray?.length > 0;
+
+    if (!temIndicadores && !temIndicadoresAvulsos) {
+      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+        'É obrigatório informar ao menos um indicador.',
+      ]);
+      return false;
+    }
+
+    const algumIndicadorSemMeta =
+      indicadoresArray.some((i: any) =>
+        i.metasIndicadorProjeto?.some((m: any) => !m.valorMeta)
+      ) ||
+      indicadoresAvulsosArray.some((i: any) =>
+        i.metasIndicadorProjeto?.some((m: any) => !m.valorMeta)
+      );
+
+    if (algumIndicadorSemMeta) {
+      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+        'É obrigatório preencher todas as metas dos indicadores.',
+      ]);
+      return false;
+    }
+
+    return true;
   }
 
   onSelecionarOrganizacao(organizacao: any) {
@@ -2082,6 +2120,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public confirmarAssinarAutuar() {
+
     this.autuacaoAcionada = true;
     this.assinarAutuar = false;
     this.finalizadoProcessamentoIntegracao = false;
@@ -2091,6 +2130,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     } else {
       this.autuarProjetoForm(this.projetoForm);
     }
+
   }
 
   public confirmarAssinarCapturarParecer(elegivel?: boolean) {
@@ -2128,13 +2168,109 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private autuarProjetoForm(form: FormGroup): void {
+
     form.updateValueAndValidity();
+
     setTimeout(() => {
+
+      const indicadoresProjetoPayload = this.projetoForm.getRawValue()
+        .indicadoresProjeto
+        .filter((indicador: IIndicadores) =>
+          indicador.idIndicadorExterno !== null &&
+          indicador.idIndicadorExterno !== undefined &&
+          indicador.idIndicadorExterno !== 0
+        )
+        .map((indicador: IIndicadores) => ({
+          idIndicador: indicador.idIndicador,
+          tipoIndicador: indicador.tipoIndicador ?? null,
+          descricaoIndicador: indicador.descricaoIndicador ?? null,
+          descricaoMeta: indicador.descricaoMeta ?? null,
+          idStatus: indicador.idStatus ?? 1,
+          idIndicadorExterno: indicador.idIndicadorExterno,
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
+            id: meta.id,
+            anoMeta: meta.anoMeta,
+            valorMeta: meta.valorMeta
+          })) ?? []
+        }));
+
+      const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
+        .indicadoresAvulsosProjeto
+        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
+        .map((indicador: IIndicadorAvulso) => ({
+          id: indicador.id ?? null,
+          idIndicadorAvulso: indicador.idIndicador ?? null,
+          indicadorAvulso: {
+            id: indicador.idIndicador ?? null,
+            nomeIndicador: indicador.nomeIndicador,
+            unidadeMedida: indicador.unidadeMedida,
+            fonteIndicador: indicador.fonteIndicador,
+            medidoPor: indicador.medidoPor,
+            baseDeReferencia: indicador.basedeReferencia
+          },
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto
+        }));
+
+      const temIndicador =
+        indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
+
+      if (!temIndicador) {
+        this._toastService.showToast('warning', 'O formulário contém erros.', [
+          'Informe pelo menos um indicador.'
+        ]);
+        return;
+      }
+
+      const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
+      const estavaDisabled = indicadoresProjetoControl?.disabled;
+
+      indicadoresProjetoControl?.disable({ emitEvent: false });
+
+      const formValido = this.validarFormulario(form);
+
+      if (!estavaDisabled) {
+        indicadoresProjetoControl?.enable({ emitEvent: false });
+      }
+
+      if (!formValido) {
+        return;
+      }
+
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
-      const payload = new ProjetoFormModel(form.value as IProjetoForm);
-      payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+
+      const odsProjetoPayload = this.projetoForm.getRawValue()
+        .odsProjeto
+        ?.map((ods: any) => ({
+          idOdsProjeto: ods.idOdsProjeto ?? null,
+          odsId: ods.odsId,
+          odsOrdem: ods.odsOrdem,
+          odsNome: ods.odsNome,
+          odsDescricao: ods.odsDescricao
+        })) ?? [];
+
+      const payload =
+        new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+
+      if (this.isProponente) {
+        payload.idOrganizacao =
+          form.get('idOrganizacao')?.value;
+      }
+
+      payload.indicadoresProjeto = indicadoresProjetoPayload;
+      payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
+      payload.odsProjeto = odsProjetoPayload;
+
+      if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
+        return;
+      }
+
+      ////////////////////////////
+      // const payload = new ProjetoFormModel(form.value as IProjetoForm);
+      // payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+
       this.autuarProjetoAsync(payload);
+
     });
   }
 
@@ -2724,8 +2860,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     if (!this.validarAbaDic()) {
       this._toastService.showToast('error', 'Erro ao avançar', [
-          'Verifique os campos obrigatórios antes de continuar.',
-        ]);
+        'Verifique os campos obrigatórios antes de continuar.',
+      ]);
       return;
     }
 

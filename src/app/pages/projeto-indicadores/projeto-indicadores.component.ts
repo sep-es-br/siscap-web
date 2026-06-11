@@ -240,12 +240,20 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
         return {
           ...cat,
+
           idIndicadorProjeto: doForm?.idIndicador,
+
+          ods: doForm?.idIndicador
+            ? (doForm as any)?.ods ?? []
+            : cat.ods ?? [],
+
           metasIndicadorProjeto:
             doForm?.metasIndicadorProjeto?.length
               ? doForm.metasIndicadorProjeto
               : this.montarMetasProjetoVazias()
+
         };
+
       });
 
     this.atualizarFormulario();
@@ -283,13 +291,13 @@ export class ProjetoIndicadoresComponent implements OnInit {
           metasBase
             .sort((a: { anoMeta: number; }, b: { anoMeta: number; }) => a.anoMeta - b.anoMeta)
             .map((meta: any) =>
-            this.fb.group({
-              id: [meta.id ?? null],
-              idFato: [meta.idFato ?? null],
-              anoMeta: [meta.anoMeta],
-              valorMeta: [meta.valorMeta ?? '', Validators.required]
-            })
-          )
+              this.fb.group({
+                id: [meta.id ?? null],
+                idFato: [meta.idFato ?? null],
+                anoMeta: [meta.anoMeta],
+                valorMeta: [meta.valorMeta ?? '', Validators.required]
+              })
+            )
         );
 
         formArray.push(
@@ -433,39 +441,46 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   irParaODS() {
 
+    if (!this.validarObrigatoriedadeIndicadores()) {
+      return;
+    }
+
+    const abaOds = document.getElementById('nav-ods-indicadores');
+    abaOds?.click();
+
+  }
+
+  private validarObrigatoriedadeIndicadores(): boolean {
+
     const indicadoresArray = this.formProjeto.get('indicadoresProjeto') as FormArray;
     const indicadoresAvulsosArray = this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
 
-    const temIndicadores = indicadoresArray && indicadoresArray.length > 0;
-    const temIndicadoresAvulsos = indicadoresAvulsosArray && indicadoresAvulsosArray.length > 0;
+    const temIndicadores = indicadoresArray?.length > 0;
+    const temIndicadoresAvulsos = indicadoresAvulsosArray?.length > 0;
 
     if (!temIndicadores && !temIndicadoresAvulsos) {
       this._toastService.showToast('error', 'Erro ao carregar projeto', [
         'É obrigatório informar ao menos um indicador.',
       ]);
-      return;
+      return false;
     }
 
-    if (
+    const algumIndicadorSemMeta =
       indicadoresArray.getRawValue().some((i: any) =>
-        i.metasIndicadorProjeto.some((m: any) => !m.valorMeta)
+        i.metasIndicadorProjeto?.some((m: any) => !m.valorMeta)
       ) ||
       indicadoresAvulsosArray.getRawValue().some((i: any) =>
-        i.metasIndicadorProjeto.some((m: any) => !m.valorMeta)
-      )
-    ) {
-      this._toastService.showToast(
-        'error',
-        'Erro ao carregar projeto',
-        ['É obrigatório preencher todas as metas dos indicadores.']
+        i.metasIndicadorProjeto?.some((m: any) => !m.valorMeta)
       );
 
-      return;
+    if (algumIndicadorSemMeta) {
+      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+        'É obrigatório preencher todas as metas dos indicadores.',
+      ]);
+      return false;
     }
 
-    const abaOds = document.getElementById('nav-ods-indicadores')
-
-    abaOds?.click();
+    return true;
 
   }
 
@@ -541,7 +556,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
         type: 'base',
         removable: false,
       },
-   
+
       ...(this.currentFilter?.chips?.labels ?? []).flatMap((labelChip: any) =>
         labelChip.valores.map((valor: any) => ({
           label: labelChip.nomeLabel,

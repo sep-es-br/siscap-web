@@ -133,17 +133,4 @@
     opacity: 0.6;
     cursor: default;
   }
-  
-}
-
-.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-  cursor: default;
-}
-
-.gestao-badge.disabled {
-  pointer-events: none;
-  opacity: 0.7;
-  cursor: default;
 }
