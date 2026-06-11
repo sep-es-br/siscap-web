@@ -7,7 +7,9 @@
         [label]="chip.label" 
         [value]="chip.value"
         [type]="chip.type"
-        [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)"
+        [removable]="chip.removable" 
+        (onClick)="onChipClick(chip)" 
+        (onRemove)="removeChip(chip)"
         [somenteLeitura]="somenteLeitura">
       </app-indicador-chip>
     </div>
@@ -17,8 +19,13 @@
     </p-button>
   </div>
 
-  <app-filtro-indicadores *ngIf="showModal" [gestao]="gestao" [desafios]="gestao?.desafios || []"
-    [filtroAtual]="currentFilter" (apply)="onApply($event)" (close)="showModal = false"
+  <app-filtro-indicadores *ngIf="showModal" 
+    [gestao]="gestao" 
+    [desafios]="gestao?.desafios || []"
+    [filtroAtual]="currentFilter" 
+    (apply)="onApply($event)" 
+    (close)="showModal = false"
+    (restaurar)="onRestaurar()"
     [somenteLeitura]="somenteLeitura"></app-filtro-indicadores>
 
 </div>

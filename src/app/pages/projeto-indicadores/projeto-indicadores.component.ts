@@ -337,6 +337,10 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.showModal = true;
   }
 
+  onRestaurar(): void {
+    this.initBaseChip();
+  }
+
   // executado quando o filtro é aplicado no componente filho
   onApply(filter: any): void {
 

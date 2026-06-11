@@ -23,6 +23,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   @Output() apply = new EventEmitter<any>();
   @Output() close = new EventEmitter<void>();
+  @Output() restaurar = new EventEmitter<void>();
 
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() desafios: Desafio[] = [];
@@ -163,6 +164,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   }
 
   resetar() {
+    
     this.filtro = {
       idGestao: this.gestaoSelecionada?.idGestao || null,
       labels: {},
@@ -174,6 +176,9 @@ export class FiltroIndicadoresComponent implements OnChanges {
         desafio: []
       }
     };
+
+    this.restaurar.emit();
+
   }
 
   applyFilter() {
