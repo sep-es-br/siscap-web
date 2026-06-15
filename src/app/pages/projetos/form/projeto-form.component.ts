@@ -1551,7 +1551,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       delete errors['required'];
 
       indicadoresProjeto.setErrors(Object.keys(errors).length ? errors : null);
-      
+
     }
 
     if (form.invalid) {
@@ -3016,41 +3016,48 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  public irParaIndicadores(): void {
+  public irParaIndicadores(event: MouseEvent): void {
+    event.preventDefault();
 
     if (!this.validarAbaDic()) {
       this._toastService.showToast('error', 'Erro ao avançar', [
         'Verifique os campos obrigatórios antes de continuar.',
       ]);
+      this.abrirAba('nav-propriedades');
       return;
     }
 
-    const tabTrigger = document.getElementById('nav-indicadores');
-
-    if (tabTrigger) {
-      const tab = new bootstrap.Tab(tabTrigger);
-      tab.show();
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    }
+    this.abrirAba('nav-indicadores');
 
   }
 
-  public irParaOds(): void {
+  public irParaOds(event: MouseEvent): void {
+    event.preventDefault();
+  
+    const campoOds = this.projetoForm.get('impactos');
+  
+    campoOds?.clearValidators();
+    campoOds?.updateValueAndValidity();
+  
+    if (!this.validarFormulario(this.projetoForm)) {
+      this.abrirAba('nav-indicadores');
+      return;
+    }
+  
+    campoOds?.setValidators([Validators.required]);
+    campoOds?.updateValueAndValidity();
+  
+    this.abrirAba('nav-ods-indicadores');
+  }
 
-    const tabTrigger = document.getElementById('nav-ods-indicadores');
+  private abrirAba(idBotaoAba: string): void {
+    const trigger = document.getElementById(idBotaoAba);
 
-    if (tabTrigger) {
-      const tab = new bootstrap.Tab(tabTrigger);
-      tab.show();
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+    if (!trigger) {
+      return;
     }
 
+    bootstrap.Tab.getOrCreateInstance(trigger).show();
   }
 
   private validarAbaDic(): boolean {

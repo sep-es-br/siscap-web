@@ -91,7 +91,7 @@
     <div class="card">
       <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
-          
+
           <li class="nav-item" role="presentation">
             <button class="nav-link" [ngClass]="{ active: !aguardandoParecer() }" id="nav-propriedades"
               data-bs-toggle="tab" data-bs-target="#tab-propriedades" role="tab" aria-controls="propriedades"
@@ -101,24 +101,25 @@
           </li>
 
           <li class="nav-item">
-            <button class="nav-link"
+            <button 
+              class="nav-link" 
               id="nav-indicadores" 
-              data-bs-toggle="tab"
-              data-bs-target="#tab-indicadores" 
+              data-bs-target="#tab-indicadores"
               type="button" 
-              (click)="irParaIndicadores()">
+              (click)="irParaIndicadores($event)">
               Indicadores
-              <span *ngIf="getControl('indicadoresProjeto')?.invalid && getControl('indicadoresProjeto')?.touched" class="text-danger"></span>
+              <span *ngIf="getControl('indicadoresProjeto').invalid && getControl('indicadoresProjeto').touched"
+                class="text-danger"></span>
             </button>
           </li>
 
           <li class="nav-item">
-            <button class="nav-link" 
+            <button 
+              class="nav-link" 
               id="nav-ods-indicadores" 
-              data-bs-toggle="tab"
               data-bs-target="#tab-ods-indicadores" 
               type="button"
-              (click)="irParaOds()">
+              (click)="irParaOds($event)">
               ODS
             </button>
           </li>
@@ -409,8 +410,10 @@
           </form>
 
           <div class="navigation-buttons">
-            <button class="nav-btn" id="avancarIndicadores"
-              style="background:var(--blue); color:white; border-color:var(--blue);" (click)="irParaIndicadores()">
+            <button class="nav-btn" 
+              id="avancarIndicadores"
+              style="background:var(--blue); color:white; border-color:var(--blue);" 
+              (click)="irParaIndicadores($event)">
               <i class="pi pi-arrow-right"></i>
             </button>
           </div>
