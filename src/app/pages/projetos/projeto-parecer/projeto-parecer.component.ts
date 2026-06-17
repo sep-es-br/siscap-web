@@ -14,6 +14,7 @@ import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { Jodit } from 'jodit';
 import { paste } from 'jodit/types/plugins/paste/paste';
+import { ToastService } from '../../../core/services/toast/toast.service';
 @Component({
   selector: 'siscap-projeto-parecer',
   standalone: true,
@@ -33,6 +34,7 @@ import { paste } from 'jodit/types/plugins/paste/paste';
 export class ProjetoParecerComponent implements OnInit, AfterViewInit{
 
   @ViewChild('editor') editorElement!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('pdfInput') pdfInput!: ElementRef<HTMLInputElement>;
 
   editor! : Jodit | undefined;
 
@@ -45,7 +47,8 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
 
 
   constructor(
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private readonly _toastService: ToastService
   ) { }
 
   get parecerFormGroup(): FormGroup {
@@ -200,6 +203,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
   MAX_CHARS = 10000;
 
   updateFormControl() {
+    
     if(!this.editor) return;
     const html = this.editor.value;
 
@@ -214,6 +218,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
 
     // bloqueia se passar do limite
     if (plainText.length > this.MAX_CHARS) {
+
       // corta o texto
       const truncated = plainText.substring(0, this.MAX_CHARS);
 
@@ -239,6 +244,53 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
     const div = document.createElement('div');
     div.innerHTML = html;
     return div.textContent?.trim() || '';
+  }
+
+  public selecionarPdf(): void {
+    this.pdfInput.nativeElement.click();
+  }
+  
+  public async onPdfSelecionado(event: Event): Promise<void> {
+  
+    const input = event.target as HTMLInputElement;
+  
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+  
+    const arquivo = input.files[0];
+
+    const pdfValido = await this.validarPdf(arquivo);
+
+    if (!pdfValido) {
+      this._toastService.showToast(
+        'error',
+        'O arquivo selecionado não é um PDF válido.',
+      );
+      input.value = '';
+      return;
+    }
+    
+    // console.log('Nome:', arquivo.name);
+    // console.log('Tamanho:', arquivo.size);
+    // console.log('Tipo:', arquivo.type);
+    
+    // guardar para enviar depois
+    // this.arquivoParecer = arquivo;
+
+  }
+
+  public async validarPdf(arquivo: File): Promise<boolean> {
+
+    const buffer = await arquivo.slice(0, 5).arrayBuffer();
+  
+    const bytes = new Uint8Array(buffer);
+  
+    const assinatura =
+      String.fromCharCode(...bytes);
+  
+    return assinatura === '%PDF-';
+
   }
 
 }

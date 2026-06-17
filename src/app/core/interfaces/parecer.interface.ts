@@ -1,5 +1,4 @@
 import { LotacaoUsuarioEnum } from "../enums/lotacao-usuario.enum";
-import { StatusParecerEnum } from "../enums/status-parecer.enum";
 
 export interface IParecer {
 
