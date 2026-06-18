@@ -1,0 +1,25 @@
+.parecer-anexo-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 8px 12px;
+  border: 1px solid #d7e7f8;
+  border-radius: 6px;
+  background: #f8fbff;
+}
+
+.parecer-anexo-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0a588f;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.parecer-anexo-actions {
+  display: flex;
+  gap: 8px;
+}

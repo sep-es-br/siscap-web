@@ -13,4 +13,14 @@ export interface IParecer {
 	parecerLotacao: LotacaoUsuarioEnum;
 	elegivel: boolean;
 
+	anexos?: IParecerAnexo;
+
+}
+
+export interface IParecerAnexo {
+	arquivo?: File;
+	nomeArquivo: string;
+	tamanhoBytes: number;
+	tipoMime: string;
+	tamanhoFormatado: string;
 }
