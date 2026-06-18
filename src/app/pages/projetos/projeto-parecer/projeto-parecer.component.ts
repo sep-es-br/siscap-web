@@ -290,6 +290,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
     if (this.editor) {
       this.editor.setReadOnly(true);
+      this.editor.setDisabled(true);
     }
 
   }
@@ -352,6 +353,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
     if (this.editor) {
       this.editor.value = '';
       this.editor.setReadOnly(false);
+      this.editor.setDisabled(false);
     }
 
     // se já existe salvo no backend, marque para exclusão ou chame o service
