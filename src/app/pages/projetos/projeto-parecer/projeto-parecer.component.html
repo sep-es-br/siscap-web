@@ -65,21 +65,24 @@
           <div class="d-flex align-items-center gap-3">
 
             <!-- Anexar -->
-            <span style="cursor:pointer;
+            <span  [class.disabled-link]="isEnviado()"
+             style="cursor:pointer;
              color:var(--blue);
              font-weight:700;
              font-size:12px;" (click)="selecionarPdf()" (keydown.enter)="selecionarPdf()"
               (keydown.space)="selecionarPdf()">
-              📎 Anexar parecer em PDF
+              <i class="fa fa-paperclip"></i> Anexar parecer em PDF
             </span>
 
             <!-- Download -->
             <span *ngIf="anexoPdfSelecionado" style="cursor:pointer;
              color:#198754;
              font-weight:600;
-             font-size:12px;" (click)="baixarPdfAnexo()" (keydown.enter)="baixarPdfAnexo()"
-              (keydown.space)="baixarPdfAnexo()">
-              ⬇️ Baixar parecer
+             font-size:12px;" 
+             (click)="baixarPdfAnexo()" 
+             (keydown.enter)="baixarPdfAnexo()"
+             (keydown.space)="baixarPdfAnexo()">
+             <i class="fas fa-download"></i> Baixar parecer
             </span>
 
             <!-- Excluir -->
@@ -88,7 +91,7 @@
              font-weight:600;
              font-size:12px;" (click)="excluirPdfAnexo()" (keydown.enter)="excluirPdfAnexo()"
               (keydown.space)="excluirPdfAnexo()">
-              🗑️ Excluir anexo
+              <i class="fas fa-trash-can"></i> Excluir anexo
             </span>
 
           </div>
