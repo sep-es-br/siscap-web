@@ -122,6 +122,7 @@ export class IndicadoresService {
       idIndicador: this._nnfb.control(indicador?.idIndicador ?? 0),
       nomeIndicador: this._nnfb.control(indicador?.nomeIndicador ?? null),
       fonteIndicador: this._nnfb.control(indicador?.fonteIndicador ?? null),
+      formulaCalculo: this._nnfb.control(indicador?.formulaCalculo ?? null),
       medidoPor: this._nnfb.control(indicador?.medidoPor ?? null),
       unidadeMedida: this._nnfb.control(indicador?.unidadeMedida ?? null),
       basedeReferencia: this._nnfb.control(indicador?.basedeReferencia ?? null),

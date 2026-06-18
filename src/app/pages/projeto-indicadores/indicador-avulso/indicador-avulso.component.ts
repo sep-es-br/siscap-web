@@ -65,7 +65,6 @@ export class IndicadorAvulsoComponent {
 
     for (let ano = anoInicio; ano <= anoFim; ano++) {
 
-      // META DO PROJETO
       this.getMetasProjeto().push(
         this.fb.group({
           anoMeta: [ano],

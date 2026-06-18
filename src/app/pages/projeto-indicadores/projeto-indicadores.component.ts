@@ -82,8 +82,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // console.log('Form do projeto vindo do pai:', this.formProjeto?.value);
-
     this.init();
 
     this.initBaseChip();
@@ -143,7 +141,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
         }
       });
 
-    // dispara primeira carga
     this.reloadIndicadores$.next();
 
   }

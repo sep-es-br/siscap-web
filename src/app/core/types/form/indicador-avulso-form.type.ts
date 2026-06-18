@@ -5,6 +5,7 @@ export type IndicadorAvulsoFormType = {
   idIndicador: FormControl<number>;
   nomeIndicador: FormControl<string | null>;
   fonteIndicador: FormControl<string | null>;
+  formulaCalculo: FormControl<string | null>;
   medidoPor: FormControl<string | null>;
   unidadeMedida: FormControl<string | null>;
   basedeReferencia: FormControl<string | null>;
@@ -17,6 +18,7 @@ export type IndicadorAvulsoFormTypeValue = Array<
     idIndicador: number;
     nomeIndicador: string | null;
     fonteIndicador: string | null;
+    formulaCalculo: string | null;
     medidoPor: string | null;
     unidadeMedida: string | null;
     basedeReferencia: string | null;

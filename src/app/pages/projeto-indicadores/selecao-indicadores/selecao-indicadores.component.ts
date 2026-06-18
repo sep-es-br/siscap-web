@@ -48,12 +48,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // if (changes['indicadores']) {
-    //   this.filtrarIndicadores();
-    // }
-    // if (changes['selecionados'] || changes['indicadores']) {
-    //   this.updateSelectAllState();
-    // }
+    
   }
 
   filtrarIndicadores(): void {
@@ -152,20 +147,6 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   onIndicadorAvulsoCriado(indicador: any): void {
-
-    // this.selecionados = [
-    //   ...this.selecionados,
-    //   {
-    //     ...indicador,
-    //     nomeIndicador: indicador.nomeIndicador,
-    //     formulaCalculo: indicador.formulaCalculo,
-    //     fonteIndicador: indicador.fonteIndicador,
-    //     unidadeMedida: indicador.unidadeMedida,
-    //     basedeReferencia: indicador.basedeReferencia,
-    //     metasIndicadorProjeto: indicador.metasIndicadorAvulsoProjeto,
-    //     avulso: true
-    //   }
-    // ];
 
     this.filtrarIndicadores();
 
