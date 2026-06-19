@@ -1753,6 +1753,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .get('parecerProjetoUsuario')
         ?.getRawValue();
 
+      console.log('PAYLOAD SUBMIT (PARECER):', payload);
+
       this.atualizarProjeto(payload, isRascunho).subscribe();
 
     } else {
