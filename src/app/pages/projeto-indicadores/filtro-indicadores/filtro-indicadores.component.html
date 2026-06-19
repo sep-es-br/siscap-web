@@ -1,5 +1,5 @@
 <!-- OVERLAY (fundo escuro) -->
-<div class="modal-overlay show" (click)="fechar()"></div>
+<div class="modal-overlay show" (click)="applyFilter()"></div>
 
 <!-- MODAL -->
 <div class="filter-modal show">
@@ -7,7 +7,7 @@
     <!-- HEADER -->
     <div class="modal-header">
         <h2 class="card-title">Filtros</h2>
-        <button class="close-modal" (click)="fechar()">✕</button>
+        <button class="close-modal" (click)="applyFilter()">✕</button>
     </div>
 
     <!-- BODY -->
@@ -29,8 +29,6 @@
                 <div class="filter-field">
                     <label class="filter-label">{{ label.nome }}</label>
 
-                    <!-- <ng-select [items]="getValoresLabel(label)" -->
-
                     <ng-select [items]="label.valores"
                         bindLabel="valor"
                         bindValue="idLabelValor"
@@ -42,7 +40,8 @@
                         placeholder="Selecionar..."
                         class="select-filtro"
                         [disabled]="somenteLeitura || isLabelFilhoDisabled(label)"
-                        (change)="onValorLabelChange(label, $event)">
+                        (change)="onValorLabelChange( label, $event )"
+                        >
 
                         <ng-template ng-multi-label-tmp>
                             <span class="custom-selected-label">

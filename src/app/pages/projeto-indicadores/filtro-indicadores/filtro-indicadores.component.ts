@@ -41,11 +41,9 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
     idGestao: number | null;
 
-    // continua igual para a filtragem
     labels: Record<number, number[]>;
     desafio: any;
 
-    // novo: somente para exibir chips
     chips: {
 
       labels: Array<{
@@ -135,7 +133,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
       .flat()
       .filter((id): id is number => id != null);
 
-    return labels.map(label => {
+    return labels.map( label => {
 
       const labelEhRaiz = label.valores.every(v => v.idPai == null);
 
@@ -146,11 +144,10 @@ export class FiltroIndicadoresComponent implements OnChanges {
         };
       }
 
-      const valoresFiltrados = label.valores.filter(valor => {
+      const valoresFiltrados = label.valores.filter( valor => {
         if (valor.idPai == null) {
           return true;
         }
-
         return idsSelecionados.includes(valor.idPai);
       });
 
@@ -164,7 +161,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
   }
 
   resetar() {
-    
+
     this.filtro = {
       idGestao: this.gestaoSelecionada?.idGestao || null,
       labels: {},
@@ -233,19 +230,6 @@ export class FiltroIndicadoresComponent implements OnChanges {
     return `${selecionados.length} selecionados`;
 
   }
-
-  // isLabelFilhoDisabled(label: any): boolean {
-  //   if (!this.isLabelFilho(label) ) {
-  //     return false;
-  //   }
-  //   const labelPai = this.getLabelPai(label);
-  //   if (!labelPai) {
-  //     return true;
-  //   }
-  //   const selecionadosPai = 
-  //     this.filtro.labels[labelPai.idLabel];
-  //   return !selecionadosPai || selecionadosPai.length === 0;
-  // }
 
   isLabelFilhoDisabled(label: any): boolean {
 
@@ -316,10 +300,11 @@ export class FiltroIndicadoresComponent implements OnChanges {
     });
   }
 
-  onValorLabelChange(label: any, selecionados: any[] | null): void {
+  onValorLabelChange( label: any, selecionados: any[] | null): void {
+
+    console.log( "label acionado.. ", label );
 
     const vazio = !selecionados || selecionados.length === 0;
-
     if (vazio) {
       this.limparLabelsFilhos(label);
     }
@@ -328,8 +313,10 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
     this.listaDesafiosFiltrados = this.recalcularDesafios();
 
-  }
+    console.log( "Filtros armazenados : " , this.filtro )
 
+  }
+ 
   private limparLabelsFilhos(labelPai: any): void {
 
     const idsValoresPai = labelPai.valores.map((v: any) => v.idLabelValor);
