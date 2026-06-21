@@ -3015,9 +3015,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.confirmarEntranhamentoParecerProcessoEdocs();
       }
     });
+    
   }
 
   public irParaIndicadores(event: MouseEvent): void {
+
     event.preventDefault();
 
     if (!this.validarAbaDic()) {
@@ -3033,14 +3035,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public irParaOds(event: MouseEvent): void {
+
     event.preventDefault();
+
+     if (!this.validarAbaDic()) {
+      this._toastService.showToast('error', 'Erro ao avançar', [
+        'Verifique os campos obrigatórios antes de continuar.',
+      ]);
+      return;
+    }
   
     const campoOds = this.projetoForm.get('impactos');
   
     campoOds?.clearValidators();
     campoOds?.updateValueAndValidity();
   
-    if (!this.validarFormulario(this.projetoForm)) {
+    if ( !this.validarFormulario(this.projetoForm) ) {
       this.abrirAba('nav-indicadores');
       return;
     }
@@ -3049,6 +3059,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     campoOds?.updateValueAndValidity();
   
     this.abrirAba('nav-ods-indicadores');
+
   }
 
   private abrirAba(idBotaoAba: string): void {

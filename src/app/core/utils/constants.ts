@@ -296,7 +296,7 @@ export const COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO: Record<string, string> =
     equipeElaboracao: 'Pessoas responsáveis pela elaboração do DIC.',
     descricaoAcaoPrincipal: 'Inserir o nome da ação.',
     valorEstimadoAcaoPrincipal: 'Preencher o valor estimado total a ser destinado à implantação das ações principais. O valor deverá ser compatível com o objeto.',
-    descricaoAcoesSecudariasProdutos: 'Inserir as ações secundárias, se houver, e os produtos. Os produtos deverão compreender os bens ou serviços oferecidos pelo DIC e estar associados à etapa ou sub etapa, conforme o caso.',
+    descricaoAcoesSecudariasProdutos: 'Inserir as ações secundárias, se houver, e os produtos. Os produtos deverão compreender os bens ou serviços oferecidos pelo DIC e estar associados à etapa ou subetapa, conforme o caso.',
     pecasPlanejamento: '(i) Apontar quais áreas estratégicas referidas no Planejamento Estratégico são atendidas pelo DIC. Apontar se o programa ou DIC é destinado ao atendimento de uma ou mais das prioridades da Administração Pública. (ii) Demonstrar a inserção do DIC no Plano Plurianual (PPA) vigente, identificando os programas e ações para os quais o DIC está previsto. (iii) Indicar a previsão orçamentária do DIC na Lei Orçamentária Anual (LOA) vigente, identificando as fontes, as ações e os valores respectivos que estão previstos para o DIC.',
     tipoIndicadorDescricao: 'Descrever o tipo de indicador.',
     valorTotalEstimadoPrograma: 'Total estimado dos DICs selecionados para composição do Programa.',

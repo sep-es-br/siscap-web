@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FiltroIndicadoresComponent } from './filtro-indicadores/filtro-indicadores.component';
@@ -16,6 +16,7 @@ import { BehaviorSubject, filter, map, switchMap, tap } from 'rxjs';
 import { IFiltroIndicador, IGestoesCatalogoExterno, IIndicadoresCatalogoExterno, IMetaIndicador } from '../../core/interfaces/indicadores-catalogo-externo.interface';
 import { StatusProjetoEnum } from '../../core/enums/status-projeto.enum';
 import { ToastService } from '../../core/services/toast/toast.service';
+import { TemplatesModule } from '../../shared/templates/templates.module';
 
 export interface IndicadorProjetoForm {
   idIndicador: number;
@@ -44,7 +45,8 @@ declare var bootstrap: any;
     CheckboxModule,
     IndicadorChipComponent,
     SelecaoIndicadoresComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TemplatesModule
   ],
   templateUrl: './projeto-indicadores.component.html',
   styleUrls: ['./projeto-indicadores.component.scss'],
@@ -292,7 +294,10 @@ export class ProjetoIndicadoresComponent implements OnInit {
                 id: [meta.id ?? null],
                 idFato: [meta.idFato ?? null],
                 anoMeta: [meta.anoMeta],
-                valorMeta: [meta.valorMeta ?? '', Validators.required]
+                valorMeta: [
+                  meta.valorMeta ?? null,
+                  [Validators.required, Validators.min(0.01)]
+                ]
               })
             )
         );
@@ -307,6 +312,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
             metasIndicadorProjeto: metasProjetoArray
           })
         );
+
       });
 
     if (this.somenteLeitura) {
@@ -413,6 +419,12 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   getMetas(index: number): FormArray {
     return this.getIndicadorForm(index).get('metasIndicadorProjeto') as FormArray;
+  }
+
+  getMetaProjetoControl(indicadorIndex: number, metaIndex: number): FormControl {
+    return this.getMetas(indicadorIndex)
+      .at(metaIndex)
+      .get('valorMeta') as FormControl;
   }
 
   getIndicadoresAvulsos(): FormArray {

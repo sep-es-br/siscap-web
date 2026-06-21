@@ -319,3 +319,18 @@
   border-color: var(--navy-dark)
 }
 
+.meta-item {
+  position: relative;
+}
+
+.meta-validation-message {
+  position: absolute;
+  top: -12px;
+  right: 8px;
+  font-size: 10px;
+}
+
+.meta-validation-message .error-message:first-child {
+  display: none;
+}
+

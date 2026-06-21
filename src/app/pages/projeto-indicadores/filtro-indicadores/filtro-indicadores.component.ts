@@ -133,7 +133,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
       .flat()
       .filter((id): id is number => id != null);
 
-    return labels.map( label => {
+    return labels.map(label => {
 
       const labelEhRaiz = label.valores.every(v => v.idPai == null);
 
@@ -144,7 +144,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
         };
       }
 
-      const valoresFiltrados = label.valores.filter( valor => {
+      const valoresFiltrados = label.valores.filter(valor => {
         if (valor.idPai == null) {
           return true;
         }
@@ -300,9 +300,9 @@ export class FiltroIndicadoresComponent implements OnChanges {
     });
   }
 
-  onValorLabelChange( label: any, selecionados: any[] | null): void {
+  onValorLabelChange(label: any, selecionados: any[] | null): void {
 
-    console.log( "label acionado.. ", label );
+    this.limparValoresFilhosInvalidos();
 
     const vazio = !selecionados || selecionados.length === 0;
     if (vazio) {
@@ -313,10 +313,8 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
     this.listaDesafiosFiltrados = this.recalcularDesafios();
 
-    console.log( "Filtros armazenados : " , this.filtro )
-
   }
- 
+
   private limparLabelsFilhos(labelPai: any): void {
 
     const idsValoresPai = labelPai.valores.map((v: any) => v.idLabelValor);
@@ -418,6 +416,34 @@ export class FiltroIndicadoresComponent implements OnChanges {
         }))
 
     };
+  }
+
+  private limparValoresFilhosInvalidos(): void {
+
+    const idsSelecionados = Object.values(this.filtro.labels ?? {})
+      .flat()
+      .map((id: any) => Number(id))
+      .filter((id: number) => !isNaN(id));
+
+    this.labelsOriginais.forEach((label: any) => {
+      if (!this.isLabelFilho(label)) {
+        return;
+      }
+
+      const selecionadosAtuais = this.filtro.labels[label.idLabel] ?? [];
+
+      const valoresValidos = label.valores
+        .filter((valor: any) => {
+          return valor.idPai == null || idsSelecionados.includes(Number(valor.idPai));
+        })
+        .map((valor: any) => valor.idLabelValor);
+
+      this.filtro.labels[label.idLabel] = selecionadosAtuais.filter((idSelecionado: number) =>
+        valoresValidos.includes(idSelecionado)
+      );
+
+    });
+
   }
 
 }

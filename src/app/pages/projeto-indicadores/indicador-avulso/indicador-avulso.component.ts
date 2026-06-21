@@ -68,7 +68,10 @@ export class IndicadorAvulsoComponent {
       this.getMetasProjeto().push(
         this.fb.group({
           anoMeta: [ano],
-          valorMeta: [null, Validators.required]
+          valorMeta: [
+                null,
+                [Validators.required, Validators.min(0.01)]
+                ]
         })
       );
 
