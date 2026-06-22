@@ -1892,6 +1892,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return false;
     }
 
+    const algumIndicadorComMetaInvalida =
+      indicadoresArray.some((i: any) =>
+        i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
+      ) ||
+      indicadoresAvulsosArray.some((i: any) =>
+        i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
+      );
+
+      if (algumIndicadorComMetaInvalida) {
+        this._toastService.showToast('error', 'Erro ao carregar projeto', [
+          'Todas as metas dos indicadores devem ser preenchidas com valores maiores que zero.',
+        ]);
+        return false;
+      }
+
     return true;
   }
 
@@ -1944,10 +1959,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'success',
             'Projeto cadastrado com sucesso.',
           );
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        ),
+        // finalize(() =>
+        //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
+        // ),
       );
     }
 
@@ -3015,7 +3031,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.confirmarEntranhamentoParecerProcessoEdocs();
       }
     });
-    
+
   }
 
   public irParaIndicadores(event: MouseEvent): void {
@@ -3038,26 +3054,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     event.preventDefault();
 
-     if (!this.validarAbaDic()) {
+    if (!this.validarAbaDic()) {
       this._toastService.showToast('error', 'Erro ao avançar', [
         'Verifique os campos obrigatórios antes de continuar.',
       ]);
       return;
     }
-  
+
     const campoOds = this.projetoForm.get('impactos');
-  
+
     campoOds?.clearValidators();
     campoOds?.updateValueAndValidity();
-  
-    if ( !this.validarFormulario(this.projetoForm) ) {
+
+    if (!this.validarFormulario(this.projetoForm)) {
       this.abrirAba('nav-indicadores');
       return;
     }
-  
+
     campoOds?.setValidators([Validators.required]);
     campoOds?.updateValueAndValidity();
-  
+
     this.abrirAba('nav-ods-indicadores');
 
   }

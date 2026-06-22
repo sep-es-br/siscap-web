@@ -132,6 +132,7 @@
                 style="margin-left:8px; padding:2px 8px; border-radius:12px; background:#f07613; color:#f1f5f9; font-size:11px; font-weight:700;">
                 INDICADOR DE PROJETO
               </span>
+
             </div>
 
             <button type="button" class="remove-indicator-btn" aria-label="Remover indicador de projeto"
@@ -182,18 +183,22 @@
             </span>
 
             <div [formGroup]="getIndicadorAvulsoProjetoForm(i)">
+
               <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;"
                 formArrayName="metasIndicadorProjeto">
 
                 <div class="mindicador-selecionado"
                   *ngFor="let meta of getMetasIndicadorAvulsoProjeto(i).controls; let j = index" [formGroupName]="j">
 
-                  <div class="meta-item"
+                  <div class="meta-item"              
                     style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
 
                     <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">
                       {{ meta.get('anoMeta')?.value }}
                     </span>
+
+                    <validation-message class="meta-validation-message" 
+                      [control]="getMetaIndicadorAvulsoProjetoControl(i, j)"></validation-message>
 
                     <input type="number" class="meta-value-input" formControlName="valorMeta"
                       placeholder="Digite a meta">
@@ -203,6 +208,7 @@
                 </div>
 
               </div>
+
             </div>
 
           </div>

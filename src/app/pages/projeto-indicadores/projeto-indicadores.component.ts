@@ -439,6 +439,12 @@ export class ProjetoIndicadoresComponent implements OnInit {
     return this.getIndicadorAvulsoProjetoForm(index).get('metasIndicadorProjeto') as FormArray;
   }
 
+  getMetaIndicadorAvulsoProjetoControl(indicadorIndex: number, metaIndex: number): FormControl {
+    return this.getMetasIndicadorAvulsoProjeto(indicadorIndex)
+      .at(metaIndex)
+      .get('valorMeta') as FormControl;
+  }
+
   voltarParaDic() {
     const tabTrigger = document.getElementById('nav-propriedades');
 
