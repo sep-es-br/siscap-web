@@ -73,6 +73,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
     };
 
   ngOnInit() {
+    // console.log("Filtro definido atual :", this.filtroAtual);
     // console.log('Desafios recebidos:', this.desafios);
     // console.log('Labels gestão:', this.gestao?.labels);
     // console.log('Valores labels gestão:', this.gestao?.labels?.flatMap(label => label.valores));
@@ -106,6 +107,8 @@ export class FiltroIndicadoresComponent implements OnChanges {
     this.filtro.desafio.id ??= [];
 
     this.atualizarLabels();
+
+    this.listaDesafiosFiltrados = this.recalcularDesafios();
 
   }
 
