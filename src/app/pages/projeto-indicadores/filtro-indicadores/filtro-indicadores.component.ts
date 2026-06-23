@@ -128,6 +128,8 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
     this.labelsOrdenados = this.recalcularLabels(this.gestaoSelecionada?.labels || []);
 
+    this.listaDesafiosFiltrados = this.recalcularDesafios();
+
   }
 
   private recalcularLabels(labels: Label[]): Label[] {
@@ -316,6 +318,8 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
     this.listaDesafiosFiltrados = this.recalcularDesafios();
 
+    this.limparDesafiosSelecionadosInvalidos();
+
   }
 
   private limparLabelsFilhos(labelPai: any): void {
@@ -338,7 +342,13 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
     });
 
-    this.filtro.desafio = [];
+    // const aindaTemLabelSelecionado = Object.values(this.filtro.labels ?? {})
+    //   .flat()
+    //   .some((id: any) => id != null);
+
+    // if (!aindaTemLabelSelecionado) {
+    //   this.filtro.desafio.id = [];
+    // }
 
   }
 
@@ -367,23 +377,26 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
     const idsSelecionados = Object.values(this.filtro.labels ?? {})
       .flat()
-      .filter(id => id != null)
-      .map(id => Number(id));
+      .filter((id: any) => id != null)
+      .map((id: any) => Number(id));
 
     if (idsSelecionados.length === 0) {
-      return this.desafios;
+      return [];
     }
 
-    return this.desafios.filter(desafio => {
+    return this.desafios.filter((desafio: Desafio) => {
 
       const grupoId = Number(desafio.grupoId);
-      const subGrupoId = desafio.subGrupoId != null ? Number(desafio.subGrupoId) : null;
+      const subGrupoId = desafio.subGrupoId != null
+        ? Number(desafio.subGrupoId)
+        : null;
 
-      if (idsSelecionados.includes(grupoId) && subGrupoId != null && idsSelecionados.includes(subGrupoId)) {
-        return true;
-      } else {
+      if (subGrupoId == null) {
         return false;
       }
+
+      return idsSelecionados.includes(grupoId)
+        && idsSelecionados.includes(subGrupoId);
 
     });
 
@@ -446,6 +459,18 @@ export class FiltroIndicadoresComponent implements OnChanges {
       );
 
     });
+
+  }
+
+  private limparDesafiosSelecionadosInvalidos(): void {
+
+    const idsDesafiosValidos = this.listaDesafiosFiltrados.map(
+      (d: Desafio) => Number(d.id)
+    );
+
+    this.filtro.desafio.id = (this.filtro.desafio.id ?? [])
+      .map((id: any) => Number(id))
+      .filter((id: number) => idsDesafiosValidos.includes(id));
 
   }
 
