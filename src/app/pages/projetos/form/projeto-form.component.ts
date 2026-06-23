@@ -228,6 +228,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public indicadoresProjeto: IIndicadores[] = [];
   public indicadoresAvulsosProjeto: IIndicadorAvulso[] = [];
 
+  arquivoParecerSelecionado: File | null = null;
+
   private camposObrigatoriosDic = [
     'sigla',
     'titulo',
@@ -1745,17 +1747,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
 
-      // const payload = new ProjetoFormModel(
-      //   this.projetoForm.getRawValue() as IProjetoForm,
-      // );
-
       payload.parecerProjetoUsuario = this.projetoForm
         .get('parecerProjetoUsuario')
         ?.getRawValue();
 
-      console.log('PAYLOAD SUBMIT (PARECER):', payload);
+      const formData = new FormData();
 
-      this.atualizarProjeto(payload, isRascunho).subscribe();
+      formData.append(
+        'projeto',
+        new Blob([JSON.stringify(payload)], {
+          type: 'application/json'
+        })
+      );
+
+      if (this.arquivoParecerSelecionado) {
+        formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
+      }
+
+      // console.log('PAYLOAD SUBMIT (PARECER):', payload);
+
+      this.atualizarProjeto(payload, isRascunho, formData).subscribe();
 
     } else {
 
@@ -1851,10 +1862,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
+      const formData = new FormData();
+
+      formData.append(
+        'projeto',
+        new Blob([JSON.stringify(payload)], {
+          type: 'application/json'
+        })
+      );
+
       // console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
-        ? this.atualizarProjeto(payload, isRascunho)
+        ? this.atualizarProjeto(payload, isRascunho, formData)
         : this.cadastrarProjeto(payload, isRascunho);
 
       requisicao.subscribe();
@@ -1966,18 +1986,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private atualizarProjeto(
     payload: ProjetoFormModel,
     isRascunho: boolean,
+    formData: FormData
   ): Observable<IProjeto> {
 
     if (payload.idResponsavelProponente === 0) {
 
       const dados = this.projetoForm.value;
-      return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
+      return this._pessoasService.getBySub(dados.subResponsavelProponente)
+      .pipe(
         switchMap((idPessoa: number) => {
           payload.idResponsavelProponente = idPessoa;
           return this._projetosService.put(
             this._idProjetoEdicao,
             payload,
             isRascunho,
+            formData
           );
         }),
         tap(() => {
@@ -1985,25 +2008,30 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'success',
             'Projeto alterado com sucesso.',
           );
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        ),
+        // finalize(() =>
+        //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
+        // ),
       );
+
     }
+
     return this._projetosService
-      .put(this._idProjetoEdicao, payload, isRascunho)
+      .put(this._idProjetoEdicao, payload, isRascunho, formData)
       .pipe(
         tap((response: IProjeto) => {
           this._toastService.showToast(
             'success',
             'Projeto alterado com sucesso.',
           );
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        ),
+        // finalize(() =>
+        //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
+        // ),
       );
+
   }
 
   private alterarStatusProjeto(status: string): void {

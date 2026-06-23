@@ -18,7 +18,6 @@ export interface IParecer {
 }
 
 export interface IParecerAnexo {
-	arquivo?: File;
 	nomeArquivo: string;
 	tamanhoBytes: number;
 	tipoMime: string;

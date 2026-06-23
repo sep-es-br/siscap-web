@@ -451,8 +451,12 @@
             </div>
             <div id="parecerAtual" class="collapse show" aria-labelledby="parecerTituloAtual">
               <div class="card-body mb-4">
-                <siscap-projeto-parecer [projetoForm]="projetoForm" [statusProjeto]="statusProjeto"
-                  [lotacaoUsuario]="lotacaoUsuario" [pareceresProjeto]="pareceresProjeto" class="mb-4">
+                <siscap-projeto-parecer [projetoForm]="projetoForm" 
+                  [statusProjeto]="statusProjeto"
+                  [lotacaoUsuario]="lotacaoUsuario" 
+                  [pareceresProjeto]="pareceresProjeto"
+                  (arquivoParecerChange)="arquivoParecerSelecionado = $event"
+                  class="mb-4">
                 </siscap-projeto-parecer>
               </div>
             </div>

@@ -1,19 +1,15 @@
 import { Injectable } from '@angular/core';
 import {
-  FormControl,
   FormGroup,
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
 import { IParecer } from '../../interfaces/parecer.interface';
-import { StatusParecerEnum } from '../../enums/status-parecer.enum';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ParecerService {
-
-  // public parecerForm: FormGroup = new FormGroup({});
 
   private _parecerSnapshot: IParecer | null = null;
 
@@ -37,13 +33,6 @@ export class ParecerService {
       dataEnvio: [parecer?.dataEnvio ?? null],
       guidDocumentoEdocs: [parecer?.guidDocumentoEdocs ?? null],
     });
-  }
-
-  public atualizarParecer(parecer: IParecer): void { 
-    // if (this.parecerForm) {
-    //   this.parecerForm.patchValue(parecer);
-    //   this._parecerSnapshot = parecer;
-    // }
   }
 
   public getValorAtual(): IParecer | null {

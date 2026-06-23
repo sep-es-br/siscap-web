@@ -239,11 +239,22 @@ export class ProjetosService extends BaseHttpService<
   public put(
     id: number,
     body: ProjetoFormModel,
-    isRascunho: boolean
+    isRascunho: boolean,
+    formData: FormData
   ): Observable<IProjeto> {
-    return this._http.put<IProjeto>(
-      `${this._url}/${id}?rascunho=${isRascunho}`, body
+
+    formData.append(
+      'projeto',
+      new Blob(
+        [JSON.stringify(body)],
+        { type: 'application/json' }
+      )
     );
+
+    return this._http.put<IProjeto>(
+      `${this._url}/${id}?rascunho=${isRascunho}`, formData
+    );
+
   }
 
   public alterarStatusProjeto(id: number, status: string): Observable<string> {

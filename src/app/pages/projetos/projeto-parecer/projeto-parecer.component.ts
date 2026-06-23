@@ -1,5 +1,5 @@
 
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -44,6 +44,8 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   @Input() statusProjeto!: string;
   @Input() lotacaoUsuario!: number;
   @Input() pareceresProjeto!: IParecer[];
+
+  @Output() arquivoParecerChange = new EventEmitter<File | null>();
 
   public anexoPdfSelecionado?: IParecerAnexo;
 
@@ -272,8 +274,10 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    // arquivo emite para armazenar no componente pai..
+    this.arquivoParecerChange.emit(arquivo);
+
     this.anexoPdfSelecionado = {
-      arquivo,
       nomeArquivo: arquivo.name,
       tamanhoBytes: arquivo.size,
       tamanhoFormatado: this.formatarTamanhoArquivo(arquivo.size),
