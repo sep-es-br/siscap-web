@@ -365,7 +365,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        // console.log("Buscar projeto por ID: ", JSON.stringify(response, null, 2))
+        console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -1027,29 +1027,36 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       enviarProjetoPedirParecer: this._nnfb.control(
         projetoFormModel?.enviarProjetoPedirParecer ?? false,
       ),
+      
       parecerProjetoUsuario: this._nnfb.group({
+
         id: [projetoFormModel?.parecerProjetoUsuario?.id ?? null],
         idProjeto: [projetoFormModel?.parecerProjetoUsuario?.idProjeto ?? null],
-        statusParecer: [
-          projetoFormModel?.parecerProjetoUsuario?.statusParecer ?? null,
-        ],
-        textoParecer: [
-          projetoFormModel?.parecerProjetoUsuario?.textoParecer ?? '',
-        ],
-        dataEnvioParecer: [
-          projetoFormModel?.parecerProjetoUsuario?.dataEnvio ?? null,
-        ],
-        guidDocumentoEdocs: [
-          projetoFormModel?.parecerProjetoUsuario?.guidDocumentoEdocs ?? '',
-        ],
-        guidUnidadeOrganizacao: [
-          projetoFormModel?.parecerProjetoUsuario?.guidUnidadeOrganizacao ?? '',
-        ],
-        usuarioFezEnvioParecer: [
-          projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? '',
-        ],
+        statusParecer: [projetoFormModel?.parecerProjetoUsuario?.statusParecer ?? null,],
+        textoParecer: [projetoFormModel?.parecerProjetoUsuario?.textoParecer ?? '',],
+        dataEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.dataEnvio ?? null,],
+        guidDocumentoEdocs: [projetoFormModel?.parecerProjetoUsuario?.guidDocumentoEdocs ?? '',],
+        guidUnidadeOrganizacao: [projetoFormModel?.parecerProjetoUsuario?.guidUnidadeOrganizacao ?? '',],
+        usuarioFezEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? '',],
         elegivel: [projetoFormModel?.parecerProjetoUsuario.elegivel ?? null],
+
+        anexos: this._nnfb.group({
+          nomeArquivo: [
+            projetoFormModel?.parecerProjetoUsuario?.anexos?.nomeArquivo ?? ''
+          ],
+          tamanhoBytes: [
+            projetoFormModel?.parecerProjetoUsuario?.anexos?.tamanhoBytes ?? null
+          ],
+          tipoMime: [
+            projetoFormModel?.parecerProjetoUsuario?.anexos?.tipoMime ?? ''
+          ],
+          tamanhoFormatado: [
+            projetoFormModel?.parecerProjetoUsuario?.anexos?.tamanhoFormatado ?? ''
+          ],
+        }),
+
       }),
+
       pareceresProjeto: this._nnfb.array([]),
 
       indicadoresAvulsosProjeto:
@@ -1993,27 +2000,27 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       const dados = this.projetoForm.value;
       return this._pessoasService.getBySub(dados.subResponsavelProponente)
-      .pipe(
-        switchMap((idPessoa: number) => {
-          payload.idResponsavelProponente = idPessoa;
-          return this._projetosService.put(
-            this._idProjetoEdicao,
-            payload,
-            isRascunho,
-            formData
-          );
-        }),
-        tap(() => {
-          this._toastService.showToast(
-            'success',
-            'Projeto alterado com sucesso.',
-          );
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
-        }),
-        // finalize(() =>
-        //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        // ),
-      );
+        .pipe(
+          switchMap((idPessoa: number) => {
+            payload.idResponsavelProponente = idPessoa;
+            return this._projetosService.put(
+              this._idProjetoEdicao,
+              payload,
+              isRascunho,
+              formData
+            );
+          }),
+          tap(() => {
+            this._toastService.showToast(
+              'success',
+              'Projeto alterado com sucesso.',
+            );
+            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          }),
+          // finalize(() =>
+          //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
+          // ),
+        );
 
     }
 
@@ -3063,20 +3070,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public irParaOds(event: MouseEvent): void {
     event.preventDefault();
-  
+
     const campoOds = this.projetoForm.get('impactos');
-  
+
     campoOds?.clearValidators();
     campoOds?.updateValueAndValidity();
-  
+
     if (!this.validarFormulario(this.projetoForm)) {
       this.abrirAba('nav-indicadores');
       return;
     }
-  
+
     campoOds?.setValidators([Validators.required]);
     campoOds?.updateValueAndValidity();
-  
+
     this.abrirAba('nav-ods-indicadores');
   }
 

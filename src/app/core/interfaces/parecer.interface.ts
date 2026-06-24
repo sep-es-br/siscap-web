@@ -13,6 +13,9 @@ export interface IParecer {
 	parecerLotacao: LotacaoUsuarioEnum;
 	elegivel: boolean;
 
+	nomeArquivo: string | ''
+    nomeOriginalArquivo: string | ''
+
 	anexos?: IParecerAnexo;
 
 }
