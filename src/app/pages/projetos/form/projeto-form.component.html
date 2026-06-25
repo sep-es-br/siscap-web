@@ -101,12 +101,11 @@
           </li>
 
           <li class="nav-item">
-            <button 
-              class="nav-link" 
-              id="nav-indicadores" 
-              data-bs-target="#tab-indicadores"
-              type="button" 
-              (click)="irParaIndicadores($event)">
+            <button class="nav-link" id="nav-indicadores" data-bs-target="#tab-indicadores" type="button"
+              (click)="irParaIndicadores($event)" [ngClass]="{
+                    'alerta-complementar-campo': deveComplementarCampo('sigla'),
+                  }" >
+              <form-warning-tooltip *ngIf="deveComplementarCampo('indicadores')" [texto]="mensagemComplementarCampo('indicadores')"></form-warning-tooltip>
               Indicadores
               <span *ngIf="getControl('indicadoresProjeto').invalid && getControl('indicadoresProjeto').touched"
                 class="text-danger"></span>
@@ -114,12 +113,11 @@
           </li>
 
           <li class="nav-item">
-            <button 
-              class="nav-link" 
-              id="nav-ods-indicadores" 
-              data-bs-target="#tab-ods-indicadores" 
-              type="button"
-              (click)="irParaOds($event)">
+            <button class="nav-link" id="nav-ods-indicadores" data-bs-target="#tab-ods-indicadores" type="button"
+              (click)="irParaOds($event)" [ngClass]="{
+                    'alerta-complementar-campo': deveComplementarCampo('sigla'),
+                  }">
+              <form-warning-tooltip *ngIf="deveComplementarCampo('ods')" [texto]="mensagemComplementarCampo('ods')"></form-warning-tooltip>
               ODS
             </button>
           </li>
@@ -307,10 +305,8 @@
               </div>
 
               <div class="col-12">
-                <label for="objetivoEspecifico" class="form-label col-12" [ngClass]="{
-                    'alerta-complementar-campo':
-                      deveComplementarCampo('objetivoEspecifico'),
-                  }">
+                <label for="objetivoEspecifico" class="form-label col-12"
+                  [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('objetivoEspecifico'),}">
                   <validation-message [control]="getControl('objetivoEspecifico')">
                     Objetivos Específicos
                     <form-helper-tooltip [texto]="projetoTooltip['objetivoEspecifico']"></form-helper-tooltip>
@@ -410,9 +406,8 @@
           </form>
 
           <div class="navigation-buttons">
-            <button class="nav-btn" 
-              id="avancarIndicadores"
-              style="background:var(--blue); color:white; border-color:var(--blue);" 
+            <button class="nav-btn" id="avancarIndicadores"
+              style="background:var(--blue); color:white; border-color:var(--blue);"
               (click)="irParaIndicadores($event)">
               <i class="pi pi-arrow-right"></i>
             </button>

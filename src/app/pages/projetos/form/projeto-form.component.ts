@@ -241,7 +241,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     'arranjosInstitucionais',
     'pecasPlanejamento',
     'acoesProjeto',
-    'rateio'
+    'rateio',
+    'indicadores',
+    'ods'
   ];
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -363,7 +365,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        // console.log("Buscar projeto por ID: ", response)
+        console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -733,6 +735,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
     const camposPedidoComplementacao: Record<string, string> = {
       sigla: 'Sigla',
       titulo: 'Título',
@@ -752,6 +755,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       acoesProjeto: 'Ações do Projeto',
       pecasPlanejamento: 'Peças de Planejamento',
       subResponsavelProponente: 'Responsável Proponente',
+      indicadores: 'Indicadores',
+      ods: 'ODS'
     };
 
     this.camposParaComplementacao = Object.entries(
