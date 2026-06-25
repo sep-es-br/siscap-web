@@ -103,7 +103,7 @@
           <li class="nav-item">
             <button class="nav-link" id="nav-indicadores" data-bs-target="#tab-indicadores" type="button"
               (click)="irParaIndicadores($event)" [ngClass]="{
-                    'alerta-complementar-campo': deveComplementarCampo('sigla'),
+                    'alerta-complementar-campo': deveComplementarCampo('indicadores'),
                   }" >
               <form-warning-tooltip *ngIf="deveComplementarCampo('indicadores')" [texto]="mensagemComplementarCampo('indicadores')"></form-warning-tooltip>
               Indicadores
@@ -115,7 +115,7 @@
           <li class="nav-item">
             <button class="nav-link" id="nav-ods-indicadores" data-bs-target="#tab-ods-indicadores" type="button"
               (click)="irParaOds($event)" [ngClass]="{
-                    'alerta-complementar-campo': deveComplementarCampo('sigla'),
+                    'alerta-complementar-campo': deveComplementarCampo('ods'),
                   }">
               <form-warning-tooltip *ngIf="deveComplementarCampo('ods')" [texto]="mensagemComplementarCampo('ods')"></form-warning-tooltip>
               ODS

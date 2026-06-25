@@ -290,6 +290,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     public parecerService: ParecerService,
   ) {
+
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
       .getOpcoesOrganizacoes()
       .pipe(tap((response) => (this.organizacoesOpcoes = response)));
@@ -365,7 +366,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", response)
+        // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -751,7 +752,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       impactos: 'Impactos',
       arranjosInstitucionais: 'Arranjos Institucionais',
       equipeElaboracao: 'Equipe de Elaboração',
-      indicadoresProjeto: 'Indicadores do Projeto',
       acoesProjeto: 'Ações do Projeto',
       pecasPlanejamento: 'Peças de Planejamento',
       subResponsavelProponente: 'Responsável Proponente',
@@ -1905,12 +1905,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
       );
 
-      if (algumIndicadorComMetaInvalida) {
-        this._toastService.showToast('error', 'Erro ao carregar projeto', [
-          'Todas as metas dos indicadores devem ser preenchidas com valores maiores que zero.',
-        ]);
-        return false;
-      }
+    if (algumIndicadorComMetaInvalida) {
+      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+        'Todas as metas dos indicadores devem ser preenchidas com valores maiores que zero.',
+      ]);
+      return false;
+    }
 
     return true;
   }
@@ -2268,15 +2268,111 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private reentranharDicProjetoForm(form: FormGroup): void {
+
     form.updateValueAndValidity();
 
     setTimeout(() => {
+
+      const indicadoresProjetoPayload = this.projetoForm.getRawValue()
+        .indicadoresProjeto
+        .filter((indicador: IIndicadores) =>
+          indicador.idIndicadorExterno !== null &&
+          indicador.idIndicadorExterno !== undefined &&
+          indicador.idIndicadorExterno !== 0
+        )
+        .map((indicador: IIndicadores) => ({
+          idIndicador: indicador.idIndicador,
+          tipoIndicador: indicador.tipoIndicador ?? null,
+          descricaoIndicador: indicador.descricaoIndicador ?? null,
+          descricaoMeta: indicador.descricaoMeta ?? null,
+          idStatus: indicador.idStatus ?? 1,
+          idIndicadorExterno: indicador.idIndicadorExterno,
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
+            id: meta.id,
+            anoMeta: meta.anoMeta,
+            valorMeta: meta.valorMeta
+          })) ?? []
+        }));
+
+      const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
+        .indicadoresAvulsosProjeto
+        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
+        .map((indicador: IIndicadorAvulso) => ({
+          id: indicador.id ?? null,
+          idIndicadorAvulso: indicador.idIndicador ?? null,
+          indicadorAvulso: {
+            id: indicador.idIndicador ?? null,
+            nomeIndicador: indicador.nomeIndicador,
+            unidadeMedida: indicador.unidadeMedida,
+            fonteIndicador: indicador.fonteIndicador,
+            medidoPor: indicador.medidoPor,
+            baseDeReferencia: indicador.basedeReferencia
+          },
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto
+        }));
+
+      const temIndicador =
+        indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
+
+      if (!temIndicador) {
+        this._toastService.showToast('warning', 'O formulário contém erros.', [
+          'Informe pelo menos um indicador.'
+        ]);
+        return;
+      }
+
+      const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
+      const estavaDisabled = indicadoresProjetoControl?.disabled;
+
+      indicadoresProjetoControl?.disable({ emitEvent: false });
+
+      const formValido = this.validarFormulario(form);
+
+      if (!estavaDisabled) {
+        indicadoresProjetoControl?.enable({ emitEvent: false });
+      }
+
+      if (!formValido) {
+        return;
+      }
+
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
-      const payload = new ProjetoFormModel(form.value as IProjetoForm);
+
+      const odsProjetoPayload = this.projetoForm.getRawValue()
+        .odsProjeto
+        ?.map((ods: any) => ({
+          idOdsProjeto: ods.idOdsProjeto ?? null,
+          odsId: ods.odsId,
+          odsOrdem: ods.odsOrdem,
+          odsNome: ods.odsNome,
+          odsDescricao: ods.odsDescricao
+        })) ?? [];
+
+      const payload =
+        new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+
+      if (this.isProponente) {
+        payload.idOrganizacao =
+          form.get('idOrganizacao')?.value;
+      }
+
+      payload.indicadoresProjeto = indicadoresProjetoPayload;
+      payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
+      payload.odsProjeto = odsProjetoPayload;
+
+      if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
+        return;
+      }
+
+      // const payload = new ProjetoFormModel(form.value as IProjetoForm);
+
       payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
+
       this.reentranharDicProjetoAsync(payload);
+
     });
+
   }
 
   public confirmarEnvioPedidoPareceres() {
@@ -2531,14 +2627,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private enviarProjetoComplementacao(): void {
-    if (
-      !this.camposParaComplementacao.some(
-        (campo) => campo.mensagemComplementacao?.length ?? 0 > 0,
-      )
-    ) {
+
+    const possuiComplemento = this.camposParaComplementacao.some(
+      (campo) => (campo.mensagemComplementacao?.length ?? 0) > 0,
+    );
+
+    if (!possuiComplemento) {
       this._toastService.showToast('error', 'Nenhum complemento informado.');
       return;
     }
+
+    this.exibeListaEtapasIntegracao = true;
 
     this._projetosService
       .enviarEmailAvisoComplementacaoProjeto(
@@ -2547,65 +2646,83 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       )
       .pipe(
         tap(() => {
+
           this._toastService.showToast(
             'info',
             'Envio de aviso de complementação iniciado no E-Docs.',
           );
+
+          this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
+
+          this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.Complementar);
+
         }),
-        catchError((error) => {
+
+        catchError(() => {
+          this.exibeListaEtapasIntegracao = false;
+          this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
+
           this._toastService.showToast(
             'error',
             'Erro ao iniciar o envio de aviso de complementação.',
           );
-          return of([]);
+
+          return EMPTY;
         }),
 
         finalize(() => {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
+
       )
-      .subscribe(() => {
-        this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        this.iniciarPollingEtapasIntegracaoModal(
-          ContextoIntegracaoEdocsEnum.Complementar,
-        );
-      });
+      .subscribe();
+
   }
 
   private reentranharDicProjetoAsync(payload: ProjetoFormModel): void {
+
     this.exibeListaEtapasIntegracao = true;
 
     this._projetosService
       .reentranharDicEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
-          this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
+          this.autuacaoAcionada = true;
+
+          this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
+
           this._toastService.showToast(
             'info',
             'Processo reentranhar DIC com correções iniciado no E-Docs.',
           );
+
+          this.iniciarPollingEtapasIntegracaoModal(
+            ContextoIntegracaoEdocsEnum.Complementar,
+          );
         }),
-        catchError((error) => {
+
+        catchError(() => {
           this.autuacaoAcionada = false;
+          this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
+
           this._toastService.showToast(
             'error',
             'Erro ao iniciar autuação no E-Docs.',
           );
-          return of([]);
+
+          return EMPTY;
         }),
+
         finalize(() => {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
       )
-      .subscribe(() => {
-        this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        this.iniciarPollingEtapasIntegracaoModal(
-          ContextoIntegracaoEdocsEnum.Complementar,
-        );
-      });
+      .subscribe();
+
   }
 
   private autuarProjetoAsync(payload: ProjetoFormModel): void {
+
     this.exibeListaEtapasIntegracao = true;
 
     this._projetosService
@@ -2639,6 +2756,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private efetivarEnvioParecerProjetoAsync(payload: ProjetoFormModel): void {
+
     this.exibeListaEtapasIntegracao = true;
 
     this._projetosService
@@ -2674,6 +2792,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private efetivarEntranhamentoPareceresProjetoAsync(
     payload: ProjetoFormModel,
   ): void {
+
     this.exibeListaEtapasIntegracao = true;
 
     this._projetosService
@@ -2742,11 +2861,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         tap((lista) => this.atualizarStatusUI(lista)),
 
         tap((lista) => {
+
           const faseComErro = lista.find((f) => f.erro);
           if (faseComErro) {
             this.tratarErro(faseComErro);
             this.pararPolling$.next();
           }
+
         }),
 
         filter((lista) => lista.every((fase) => fase.finalizada)),
@@ -2770,6 +2891,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
       )
       .subscribe();
+
   }
 
   private atualizarStatusUI(lista: ProjetoIntegracaoEdocsFasesModel[]) {
@@ -2848,6 +2970,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private tratarErro(fase: ProjetoIntegracaoEdocsFasesModel): void {
+
     this.autuacaoAcionada = false;
     this.erroEmAlgumaFaseModalAutuacao = true;
 
@@ -2865,6 +2988,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.pararPolling$.next();
 
     this.cdr.detectChanges();
+    
   }
 
   ngOnDestroy(): void {
