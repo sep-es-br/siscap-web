@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { IParecer } from '../../interfaces/parecer.interface';
 import { environment } from '../../../../environments/environment';
-import { HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { FilesService } from '../files/files.service';
 
 @Injectable({
@@ -39,7 +39,9 @@ export class ParecerService {
     this._parecerSnapshot = parecer;
   }
 
-  constructor(private _nnfb: NonNullableFormBuilder, private filesService: FilesService,) { }
+  constructor(private _nnfb: NonNullableFormBuilder, 
+    private filesService: FilesService,
+    private readonly _http: HttpClient) { }
 
   public construirParecerForm(parecer?: IParecer): FormGroup {
     return this._nnfb.group({
@@ -55,6 +57,14 @@ export class ParecerService {
 
   public getValorAtual(): IParecer | null {
     return this._parecerSnapshot;
+  }
+
+  excluirAnexoParecer(idParecer: AbstractControl<any, any> | null) {
+    const deleteURL = `${this._url}/dic/parecer/${idParecer}/arquivo`;
+    console.log("chamando endpoint para excluir o parecer.. {}", deleteURL)
+    return this._http.delete(deleteURL, {
+        responseType: 'text',
+      });
   }
 
 }

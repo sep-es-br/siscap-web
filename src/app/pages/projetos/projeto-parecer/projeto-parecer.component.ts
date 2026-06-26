@@ -92,6 +92,8 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
     const textoParecer = this.parecerFormGroup.get('textoParecer');
 
+    console.log( " textoParecer : ", textoParecer );
+
     if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegivel) {
       textoParecer?.setValidators([Validators.required]);
     } else {
@@ -100,11 +102,12 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
     textoParecer?.updateValueAndValidity();
 
-    const nomeArquivo = this.parecerFormGroup.get('nomeArquivo')?.value ?? '';
-    // const nomeOriginalArquivo = this.parecerFormGroup.get('nomeOriginalArquivo')?.value ?? '';
+    const nomeArquivo = this.parecerFormGroup.get('nomeArquivo');
+
+    console.log( " nomeArquivo : ", nomeArquivo )
     
     this.anexoPdfSelecionado = {
-      nomeArquivo: nomeArquivo,
+      nomeArquivo: nomeArquivo?.getRawValue(),
       tamanhoBytes: 0,
       tamanhoFormatado: '',
       tipoMime: 'application/pdf'
@@ -219,6 +222,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   updateFormControl() {
 
     if (!this.editor) return;
+
     const html = this.editor.value;
 
     // ignora conteúdo vazio/fantasma
@@ -250,7 +254,9 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
     }
 
     this.textoLength = plainText.length;
+
     this.parecerFormGroup.get('textoParecer')?.patchValue(this.normalizeHtml(html), { emitEvent: false });
+
   }
 
   // função auxiliar para extrair texto puro
@@ -298,7 +304,8 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
     const textoMetadados = this.montarTextoMetadadosPdf(this.anexoPdfSelecionado);
 
     this.parecerFormGroup.get('textoParecer')?.setValue(textoMetadados);
-
+    this.parecerFormGroup.get('nomeArquivo')?.setValue(arquivo.name); 
+    
     this.textoLength = textoMetadados.length;
 
     input.value = ''
@@ -311,7 +318,11 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   }
 
   public possuiAnexo(): boolean {
-    return this.anexoPdfSelecionado ? true : false;
+    if (this.anexoPdfSelecionado?.nomeArquivo?.trim()){
+      return true
+    }else{
+      return false
+    }
   }
 
   public async validarPdf(arquivo: File): Promise<boolean> {
@@ -359,8 +370,6 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
     const idParecer = this.parecerFormGroup.get('id')?.value;
 
-    console.log("idParecer encontrado :", idParecer)
-
     this._projetoParecerService.baixarParecer(idParecer);
 
   }
@@ -375,9 +384,12 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
       this.editor.setDisabled(false);
     }
 
-    // se já existe salvo no backend, marque para exclusão ou chame o service
-    // exemplo:
-    // this._parecerService.excluirAnexo(this.parecer.id).subscribe(...)
+    const idParecer = this.parecerFormGroup.get('id')?.value;
+
+    this._projetoParecerService.excluirAnexoParecer(idParecer).subscribe({
+      next: () => console.log('OK'),
+      error: err => console.error(err)
+    });
 
   }
 

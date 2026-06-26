@@ -76,8 +76,8 @@
               <i class="fa fa-paperclip"></i> Anexar parecer em PDF
             </span>
 
-            <!-- Download -->
-            <span *ngIf="anexoPdfSelecionado" style="cursor:pointer;
+           <!-- Download -->
+            <span *ngIf="possuiAnexo()" style="cursor:pointer;
              color:#198754;
              font-weight:600;
              font-size:12px;" 
@@ -88,7 +88,7 @@
             </span>
 
             <!-- Excluir -->
-            <span *ngIf="anexoPdfSelecionado && !isEnviado()" style="cursor:pointer;
+            <span *ngIf="possuiAnexo() && !isEnviado()" style="cursor:pointer;
              color:#dc3545;
              font-weight:600;
              font-size:12px;" (click)="excluirPdfAnexo()" (keydown.enter)="excluirPdfAnexo()"
