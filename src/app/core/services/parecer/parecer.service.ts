@@ -1,15 +1,33 @@
 import { Injectable } from '@angular/core';
 import {
+  AbstractControl,
   FormGroup,
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
 import { IParecer } from '../../interfaces/parecer.interface';
+import { environment } from '../../../../environments/environment';
+import { HttpResponse } from '@angular/common/http';
+import { FilesService } from '../files/files.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ParecerService {
+
+  private readonly _url = `${environment.apiUrl}/projetos`;
+
+  baixarParecer(idParecer: AbstractControl<any, any> | null) {
+    const downloadURL = `${this._url}/dic/parecer/${idParecer}/arquivo`;
+    this.filesService.requestPDF(downloadURL).subscribe({
+      next: (res) => {
+        if (res instanceof HttpResponse) {
+          const httpResponse = res as HttpResponse<Blob>;
+          this.filesService.downloadPDF(httpResponse);
+        }
+      },
+    });
+  }
 
   private _parecerSnapshot: IParecer | null = null;
 
@@ -21,7 +39,7 @@ export class ParecerService {
     this._parecerSnapshot = parecer;
   }
 
-  constructor(private _nnfb: NonNullableFormBuilder) {}
+  constructor(private _nnfb: NonNullableFormBuilder, private filesService: FilesService,) { }
 
   public construirParecerForm(parecer?: IParecer): FormGroup {
     return this._nnfb.group({

@@ -51,7 +51,8 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
   constructor(
     private fb: FormBuilder,
-    private readonly _toastService: ToastService
+    private readonly _toastService: ToastService,
+    private _projetoParecerService: ParecerService
   ) { }
 
   get parecerFormGroup(): FormGroup {
@@ -98,6 +99,16 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
     }
 
     textoParecer?.updateValueAndValidity();
+
+    const nomeArquivo = this.parecerFormGroup.get('nomeArquivo')?.value ?? '';
+    // const nomeOriginalArquivo = this.parecerFormGroup.get('nomeOriginalArquivo')?.value ?? '';
+    
+    this.anexoPdfSelecionado = {
+      nomeArquivo: nomeArquivo,
+      tamanhoBytes: 0,
+      tamanhoFormatado: '',
+      tipoMime: 'application/pdf'
+    };
 
   }
 
@@ -345,9 +356,13 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   }
 
   public baixarPdfAnexo(): void {
-    // chama seu service para gerar/download pelo id do parecer
-    // exemplo:
-    // this._parecerService.downloadAnexo(this.parecer.id).subscribe(...)
+
+    const idParecer = this.parecerFormGroup.get('id')?.value;
+
+    console.log("idParecer encontrado :", idParecer)
+
+    this._projetoParecerService.baixarParecer(idParecer);
+
   }
 
   public excluirPdfAnexo(): void {
