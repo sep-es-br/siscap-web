@@ -337,11 +337,11 @@ export class ProjetosService extends BaseHttpService<
 
   public efetivarEnvioParecerEdocs(
     id: number,
-    body: ProjetoFormModel
+    formData: FormData
   ): Observable<IProjeto> {
     this.iniciarAutuacao(id);
     return this._http.put<IProjeto>(
-      `${this._url}/dic/edocs/capturarparecer/${id}`, body
+      `${this._url}/dic/edocs/capturarparecer/${id}`, formData
     );
   }
 

@@ -365,7 +365,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", response)
+        // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -1039,6 +1039,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         guidUnidadeOrganizacao: [projetoFormModel?.parecerProjetoUsuario?.guidUnidadeOrganizacao ?? '',],
         usuarioFezEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? '',],
         elegivel: [projetoFormModel?.parecerProjetoUsuario.elegivel ?? null],
+        nomeArquivo: [projetoFormModel?.parecerProjetoUsuario?.nomeArquivo ?? '',],
+        nomeOriginalArquivo: [projetoFormModel?.parecerProjetoUsuario?.nomeOriginalArquivo ?? '',],
 
         anexos: this._nnfb.group({
           nomeArquivo: [
@@ -1235,6 +1237,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         guidUnidadeOrganizacao: '',
       });
     }
+
   }
 
   private idOrganizacaoChange(idOrganizacaoValue: number | null): void {
@@ -2406,6 +2409,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private efetivarEnvioParecerProjetoForm(form: FormGroup): void {
+
     form.updateValueAndValidity();
 
     form.get('valor.tipo')?.enable();
@@ -2476,11 +2480,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
     payload.odsProjeto = odsProjetoPayload;
 
-    //const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+    const formData = new FormData();
+
+    formData.append(
+      'projeto',
+      new Blob([JSON.stringify(payload)], {
+        type: 'application/json'
+      })
+    );
+
+    if (this.arquivoParecerSelecionado) {
+      formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
+    }
 
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
-    this.efetivarEnvioParecerProjetoAsync(payload);
+    this.efetivarEnvioParecerProjetoAsync(formData);
 
   }
 
@@ -2653,11 +2668,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       });
   }
 
-  private efetivarEnvioParecerProjetoAsync(payload: ProjetoFormModel): void {
+  private efetivarEnvioParecerProjetoAsync(formData: FormData): void {
+
     this.exibeListaEtapasIntegracao = true;
 
     this._projetosService
-      .efetivarEnvioParecerEdocs(this._idProjetoEdicao, payload)
+      .efetivarEnvioParecerEdocs( this._idProjetoEdicao, formData )
       .pipe(
         tap(() => {
           this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
@@ -3108,6 +3124,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }
     });
     return valido;
+  }
+
+  public baixarPdfAnexo(idParecer: any): void {
+
+    this.parecerService.baixarParecer(idParecer);
+
+  }
+
+  get parecerFormGroup(): FormGroup {
+    return this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
   }
 
 }

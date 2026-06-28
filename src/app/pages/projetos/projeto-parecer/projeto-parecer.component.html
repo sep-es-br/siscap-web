@@ -65,26 +65,21 @@
           <div class="d-flex align-items-center gap-3">
 
             <!-- Anexar -->
-            <span  [class.disabled-link]="isEnviado()"
-             style="cursor:pointer;
+            <span [class.disabled-link]="isEnviado()" style="cursor:pointer;
              color:var(--blue);
              font-weight:700;
-             font-size:12px;" 
-             (click)="selecionarPdf()" 
-             (keydown.enter)="selecionarPdf()"
-             (keydown.space)="selecionarPdf()">
+             font-size:12px;" (click)="selecionarPdf()" (keydown.enter)="selecionarPdf()"
+              (keydown.space)="selecionarPdf()">
               <i class="fa fa-paperclip"></i> Anexar parecer em PDF
             </span>
 
-           <!-- Download -->
+            <!-- Download -->
             <span *ngIf="possuiAnexo()" style="cursor:pointer;
              color:#198754;
              font-weight:600;
-             font-size:12px;" 
-             (click)="baixarPdfAnexo()" 
-             (keydown.enter)="baixarPdfAnexo()"
-             (keydown.space)="baixarPdfAnexo()">
-             <i class="fas fa-download"></i> Baixar parecer
+             font-size:12px;" (click)="baixarPdfAnexo()" (keydown.enter)="baixarPdfAnexo()"
+              (keydown.space)="baixarPdfAnexo()">
+              <i class="fas fa-download"></i> Baixar parecer
             </span>
 
             <!-- Excluir -->
@@ -102,13 +97,8 @@
             (change)="onPdfSelecionado($event)">
         </div>
 
-        <textarea #editor 
-          id="textoParecer"
-          class="form-control"
-          rows="8" 
-          maxlength="10000"
-          placeholder="Digite aqui o texto do parecer..." 
-          [disabled]="isEnviado()">
+        <textarea #editor id="textoParecer" class="form-control" rows="8" maxlength="10000"
+          placeholder="Digite aqui o texto do parecer..." [disabled]="isEnviado()">
         </textarea>
 
         <small class="text-muted d-block text-end ">
@@ -120,6 +110,7 @@
     </div>
 
     <div *ngIf="isEnviado()" class="row mt-2">
+
       <div class="col-12">
         <strong>Parecer enviado</strong> no dia
         <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'dd/MM/yyyy' }}</span>
@@ -128,6 +119,7 @@
         por
         <span class="fw-semibold">{{ this.parecerFormGroup.get('usuarioFezEnvioParecer')?.value }}</span>
       </div>
+
     </div>
 
   </form>

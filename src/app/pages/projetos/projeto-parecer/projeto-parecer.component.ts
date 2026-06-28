@@ -92,8 +92,6 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
     const textoParecer = this.parecerFormGroup.get('textoParecer');
 
-    console.log( " textoParecer : ", textoParecer );
-
     if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegivel) {
       textoParecer?.setValidators([Validators.required]);
     } else {
@@ -102,16 +100,16 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
     textoParecer?.updateValueAndValidity();
 
-    const nomeArquivo = this.parecerFormGroup.get('nomeArquivo');
-
-    console.log( " nomeArquivo : ", nomeArquivo )
+    const nomeArquivo = this.parecerFormGroup.get('nomeArquivo')?.value;
     
     this.anexoPdfSelecionado = {
-      nomeArquivo: nomeArquivo?.getRawValue(),
+      nomeArquivo: nomeArquivo,
       tamanhoBytes: 0,
       tamanhoFormatado: '',
       tipoMime: 'application/pdf'
     };
+
+    
 
   }
 
@@ -318,11 +316,23 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   }
 
   public possuiAnexo(): boolean {
-    if (this.anexoPdfSelecionado?.nomeArquivo?.trim()){
+
+    const nomeArquivo = this.parecerFormGroup.get('nomeArquivo')?.value;
+
+    if (nomeArquivo){
+      if(this.editor){
+        this.editor.setReadOnly(true);
+        this.editor.setDisabled(true);
+      }
       return true
     }else{
+      if(this.editor){
+        this.editor.setReadOnly(false);
+        this.editor.setDisabled(false);
+      }
       return false
     }
+
   }
 
   public async validarPdf(arquivo: File): Promise<boolean> {
@@ -377,6 +387,8 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   public excluirPdfAnexo(): void {
 
     this.anexoPdfSelecionado = undefined;
+    this.parecerFormGroup.get('nomeArquivo')?.setValue('');
+    this.parecerFormGroup.get('nomeOriginalArquivo')?.setValue('');
 
     if (this.editor) {
       this.editor.value = '';
