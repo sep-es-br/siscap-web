@@ -21,8 +21,8 @@
 </div>
 
 <app-selecao-indicadores [indicadores]="indicadoresBI" [gestao]="gestao" [form]="formProjeto"
-  [selecionados]="indicadoresSelecionados" [loading]="loading" [somenteLeitura]="somenteLeitura"
-  (selecionadosChange)="onSelecaoChange($event)">
+  [selecionados]="indicadoresSelecionados" [loading]="loading"
+  (selecionadosChange)="onSelecaoChange($event)" [podeEditar]="podeEditarIndicadores">
 </app-selecao-indicadores>
 
 <!-- CARD: INDICADORES SELECIONADOS -->

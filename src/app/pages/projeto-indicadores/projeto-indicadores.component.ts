@@ -517,8 +517,11 @@ export class ProjetoIndicadoresComponent implements OnInit {
     const isEmAnalise =
       status === StatusProjetoEnum.Em_Analise;
 
+    const isEmComplementacao =
+      status === StatusProjetoEnum.Em_Complementacao;
+
     const podeEditar =
-      isEmElaboracao || (isEmAnalise && this.isSubcap);
+      isEmElaboracao || (isEmAnalise && this.isSubcap) || isEmComplementacao;
 
     return podeEditar;
 

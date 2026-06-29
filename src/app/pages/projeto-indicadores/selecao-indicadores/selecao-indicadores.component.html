@@ -7,7 +7,7 @@
         <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
         <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
           class="w-100 search-input" placeholder="Nome do indicador" [(ngModel)]="filtroTexto"
-          (ngModelChange)="filtrarIndicadores()" [disabled]="somenteLeitura" />
+          (ngModelChange)="filtrarIndicadores()" [disabled]="!podeEditar" />
         <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()"></i>
       </span>
     </div>
@@ -18,7 +18,7 @@
     <div class="indicador-item select-all">
       <label class="indicador-label">
         <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
-          [disabled]="somenteLeitura"></p-checkbox>
+          [disabled]="!podeEditar"></p-checkbox>
         <span class="text-blue-primary">SELECIONAR TODOS</span>
       </label>
     </div>
@@ -29,7 +29,7 @@
           <label *ngIf="!indicador.avulso" class="indicador-label">
             <p-checkbox [binary]="true" [ngModel]="isSelecionado(indicador)"
               (ngModelChange)="toggleIndicador(indicador)" [ngModelOptions]="{ standalone: true }"
-              [disabled]="somenteLeitura">
+              [disabled]="!podeEditar">
             </p-checkbox>
             <span>{{ indicador.nomeIndicador }} <small *ngIf="indicador.avulso" class="indicador-avulso-label">
                 (Indicador de projeto)</small> </span>
@@ -44,7 +44,7 @@
     <div class="create-special-link"
       style="cursor:pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s;"
       title="Se não encontrar o indicador estratégico desejado, crie um novo"
-      (click)="!somenteLeitura && showNewIndicatorForm(); $event.stopPropagation()"
+      (click)="podeEditar && showNewIndicatorForm(); $event.stopPropagation()"
       onmouseover="this.style.background='#eef6ff'" onmouseout="this.style.background='transparent'">
       <span style="color:var(--blue); font-weight:700; font-size:12px;">+ Criar um Indicador de Projeto</span>
     </div>

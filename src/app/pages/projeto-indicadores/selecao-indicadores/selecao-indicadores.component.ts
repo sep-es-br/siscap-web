@@ -26,8 +26,9 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     this.filtrarIndicadores();
     this.updateSelectAllState();
   }
-  @Input() somenteLeitura: boolean = false;
+  // @Input() somenteLeitura: boolean = false;
   @Output() selecionadosChange = new EventEmitter<any[]>();
+  @Input() podeEditar: boolean = true;
 
   @ViewChild('searchInput')
   searchInput!: ElementRef<HTMLInputElement>;
@@ -191,7 +192,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   toggleSearch(): void {
-    if (this.somenteLeitura) {
+    if (!this.podeEditar) {
       return;
     }
     this.searchVisible = !this.searchVisible;
@@ -203,7 +204,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   limparBusca(): void {
-    if (this.somenteLeitura) {
+    if (!this.podeEditar) {
       return;
     }
     this.filtroTexto = '';
