@@ -143,4 +143,21 @@ export class IndicadorAvulsoComponent {
     return formArray.at(index).get('valorMeta') as AbstractControl;
   }
 
+  bloquearCaracteresInvalidos(event: KeyboardEvent): void {
+    const teclasBloqueadas = ['e', 'E', '+', '-'];
+  
+    if (teclasBloqueadas.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+  
+  bloquearColagemInvalida(event: ClipboardEvent): void {
+    const valorColado = event.clipboardData?.getData('text') ?? '';
+  
+    if (!/^\d+([.,]\d+)?$/.test(valorColado)) {
+      event.preventDefault();
+    }
+    
+  }
+
 }

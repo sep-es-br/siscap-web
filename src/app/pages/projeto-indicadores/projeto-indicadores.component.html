@@ -104,7 +104,9 @@
                     <validation-message class="meta-validation-message"
                       [control]="getMetaProjetoControl(i, j)"></validation-message>
                     <input type="number" class="meta-value-input" formControlName="valorMeta"
-                      placeholder="Digite a meta">
+                      placeholder="Digite a meta" 
+                      (keydown)="bloquearCaracteresInvalidos($event)"
+                      (paste)="bloquearColagemInvalida($event)">
                   </div>
                 </div>
               </div>

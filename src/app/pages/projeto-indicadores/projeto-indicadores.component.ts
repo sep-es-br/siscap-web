@@ -602,4 +602,21 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   }
 
+  bloquearCaracteresInvalidos(event: KeyboardEvent): void {
+    const teclasBloqueadas = ['e', 'E', '+', '-'];
+  
+    if (teclasBloqueadas.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+  
+  bloquearColagemInvalida(event: ClipboardEvent): void {
+    const valorColado = event.clipboardData?.getData('text') ?? '';
+  
+    if (!/^\d+([.,]\d+)?$/.test(valorColado)) {
+      event.preventDefault();
+    }
+    
+  }
+
 }
