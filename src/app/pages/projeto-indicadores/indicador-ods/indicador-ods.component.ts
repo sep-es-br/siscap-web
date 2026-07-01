@@ -39,6 +39,8 @@ export class IndicadorOdsComponent implements OnInit {
 
   ngOnInit(): void {
 
+    console.log('IndicadorOdsComponent - ngOnInit');
+
     this.formProjeto.get('indicadoresProjeto')?.valueChanges
       .subscribe(valor => {
         this.sincronizarOdsComIndicadores();
@@ -106,11 +108,12 @@ export class IndicadorOdsComponent implements OnInit {
 
     this.odsEscolhidas = odsProjeto.value;
 
-    this.atualizarOdsSugeridas();
+    // this.atualizarOdsSugeridas();
 
   }
 
   removerOds(ods: IOdsIndicadorExterno): void {
+
     this.odsEscolhidas = this.odsEscolhidas
       .filter(o => o.odsId !== ods.odsId);
 
@@ -125,6 +128,7 @@ export class IndicadorOdsComponent implements OnInit {
     }
 
     this.atualizarOdsSugeridas();
+
   }
 
   get indicadoresProjeto(): any[] {
@@ -136,6 +140,7 @@ export class IndicadorOdsComponent implements OnInit {
   }
 
   voltarParaIndicadores() {
+
     const tabTrigger = document.getElementById('nav-indicadores');
 
     if (tabTrigger) {
@@ -146,79 +151,8 @@ export class IndicadorOdsComponent implements OnInit {
         behavior: 'smooth'
       });
     }
+
   }
-
-  // private sincronizarOdsComIndicadores(): void {
-
-  //   const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
-  //   //console.log("odsProjetoArray", odsProjetoArray.value)
-
-  //   const odsProjetoAtual = odsProjetoArray?.getRawValue() ?? [];
-  //   //console.log("odsProjetoAtual", odsProjetoAtual.values)
-
-  //   if ( this.isModoEdicao && odsProjetoAtual.length > 0 ) {
-
-  //     this.odsEscolhidas = odsProjetoAtual
-  //       .filter( (ods: any) => ods.idOdsProjeto != null )
-  //       .map( (ods: any) => ({
-  //         idOdsProjeto: ods.idOdsProjeto ?? null,
-  //         idOdsIndicadorExterno: ods.idOdsIndicadorExterno ?? null,
-  //         idOdsExterno: ods.idOdsExterno ?? ods.odsId,
-  //         odsId: ods.odsId,
-  //         odsOrdem: ods.odsOrdem,
-  //         odsNome: ods.odsNome,
-  //         odsDescricao: ods.odsDescricao,
-  //         odsCor: ods.odsCor,
-  //         indicadoresVinculados: ods.indicadoresVinculados ?? []
-  //       }));
-
-  //     this.atualizarOdsSugeridas();
-
-  //     console.log("saiu por aqui..")
-
-  //     return;
-
-  //   }
-
-  //   const indicadores = this.formProjeto.get('indicadoresProjeto')?.value ?? [];
-
-  //   const odsPorId = new Map<number, IOdsIndicadorExterno>();
-
-  //   indicadores.forEach((indicador: IIndicadoresCatalogoExterno) => {
-
-  //     const odsDoIndicador = indicador.ods ?? [];
-
-  //     console.log("todas ODS catalogo : ", this.odsTodas);
-
-  //     odsDoIndicador.forEach((odsIndicador: IOdsIndicadorExterno) => {
-
-  //       const odsId = odsIndicador.odsId;
-
-  //       const odsCatalogo = this.odsTodas.find(o => o.odsId === odsId);
-
-  //       if (!odsCatalogo) {
-  //         return;
-  //       }
-
-  //       const existente = odsPorId.get(odsId);
-
-  //       if (existente) {
-  //         existente.indicadoresVinculados.push(indicador);
-  //       } else {
-  //         odsPorId.set(
-  //           odsId,
-  //           this.montarOdsEscolhida(odsCatalogo, [indicador])
-  //         );
-  //       }
-  //     });
-  //   });
-
-  //   this.odsEscolhidas = Array.from(odsPorId.values());
-
-  //   this.atualizarFormOdsProjeto();
-  //   this.atualizarOdsSugeridas();
-
-  // }
 
   private sincronizarOdsComIndicadores(): void {
 
@@ -228,12 +162,12 @@ export class IndicadorOdsComponent implements OnInit {
 
     const odsPorId = new Map<number, IOdsIndicadorExterno>();
 
-    /**
-     * 1. Primeiro mantém as ODS que realmente vieram do banco
-     */
     odsProjetoAtual
       .filter((ods: any) => ods.idOdsProjeto != null)
       .forEach((ods: any) => {
+
+        console.log('sincronizarOdsComIndicadores - odsProjetoAtual', ods);
+
         odsPorId.set(ods.odsId, {
           idOdsProjeto: ods.idOdsProjeto,
           idOdsIndicadorExterno: ods.idOdsIndicadorExterno ?? null,
@@ -245,11 +179,9 @@ export class IndicadorOdsComponent implements OnInit {
           odsCor: ods.odsCor,
           indicadoresVinculados: ods.indicadoresVinculados ?? []
         });
+
       });
 
-    /**
-     * 2. Depois adiciona as ODS sugeridas pelos indicadores selecionados
-     */
     indicadores.forEach((indicador: IIndicadoresCatalogoExterno) => {
 
       const odsDoIndicador = indicador.ods ?? [];
@@ -259,11 +191,15 @@ export class IndicadorOdsComponent implements OnInit {
         const odsId = odsIndicador.odsId;
 
         if (odsPorId.has(odsId)) {
+
           const existente = odsPorId.get(odsId);
+
+          console.log( 'sincronizarOdsComIndicadores - push', odsIndicador );
 
           existente?.indicadoresVinculados?.push(indicador);
 
           return;
+
         }
 
         const odsCatalogo = this.odsTodas.find(o => o.odsId === odsId);
@@ -276,26 +212,25 @@ export class IndicadorOdsComponent implements OnInit {
           odsId,
           this.montarOdsEscolhida(odsCatalogo, [indicador])
         );
+
       });
     });
 
     this.odsEscolhidas = Array.from(odsPorId.values());
 
     this.atualizarFormOdsProjeto();
+
     this.atualizarOdsSugeridas();
 
   }
-
-  // private buscarOdsProjetoAtual(odsId: number): any | null {
-  //   const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
-  //   return odsProjetoArray?.getRawValue()
-  //     ?.find((ods: any) => ods.odsId === odsId) ?? null;
-  // }
 
   private montarOdsEscolhida(
     odsGestao: IOdsGestao,
     indicadoresVinculados: IIndicadoresCatalogoExterno[]
   ): IOdsIndicadorExterno {
+
+    console.log('montarOdsEscolhida', indicadoresVinculados);
+
     return {
       idOdsProjeto: null as any,
       idOdsIndicadorExterno: null as any,
@@ -307,6 +242,7 @@ export class IndicadorOdsComponent implements OnInit {
       odsCor: odsGestao.corOds,
       indicadoresVinculados
     };
+
   }
 
   private atualizarFormOdsProjeto(): void {
@@ -386,7 +322,6 @@ export class IndicadorOdsComponent implements OnInit {
       return nomeNormalizado?.includes(termo);
     });
   }
-
 
   toggleSearch(): void {
     if (this.somenteLeitura) {
