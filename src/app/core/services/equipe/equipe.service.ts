@@ -94,11 +94,11 @@ export class EquipeService {
         const novoMembro: EquipeModel = {
           subPessoa: this._usuarioService.usuarioPerfil.subNovo,
           idPessoa: this._usuarioService.usuarioPerfil.idPessoa,
-          idPapel: null,
+          idPapel: TipoPapelEnum.Redator,
           idStatus: TipoStatusEnum.Ativo,
           justificativa: null,
           nome: this._usuarioService.usuarioPerfil.nome,
-          papelNome: 'Elaborador'
+          papelNome: ''
         };
 
         equipeFormArray.push(this.construirMembroFormGroup(novoMembro));
@@ -116,6 +116,7 @@ export class EquipeService {
   }
 
   public construirMembroFormGroup(membro?: IEquipe): FormGroup<EquipeFormType> {
+
     return this._nnfb.group<EquipeFormType>({
       subPessoa: this._nnfb.control(membro?.subPessoa ?? null),
       idPessoa: this._nnfb.control(membro?.idPessoa ?? 0, Validators.required),
@@ -124,6 +125,7 @@ export class EquipeService {
       justificativa: this._nnfb.control(membro?.justificativa ?? null),
       nome: this._nnfb.control(membro?.nome ?? '')
     });
+
   }
 
   public construirMembroFormGroupNgSelectValue(

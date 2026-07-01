@@ -20,12 +20,12 @@
                     name="papelSelect"
                     id="papelSelect"
                     class="papel-select"
-                    placeholder="-- Papel do membro --"
+                    [placeholder]="placeholderPapel"
                     [readonly]="isMembroRemovido(i) || !isModoEdicao"
                     [clearable]="false"
                     formControlName="idPapel"
                   >
-                    @for (tipoPapel of tiposPapelOpcoes; track tipoPapel) {
+                    @for (tipoPapel of tiposPapelOpcoesVisiveis; track tipoPapel) {
                       <ng-option
                         [value]="tipoPapel.id"
                         [disabled]="papelDeveEstarDesabilitado(tipoPapel, i)"
@@ -43,9 +43,8 @@
                     type="button"
                     ngbTooltip="Excluir membro da equipe"
                     class="btn btn-outline-danger rounded-circle"
-                    [disabled]="!isModoEdicao || membroFormGroup.getRawValue().subPessoa == subProponente"
-                    (click)="removerMembroDaEquipe(i)"
-                  >
+                    [disabled]="!isModoEdicao"
+                    (click)="removerMembroDaEquipe(i)" >
                     <i class="fa-solid fa-close delete-btn-icon"></i>
                   </button>
                 </div>

@@ -904,6 +904,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public async idMembroNgSelectChangeEvent(
     event: IOpcoesDropdownResponsavelProponente,
   ): Promise<void> {
+
     const subResponsavelProponente = this.projetoForm.get(
       'subResponsavelProponente',
     ) as FormControl<string | null>;
@@ -922,6 +923,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     this.exibirLista = false;
+
   }
 
   public idIndicadorNgSelectChangeEvent(event: number): void {
