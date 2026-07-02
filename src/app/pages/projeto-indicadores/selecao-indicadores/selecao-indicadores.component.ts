@@ -21,12 +21,13 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   @Input() selecionados: IIndicadoresCatalogoExterno[] = [];
   @Input() loading: boolean = false;
   @Input() gestao: IGestoesCatalogoExterno | null = null;
+
   @Input() set indicadores(value: IIndicadoresCatalogoExterno[]) {
     this._indicadores = value || [];
     this.filtrarIndicadores();
     this.updateSelectAllState();
   }
-  // @Input() somenteLeitura: boolean = false;
+
   @Output() selecionadosChange = new EventEmitter<any[]>();
   @Input() podeEditar: boolean = true;
 

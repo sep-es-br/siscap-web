@@ -39,8 +39,6 @@ export class IndicadorOdsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    console.log('IndicadorOdsComponent - ngOnInit');
-
     this.formProjeto.get('indicadoresProjeto')?.valueChanges
       .subscribe(valor => {
         this.sincronizarOdsComIndicadores();
@@ -56,14 +54,19 @@ export class IndicadorOdsComponent implements OnInit {
 
     const odsProjeto = this.formProjeto.getRawValue().odsProjeto ?? [];
 
-    this.odsEscolhidas = odsProjeto.map((ods: any) => ({
-      idOdsProjeto: ods.idOdsProjeto ?? null,
-      odsId: ods.odsId,
-      odsOrdem: ods.odsOrdem,
-      odsNome: ods.odsNome,
-      odsDescricao: ods.odsDescricao,
-      odsCor: ods.odsCor
-    }));
+    this.odsEscolhidas = odsProjeto.map((ods: any) => {
+      const odsAnterior = this.odsEscolhidas?.find(o => o.odsId === ods.odsId);
+
+      return {
+        idOdsProjeto: ods.idOdsProjeto ?? null,
+        odsId: ods.odsId,
+        odsOrdem: ods.odsOrdem,
+        odsNome: ods.odsNome,
+        odsDescricao: ods.odsDescricao,
+        odsCor: ods.odsCor,
+        indicadoresVinculados: odsAnterior?.indicadoresVinculados ?? ods.indicadoresVinculados ?? []
+      };
+    });
 
   }
 
@@ -106,9 +109,22 @@ export class IndicadorOdsComponent implements OnInit {
       })
     );
 
-    this.odsEscolhidas = odsProjeto.value;
+    this.odsEscolhidas = [
+      ...this.odsEscolhidas,
+      {
+        idOdsProjeto: null,
+        idOdsIndicadorExterno: 0,
+        idOdsExterno: ods.odsId,
+        odsId: ods.odsId,
+        odsOrdem: ods.ordemOds,
+        odsNome: ods.nomeOds,
+        odsDescricao: ods.descricaoOds,
+        odsCor: ods.corOds,
+        indicadoresVinculados: []
+      }
+    ];
 
-    // this.atualizarOdsSugeridas();
+    this.atualizarOdsSugeridas();
 
   }
 
@@ -160,13 +176,13 @@ export class IndicadorOdsComponent implements OnInit {
     const odsProjetoAtual = odsProjetoArray?.getRawValue() ?? [];
     const indicadores = this.formProjeto.get('indicadoresProjeto')?.value ?? [];
 
+    console.log('sincronizarOdsComIndicadores - indicadores', indicadores);
+
     const odsPorId = new Map<number, IOdsIndicadorExterno>();
 
     odsProjetoAtual
       .filter((ods: any) => ods.idOdsProjeto != null)
       .forEach((ods: any) => {
-
-        console.log('sincronizarOdsComIndicadores - odsProjetoAtual', ods);
 
         odsPorId.set(ods.odsId, {
           idOdsProjeto: ods.idOdsProjeto,
@@ -177,7 +193,9 @@ export class IndicadorOdsComponent implements OnInit {
           odsNome: ods.odsNome,
           odsDescricao: ods.odsDescricao,
           odsCor: ods.odsCor,
-          indicadoresVinculados: ods.indicadoresVinculados ?? []
+          indicadoresVinculados: Array.isArray(ods.indicadoresVinculados)
+            ? ods.indicadoresVinculados
+            : []
         });
 
       });
@@ -194,9 +212,17 @@ export class IndicadorOdsComponent implements OnInit {
 
           const existente = odsPorId.get(odsId);
 
-          console.log( 'sincronizarOdsComIndicadores - push', odsIndicador );
+          if (!existente) {
+            console.warn('ODS existente não encontrado');
+            return;
+          }
 
-          existente?.indicadoresVinculados?.push(indicador);
+          // console.log('existente:', existente);
+          // console.log('indicadoresVinculados:', existente.indicadoresVinculados);
+          // console.log('isArray:', Array.isArray(existente.indicadoresVinculados));
+          // console.log('typeof:', typeof existente.indicadoresVinculados);
+
+          existente.indicadoresVinculados.push(indicador);
 
           return;
 
@@ -229,8 +255,6 @@ export class IndicadorOdsComponent implements OnInit {
     indicadoresVinculados: IIndicadoresCatalogoExterno[]
   ): IOdsIndicadorExterno {
 
-    console.log('montarOdsEscolhida', indicadoresVinculados);
-
     return {
       idOdsProjeto: null as any,
       idOdsIndicadorExterno: null as any,
@@ -261,7 +285,8 @@ export class IndicadorOdsComponent implements OnInit {
           odsOrdem: [ods.odsOrdem],
           odsNome: [ods.odsNome],
           odsDescricao: [ods.odsDescricao],
-          odsCor: [ods.odsCor]
+          odsCor: [ods.odsCor],
+          indicadoresVinculados: ods.indicadoresVinculados ?? []
         })
       );
     });

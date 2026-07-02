@@ -417,7 +417,8 @@
 
         <div class="tab-pane fade" id="tab-indicadores" role="tabpanel" aria-labelledby="nav-indicadores">
           <siscap-projeto-indicadores [formProjeto]="projetoForm" [isModoEdicao]="isModoEdicao"
-            [isSubcap]="isSubcapGeoc()" [statusProjeto]="statusProjeto"></siscap-projeto-indicadores>
+            [isSubcap]="isSubcapGeoc()" [statusProjeto]="statusProjeto"  
+            (indicadoresCatalogoCarregados)="onIndicadoresCatalogoCarregados($event)"></siscap-projeto-indicadores>
         </div>
 
         <div class="tab-pane fade" id="tab-ods-indicadores" role="tabpanel" aria-labelledby="nav-indicador-ods">

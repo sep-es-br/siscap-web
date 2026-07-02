@@ -110,6 +110,8 @@ import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { gerarStepStatusProjeto, IStep } from '../../../core/utils/steps';
 import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
 import { IIndicadorAvulso } from '../../../core/interfaces/indicador-avulso.interface';
+import { CatalogoIndicadorService } from '../../../core/services/catalogo-indicadores/catalogo-indicador.service';
+import { IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 
 declare var bootstrap: any;
 
@@ -246,6 +248,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     'ods'
   ];
 
+  public indicadoresCatalogoBI: IIndicadoresCatalogoExterno[] = [];
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -289,6 +293,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     public parecerService: ParecerService,
+    public catalogoIndicadoresService: CatalogoIndicadorService
   ) {
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
@@ -1593,6 +1598,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     // e seja diferente do papel 'Redator'
     const equipeElaboracao = this.projetoForm.get('equipeElaboracao')
       ?.value as IEquipe[];
+
     const membrosEquipeAtivas = equipeElaboracao.filter(
       (membro: EquipeModel) =>
         membro.idStatus === TipoStatusEnum.Ativo &&
@@ -1751,10 +1757,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresProjeto = indicadoresProjetoPayload;
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
-
-      // const payload = new ProjetoFormModel(
-      //   this.projetoForm.getRawValue() as IProjetoForm,
-      // );
 
       payload.parecerProjetoUsuario = this.projetoForm
         .get('parecerProjetoUsuario')
@@ -2990,7 +2992,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.pararPolling$.next();
 
     this.cdr.detectChanges();
-    
+
   }
 
   ngOnDestroy(): void {
@@ -3230,6 +3232,55 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }
     });
     return valido;
+  }
+
+  public onIndicadoresCatalogoCarregados(
+    catalogo: IIndicadoresCatalogoExterno[]
+  ): void {
+    this.indicadoresCatalogoBI = catalogo;
+    this.enriquecerIndicadoresProjetoComCatalogo(catalogo);
+  }
+
+  private enriquecerIndicadoresProjetoComCatalogo(
+    catalogo: IIndicadoresCatalogoExterno[]): void {
+
+    const indicadoresControl = this.projetoForm.get('indicadoresProjeto');
+    const indicadoresProjeto = indicadoresControl?.value ?? [];
+
+    if (!indicadoresProjeto.length || !catalogo.length) {
+      return;
+    }
+
+    const indicadoresEnriquecidos: IIndicadoresCatalogoExterno[] = indicadoresProjeto.map((indicadorProjeto: any) => {
+      const idIndicador =
+        indicadorProjeto.idIndicadorExterno ??
+        indicadorProjeto.idIndicadorCatalogoExterno ??
+        indicadorProjeto.idIndicador;
+
+      const indicadorCatalogo = catalogo.find(
+        (i) => i.idIndicador === idIndicador
+      );
+
+      return {
+        ...indicadorProjeto,
+        nomeIndicador:
+          indicadorProjeto.nomeIndicador ?? indicadorCatalogo?.nomeIndicador,
+        unidadeMedida:
+          indicadorProjeto.unidadeMedida ?? indicadorCatalogo?.unidadeMedida,
+        formulaCalculo:
+          indicadorProjeto.formulaCalculo ?? indicadorCatalogo?.formulaCalculo,
+        polaridade:
+          indicadorProjeto.polaridade ?? indicadorCatalogo?.polaridade,
+        medidoPor:
+          indicadorProjeto.medidoPor ?? indicadorCatalogo?.medidoPor,
+        metasIndicador:
+          indicadorProjeto.metasIndicador ?? indicadorCatalogo?.metasIndicador,
+        ods: indicadorCatalogo?.ods ?? []
+      };
+    });
+
+    indicadoresControl?.patchValue(indicadoresEnriquecidos);
+
   }
 
 }

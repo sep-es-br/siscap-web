@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -52,10 +52,13 @@ declare var bootstrap: any;
   styleUrls: ['./projeto-indicadores.component.scss'],
 })
 export class ProjetoIndicadoresComponent implements OnInit {
+
   @Input() formProjeto!: FormGroup;
   @Input() isModoEdicao: boolean = false;
   @Input() isSubcap: boolean = false;
   @Input() statusProjeto: string = '';
+
+  @Output() indicadoresCatalogoCarregados = new EventEmitter<IIndicadoresCatalogoExterno[]>();
 
   private reloadIndicadores$ = new BehaviorSubject<void>(undefined);
 
@@ -97,9 +100,13 @@ export class ProjetoIndicadoresComponent implements OnInit {
         })
       )
       .subscribe((indicadores) => {
+
+
+
         this.indicadoresBI = indicadores;
         this.indicadoresFiltrados = indicadores;
         this.loading = false;
+
       });
 
   }
@@ -131,10 +138,15 @@ export class ProjetoIndicadoresComponent implements OnInit {
       )
       .subscribe({
         next: (indicadores) => {
+
           this.indicadoresBI = indicadores;
           this.indicadoresFiltrados = indicadores;
+
+          this.indicadoresCatalogoCarregados.emit(this.indicadoresBI);
+
           this.syncComFormulario();
           this.loading = false;
+
         },
 
         error: (err) => {
@@ -604,19 +616,19 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   bloquearCaracteresInvalidos(event: KeyboardEvent): void {
     const teclasBloqueadas = ['e', 'E', '+', '-'];
-  
+
     if (teclasBloqueadas.includes(event.key)) {
       event.preventDefault();
     }
   }
-  
+
   bloquearColagemInvalida(event: ClipboardEvent): void {
     const valorColado = event.clipboardData?.getData('text') ?? '';
-  
+
     if (!/^\d+([.,]\d+)?$/.test(valorColado)) {
       event.preventDefault();
     }
-    
+
   }
 
 }
