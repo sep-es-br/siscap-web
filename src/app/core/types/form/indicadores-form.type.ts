@@ -1,4 +1,5 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { IOdsIndicadorExterno } from '../../interfaces/indicadores-catalogo-externo.interface';
 
 export type IndicadoresFormType = {
   idIndicador: FormControl<number>;
@@ -7,6 +8,7 @@ export type IndicadoresFormType = {
   descricaoMeta: FormControl<string | null>;
   idStatus: FormControl<number>;
   idIndicadorCatalogoExterno: FormControl<number | null>;
+  ods: FormControl<any[]>;
   metasIndicadorProjeto: FormArray<FormGroup<MetaIndicadorExternoFormType>>;
 };
 
@@ -18,6 +20,7 @@ export type IndicadoresFormTypeValue = Array<
     descricaoMeta: string | null;
     idStatus: number;
     idIndicadorCatalogoExterno: number | null;
+    ods: FormControl<any[]>;
     metasIndicadorProjeto: FormArray<FormGroup<MetaIndicadorExternoFormType>>;
   }>
 >;

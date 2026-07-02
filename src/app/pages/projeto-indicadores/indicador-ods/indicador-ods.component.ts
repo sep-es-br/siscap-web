@@ -176,8 +176,6 @@ export class IndicadorOdsComponent implements OnInit {
     const odsProjetoAtual = odsProjetoArray?.getRawValue() ?? [];
     const indicadores = this.formProjeto.get('indicadoresProjeto')?.value ?? [];
 
-    console.log('sincronizarOdsComIndicadores - indicadores', indicadores);
-
     const odsPorId = new Map<number, IOdsIndicadorExterno>();
 
     odsProjetoAtual
@@ -208,24 +206,40 @@ export class IndicadorOdsComponent implements OnInit {
 
         const odsId = odsIndicador.odsId;
 
+        // if (odsPorId.has(odsId)) {
+        //   const existente = odsPorId.get(odsId);
+        //   if (!existente) {
+        //     console.warn('ODS existente não encontrado');
+        //     return;
+        //   }
+        //   existente.indicadoresVinculados.push(indicador);
+        //   return;
+        // }
+
         if (odsPorId.has(odsId)) {
 
           const existente = odsPorId.get(odsId);
-
+        
           if (!existente) {
-            console.warn('ODS existente não encontrado');
             return;
           }
-
-          // console.log('existente:', existente);
-          // console.log('indicadoresVinculados:', existente.indicadoresVinculados);
-          // console.log('isArray:', Array.isArray(existente.indicadoresVinculados));
-          // console.log('typeof:', typeof existente.indicadoresVinculados);
-
-          existente.indicadoresVinculados.push(indicador);
-
+        
+          if (!Array.isArray(existente.indicadoresVinculados)) {
+            existente.indicadoresVinculados = [];
+          }
+        
+          const jaVinculado = existente.indicadoresVinculados.some(
+            (i: any) =>
+              (i.idIndicadorExterno ?? i.idIndicadorCatalogoExterno ?? i.idIndicador) ===
+              (indicador.idIndicador ?? indicador.idIndicadorProjeto ?? indicador.idIndicador)
+          );
+        
+          if (!jaVinculado) {
+            existente.indicadoresVinculados.push(indicador);
+          }
+        
           return;
-
+          
         }
 
         const odsCatalogo = this.odsTodas.find(o => o.odsId === odsId);

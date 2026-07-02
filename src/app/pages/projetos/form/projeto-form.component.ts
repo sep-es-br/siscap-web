@@ -1880,7 +1880,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const temIndicadoresAvulsos = indicadoresAvulsosArray?.length > 0;
 
     if (!temIndicadores && !temIndicadoresAvulsos) {
-      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
         'É obrigatório informar ao menos um indicador.',
       ]);
       return false;
@@ -1895,7 +1895,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
 
     if (algumIndicadorSemMeta) {
-      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
         'É obrigatório preencher todas as metas dos indicadores.',
       ]);
       return false;
@@ -1910,7 +1910,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
 
     if (algumIndicadorComMetaInvalida) {
-      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+      this._toastService.showToast('warning', 'Erro ao validar indicadores', [
         'Todas as metas dos indicadores devem ser preenchidas com valores maiores que zero.',
       ]);
       return false;
@@ -3172,7 +3172,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     if (!this.validarAbaDic()) {
-      this._toastService.showToast('error', 'Erro ao avançar', [
+      this._toastService.showToast('warning', 'Erro ao avançar', [
         'Verifique os campos obrigatórios antes de continuar.',
       ]);
       this.abrirAba('nav-propriedades');
@@ -3188,7 +3188,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     if (!this.validarAbaDic()) {
-      this._toastService.showToast('error', 'Erro ao avançar', [
+      this._toastService.showToast('warning', 'Erro ao avançar', [
         'Verifique os campos obrigatórios antes de continuar.',
       ]);
       return;
@@ -3277,6 +3277,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           indicadorProjeto.metasIndicador ?? indicadorCatalogo?.metasIndicador,
         ods: indicadorCatalogo?.ods ?? []
       };
+
     });
 
     indicadoresControl?.patchValue(indicadoresEnriquecidos);

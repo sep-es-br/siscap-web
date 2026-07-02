@@ -490,7 +490,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     const temIndicadoresAvulsos = indicadoresAvulsosArray?.length > 0;
 
     if (!temIndicadores && !temIndicadoresAvulsos) {
-      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
         'É obrigatório informar ao menos um indicador.',
       ]);
       return false;
@@ -505,7 +505,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
       );
 
     if (algumIndicadorSemMeta) {
-      this._toastService.showToast('error', 'Erro ao carregar projeto', [
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
         'É obrigatório preencher todas as metas dos indicadores.',
       ]);
       return false;

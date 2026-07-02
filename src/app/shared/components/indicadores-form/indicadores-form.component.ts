@@ -75,6 +75,7 @@ export class IndicadoresFormComponent {
       descricaoMeta: this._nnfb.control(null, [Validators.required]),
       idStatus: this._nnfb.control(TipoStatusEnum.Ativo,),
       idIndicadorCatalogoExterno: this._nnfb.control(null),
+      ods: this._nnfb.control([]),
       metasIndicadorProjeto: this._nnfb.array<FormGroup<MetaIndicadorExternoFormType>>([])
     });
 
