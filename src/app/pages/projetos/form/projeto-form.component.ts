@@ -169,7 +169,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public indicadoresOpcoes: IOpcoesDropdown[] = [];
 
-  public statusProjeto: string = StatusProjetoEnum.Em_Elaboracao;;
+  public statusProjeto: string = StatusProjetoEnum.Em_Elaboracao;
   public statusProjetoNovo: string | null = null;
   public statusProjetoOpcoes: Array<string> = [];
   public moedasList: Array<IMoeda> = MoedaHelper.moedasList();
@@ -3187,11 +3187,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     event.preventDefault();
 
-    if (!this.validarAbaDic()) {
-      this._toastService.showToast('warning', 'Erro ao avançar', [
-        'Verifique os campos obrigatórios antes de continuar.',
-      ]);
-      return;
+    if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
+      if (!this.validarAbaDic()) {
+        this._toastService.showToast('warning', 'Erro ao avançar', [
+          'Verifique os campos obrigatórios antes de continuar.',
+        ]);
+        return;
+      }
     }
 
     const campoOds = this.projetoForm.get('impactos');
@@ -3199,9 +3201,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     campoOds?.clearValidators();
     campoOds?.updateValueAndValidity();
 
-    if (!this.validarFormulario(this.projetoForm)) {
-      this.abrirAba('nav-indicadores');
-      return;
+    if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
+      if (!this.validarFormulario(this.projetoForm)) {
+        this.abrirAba('nav-indicadores');
+        return;
+      }
     }
 
     campoOds?.setValidators([Validators.required]);
