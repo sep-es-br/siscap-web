@@ -1,0 +1,136 @@
+.gestao-badge {
+  background: transparent;
+  color: #0a1a30;
+  border: 1px solid #dce4ed;
+  border-radius: 8px;
+  padding: 10px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 160px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.04);
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    border-color: #3b82f6;
+    background: #f8fbff;
+  }
+
+  .chip-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .gestao-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #64748b;
+    font-weight: 700;
+  }
+
+  .gestao-year {
+    font-size: 12px;
+    font-weight: 600;
+    color: #0056b3;
+    line-height: 1.2;
+  }
+
+  .remove-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 10px;
+    color: #94a3b8;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #ef4444;
+    }
+  }
+}
+
+.filter-badge {
+  background: transparent;
+  color: #0a1a30;
+  border: 1px solid #dce4ed;
+  border-radius: 8px;
+
+  // espaço interno
+  padding: 10px 28px 10px 12px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  text-align: left;
+  min-width: 160px;
+
+  cursor: pointer;
+
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.04);
+  transition: all 0.2s ease;
+
+  position: relative;
+
+  &:hover {
+    border-color: #3b82f6;
+    background: #f8fbff;
+  }
+
+  .chip-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 2px;
+
+    width: 100%;
+  }
+
+  .gestao-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #64748b;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .gestao-year {
+    font-size: 12px;
+    font-weight: 600;
+    color: #0056b3;
+    line-height: 1.2;
+    text-align: left;
+
+    // evita texto gigante estourar o badge
+    word-break: break-word;
+  }
+
+  .remove-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    font-size: 10px;
+    color: #94a3b8;
+
+    transition: color 0.2s;
+
+    &:hover {
+      color: #ef4444;
+    }
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}

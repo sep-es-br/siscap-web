@@ -96,6 +96,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
   }
 
   getPlainTextLength(html: string): number {
+    
     if (!html) return 0;
 
     const div = document.createElement('div');
@@ -103,7 +104,9 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
 
     // remove espaços e quebras invisíveis
     const text = div.textContent?.replace(/\s/g, '') || '';
+
     return text.length;
+
   }
 
   ngAfterViewInit(): void {

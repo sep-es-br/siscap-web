@@ -1,0 +1,119 @@
+<div id="odsSection">
+
+    <!-- ── NOVO: Dropdown de ODS exclusivo desta página ── -->
+    <div class="ods-page-filter-bar" style="display:none;">
+        <span class="ods-page-filter-label">Filtrar / Adicionar por ODS:</span>
+        <select class="ods-page-filter-select" id="odsPageSelect"></select>
+        <button class="ods-page-filter-btn" onclick="addOdsFromPageDropdown()">+ Adicionar</button>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+        <div class="ods-section-header">
+            
+            <div>
+                <div class="card-title" style="margin-bottom:2px;">ODS Sugeridas</div>
+                <div style="font-size:12px; color:var(--gray-text);">ODS identificadas a partir dos indicadores
+                    selecionados. Clique para adicionar à seleção.</div>
+            </div>
+
+            <div class="search-container" [class.expanded]="searchVisible">
+                <span class="p-input-icon-left p-input-icon-right w-100">
+                    <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
+                    <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
+                    class="w-100 search-input" placeholder="Nome da ODS" [(ngModel)]="filtroTexto"
+                    (ngModelChange)="filtrarOds()" [disabled]="somenteLeitura"/>
+                    <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()"></i>
+                </span>
+            </div>
+
+        </div>
+        
+        <div class="ods-suggested-row" id="odsSuggestedRow">
+            <div class="ods-suggested-card" *ngFor="let ods of ods" 
+                (click)="adicionarOds(ods)"
+                (keydown.enter)="adicionarOds(ods)"
+                (keydown.space)="adicionarOds(ods)"
+                [title]="'Clique para selecionar ' + ods.nomeOds" 
+                [class.disabled]="!isModoEdicao">
+                <div class="ods-sug-top" style="background:#9ca3af;"></div>
+                <div class="ods-sug-body">
+                    <div class="ods-sug-badge" style="background:#9ca3af;">
+                        {{ ods.ordemOds || ods.odsId }}
+                    </div>
+                    <div class="ods-sug-name">
+                        {{ ods.nomeOds }}
+                    </div>
+                    <div class="ods-sug-add">+ Adicionar</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+        <div class="ods-section-header">
+            <div>
+                <div class="card-title" style="margin-bottom:2px;">ODS Selecionadas</div>
+                <div style="font-size:12px; color:var(--gray-text);">
+                    ODS confirmadas para este projeto. Clique em × para remover.
+                </div>
+            </div>
+        </div>
+
+        <div class="ods-selected-grid" id="odsSelectedGrid">
+            <div class="ods-sel-card" *ngFor="let ods of odsEscolhidas">
+                <div class="ods-sel-top" [style.background]="ods.odsCor"></div>
+                <div class="ods-sel-body">
+                    <div class="ods-sel-header">
+                        <div class="ods-sel-name-container">
+                            <div class="ods-sel-badge" [style.background]="ods.odsCor">
+                                {{ ods.odsOrdem }}
+                            </div>
+                            <div class="ods-sel-name">
+                                {{ ods.odsId }} - {{ ods.odsNome }}
+                            </div>
+                        </div>
+                        <button class="ods-sel-remove" type="button" (click)="removerOds(ods)" title="Remover" [disabled]="!isModoEdicao">×</button>
+                    </div>
+                    <div class="ods-sel-desc">
+                        {{ ods.odsDescricao }}
+                    </div>
+                    <div class="ods-sel-indicators">
+                        <div class="ods-sel-ind-title">
+                            Indicadores Vinculados
+                        </div>
+                        <div class="ods-sel-ind-list">
+                            <div class="ods-sel-ind-item" *ngFor="let indicador of ods.indicadoresVinculados">
+                                {{ indicador.nomeIndicador }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div [formGroup]="formProjeto" class="row">
+        <div class="col-12">
+            <label
+            for="impactos"
+            class="form-label col-12">
+            <validation-message [control]="getControl('impactos')">
+            Impactos do Projeto no Âmbito Ambiental, Social e de Governança (ESG)
+            </validation-message>
+        </label>
+        <textarea
+            rows="5"
+            class="form-control"
+            id="impactos"
+            formControlName="impactos"
+            maxLength="2000"></textarea>
+        </div>
+    </div>
+
+    <div class="navigation-buttons" style="margin-top:20px;">
+        <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);" (click)="voltarParaIndicadores()"><i class="pi pi-arrow-left"></i></button>
+        <!-- <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);" (click)="concluirDIC()">→</button> -->
+    </div>
+
+</div>

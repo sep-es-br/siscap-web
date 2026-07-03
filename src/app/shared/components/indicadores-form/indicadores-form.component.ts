@@ -8,8 +8,7 @@ import { TemplatesModule } from '../../templates/templates.module';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { ToastService } from '../../../core/services/toast/toast.service';
-import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
-import { IndicadoresFormType } from '../../../core/types/form/indicadores-form.type';
+import { IndicadoresFormType, MetaIndicadorExternoFormType } from '../../../core/types/form/indicadores-form.type';
 
 @Component({
   selector: 'siscap-indicadores-form',
@@ -75,6 +74,9 @@ export class IndicadoresFormComponent {
       descricaoIndicador: this._nnfb.control(null, [Validators.required]),
       descricaoMeta: this._nnfb.control(null, [Validators.required]),
       idStatus: this._nnfb.control(TipoStatusEnum.Ativo,),
+      idIndicadorCatalogoExterno: this._nnfb.control(null),
+      ods: this._nnfb.control([]),
+      metasIndicadorProjeto: this._nnfb.array<FormGroup<MetaIndicadorExternoFormType>>([])
     });
 
     this.indicadoresFormArray.push(novoIndicador);

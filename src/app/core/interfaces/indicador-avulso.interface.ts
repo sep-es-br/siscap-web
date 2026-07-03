@@ -2,20 +2,20 @@ import { FormArray, FormGroup } from "@angular/forms";
 import { MetaIndicadorExternoFormType } from "../types/form/indicadores-form.type";
 import { IMetaIndicador } from "./indicadores-catalogo-externo.interface";
 
-export interface IIndicadores {
+export interface IIndicadorAvulso {
+  id: number;
   idIndicador: number;
-  tipoIndicador: string | null;
-  descricaoIndicador: string | null;
-  descricaoMeta: string | null;
-  idStatus: number;
-  idIndicadorExterno: number | null;
+  nomeIndicador: string | null;
+  formulaCalculo: string | null;
+  fonteIndicador: string | null;
+  medidoPor: string | null;
+  unidadeMedida: string | null;
+  basedeReferencia: string | null;
+  
   metasIndicadorProjeto: Array<{
-    id: number | null;
+    id: number;
     anoMeta: number | null;
     valorMeta: string | null;
   }>;
-  ods: Array<{
-    id: number | null;
-    idOdsIndicadorExterno: number;
-  }>;
+
 }

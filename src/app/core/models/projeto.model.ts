@@ -13,6 +13,8 @@ import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } fro
 import { IParecer } from '../interfaces/parecer.interface';
 import { LotacaoUsuarioEnum } from '../enums/lotacao-usuario.enum';
 import { IStatusProjeto } from '../interfaces/status-projeto.interface';
+import { IIndicadorAvulso } from '../interfaces/indicador-avulso.interface';
+import { IndicadorAvulsoModel } from './indicador-avulso.model';
 
 export class ProjetoFormModel implements IProjetoForm {
   public sigla: string;
@@ -32,7 +34,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public nomeResponsavelProponente: string;
   public papelResponsavelProponente: string;
   public subResponsavelProponente: string;
-  public indicadoresProjeto: Array<IIndicadores>; 
+  public indicadoresProjeto: Array<IIndicadores>;
   public acoesProjeto: Array<IAcao>;
   public nomeagente: string;
   public pecasPlanejamento: string;
@@ -54,8 +56,20 @@ export class ProjetoFormModel implements IProjetoForm {
   public subProponente: string;
   public nomeProponente: string;
   public historico: Array<IStatusProjeto>;
+  public indicadoresAvulsosProjeto: Array<IIndicadorAvulso>;
+  public odsProjeto: Array<{
+    id: number | null;
+    idOdsIndicadorExterno: number;
+    idOdsProjeto: number | null;
+    odsId: number;
+    odsOrdem: number;
+    odsNome: string;
+    odsDescricao: string;
+    odsCor: string;
+  }>;
 
   constructor(projetoForm?: IProjetoForm) {
+
     this.sigla = projetoForm?.sigla ?? '';
     this.titulo = projetoForm?.titulo ?? '';
     this.idOrganizacao = projetoForm?.idOrganizacao ?? 0;
@@ -81,6 +95,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.acoesProjeto = this.construirAcoesProjeto(
       projetoForm?.acoesProjeto
     );
+
     this.nomeagente = projetoForm?.nomeagente ?? '';
     this.pecasPlanejamento = projetoForm?.pecasPlanejamento ?? '';
     this.enviarProjetoGestor = projetoForm?.enviarProjetoGestor ?? false;
@@ -101,6 +116,11 @@ export class ProjetoFormModel implements IProjetoForm {
     this.subProponente = projetoForm?.subProponente ?? '';
     this.nomeProponente = projetoForm?.nomeProponente ?? '';
     this.historico = new Array();
+
+    this.indicadoresAvulsosProjeto = this.montarIndicadorAvulsoProjeto( projetoForm?.indicadoresAvulsosProjeto ?? [] );
+
+    this.odsProjeto = projetoForm?.odsProjeto ?? [];
+
   }
 
   private construirRateioModelArray(
@@ -130,6 +150,17 @@ export class ProjetoFormModel implements IProjetoForm {
     return indicadoresProjeto.map((indicadores) => new IndicadorModel(indicadores));
   }
 
+  private construirIndicadoresAvulsosProjeto(
+    indicadoresAvulsosProjeto?: Array<IIndicadorAvulso>): Array<IndicadorAvulsoModel> {
+
+    if (!indicadoresAvulsosProjeto) {
+      return [];
+    }
+
+    return indicadoresAvulsosProjeto.map((indicadorAvulso) => new IndicadorAvulsoModel(indicadorAvulso));
+
+  }
+
   private construirAcoesProjeto(
     acoesProjeto?: Array<IAcao>
   ): Array<AcaoModel> {
@@ -139,9 +170,38 @@ export class ProjetoFormModel implements IProjetoForm {
     return acoesProjeto.map((acoes) => new AcaoModel(acoes));
   }
 
-}
+  private montarIndicadorAvulsoProjeto(item: Array<any>): Array<IndicadorAvulsoModel> {
+
+    return item?.map( (indicadorAvulso) => ({
+
+      id: indicadorAvulso?.id ?? 0,
+
+      // aqui eu usaria o id do indicador avulso real
+      idIndicador: indicadorAvulso?.idIndicadorAvulso ?? indicadorAvulso?.indicadorAvulso?.id ?? 0,
+
+      nomeIndicador: indicadorAvulso?.indicadorAvulso?.nomeIndicador ?? null,
+      formulaCalculo: indicadorAvulso?.indicadorAvulso?.formulaCalculo ?? null,
+      fonteIndicador: indicadorAvulso?.indicadorAvulso?.fonteIndicador ?? null,
+      medidoPor: indicadorAvulso?.indicadorAvulso?.medidoPor ?? null,
+      unidadeMedida: indicadorAvulso?.indicadorAvulso?.unidadeMedida ?? null,
+
+      // atenção: API vem baseDeReferencia, interface usa basedeReferencia
+      basedeReferencia: indicadorAvulso?.indicadorAvulso?.baseDeReferencia ?? null,
+
+      metasIndicadorProjeto:
+        indicadorAvulso?.metasIndicadorProjeto?.map((meta: any) => ({
+          id: meta?.id ?? 0,
+          anoMeta: meta?.anoMeta ?? null,
+          valorMeta: meta?.valorMeta ?? null
+        })) ?? []
+      })) ?? [];
+
+    };
+
+  }
 
 export class ProjetoModel extends ProjetoFormModel implements IProjeto {
+
   public readonly id: number;
   public readonly idStatus: number;
   public readonly status: string;
@@ -153,4 +213,5 @@ export class ProjetoModel extends ProjetoFormModel implements IProjeto {
     this.status = projeto?.status ?? '';
     this.historico = projeto?.historico ?? [];
   }
+
 }

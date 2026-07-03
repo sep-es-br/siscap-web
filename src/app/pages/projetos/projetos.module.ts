@@ -24,6 +24,8 @@ import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.compo
 import { TimelineModule } from 'primeng/timeline';
 import { TooltipModule } from 'primeng/tooltip';
 import { ProgressoButtonComponent } from '../../shared/components/progresso-button/progresso-button.component';
+import { ProjetoIndicadoresComponent } from "../projeto-indicadores/projeto-indicadores.component";
+import { IndicadorOdsComponent } from '../projeto-indicadores/indicador-ods/indicador-ods.component';
 
 @NgModule({
   declarations: [
@@ -52,8 +54,10 @@ import { ProgressoButtonComponent } from '../../shared/components/progresso-butt
     ProjetoParecerComponent,
     TimelineModule,
     TooltipModule,
-    ProgressoButtonComponent
-  ],
+    ProjetoIndicadoresComponent,
+    ProgressoButtonComponent,
+    IndicadorOdsComponent
+],
   exports: [
     ProjetosComponent,
     ProjetosListComponent,

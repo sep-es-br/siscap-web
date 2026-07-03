@@ -1,0 +1,73 @@
+<div class="modal-overlay show" (click)="fechar()"></div>
+
+<div id="newIndicatorModal" class="indicator-form-modal show">
+
+    <div class="modal-header">
+        <div class="card-title" style="text-transform: uppercase;">CRIAR UM INDICADOR DE PROJETO</div>
+        <button class="close-modal" (click)="fechar()">✕</button>
+    </div>
+
+    <form [formGroup]="formIndicador">
+
+        <div class="filter-scroll" style="max-height:70vh; overflow-y:auto; padding-right:10px;">
+
+            <div class="form-row"><label><validation-message [control]="getControl('nomeIndicador')">NOME DO INDICADOR
+                    </validation-message></label><input type="text" formControlName="nomeIndicador" id="fName"
+                    placeholder="Ex: Taxa de Alfabetização" maxlength="200"></div>
+
+            <div class="form-row"><label><validation-message [control]="getControl('formulaCalculo')">FÓRMULA /
+                        METODOLOGIA DE CÁLCULO
+                    </validation-message></label>
+                <textarea formControlName="formulaCalculo" id="fFormula" rows="3"
+                    placeholder="Descreve a fórmula ou metodologia." maxlength="2000">
+                </textarea>
+            </div>
+
+            <div class="form-row"><label><validation-message
+                        [control]="getControl('medidoPor')">FONTE</validation-message></label><input type="text"
+                    formControlName="medidoPor" id="fOrgao" placeholder="Ex: Secretaria de Educação" maxlength="50">
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-row"><label><validation-message [control]="getControl('unidadeMedida')">UNIDADE DE
+                            MEDIDA</validation-message></label><input type="text" formControlName="unidadeMedida"
+                        id="fUnidade" placeholder="Ex: %" maxlength="50"></div>
+                <div class="form-row"><label><validation-message [control]="getControl('basedeReferencia')">BASE DE
+                            REFERÊNCIA</validation-message></label><input type="text" formControlName="basedeReferencia"
+                        id="fValorBase" placeholder="Ex: 25.000 (2022)" maxlength="30"></div>
+            </div>
+
+            <div class="form-row"><label>META DO PROJETO</label>
+                <div formArrayName="metasIndicadorProjeto">
+                    <div class="meta-years" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="year-meta"
+                            *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index"
+                            [formGroupName]="i">
+                            <div class="year-label" style="font-size:11px; margin-bottom:4px;">
+                                <validation-message [control]="getMetaProjetoControl(i)"> {{ (gestao?.doAno ?? 0) + i }}
+                                </validation-message>
+                            </div>
+                            <input type="number" pInputText inputmode="numeric" formControlName="valorMeta"
+                                style="width:100%; border-radius:6px;" 
+                                (keydown)="bloquearCaracteresInvalidos($event)"
+                                (paste)="bloquearColagemInvalida($event)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions" style="margin-top:24px;">
+                <button class="btn-secondary" (click)="fechar()">Cancelar</button>
+                <button class="btn-primary" (click)="salvar()">Adicionar</button>
+            </div>
+
+        </div>
+
+    </form>
+
+    <ng-template *ngIf="!loading">
+        <div class="estado-vazio">
+            <i class="pi pi-spin pi-spinner"></i>
+            Adicionando indicador projeto...
+        </div>
+    </ng-template>

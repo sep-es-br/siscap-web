@@ -1,6 +1,7 @@
 import { IAcao } from './acoes.interface';
 import { IEquipe } from './equipe.interface';
 import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from './estrutura.campo.complementar.dic.interface';
+import { IIndicadorAvulso } from './indicador-avulso.interface';
 import { IIndicadores } from './indicadores.interface';
 import { IParecer } from './parecer.interface';
 import { IRateio } from './rateio.interface';
@@ -49,6 +50,17 @@ export interface IProjeto {
   subProponente: string;
   nomeProponente: string;
   historico: Array<IStatusProjeto >,
+  indicadoresAvulsosProjeto: Array<IIndicadorAvulso>,
+  odsProjeto: Array<{
+    id: number | null;
+    idOdsIndicadorExterno: number;
+    idOdsProjeto: number | null;
+    odsId: number;
+    odsOrdem: number;
+    odsNome: string;
+    odsDescricao: string;
+    odsCor: string;
+  }>;
 }
 
 export interface IProjetoForm

@@ -1,0 +1,113 @@
+<!-- OVERLAY (fundo escuro) -->
+<div class="modal-overlay show" (click)="applyFilter()"></div>
+
+<!-- MODAL -->
+<div class="filter-modal show">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+        <h2 class="card-title">Filtros</h2>
+        <button class="close-modal" (click)="applyFilter()">✕</button>
+    </div>
+
+    <!-- BODY -->
+    <div class="filter-body">
+        <div class="filter-grid">
+
+            <!-- GESTÃO (linha inteira) -->
+            <div class="filter-field full-width">
+                <label class="filter-label">Gestão Administrativa</label>
+                <select class="filter-select" [(ngModel)]="filtro.idGestao">
+                    <option *ngIf="gestao" [value]="gestao.idGestao">
+                        {{ gestao.nomeGestao }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- LABELS DINÂMICOS -->
+            <ng-container *ngFor="let label of labelsOrdenados">
+                <div class="filter-field">
+                    <label class="filter-label">{{ label.nome }}</label>
+
+                    <ng-select [items]="label.valores"
+                        bindLabel="valor"
+                        bindValue="idLabelValor"
+                        [(ngModel)]="filtro.labels[label.idLabel]"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        [clearable]="true"
+                        placeholder="Selecionar..."
+                        class="select-filtro"
+                        [disabled]="somenteLeitura || isLabelFilhoDisabled(label)"
+                        (change)="onValorLabelChange( label, $event )"
+                        >
+
+                        <ng-template ng-multi-label-tmp>
+                            <span class="custom-selected-label">
+                                {{ getTextoSelecionadosLabel(label.idLabel) }}
+                            </span>
+                        </ng-template>
+
+                        <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                            <div class="select-option-checkbox">
+                                <input type="checkbox" [checked]="item$.selected" tabindex="-1"
+                                    style="margin-right: 8px; pointer-events: none;" />
+                                <span>{{ item.valor }}</span>
+                            </div>
+                        </ng-template>
+
+                    </ng-select>
+
+                </div>
+            </ng-container>
+
+            <!-- DESAFIOS -->
+            <div class="filter-field">
+                <label class="filter-label">
+                    Desafios
+                </label>
+                <ng-select [items]="listaDesafiosFiltrados" 
+                    bindLabel="nome" 
+                    bindValue="id" 
+                    [(ngModel)]="filtro.desafio.id"
+                    [multiple]="true" 
+                    [closeOnSelect]="false" 
+                    [searchable]="true" 
+                    [clearable]="true"
+                    placeholder="Selecionar..." 
+                    class="select-filtro" 
+                    [disabled]="somenteLeitura || !isLabelsFilhosSelecionados()">
+
+                    <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                        <input type="checkbox" [checked]="item$.selected" tabindex="-1" style="margin-right: 8px; pointer-events: none;" />
+                        <span>{{ item.nome }}</span>
+                    </ng-template>
+
+                    <ng-template ng-multi-label-tmp let-items="items">
+                        <span class="custom-selected-label" *ngIf="items.length === 1">
+                            {{ items[0].nome }}
+                        </span>
+                        <span class="custom-selected-label" *ngIf="items.length > 1">
+                            {{ items.length }} selecionados
+                        </span>
+                    </ng-template>
+
+                </ng-select>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="modal-footer">
+        <button class="btn-restaurar" (click)="resetar()">
+            RESTAURAR FILTROS
+        </button>
+        <button class="btn-filtrar" (click)="applyFilter();">
+            FILTRAR
+        </button>
+    </div>
+
+</div>

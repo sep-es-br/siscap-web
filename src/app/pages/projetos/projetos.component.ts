@@ -84,7 +84,6 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this._subscription.add(
       this._projetosService.atualizarListaProjetos$.subscribe(() => {
         this.fetchPage();

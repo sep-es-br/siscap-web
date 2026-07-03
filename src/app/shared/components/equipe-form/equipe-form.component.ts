@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import {
@@ -54,6 +54,8 @@ export class EquipeFormComponent implements OnDestroy {
 
   public permissaoRemoverMembro: boolean = false;
 
+  public placeholderPapel = '-- Papel do membro --';
+
   constructor(
     public equipeService: EquipeService,
     private readonly _usuarioService: UsuarioService,
@@ -71,13 +73,15 @@ export class EquipeFormComponent implements OnDestroy {
   public getMembroNome(subPessoa: string | null | undefined): string {
     const nomePadrao = this.pessoasOpcoesGoves.find(p => p.agentePublicoSub === subPessoa)?.nome;
     if (!nomePadrao) {
-      return this.equipeProjeto.find( p => p.subPessoa === subPessoa)?.nome ?? '';
+      return this.equipeProjeto.find(p => p.subPessoa === subPessoa)?.nome ?? '';
     }
     return nomePadrao ?? '';
   }
 
   public getPapelNome(idPapel: number | null | undefined): string {
-    if (idPapel === 3) return 'Redator';
+    if (idPapel === TipoPapelEnum.Redator) {
+      return this.placeholderPapel;
+    }
     return this.tiposPapelOpcoes.find((papel) => papel.id === idPapel)?.nome ?? '';
   }
 
@@ -115,10 +119,11 @@ export class EquipeFormComponent implements OnDestroy {
 
     const membroFormGroup = this.equipeService.equipeFormArray.at(index);
 
-    if( this.statusProjeto == StatusProjetoEnum.Em_Elaboracao )
+    if (this.statusProjeto == StatusProjetoEnum.Em_Elaboracao) {
       membroFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Excluido);
-    else
+    } else {
       membroFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Inativo);
+    }
 
     membroFormGroup.get('idPapel')?.removeValidators(Validators.required);
     membroFormGroup.get('idPapel')?.updateValueAndValidity();
@@ -135,10 +140,11 @@ export class EquipeFormComponent implements OnDestroy {
         )} - ${this.getPapelNome(membroFormGroup.value.idPapel)}`,
       ]
     );
+
   }
 
-  public desabilitarCampo(index: number) : boolean {
-    return ( this.statusProjeto != StatusProjetoEnum.Em_Elaboracao && !this.isNovoMembro(index) );
+  public desabilitarCampo(index: number): boolean {
+    return (this.statusProjeto != StatusProjetoEnum.Em_Elaboracao && !this.isNovoMembro(index));
   }
 
   public papelDeveEstarDesabilitado(papel: IOpcoesDropdown, indexMembro: number): boolean {
@@ -149,4 +155,11 @@ export class EquipeFormComponent implements OnDestroy {
       // Desativa a opção "Redator" dos papeis se já houver um membro incluso com o papel selecionado
     );
   }
+
+  get tiposPapelOpcoesVisiveis() {
+    return this.tiposPapelOpcoes.filter(
+      papel => papel.id !== TipoPapelEnum.Redator
+    );
+  }
+
 }

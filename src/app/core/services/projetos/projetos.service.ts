@@ -23,6 +23,7 @@ import { environment } from '../../../../environments/environment';
 import { IProjetoIntegracaoEdocsFases } from '../../interfaces/projeto-integracao-edcos-fases.interface';
 import { IEstruturaCamposComplementar } from '../../interfaces/estrutura.campo.complementar.dic.interface';
 import { FilesService } from '../files/files.service';
+import { LotacaoUsuarioEnum } from '../../enums/lotacao-usuario.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -144,17 +145,24 @@ export class ProjetosService extends BaseHttpService<
   }
 
   public gerarBotoesAcaoParecerEstrategicoOrcamentario(): Array<BotaoPropriedadesModel> {
-    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
-    const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('efetivarparecerestrategicoorcamentario');
-    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    return [botaoCancelar, botaoSalvar, botaoEnviar];
+    const botoes = [
+      BotoesConfig.gerarBotaoPropriedades('cancelar'),
+      BotoesConfig.gerarBotaoPropriedades('salvarparecer'),
+      BotoesConfig.gerarBotaoPropriedades('efetivarparecerestrategicoorcamentario')
+    ];
+    return botoes;
   }
 
-  public gerarBotoesAcaoParecerGEOC(): Array<BotaoPropriedadesModel> {
-    const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvarparecer');
-    const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('capturarparecerGEOC');
-    const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
-    return [botaoCancelar, botaoSalvar, botaoEnviar];
+  public gerarBotoesAcaoParecerGEOC( lotacaoUsuario: LotacaoUsuarioEnum ): Array<BotaoPropriedadesModel> {
+    
+    const botoes = [
+      BotoesConfig.gerarBotaoPropriedades('cancelar'),
+      BotoesConfig.gerarBotaoPropriedades('salvarparecer'),
+      BotoesConfig.gerarBotaoPropriedades('capturarparecerGEOC'),
+    ];
+
+    return botoes;
+
   }
 
   public gerarBotoesAcaoEntgranharPareceresProcessoEdocs(): Array<BotaoPropriedadesModel> {
@@ -167,6 +175,12 @@ export class ProjetosService extends BaseHttpService<
     const botaoEntranharPareceres = BotoesConfig.gerarBotaoPropriedades('entranharParecerGEOCdocs');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     return [botaoCancelar, botaoEntranharPareceres];
+  }
+
+  public gerarBotoeAcaoVoltarContextoParecerSep(): Array<BotaoPropriedadesModel> {
+    const botaoSolicitarParecer = BotoesConfig.gerarBotaoPropriedades('parecerestrategicoorcamentario');
+    const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
+    return [botaoVoltar, botaoSolicitarParecer];
   }
 
   public construirProjetoModelRateio(
@@ -361,6 +375,14 @@ export class ProjetosService extends BaseHttpService<
   ): Observable<IProjetoIntegracaoEdocsFases[]> {
     return this._http.get<IProjetoIntegracaoEdocsFases[]>(
       `${this._url}/dic/edocs/fases/${idProjeto}`);
+  }
+
+  public reEnviarEmailPedidoParecerProjeto(id: number): 
+    Observable<void> {
+    return this._http.post<void>(
+      `${this._url}/${id}/reenviar-email-pedido-parecer`,
+      {}
+    );
   }
 
 }
