@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, filter, Observable, Subject, tap } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -153,8 +153,8 @@ export class ProjetosService extends BaseHttpService<
     return botoes;
   }
 
-  public gerarBotoesAcaoParecerGEOC( lotacaoUsuario: LotacaoUsuarioEnum ): Array<BotaoPropriedadesModel> {
-    
+  public gerarBotoesAcaoParecerGEOC(lotacaoUsuario: LotacaoUsuarioEnum): Array<BotaoPropriedadesModel> {
+
     const botoes = [
       BotoesConfig.gerarBotaoPropriedades('cancelar'),
       BotoesConfig.gerarBotaoPropriedades('salvarparecer'),
@@ -313,16 +313,26 @@ export class ProjetosService extends BaseHttpService<
 
   }
 
-  public baixarDIC(id: number): void {
+  public baixarDIC(id: number): Observable<any> {
     const downloadURL = `${this._url}/dic/${id}`;
-    this.filesService.requestPDF(downloadURL).subscribe({
-      next: (res) => {
+
+    return this.filesService.requestPDF(downloadURL).pipe(
+      tap((res) => {
         if (res instanceof HttpResponse) {
-          const httpResponse = res as HttpResponse<Blob>;
-          this.filesService.downloadPDF(httpResponse);
+          this.filesService.downloadPDF(res as HttpResponse<Blob>);
         }
-      },
-    });
+      })
+    );
+
+    // this.filesService.requestPDF(downloadURL).subscribe({
+    //   next: (res) => {
+    //     if (res instanceof HttpResponse) {
+    //       const httpResponse = res as HttpResponse<Blob>;
+    //       this.filesService.downloadPDF(httpResponse);
+    //     }
+    //   },
+    // });
+    
   }
 
   public autuarProjetoEdocs(
@@ -388,7 +398,7 @@ export class ProjetosService extends BaseHttpService<
       `${this._url}/dic/edocs/fases/${idProjeto}`);
   }
 
-  public reEnviarEmailPedidoParecerProjeto(id: number): 
+  public reEnviarEmailPedidoParecerProjeto(id: number):
     Observable<void> {
     return this._http.post<void>(
       `${this._url}/${id}/reenviar-email-pedido-parecer`,

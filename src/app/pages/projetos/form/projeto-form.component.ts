@@ -230,6 +230,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public indicadoresProjeto: IIndicadores[] = [];
   public indicadoresAvulsosProjeto: IIndicadorAvulso[] = [];
 
+  public textoSpinner: string = 'Carregando...';
+
   arquivoParecerSelecionado: File | null = null;
 
   private camposObrigatoriosDic = [
@@ -940,9 +942,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public baixarDIC(): void {
-    this._projetosService.baixarDIC(this._idProjetoEdicao);
-  }
 
+    this.loading = true;
+    this.textoSpinner = 'Baixando DIC...';
+    
+    this._projetosService.baixarDIC(this._idProjetoEdicao)
+    .pipe(
+      finalize(() => this.loading = false)
+    )
+    .subscribe();;
+
+  }
+  
   private iniciarForm(projetoFormModel?: ProjetoFormModel): Observable<any> {
 
     const valorInicialControleValorEstimado = projetoFormModel?.valor
