@@ -1,19 +1,33 @@
 import { Injectable } from '@angular/core';
 import {
-  FormControl,
+  AbstractControl,
   FormGroup,
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
 import { IParecer } from '../../interfaces/parecer.interface';
-import { StatusParecerEnum } from '../../enums/status-parecer.enum';
+import { environment } from '../../../../environments/environment';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { FilesService } from '../files/files.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ParecerService {
 
-  // public parecerForm: FormGroup = new FormGroup({});
+  private readonly _url = `${environment.apiUrl}/projetos`;
+
+  baixarParecer(idParecer: AbstractControl<any, any> | null) {
+    const downloadURL = `${this._url}/dic/parecer/${idParecer}/arquivo`;
+    this.filesService.requestPDF(downloadURL).subscribe({
+      next: (res) => {
+        if (res instanceof HttpResponse) {
+          const httpResponse = res as HttpResponse<Blob>;
+          this.filesService.downloadPDF(httpResponse);
+        }
+      },
+    });
+  }
 
   private _parecerSnapshot: IParecer | null = null;
 
@@ -25,7 +39,9 @@ export class ParecerService {
     this._parecerSnapshot = parecer;
   }
 
-  constructor(private _nnfb: NonNullableFormBuilder) {}
+  constructor(private _nnfb: NonNullableFormBuilder, 
+    private filesService: FilesService,
+    private readonly _http: HttpClient) { }
 
   public construirParecerForm(parecer?: IParecer): FormGroup {
     return this._nnfb.group({
@@ -39,15 +55,16 @@ export class ParecerService {
     });
   }
 
-  public atualizarParecer(parecer: IParecer): void { 
-    // if (this.parecerForm) {
-    //   this.parecerForm.patchValue(parecer);
-    //   this._parecerSnapshot = parecer;
-    // }
-  }
-
   public getValorAtual(): IParecer | null {
     return this._parecerSnapshot;
+  }
+
+  excluirAnexoParecer(idParecer: AbstractControl<any, any> | null) {
+    const deleteURL = `${this._url}/dic/parecer/${idParecer}/arquivo`;
+    console.log("chamando endpoint para excluir o parecer.. {}", deleteURL)
+    return this._http.delete(deleteURL, {
+        responseType: 'text',
+      });
   }
 
 }

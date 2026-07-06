@@ -230,6 +230,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public indicadoresProjeto: IIndicadores[] = [];
   public indicadoresAvulsosProjeto: IIndicadorAvulso[] = [];
 
+  arquivoParecerSelecionado: File | null = null;
+
   private camposObrigatoriosDic = [
     'sigla',
     'titulo',
@@ -371,6 +373,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
+        // console.log("Buscar projeto por ID: ", response)
         // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
@@ -1037,29 +1040,38 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       enviarProjetoPedirParecer: this._nnfb.control(
         projetoFormModel?.enviarProjetoPedirParecer ?? false,
       ),
+      
       parecerProjetoUsuario: this._nnfb.group({
+
         id: [projetoFormModel?.parecerProjetoUsuario?.id ?? null],
         idProjeto: [projetoFormModel?.parecerProjetoUsuario?.idProjeto ?? null],
-        statusParecer: [
-          projetoFormModel?.parecerProjetoUsuario?.statusParecer ?? null,
-        ],
-        textoParecer: [
-          projetoFormModel?.parecerProjetoUsuario?.textoParecer ?? '',
-        ],
-        dataEnvioParecer: [
-          projetoFormModel?.parecerProjetoUsuario?.dataEnvio ?? null,
-        ],
-        guidDocumentoEdocs: [
-          projetoFormModel?.parecerProjetoUsuario?.guidDocumentoEdocs ?? '',
-        ],
-        guidUnidadeOrganizacao: [
-          projetoFormModel?.parecerProjetoUsuario?.guidUnidadeOrganizacao ?? '',
-        ],
-        usuarioFezEnvioParecer: [
-          projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? '',
-        ],
+        statusParecer: [projetoFormModel?.parecerProjetoUsuario?.statusParecer ?? null,],
+        textoParecer: [projetoFormModel?.parecerProjetoUsuario?.textoParecer ?? '',],
+        dataEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.dataEnvio ?? null,],
+        guidDocumentoEdocs: [projetoFormModel?.parecerProjetoUsuario?.guidDocumentoEdocs ?? '',],
+        guidUnidadeOrganizacao: [projetoFormModel?.parecerProjetoUsuario?.guidUnidadeOrganizacao ?? '',],
+        usuarioFezEnvioParecer: [projetoFormModel?.parecerProjetoUsuario?.usuarioFezEnvioParecer ?? '',],
         elegivel: [projetoFormModel?.parecerProjetoUsuario.elegivel ?? null],
+        nomeArquivo: [projetoFormModel?.parecerProjetoUsuario?.nomeArquivo ?? '',],
+        nomeOriginalArquivo: [projetoFormModel?.parecerProjetoUsuario?.nomeOriginalArquivo ?? '',],
+
+        anexos: this._nnfb.group({
+          nomeArquivo: [
+            projetoFormModel?.parecerProjetoUsuario?.anexos?.nomeArquivo ?? ''
+          ],
+          tamanhoBytes: [
+            projetoFormModel?.parecerProjetoUsuario?.anexos?.tamanhoBytes ?? null
+          ],
+          tipoMime: [
+            projetoFormModel?.parecerProjetoUsuario?.anexos?.tipoMime ?? ''
+          ],
+          tamanhoFormatado: [
+            projetoFormModel?.parecerProjetoUsuario?.anexos?.tamanhoFormatado ?? ''
+          ],
+        }),
+
       }),
+
       pareceresProjeto: this._nnfb.array([]),
 
       indicadoresAvulsosProjeto:
@@ -1238,6 +1250,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         guidUnidadeOrganizacao: '',
       });
     }
+
   }
 
   private idOrganizacaoChange(idOrganizacaoValue: number | null): void {
@@ -1762,7 +1775,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         .get('parecerProjetoUsuario')
         ?.getRawValue();
 
-      this.atualizarProjeto(payload, isRascunho).subscribe();
+      const formData = new FormData();
+
+      formData.append(
+        'projeto',
+        new Blob([JSON.stringify(payload)], {
+          type: 'application/json'
+        })
+      );
+
+      if (this.arquivoParecerSelecionado) {
+        formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
+      }
+
+      // console.log('PAYLOAD SUBMIT (PARECER):', payload);
+
+      this.atualizarProjeto(payload, isRascunho, formData).subscribe();
 
     } else {
 
@@ -1859,10 +1887,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
+      const formData = new FormData();
+
+      formData.append(
+        'projeto',
+        new Blob([JSON.stringify(payload)], {
+          type: 'application/json'
+        })
+      );
+
       // console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
-        ? this.atualizarProjeto(payload, isRascunho)
+        ? this.atualizarProjeto(payload, isRascunho, formData)
         : this.cadastrarProjeto(payload, isRascunho);
 
       requisicao.subscribe();
@@ -1990,44 +2027,52 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private atualizarProjeto(
     payload: ProjetoFormModel,
     isRascunho: boolean,
+    formData: FormData
   ): Observable<IProjeto> {
 
     if (payload.idResponsavelProponente === 0) {
 
       const dados = this.projetoForm.value;
-      return this._pessoasService.getBySub(dados.subResponsavelProponente).pipe(
-        switchMap((idPessoa: number) => {
-          payload.idResponsavelProponente = idPessoa;
-          return this._projetosService.put(
-            this._idProjetoEdicao,
-            payload,
-            isRascunho,
-          );
-        }),
-        tap(() => {
-          this._toastService.showToast(
-            'success',
-            'Projeto alterado com sucesso.',
-          );
-        }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        ),
-      );
+      return this._pessoasService.getBySub(dados.subResponsavelProponente)
+        .pipe(
+          switchMap((idPessoa: number) => {
+            payload.idResponsavelProponente = idPessoa;
+            return this._projetosService.put(
+              this._idProjetoEdicao,
+              payload,
+              isRascunho,
+              formData
+            );
+          }),
+          tap(() => {
+            this._toastService.showToast(
+              'success',
+              'Projeto alterado com sucesso.',
+            );
+            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          }),
+          // finalize(() =>
+          //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
+          // ),
+        );
+
     }
+
     return this._projetosService
-      .put(this._idProjetoEdicao, payload, isRascunho)
+      .put(this._idProjetoEdicao, payload, isRascunho, formData)
       .pipe(
         tap((response: IProjeto) => {
           this._toastService.showToast(
             'success',
             'Projeto alterado com sucesso.',
           );
+          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        ),
+        // finalize(() =>
+        //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
+        // ),
       );
+
   }
 
   private alterarStatusProjeto(status: string): void {
@@ -2491,6 +2536,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private efetivarEnvioParecerProjetoForm(form: FormGroup): void {
+
     form.updateValueAndValidity();
 
     form.get('valor.tipo')?.enable();
@@ -2561,11 +2607,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
     payload.odsProjeto = odsProjetoPayload;
 
-    //const payload = new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+    const formData = new FormData();
+
+    formData.append(
+      'projeto',
+      new Blob([JSON.stringify(payload)], {
+        type: 'application/json'
+      })
+    );
+
+    if (this.arquivoParecerSelecionado) {
+      formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
+    }
 
     payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
-    this.efetivarEnvioParecerProjetoAsync(payload);
+    this.efetivarEnvioParecerProjetoAsync(formData);
 
   }
 
@@ -2759,12 +2816,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       });
   }
 
-  private efetivarEnvioParecerProjetoAsync(payload: ProjetoFormModel): void {
+  private efetivarEnvioParecerProjetoAsync(formData: FormData): void {
 
     this.exibeListaEtapasIntegracao = true;
 
     this._projetosService
-      .efetivarEnvioParecerEdocs(this._idProjetoEdicao, payload)
+      .efetivarEnvioParecerEdocs( this._idProjetoEdicao, formData )
       .pipe(
         tap(() => {
           this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
@@ -3198,6 +3255,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const campoOds = this.projetoForm.get('impactos');
 
+
     campoOds?.clearValidators();
     campoOds?.updateValueAndValidity();
 
@@ -3236,6 +3294,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }
     });
     return valido;
+  }
+
+  public baixarPdfAnexo(idParecer: any): void {
+
+    this.parecerService.baixarParecer(idParecer);
+
+  }
+
+  get parecerFormGroup(): FormGroup {
+    return this.projetoForm.get('parecerProjetoUsuario') as FormGroup;
   }
 
   public onIndicadoresCatalogoCarregados(

@@ -1,5 +1,4 @@
 import { LotacaoUsuarioEnum } from "../enums/lotacao-usuario.enum";
-import { StatusParecerEnum } from "../enums/status-parecer.enum";
 
 export interface IParecer {
 
@@ -14,4 +13,16 @@ export interface IParecer {
 	parecerLotacao: LotacaoUsuarioEnum;
 	elegivel: boolean;
 
+	nomeArquivo: string 
+    nomeOriginalArquivo: string 
+	
+	anexos?: IParecerAnexo;
+
+}
+
+export interface IParecerAnexo {
+	nomeArquivo: string;
+	tamanhoBytes: number;
+	tipoMime: string;
+	tamanhoFormatado: string;
 }

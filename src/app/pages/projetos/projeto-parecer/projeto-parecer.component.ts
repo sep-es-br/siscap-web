@@ -1,5 +1,5 @@
 
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -7,13 +7,14 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxMaskDirective } from 'ngx-mask';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
-import { IParecer } from '../../../core/interfaces/parecer.interface';
+import { IParecer, IParecerAnexo } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { Jodit } from 'jodit';
 import { paste } from 'jodit/types/plugins/paste/paste';
+import { ToastService } from '../../../core/services/toast/toast.service';
 @Component({
   selector: 'siscap-projeto-parecer',
   standalone: true,
@@ -30,11 +31,12 @@ import { paste } from 'jodit/types/plugins/paste/paste';
   templateUrl: './projeto-parecer.component.html',
   styleUrl: './projeto-parecer.component.scss'
 })
-export class ProjetoParecerComponent implements OnInit, AfterViewInit{
+export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
   @ViewChild('editor') editorElement!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('pdfInput') pdfInput!: ElementRef<HTMLInputElement>;
 
-  editor! : Jodit | undefined;
+  editor!: Jodit | undefined;
 
   textoLength = 0;
 
@@ -43,9 +45,14 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
   @Input() lotacaoUsuario!: number;
   @Input() pareceresProjeto!: IParecer[];
 
+  @Output() arquivoParecerChange = new EventEmitter<File | null>();
+
+  public anexoPdfSelecionado?: IParecerAnexo;
 
   constructor(
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private readonly _toastService: ToastService,
+    private _projetoParecerService: ParecerService
   ) { }
 
   get parecerFormGroup(): FormGroup {
@@ -78,20 +85,31 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
 
   public isEnviado(): boolean {
     const statusParecer = this.parecerFormGroup.get('statusParecer')?.value;
-    return !(statusParecer === StatusParecerEnum.Pendente)
+    return !(statusParecer === StatusParecerEnum.Pendente);
   }
 
   ngOnInit(): void {
 
     const textoParecer = this.parecerFormGroup.get('textoParecer');
 
-    if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegivel ) {
+    if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP || this.statusProjeto == StatusProjetoEnum.Elegivel) {
       textoParecer?.setValidators([Validators.required]);
     } else {
       textoParecer?.clearValidators();
     }
 
     textoParecer?.updateValueAndValidity();
+
+    const nomeArquivo = this.parecerFormGroup.get('nomeArquivo')?.value;
+    
+    this.anexoPdfSelecionado = {
+      nomeArquivo: nomeArquivo,
+      tamanhoBytes: 0,
+      tamanhoFormatado: '',
+      tipoMime: 'application/pdf'
+    };
+
+    
 
   }
 
@@ -112,56 +130,56 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
   ngAfterViewInit(): void {
     setTimeout(() => {
 
-        this.editor = Jodit.make(this.editorElement?.nativeElement, {
-          height: 300,
-          enter: 'p',
-          disablePlugins: 'file image',
-          toolbarSticky: false,
-          // Toolbar simples (ideal pro Jasper)
-          buttons: [
-            'bold',
-            'italic',
-            'underline',
-          ],
-          askBeforePasteHTML: false,
-          processPasteHTML: true,
-          cleanHTML: {
-            removeEmptyElements: true,   // remove <p><br></p>
-            fillEmptyParagraph: false,
-            replaceOldTags: {
-              // define tags que são permitidas; as não listadas serão removidas
-              b: 'b',
-              strong: 'b',
-              i: 'i',
-              em: 'i',
-              u: 'u',
-              a: 'a',
-              p: 'p',
-              br: 'br'
-            }
+      this.editor = Jodit.make(this.editorElement?.nativeElement, {
+        height: 300,
+        enter: 'p',
+        disablePlugins: 'file image',
+        toolbarSticky: false,
+        // Toolbar simples (ideal pro Jasper)
+        buttons: [
+          'bold',
+          'italic',
+          'underline',
+        ],
+        askBeforePasteHTML: false,
+        processPasteHTML: true,
+        cleanHTML: {
+          removeEmptyElements: true,   // remove <p><br></p>
+          fillEmptyParagraph: false,
+          replaceOldTags: {
+            // define tags que são permitidas; as não listadas serão removidas
+            b: 'b',
+            strong: 'b',
+            i: 'i',
+            em: 'i',
+            u: 'u',
+            a: 'a',
+            p: 'p',
+            br: 'br'
           }
-        });
+        }
+      });
 
-        this.editor.events.on(['paste'], (event: any) => {
-          const html = event.clipboardData?.getData('text/html');
+      this.editor.events.on(['paste'], (event: any) => {
+        const html = event.clipboardData?.getData('text/html');
 
-          if (html) {
-            event.preventDefault();
+        if (html) {
+          event.preventDefault();
 
-            const limpo = this.normalizeHtml(html);
-            this.editor?.selection.insertHTML(limpo);
-          }
-        })
+          const limpo = this.normalizeHtml(html);
+          this.editor?.selection.insertHTML(limpo);
+        }
+      })
 
-        this.editor.events.on(['change'], () => this.updateFormControl());
-        const textoParecer = this.parecerFormGroup.get('textoParecer');
+      this.editor.events.on(['change'], () => this.updateFormControl());
+      const textoParecer = this.parecerFormGroup.get('textoParecer');
 
-        this.editor.value = textoParecer?.getRawValue();
+      this.editor.value = textoParecer?.getRawValue();
 
-        textoParecer?.valueChanges.subscribe(value => {
-          if(this.editor)
-            this.editor.value = value
-        })
+      textoParecer?.valueChanges.subscribe(value => {
+        if (this.editor)
+          this.editor.value = value
+      })
 
 
     })
@@ -203,7 +221,9 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
   MAX_CHARS = 10000;
 
   updateFormControl() {
-    if(!this.editor) return;
+
+    if (!this.editor) return;
+
     const html = this.editor.value;
 
     // ignora conteúdo vazio/fantasma
@@ -217,6 +237,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
 
     // bloqueia se passar do limite
     if (plainText.length > this.MAX_CHARS) {
+
       // corta o texto
       const truncated = plainText.substring(0, this.MAX_CHARS);
 
@@ -226,7 +247,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
       const scroll = this.editor.editor.scrollTop;
       this.parecerFormGroup.get('textoParecer')?.patchValue(this.normalizeHtml(truncated), { emitEvent: false });
       setTimeout(() => {
-        if(!this.editor) return;
+        if (!this.editor) return;
         this.editor.editor.scrollTop = this.editor.editor.scrollHeight;
       }, 0)
 
@@ -234,7 +255,9 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
     }
 
     this.textoLength = plainText.length;
+
     this.parecerFormGroup.get('textoParecer')?.patchValue(this.normalizeHtml(html), { emitEvent: false });
+
   }
 
   // função auxiliar para extrair texto puro
@@ -242,6 +265,147 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit{
     const div = document.createElement('div');
     div.innerHTML = html;
     return div.textContent?.trim() || '';
+  }
+
+  public selecionarPdf(): void {
+    this.pdfInput.nativeElement.click();
+  }
+
+  public async onPdfSelecionado(event: Event): Promise<void> {
+
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const arquivo = input.files[0];
+
+    const pdfValido = await this.validarPdf(arquivo);
+
+    if (!pdfValido) {
+      this._toastService.showToast(
+        'error',
+        'O arquivo selecionado não é um PDF válido.',
+      );
+      input.value = '';
+      return;
+    }
+
+    // arquivo emite para armazenar no componente pai..
+    this.arquivoParecerChange.emit(arquivo);
+
+    this.anexoPdfSelecionado = {
+      nomeArquivo: arquivo.name,
+      tamanhoBytes: arquivo.size,
+      tamanhoFormatado: this.formatarTamanhoArquivo(arquivo.size),
+      tipoMime: arquivo.type || 'application/pdf'
+    };
+
+    const textoMetadados = this.montarTextoMetadadosPdf(this.anexoPdfSelecionado);
+
+    this.parecerFormGroup.get('textoParecer')?.setValue(textoMetadados);
+    this.parecerFormGroup.get('nomeArquivo')?.setValue(arquivo.name); 
+    
+    this.textoLength = textoMetadados.length;
+
+    input.value = ''
+
+    if (this.editor) {
+      this.editor.setReadOnly(true);
+      this.editor.setDisabled(true);
+    }
+
+  }
+
+  public possuiAnexo(): boolean {
+
+    const nomeArquivo = this.parecerFormGroup.get('nomeArquivo')?.value;
+
+    if (nomeArquivo){
+      if(this.editor){
+        this.editor.setReadOnly(true);
+        this.editor.setDisabled(true);
+      }
+      return true
+    }else{
+      if(this.editor){
+        this.editor.setReadOnly(false);
+        this.editor.setDisabled(false);
+      }
+      return false
+    }
+
+  }
+
+  public async validarPdf(arquivo: File): Promise<boolean> {
+
+    const buffer = await arquivo.slice(0, 5).arrayBuffer();
+
+    const bytes = new Uint8Array(buffer);
+
+    const assinatura =
+      String.fromCharCode(...bytes);
+
+    return assinatura === '%PDF-';
+
+  }
+
+  private montarTextoMetadadosPdf(anexo: IParecerAnexo): string {
+    return [
+      'Parecer anexado em PDF.',
+      '',
+      `Arquivo: ${anexo.nomeArquivo}`,
+      `Tamanho: ${anexo.tamanhoFormatado}`,
+      `Tipo: ${anexo.tipoMime}`
+    ].join('\n');
+  }
+
+  private formatarTamanhoArquivo(tamanhoBytes: number): string {
+
+    if (tamanhoBytes < 1024) {
+      return `${tamanhoBytes} bytes`;
+    }
+
+    const tamanhoKb = tamanhoBytes / 1024;
+
+    if (tamanhoKb < 1024) {
+      return `${tamanhoKb.toFixed(2)} KB`;
+    }
+
+    const tamanhoMb = tamanhoKb / 1024;
+
+    return `${tamanhoMb.toFixed(2)} MB`;
+
+  }
+
+  public baixarPdfAnexo(): void {
+
+    const idParecer = this.parecerFormGroup.get('id')?.value;
+
+    this._projetoParecerService.baixarParecer(idParecer);
+
+  }
+
+  public excluirPdfAnexo(): void {
+
+    this.anexoPdfSelecionado = undefined;
+    this.parecerFormGroup.get('nomeArquivo')?.setValue('');
+    this.parecerFormGroup.get('nomeOriginalArquivo')?.setValue('');
+
+    if (this.editor) {
+      this.editor.value = '';
+      this.editor.setReadOnly(false);
+      this.editor.setDisabled(false);
+    }
+
+    const idParecer = this.parecerFormGroup.get('id')?.value;
+
+    this._projetoParecerService.excluirAnexoParecer(idParecer).subscribe({
+      next: () => console.log('OK'),
+      error: err => console.error(err)
+    });
+
   }
 
 }

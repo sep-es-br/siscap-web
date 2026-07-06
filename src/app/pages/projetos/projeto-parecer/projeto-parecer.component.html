@@ -1,87 +1,126 @@
-<div class="project-form" *ngIf="isSubeo() || isSubepp() || isSubcapGeoc()" >
-    <form [formGroup]="parecerFormGroup">
-      <div class="row ">
-        <div class="col-12" *ngIf="isSubepp()">
-          <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
-            Parecer Estratégico
-          </p>
-          <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
-              O setor deverá elaborar um parecer estratégico acerca do projeto apresentado, contemplando
-              os seguintes pontos:
-          </p>
-          <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
-            <li>Indicar e/ou confirmar o enquadramento do projeto em relação ao Planejamento Estratégico do Governo vigente (eixo, área estratégica, programa ou afins);</li>
-            <li>Sugerir projetos de sua carteira estratégica que apresentem alinhamento com o tema
-                proposto;</li>
-            <li>Identificar indicadores estratégicos que possam ser associados ao projeto em análise.
-            </li>
-          </ul>
-        </div>
-
-        <div class="col-12" *ngIf="isSubeo()">
-          <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
-            Parecer Orçamentário
-          </p>
-          <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
-            O setor responsável deverá apresentar parecer quanto à adequação orçamentária da proposta, abrangendo os
-              seguintes aspectos:
-          </p>
-          <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
-            <li>Verificar a conformidade com a LOA, LDO e PPA;</li>
-            <li>Indicar a disponibilidade de outras fontes de recursos eventualmente acessíveis ao Órgão demandante.</li>
-          </ul>
-        </div>
-        <div class="col-12" *ngIf="isSubcapGeoc()">
-          <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
-            Parecer Captação
-          </p>
-          <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
-              O setor responsável deverá elaborar parecer acerca da proposta, contemplando os seguintes aspectos:
-          </p>
-          <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
-            <li>Declarar a elegibilidade da proposta para pleito de financiamento;</li>
-            <li>Avaliar a aderência do projeto a contratações já realizadas ou em prospecção, bem como a viabilidade de associação com outros projetos para a formatação de uma proposta de programa;</li>
-            <li>Apresentar projeção das taxas que poderão compor eventual operação de crédito, considerando contratos firmados e a experiência prévia com bancos de fomento.</li>
-          </ul>
-        </div>
+<div class="project-form" *ngIf="isSubeo() || isSubepp() || isSubcapGeoc()">
+  <form [formGroup]="parecerFormGroup">
+    <div class="row ">
+      <div class="col-12" *ngIf="isSubepp()">
+        <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
+          Parecer Estratégico
+        </p>
+        <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
+          O setor deverá elaborar um parecer estratégico acerca do projeto apresentado, contemplando
+          os seguintes pontos:
+        </p>
+        <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
+          <li>Indicar e/ou confirmar o enquadramento do projeto em relação ao Planejamento Estratégico do Governo
+            vigente (eixo, área estratégica, programa ou afins);</li>
+          <li>Sugerir projetos de sua carteira estratégica que apresentem alinhamento com o tema
+            proposto;</li>
+          <li>Identificar indicadores estratégicos que possam ser associados ao projeto em análise.
+          </li>
+        </ul>
       </div>
 
+      <div class="col-12" *ngIf="isSubeo()">
+        <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
+          Parecer Orçamentário
+        </p>
+        <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
+          O setor responsável deverá apresentar parecer quanto à adequação orçamentária da proposta, abrangendo os
+          seguintes aspectos:
+        </p>
+        <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
+          <li>Verificar a conformidade com a LOA, LDO e PPA;</li>
+          <li>Indicar a disponibilidade de outras fontes de recursos eventualmente acessíveis ao Órgão demandante.</li>
+        </ul>
+      </div>
+      <div class="col-12" *ngIf="isSubcapGeoc()">
+        <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
+          Parecer Captação
+        </p>
+        <p class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
+          O setor responsável deverá elaborar parecer acerca da proposta, contemplando os seguintes aspectos:
+        </p>
+        <ul class="text-muted" style="font-size: 0.9rem; line-height: 1.4; margin-left: 1rem;">
+          <li>Declarar a elegibilidade da proposta para pleito de financiamento;</li>
+          <li>Avaliar a aderência do projeto a contratações já realizadas ou em prospecção, bem como a viabilidade de
+            associação com outros projetos para a formatação de uma proposta de programa;</li>
+          <li>Apresentar projeção das taxas que poderão compor eventual operação de crédito, considerando contratos
+            firmados e a experiência prévia com bancos de fomento.</li>
+        </ul>
+      </div>
+    </div>
 
+    <!-- Campo de Texto do Parecer -->
+    <div class="row">
 
-      <!-- Campo de Texto do Parecer -->
-      <div class="row">
-        <div class="col-12">
-          <label for="textoParecer" class="form-label col-12">
-            <validation-message [control]="this.parecerFormGroup.get('textoParecer')!">
+      <div class="col-12">
+
+        <div class="d-flex justify-content-between align-items-center w-100 mb-2">
+
+          <label for="textoParecer" class="form-label mb-0">
+            <validation-message [control]="parecerFormGroup.get('textoParecer')!">
               Parecer
             </validation-message>
           </label>
 
-          <textarea #editor
-            id="textoParecer"
-            class="form-control"
-            rows="8"
-            maxlength="10000"
-            placeholder="Digite aqui o texto do parecer..."
-            [disabled]="isEnviado()"
-          >
-          </textarea>
+          <div class="d-flex align-items-center gap-3">
 
-          <small class="text-muted d-block text-end ">
-            {{ this.textoLength }}/10.000 caracteres
-          </small>
+            <!-- Anexar -->
+            <span [class.disabled-link]="isEnviado()" style="cursor:pointer;
+             color:var(--blue);
+             font-weight:700;
+             font-size:12px;" (click)="selecionarPdf()" (keydown.enter)="selecionarPdf()"
+              (keydown.space)="selecionarPdf()">
+              <i class="fa fa-paperclip"></i> Anexar parecer em PDF
+            </span>
+
+            <!-- Download -->
+            <span *ngIf="possuiAnexo()" style="cursor:pointer;
+             color:#198754;
+             font-weight:600;
+             font-size:12px;" (click)="baixarPdfAnexo()" (keydown.enter)="baixarPdfAnexo()"
+              (keydown.space)="baixarPdfAnexo()">
+              <i class="fas fa-download"></i> Baixar parecer
+            </span>
+
+            <!-- Excluir -->
+            <span *ngIf="possuiAnexo() && !isEnviado()" style="cursor:pointer;
+             color:#dc3545;
+             font-weight:600;
+             font-size:12px;" (click)="excluirPdfAnexo()" (keydown.enter)="excluirPdfAnexo()"
+              (keydown.space)="excluirPdfAnexo()">
+              <i class="fas fa-trash-can"></i> Excluir anexo
+            </span>
+
+          </div>
+
+          <input #pdfInput type="file" accept=".pdf,application/pdf" style="display:none"
+            (change)="onPdfSelecionado($event)">
         </div>
+
+        <textarea #editor id="textoParecer" class="form-control" rows="8" maxlength="10000"
+          placeholder="Digite aqui o texto do parecer..." [disabled]="isEnviado()">
+        </textarea>
+
+        <small class="text-muted d-block text-end ">
+          {{ this.textoLength }}/10.000 caracteres
+        </small>
+
       </div>
 
-      <div *ngIf="isEnviado()" class="row mt-2">
-        <div class="col-12">
-          <strong>Parecer enviado</strong> no dia
-          <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'dd/MM/yyyy' }}</span>
-          às
-          <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'HH:mm' }}</span>
-          por
-          <span class="fw-semibold">{{  this.parecerFormGroup.get('usuarioFezEnvioParecer')?.value }}</span>
-        </div>
+    </div>
+
+    <div *ngIf="isEnviado()" class="row mt-2">
+
+      <div class="col-12">
+        <strong>Parecer enviado</strong> no dia
+        <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'dd/MM/yyyy' }}</span>
+        às
+        <span class="text-primary">{{ this.parecerFormGroup.get('dataEnvioParecer')?.value | date:'HH:mm' }}</span>
+        por
+        <span class="fw-semibold">{{ this.parecerFormGroup.get('usuarioFezEnvioParecer')?.value }}</span>
       </div>
-    </form>
+
+    </div>
+
+  </form>
 </div>

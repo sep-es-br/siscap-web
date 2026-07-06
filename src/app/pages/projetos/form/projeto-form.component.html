@@ -448,7 +448,8 @@
             <div id="parecerAtual" class="collapse show" aria-labelledby="parecerTituloAtual">
               <div class="card-body mb-4">
                 <siscap-projeto-parecer [projetoForm]="projetoForm" [statusProjeto]="statusProjeto"
-                  [lotacaoUsuario]="lotacaoUsuario" [pareceresProjeto]="pareceresProjeto" class="mb-4">
+                  [lotacaoUsuario]="lotacaoUsuario" [pareceresProjeto]="pareceresProjeto"
+                  (arquivoParecerChange)="arquivoParecerSelecionado = $event" class="mb-4">
                 </siscap-projeto-parecer>
               </div>
             </div>
@@ -499,6 +500,18 @@
                         mapSubUser[parecer.usuarioFezEnvioParecer]
                         }}</span>
                     </div>
+
+                    <div class="col-12 mt-3">
+                      <button type="button" 
+                        class="btn btn-link p-0 
+                        text-success 
+                        fw-semibold text-decoration-none" 
+                        style="font-size:14px;"
+                        (click)="baixarPdfAnexo(parecer.id)">
+                        <i class="fas fa-download"></i> Baixar parecer
+                      </button>
+                    </div>
+
                   </div>
                 </ng-container>
 

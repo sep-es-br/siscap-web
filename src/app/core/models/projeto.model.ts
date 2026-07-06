@@ -110,7 +110,9 @@ export class ProjetoFormModel implements IProjetoForm {
     this.podeResponderComplementacao = projetoForm?.podeResponderComplementacao ?? false;
     this.enviarProjetoPedirParecer = projetoForm?.enviarProjetoPedirParecer ?? false;
     this.camposComplementar = projetoForm?.camposComplementar ?? [];
+
     this.parecerProjetoUsuario = projetoForm?.parecerProjetoUsuario ?? ({} as IParecer);
+
     this.lotacaoUsuario = projetoForm?.lotacaoUsuario ?? 0;
     this.pareceresProjeto = projetoForm?.pareceresProjeto ?? [];
     this.subProponente = projetoForm?.subProponente ?? '';
