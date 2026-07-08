@@ -297,7 +297,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     public parecerService: ParecerService,
-    public catalogoIndicadoresService: CatalogoIndicadorService
+    public catalogoIndicadoresService: CatalogoIndicadorService,
+    private _router: Router
   ) {
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
@@ -945,15 +946,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     this.textoSpinner = 'Baixando DIC...';
-    
+
     this._projetosService.baixarDIC(this._idProjetoEdicao)
-    .pipe(
-      finalize(() => this.loading = false)
-    )
-    .subscribe();;
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe();;
 
   }
-  
+
   private iniciarForm(projetoFormModel?: ProjetoFormModel): Observable<any> {
 
     const valorInicialControleValorEstimado = projetoFormModel?.valor
@@ -1051,7 +1052,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       enviarProjetoPedirParecer: this._nnfb.control(
         projetoFormModel?.enviarProjetoPedirParecer ?? false,
       ),
-      
+
       parecerProjetoUsuario: this._nnfb.group({
 
         id: [projetoFormModel?.parecerProjetoUsuario?.id ?? null],
@@ -2726,7 +2727,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
 
-          this.iniciarPollingEtapasIntegracaoModal(ContextoIntegracaoEdocsEnum.Complementar);
+          this.iniciarPollingEtapasIntegracaoModal();
 
         }),
 
@@ -2768,9 +2769,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'Processo reentranhar DIC com correções iniciado no E-Docs.',
           );
 
-          this.iniciarPollingEtapasIntegracaoModal(
-            ContextoIntegracaoEdocsEnum.Complementar,
-          );
+          this.iniciarPollingEtapasIntegracaoModal();
         }),
 
         catchError(() => {
@@ -2807,23 +2806,40 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'Processo de autuação iniciado no E-Docs.',
           );
         }),
-        catchError((error) => {
-          this.autuacaoAcionada = false;
-          this._toastService.showToast(
-            'error',
-            'Erro ao iniciar autuação no E-Docs.',
-          );
-          return of([]);
-        }),
+
+        // catchError((error) => {
+        //   console.error(' autuarProjetoAsync Erro ao iniciar autuação no E-Docs:', error);
+        //   this.autuacaoAcionada = false;
+        //   if (
+        //     error.status === 401 &&
+        //     error.error?.titulo === 'EDOCS_TOKEN_EXPIRADO'
+        //   ) {
+        //     return throwError(() => error);
+        //   }
+        //   this._toastService.showToast(
+        //     'error',
+        //     'Erro ao iniciar autuação no E-Docs.',
+        //   );
+        //   return EMPTY;
+        // }),
+
+        // catchError((error) => {
+        //   this.autuacaoAcionada = false;
+        //   this._toastService.showToast(
+        //     'error',
+        //     'Erro ao iniciar autuação no E-Docs.',
+        //   );
+        //   return of([]);
+        // }),
+
         finalize(() => {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
+
       )
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        this.iniciarPollingEtapasIntegracaoModal(
-          ContextoIntegracaoEdocsEnum.Autuacao,
-        );
+        this.iniciarPollingEtapasIntegracaoModal();
       });
   }
 
@@ -2832,7 +2848,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.exibeListaEtapasIntegracao = true;
 
     this._projetosService
-      .efetivarEnvioParecerEdocs( this._idProjetoEdicao, formData )
+      .efetivarEnvioParecerEdocs(this._idProjetoEdicao, formData)
       .pipe(
         tap(() => {
           this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
@@ -2855,9 +2871,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        this.iniciarPollingEtapasIntegracaoModal(
-          ContextoIntegracaoEdocsEnum.Autuacao,
-        );
+        this.iniciarPollingEtapasIntegracaoModal();
       });
   }
 
@@ -2894,17 +2908,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        this.iniciarPollingEtapasIntegracaoModal(
-          ContextoIntegracaoEdocsEnum.CapturaAsinaturaParecer,
-        );
+        this.iniciarPollingEtapasIntegracaoModal();
       });
   }
 
   private pararPolling$ = new Subject<void>();
 
-  private iniciarPollingEtapasIntegracaoModal(
-    contexto: ContextoIntegracaoEdocsEnum,
-  ): void {
+  private iniciarPollingEtapasIntegracaoModal(): void {
     const INTERVALO = 2000;
 
     interval(INTERVALO)
@@ -2935,6 +2945,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         tap((lista) => {
 
           const faseComErro = lista.find((f) => f.erro);
+
           if (faseComErro) {
             this.tratarErro(faseComErro);
             this.pararPolling$.next();
@@ -3044,10 +3055,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private tratarErro(fase: ProjetoIntegracaoEdocsFasesModel): void {
 
     this.autuacaoAcionada = false;
+
     this.erroEmAlgumaFaseModalAutuacao = true;
 
     if ((fase.msgAlertaExibir?.length ?? 0) > 0) {
+
       this._toastService.showToast('warning', fase.msgAlertaExibir);
+
+      if (fase.tokenExpirado) {
+        this._ngbModalService.dismissAll();
+        this._router.navigateByUrl('login');
+      }
+
+      return;
+
     } else {
       this._toastService.showToast(
         'error',
