@@ -14,7 +14,7 @@ import { IHttpBackEndErrorResponse } from '../../interfaces/http-backend-error-r
   providedIn: 'root',
 })
 export class ErrorHandlerService {
-  constructor(private _toastService: ToastService, private _router: Router) {}
+  constructor(private _toastService: ToastService, private _router: Router) { }
 
   /**
    * @public
@@ -33,7 +33,7 @@ export class ErrorHandlerService {
       this.showDefaultErrorToast();
     } else {
       this.showBackEndErrorToast(error.error);
-      this.handleRouting(error.status);
+      this.handleRouting(error);
     }
   }
 
@@ -52,8 +52,25 @@ export class ErrorHandlerService {
     );
   }
 
-  private handleRouting(errorStatus: number): void {
-    switch (errorStatus) {
+  private handleRouting(error: HttpErrorResponse): void {
+
+    const isErroTokenEdocs = error.status === 401 && error.error?.titulo === 'EDOCS_TOKEN_EXPIRADO';
+
+    if (isErroTokenEdocs) {
+      this._toastService.showToast(
+        'error',
+        error.error?.erros?.[0] ??
+        'Sua permissão de acesso ao E-Docs expirou. Você será redirecionado para o login.'
+      );
+
+      setTimeout(() => {
+        this._router.navigateByUrl('login');
+      }, 2000);
+
+      return;
+    }
+
+    switch (error.status) {
       case 401:
         this._router.navigateByUrl('login');
         break;
@@ -63,5 +80,6 @@ export class ErrorHandlerService {
       default:
         break;
     }
+
   }
 }

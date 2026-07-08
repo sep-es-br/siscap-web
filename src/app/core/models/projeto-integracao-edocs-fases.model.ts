@@ -9,6 +9,7 @@ export class ProjetoIntegracaoEdocsFasesModel implements IProjetoIntegracaoEdocs
   public erro: boolean;
   public msgAlertaExibir: string;
   public contextoNegocio: string;
+  public tokenExpirado: boolean = false;
 
     constructor(integracao?: IProjetoIntegracaoEdocsFases) {
       this.id = integracao?.id ?? 0;
@@ -18,6 +19,7 @@ export class ProjetoIntegracaoEdocsFasesModel implements IProjetoIntegracaoEdocs
       this.erro = integracao?.erro ?? false;
       this.msgAlertaExibir = integracao?.msgAlertaExibir ?? '';
       this.contextoNegocio = integracao?.contextoNegocio ?? '';
+      this.tokenExpirado = integracao?.tokenExpirado ?? false;
     }
 
 }

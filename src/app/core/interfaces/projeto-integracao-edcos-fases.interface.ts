@@ -4,6 +4,7 @@ export interface IProjetoIntegracaoEdocsFases {
   readonly iniciada: boolean;
   readonly finalizada: boolean;
   readonly erro: boolean;
+  readonly tokenExpirado: boolean;
   readonly msgAlertaExibir: string;
   readonly contextoNegocio: string;
 }
