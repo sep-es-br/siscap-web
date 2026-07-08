@@ -401,6 +401,10 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
     const idParecer = this.parecerFormGroup.get('id')?.value;
 
+    if (!idParecer) {
+      return;
+    }
+
     this._projetoParecerService.excluirAnexoParecer(idParecer).subscribe({
       next: () => console.log('OK'),
       error: err => console.error(err)
