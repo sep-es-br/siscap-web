@@ -13,18 +13,29 @@ import { NgClass } from '@angular/common';
   styleUrl: './confirmation-modal.component.scss'
 })
 export class ConfirmationModalComponent {
+
   @Input() public config: {
+
     titulo: string;
     headerCustomClass?: string;
     textoPrincipal: string;
     textoSecundario?: string;
     textoPrincipalCustomClass?: string;
     textoSecundarioCustomClass?: string;
+
+    itensDetalhe?: {
+      titulo?: string;
+      linhas: {
+        titulo: string;
+        descricao?: string;
+      }[];
+    };
+
   } = {
-    titulo: 'Título',
-    textoPrincipal: 'Conteúdo',
-    textoPrincipalCustomClass: 'fw-bold',
-  };
+      titulo: 'Título',
+      textoPrincipal: 'Conteúdo',
+      textoPrincipalCustomClass: 'fw-bold',
+    };
 
   botaoCancelar: BotaoPropriedadesModel;
 

@@ -5,16 +5,41 @@
 <div class="modal-body text-center">
   <p [ngClass]="config.textoPrincipalCustomClass">{{ config.textoPrincipal }}</p>
   @if (config.textoSecundario) {
-    <p [ngClass]="config.textoSecundarioCustomClass">{{ config.textoSecundario }}</p>
+  <p [ngClass]="config.textoSecundarioCustomClass">{{ config.textoSecundario }}</p>
+  }
+
+  @if (config.itensDetalhe; as detalhes) {
+
+  @if (detalhes.linhas.length) {
+  <div class="mt-3 text-start">
+
+    @if (detalhes.titulo) {
+    <strong>{{ detalhes.titulo }}</strong>
+    }
+
+    <div class="detalhes-grid">
+
+      @for (item of detalhes.linhas; track item.titulo) {
+      <div class="detalhe-card">
+        <div class="detalhe-titulo">
+          {{ item.titulo }}
+        </div>
+
+        @if (item.descricao) {
+        <div class="detalhe-subtitulo">
+          {{ item.descricao }}
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+  </div>
+
+  }
   }
 </div>
 <div class="modal-footer d-flex justify-content-center">
-  <siscap-botao
-    [propriedades]="botaoCancelar"
-    (acao)="activeModal.dismiss('cancelar')"
-  ></siscap-botao>
-  <siscap-botao
-    [propriedades]="botaoProsseguir"
-    (acao)="activeModal.dismiss('confirmar')"
-  ></siscap-botao>
+  <siscap-botao [propriedades]="botaoCancelar" (acao)="activeModal.dismiss('cancelar')"></siscap-botao>
+  <siscap-botao [propriedades]="botaoProsseguir" (acao)="activeModal.dismiss('confirmar')"></siscap-botao>
 </div>
