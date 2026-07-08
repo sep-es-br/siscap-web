@@ -507,7 +507,7 @@
                         text-success 
                         fw-semibold text-decoration-none" 
                         style="font-size:14px;"
-                        (click)="baixarPdfAnexo(parecer.id)">
+                        (click)="baixarPdfAnexo(parecer.id)" [disabled]="!parecerPossuiAnexo(parecer)" >
                         <i class="fas fa-download"></i> Baixar parecer
                       </button>
                     </div>

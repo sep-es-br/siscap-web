@@ -130,14 +130,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getTiposValorOpcoes$: Observable<IOpcoesDropdown[]>;
-  private readonly _getLocalidadesOpcoes$: Observable<
-    ILocalidadeOpcoesDropdown[]
-  >;
+  private readonly _getLocalidadesOpcoes$: Observable<ILocalidadeOpcoesDropdown[]>;
   private readonly _getTiposPapelOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getAllOpcoes$: Observable<any>;
-  private readonly _getTiposMotivosArquivamentoOpcoes$: Observable<
-    IMotivoArquivamentoOpcoesDropdown[]
-  >;
+  private readonly _getTiposMotivosArquivamentoOpcoes$: Observable<IMotivoArquivamentoOpcoesDropdown[]>;
 
   private _idProjetoEdicao: number = 0;
 
@@ -3365,6 +3361,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     indicadoresControl?.patchValue(indicadoresEnriquecidos);
 
+  }
+
+  parecerPossuiAnexo(parecer: IParecer): boolean {
+    return parecer?.nomeArquivo?.trim().length > 0;
   }
 
 }
