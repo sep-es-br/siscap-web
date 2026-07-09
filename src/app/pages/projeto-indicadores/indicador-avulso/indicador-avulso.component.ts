@@ -60,8 +60,8 @@ export class IndicadorAvulsoComponent {
       return;
     }
 
-    const anoInicio = this.gestao.doAno;
-    const anoFim = this.gestao.ateAno;
+    const anoInicio = this.gestao.deAnoMeta; // doAno;
+    const anoFim = this.gestao.ateAnoMeta;
 
     for (let ano = anoInicio; ano <= anoFim; ano++) {
 
