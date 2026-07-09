@@ -4,4 +4,44 @@ div.toast-container {
   right: 0;
   padding: 1rem;
   z-index: 1200;
+
+  width: min(480px, 100vw);
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+.app-toast {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.toast-header-line {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.toast-title {
+  margin: 0;
+  min-width: 0;
+  flex: 1;
+
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.toast-message {
+  margin: 0.25rem 0 0 0;
+
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.btn-close {
+  flex: 0 0 auto;
 }
