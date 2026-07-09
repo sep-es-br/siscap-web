@@ -942,13 +942,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     this.textoSpinner = 'Baixando DIC...';
-
+  
     this._projetosService.baixarDIC(this._idProjetoEdicao)
       .pipe(
-        finalize(() => this.loading = false)
+        finalize(() => {
+          this.loading = false;
+        })
       )
-      .subscribe();;
-
+      .subscribe();
+  
   }
 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): Observable<any> {

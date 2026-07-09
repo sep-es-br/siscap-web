@@ -314,6 +314,7 @@ export class ProjetosService extends BaseHttpService<
   }
 
   public baixarDIC(id: number): Observable<any> {
+    
     const downloadURL = `${this._url}/dic/${id}`;
 
     return this.filesService.requestPDF(downloadURL).pipe(
