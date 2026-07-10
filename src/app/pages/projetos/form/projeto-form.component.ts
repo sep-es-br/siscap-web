@@ -1956,12 +1956,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
       );
 
-    if (algumIndicadorComMetaInvalida) {
-      this._toastService.showToast('warning', 'Erro ao validar indicadores', [
-        'Todas as metas dos indicadores devem ser preenchidas com valores maiores que zero.',
-      ]);
-      return false;
-    }
+    // if (algumIndicadorComMetaInvalida) {
+    //   this._toastService.showToast('warning', 'Erro ao validar indicadores', [
+    //     'Todas as metas dos indicadores devem ser preenchidas com valores maiores que zero.',
+    //   ]);
+    //   return false;
+    // }
 
     return true;
   }
@@ -1980,6 +1980,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   onSelecionarPessoa(pessoa: any) {
+    
+    console.log('Pessoa selecionada:', pessoa);
+    
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
@@ -1997,6 +2000,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       });
       this.lotacaoGestorProjeto = '';
     }
+
   }
 
   private cadastrarProjeto(
