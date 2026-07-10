@@ -8,6 +8,8 @@ export interface IGestoesCatalogoExterno {
   desafios: Desafio[];
   doAno: number;
   ateAno: number;
+  deAnoMeta: number;      // ano inicial calculado para metas
+  ateAnoMeta: number;     // ano final calculado para metas
 }
 
 export interface Label {

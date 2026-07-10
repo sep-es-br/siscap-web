@@ -1,5 +1,5 @@
 <div class="h-100" *ngIf="loading || isLoadingPessoas">
-  <loading-spinner></loading-spinner>
+  <loading-spinner [textoProcessando]="textoSpinner"></loading-spinner>
 </div>
 
 <div class="row" *ngIf="!loading">
@@ -21,7 +21,7 @@
   </div>
 </div>
 
-<main class="d-flex flex-column flex-xl-row justify-content-end">
+<main *ngIf="!loading" class="d-flex flex-column flex-xl-row justify-content-end">
   <div ngbAccordion *ngIf="statusSteps" class="align-self-start">
     <div ngbAccordionItem [collapsed]="isMobile ? accordionCollapsed : false">
       <h4 ngbAccordionHeader class="d-xl-none">
@@ -448,7 +448,8 @@
             <div id="parecerAtual" class="collapse show" aria-labelledby="parecerTituloAtual">
               <div class="card-body mb-4">
                 <siscap-projeto-parecer [projetoForm]="projetoForm" [statusProjeto]="statusProjeto"
-                  [lotacaoUsuario]="lotacaoUsuario" [pareceresProjeto]="pareceresProjeto" class="mb-4">
+                  [lotacaoUsuario]="lotacaoUsuario" [pareceresProjeto]="pareceresProjeto"
+                  (arquivoParecerChange)="arquivoParecerSelecionado = $event" class="mb-4">
                 </siscap-projeto-parecer>
               </div>
             </div>
@@ -499,6 +500,18 @@
                         mapSubUser[parecer.usuarioFezEnvioParecer]
                         }}</span>
                     </div>
+
+                    <div class="col-12 mt-3">
+                      <button type="button" 
+                        class="btn btn-link p-0 
+                        text-success 
+                        fw-semibold text-decoration-none" 
+                        style="font-size:14px;"
+                        (click)="baixarPdfAnexo(parecer.id)" [disabled]="!parecerPossuiAnexo(parecer)" >
+                        <i class="fas fa-download"></i> Baixar parecer
+                      </button>
+                    </div>
+
                   </div>
                 </ng-container>
 

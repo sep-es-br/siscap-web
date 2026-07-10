@@ -116,11 +116,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public tiposPapelOpcoesVisiveis: IOpcoesDropdown[] = [];
   public equipeCaptacao: IEquipe[] = [];
 
-  public nomeUsuario : string = '';
+  public nomeUsuario: string = '';
   public lotacaoPrioritariaUsuario: string = '';
 
-public projetoTooltip: Record<string, string> =
-      COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
+  public projetoTooltip: Record<string, string> =
+    COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
@@ -143,13 +143,13 @@ public projetoTooltip: Record<string, string> =
     return this.statusProgramaAtual === StatusPrograma.ELABORACAO;
   }
 
-    accordionCollapsed = true;
-    isMobile = window.innerWidth < 1200;
+  accordionCollapsed = true;
+  isMobile = window.innerWidth < 1200;
 
-    @HostListener('window:resize')
-    onResize() {
-      this.isMobile = window.innerWidth < 1200;
-    }
+  @HostListener('window:resize')
+  onResize() {
+    this.isMobile = window.innerWidth < 1200;
+  }
 
   constructor(
     public valorService: ValorService,
@@ -167,27 +167,27 @@ public projetoTooltip: Record<string, string> =
     private readonly _projetosService: ProjetosService
   ) {
 
-      this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
-        this.executarAcaoBreadcrumb(acao)
-      );
+    this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
+      this.executarAcaoBreadcrumb(acao)
+    );
 
   }
 
   ngOnInit(): void {
     this._pessoasService.buscarTodosAgentesPublicosGoves()
-    .subscribe({
-          next: () => {
-            this._agentesCache$ = this._pessoasService.buscarAgentesPorTermo('').pipe(shareReplay(1))
-          },
-          error: (err) =>
-            console.error(
-              'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
-              err
-            ),
-        });
+      .subscribe({
+        next: () => {
+          this._agentesCache$ = this._pessoasService.buscarAgentesPorTermo('').pipe(shareReplay(1))
+        },
+        error: (err) =>
+          console.error(
+            'Erro ao carregar em cache lista de todos agentes públicos ligados ao Governo :',
+            err
+          ),
+      });
 
     forkJoin({
-      organizacoesOpcoes:  this._opcoesDropdownService.getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria),
+      organizacoesOpcoes: this._opcoesDropdownService.getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria),
       pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
       tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
       projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
@@ -207,7 +207,7 @@ public projetoTooltip: Record<string, string> =
         this.projetosPropostosOpcoes = projetosPropostosOpcoes;
         this.programasOpcoes = programasOpcoes;
         // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
-        this.tiposValorOpcoes = tiposValorOpcoes.filter( (tipoValor) => tipoValor.id <= 3 );
+        this.tiposValorOpcoes = tiposValorOpcoes.filter((tipoValor) => tipoValor.id <= 3);
 
 
         this.tiposPapelOpcoes = tiposPapelOpcoes;
@@ -223,19 +223,19 @@ public projetoTooltip: Record<string, string> =
         this.nomeUsuario = this._usuarioService.usuarioPerfil.nome;
         this.lotacaoPrioritariaUsuario = this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
 
-
         this._programasService.idPrograma$.pipe(
           takeUntil(this._destroy$),
           switchMap(idPrograma => idPrograma > 0 ? this._programasService.getById(idPrograma) : of(undefined))
         ).subscribe(
           programa => {
 
+            // console.log(' response byId programa : ', programa);
+
             const programaModel = programa && new ProgramaModel(programa);
 
             this.iniciarForm(programaModel);
 
-            if(programa) {
-              // console.log(' response byId programa : ', response);
+            if (programa) {
 
               this.programaAtual = programa;
 
@@ -245,7 +245,7 @@ public projetoTooltip: Record<string, string> =
                 h => gerarStepProgramaStatus(h.status, h, statushistorico)
               )
 
-              if(![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel!.statusPrograma) ){
+              if (![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel!.statusPrograma)) {
                 const caminhoPerfeito = [
                   StatusPrograma.ELABORACAO,
                   StatusPrograma.AGUARDANDO_ASSINATURAS,
@@ -253,7 +253,7 @@ public projetoTooltip: Record<string, string> =
                   StatusPrograma.AUTUADO
                 ]
 
-                caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel!.statusPrograma)+1).forEach(
+                caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel!.statusPrograma) + 1).forEach(
                   status => {
                     this.statusSteps?.push(gerarStepProgramaStatus(status, undefined, statushistorico))
                   }
@@ -276,13 +276,13 @@ public projetoTooltip: Record<string, string> =
               this.equipeCaptacao = programaModel!.equipeCaptacao;
             } else {
 
-                this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                  this._programasService.gerarBotoesAcaoFormulario({
-                    deveExibirBotaoSalvar: true,
-                    deveExibirBotaoSolicitarAutorizacao: false,
-                    deveExibirBotaoAutuar: false,
-                  })
-                );
+              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+                this._programasService.gerarBotoesAcaoFormulario({
+                  deveExibirBotaoSalvar: true,
+                  deveExibirBotaoSolicitarAutorizacao: false,
+                  deveExibirBotaoAutuar: false,
+                })
+              );
 
             }
 
@@ -368,11 +368,11 @@ public projetoTooltip: Record<string, string> =
         orgaosEnvolvidosList.patchValue([
           ...orgaosEnvolvidosList.value,
           ...(this.orgaosSelecionados.some(orgaoOpt => orgaoOpt.id === projeto.idOrganizacao)
-                ? []
-                : [projeto.idOrganizacao])
+            ? []
+            : [projeto.idOrganizacao])
         ]);
 
-        for(let equipePessoa of projeto.equipeElaboracao){
+        for (let equipePessoa of projeto.equipeElaboracao) {
           const jaExiste =
             this.equipeService.equipeFormArray.value.some(
               (membro) =>
@@ -407,24 +407,24 @@ public projetoTooltip: Record<string, string> =
     setTimeout(() => (this.idProjetoProposto = null), 0);
   }
 
-  public getIcon(status: IStep<StatusPrograma>) : string | undefined {
+  public getIcon(status: IStep<StatusPrograma>): string | undefined {
 
-    if(status.isInativo()) return "fa-regular fa-clock"
+    if (status.isInativo()) return "fa-regular fa-clock"
 
-    if(status.isAtual()) return "pi pi-refresh";
+    if (status.isAtual()) return "pi pi-refresh";
 
-    if(status.isFinalizado()) return "fa-solid " + (status.positivo ? 'check-icon fa-check' : 'refused-icon fa-xmark')
+    if (status.isFinalizado()) return "fa-solid " + (status.positivo ? 'check-icon fa-check' : 'refused-icon fa-xmark')
 
     return undefined;
   }
 
-  public getColor(status: IStep<StatusPrograma>) : string | undefined {
+  public getColor(status: IStep<StatusPrograma>): string | undefined {
 
-    if(status.isInativo()) return "gray"
+    if (status.isInativo()) return "gray"
 
-    if(status.isAtual()) return "orange";
+    if (status.isAtual()) return "orange";
 
-    if(status.isFinalizado()) return status.positivo ? "green" : "red";
+    if (status.isFinalizado()) return status.positivo ? "green" : "red";
 
     return undefined;
 
@@ -794,7 +794,7 @@ public projetoTooltip: Record<string, string> =
     // Botão de Autuar deve aparecer somente se o Programa já foi Assinado
 
     const deveExibirBotaoSolicitarAutorizacao = [StatusPrograma.AGUARDANDO_ASSINATURAS].includes(programa.statusPrograma)
-                                              || ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
+      || ![StatusPrograma.ASSINADO, StatusPrograma.AUTUADO, StatusPrograma.RECUSADO].includes(programa.statusPrograma);
     // Botão de Solicitar Autorizações não deve aparecer se o Programa já foi Assinado, Autuado ou Recusado
 
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
@@ -820,18 +820,32 @@ public projetoTooltip: Record<string, string> =
   }
 
   private dispararModalConfirmarSolicitarAutorizacao() {
+
     const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
       centered: true,
     });
+    
+
+    const assinantes = this.programaAtual.programaAssinantesEdocsDto?.map( (assinante) => ({
+      titulo: assinante.nomeAssinante,
+      descricao: assinante.papelAssinante
+    }));
 
     modalRef.componentInstance.config = {
+
       titulo: 'Solicitar Autorização',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal: 'Esta ação solicitará por email autorização para o programa aos gestores',
+
+      itensDetalhe: {
+        titulo: 'Assinantes',
+        linhas: assinantes || []
+      }
+
     };
 
     modalRef.result.then(
-      (resolve) => {},
+      (resolve) => { },
       (result) => {
         if (result === 'confirmar') {
           this.loading = true;
@@ -879,12 +893,12 @@ public projetoTooltip: Record<string, string> =
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal:
         'Esta ação realizará a autuação de um processo no E-Docs para o programa de captação ' +
-        `${this.programaAtual.titulo}, utilizando a sua identidade ${ this.nomeUsuario }(${ this.lotacaoPrioritariaUsuario })` ,
+        `${this.programaAtual.titulo}, utilizando a sua identidade ${this.nomeUsuario}(${this.lotacaoPrioritariaUsuario})`,
       textoPrincipalCustomClass: 'fw-bold',
     };
 
     modalRef.result.then(
-      (resolve) => {},
+      (resolve) => { },
       (result) => {
         if (result === 'confirmar') {
           this.loading = true;

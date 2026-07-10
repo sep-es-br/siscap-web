@@ -41,16 +41,14 @@
                 <div formArrayName="metasIndicadorProjeto">
                     <div class="meta-years" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="year-meta"
-                            *ngFor="let _ of [].constructor((((gestao?.ateAno ?? 0) - (gestao?.doAno ?? 0)) + 1)); let i = index"
+                            *ngFor="let _ of [].constructor((((gestao?.ateAnoMeta ?? 0) - (gestao?.deAnoMeta ?? 0)) + 1)); let i = index"
                             [formGroupName]="i">
                             <div class="year-label" style="font-size:11px; margin-bottom:4px;">
-                                <validation-message [control]="getMetaProjetoControl(i)"> {{ (gestao?.doAno ?? 0) + i }}
+                                <validation-message [control]="getMetaProjetoControl(i)"> {{ (gestao?.deAnoMeta ?? 0) + i }}
                                 </validation-message>
                             </div>
-                            <input type="number" pInputText inputmode="numeric" formControlName="valorMeta"
-                                style="width:100%; border-radius:6px;" 
-                                (keydown)="bloquearCaracteresInvalidos($event)"
-                                (paste)="bloquearColagemInvalida($event)" />
+                            <input type="text" pInputText inputmode="text" formControlName="valorMeta"
+                                style="width:100%; border-radius:6px;" />
                         </div>
                     </div>
                 </div>

@@ -101,8 +101,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
       )
       .subscribe((indicadores) => {
 
-
-
         this.indicadoresBI = indicadores;
         this.indicadoresFiltrados = indicadores;
         this.loading = false;
@@ -308,7 +306,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
                 anoMeta: [meta.anoMeta],
                 valorMeta: [
                   meta.valorMeta ?? null,
-                  [Validators.required, Validators.min(0.01)]
+                  [Validators.required]
                 ]
               })
             )
@@ -541,8 +539,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private montarMetasProjetoVazias(): IMetaIndicador[] {
 
-    const doAno = this.gestao?.doAno ?? 0;
-    const ateAno = this.gestao?.ateAno ?? 0;
+    const doAno = this.gestao?.deAnoMeta ?? 0;
+    const ateAno = this.gestao?.ateAnoMeta ?? 0;
 
     if (!doAno || !ateAno || ateAno < doAno) {
       return [];
