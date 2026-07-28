@@ -26,6 +26,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ProgressoButtonComponent } from '../../shared/components/progresso-button/progresso-button.component';
 import { ProjetoIndicadoresComponent } from "../projeto-indicadores/projeto-indicadores.component";
 import { IndicadorOdsComponent } from '../projeto-indicadores/indicador-ods/indicador-ods.component';
+import { ProjetoPpaLoaComponent } from './projeto-ppa-loa/projeto-ppa-loa.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { IndicadorOdsComponent } from '../projeto-indicadores/indicador-ods/indi
     TooltipModule,
     ProjetoIndicadoresComponent,
     ProgressoButtonComponent,
-    IndicadorOdsComponent
+    IndicadorOdsComponent,
+    ProjetoPpaLoaComponent
 ],
   exports: [
     ProjetosComponent,

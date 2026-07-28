@@ -1,11 +1,9 @@
 
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgxMaskDirective } from 'ngx-mask';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { IParecer, IParecerAnexo } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
@@ -13,7 +11,6 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { LotacaoUsuarioEnum } from '../../../core/enums/lotacao-usuario.enum';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
 import { Jodit } from 'jodit';
-import { paste } from 'jodit/types/plugins/paste/paste';
 import { ToastService } from '../../../core/services/toast/toast.service';
 @Component({
   selector: 'siscap-projeto-parecer',

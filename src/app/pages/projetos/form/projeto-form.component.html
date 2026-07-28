@@ -122,6 +122,15 @@
             </button>
           </li>
 
+          <li class="nav-item">
+            <button class="nav-link" id="nav-planejamento" data-bs-target="#tab-planejamento" type="button"
+              [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('planejamento'),}" >
+              <form-warning-tooltip *ngIf="deveComplementarCampo('planejamento')" [texto]="mensagemComplementarCampo('planejamento')"></form-warning-tooltip>
+              Planejamento
+              <span *ngIf="getControl('indicadoresProjeto').invalid && getControl('indicadoresProjeto').touched" class="text-danger"></span>
+            </button>
+          </li>
+
           <li class="nav-item" role="presentation" *ngIf="aguardandoParecer() || this.pareceresProjeto.length > 0">
             <button class="nav-link" [ngClass]="{'active': aguardandoParecer()}" id="nav-pareceres" data-bs-toggle="tab"
               data-bs-target="#tab-pareceres" role="tab" aria-controls="pareceres" aria-selected="true">
@@ -424,6 +433,10 @@
         <div class="tab-pane fade" id="tab-ods-indicadores" role="tabpanel" aria-labelledby="nav-indicador-ods">
           <siscap-indicador-ods [formProjeto]="projetoForm" [isModoEdicao]="isModoEdicao" [isSubcap]="isSubcapGeoc()"
             [statusProjeto]="statusProjeto"></siscap-indicador-ods>
+        </div>
+
+        <div class="tab-pane fade" id="tab-ods-ppa-loa" role="tabpanel" aria-labelledby="nav-indicador-ppa-loa">
+          <siscap-projeto-ppa-loa></siscap-projeto-ppa-loa>
         </div>
 
         <div class="tab-pane fade" [ngClass]="{'show active': aguardandoParecer()}"

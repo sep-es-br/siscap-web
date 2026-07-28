@@ -31,8 +31,6 @@ import {
   interval,
   takeUntil,
   filter,
-  startWith,
-  mergeAll,
   forkJoin,
   throwError,
 } from 'rxjs';
@@ -83,7 +81,6 @@ import {
 } from '../../../core/enums/breadcrumb.enum';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
-import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
@@ -102,7 +99,6 @@ import {
   IEstruturaCamposComplementar,
   IEstruturaCamposComplementarProjeto,
 } from '../../../core/interfaces/estrutura.campo.complementar.dic.interface';
-import { ContextoIntegracaoEdocsEnum } from '../../../core/enums/contexto-integracao-edocs.enum';
 import { IParecer } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
 import { StatusParecerEnum } from '../../../core/enums/status-parecer.enum';
