@@ -123,7 +123,10 @@
           </li>
 
           <li class="nav-item">
-            <button class="nav-link" id="nav-planejamento" data-bs-target="#tab-planejamento" type="button"
+            <button class="nav-link" id="nav-planejamento" data-bs-target="#tab-ods-ppa-loa" type="button"
+              (click)="irParaPlanejamento($event)" [ngClass]="{
+                    'alerta-complementar-campo': deveComplementarCampo('ods'),
+                  }"
               [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('planejamento'),}" >
               <form-warning-tooltip *ngIf="deveComplementarCampo('planejamento')" [texto]="mensagemComplementarCampo('planejamento')"></form-warning-tooltip>
               Planejamento

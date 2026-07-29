@@ -3269,6 +3269,35 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.abrirAba('nav-indicadores');
 
   }
+  
+  public irParaPlanejamento(event: MouseEvent): void {
+
+    event.preventDefault();
+
+    if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
+      if (!this.validarAbaDic()) {
+        this._toastService.showToast('warning', 'Erro ao avançar', [
+          'Verifique os campos obrigatórios antes de continuar.',
+        ]);
+        return;
+      }
+    }
+
+    // const campoOds = this.projetoForm.get('impactos');
+    // campoOds?.clearValidators();
+    // campoOds?.updateValueAndValidity();
+    // if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
+    //   if (!this.validarFormulario(this.projetoForm)) {
+    //     this.abrirAba('nav-indicadores');
+    //     return;
+    //   }
+    // }
+    // campoOds?.setValidators([Validators.required]);
+    // campoOds?.updateValueAndValidity();
+
+    this.abrirAba('nav-planejamento');
+
+  }
 
   public irParaOds(event: MouseEvent): void {
 
