@@ -1,1 +1,229 @@
-<p>projeto-ppa-loa works!</p>
+<section class="planejamento-section">
+
+  <!-- Cabeçalho e filtros -->
+  <div class="filter-menu-card">
+    <div class="badges-container">
+
+      <div class="gestao-badge">
+        <span class="gestao-label">
+          {{ tituloPlanejamento }}
+        </span>
+
+        <span class="gestao-year">
+          {{ periodoPlanejamento }}
+        </span>
+      </div>
+
+      <div
+        class="filtros-aplicados"
+        *ngIf="filtrosAplicados.length > 0"
+      >
+        <div
+          class="filtro-chip"
+          *ngFor="let filtro of filtrosAplicados; trackBy: trackByFiltro"
+        >
+          <span class="filtro-chip-label">
+            {{ filtro.label }}:
+          </span>
+
+          <span>
+            {{ filtro.valor }}
+          </span>
+
+          <button
+            *ngIf="!somenteLeitura"
+            type="button"
+            class="filtro-chip-remover"
+            title="Remover filtro"
+            aria-label="Remover filtro"
+            (click)="onRemoverFiltro(filtro)"
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="filtros-container">
+      <button
+        type="button"
+        class="filtros-btn"
+        [disabled]="somenteLeitura"
+        (click)="onAbrirFiltros()"
+      >
+        <span>Filtros</span>
+        <span class="filtros-btn-icon">▽</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Ações selecionadas -->
+  <div class="planejamento-card">
+
+    <header class="planejamento-card-header">
+      <h2 class="planejamento-card-title">
+        Ações do planejamento
+      </h2>
+
+      <span class="planejamento-count-badge">
+        {{ quantidadeAcoes }}
+        {{ quantidadeAcoes === 1 ? 'adicionada' : 'adicionadas' }}
+      </span>
+    </header>
+
+    <!-- Estado vazio -->
+    <div
+      class="planejamento-empty-state"
+      *ngIf="quantidadeAcoes === 0"
+    >
+      <div class="planejamento-empty-icon">
+        📋
+      </div>
+
+      <div class="planejamento-empty-title">
+        Nenhuma ação selecionada
+      </div>
+
+      <div class="planejamento-empty-description">
+        Utilize os filtros acima para adicionar as ações do planejamento
+        ao projeto.
+      </div>
+    </div>
+
+    <!-- Lista de ações -->
+    <div
+      class="planejamento-cards-container"
+      *ngIf="quantidadeAcoes > 0"
+    >
+      <article
+        class="acao-planejamento-card"
+        *ngFor="
+          let acao of acoesPlanejamento;
+          trackBy: trackByAcao
+        "
+      >
+        <header class="acao-planejamento-header">
+
+          <div class="acao-planejamento-identificacao">
+            <span
+              class="acao-planejamento-codigo"
+              *ngIf="acao.codigo"
+            >
+              {{ acao.codigo }}
+            </span>
+
+            <span
+              class="acao-planejamento-tipo"
+              *ngIf="acao.tipo"
+            >
+              {{ acao.tipo }}
+            </span>
+          </div>
+
+          <button
+            *ngIf="!somenteLeitura"
+            type="button"
+            class="acao-remover-btn"
+            title="Remover ação"
+            aria-label="Remover ação do planejamento"
+            (click)="onRemoverAcao(acao)"
+          >
+            &times;
+          </button>
+
+        </header>
+
+        <h3 class="acao-planejamento-titulo">
+          {{ acao.titulo }}
+        </h3>
+
+        <p
+          class="acao-planejamento-descricao"
+          *ngIf="acao.descricao"
+        >
+          {{ acao.descricao }}
+        </p>
+
+        <div class="acao-planejamento-dados">
+
+          <div
+            class="acao-planejamento-campo"
+            *ngIf="acao.programa"
+          >
+            <span class="acao-planejamento-label">
+              Programa
+            </span>
+
+            <span class="acao-planejamento-valor">
+              {{ acao.programa }}
+            </span>
+          </div>
+
+          <div
+            class="acao-planejamento-campo"
+            *ngIf="acao.objetivoEstrategico"
+          >
+            <span class="acao-planejamento-label">
+              Objetivo estratégico
+            </span>
+
+            <span class="acao-planejamento-valor">
+              {{ acao.objetivoEstrategico }}
+            </span>
+          </div>
+
+          <div
+            class="acao-planejamento-campo"
+            *ngIf="acao.unidadeResponsavel"
+          >
+            <span class="acao-planejamento-label">
+              Unidade responsável
+            </span>
+
+            <span class="acao-planejamento-valor">
+              {{ acao.unidadeResponsavel }}
+            </span>
+          </div>
+
+          <div
+            class="acao-planejamento-campo"
+            *ngIf="acao.produto"
+          >
+            <span class="acao-planejamento-label">
+              Produto ou entrega
+            </span>
+
+            <span class="acao-planejamento-valor">
+              {{ acao.produto }}
+            </span>
+          </div>
+
+        </div>
+      </article>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="planejamento-footer">
+
+      <label
+        class="nao-previsto-ppa"
+        [class.nao-previsto-ppa-ativo]="naoPrevistoPpa"
+        [class.nao-previsto-ppa-desabilitado]="somenteLeitura"
+      >
+        <input
+          type="checkbox"
+          [checked]="naoPrevistoPpa"
+          [disabled]="somenteLeitura"
+          (change)="onNaoPrevistoPpaChange($event)"
+        />
+
+        <span>
+          Não previsto no PPA {{ periodoPlanejamento }}
+        </span>
+      </label>
+
+    </footer>
+
+  </div>
+</section>

@@ -24,6 +24,7 @@ import { IProjetoIntegracaoEdocsFases } from '../../interfaces/projeto-integraca
 import { IEstruturaCamposComplementar } from '../../interfaces/estrutura.campo.complementar.dic.interface';
 import { FilesService } from '../files/files.service';
 import { LotacaoUsuarioEnum } from '../../enums/lotacao-usuario.enum';
+import { IOpcaoPlanejamento, IPeriodoPlanejamento } from '../../../pages/projetos/projeto-ppa-loa/filtro-acoes/filtro-acoes.component';
 
 @Injectable({
   providedIn: 'root',
@@ -314,7 +315,7 @@ export class ProjetosService extends BaseHttpService<
   }
 
   public baixarDIC(id: number): Observable<any> {
-    
+
     const downloadURL = `${this._url}/dic/${id}`;
 
     return this.filesService.requestPDF(downloadURL).pipe(
@@ -333,7 +334,7 @@ export class ProjetosService extends BaseHttpService<
     //     }
     //   },
     // });
-    
+
   }
 
   public autuarProjetoEdocs(
@@ -404,6 +405,30 @@ export class ProjetosService extends BaseHttpService<
     return this._http.post<void>(
       `${this._url}/${id}/reenviar-email-pedido-parecer`,
       {}
+    );
+  }
+
+  listarAcoesPorProgramas(idPeriodo: number, idsProgramas: number[]): Observable<IOpcaoPlanejamento[]> {
+     return this._http.get<IOpcaoPlanejamento[]>(
+      `${this._url}/planejamento/acoes/`
+    );
+  }
+
+  listarProgramasPorAreas(idPeriodo: number, idsAreas: number[]): Observable<IOpcaoPlanejamento[]> {
+    return this._http.get<IOpcaoPlanejamento[]>(
+      `${this._url}/planejamento/programas/`
+    );
+  }
+
+  listarAreasTematicas(id: any): Observable<IOpcaoPlanejamento[]> {
+    return this._http.get<IOpcaoPlanejamento[]>(
+      `${this._url}/planejamento/areastematicas/`
+    );
+  }
+
+  buscarPeriodoPlanejamentoVigente(): Observable<IPeriodoPlanejamento> {
+    return this._http.get<IPeriodoPlanejamento>(
+      `${this._url}/planejamento/periodos/vigente`
     );
   }
 
