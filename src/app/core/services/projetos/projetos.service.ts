@@ -24,7 +24,7 @@ import { IProjetoIntegracaoEdocsFases } from '../../interfaces/projeto-integraca
 import { IEstruturaCamposComplementar } from '../../interfaces/estrutura.campo.complementar.dic.interface';
 import { FilesService } from '../files/files.service';
 import { LotacaoUsuarioEnum } from '../../enums/lotacao-usuario.enum';
-import { IOpcaoPlanejamento, IPeriodoPlanejamento } from '../../../pages/projetos/projeto-ppa-loa/filtro-acoes/filtro-acoes.component';
+import { IOpcaoPlanejamento, IPeriodoPlanejamento } from '../../../pages/projetos/projeto-ppa-loa/ppa-loa-filtro/filtro-acoes.component';
 
 @Injectable({
   providedIn: 'root',

@@ -46,7 +46,7 @@ export interface IFiltroPlanejamento {
 }
 
 @Component({
-  selector: 'siscap-filtro-acoes',
+  selector: 'siscap-filtro-ppa-loa',
   standalone: true,
   imports: [
     CommonModule,

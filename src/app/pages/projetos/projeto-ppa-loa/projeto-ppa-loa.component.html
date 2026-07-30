@@ -4,19 +4,19 @@
   <div class="card">
     <div class="card-header">
       <div class="badges-container">
-        <siscap-planejamento-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value" [type]="chip.type"
+        <siscap-ppa-loa-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value" [type]="chip.type"
           [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)"
           [somenteLeitura]="somenteLeitura">
-        </siscap-planejamento-chip>
+        </siscap-ppa-loa-chip>
       </div>
       <p-button styleClass="btn-filtros" (click)="showModal = true" [disabled]="somenteLeitura">
         <span>Filtros</span>
         <span style="font-size:14px">▽</span>
       </p-button>
     </div>
-    <!-- <app-filtro-indicadores *ngIf="showModal" [gestao]="gestao" [desafios]="gestao?.desafios || []"
+    <siscap-filtro-ppa-loa *ngIf="showModal" [gestao]="gestao" [desafios]="gestao?.desafios || []"
       [filtroAtual]="currentFilter" (apply)="onApply($event)" (close)="showModal = false" (restaurar)="onRestaurar()"
-      [somenteLeitura]="somenteLeitura"></app-filtro-indicadores> -->
+      [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
   </div>
 
   <!-- Cabeçalho e filtros -->
