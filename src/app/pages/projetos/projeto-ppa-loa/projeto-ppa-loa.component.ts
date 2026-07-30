@@ -7,7 +7,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { Button } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { PpaLoaChipComponent } from './ppa-loa-chip/ppa-loa-chip.component';
-import { FiltroAcoesComponent } from './ppa-loa-filtro/filtro-acoes.component';
+import { FiltroAcoesComponent, IPeriodoPlanejamento } from './ppa-loa-filtro/filtro-acoes.component';
+import { Subscription } from 'rxjs';
+import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -48,9 +50,12 @@ export class ProjetoPpaLoaComponent {
 
   chips: any[] = [];
 
+  private carregamentoInicialSubscription?: Subscription;
+
   tituloPlanejamento: any;
-  periodoPlanejamento: any;
+  periodoPlanejamento: IPeriodoPlanejamento | undefined;
   acoesPlanejamento: PlanejamentoAcao[] = [];
+
   filtrosPlanejamento: PlanejamentoFiltroAplicado[] = [];
 
   naoPrevistoPpa = false;
@@ -58,14 +63,21 @@ export class ProjetoPpaLoaComponent {
   quantidadeAcoes: number = 0;
   filtrosAplicados: any[] = [];
 
-  currentFilter: any = {};
+  currentFilter: PlanejamentoFiltroAplicado[] = [];
 
   trackByFiltro: TrackByFunction<any> = (_, filtro) => filtro.id;
   trackByAcao: TrackByFunction<PlanejamentoAcao> = (_, acao) => acao.id;
 
   showModal: boolean = false;
+  carregandoDadosIniciais: boolean = false;
 
-  constructor(private readonly _ngbModalService: NgbModal) { }
+  constructor(private readonly _ngbModalService: NgbModal,
+    private readonly _projetosService: ProjetosService
+  ) { }
+
+  ngOnInit(): void {
+    this.initBaseChip();
+  }
 
   abrirModalFiltrosPlanejamento(modalTemplateRef: any): void {
     const modalRef = this._ngbModalService.open(modalTemplateRef, {
@@ -114,14 +126,39 @@ export class ProjetoPpaLoaComponent {
   }
 
   initBaseChip() {
-    this.chips = [
-      {
-        label: 'PLANEJAMENTO',
-        value: '-',
-        type: 'base',
-        removable: false,
-      },
-    ];
+
+    this.carregamentoInicialSubscription?.unsubscribe();
+
+    this.carregandoDadosIniciais = true;
+
+    // this.carregamentoInicialSubscription =
+    //   this._projetosService
+    //     .buscarPeriodoPpaVigente()
+
+    this._projetosService
+      .buscarPeriodoPpaVigente()
+      .subscribe({
+        next: (periodo) => {
+
+          this.periodoPlanejamento = periodo;
+
+          console.log('Período recebido:', periodo);
+
+          this.chips = [
+            {
+              label: 'PLANEJAMENTO',
+              value: periodo.descricao || '-',
+              type: 'base',
+              removable: false,
+            },
+          ];
+      
+        },
+        error: (erro) => {
+          console.error('Erro ao buscar período:', erro);
+        }
+      });
+
   }
 
   onChipClick(chip: any) {

@@ -122,7 +122,7 @@ export class FiltroAcoesComponent
 
   /**
    * Inicializa o período fixo e carrega a lista inicial
-   * de áreas temáticas.
+   * de funcoes.
    */
   private carregarDadosIniciais(): void {
     
@@ -132,7 +132,7 @@ export class FiltroAcoesComponent
 
     this.carregamentoInicialSubscription =
       this._projetosService
-        .buscarPeriodoPlanejamentoVigente()
+        .buscarPeriodoPpaVigente()
         .pipe(
           switchMap(periodo => {
 
@@ -140,7 +140,7 @@ export class FiltroAcoesComponent
             this.filtro.idPeriodoPlanejamento = periodo.id;
 
             return this._projetosService
-              .listarAreasTematicas(periodo.id);
+              .listarFuncoesPpaLoa(periodo.id);
 
           }),
           finalize(() => {
@@ -247,7 +247,7 @@ export class FiltroAcoesComponent
 
     this.programasSubscription =
       this._projetosService
-        .listarProgramasPorAreas(
+        .listarProgramasPorFuncoes(
           idPeriodo,
           idsAreas
         )

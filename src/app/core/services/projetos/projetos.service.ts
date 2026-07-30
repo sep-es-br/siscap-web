@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
-import { BehaviorSubject, filter, Observable, Subject, tap } from 'rxjs';
+import { BehaviorSubject, filter, Observable, of, Subject, tap } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -410,26 +410,38 @@ export class ProjetosService extends BaseHttpService<
 
   listarAcoesPorProgramas(idPeriodo: number, idsProgramas: number[]): Observable<IOpcaoPlanejamento[]> {
      return this._http.get<IOpcaoPlanejamento[]>(
-      `${this._url}/planejamento/acoes/`
+      `${this._url}/ppaloa/acoes/`
     );
   }
 
-  listarProgramasPorAreas(idPeriodo: number, idsAreas: number[]): Observable<IOpcaoPlanejamento[]> {
+  listarProgramasPorFuncoes(idPeriodo: number, idsFuncoes: number[]): Observable<IOpcaoPlanejamento[]> {
     return this._http.get<IOpcaoPlanejamento[]>(
-      `${this._url}/planejamento/programas/`
+      `${this._url}/ppaloa/programas/`
     );
   }
 
-  listarAreasTematicas(id: any): Observable<IOpcaoPlanejamento[]> {
+  listarFuncoesPpaLoa(id: any): Observable<IOpcaoPlanejamento[]> {
     return this._http.get<IOpcaoPlanejamento[]>(
-      `${this._url}/planejamento/areastematicas/`
+      `${this._url}/ppaloa/funcoes/`
     );
   }
 
-  buscarPeriodoPlanejamentoVigente(): Observable<IPeriodoPlanejamento> {
+  buscarPeriodoPpaVigente(): Observable<IPeriodoPlanejamento> {
+    const usarMock = true;
+  
+    if (usarMock) {
+      return of({
+        id: 1,
+        // anoInicio: 2024,
+        // anoFim: 2027,
+        descricao: '2024-2027'
+      } as IPeriodoPlanejamento);
+    }
+  
     return this._http.get<IPeriodoPlanejamento>(
-      `${this._url}/planejamento/periodos/vigente`
+      `${this._url}/ppaloa/periodos/vigente`
     );
+    
   }
 
 }
