@@ -7,9 +7,10 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { Button } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { PpaLoaChipComponent } from './ppa-loa-chip/ppa-loa-chip.component';
-import { FiltroAcoesComponent, IPeriodoPlanejamento } from './ppa-loa-filtro/filtro-acoes.component';
-import { Subscription } from 'rxjs';
+import { FiltroAcoesComponent, IFiltroPlanejamento, IPeriodoPlanejamento } from './ppa-loa-filtro/filtro-acoes.component';
+import { finalize, Subscription } from 'rxjs';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
+import { ToastService } from '../../../core/services/toast/toast.service';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -63,16 +64,18 @@ export class ProjetoPpaLoaComponent {
   quantidadeAcoes: number = 0;
   filtrosAplicados: any[] = [];
 
-  currentFilter: PlanejamentoFiltroAplicado[] = [];
+  currentFilter: Partial<IFiltroPlanejamento> | null = null;
 
   trackByFiltro: TrackByFunction<any> = (_, filtro) => filtro.id;
   trackByAcao: TrackByFunction<PlanejamentoAcao> = (_, acao) => acao.id;
 
   showModal: boolean = false;
   carregandoDadosIniciais: boolean = false;
+  loading: boolean = false;
 
   constructor(private readonly _ngbModalService: NgbModal,
-    private readonly _projetosService: ProjetosService
+    private readonly _projetosService: ProjetosService,
+    private readonly _toastService: ToastService,
   ) { }
 
   ngOnInit(): void {
@@ -142,8 +145,6 @@ export class ProjetoPpaLoaComponent {
 
           this.periodoPlanejamento = periodo;
 
-          console.log('Período recebido:', periodo);
-
           this.chips = [
             {
               label: 'PLANEJAMENTO',
@@ -152,7 +153,11 @@ export class ProjetoPpaLoaComponent {
               removable: false,
             },
           ];
-      
+
+          this.currentFilter = {
+            idPeriodoPlanejamento: periodo.id
+          };
+
         },
         error: (erro) => {
           console.error('Erro ao buscar período:', erro);
@@ -192,13 +197,18 @@ export class ProjetoPpaLoaComponent {
 
   onApply(filter: any): void {
 
-    // this.loading = true
+    this.loading = true
 
-    // this.currentFilter = structuredClone(filter);
+    this.currentFilter = structuredClone(filter);
 
-    // this.atualizarChipsFiltros();
+    this.atualizarChipsFiltros();
 
     this.showModal = false;
+
+    if(this.currentFilter?.idsAcoes?.length == 0)
+      return
+
+    this.carregarAcoesSelecionadas(this.currentFilter?.idsAcoes ?? []);
 
     // const filtroFormatado: IFiltroIndicador = {
     //   idGestao: filter.idGestao,
@@ -212,6 +222,83 @@ export class ProjetoPpaLoaComponent {
     // };
 
     // this.filterService.setFilter(filtroFormatado);
+
+  }
+
+  private atualizarChipsFiltros(): void {
+
+    this.chips = [
+
+      {
+        label: 'PLANEJAMENTO',
+        value: this.periodoPlanejamento?.descricao || '-',
+        type: 'base',
+        removable: false,
+      },
+
+      ...(this.currentFilter?.chips?.funcoes ?? []).map((funcao: any) => ({
+        label: 'FUNCAO',
+        value: funcao.nome,
+        type: 'filter',
+        removable: true,
+        idDesafio: funcao.id
+      })),
+
+      ...(this.currentFilter?.chips?.programas ?? []).map((programa: any) => ({
+        label: 'PROGRAMA',
+        value: programa.nome,
+        type: 'filter',
+        removable: true,
+        idDesafio: programa.id
+      })),
+
+      ...(this.currentFilter?.chips?.acoes ?? []).map((acao: any) => ({
+        label: 'FUNÇÃO',
+        value: acao.nome,
+        type: 'filter',
+        removable: true,
+        idDesafio: acao.id
+      }))
+
+    ];
+
+  }
+
+  private carregarAcoesSelecionadas(
+    chavesAcoes: number[]
+  ): void {
+
+    this.loading = true;
+
+    this._projetosService
+      .buscarDadosAcoes(chavesAcoes)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+        })
+      )
+      .subscribe({
+        next: acoes => {
+          
+          this.acoesPlanejamento = acoes;
+          
+          // this.atualizarAcoesProjeto(chavesAcoes);
+
+          this.quantidadeAcoes = this.acoesPlanejamento.length ?? 0;
+          
+          console.log('Açoes selecionadas :', this.acoesPlanejamento)
+
+        },
+        error: erro => {
+
+          console.error('Erro ao consultar dados de ações no BI:', erro);
+
+          this._toastService.showToast('error', 'Não foi possível consultar os dados das ações selecionadas.');
+
+          this.quantidadeAcoes = 0;
+
+        }
+      });
 
   }
 

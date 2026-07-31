@@ -34,12 +34,12 @@ export interface IChipPlanejamento {
 export interface IFiltroPlanejamento {
   idPeriodoPlanejamento: number | null;
 
-  idsAreasTematicas: number[];
+  idsFuncoes: number[];
   idsProgramas: number[];
   idsAcoes: number[];
 
   chips: {
-    areasTematicas: IChipPlanejamento[];
+    funcoes: IChipPlanejamento[];
     programas: IChipPlanejamento[];
     acoes: IChipPlanejamento[];
   };
@@ -76,7 +76,7 @@ export class FiltroAcoesComponent
 
   periodoPlanejamento: IPeriodoPlanejamento | null = null;
 
-  areasTematicas: IOpcaoPlanejamento[] = [];
+  funcoes: IOpcaoPlanejamento[] = [];
   programas: IOpcaoPlanejamento[] = [];
   acoes: IOpcaoPlanejamento[] = [];
 
@@ -97,10 +97,13 @@ export class FiltroAcoesComponent
   ) {}
 
   ngOnInit(): void {
+
     this.componenteInicializado = true;
 
     this.inicializarFiltro();
+
     this.carregarDadosIniciais();
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -148,17 +151,17 @@ export class FiltroAcoesComponent
           })
         )
         .subscribe({
-          next: areasTematicas => {
+          next: funcoes => {
 
-            this.areasTematicas = areasTematicas ?? [];
+            this.funcoes = funcoes ?? [];
 
-            this.filtro.idsAreasTematicas =
+            this.filtro.idsFuncoes =
               this.manterSomenteIdsValidos(
-                this.filtro.idsAreasTematicas,
-                this.areasTematicas
+                this.filtro.idsFuncoes,
+                this.funcoes
               );
 
-            if (this.filtro.idsAreasTematicas.length > 0) {
+            if (this.filtro.idsFuncoes.length > 0) {
               this.carregarProgramas(true);
             }
 
@@ -169,7 +172,7 @@ export class FiltroAcoesComponent
               erro
             );
 
-            this.areasTematicas = [];
+            this.funcoes = [];
             this.programas = [];
             this.acoes = [];
           }
@@ -178,11 +181,12 @@ export class FiltroAcoesComponent
 
   /**
    * Executado quando o usuário seleciona ou remove
-   * uma Área Temática.
+   * uma Função.
    */
-  onAreasTematicasChange(): void {
-    this.filtro.idsAreasTematicas =
-      this.normalizarIds(this.filtro.idsAreasTematicas);
+  onFuncoesChange(): void {
+
+    this.filtro.idsFuncoes =
+      this.normalizarIds(this.filtro.idsFuncoes);
 
     this.filtro.idsProgramas = [];
     this.filtro.idsAcoes = [];
@@ -190,11 +194,12 @@ export class FiltroAcoesComponent
     this.programas = [];
     this.acoes = [];
 
-    if (this.filtro.idsAreasTematicas.length === 0) {
+    if (this.filtro.idsFuncoes.length === 0) {
       return;
     }
 
     this.carregarProgramas(false);
+
   }
 
   /**
@@ -222,12 +227,11 @@ export class FiltroAcoesComponent
   private carregarProgramas(
     preservarSelecaoAtual: boolean
   ): void {
+
     this.programasSubscription?.unsubscribe();
 
     const idPeriodo = this.filtro.idPeriodoPlanejamento;
-    const idsAreas = this.normalizarIds(
-      this.filtro.idsAreasTematicas
-    );
+    const idsFuncoes = this.normalizarIds(this.filtro.idsFuncoes);
 
     this.programas = [];
     this.acoes = [];
@@ -237,7 +241,7 @@ export class FiltroAcoesComponent
       this.filtro.idsAcoes = [];
     }
 
-    if (idPeriodo == null || idsAreas.length === 0) {
+    if (idPeriodo == null || idsFuncoes.length === 0) {
       this.filtro.idsProgramas = [];
       this.filtro.idsAcoes = [];
       return;
@@ -249,7 +253,7 @@ export class FiltroAcoesComponent
       this._projetosService
         .listarProgramasPorFuncoes(
           idPeriodo,
-          idsAreas
+          idsFuncoes
         )
         .pipe(
           finalize(() => {
@@ -292,6 +296,7 @@ export class FiltroAcoesComponent
             this.filtro.idsAcoes = [];
           }
         });
+
   }
 
   /**
@@ -369,7 +374,7 @@ export class FiltroAcoesComponent
     this.filtro.idPeriodoPlanejamento =
       this.periodoPlanejamento.id;
 
-    if (this.filtro.idsAreasTematicas.length > 0) {
+    if (this.filtro.idsFuncoes.length > 0) {
       this.carregarProgramas(true);
       return;
     }
@@ -404,8 +409,8 @@ export class FiltroAcoesComponent
       idPeriodoPlanejamento:
         this.filtro.idPeriodoPlanejamento,
 
-      idsAreasTematicas: [
-        ...this.filtro.idsAreasTematicas
+      idsFuncoes: [
+        ...this.filtro.idsFuncoes
       ],
 
       idsProgramas: [
@@ -417,8 +422,8 @@ export class FiltroAcoesComponent
       ],
 
       chips: {
-        areasTematicas: [
-          ...this.filtro.chips.areasTematicas
+        funcoes: [
+          ...this.filtro.chips.funcoes
         ],
         programas: [
           ...this.filtro.chips.programas
@@ -443,14 +448,15 @@ export class FiltroAcoesComponent
   }
 
   private inicializarFiltro(): void {
+
     const filtroAtual = this.filtroAtual;
 
     this.filtro = {
       idPeriodoPlanejamento:
         filtroAtual?.idPeriodoPlanejamento ?? null,
 
-      idsAreasTematicas: this.normalizarIds(
-        filtroAtual?.idsAreasTematicas
+      idsFuncoes: this.normalizarIds(
+        filtroAtual?.idsFuncoes
       ),
 
       idsProgramas: this.normalizarIds(
@@ -462,22 +468,24 @@ export class FiltroAcoesComponent
       ),
 
       chips: {
-        areasTematicas: [],
+        funcoes: [],
         programas: [],
         acoes: []
       }
+
     };
+
   }
 
   private criarFiltroVazio(): IFiltroPlanejamento {
     return {
       idPeriodoPlanejamento: null,
-      idsAreasTematicas: [],
+      idsFuncoes: [],
       idsProgramas: [],
       idsAcoes: [],
 
       chips: {
-        areasTematicas: [],
+        funcoes: [],
         programas: [],
         acoes: []
       }
@@ -486,9 +494,9 @@ export class FiltroAcoesComponent
 
   private montarChipsFiltro(): void {
     this.filtro.chips = {
-      areasTematicas: this.obterOpcoesSelecionadas(
-        this.areasTematicas,
-        this.filtro.idsAreasTematicas
+      funcoes: this.obterOpcoesSelecionadas(
+        this.funcoes,
+        this.filtro.idsFuncoes
       ),
 
       programas: this.obterOpcoesSelecionadas(

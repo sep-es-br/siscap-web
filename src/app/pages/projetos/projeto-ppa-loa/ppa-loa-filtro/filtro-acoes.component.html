@@ -27,17 +27,18 @@
 
         <div class="filter-grid">
 
-            <!-- ÁREA TEMÁTICA -->
+            <!-- FUNÇÕES -->
             <div class="filter-field">
+                
                 <label class="filter-label">
                     Função
                 </label>
 
                 <ng-select
-                    [items]="areasTematicas"
+                    [items]="funcoes"
                     bindLabel="nome"
                     bindValue="id"
-                    [(ngModel)]="filtro.idsAreasTematicas"
+                    [(ngModel)]="filtro.idsFuncoes"
                     [multiple]="true"
                     [closeOnSelect]="false"
                     [searchable]="true"
@@ -45,7 +46,7 @@
                     [disabled]="somenteLeitura"
                     placeholder="Selecione..."
                     class="select-filtro"
-                    (change)="onAreasTematicasChange()">
+                    (change)="onFuncoesChange()">
 
                     <ng-template
                         ng-option-tmp
@@ -58,7 +59,6 @@
                                 tabindex="-1"
                                 [checked]="item$.selected"
                                 style="margin-right: 8px; pointer-events: none;" />
-
                             <span>{{ item.nome }}</span>
                         </div>
                     </ng-template>
@@ -100,10 +100,10 @@
                     [clearable]="true"
                     [disabled]="
                         somenteLeitura ||
-                        !filtro.idsAreasTematicas.length
+                        !filtro.idsFuncoes.length
                     "
                     [placeholder]="
-                        filtro.idsAreasTematicas.length
+                        filtro.idsFuncoes.length
                             ? 'Selecione...'
                             : 'Selecione uma Área primeiro...'
                     "

@@ -51,10 +51,7 @@
 
     <!-- Lista de ações -->
     <div class="planejamento-cards-container" *ngIf="quantidadeAcoes > 0">
-      <article class="acao-planejamento-card" *ngFor="
-          let acao of acoesPlanejamento;
-          trackBy: trackByAcao
-        ">
+      <article class="acao-planejamento-card" *ngFor="let acao of acoesPlanejamento; trackBy: trackByAcao">
         <header class="acao-planejamento-header">
 
           <div class="acao-planejamento-identificacao">

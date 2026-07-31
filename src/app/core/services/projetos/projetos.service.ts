@@ -25,6 +25,7 @@ import { IEstruturaCamposComplementar } from '../../interfaces/estrutura.campo.c
 import { FilesService } from '../files/files.service';
 import { LotacaoUsuarioEnum } from '../../enums/lotacao-usuario.enum';
 import { IOpcaoPlanejamento, IPeriodoPlanejamento } from '../../../pages/projetos/projeto-ppa-loa/ppa-loa-filtro/filtro-acoes.component';
+import { PlanejamentoAcao } from '../../../pages/projetos/projeto-ppa-loa/projeto-ppa-loa.component';
 
 @Injectable({
   providedIn: 'root',
@@ -409,39 +410,196 @@ export class ProjetosService extends BaseHttpService<
   }
 
   listarAcoesPorProgramas(idPeriodo: number, idsProgramas: number[]): Observable<IOpcaoPlanejamento[]> {
-     return this._http.get<IOpcaoPlanejamento[]>(
+
+    const usarMock = true;
+
+    if (usarMock) {
+
+      const acoesMock = [
+        {
+          id: 114,
+          nome: 'RESERVA PARA O PAGAMENTO DE PESSOAL',
+          idPeriodo: 1,
+          idFuncao: 10,
+          idPrograma: 27
+        },
+        {
+          id: 1097,
+          nome: 'REALIZAÇÃO DE CONCURSO PÚBLICO E PROCESSO SELETIVO',
+          idPeriodo: 1,
+          idFuncao: 10,
+          idPrograma: 27
+        }
+      ]
+
+      const acoesFiltradas: IOpcaoPlanejamento[] = acoesMock
+        .filter(acao =>
+          acao.idPeriodo === idPeriodo &&
+          idsProgramas.includes(acao.idPrograma)
+        )
+        .map(acao => ({
+          id: acao.id,
+          nome: acao.id.toString().padStart(4, '0') + '-' + acao.nome
+        }));
+
+      return of(acoesFiltradas);
+
+    }
+
+    return this._http.get<IOpcaoPlanejamento[]>(
       `${this._url}/ppaloa/acoes/`
     );
+
   }
 
   listarProgramasPorFuncoes(idPeriodo: number, idsFuncoes: number[]): Observable<IOpcaoPlanejamento[]> {
+
+    const usarMock = true;
+
+    if (usarMock) {
+
+      const programasMock = [
+        {
+          id: 27,
+          nome: 'GESTÃO ESTRATÉGICA DE PESSOAS',
+          idPeriodo: 1,
+          idFuncao: 10
+        },
+        {
+          id: 61,
+          nome: 'SAÚDE CIDADÃ',
+          idPeriodo: 1,
+          idFuncao: 10
+        }
+      ];
+
+      const programasFiltrados: IOpcaoPlanejamento[] = programasMock
+        .filter(programa =>
+          programa.idPeriodo === idPeriodo &&
+          idsFuncoes.includes(programa.idFuncao)
+        )
+        .map(programa => ({
+          id: programa.id,
+          nome: programa.id.toString().padStart(4, '0') + '-' + programa.nome
+        }));
+
+      return of(programasFiltrados);
+
+    }
+
     return this._http.get<IOpcaoPlanejamento[]>(
       `${this._url}/ppaloa/programas/`
     );
+
   }
 
-  listarFuncoesPpaLoa(id: any): Observable<IOpcaoPlanejamento[]> {
+  listarFuncoesPpaLoa(idPpa: number): Observable<IOpcaoPlanejamento[]> {
+
+    const usarMock = true;
+
+    if (usarMock) {
+
+      const funcoesMock = [
+        {
+          id: 1,
+          nome: 'LEGISLATIVA'
+        },
+        {
+          id: 2,
+          nome: 'JUDICIÁRIA'
+        },
+        {
+          id: 3,
+          nome: 'ESSENCIAL À JUSTIÇA'
+        },
+        {
+          id: 4,
+          nome: 'ADMINISTRAÇÃO'
+        },
+        {
+          id: 5,
+          nome: 'DEFESA NACIONAL'
+        },
+        {
+          id: 6,
+          nome: 'SEGURANÇA PÚBLICA'
+        },
+        {
+          id: 7,
+          nome: 'RELAÇÕES EXTERIORES'
+        },
+        {
+          id: 8,
+          nome: 'ASSISTÊNCIA SOCIAL'
+        },
+        {
+          id: 9,
+          nome: 'PREVIDÊNCIA SOCIAL'
+        },
+        {
+          id: 10,
+          nome: 'SAÚDE'
+        }
+      ] as IOpcaoPlanejamento[];
+
+      return of(funcoesMock.map(funcao => ({
+        id: funcao.id,
+        nome: funcao.id.toString().padStart(2, '0') + '-' + funcao.nome
+      })));
+
+    }
+
     return this._http.get<IOpcaoPlanejamento[]>(
       `${this._url}/ppaloa/funcoes/`
     );
+
   }
 
   buscarPeriodoPpaVigente(): Observable<IPeriodoPlanejamento> {
+
     const usarMock = true;
-  
+
     if (usarMock) {
       return of({
         id: 1,
-        // anoInicio: 2024,
-        // anoFim: 2027,
         descricao: '2024-2027'
       } as IPeriodoPlanejamento);
     }
-  
+
     return this._http.get<IPeriodoPlanejamento>(
       `${this._url}/ppaloa/periodos/vigente`
     );
-    
+
+  }
+
+  buscarDadosAcoes(idsAcoes: number[]): Observable<PlanejamentoAcao[]> {
+
+    const usarMock = true;
+
+    if (usarMock) {
+
+      const acoesPlanejamento: PlanejamentoAcao[] = [
+        {
+          id: 2175,
+          codigo: '2175',
+          titulo: 'MANUTENÇÃO DAS UNIDADES CENTRAL E REGIONAIS',
+          descricao: 'Manutenção das unidades central e regionais da SEDU.',
+          tipo: 'Ação Orçamentária',
+          programa: 'GESTÃO E SUPORTE EDUCACIONAL',
+          objetivoEstrategico: '01 - EDUCAÇÃO',
+          unidadeResponsavel: 'SEDU - Secretaria da Educação',
+          produto: 'Unidades mantidas'
+        }
+      ];
+
+      return of(acoesPlanejamento);
+
+    }
+
+    return this._http.get<PlanejamentoAcao[]>(
+      `${this._url}/ppaloa/acao/`
+    );
+
   }
 
 }
