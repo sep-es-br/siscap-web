@@ -452,7 +452,7 @@ export class ProjetosService extends BaseHttpService<
 
   }
 
-  listarProgramasPorFuncoes(idPeriodo: number, idsFuncoes: number[]): Observable<IOpcaoPlanejamento[]> {
+  listarProgramasPorFuncoes(idsAno: number[], idsFuncoes: number[], idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
 
     const usarMock = true;
 
@@ -462,21 +462,24 @@ export class ProjetosService extends BaseHttpService<
         {
           id: 27,
           nome: 'GESTÃO ESTRATÉGICA DE PESSOAS',
-          idPeriodo: 1,
-          idFuncao: 10
+          idAno: 2024,
+          idUo: 1101,
+          idFuncao: 1
         },
         {
           id: 61,
           nome: 'SAÚDE CIDADÃ',
-          idPeriodo: 1,
-          idFuncao: 10
+          idAno: 2024,
+          idUo: 1101,
+          idFuncao: 1
         }
       ];
 
       const programasFiltrados: IOpcaoPlanejamento[] = programasMock
         .filter(programa =>
-          programa.idPeriodo === idPeriodo &&
-          idsFuncoes.includes(programa.idFuncao)
+          idsAno.includes(programa.idAno) &&
+          idsFuncoes.includes(programa.idFuncao) &&
+          idsUos.includes(programa.idUo)
         )
         .map(programa => ({
           id: programa.id,
@@ -493,7 +496,7 @@ export class ProjetosService extends BaseHttpService<
 
   }
 
-  listarFuncoesPpaLoa(idPpa: number): Observable<IOpcaoPlanejamento[]> {
+  listarFuncoesPpaLoa(idsAnos: number[], idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
 
     const usarMock = true;
 
@@ -583,12 +586,26 @@ export class ProjetosService extends BaseHttpService<
           id: 2175,
           codigo: '2175',
           titulo: 'MANUTENÇÃO DAS UNIDADES CENTRAL E REGIONAIS',
-          descricao: 'Manutenção das unidades central e regionais da SEDU.',
-          tipo: 'Ação Orçamentária',
+          unidadeOrcamentaria: 'SEFAZ',
           programa: 'GESTÃO E SUPORTE EDUCACIONAL',
-          objetivoEstrategico: '01 - EDUCAÇÃO',
-          unidadeResponsavel: 'SEDU - Secretaria da Educação',
-          produto: 'Unidades mantidas'
+          funcao: '01 - EDUCAÇÃO',
+          valorPpa: 60000,
+          anoLoa: 2026,
+          valorLoa: 15000,
+          detalhamentoOrcamentarioLoa: [{
+              codigoGnd: '3',
+              codigoModalidade: '90',
+              idUso: '0',
+              fonte: '15000000',
+              valor: 9750000.00
+            },
+            {
+              codigoGnd: '4',
+              codigoModalidade: '40',
+              idUso: '0',
+              fonte: '17000000',
+              valor: 5250000.00
+            } ]
         }
       ];
 
@@ -598,6 +615,106 @@ export class ProjetosService extends BaseHttpService<
 
     return this._http.get<PlanejamentoAcao[]>(
       `${this._url}/ppaloa/acao/`
+    );
+
+  }
+
+  listarAnosPpaLoa(): Observable<IOpcaoPlanejamento[]> {
+
+    const usarMock = true;
+
+    if (usarMock) {
+
+      const anosMock = [
+        {
+          id: 2024,
+          nome: '2024'
+        },
+        {
+          id: 2025,
+          nome: '2025'
+        },
+        {
+          id: 2026,
+          nome: '2026'
+        },
+        {
+          id: 2027,
+          nome: '2027'
+        }
+      ] as IOpcaoPlanejamento[];
+
+      return of(anosMock.map(ano => ({
+        id: ano.id,
+        nome: ano.nome
+      })));
+
+    }
+
+    return this._http.get<IOpcaoPlanejamento[]>(
+      `${this._url}/ppaloa/anos/`
+    );
+
+  }
+
+  listarUosPorAnosPpaLoa(idAnos: number[]): Observable<IOpcaoPlanejamento[]> {
+
+    const usarMock = true;
+
+    if (usarMock) {
+
+      const uosMock = [
+        {
+          id: 1101,
+          nome: 'ALEES'
+        },
+        {
+          id: 2101,
+          nome: 'TCEES'
+        },
+        {
+          id: 3101,
+          nome: 'TJEES'
+        },
+        {
+          id: 3901,
+          nome: 'FUNEPJ'
+        },
+        {
+          id: 5101,
+          nome: 'MPES'
+        },
+        {
+          id: 5901,
+          nome: 'FERIDL'
+        },
+        {
+          id: 5902,
+          nome: 'FUNEMP'
+        },
+        {
+          id: 6101,
+          nome: 'DPES'
+        },
+        {
+          id: 6901,
+          nome: 'FADEPES'
+        },
+        {
+          id: 10101,
+          nome: 'SCV'
+        },
+      ] as IOpcaoPlanejamento[];
+
+      return of(uosMock.map(uo => ({
+        id: uo.id,
+        nome: uo.nome
+      })));
+
+    }
+
+    return this._http.get<IOpcaoPlanejamento[]>(
+      `${this._url}/ppaloa/uos/`
     );
 
   }

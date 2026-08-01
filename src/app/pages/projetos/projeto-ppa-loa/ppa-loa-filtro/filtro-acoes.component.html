@@ -1,7 +1,5 @@
 <!-- OVERLAY -->
-<div
-    class="modal-overlay show"
-    (click)="fecharModal()">
+<div class="modal-overlay show" (click)="fecharModal()">
 </div>
 
 <!-- MODAL -->
@@ -13,11 +11,7 @@
             FILTROS PLANEJAMENTO
         </h2>
 
-        <button
-            type="button"
-            class="close-modal"
-            aria-label="Fechar"
-            (click)="fecharModal()">
+        <button type="button" class="close-modal" aria-label="Fechar" (click)="fecharModal()">
             ✕
         </button>
     </div>
@@ -27,55 +21,111 @@
 
         <div class="filter-grid">
 
-            <!-- FUNÇÕES -->
+            <!-- ANO DO PPA -->
             <div class="filter-field">
-                
+
                 <label class="filter-label">
-                    Função
+                    Ano
                 </label>
 
-                <ng-select
-                    [items]="funcoes"
-                    bindLabel="nome"
-                    bindValue="id"
-                    [(ngModel)]="filtro.idsFuncoes"
-                    [multiple]="true"
-                    [closeOnSelect]="false"
-                    [searchable]="true"
-                    [clearable]="true"
-                    [disabled]="somenteLeitura"
-                    placeholder="Selecione..."
-                    class="select-filtro"
-                    (change)="onFuncoesChange()">
+                <ng-select [items]="anos" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsAnos" [multiple]="true"
+                    [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="somenteLeitura"
+                    placeholder="Selecione..." class="select-filtro" (change)="onAnoChange()">
 
-                    <ng-template
-                        ng-option-tmp
-                        let-item="item"
-                        let-item$="item$">
-
+                    <ng-template ng-option-tmp let-item="item" let-item$="item$">
                         <div class="select-option-checkbox">
-                            <input
-                                type="checkbox"
-                                tabindex="-1"
-                                [checked]="item$.selected"
+                            <input type="checkbox" tabindex="-1" [checked]="item$.selected"
                                 style="margin-right: 8px; pointer-events: none;" />
                             <span>{{ item.nome }}</span>
                         </div>
                     </ng-template>
 
-                    <ng-template
-                        ng-multi-label-tmp
-                        let-items="items">
+                    <ng-template ng-multi-label-tmp let-items="items">
 
-                        <span
-                            class="custom-selected-label"
-                            *ngIf="items.length === 1">
+                        <span class="custom-selected-label" *ngIf="items.length === 1">
                             {{ items[0].nome }}
                         </span>
 
-                        <span
-                            class="custom-selected-label"
-                            *ngIf="items.length > 1">
+                        <span class="custom-selected-label" *ngIf="items.length > 1">
+                            {{ items.length }} selecionadas
+                        </span>
+                    </ng-template>
+
+                </ng-select>
+            </div>
+
+            <!-- UO DO PPA -->
+            <div class="filter-field">
+
+                <label class="filter-label">
+                    Unidade Orçamentária
+                </label>
+
+                <ng-select [items]="uos" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsUos" [multiple]="true"
+                    [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
+                        somenteLeitura ||
+                        !filtro.idsAnos.length
+                    " [placeholder]="
+                        filtro.idsAnos.length
+                            ? 'Selecione...'
+                            : 'Selecione um Ano primeiro...'
+                    " class="select-filtro" (change)="onUoChange()">
+
+                    <ng-template ng-option-tmp let-item="item" let-item$="item$">
+                        <div class="select-option-checkbox">
+                            <input type="checkbox" tabindex="-1" [checked]="item$.selected"
+                                style="margin-right: 8px; pointer-events: none;" />
+                            <span>{{ item.nome }}</span>
+                        </div>
+                    </ng-template>
+
+                    <ng-template ng-multi-label-tmp let-items="items">
+
+                        <span class="custom-selected-label" *ngIf="items.length === 1">
+                            {{ items[0].nome }}
+                        </span>
+
+                        <span class="custom-selected-label" *ngIf="items.length > 1">
+                            {{ items.length }} selecionadas
+                        </span>
+                    </ng-template>
+
+                </ng-select>
+            </div>
+
+            <!-- FUNÇÕES -->
+            <div class="filter-field">
+
+                <label class="filter-label">
+                    Função
+                </label>
+
+                <ng-select [items]="funcoes" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsFuncoes"
+                    [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
+                        somenteLeitura ||
+                        !filtro.idsUos.length
+                    " [placeholder]="
+                        filtro.idsUos.length
+                            ? 'Selecione...'
+                            : 'Selecione uma UO primeiro...'
+                    " class="select-filtro" (change)="onFuncoesChange()">
+
+                    <ng-template ng-option-tmp let-item="item" let-item$="item$">
+
+                        <div class="select-option-checkbox">
+                            <input type="checkbox" tabindex="-1" [checked]="item$.selected"
+                                style="margin-right: 8px; pointer-events: none;" />
+                            <span>{{ item.nome }}</span>
+                        </div>
+                    </ng-template>
+
+                    <ng-template ng-multi-label-tmp let-items="items">
+
+                        <span class="custom-selected-label" *ngIf="items.length === 1">
+                            {{ items[0].nome }}
+                        </span>
+
+                        <span class="custom-selected-label" *ngIf="items.length > 1">
                             {{ items.length }} selecionadas
                         </span>
                     </ng-template>
@@ -89,56 +139,33 @@
                     Programa
                 </label>
 
-                <ng-select
-                    [items]="programas"
-                    bindLabel="nome"
-                    bindValue="id"
-                    [(ngModel)]="filtro.idsProgramas"
-                    [multiple]="true"
-                    [closeOnSelect]="false"
-                    [searchable]="true"
-                    [clearable]="true"
-                    [disabled]="
+                <ng-select [items]="programas" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsProgramas"
+                    [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsFuncoes.length
-                    "
-                    [placeholder]="
+                    " [placeholder]="
                         filtro.idsFuncoes.length
                             ? 'Selecione...'
-                            : 'Selecione uma Área primeiro...'
-                    "
-                    class="select-filtro"
-                    (change)="onProgramasChange()">
+                            : 'Selecione uma Função primeiro...'
+                    " class="select-filtro" (change)="onProgramasChange()">
 
-                    <ng-template
-                        ng-option-tmp
-                        let-item="item"
-                        let-item$="item$">
+                    <ng-template ng-option-tmp let-item="item" let-item$="item$">
 
                         <div class="select-option-checkbox">
-                            <input
-                                type="checkbox"
-                                tabindex="-1"
-                                [checked]="item$.selected"
+                            <input type="checkbox" tabindex="-1" [checked]="item$.selected"
                                 style="margin-right: 8px; pointer-events: none;" />
 
                             <span>{{ item.nome }}</span>
                         </div>
                     </ng-template>
 
-                    <ng-template
-                        ng-multi-label-tmp
-                        let-items="items">
+                    <ng-template ng-multi-label-tmp let-items="items">
 
-                        <span
-                            class="custom-selected-label"
-                            *ngIf="items.length === 1">
+                        <span class="custom-selected-label" *ngIf="items.length === 1">
                             {{ items[0].nome }}
                         </span>
 
-                        <span
-                            class="custom-selected-label"
-                            *ngIf="items.length > 1">
+                        <span class="custom-selected-label" *ngIf="items.length > 1">
                             {{ items.length }} selecionados
                         </span>
                     </ng-template>
@@ -152,55 +179,33 @@
                     Ação
                 </label>
 
-                <ng-select
-                    [items]="acoes"
-                    bindLabel="nome"
-                    bindValue="id"
-                    [(ngModel)]="filtro.idsAcoes"
-                    [multiple]="true"
-                    [closeOnSelect]="false"
-                    [searchable]="true"
-                    [clearable]="true"
-                    [disabled]="
+                <ng-select [items]="acoes" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsAcoes"
+                    [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsProgramas.length
-                    "
-                    [placeholder]="
+                    " [placeholder]="
                         filtro.idsProgramas.length
                             ? 'Selecione...'
                             : 'Selecione um Programa primeiro...'
-                    "
-                    class="select-filtro">
+                    " class="select-filtro">
 
-                    <ng-template
-                        ng-option-tmp
-                        let-item="item"
-                        let-item$="item$">
+                    <ng-template ng-option-tmp let-item="item" let-item$="item$">
 
                         <div class="select-option-checkbox">
-                            <input
-                                type="checkbox"
-                                tabindex="-1"
-                                [checked]="item$.selected"
+                            <input type="checkbox" tabindex="-1" [checked]="item$.selected"
                                 style="margin-right: 8px; pointer-events: none;" />
 
                             <span>{{ item.nome }}</span>
                         </div>
                     </ng-template>
 
-                    <ng-template
-                        ng-multi-label-tmp
-                        let-items="items">
+                    <ng-template ng-multi-label-tmp let-items="items">
 
-                        <span
-                            class="custom-selected-label"
-                            *ngIf="items.length === 1">
+                        <span class="custom-selected-label" *ngIf="items.length === 1">
                             {{ items[0].nome }}
                         </span>
 
-                        <span
-                            class="custom-selected-label"
-                            *ngIf="items.length > 1">
+                        <span class="custom-selected-label" *ngIf="items.length > 1">
                             {{ items.length }} selecionadas
                         </span>
                     </ng-template>
@@ -215,18 +220,11 @@
     <!-- FOOTER -->
     <div class="modal-footer">
 
-        <button
-            type="button"
-            class="btn-restaurar"
-            [disabled]="somenteLeitura"
-            (click)="resetar()">
+        <button type="button" class="btn-restaurar" [disabled]="somenteLeitura" (click)="resetar()">
             RESTAURAR FILTROS
         </button>
 
-        <button
-            type="button"
-            class="btn-filtrar"
-            (click)="applyFilter()">
+        <button type="button" class="btn-filtrar" (click)="applyFilter()">
             FILTRAR
         </button>
 

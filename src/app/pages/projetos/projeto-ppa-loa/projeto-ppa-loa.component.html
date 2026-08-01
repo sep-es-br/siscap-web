@@ -14,11 +14,10 @@
         <span style="font-size:14px">▽</span>
       </p-button>
     </div>
-    <siscap-filtro-ppa-loa *ngIf="showModal" [filtroAtual]="currentFilter" 
-      (apply)="onApply($event)" (close)="showModal = false" (restaurar)="onRestaurar()"
-      [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
+    <siscap-filtro-ppa-loa *ngIf="showModal" [filtroAtual]="currentFilter" (apply)="onApply($event)"
+      (close)="showModal = false" (restaurar)="onRestaurar()" [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
   </div>
-  
+
   <!-- Ações selecionadas -->
   <div class="planejamento-card">
 
@@ -28,7 +27,7 @@
       </h2>
 
       <span class="planejamento-count-badge">
-        {{ quantidadeAcoes }}
+        {{ quantidadeAcoes | number: '2.0-0' }}
         {{ quantidadeAcoes === 1 ? 'adicionada' : 'adicionadas' }}
       </span>
     </header>
@@ -51,17 +50,21 @@
 
     <!-- Lista de ações -->
     <div class="planejamento-cards-container" *ngIf="quantidadeAcoes > 0">
-      <article class="acao-planejamento-card" *ngFor="let acao of acoesPlanejamento; trackBy: trackByAcao">
+
+      <article class="acao-planejamento-card" *ngFor="let acao of acoesPlanejamento; trackBy: trackByAcao ">
+
+        <!-- Cabeçalho da ação -->
         <header class="acao-planejamento-header">
 
-          <div class="acao-planejamento-identificacao">
-            <span class="acao-planejamento-codigo" *ngIf="acao.codigo">
-              {{ acao.codigo }}
-            </span>
+          <div class="acao-planejamento-cabecalho-conteudo">
 
-            <span class="acao-planejamento-tipo" *ngIf="acao.tipo">
-              {{ acao.tipo }}
-            </span>
+            <h3 class="acao-planejamento-titulo">
+              <ng-container *ngIf="acao.codigo">
+                {{ acao.codigo }} -
+              </ng-container>
+              {{ acao.titulo }}
+            </h3>
+
           </div>
 
           <button *ngIf="!somenteLeitura" type="button" class="acao-remover-btn" title="Remover ação"
@@ -71,15 +74,38 @@
 
         </header>
 
-        <h3 class="acao-planejamento-titulo">
-          {{ acao.titulo }}
-        </h3>
-
-        <p class="acao-planejamento-descricao" *ngIf="acao.descricao">
-          {{ acao.descricao }}
-        </p>
-
+        <!-- Informações da ação -->
         <div class="acao-planejamento-dados">
+
+          <div class="acao-planejamento-campo campo-linha-inteira" *ngIf="acao.unidadeOrcamentaria">
+            <span class="acao-planejamento-label">
+              Unidade orçamentária
+            </span>
+
+            <span class="acao-planejamento-valor">
+              {{ acao.unidadeOrcamentaria }}
+            </span>
+          </div>
+
+          <div class="acao-planejamento-campo campo-linha-inteira" *ngIf="acao.orgao">
+            <span class="acao-planejamento-label">
+              Órgão
+            </span>
+
+            <span class="acao-planejamento-valor">
+              {{ acao.orgao }}
+            </span>
+          </div>
+
+          <div class="acao-planejamento-campo" *ngIf="acao.funcao">
+            <span class="acao-planejamento-label">
+              Função
+            </span>
+
+            <span class="acao-planejamento-valor">
+              {{ acao.funcao }}
+            </span>
+          </div>
 
           <div class="acao-planejamento-campo" *ngIf="acao.programa">
             <span class="acao-planejamento-label">
@@ -91,54 +117,78 @@
             </span>
           </div>
 
-          <div class="acao-planejamento-campo" *ngIf="acao.objetivoEstrategico">
+          <div class="acao-planejamento-campo campo-linha-inteira" *ngIf="acao.valorPpa">
             <span class="acao-planejamento-label">
-              Objetivo estratégico
+              Valor PPA {{ acao.periodoPpa }}
             </span>
 
             <span class="acao-planejamento-valor">
-              {{ acao.objetivoEstrategico }}
+              {{ formatarMoeda(acao.valorPpa) }}
             </span>
           </div>
 
-          <div class="acao-planejamento-campo" *ngIf="acao.unidadeResponsavel">
-            <span class="acao-planejamento-label">
-              Unidade responsável
+          <div class="acao-planejamento-campo campo-linha-inteira" *ngIf="acao.valorLoa">
+            
+            <span class="valor-loa-label">
+              Valor LOA {{ acao.anoLoa }}
             </span>
 
-            <span class="acao-planejamento-valor">
-              {{ acao.unidadeResponsavel }}
-            </span>
-          </div>
-
-          <div class="acao-planejamento-campo" *ngIf="acao.produto">
-            <span class="acao-planejamento-label">
-              Produto ou entrega
-            </span>
-
-            <span class="acao-planejamento-valor">
-              {{ acao.produto }}
+            <span class="valor-loa-total" >
+              {{ formatarMoeda(acao.valorLoa) }}
             </span>
           </div>
 
         </div>
+
+        <!-- 
+          detalhamentoOrcamentarioLoa: [{
+              codigoGnd: '3',
+              codigoModalidade: '90',
+              idUso: '0',
+              fonte: '15000000',
+              valor: 9750000.00
+            },
+            {
+              codigoGnd: '4',
+              codigoModalidade: '40',
+              idUso: '0',
+              fonte: '17000000',
+              valor: 5250000.00
+            } ] -->
+
+
+        <!-- Descrição -->
+        <div class="acao-planejamento-detalhamento" *ngIf="acao.descricao">
+          <div class="acao-planejamento-detalhamento-titulo">
+            Descrição da ação
+          </div>
+
+          <p class="acao-planejamento-descricao">
+            {{ acao.descricao }}
+          </p>
+        </div>
+
       </article>
+
     </div>
 
-    <!-- Rodapé -->
-    <footer class="planejamento-footer">
-
-      <label class="nao-previsto-ppa" [class.nao-previsto-ppa-ativo]="naoPrevistoPpa"
-        [class.nao-previsto-ppa-desabilitado]="somenteLeitura">
-        <input type="checkbox" [checked]="naoPrevistoPpa" [disabled]="somenteLeitura"
-          (change)="onNaoPrevistoPpaChange($event)" />
-
-        <span>
-          Não previsto no PPA {{ periodoPlanejamento }}
-        </span>
-      </label>
-
-    </footer>
-
   </div>
+
+  <!-- Rodapé -->
+  <footer class="planejamento-footer">
+
+    <label class="nao-previsto-ppa" [class.nao-previsto-ppa-ativo]="naoPrevistoPpa"
+      [class.nao-previsto-ppa-desabilitado]="somenteLeitura">
+      <input type="checkbox" [checked]="naoPrevistoPpa" [disabled]="somenteLeitura"
+        (change)="onNaoPrevistoPpaChange($event)" />
+
+      <span>
+        Não previsto no PPA {{ periodoPlanejamento }}
+      </span>
+    </label>
+
+  </footer>
+
+  <!-- </div> -->
+
 </section>

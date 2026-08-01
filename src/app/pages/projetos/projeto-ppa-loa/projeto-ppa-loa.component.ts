@@ -17,11 +17,23 @@ export interface PlanejamentoAcao {
   codigo?: string;
   titulo: string;
   descricao?: string;
-  tipo?: string;
+  unidadeOrcamentaria?: string;
+  orgao?: string;
+  funcao?: string;
   programa?: string;
-  objetivoEstrategico?: string;
-  unidadeResponsavel?: string;
-  produto?: string;
+  periodoPpa?: string;
+  valorPpa?: number;
+  anoLoa?: number;
+  valorLoa?: number;
+  detalhamentoOrcamentarioLoa: DetalhamentoOrcamentarioLoa[];
+}
+
+export interface DetalhamentoOrcamentarioLoa {
+  codigoGnd?: string;
+  codigoModalidade?: string;
+  idUso?: string;
+  fonte?: string;
+  valor?: number;
 }
 
 export interface PlanejamentoFiltroAplicado {
@@ -29,6 +41,7 @@ export interface PlanejamentoFiltroAplicado {
   label: string;
   valor: string;
 }
+
 @Component({
   selector: 'siscap-projeto-ppa-loa',
   standalone: true,
@@ -205,7 +218,7 @@ export class ProjetoPpaLoaComponent {
 
     this.showModal = false;
 
-    if(this.currentFilter?.idsAcoes?.length == 0)
+    if (this.currentFilter?.idsAcoes?.length == 0)
       return
 
     this.carregarAcoesSelecionadas(this.currentFilter?.idsAcoes ?? []);
@@ -236,12 +249,29 @@ export class ProjetoPpaLoaComponent {
         removable: false,
       },
 
+      ...(this.currentFilter?.chips?.anos ?? []).map((ano: any) => ({
+        label: 'ANO',
+        value: ano.nome,
+        type: 'filter',
+        removable: true,
+        idAno: ano.id
+      })),
+
+      ...(this.currentFilter?.chips?.uos ?? []).map((uo: any) => ({
+        label: 'UO',
+        value: uo.nome,
+        type: 'filter',
+        removable: true,
+        idUo: uo.id
+      })),
+
+
       ...(this.currentFilter?.chips?.funcoes ?? []).map((funcao: any) => ({
         label: 'FUNCAO',
         value: funcao.nome,
         type: 'filter',
         removable: true,
-        idDesafio: funcao.id
+        idFuncao: funcao.id
       })),
 
       ...(this.currentFilter?.chips?.programas ?? []).map((programa: any) => ({
@@ -253,7 +283,7 @@ export class ProjetoPpaLoaComponent {
       })),
 
       ...(this.currentFilter?.chips?.acoes ?? []).map((acao: any) => ({
-        label: 'FUNÇÃO',
+        label: 'AÇÃO',
         value: acao.nome,
         type: 'filter',
         removable: true,
@@ -279,13 +309,13 @@ export class ProjetoPpaLoaComponent {
       )
       .subscribe({
         next: acoes => {
-          
+
           this.acoesPlanejamento = acoes;
-          
+
           // this.atualizarAcoesProjeto(chavesAcoes);
 
           this.quantidadeAcoes = this.acoesPlanejamento.length ?? 0;
-          
+
           console.log('Açoes selecionadas :', this.acoesPlanejamento)
 
         },
@@ -299,6 +329,19 @@ export class ProjetoPpaLoaComponent {
 
         }
       });
+
+  }
+
+  formatarMoeda(valor: number | null | undefined): string {
+    
+    if (valor == null) {
+      return 'R$ 0,00';
+    }
+
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(valor);
 
   }
 

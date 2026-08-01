@@ -34,15 +34,20 @@ export interface IChipPlanejamento {
 export interface IFiltroPlanejamento {
   idPeriodoPlanejamento: number | null;
 
+  idsAnos: number[];
+  idsUos: number[];
   idsFuncoes: number[];
   idsProgramas: number[];
   idsAcoes: number[];
 
   chips: {
+    anos: IChipPlanejamento[];
+    uos: IChipPlanejamento[];
     funcoes: IChipPlanejamento[];
     programas: IChipPlanejamento[];
     acoes: IChipPlanejamento[];
   };
+
 }
 
 @Component({
@@ -76,6 +81,8 @@ export class FiltroAcoesComponent
 
   periodoPlanejamento: IPeriodoPlanejamento | null = null;
 
+  anos: IOpcaoPlanejamento[] = [];
+  uos: IOpcaoPlanejamento[] = [];
   funcoes: IOpcaoPlanejamento[] = [];
   programas: IOpcaoPlanejamento[] = [];
   acoes: IOpcaoPlanejamento[] = [];
@@ -83,6 +90,8 @@ export class FiltroAcoesComponent
   carregandoDadosIniciais = false;
   carregandoProgramas = false;
   carregandoAcoes = false;
+  carregandoUos = false;
+  carregandoFuncoes = false;
 
   filtro: IFiltroPlanejamento = this.criarFiltroVazio();
 
@@ -91,10 +100,12 @@ export class FiltroAcoesComponent
   private carregamentoInicialSubscription?: Subscription;
   private programasSubscription?: Subscription;
   private acoesSubscription?: Subscription;
+  private uosSubscription?: Subscription;
+  private funcoesSubscription?: Subscription;
 
   constructor(
     private readonly _projetosService: ProjetosService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 
@@ -121,6 +132,7 @@ export class FiltroAcoesComponent
     this.carregamentoInicialSubscription?.unsubscribe();
     this.programasSubscription?.unsubscribe();
     this.acoesSubscription?.unsubscribe();
+    this.uosSubscription?.unsubscribe();
   }
 
   /**
@@ -128,7 +140,7 @@ export class FiltroAcoesComponent
    * de funcoes.
    */
   private carregarDadosIniciais(): void {
-    
+
     this.carregamentoInicialSubscription?.unsubscribe();
 
     this.carregandoDadosIniciais = true;
@@ -137,46 +149,97 @@ export class FiltroAcoesComponent
       this._projetosService
         .buscarPeriodoPpaVigente()
         .pipe(
+
           switchMap(periodo => {
 
             this.periodoPlanejamento = periodo;
             this.filtro.idPeriodoPlanejamento = periodo.id;
 
-            return this._projetosService
-              .listarFuncoesPpaLoa(periodo.id);
+            return this._projetosService.listarAnosPpaLoa();
+
+            // return this._projetosService
+            //   .listarFuncoesPpaLoa(periodo.id);
 
           }),
+
           finalize(() => {
             this.carregandoDadosIniciais = false;
           })
+
         )
         .subscribe({
-          next: funcoes => {
+          next: anos => {
 
-            this.funcoes = funcoes ?? [];
+            this.anos = anos ?? [];
 
-            this.filtro.idsFuncoes =
+            this.filtro.idsAnos =
               this.manterSomenteIdsValidos(
-                this.filtro.idsFuncoes,
-                this.funcoes
+                this.filtro.idsAnos,
+                this.anos
               );
 
-            if (this.filtro.idsFuncoes.length > 0) {
+            if (this.filtro.idsAnos.length > 0) {
               this.carregarProgramas(true);
             }
 
           },
+
           error: erro => {
             console.error(
               'Erro ao carregar os dados iniciais do planejamento.',
               erro
             );
 
+            this.anos = [];
+            this.uos = [];
             this.funcoes = [];
             this.programas = [];
             this.acoes = [];
+
           }
         });
+  }
+
+  onAnoChange(): void {
+
+    this.filtro.idsAnos =
+      this.normalizarIds(this.filtro.idsAnos);
+
+    this.filtro.idsUos = [];
+    this.filtro.idsProgramas = [];
+    this.filtro.idsAcoes = [];
+
+    this.uos = []
+    this.programas = [];
+    this.acoes = [];
+
+    if (this.filtro.idsAnos.length === 0) {
+      return;
+    }
+
+    this.carregarUos(false);
+
+  }
+
+  onUoChange(): void {
+
+    this.filtro.idsUos =
+      this.normalizarIds(this.filtro.idsUos);
+
+    this.filtro.idsFuncoes = [];
+    this.filtro.idsProgramas = [];
+    this.filtro.idsAcoes = [];
+
+    this.funcoes = [];
+    this.programas = [];
+    this.acoes = [];
+
+    if (this.filtro.idsUos.length === 0) {
+      return;
+    }
+
+    this.carregarFuncoes(false);
+
   }
 
   /**
@@ -221,8 +284,8 @@ export class FiltroAcoesComponent
   }
 
   /**
-   * Consulta os programas pertencentes às áreas
-   * temáticas selecionadas.
+   * Consulta os programas pertencentes às funcoes
+   * selecionadas.
    */
   private carregarProgramas(
     preservarSelecaoAtual: boolean
@@ -230,18 +293,23 @@ export class FiltroAcoesComponent
 
     this.programasSubscription?.unsubscribe();
 
-    const idPeriodo = this.filtro.idPeriodoPlanejamento;
+    const idsAnos = this.normalizarIds(this.filtro.idsAnos);
     const idsFuncoes = this.normalizarIds(this.filtro.idsFuncoes);
+    const idsUos = this.normalizarIds(this.filtro.idsUos);
 
     this.programas = [];
     this.acoes = [];
+
+    console.log( 'idsAnos : ' , idsAnos );
+    console.log( 'idsFuncoes : ' , idsFuncoes );
+    console.log( 'idsUos : ' , idsUos );
 
     if (!preservarSelecaoAtual) {
       this.filtro.idsProgramas = [];
       this.filtro.idsAcoes = [];
     }
 
-    if (idPeriodo == null || idsFuncoes.length === 0) {
+    if (idsFuncoes.length === 0 || idsAnos.length === 0 || idsUos.length === 0 ) {
       this.filtro.idsProgramas = [];
       this.filtro.idsAcoes = [];
       return;
@@ -251,10 +319,7 @@ export class FiltroAcoesComponent
 
     this.programasSubscription =
       this._projetosService
-        .listarProgramasPorFuncoes(
-          idPeriodo,
-          idsFuncoes
-        )
+        .listarProgramasPorFuncoes( idsAnos, idsFuncoes, idsUos )
         .pipe(
           finalize(() => {
             this.carregandoProgramas = false;
@@ -268,9 +333,9 @@ export class FiltroAcoesComponent
             this.filtro.idsProgramas =
               preservarSelecaoAtual
                 ? this.manterSomenteIdsValidos(
-                    this.filtro.idsProgramas,
-                    this.programas
-                  )
+                  this.filtro.idsProgramas,
+                  this.programas
+                )
                 : [];
 
             if (
@@ -282,6 +347,9 @@ export class FiltroAcoesComponent
               this.filtro.idsAcoes = [];
               this.acoes = [];
             }
+
+            console.log('porgramas encontrados ', programas)
+
           },
           error: erro => {
             console.error(
@@ -339,15 +407,15 @@ export class FiltroAcoesComponent
         )
         .subscribe({
           next: acoes => {
-            
+
             this.acoes = acoes ?? [];
 
             this.filtro.idsAcoes =
               preservarSelecaoAtual
                 ? this.manterSomenteIdsValidos(
-                    this.filtro.idsAcoes,
-                    this.acoes
-                  )
+                  this.filtro.idsAcoes,
+                  this.acoes
+                )
                 : [];
           },
           error: erro => {
@@ -387,6 +455,7 @@ export class FiltroAcoesComponent
   }
 
   resetar(): void {
+
     this.programasSubscription?.unsubscribe();
     this.acoesSubscription?.unsubscribe();
 
@@ -403,11 +472,20 @@ export class FiltroAcoesComponent
   }
 
   applyFilter(): void {
+    
     this.montarChipsFiltro();
 
     this.apply.emit({
       idPeriodoPlanejamento:
         this.filtro.idPeriodoPlanejamento,
+
+      idsAnos: [
+        ...this.filtro.idsAnos
+      ],
+
+      idsUos: [
+        ...this.filtro.idsUos
+      ],
 
       idsFuncoes: [
         ...this.filtro.idsFuncoes
@@ -422,6 +500,12 @@ export class FiltroAcoesComponent
       ],
 
       chips: {
+        anos: [
+          ...this.filtro.chips.anos
+        ],
+        uos: [
+          ...this.filtro.chips.uos
+        ],
         funcoes: [
           ...this.filtro.chips.funcoes
         ],
@@ -432,7 +516,9 @@ export class FiltroAcoesComponent
           ...this.filtro.chips.acoes
         ]
       }
+
     });
+
   }
 
   fecharModal(): void {
@@ -452,8 +538,17 @@ export class FiltroAcoesComponent
     const filtroAtual = this.filtroAtual;
 
     this.filtro = {
+
       idPeriodoPlanejamento:
         filtroAtual?.idPeriodoPlanejamento ?? null,
+
+      idsAnos: this.normalizarIds(
+        filtroAtual?.idsAnos
+      ),
+
+      idsUos: this.normalizarIds(
+        filtroAtual?.idsUos
+      ),
 
       idsFuncoes: this.normalizarIds(
         filtroAtual?.idsFuncoes
@@ -468,6 +563,8 @@ export class FiltroAcoesComponent
       ),
 
       chips: {
+        anos: [],
+        uos: [],
         funcoes: [],
         programas: [],
         acoes: []
@@ -479,21 +576,39 @@ export class FiltroAcoesComponent
 
   private criarFiltroVazio(): IFiltroPlanejamento {
     return {
+
       idPeriodoPlanejamento: null,
+      idsAnos: [],
+      idsUos: [],
       idsFuncoes: [],
       idsProgramas: [],
       idsAcoes: [],
 
       chips: {
+        anos: [],
+        uos: [],
         funcoes: [],
         programas: [],
         acoes: []
       }
+
     };
   }
 
   private montarChipsFiltro(): void {
+
     this.filtro.chips = {
+
+      anos: this.obterOpcoesSelecionadas(
+        this.anos,
+        this.filtro.idsAnos
+      ),
+
+      uos: this.obterOpcoesSelecionadas(
+        this.uos,
+        this.filtro.idsUos
+      ),
+
       funcoes: this.obterOpcoesSelecionadas(
         this.funcoes,
         this.filtro.idsFuncoes
@@ -508,7 +623,9 @@ export class FiltroAcoesComponent
         this.acoes,
         this.filtro.idsAcoes
       )
+
     };
+
   }
 
   private obterOpcoesSelecionadas(
@@ -554,4 +671,159 @@ export class FiltroAcoesComponent
       )
     );
   }
+
+  private carregarUos(
+    preservarSelecaoAtual: boolean
+  ): void {
+
+    this.uosSubscription?.unsubscribe();
+
+    const idPeriodo = this.filtro.idPeriodoPlanejamento;
+    const idsAnos = this.normalizarIds(this.filtro.idsAnos);
+    const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
+
+    this.uos = [];
+    this.programas = [];
+    this.acoes = [];
+
+    if (!preservarSelecaoAtual) {
+      this.filtro.idsUos = [];
+      this.filtro.idsProgramas = [];
+      this.filtro.idsAcoes = [];
+    }
+
+    if (idPeriodo == null || idsAnos.length === 0) {
+      this.filtro.idsProgramas = [];
+      this.filtro.idsAcoes = [];
+      return;
+    }
+
+    this.carregandoUos = true;
+
+    this.uosSubscription =
+      this._projetosService
+        .listarUosPorAnosPpaLoa(idsAnos)
+        .pipe(
+          finalize(() => {
+            this.carregandoUos = false;
+          })
+        )
+        .subscribe({
+          next: uos => {
+
+            this.uos = uos ?? [];
+
+            this.filtro.idsUos =
+              preservarSelecaoAtual
+                ? this.manterSomenteIdsValidos(
+                  this.filtro.idsUos,
+                  this.uos
+                )
+                : [];
+
+            if (
+              preservarSelecaoAtual &&
+              this.filtro.idsUos.length > 0
+            ) {
+              this.carregarProgramas(true);
+            } else {
+              this.filtro.idsUos = [];
+            }
+
+          },
+          error: erro => {
+            console.error(
+              'Erro ao carregar as UOS.',
+              erro
+            );
+
+            this.uos = [];
+            this.programas = [];
+            this.acoes = [];
+
+            this.filtro.idsUos = [];
+            this.filtro.idsProgramas = [];
+            this.filtro.idsAcoes = [];
+
+          }
+        });
+
+  }
+
+  private carregarFuncoes(
+    preservarSelecaoAtual: boolean
+  ): void {
+
+    this.funcoesSubscription?.unsubscribe();
+
+    const idsAnos = this.normalizarIds(this.filtro.idsAnos);
+    const idsUos = this.normalizarIds(this.filtro.idsUos);
+
+    this.programas = [];
+    this.acoes = [];
+
+    if (!preservarSelecaoAtual) {
+      this.filtro.idsProgramas = [];
+      this.filtro.idsAcoes = [];
+    }
+
+    if (idsUos.length === 0 || idsAnos.length === 0) {
+      this.filtro.idsAnos = [];
+      this.filtro.idsUos = [];
+      return;
+    }
+
+    this.carregandoFuncoes = true;
+
+    this.uosSubscription =
+      this._projetosService
+        .listarFuncoesPpaLoa(idsAnos, idsUos)
+        .pipe(
+          finalize(() => {
+            this.carregandoFuncoes = false;
+          })
+        )
+        .subscribe({
+          next: funcoes => {
+
+            this.funcoes = funcoes ?? [];
+
+            this.filtro.idsFuncoes =
+              preservarSelecaoAtual
+                ? this.manterSomenteIdsValidos(
+                  this.filtro.idsFuncoes,
+                  this.funcoes
+                )
+                : [];
+
+            if (
+              preservarSelecaoAtual &&
+              this.filtro.idsFuncoes.length > 0
+            ) {
+              this.carregarProgramas(true);
+            } else {
+              this.filtro.idsFuncoes = [];
+            }
+
+          },
+          error: erro => {
+
+            console.error(
+              'Erro ao carregar as Funcoes.',
+              erro
+            );
+
+            this.uos = [];
+            this.programas = [];
+            this.acoes = [];
+
+            this.filtro.idsUos = [];
+            this.filtro.idsProgramas = [];
+            this.filtro.idsAcoes = [];
+
+          }
+        });
+
+  }
+
 }
