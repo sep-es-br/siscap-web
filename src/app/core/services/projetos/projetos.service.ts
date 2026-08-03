@@ -558,22 +558,18 @@ export class ProjetosService extends BaseHttpService<
 
   }
 
-  buscarPeriodoPpaVigente(): Observable<IPeriodoPlanejamento> {
-
-    const usarMock = true;
-
-    if (usarMock) {
-      return of({
-        id: 1,
-        descricao: '2024-2027'
-      } as IPeriodoPlanejamento);
-    }
-
-    return this._http.get<IPeriodoPlanejamento>(
-      `${this._url}/ppaloa/periodos/vigente`
-    );
-
-  }
+  // buscarPeriodoPpaVigente(): Observable<IPeriodoPlanejamento> {
+  //   const usarMock = false;
+  //   if (usarMock) {
+  //     return of({
+  //       id: 1,
+  //       descricao: '2024-2027'
+  //     } as IPeriodoPlanejamento);
+  //   }
+  //   return this._http.get<IPeriodoPlanejamento>(
+  //     `${this._url}/ppaloa/bi/ppa`
+  //   );
+  // }
 
   buscarDadosAcoes(idsAcoes: number[]): Observable<PlanejamentoAcao[]> {
 
@@ -619,43 +615,36 @@ export class ProjetosService extends BaseHttpService<
 
   }
 
-  listarAnosPpaLoa(): Observable<IOpcaoPlanejamento[]> {
-
-    const usarMock = true;
-
-    if (usarMock) {
-
-      const anosMock = [
-        {
-          id: 2024,
-          nome: '2024'
-        },
-        {
-          id: 2025,
-          nome: '2025'
-        },
-        {
-          id: 2026,
-          nome: '2026'
-        },
-        {
-          id: 2027,
-          nome: '2027'
-        }
-      ] as IOpcaoPlanejamento[];
-
-      return of(anosMock.map(ano => ({
-        id: ano.id,
-        nome: ano.nome
-      })));
-
-    }
-
-    return this._http.get<IOpcaoPlanejamento[]>(
-      `${this._url}/ppaloa/anos/`
-    );
-
-  }
+  // listarAnosPpaLoa(): Observable<IOpcaoPlanejamento[]> {
+  //   const usarMock = true;
+  //   if (usarMock) {
+  //     const anosMock = [
+  //       {
+  //         id: 2024,
+  //         nome: '2024'
+  //       },
+  //       {
+  //         id: 2025,
+  //         nome: '2025'
+  //       },
+  //       {
+  //         id: 2026,
+  //         nome: '2026'
+  //       },
+  //       {
+  //         id: 2027,
+  //         nome: '2027'
+  //       }
+  //     ] as IOpcaoPlanejamento[];
+  //     return of(anosMock.map(ano => ({
+  //       id: ano.id,
+  //       nome: ano.nome
+  //     })));
+  //   }
+  //   return this._http.get<IOpcaoPlanejamento[]>(
+  //     `${this._url}/ppaloa/anos/`
+  //   );
+  // }
 
   listarUosPorAnosPpaLoa(idAnos: number[]): Observable<IOpcaoPlanejamento[]> {
 

@@ -15,6 +15,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { finalize, Subscription, switchMap } from 'rxjs';
 
 import { ProjetosService } from '../../../../core/services/projetos/projetos.service';
+import { PpaloaIntegracaoBiService } from '../../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 
 export interface IOpcaoPlanejamento {
   id: number;
@@ -104,7 +105,8 @@ export class FiltroAcoesComponent
   private funcoesSubscription?: Subscription;
 
   constructor(
-    private readonly _projetosService: ProjetosService
+    private readonly _projetosService: ProjetosService,
+    private readonly _ppaloaIntegracaoService: PpaloaIntegracaoBiService
   ) { }
 
   ngOnInit(): void {
@@ -146,56 +148,40 @@ export class FiltroAcoesComponent
     this.carregandoDadosIniciais = true;
 
     this.carregamentoInicialSubscription =
-      this._projetosService
+      this._ppaloaIntegracaoService
         .buscarPeriodoPpaVigente()
         .pipe(
-
           switchMap(periodo => {
-
             this.periodoPlanejamento = periodo;
             this.filtro.idPeriodoPlanejamento = periodo.id;
-
             return this._projetosService.listarAnosPpaLoa();
-
-            // return this._projetosService
-            //   .listarFuncoesPpaLoa(periodo.id);
-
           }),
-
           finalize(() => {
             this.carregandoDadosIniciais = false;
           })
-
         )
         .subscribe({
           next: anos => {
-
             this.anos = anos ?? [];
-
             this.filtro.idsAnos =
               this.manterSomenteIdsValidos(
                 this.filtro.idsAnos,
                 this.anos
               );
-
             if (this.filtro.idsAnos.length > 0) {
               this.carregarProgramas(true);
             }
-
           },
-
           error: erro => {
             console.error(
               'Erro ao carregar os dados iniciais do planejamento.',
               erro
             );
-
             this.anos = [];
             this.uos = [];
             this.funcoes = [];
             this.programas = [];
             this.acoes = [];
-
           }
         });
   }

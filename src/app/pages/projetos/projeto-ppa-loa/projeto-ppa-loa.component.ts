@@ -11,6 +11,7 @@ import { FiltroAcoesComponent, IFiltroPlanejamento, IPeriodoPlanejamento } from 
 import { finalize, Subscription } from 'rxjs';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
+import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -89,6 +90,7 @@ export class ProjetoPpaLoaComponent {
   constructor(private readonly _ngbModalService: NgbModal,
     private readonly _projetosService: ProjetosService,
     private readonly _toastService: ToastService,
+    private readonly _ppaloaIntegracaoService: PpaloaIntegracaoBiService
   ) { }
 
   ngOnInit(): void {
@@ -147,11 +149,7 @@ export class ProjetoPpaLoaComponent {
 
     this.carregandoDadosIniciais = true;
 
-    // this.carregamentoInicialSubscription =
-    //   this._projetosService
-    //     .buscarPeriodoPpaVigente()
-
-    this._projetosService
+    this._ppaloaIntegracaoService
       .buscarPeriodoPpaVigente()
       .subscribe({
         next: (periodo) => {
