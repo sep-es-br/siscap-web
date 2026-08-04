@@ -409,154 +409,154 @@ export class ProjetosService extends BaseHttpService<
     );
   }
 
-  listarAcoesPorProgramas(idPeriodo: number, idsProgramas: number[]): Observable<IOpcaoPlanejamento[]> {
+  // listarAcoesPorProgramas(idPeriodo: number, idsProgramas: number[]): Observable<IOpcaoPlanejamento[]> {
 
-    const usarMock = true;
+  //   const usarMock = true;
 
-    if (usarMock) {
+  //   if (usarMock) {
 
-      const acoesMock = [
-        {
-          id: 114,
-          nome: 'RESERVA PARA O PAGAMENTO DE PESSOAL',
-          idPeriodo: 1,
-          idFuncao: 10,
-          idPrograma: 27
-        },
-        {
-          id: 1097,
-          nome: 'REALIZAÇÃO DE CONCURSO PÚBLICO E PROCESSO SELETIVO',
-          idPeriodo: 1,
-          idFuncao: 10,
-          idPrograma: 27
-        }
-      ]
+  //     const acoesMock = [
+  //       {
+  //         id: 114,
+  //         nome: 'RESERVA PARA O PAGAMENTO DE PESSOAL',
+  //         idPeriodo: 1,
+  //         idFuncao: 10,
+  //         idPrograma: 27
+  //       },
+  //       {
+  //         id: 1097,
+  //         nome: 'REALIZAÇÃO DE CONCURSO PÚBLICO E PROCESSO SELETIVO',
+  //         idPeriodo: 1,
+  //         idFuncao: 10,
+  //         idPrograma: 27
+  //       }
+  //     ]
 
-      const acoesFiltradas: IOpcaoPlanejamento[] = acoesMock
-        .filter(acao =>
-          acao.idPeriodo === idPeriodo &&
-          idsProgramas.includes(acao.idPrograma)
-        )
-        .map(acao => ({
-          id: acao.id,
-          nome: acao.id.toString().padStart(4, '0') + '-' + acao.nome
-        }));
+  //     const acoesFiltradas: IOpcaoPlanejamento[] = acoesMock
+  //       .filter(acao =>
+  //         acao.idPeriodo === idPeriodo &&
+  //         idsProgramas.includes(acao.idPrograma)
+  //       )
+  //       .map(acao => ({
+  //         id: acao.id,
+  //         nome: acao.id.toString().padStart(4, '0') + '-' + acao.nome
+  //       }));
 
-      return of(acoesFiltradas);
+  //     return of(acoesFiltradas);
 
-    }
+  //   }
 
-    return this._http.get<IOpcaoPlanejamento[]>(
-      `${this._url}/ppaloa/acoes/`
-    );
+  //   return this._http.get<IOpcaoPlanejamento[]>(
+  //     `${this._url}/ppaloa/acoes/`
+  //   );
 
-  }
+  // }
 
-  listarProgramasPorFuncoes(idsAno: number[], idsFuncoes: number[], idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
+  // listarProgramasPorFuncoes(idsAno: number[], idsFuncoes: number[], idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
 
-    const usarMock = true;
+  //   const usarMock = false;
 
-    if (usarMock) {
+  //   if (usarMock) {
 
-      const programasMock = [
-        {
-          id: 27,
-          nome: 'GESTÃO ESTRATÉGICA DE PESSOAS',
-          idAno: 2024,
-          idUo: 1101,
-          idFuncao: 1
-        },
-        {
-          id: 61,
-          nome: 'SAÚDE CIDADÃ',
-          idAno: 2024,
-          idUo: 1101,
-          idFuncao: 1
-        }
-      ];
+  //     const programasMock = [
+  //       {
+  //         id: 27,
+  //         nome: 'GESTÃO ESTRATÉGICA DE PESSOAS',
+  //         idAno: 2024,
+  //         idUo: 1101,
+  //         idFuncao: 1
+  //       },
+  //       {
+  //         id: 61,
+  //         nome: 'SAÚDE CIDADÃ',
+  //         idAno: 2024,
+  //         idUo: 1101,
+  //         idFuncao: 1
+  //       }
+  //     ];
 
-      const programasFiltrados: IOpcaoPlanejamento[] = programasMock
-        .filter(programa =>
-          idsAno.includes(programa.idAno) &&
-          idsFuncoes.includes(programa.idFuncao) &&
-          idsUos.includes(programa.idUo)
-        )
-        .map(programa => ({
-          id: programa.id,
-          nome: programa.id.toString().padStart(4, '0') + '-' + programa.nome
-        }));
+  //     const programasFiltrados: IOpcaoPlanejamento[] = programasMock
+  //       .filter(programa =>
+  //         idsAno.includes(programa.idAno) &&
+  //         idsFuncoes.includes(programa.idFuncao) &&
+  //         idsUos.includes(programa.idUo)
+  //       )
+  //       .map(programa => ({
+  //         id: programa.id,
+  //         nome: programa.id.toString().padStart(4, '0') + '-' + programa.nome
+  //       }));
 
-      return of(programasFiltrados);
+  //     return of(programasFiltrados);
 
-    }
+  //   }
 
-    return this._http.get<IOpcaoPlanejamento[]>(
-      `${this._url}/ppaloa/programas/`
-    );
+  //   return this._http.get<IOpcaoPlanejamento[]>(
+  //     `${this._url}/ppaloa/programas/`
+  //   );
 
-  }
+  // }
 
-  listarFuncoesPpaLoa(idsAnos: number[], idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
+  // listarFuncoesPpaLoa(idsAnos: number[], idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
 
-    const usarMock = true;
+  //   const usarMock = true;
 
-    if (usarMock) {
+  //   if (usarMock) {
 
-      const funcoesMock = [
-        {
-          id: 1,
-          nome: 'LEGISLATIVA'
-        },
-        {
-          id: 2,
-          nome: 'JUDICIÁRIA'
-        },
-        {
-          id: 3,
-          nome: 'ESSENCIAL À JUSTIÇA'
-        },
-        {
-          id: 4,
-          nome: 'ADMINISTRAÇÃO'
-        },
-        {
-          id: 5,
-          nome: 'DEFESA NACIONAL'
-        },
-        {
-          id: 6,
-          nome: 'SEGURANÇA PÚBLICA'
-        },
-        {
-          id: 7,
-          nome: 'RELAÇÕES EXTERIORES'
-        },
-        {
-          id: 8,
-          nome: 'ASSISTÊNCIA SOCIAL'
-        },
-        {
-          id: 9,
-          nome: 'PREVIDÊNCIA SOCIAL'
-        },
-        {
-          id: 10,
-          nome: 'SAÚDE'
-        }
-      ] as IOpcaoPlanejamento[];
+  //     const funcoesMock = [
+  //       {
+  //         id: 1,
+  //         nome: 'LEGISLATIVA'
+  //       },
+  //       {
+  //         id: 2,
+  //         nome: 'JUDICIÁRIA'
+  //       },
+  //       {
+  //         id: 3,
+  //         nome: 'ESSENCIAL À JUSTIÇA'
+  //       },
+  //       {
+  //         id: 4,
+  //         nome: 'ADMINISTRAÇÃO'
+  //       },
+  //       {
+  //         id: 5,
+  //         nome: 'DEFESA NACIONAL'
+  //       },
+  //       {
+  //         id: 6,
+  //         nome: 'SEGURANÇA PÚBLICA'
+  //       },
+  //       {
+  //         id: 7,
+  //         nome: 'RELAÇÕES EXTERIORES'
+  //       },
+  //       {
+  //         id: 8,
+  //         nome: 'ASSISTÊNCIA SOCIAL'
+  //       },
+  //       {
+  //         id: 9,
+  //         nome: 'PREVIDÊNCIA SOCIAL'
+  //       },
+  //       {
+  //         id: 10,
+  //         nome: 'SAÚDE'
+  //       }
+  //     ] as IOpcaoPlanejamento[];
 
-      return of(funcoesMock.map(funcao => ({
-        id: funcao.id,
-        nome: funcao.id.toString().padStart(2, '0') + '-' + funcao.nome
-      })));
+  //     return of(funcoesMock.map(funcao => ({
+  //       id: funcao.id,
+  //       nome: funcao.id.toString().padStart(2, '0') + '-' + funcao.nome
+  //     })));
 
-    }
+  //   }
 
-    return this._http.get<IOpcaoPlanejamento[]>(
-      `${this._url}/ppaloa/funcoes/`
-    );
+  //   return this._http.get<IOpcaoPlanejamento[]>(
+  //     `${this._url}/ppaloa/funcoes/`
+  //   );
 
-  }
+  // }
 
   // buscarPeriodoPpaVigente(): Observable<IPeriodoPlanejamento> {
   //   const usarMock = false;
@@ -646,66 +646,66 @@ export class ProjetosService extends BaseHttpService<
   //   );
   // }
 
-  listarUosPorAnosPpaLoa(idAnos: number[]): Observable<IOpcaoPlanejamento[]> {
+  // listarUosPorAnosPpaLoa(idAnos: number[]): Observable<IOpcaoPlanejamento[]> {
 
-    const usarMock = true;
+  //   const usarMock = true;
 
-    if (usarMock) {
+  //   if (usarMock) {
 
-      const uosMock = [
-        {
-          id: 1101,
-          nome: 'ALEES'
-        },
-        {
-          id: 2101,
-          nome: 'TCEES'
-        },
-        {
-          id: 3101,
-          nome: 'TJEES'
-        },
-        {
-          id: 3901,
-          nome: 'FUNEPJ'
-        },
-        {
-          id: 5101,
-          nome: 'MPES'
-        },
-        {
-          id: 5901,
-          nome: 'FERIDL'
-        },
-        {
-          id: 5902,
-          nome: 'FUNEMP'
-        },
-        {
-          id: 6101,
-          nome: 'DPES'
-        },
-        {
-          id: 6901,
-          nome: 'FADEPES'
-        },
-        {
-          id: 10101,
-          nome: 'SCV'
-        },
-      ] as IOpcaoPlanejamento[];
+  //     const uosMock = [
+  //       {
+  //         id: 1101,
+  //         nome: 'ALEES'
+  //       },
+  //       {
+  //         id: 2101,
+  //         nome: 'TCEES'
+  //       },
+  //       {
+  //         id: 3101,
+  //         nome: 'TJEES'
+  //       },
+  //       {
+  //         id: 3901,
+  //         nome: 'FUNEPJ'
+  //       },
+  //       {
+  //         id: 5101,
+  //         nome: 'MPES'
+  //       },
+  //       {
+  //         id: 5901,
+  //         nome: 'FERIDL'
+  //       },
+  //       {
+  //         id: 5902,
+  //         nome: 'FUNEMP'
+  //       },
+  //       {
+  //         id: 6101,
+  //         nome: 'DPES'
+  //       },
+  //       {
+  //         id: 6901,
+  //         nome: 'FADEPES'
+  //       },
+  //       {
+  //         id: 10101,
+  //         nome: 'SCV'
+  //       },
+  //     ] as IOpcaoPlanejamento[];
 
-      return of(uosMock.map(uo => ({
-        id: uo.id,
-        nome: uo.nome
-      })));
+  //     return of(uosMock.map(uo => ({
+  //       id: uo.id,
+  //       nome: uo.nome
+  //     })));
 
-    }
+  //   }
 
-    return this._http.get<IOpcaoPlanejamento[]>(
-      `${this._url}/ppaloa/uos/`
-    );
+  //   return this._http.get<IOpcaoPlanejamento[]>(
+  //     `${this._url}/ppaloa/uos/`
+  //   );
 
-  }
+  // }
 
 }

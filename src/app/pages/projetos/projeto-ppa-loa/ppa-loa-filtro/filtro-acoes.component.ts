@@ -154,7 +154,7 @@ export class FiltroAcoesComponent
           switchMap(periodo => {
             this.periodoPlanejamento = periodo;
             this.filtro.idPeriodoPlanejamento = periodo.id;
-            return this._projetosService.listarAnosPpaLoa();
+            return this._ppaloaIntegracaoService.listarAnosPpaLoa();
           }),
           finalize(() => {
             this.carregandoDadosIniciais = false;
@@ -198,6 +198,8 @@ export class FiltroAcoesComponent
     this.uos = []
     this.programas = [];
     this.acoes = [];
+
+    console.log('onAnoChange -> this.filtro.idsAnos : ', this.filtro.idsAnos);
 
     if (this.filtro.idsAnos.length === 0) {
       return;
@@ -286,16 +288,16 @@ export class FiltroAcoesComponent
     this.programas = [];
     this.acoes = [];
 
-    console.log( 'idsAnos : ' , idsAnos );
-    console.log( 'idsFuncoes : ' , idsFuncoes );
-    console.log( 'idsUos : ' , idsUos );
+    console.log('idsAnos : ', idsAnos);
+    console.log('idsFuncoes : ', idsFuncoes);
+    console.log('idsUos : ', idsUos);
 
     if (!preservarSelecaoAtual) {
       this.filtro.idsProgramas = [];
       this.filtro.idsAcoes = [];
     }
 
-    if (idsFuncoes.length === 0 || idsAnos.length === 0 || idsUos.length === 0 ) {
+    if (idsFuncoes.length === 0 || idsAnos.length === 0 || idsUos.length === 0) {
       this.filtro.idsProgramas = [];
       this.filtro.idsAcoes = [];
       return;
@@ -304,8 +306,8 @@ export class FiltroAcoesComponent
     this.carregandoProgramas = true;
 
     this.programasSubscription =
-      this._projetosService
-        .listarProgramasPorFuncoes( idsAnos, idsFuncoes, idsUos )
+      this._ppaloaIntegracaoService
+        .listarProgramasPorFuncoes(idsAnos, idsFuncoes, idsUos)
         .pipe(
           finalize(() => {
             this.carregandoProgramas = false;
@@ -358,14 +360,14 @@ export class FiltroAcoesComponent
    * selecionados.
    */
   private carregarAcoes(
-    preservarSelecaoAtual: boolean
-  ): void {
+    preservarSelecaoAtual: boolean): void {
+
     this.acoesSubscription?.unsubscribe();
 
-    const idPeriodo = this.filtro.idPeriodoPlanejamento;
-    const idsProgramas = this.normalizarIds(
-      this.filtro.idsProgramas
-    );
+    const idFuncoes = this.normalizarIds(this.filtro.idsFuncoes);
+    const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
+    const idAnos = this.normalizarIds(this.filtro.idsAnos);
+    const idUos = this.normalizarIds(this.filtro.idsUos);
 
     this.acoes = [];
 
@@ -373,7 +375,7 @@ export class FiltroAcoesComponent
       this.filtro.idsAcoes = [];
     }
 
-    if (idPeriodo == null || idsProgramas.length === 0) {
+    if (idFuncoes.length === 0 || idsProgramas.length === 0 || idAnos.length === 0 || idUos.length === 0) {
       this.filtro.idsAcoes = [];
       return;
     }
@@ -381,10 +383,12 @@ export class FiltroAcoesComponent
     this.carregandoAcoes = true;
 
     this.acoesSubscription =
-      this._projetosService
+      this._ppaloaIntegracaoService
         .listarAcoesPorProgramas(
-          idPeriodo,
-          idsProgramas
+          idFuncoes,
+          idsProgramas,
+          idAnos,
+          idUos
         )
         .pipe(
           finalize(() => {
@@ -458,7 +462,7 @@ export class FiltroAcoesComponent
   }
 
   applyFilter(): void {
-    
+
     this.montarChipsFiltro();
 
     this.apply.emit({
@@ -664,6 +668,8 @@ export class FiltroAcoesComponent
 
     this.uosSubscription?.unsubscribe();
 
+    console.log('carregarUos -> this.filtro.idsAnos : ', this.filtro.idsAnos);
+
     const idPeriodo = this.filtro.idPeriodoPlanejamento;
     const idsAnos = this.normalizarIds(this.filtro.idsAnos);
     const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
@@ -678,16 +684,18 @@ export class FiltroAcoesComponent
       this.filtro.idsAcoes = [];
     }
 
-    if (idPeriodo == null || idsAnos.length === 0) {
+    if (idsAnos.length === 0) {
       this.filtro.idsProgramas = [];
       this.filtro.idsAcoes = [];
       return;
     }
 
+    console.log('carregarUos idsAnos : ', idsAnos);
+
     this.carregandoUos = true;
 
     this.uosSubscription =
-      this._projetosService
+      this._ppaloaIntegracaoService
         .listarUosPorAnosPpaLoa(idsAnos)
         .pipe(
           finalize(() => {
@@ -762,7 +770,7 @@ export class FiltroAcoesComponent
     this.carregandoFuncoes = true;
 
     this.uosSubscription =
-      this._projetosService
+      this._ppaloaIntegracaoService
         .listarFuncoesPpaLoa(idsAnos, idsUos)
         .pipe(
           finalize(() => {
