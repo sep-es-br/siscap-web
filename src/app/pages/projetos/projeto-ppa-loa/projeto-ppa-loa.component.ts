@@ -219,7 +219,10 @@ export class ProjetoPpaLoaComponent {
     if (this.currentFilter?.idsAcoes?.length == 0)
       return
 
-    this.carregarAcoesSelecionadas(this.currentFilter?.idsAcoes ?? []);
+    // idFuncoes: number[], idsProgramas: number[], idAnos: number[], idUos: number[], idsAcoes: number[]
+
+    this.carregarAcoesSelecionadas(this.currentFilter?.idsFuncoes ?? [], this.currentFilter?.idsProgramas ?? [], this.currentFilter?.idsAcoes ?? [],
+      this.currentFilter?.idsUos ?? [], this.currentFilter?.idsAcoes ?? []);
 
     // const filtroFormatado: IFiltroIndicador = {
     //   idGestao: filter.idGestao,
@@ -293,13 +296,13 @@ export class ProjetoPpaLoaComponent {
   }
 
   private carregarAcoesSelecionadas(
-    chavesAcoes: number[]
+    idFuncoes: number[], idsProgramas: number[], idAnos: number[], idUos: number[], idsAcoes: number[]
   ): void {
 
     this.loading = true;
 
-    this._projetosService
-      .buscarDadosAcoes(chavesAcoes)
+    this._ppaloaIntegracaoService
+      .buscarDadosAcoes(idFuncoes, idsProgramas, idAnos, idUos, idsAcoes)
       .pipe(
         finalize(() => {
           this.loading = false;
@@ -307,31 +310,21 @@ export class ProjetoPpaLoaComponent {
       )
       .subscribe({
         next: acoes => {
-
           this.acoesPlanejamento = acoes;
-
           // this.atualizarAcoesProjeto(chavesAcoes);
-
           this.quantidadeAcoes = this.acoesPlanejamento.length ?? 0;
-
-          console.log('Açoes selecionadas :', this.acoesPlanejamento)
-
         },
         error: erro => {
-
           console.error('Erro ao consultar dados de ações no BI:', erro);
-
           this._toastService.showToast('error', 'Não foi possível consultar os dados das ações selecionadas.');
-
           this.quantidadeAcoes = 0;
-
         }
       });
 
   }
 
   formatarMoeda(valor: number | null | undefined): string {
-    
+
     if (valor == null) {
       return 'R$ 0,00';
     }

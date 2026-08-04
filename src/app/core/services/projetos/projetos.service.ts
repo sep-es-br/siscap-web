@@ -571,49 +571,49 @@ export class ProjetosService extends BaseHttpService<
   //   );
   // }
 
-  buscarDadosAcoes(idsAcoes: number[]): Observable<PlanejamentoAcao[]> {
+  // buscarDadosAcoes(idsAcoes: number[]): Observable<PlanejamentoAcao[]> {
 
-    const usarMock = true;
+  //   const usarMock = true;
 
-    if (usarMock) {
+  //   if (usarMock) {
 
-      const acoesPlanejamento: PlanejamentoAcao[] = [
-        {
-          id: 2175,
-          codigo: '2175',
-          titulo: 'MANUTENÇÃO DAS UNIDADES CENTRAL E REGIONAIS',
-          unidadeOrcamentaria: 'SEFAZ',
-          programa: 'GESTÃO E SUPORTE EDUCACIONAL',
-          funcao: '01 - EDUCAÇÃO',
-          valorPpa: 60000,
-          anoLoa: 2026,
-          valorLoa: 15000,
-          detalhamentoOrcamentarioLoa: [{
-              codigoGnd: '3',
-              codigoModalidade: '90',
-              idUso: '0',
-              fonte: '15000000',
-              valor: 9750000.00
-            },
-            {
-              codigoGnd: '4',
-              codigoModalidade: '40',
-              idUso: '0',
-              fonte: '17000000',
-              valor: 5250000.00
-            } ]
-        }
-      ];
+  //     const acoesPlanejamento: PlanejamentoAcao[] = [
+  //       {
+  //         id: 2175,
+  //         codigo: '2175',
+  //         titulo: 'MANUTENÇÃO DAS UNIDADES CENTRAL E REGIONAIS',
+  //         unidadeOrcamentaria: 'SEFAZ',
+  //         programa: 'GESTÃO E SUPORTE EDUCACIONAL',
+  //         funcao: '01 - EDUCAÇÃO',
+  //         valorPpa: 60000,
+  //         anoLoa: 2026,
+  //         valorLoa: 15000,
+  //         detalhamentoOrcamentarioLoa: [{
+  //             codigoGnd: '3',
+  //             codigoModalidade: '90',
+  //             idUso: '0',
+  //             fonte: '15000000',
+  //             valor: 9750000.00
+  //           },
+  //           {
+  //             codigoGnd: '4',
+  //             codigoModalidade: '40',
+  //             idUso: '0',
+  //             fonte: '17000000',
+  //             valor: 5250000.00
+  //           } ]
+  //       }
+  //     ];
 
-      return of(acoesPlanejamento);
+  //     return of(acoesPlanejamento);
 
-    }
+  //   }
 
-    return this._http.get<PlanejamentoAcao[]>(
-      `${this._url}/ppaloa/acao/`
-    );
+  //   return this._http.get<PlanejamentoAcao[]>(
+  //     `${this._url}/ppaloa/acao/`
+  //   );
 
-  }
+  // }
 
   // listarAnosPpaLoa(): Observable<IOpcaoPlanejamento[]> {
   //   const usarMock = true;

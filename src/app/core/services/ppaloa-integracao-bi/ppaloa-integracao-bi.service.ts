@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { IOpcaoPlanejamento, IPeriodoPlanejamento } from '../../../pages/projetos/projeto-ppa-loa/ppa-loa-filtro/filtro-acoes.component';
 import { map, Observable, of } from 'rxjs';
+import { PlanejamentoAcao } from '../../../pages/projetos/projeto-ppa-loa/projeto-ppa-loa.component';
 
 @Injectable({
   providedIn: 'root'
@@ -264,6 +265,58 @@ export class PpaloaIntegracaoBiService {
 
     return this._http.get<IOpcaoPlanejamento[]>(
       `${this._url}/ppa/acoes`,
+      { params }
+    );
+
+  }
+
+  buscarDadosAcoes( idFuncoes: number[], idsProgramas: number[], idAnos: number[], idUos: number[], idsAcoes: number[]): Observable<PlanejamentoAcao[]> {
+
+    const usarMock = false;
+
+    if (usarMock) {
+
+      const acoesPlanejamento: PlanejamentoAcao[] = [
+        {
+          id: 2175,
+          codigo: '2175',
+          titulo: 'MANUTENÇÃO DAS UNIDADES CENTRAL E REGIONAIS',
+          unidadeOrcamentaria: 'SEFAZ',
+          programa: 'GESTÃO E SUPORTE EDUCACIONAL',
+          funcao: '01 - EDUCAÇÃO',
+          valorPpa: 60000,
+          anoLoa: 2026,
+          valorLoa: 15000,
+          detalhamentoOrcamentarioLoa: [{
+              codigoGnd: '3',
+              codigoModalidade: '90',
+              idUso: '0',
+              fonte: '15000000',
+              valor: 9750000.00
+            },
+            {
+              codigoGnd: '4',
+              codigoModalidade: '40',
+              idUso: '0',
+              fonte: '17000000',
+              valor: 5250000.00
+            } ]
+        }
+      ];
+
+      return of(acoesPlanejamento);
+
+    }
+
+    const params = new HttpParams()
+      .set('funcoes', idFuncoes.join(','))
+      .set('programas', idsProgramas.join(','))
+      .set('anos', idAnos.join(','))
+      .set('uos', idUos.join(','))
+      .set('acoes', idsAcoes.join(','));
+
+    return this._http.get<PlanejamentoAcao[]>(
+      `${this._url}/ppa/acoes/dados`,
       { params }
     );
 
