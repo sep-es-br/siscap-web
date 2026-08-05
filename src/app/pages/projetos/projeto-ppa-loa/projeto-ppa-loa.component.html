@@ -59,10 +59,10 @@
           <div class="acao-planejamento-cabecalho-conteudo">
 
             <h3 class="acao-planejamento-titulo">
-              <ng-container *ngIf="acao.codigo">
-                {{ acao.codigo }} -
+              <ng-container *ngIf="acao.codigoAcao">
+                {{ acao.codigoAcao }} -
               </ng-container>
-              {{ acao.titulo }}
+              {{ acao.nomeAcao }}
             </h3>
 
           </div>
@@ -77,49 +77,50 @@
         <!-- Informações da ação -->
         <div class="acao-planejamento-dados">
 
-          <div class="acao-planejamento-campo campo-linha-inteira" *ngIf="acao.unidadeOrcamentaria">
+          <div class="acao-planejamento-campo" *ngIf="acao.nomeUnidadeOrcamentaria">
             <span class="acao-planejamento-label">
               Unidade orçamentária
             </span>
 
             <span class="acao-planejamento-valor">
-              {{ acao.unidadeOrcamentaria }}
+              {{ acao.siglaUnidadeOrcamentaria }}
             </span>
           </div>
 
-          <div class="acao-planejamento-campo campo-linha-inteira" *ngIf="acao.orgao">
+          <div class="acao-planejamento-campo" *ngIf="acao.nomeOrgao">
             <span class="acao-planejamento-label">
               Órgão
             </span>
 
             <span class="acao-planejamento-valor">
-              {{ acao.orgao }}
+              {{ acao.siglaOrgao }}
             </span>
           </div>
 
-          <div class="acao-planejamento-campo" *ngIf="acao.funcao">
+
+          <div class="acao-planejamento-campo" *ngIf="acao.nomeFuncao">
             <span class="acao-planejamento-label">
               Função
             </span>
 
             <span class="acao-planejamento-valor">
-              {{ acao.funcao }}
+              {{ acao.nomeFuncao }}
             </span>
           </div>
 
-          <div class="acao-planejamento-campo" *ngIf="acao.programa">
+          <div class="acao-planejamento-campo" *ngIf="acao.nomePrograma">
             <span class="acao-planejamento-label">
               Programa
             </span>
 
             <span class="acao-planejamento-valor">
-              {{ acao.programa }}
+              {{ acao.nomePrograma }}
             </span>
           </div>
 
-          <div class="acao-planejamento-campo campo-linha-inteira" *ngIf="acao.valorPpa">
+          <div class="acao-planejamento-campo" *ngIf="acao.valorPpa">
             <span class="acao-planejamento-label">
-              Valor PPA {{ acao.periodoPpa }}
+              Valor PPA
             </span>
 
             <span class="acao-planejamento-valor">
@@ -127,46 +128,69 @@
             </span>
           </div>
 
-          <div class="acao-planejamento-campo campo-linha-inteira" *ngIf="acao.valorLoa">
-            
+          <div class="acao-planejamento-campo" *ngIf="acao.valorLoa">
+
             <span class="valor-loa-label">
-              Valor LOA {{ acao.anoLoa }}
+              Valor LOA
             </span>
 
-            <span class="valor-loa-total" >
+            <span class="valor-loa-total">
               {{ formatarMoeda(acao.valorLoa) }}
             </span>
           </div>
 
         </div>
 
-        <!-- 
-          detalhamentoOrcamentarioLoa: [{
-              codigoGnd: '3',
-              codigoModalidade: '90',
-              idUso: '0',
-              fonte: '15000000',
-              valor: 9750000.00
-            },
-            {
-              codigoGnd: '4',
-              codigoModalidade: '40',
-              idUso: '0',
-              fonte: '17000000',
-              valor: 5250000.00
-            } ] -->
+        <div class="acao-planejamento-detalhamento" *ngIf="acao.detalhamentosLoa?.length">
 
-
-        <!-- Descrição -->
-        <div class="acao-planejamento-detalhamento" *ngIf="acao.descricao">
           <div class="acao-planejamento-detalhamento-titulo">
-            Descrição da ação
+            Detalhamento Orçamentário LOA
           </div>
 
-          <p class="acao-planejamento-descricao">
-            {{ acao.descricao }}
-          </p>
+          <!-- Cabeçalho exibido no desktop -->
+          <div class="detalhamento-loa-cabecalho">
+            <div>GND</div>
+            <div>Modalidade</div>
+            <div>ID-USO</div>
+            <div>Fonte</div>
+            <div class="detalhamento-loa-coluna-valor">Valor</div>
+          </div>
+
+          <!-- Registros -->
+          <div class="detalhamento-loa-linha"
+            *ngFor=" let detalhe of acao.detalhamentosLoa;  trackBy: trackByDetalhamentoLoa">
+            <div class="detalhamento-loa-celula" data-label="GND">
+              {{ detalhe.codigoGnd }}
+            </div>
+
+            <div class="detalhamento-loa-celula" data-label="Modalidade">
+              {{ detalhe.codigoModalidade }}
+            </div>
+
+            <div class="detalhamento-loa-celula" data-label="ID-USO">
+              {{ detalhe.idUso }}
+            </div>
+
+            <div class="detalhamento-loa-celula" data-label="Fonte">
+              {{ detalhe.fonte }}
+            </div>
+
+            <div class="detalhamento-loa-celula detalhamento-loa-coluna-valor detalhamento-loa-valor"
+              data-label="Valor">
+              {{ formatarMoeda(detalhe.valor) }}
+            </div>
+          </div>
+
         </div>
+
+         <div class="acao-planejamento-total" *ngIf="acao.detalhamentosLoa?.length">
+            <span class="acao-planejamento-total-label">
+              Total da ação
+            </span>
+            <span class="acao-planejamento-total-valor">
+              {{ formatarMoeda(acao.valorTotalDetalhamento) }}
+            </span>
+          </div>
 
       </article>
 
@@ -188,7 +212,5 @@
     </label>
 
   </footer>
-
-  <!-- </div> -->
 
 </section>

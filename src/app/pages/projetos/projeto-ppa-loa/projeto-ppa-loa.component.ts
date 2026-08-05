@@ -15,26 +15,30 @@ import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integra
 
 export interface PlanejamentoAcao {
   id: number;
-  codigo?: string;
-  titulo: string;
-  descricao?: string;
-  unidadeOrcamentaria?: string;
-  orgao?: string;
-  funcao?: string;
-  programa?: string;
-  periodoPpa?: string;
-  valorPpa?: number;
-  anoLoa?: number;
-  valorLoa?: number;
-  detalhamentoOrcamentarioLoa: DetalhamentoOrcamentarioLoa[];
+  codigoOrgao: string | null;
+  siglaOrgao: string | null;
+  nomeOrgao: string | null;
+  codigoUnidadeOrcamentaria: string | null;
+  siglaUnidadeOrcamentaria: string | null;
+  nomeUnidadeOrcamentaria: string | null;
+  codigoPrograma: string | null;
+  nomePrograma: string | null;
+  codigoAcao: string | null;
+  nomeAcao: string | null;
+  codigoFuncao: string | null;
+  nomeFuncao: string | null;
+  valorPpa: number | null;
+  valorLoa: number;
+  detalhamentosLoa: DetalhamentoOrcamentarioLoa[];
+  valorTotalDetalhamento?: number;
 }
 
 export interface DetalhamentoOrcamentarioLoa {
-  codigoGnd?: string;
-  codigoModalidade?: string;
-  idUso?: string;
-  fonte?: string;
-  valor?: number;
+  codigoGnd: string | null;
+  codigoModalidade: string | null;
+  idUso: string | null;
+  fonte: string | null;
+  valor: number | null;
 }
 
 export interface PlanejamentoFiltroAplicado {
@@ -82,6 +86,13 @@ export class ProjetoPpaLoaComponent {
 
   trackByFiltro: TrackByFunction<any> = (_, filtro) => filtro.id;
   trackByAcao: TrackByFunction<PlanejamentoAcao> = (_, acao) => acao.id;
+
+  trackByDetalhamentoLoa(
+    index: number,
+    detalhe: DetalhamentoOrcamentarioLoa
+  ): string {
+    return `${detalhe.codigoGnd}-${detalhe.codigoModalidade}-${detalhe.idUso}-${detalhe.fonte}-${index}`;
+  }
 
   showModal: boolean = false;
   carregandoDadosIniciais: boolean = false;
@@ -166,6 +177,7 @@ export class ProjetoPpaLoaComponent {
           ];
 
           this.currentFilter = {
+            periodoPlanejamento: periodo,
             idPeriodoPlanejamento: periodo.id
           };
 
@@ -219,23 +231,12 @@ export class ProjetoPpaLoaComponent {
     if (this.currentFilter?.idsAcoes?.length == 0)
       return
 
-    // idFuncoes: number[], idsProgramas: number[], idAnos: number[], idUos: number[], idsAcoes: number[]
-
-    this.carregarAcoesSelecionadas(this.currentFilter?.idsFuncoes ?? [], this.currentFilter?.idsProgramas ?? [], this.currentFilter?.idsAcoes ?? [],
-      this.currentFilter?.idsUos ?? [], this.currentFilter?.idsAcoes ?? []);
-
-    // const filtroFormatado: IFiltroIndicador = {
-    //   idGestao: filter.idGestao,
-    //   labels: Object.entries(filter.labels ?? {})
-    //     .filter(([_, valores]) => Array.isArray(valores) && valores.length > 0)
-    //     .map(([idLabel, idLabelValores]) => ({
-    //       idLabel: Number(idLabel),
-    //       idLabelValores: idLabelValores as number[]
-    //     })),
-    //   desafios: filter.desafio?.id ?? []
-    // };
-
-    // this.filterService.setFilter(filtroFormatado);
+    this.carregarAcoesSelecionadas(this.currentFilter?.periodoPlanejamento?.descricao ?? '',
+      this.currentFilter?.idsFuncoes ?? [],
+      this.currentFilter?.idsProgramas ?? [],
+      this.currentFilter?.idsAnos ?? [],
+      this.currentFilter?.idsUos ?? [],
+      this.currentFilter?.idsAcoes ?? []);
 
   }
 
@@ -296,13 +297,13 @@ export class ProjetoPpaLoaComponent {
   }
 
   private carregarAcoesSelecionadas(
-    idFuncoes: number[], idsProgramas: number[], idAnos: number[], idUos: number[], idsAcoes: number[]
+    ppa: string, idFuncoes: number[], idsProgramas: number[], idAnos: number[], idUos: number[], idsAcoes: number[]
   ): void {
 
     this.loading = true;
 
     this._ppaloaIntegracaoService
-      .buscarDadosAcoes(idFuncoes, idsProgramas, idAnos, idUos, idsAcoes)
+      .buscarDadosAcoes(ppa, idFuncoes, idsProgramas, idAnos, idUos, idsAcoes)
       .pipe(
         finalize(() => {
           this.loading = false;
@@ -310,9 +311,19 @@ export class ProjetoPpaLoaComponent {
       )
       .subscribe({
         next: acoes => {
-          this.acoesPlanejamento = acoes;
-          // this.atualizarAcoesProjeto(chavesAcoes);
+
+          // this.acoesPlanejamento = acoes;
+
+          this.acoesPlanejamento = acoes.map( acao => ({
+            ...acao,
+            valorTotalDetalhamento: ( acao.detalhamentosLoa ?? [])
+              .reduce(
+                (total, detalhe) =>
+                  total + Number(detalhe.valor ?? 0), 0 )
+          }));
+
           this.quantidadeAcoes = this.acoesPlanejamento.length ?? 0;
+
         },
         error: erro => {
           console.error('Erro ao consultar dados de ações no BI:', erro);

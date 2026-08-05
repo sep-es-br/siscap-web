@@ -33,6 +33,8 @@ export interface IChipPlanejamento {
 }
 
 export interface IFiltroPlanejamento {
+
+  periodoPlanejamento: IPeriodoPlanejamento | null;
   idPeriodoPlanejamento: number | null;
 
   idsAnos: number[];
@@ -466,6 +468,10 @@ export class FiltroAcoesComponent
     this.montarChipsFiltro();
 
     this.apply.emit({
+
+      periodoPlanejamento:
+        this.filtro.periodoPlanejamento,
+
       idPeriodoPlanejamento:
         this.filtro.idPeriodoPlanejamento,
 
@@ -529,6 +535,9 @@ export class FiltroAcoesComponent
 
     this.filtro = {
 
+      periodoPlanejamento:
+        filtroAtual?.periodoPlanejamento ?? null,
+
       idPeriodoPlanejamento:
         filtroAtual?.idPeriodoPlanejamento ?? null,
 
@@ -567,6 +576,7 @@ export class FiltroAcoesComponent
   private criarFiltroVazio(): IFiltroPlanejamento {
     return {
 
+      periodoPlanejamento: null,
       idPeriodoPlanejamento: null,
       idsAnos: [],
       idsUos: [],
