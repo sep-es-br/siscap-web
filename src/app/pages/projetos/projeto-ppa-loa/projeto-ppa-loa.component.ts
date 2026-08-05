@@ -138,8 +138,43 @@ export class ProjetoPpaLoaComponent {
     this.naoPrevistoPpa = naoPrevisto;
   }
 
-  onRemoverAcao(_t32: any) {
-    throw new Error('Method not implemented.');
+  onRemoverAcao(acao: any) {
+
+  //   id: number;
+  // codigoOrgao: string | null;
+  // siglaOrgao: string | null;
+  // nomeOrgao: string | null;
+  // codigoUnidadeOrcamentaria: string | null;
+  // siglaUnidadeOrcamentaria: string | null;
+  // nomeUnidadeOrcamentaria: string | null;
+  // codigoPrograma: string | null;
+  // nomePrograma: string | null;
+  // codigoAcao: string | null;
+  // nomeAcao: string | null;
+  // codigoFuncao: string | null;
+  // nomeFuncao: string | null;
+  // valorPpa: number | null;
+  // valorLoa: number;
+  // detalhamentosLoa: DetalhamentoOrcamentarioLoa[];
+  // valorTotalDetalhamento?: number;
+  
+  ppa, idFuncoes, idsProgramas, idAnos, idUos, idsAcoes
+    
+    this.acoesPlanejamento = this.acoesPlanejamento
+         .filter(o => o.odsId !== ods.odsId);
+   
+       const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
+   
+       const index = odsProjetoArray.controls.findIndex(control =>
+         control.get('odsId')?.value === ods.odsId
+       );
+   
+       if (index >= 0) {
+         odsProjetoArray.removeAt(index);
+       }
+   
+       this.atualizarOdsSugeridas();
+   
   }
 
   onNaoPrevistoPpaChange($event: Event) {
