@@ -1,8 +1,8 @@
-import { Component, TrackByFunction } from '@angular/core';
+import { Component, Input, TrackByFunction } from '@angular/core';
 import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Button } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -12,6 +12,8 @@ import { finalize, Subscription } from 'rxjs';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
+import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
+import { event } from 'jquery';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -29,6 +31,7 @@ export interface PlanejamentoAcao {
   nomeFuncao: string | null;
   valorPpa: number | null;
   valorLoa: number;
+  anoAcao: string;
   detalhamentosLoa: DetalhamentoOrcamentarioLoa[];
   valorTotalDetalhamento?: number;
 }
@@ -67,12 +70,14 @@ export interface PlanejamentoFiltroAplicado {
 })
 export class ProjetoPpaLoaComponent {
 
+  @Input({ required: true }) projetoForm!: FormGroup;
+
   chips: any[] = [];
 
   private carregamentoInicialSubscription?: Subscription;
 
   tituloPlanejamento: any;
-  periodoPlanejamento: IPeriodoPlanejamento | undefined;
+  periodoPlanejamento: IPeriodoPlanejamento | null = null;
   acoesPlanejamento: PlanejamentoAcao[] = [];
 
   filtrosPlanejamento: PlanejamentoFiltroAplicado[] = [];
@@ -97,14 +102,15 @@ export class ProjetoPpaLoaComponent {
   showModal: boolean = false;
   carregandoDadosIniciais: boolean = false;
   loading: boolean = false;
+  carregandoAcoes: boolean = false;
 
   constructor(private readonly _ngbModalService: NgbModal,
-    private readonly _projetosService: ProjetosService,
     private readonly _toastService: ToastService,
     private readonly _ppaloaIntegracaoService: PpaloaIntegracaoBiService
   ) { }
 
   ngOnInit(): void {
+    this.naoPrevistoPpa = this.projetoForm.get('naoPrevistoPpa')?.value ?? false;
     this.initBaseChip();
   }
 
@@ -138,47 +144,150 @@ export class ProjetoPpaLoaComponent {
     this.naoPrevistoPpa = naoPrevisto;
   }
 
-  onRemoverAcao(acao: any) {
+  // onRemoverAcao(acaoInformada: any) {
 
-  //   id: number;
-  // codigoOrgao: string | null;
-  // siglaOrgao: string | null;
-  // nomeOrgao: string | null;
-  // codigoUnidadeOrcamentaria: string | null;
-  // siglaUnidadeOrcamentaria: string | null;
-  // nomeUnidadeOrcamentaria: string | null;
-  // codigoPrograma: string | null;
-  // nomePrograma: string | null;
-  // codigoAcao: string | null;
-  // nomeAcao: string | null;
-  // codigoFuncao: string | null;
-  // nomeFuncao: string | null;
-  // valorPpa: number | null;
-  // valorLoa: number;
-  // detalhamentosLoa: DetalhamentoOrcamentarioLoa[];
-  // valorTotalDetalhamento?: number;
-  
-  ppa, idFuncoes, idsProgramas, idAnos, idUos, idsAcoes
-    
-    this.acoesPlanejamento = this.acoesPlanejamento
-         .filter(o => o.odsId !== ods.odsId);
-   
-       const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
-   
-       const index = odsProjetoArray.controls.findIndex(control =>
-         control.get('odsId')?.value === ods.odsId
-       );
-   
-       if (index >= 0) {
-         odsProjetoArray.removeAt(index);
-       }
-   
-       this.atualizarOdsSugeridas();
-   
+  //   this.acoesPlanejamento = this.acoesPlanejamento.filter(acao =>
+  //     acao.codigoOrgao !== acaoInformada.codigoOrgao ||
+  //     acao.codigoUnidadeOrcamentaria !== acaoInformada.codigoUnidadeOrcamentaria ||
+  //     acao.codigoPrograma !== acaoInformada.codigoPrograma ||
+  //     acao.codigoAcao !== acaoInformada.codigoAcao ||
+  //     acao.codigoFuncao !== acaoInformada.codigoFuncao
+  //   );
+
+  //   this.quantidadeAcoes = this.acoesPlanejamento.length ?? 0;
+
+  //   if (this.quantidadeAcoes === 0) {
+  //     console.log('passou aqui...')
+  //     this.filtrosPlanejamento = [];
+  //     this.currentFilter = null;
+  //   }
+
+  //   const acoesPlanejamentoProjetoArray = this.projetoForm.get('acoesPlanejamentoProjeto') as FormArray;
+
+  //   const index = acoesPlanejamentoProjetoArray.controls.findIndex(control =>
+  //     control.get('codAcao')?.value === acaoInformada.codigoAcao &&
+  //     control.get('codFuncao')?.value === acaoInformada.codigoFuncao &&
+  //     control.get('codPrograma')?.value === acaoInformada.codigoPrograma &&
+  //     control.get('ano')?.value === acaoInformada.ano &&
+  //     control.get('codUo')?.value === acaoInformada.codUo
+  //   );
+
+  //   if (index >= 0) {
+  //     acoesPlanejamentoProjetoArray.removeAt(index);
+  //   }
+
+  //   this.initBaseChip();
+
+  // }
+
+  onRemoverAcao(acaoInformada: PlanejamentoAcao): void {
+
+    // 1. Remove da lista exibida na tela
+    this.acoesPlanejamento = this.acoesPlanejamento.filter(
+      acao => this.chaveAcaoBi(acao) !== this.chaveAcaoBi(acaoInformada)
+    );
+
+    this.quantidadeAcoes = this.acoesPlanejamento.length;
+
+    // 2. Recupera o controle do formulário
+    const controleAcoes =
+      this.projetoForm.get('acoesPlanejamentoProjeto');
+
+    if (!controleAcoes) {
+      console.error(
+        'Controle acoesPlanejamentoProjeto não encontrado.'
+      );
+      return;
+    }
+
+    const acoesDoFormulario =
+      (controleAcoes.value as IAcaoPlanejamentoProjeto[] | null) ?? [];
+
+    const chaveRemovida =
+      this.chaveAcaoBi(acaoInformada);
+
+    // 3. Remove também do formulário
+    const acoesAtualizadas = acoesDoFormulario.filter(
+      acaoFormulario =>
+        this.chaveAcaoFormulario(acaoFormulario) !== chaveRemovida
+    );
+
+    controleAcoes.setValue(acoesAtualizadas);
+    controleAcoes.markAsDirty();
+    controleAcoes.markAsTouched();
+    controleAcoes.updateValueAndValidity();
+
+    console.log('Ação removida:', chaveRemovida);
+    console.log(
+      'Ações restantes no formulário:',
+      controleAcoes.value
+    );
+
+    // 4. Se não restou nenhuma ação, limpa somente os chips
+    if (this.quantidadeAcoes === 0) {
+
+      this.filtrosPlanejamento = [];
+
+      this.currentFilter = {
+        periodoPlanejamento: this.periodoPlanejamento,
+        idPeriodoPlanejamento: this.periodoPlanejamento?.id
+      };
+
+      this.chips = [
+        {
+          label: 'PLANEJAMENTO',
+          value: this.periodoPlanejamento?.descricao || '-',
+          type: 'base',
+          removable: false
+        }
+      ];
+    }
+
   }
 
-  onNaoPrevistoPpaChange($event: Event) {
-    throw new Error('Method not implemented.');
+  private chaveAcaoBi(acao: PlanejamentoAcao): string {
+
+    return [
+      this.normalizarCodigo(acao.codigoUnidadeOrcamentaria),
+      this.normalizarCodigo(acao.codigoPrograma),
+      this.normalizarCodigo(acao.codigoAcao),
+      this.normalizarCodigo(acao.codigoFuncao),
+      this.normalizarCodigo(acao.anoAcao)
+    ].join('|');
+  }
+
+  private chaveAcaoFormulario(
+    acao: IAcaoPlanejamentoProjeto
+  ): string {
+
+    return [
+      this.normalizarCodigo(acao.codUo),
+      this.normalizarCodigo(acao.codPrograma),
+      this.normalizarCodigo(acao.codAcao),
+      this.normalizarCodigo(acao.codFuncao),
+      this.normalizarCodigo(acao.ano)
+    ].join('|');
+  }
+
+  private normalizarCodigo(
+    valor: string | number | null | undefined
+  ): string {
+
+    const codigo = String(valor ?? '').trim();
+
+    // Remove zeros à esquerda:
+    // "0012" e 12 passam a ser considerados iguais.
+    return codigo.replace(/^0+(?=\d)/, '');
+  }
+
+  onNaoPrevistoPpaChange(event: Event): void {
+
+    const input = event.currentTarget as HTMLInputElement;
+
+    this.naoPrevistoPpa = input.checked;
+
+    this.projetoForm.get('naoPrevistoPpa')?.setValue(input.checked);
+
   }
 
   onRemoverFiltro(_t10: any) {
@@ -215,6 +324,9 @@ export class ProjetoPpaLoaComponent {
             periodoPlanejamento: periodo,
             idPeriodoPlanejamento: periodo.id
           };
+
+          // Carrega as ações existentes quando estiver editando
+          this.carregarAcoesProjetoEdicao();
 
         },
         error: (erro) => {
@@ -335,32 +447,66 @@ export class ProjetoPpaLoaComponent {
     ppa: string, idFuncoes: number[], idsProgramas: number[], idAnos: number[], idUos: number[], idsAcoes: number[]
   ): void {
 
-    this.loading = true;
+    this.carregandoAcoes = true;
 
     this._ppaloaIntegracaoService
       .buscarDadosAcoes(ppa, idFuncoes, idsProgramas, idAnos, idUos, idsAcoes)
       .pipe(
         finalize(() => {
-          this.loading = false;
+          this.carregandoAcoes = false;
         })
       )
       .subscribe({
         next: acoes => {
 
-          // this.acoesPlanejamento = acoes;
-
-          this.acoesPlanejamento = acoes.map( acao => ({
+          this.acoesPlanejamento = acoes.map(acao => ({
             ...acao,
-            valorTotalDetalhamento: ( acao.detalhamentosLoa ?? [])
+            valorTotalDetalhamento: (acao.detalhamentosLoa ?? [])
               .reduce(
                 (total, detalhe) =>
-                  total + Number(detalhe.valor ?? 0), 0 )
+                  total + Number(detalhe.valor ?? 0), 0)
           }));
 
           this.quantidadeAcoes = this.acoesPlanejamento.length ?? 0;
 
+          const controle = this.projetoForm.get(
+            'acoesPlanejamentoProjeto'
+          );
+
+          if (!controle) {
+            console.log("Controle nao encontrado!!")
+            return;
+          }
+
+          acoes.map(acaoBi => {
+
+            console.log('acao bi selecionada setando no form :', acaoBi)
+
+            const novaAcao: IAcaoPlanejamentoProjeto = {
+              id: null,
+              idProjeto: null,
+              codAcao: Number(acaoBi.codigoAcao),
+              codFuncao: Number(acaoBi.codigoFuncao),
+              codPrograma: Number(acaoBi.codigoPrograma),
+              ano: String(acaoBi.anoAcao),
+              codUo: String(acaoBi.codigoUnidadeOrcamentaria)
+            };
+
+            const acoesAtuais =
+              (controle.value as IAcaoPlanejamentoProjeto[] | null) ?? [];
+
+            controle.setValue([
+              ...acoesAtuais,
+              novaAcao
+            ]);
+
+          });
+
+          controle.markAsDirty();
+
         },
         error: erro => {
+          this.carregandoAcoes = false;
           console.error('Erro ao consultar dados de ações no BI:', erro);
           this._toastService.showToast('error', 'Não foi possível consultar os dados das ações selecionadas.');
           this.quantidadeAcoes = 0;
@@ -380,6 +526,49 @@ export class ProjetoPpaLoaComponent {
       currency: 'BRL'
     }).format(valor);
 
+  }
+
+  private carregarAcoesProjetoEdicao(): void {
+
+    if (this.naoPrevistoPpa) {
+      return;
+    }
+
+    const acoesProjeto =
+      this.projetoForm.get('acoesPlanejamentoProjeto')?.value as IAcaoPlanejamentoProjeto[] ?? [];
+
+    if (acoesProjeto.length === 0) {
+      return;
+    }
+
+    const idsFuncoes = [
+      ...new Set(acoesProjeto.map(acao => Number(acao.codFuncao)))
+    ];
+
+    const idsProgramas = [
+      ...new Set(acoesProjeto.map(acao => Number(acao.codPrograma)))
+    ];
+
+    const idsAnos = [
+      ...new Set(acoesProjeto.map(acao => Number(acao.ano)))
+    ];
+
+    const idsUos = [
+      ...new Set(acoesProjeto.map(acao => Number(acao.codUo)))
+    ];
+
+    const idsAcoes = [
+      ...new Set(acoesProjeto.map(acao => Number(acao.codAcao)))
+    ];
+
+    this.carregarAcoesSelecionadas(
+      this.periodoPlanejamento?.descricao ?? '',
+      idsFuncoes,
+      idsProgramas,
+      idsAnos,
+      idsUos,
+      idsAcoes
+    );
   }
 
 }

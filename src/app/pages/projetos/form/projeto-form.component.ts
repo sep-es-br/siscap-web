@@ -368,8 +368,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        // console.log("Buscar projeto por ID: ", response)
-        // console.log("Buscar projeto por ID: ", response)
+        console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -938,7 +937,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     this.textoSpinner = 'Baixando DIC...';
-  
+
     this._projetosService.baixarDIC(this._idProjetoEdicao)
       .pipe(
         finalize(() => {
@@ -946,7 +945,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
-  
+
   }
 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): Observable<any> {
@@ -1077,6 +1076,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
 
       }),
+
+      acoesPlanejamentoProjeto: this._nnfb.control(
+          projetoFormModel?.acoesPlanejamentoProjeto ?? false,
+        ),
+
+      naoPrevistoPpa: this._nnfb.control(
+          projetoFormModel?.naoPrevistoPpa ?? false,
+        ),
 
       pareceresProjeto: this._nnfb.array([]),
 
@@ -1902,7 +1909,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         })
       );
 
-      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho, formData)
@@ -1976,9 +1983,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   onSelecionarPessoa(pessoa: any) {
-    
-    console.log('Pessoa selecionada:', pessoa);
-    
+
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
@@ -3269,7 +3274,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.abrirAba('nav-indicadores');
 
   }
-  
+
   public irParaPlanejamento(event: MouseEvent): void {
 
     event.preventDefault();

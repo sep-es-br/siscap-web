@@ -21,169 +21,183 @@
   <!-- Ações selecionadas -->
   <div class="planejamento-card">
 
-    <header class="planejamento-card-header">
-      <h2 class="planejamento-card-title">
-        Ações do planejamento
-      </h2>
+    <ng-container *ngIf="!carregandoAcoes">
 
-      <span class="planejamento-count-badge">
-        {{ quantidadeAcoes | number: '2.0-0' }}
-        {{ quantidadeAcoes === 1 ? 'adicionada' : 'adicionadas' }}
-      </span>
-    </header>
+      <!-- Carregamento local -->
+      <div *ngIf="carregandoAcoes" class="planejamento-acoes-loading" role="status" aria-live="polite"
+        aria-label="Carregando ações do planejamento">
 
-    <!-- Estado vazio -->
-    <div class="planejamento-empty-state" *ngIf="quantidadeAcoes === 0">
-      <div class="planejamento-empty-icon">
-        📋
+        <div class="spinner-border text-primary" aria-hidden="true"></div>
+
+        <span class="planejamento-acoes-loading-texto">
+          Carregando ações do planejamento...
+        </span>
+
       </div>
 
-      <div class="planejamento-empty-title">
-        Nenhuma ação selecionada
-      </div>
+      <header class="planejamento-card-header">
+        <h2 class="planejamento-card-title">
+          Ações do planejamento
+        </h2>
 
-      <div class="planejamento-empty-description">
-        Utilize os filtros acima para adicionar as ações do planejamento
-        ao projeto.
-      </div>
-    </div>
+        <span class="planejamento-count-badge">
+          {{ quantidadeAcoes | number: '2.0-0' }}
+          {{ quantidadeAcoes === 1 ? 'adicionada' : 'adicionadas' }}
+        </span>
+      </header>
 
-    <!-- Lista de ações -->
-    <div class="planejamento-cards-container" *ngIf="quantidadeAcoes > 0">
-
-      <article class="acao-planejamento-card" *ngFor="let acao of acoesPlanejamento; trackBy: trackByAcao ">
-
-        <!-- Cabeçalho da ação -->
-        <header class="acao-planejamento-header">
-
-          <div class="acao-planejamento-cabecalho-conteudo">
-
-            <h3 class="acao-planejamento-titulo">
-              <ng-container *ngIf="acao.codigoAcao">
-                {{ acao.codigoAcao }} -
-              </ng-container>
-              {{ acao.nomeAcao }}
-            </h3>
-
-          </div>
-
-          <button *ngIf="!somenteLeitura" type="button" class="acao-remover-btn" title="Remover ação"
-            aria-label="Remover ação do planejamento" (click)="onRemoverAcao(acao)">
-            &times;
-          </button>
-
-        </header>
-
-        <!-- Informações da ação -->
-        <div class="acao-planejamento-dados">
-
-          <div class="acao-planejamento-campo" *ngIf="acao.nomeUnidadeOrcamentaria">
-            <span class="acao-planejamento-label">
-              Unidade orçamentária
-            </span>
-
-            <span class="acao-planejamento-valor">
-              {{ acao.siglaUnidadeOrcamentaria }}
-            </span>
-          </div>
-
-          <div class="acao-planejamento-campo" *ngIf="acao.nomeOrgao">
-            <span class="acao-planejamento-label">
-              Órgão
-            </span>
-
-            <span class="acao-planejamento-valor">
-              {{ acao.siglaOrgao }}
-            </span>
-          </div>
-
-
-          <div class="acao-planejamento-campo" *ngIf="acao.nomeFuncao">
-            <span class="acao-planejamento-label">
-              Função
-            </span>
-
-            <span class="acao-planejamento-valor">
-              {{ acao.nomeFuncao }}
-            </span>
-          </div>
-
-          <div class="acao-planejamento-campo" *ngIf="acao.nomePrograma">
-            <span class="acao-planejamento-label">
-              Programa
-            </span>
-
-            <span class="acao-planejamento-valor">
-              {{ acao.nomePrograma }}
-            </span>
-          </div>
-
-          <div class="acao-planejamento-campo" *ngIf="acao.valorPpa">
-            <span class="acao-planejamento-label">
-              Valor PPA
-            </span>
-
-            <span class="acao-planejamento-valor">
-              {{ formatarMoeda(acao.valorPpa) }}
-            </span>
-          </div>
-
-          <div class="acao-planejamento-campo" *ngIf="acao.valorLoa">
-
-            <span class="valor-loa-label">
-              Valor LOA
-            </span>
-
-            <span class="valor-loa-total">
-              {{ formatarMoeda(acao.valorLoa) }}
-            </span>
-          </div>
-
+      <!-- Estado vazio -->
+      <div class="planejamento-empty-state" *ngIf="quantidadeAcoes === 0">
+        <div class="planejamento-empty-icon">
+          📋
         </div>
 
-        <div class="acao-planejamento-detalhamento" *ngIf="acao.detalhamentosLoa?.length">
-
-          <div class="acao-planejamento-detalhamento-titulo">
-            Detalhamento Orçamentário LOA
-          </div>
-
-          <!-- Cabeçalho exibido no desktop -->
-          <div class="detalhamento-loa-cabecalho">
-            <div>GND</div>
-            <div>Modalidade</div>
-            <div>ID-USO</div>
-            <div>Fonte</div>
-            <div class="detalhamento-loa-coluna-valor">Valor</div>
-          </div>
-
-          <!-- Registros -->
-          <div class="detalhamento-loa-linha"
-            *ngFor=" let detalhe of acao.detalhamentosLoa;  trackBy: trackByDetalhamentoLoa">
-            <div class="detalhamento-loa-celula" data-label="GND">
-              {{ detalhe.codigoGnd }}
-            </div>
-
-            <div class="detalhamento-loa-celula" data-label="Modalidade">
-              {{ detalhe.codigoModalidade }}
-            </div>
-
-            <div class="detalhamento-loa-celula" data-label="ID-USO">
-              {{ detalhe.idUso }}
-            </div>
-
-            <div class="detalhamento-loa-celula" data-label="Fonte">
-              {{ detalhe.fonte }}
-            </div>
-
-            <div class="detalhamento-loa-celula detalhamento-loa-coluna-valor detalhamento-loa-valor"
-              data-label="Valor">
-              {{ formatarMoeda(detalhe.valor) }}
-            </div>
-          </div>
-
+        <div class="planejamento-empty-title">
+          Nenhuma ação selecionada
         </div>
 
-         <div class="acao-planejamento-total" *ngIf="acao.detalhamentosLoa?.length">
+        <div class="planejamento-empty-description">
+          Utilize os filtros acima para adicionar as ações do planejamento
+          ao projeto.
+        </div>
+      </div>
+
+      <!-- Lista de ações -->
+      <div class="planejamento-cards-container" *ngIf="quantidadeAcoes > 0">
+
+        <article class="acao-planejamento-card" *ngFor="let acao of acoesPlanejamento; trackBy: trackByAcao ">
+
+          <!-- Cabeçalho da ação -->
+          <header class="acao-planejamento-header">
+
+            <div class="acao-planejamento-cabecalho-conteudo">
+
+              <h3 class="acao-planejamento-titulo">
+                <ng-container *ngIf="acao.codigoAcao">
+                  {{ acao.codigoAcao }} -
+                </ng-container>
+                {{ acao.nomeAcao }}
+              </h3>
+
+            </div>
+
+            <button *ngIf="!somenteLeitura" type="button" class="acao-remover-btn" title="Remover ação"
+              aria-label="Remover ação do planejamento" (click)="onRemoverAcao(acao)">
+              &times;
+            </button>
+
+          </header>
+
+          <!-- Informações da ação -->
+          <div class="acao-planejamento-dados">
+
+            <div class="acao-planejamento-campo" *ngIf="acao.nomeUnidadeOrcamentaria">
+              <span class="acao-planejamento-label">
+                Unidade orçamentária
+              </span>
+
+              <span class="acao-planejamento-valor">
+                {{ acao.siglaUnidadeOrcamentaria }}
+              </span>
+            </div>
+
+            <div class="acao-planejamento-campo" *ngIf="acao.nomeOrgao">
+              <span class="acao-planejamento-label">
+                Órgão
+              </span>
+
+              <span class="acao-planejamento-valor">
+                {{ acao.siglaOrgao }}
+              </span>
+            </div>
+
+
+            <div class="acao-planejamento-campo" *ngIf="acao.nomeFuncao">
+              <span class="acao-planejamento-label">
+                Função
+              </span>
+
+              <span class="acao-planejamento-valor">
+                {{ acao.nomeFuncao }}
+              </span>
+            </div>
+
+            <div class="acao-planejamento-campo" *ngIf="acao.nomePrograma">
+              <span class="acao-planejamento-label">
+                Programa
+              </span>
+
+              <span class="acao-planejamento-valor">
+                {{ acao.nomePrograma }}
+              </span>
+            </div>
+
+            <div class="acao-planejamento-campo" *ngIf="acao.valorPpa">
+              <span class="acao-planejamento-label">
+                Valor PPA
+              </span>
+
+              <span class="acao-planejamento-valor">
+                {{ formatarMoeda(acao.valorPpa) }}
+              </span>
+            </div>
+
+            <div class="acao-planejamento-campo" *ngIf="acao.valorLoa">
+
+              <span class="valor-loa-label">
+                Valor LOA
+              </span>
+
+              <span class="valor-loa-total">
+                {{ formatarMoeda(acao.valorLoa) }}
+              </span>
+            </div>
+
+          </div>
+
+          <div class="acao-planejamento-detalhamento" *ngIf="acao.detalhamentosLoa?.length">
+
+            <div class="acao-planejamento-detalhamento-titulo">
+              Detalhamento Orçamentário LOA
+            </div>
+
+            <!-- Cabeçalho exibido no desktop -->
+            <div class="detalhamento-loa-cabecalho">
+              <div>GND</div>
+              <div>Modalidade</div>
+              <div>ID-USO</div>
+              <div>Fonte</div>
+              <div class="detalhamento-loa-coluna-valor">Valor</div>
+            </div>
+
+            <!-- Registros -->
+            <div class="detalhamento-loa-linha"
+              *ngFor=" let detalhe of acao.detalhamentosLoa;  trackBy: trackByDetalhamentoLoa">
+              <div class="detalhamento-loa-celula" data-label="GND">
+                {{ detalhe.codigoGnd }}
+              </div>
+
+              <div class="detalhamento-loa-celula" data-label="Modalidade">
+                {{ detalhe.codigoModalidade }}
+              </div>
+
+              <div class="detalhamento-loa-celula" data-label="ID-USO">
+                {{ detalhe.idUso }}
+              </div>
+
+              <div class="detalhamento-loa-celula" data-label="Fonte">
+                {{ detalhe.fonte }}
+              </div>
+
+              <div class="detalhamento-loa-celula detalhamento-loa-coluna-valor detalhamento-loa-valor"
+                data-label="Valor">
+                {{ formatarMoeda(detalhe.valor) }}
+              </div>
+            </div>
+
+          </div>
+
+          <div class="acao-planejamento-total" *ngIf="acao.detalhamentosLoa?.length">
             <span class="acao-planejamento-total-label">
               Total da ação
             </span>
@@ -192,9 +206,11 @@
             </span>
           </div>
 
-      </article>
+        </article>
 
-    </div>
+      </div>
+
+    </ng-container>
 
   </div>
 
@@ -205,9 +221,8 @@
       [class.nao-previsto-ppa-desabilitado]="somenteLeitura">
       <input type="checkbox" [checked]="naoPrevistoPpa" [disabled]="somenteLeitura"
         (change)="onNaoPrevistoPpaChange($event)" />
-
       <span>
-        Não previsto no PPA {{ periodoPlanejamento }}
+        Não previsto no PPA {{ periodoPlanejamento?.descricao }}
       </span>
     </label>
 

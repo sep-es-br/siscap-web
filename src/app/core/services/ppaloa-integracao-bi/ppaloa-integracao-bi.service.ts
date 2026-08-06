@@ -285,7 +285,7 @@ export class PpaloaIntegracaoBiService {
       { params }
     ).pipe(
       tap(response => {
-        console.log('Response recebido no serviço:', response);
+        // console.log('Response recebido no serviço:', response);
       })
     );
 

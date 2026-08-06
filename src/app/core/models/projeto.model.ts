@@ -15,8 +15,10 @@ import { LotacaoUsuarioEnum } from '../enums/lotacao-usuario.enum';
 import { IStatusProjeto } from '../interfaces/status-projeto.interface';
 import { IIndicadorAvulso } from '../interfaces/indicador-avulso.interface';
 import { IndicadorAvulsoModel } from './indicador-avulso.model';
+import { IAcaoPlanejamentoProjeto } from '../interfaces/acao-planejamento-projeto.interface';
 
 export class ProjetoFormModel implements IProjetoForm {
+
   public sigla: string;
   public titulo: string;
   public idOrganizacao: number;
@@ -67,6 +69,8 @@ export class ProjetoFormModel implements IProjetoForm {
     odsDescricao: string;
     odsCor: string;
   }>;
+  public acoesPlanejamentoProjeto: Array<IAcaoPlanejamentoProjeto>;
+  public naoPrevistoPpa: boolean | false;
 
   constructor(projetoForm?: IProjetoForm) {
 
@@ -122,6 +126,10 @@ export class ProjetoFormModel implements IProjetoForm {
     this.indicadoresAvulsosProjeto = this.montarIndicadorAvulsoProjeto( projetoForm?.indicadoresAvulsosProjeto ?? [] );
 
     this.odsProjeto = projetoForm?.odsProjeto ?? [];
+
+    this.acoesPlanejamentoProjeto = projetoForm?.acoesPlanejamentoProjeto ?? [];
+
+    this.naoPrevistoPpa = projetoForm?.naoPrevistoPpa ?? false;
 
   }
 

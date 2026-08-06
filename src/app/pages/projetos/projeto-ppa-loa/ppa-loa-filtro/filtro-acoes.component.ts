@@ -201,8 +201,6 @@ export class FiltroAcoesComponent
     this.programas = [];
     this.acoes = [];
 
-    console.log('onAnoChange -> this.filtro.idsAnos : ', this.filtro.idsAnos);
-
     if (this.filtro.idsAnos.length === 0) {
       return;
     }
@@ -290,10 +288,6 @@ export class FiltroAcoesComponent
     this.programas = [];
     this.acoes = [];
 
-    console.log('idsAnos : ', idsAnos);
-    console.log('idsFuncoes : ', idsFuncoes);
-    console.log('idsUos : ', idsUos);
-
     if (!preservarSelecaoAtual) {
       this.filtro.idsProgramas = [];
       this.filtro.idsAcoes = [];
@@ -337,8 +331,6 @@ export class FiltroAcoesComponent
               this.filtro.idsAcoes = [];
               this.acoes = [];
             }
-
-            console.log('porgramas encontrados ', programas)
 
           },
           error: erro => {
@@ -678,11 +670,9 @@ export class FiltroAcoesComponent
 
     this.uosSubscription?.unsubscribe();
 
-    console.log('carregarUos -> this.filtro.idsAnos : ', this.filtro.idsAnos);
-
-    const idPeriodo = this.filtro.idPeriodoPlanejamento;
+//    const idPeriodo = this.filtro.idPeriodoPlanejamento;
     const idsAnos = this.normalizarIds(this.filtro.idsAnos);
-    const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
+ //   const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
 
     this.uos = [];
     this.programas = [];
@@ -699,8 +689,6 @@ export class FiltroAcoesComponent
       this.filtro.idsAcoes = [];
       return;
     }
-
-    console.log('carregarUos idsAnos : ', idsAnos);
 
     this.carregandoUos = true;
 
