@@ -164,15 +164,31 @@ export class FiltroAcoesComponent
         )
         .subscribe({
           next: anos => {
+
             this.anos = anos ?? [];
+
             this.filtro.idsAnos =
               this.manterSomenteIdsValidos(
                 this.filtro.idsAnos,
                 this.anos
               );
+            
+            if (this.filtro.idsUos.length > 0){
+              this.carregarUos(true);
+            }
+
+            if (this.filtro.idsFuncoes.length > 0){
+              this.carregarFuncoes(true);
+            }
+
             if (this.filtro.idsAnos.length > 0) {
               this.carregarProgramas(true);
             }
+
+            if (this.filtro.idsAcoes.length > 0) {
+              this.carregarAcoes(true);
+            }
+
           },
           error: erro => {
             console.error(
@@ -670,10 +686,8 @@ export class FiltroAcoesComponent
 
     this.uosSubscription?.unsubscribe();
 
-//    const idPeriodo = this.filtro.idPeriodoPlanejamento;
     const idsAnos = this.normalizarIds(this.filtro.idsAnos);
- //   const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
-
+    
     this.uos = [];
     this.programas = [];
     this.acoes = [];

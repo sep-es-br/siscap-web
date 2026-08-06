@@ -70,7 +70,7 @@ export class ProjetoFormModel implements IProjetoForm {
     odsCor: string;
   }>;
   public acoesPlanejamentoProjeto: Array<IAcaoPlanejamentoProjeto>;
-  public naoPrevistoPpa: boolean | false;
+  public naoPrevistoNoPpa: boolean | false;
 
   constructor(projetoForm?: IProjetoForm) {
 
@@ -129,7 +129,7 @@ export class ProjetoFormModel implements IProjetoForm {
 
     this.acoesPlanejamentoProjeto = projetoForm?.acoesPlanejamentoProjeto ?? [];
 
-    this.naoPrevistoPpa = projetoForm?.naoPrevistoPpa ?? false;
+    this.naoPrevistoNoPpa = projetoForm?.naoPrevistoNoPpa ?? false;
 
   }
 

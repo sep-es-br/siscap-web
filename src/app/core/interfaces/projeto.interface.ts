@@ -63,7 +63,7 @@ export interface IProjeto {
     odsCor: string;
   }>;
   acoesPlanejamentoProjeto: Array<IAcaoPlanejamentoProjeto>;
-  naoPrevistoPpa: boolean;
+  naoPrevistoNoPpa: boolean;
 }
 
 export interface IProjetoForm

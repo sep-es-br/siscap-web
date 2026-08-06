@@ -108,6 +108,7 @@ import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
 import { IIndicadorAvulso } from '../../../core/interfaces/indicador-avulso.interface';
 import { CatalogoIndicadorService } from '../../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
+import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
 
 declare var bootstrap: any;
 
@@ -1078,12 +1079,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }),
 
       acoesPlanejamentoProjeto: this._nnfb.control(
-          projetoFormModel?.acoesPlanejamentoProjeto ?? false,
-        ),
+        projetoFormModel?.acoesPlanejamentoProjeto ?? false,
+      ),
 
-      naoPrevistoPpa: this._nnfb.control(
-          projetoFormModel?.naoPrevistoPpa ?? false,
-        ),
+      naoPrevistoNoPpa: this._nnfb.control(
+        projetoFormModel?.naoPrevistoNoPpa ?? false,
+      ),
 
       pareceresProjeto: this._nnfb.array([]),
 
@@ -1343,14 +1344,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         break;
 
       case BreadcrumbAcoesEnum.Salvar:
-        this.submitProjetoForm(this.projetoForm, true);
+        this.submitProjetoForm(this.projetoForm, true, false);
         break;
 
       case BreadcrumbAcoesEnum.Enviar:
         this.projetoForm.patchValue({
           enviarProjetoGestor: true,
         });
-        if (!this.validarFormulario(this.projetoForm)) break;
+        if (!this.validarFormulario(this.projetoForm, true)) break;
         this.validacaoSomaValoresAcoesEnviar(this.projetoForm, false);
         break;
 
@@ -1378,7 +1379,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         codigoMotivoArquivamento?.clearValidators();
         codigoMotivoArquivamento?.updateValueAndValidity();
 
-        if (!this.validarFormulario(this.projetoForm)) break;
+        if (!this.validarFormulario(this.projetoForm, true)) break;
 
         if (this.compararValorEstimadoValorAcoes()) {
           if (this.statusProjeto == StatusProjetoEnum.Em_Complementacao)
@@ -1407,7 +1408,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.projetoForm.patchValue({
           enviarProjetoPedirParecer: true,
         });
-        if (!this.validarFormulario(this.projetoForm)) break;
+        if (!this.validarFormulario(this.projetoForm, true)) break;
         this.validacaoSomaValoresAcoesEnviarParecer(this.projetoForm, false);
         break;
 
@@ -1562,10 +1563,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return subeoSubeppEntranhados;
   }
 
-  private validarFormulario(form: FormGroup): boolean {
+  private validarFormulario(form: FormGroup, isEnvioDic: boolean): boolean {
 
     for (const key in form.controls) {
       form.controls[key].markAllAsTouched();
+    }
+
+    const acoesPlanejamentoProjeto = this.projetoForm.get('acoesPlanejamentoProjeto')
+      ?.value as IAcaoPlanejamentoProjeto[];
+
+    const naoPrevistoNoPpa = this.projetoForm.get('naoPrevistoNoPpa')
+      ?.value as boolean;
+
+    if (acoesPlanejamentoProjeto.length === 0 && isEnvioDic && !naoPrevistoNoPpa) {
+      this._toastService.showToast('warning', 'O formulário contém erros.', [
+        'Para envio do DIC não havendo acoes de planejamento informadas é obrigatório informar que não há previsão no PPA.',
+      ]);
+      return false;
     }
 
     const indicadoresProjeto = form.get('indicadoresProjeto');
@@ -1703,7 +1717,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
   }
 
-  private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
+  private submitProjetoForm(form: FormGroup, isRascunho: boolean, isEnvioDic: boolean): void {
 
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
@@ -1756,7 +1770,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           },
           metasIndicadorProjeto: indicador.metasIndicadorProjeto
         }));
-
 
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
@@ -1861,7 +1874,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       indicadoresProjetoControl?.disable({ emitEvent: false });
 
-      const formValido = this.validarFormulario(form);
+      const formValido = this.validarFormulario(form, isEnvioDic);
 
       if (!estavaDisabled) {
         indicadoresProjetoControl?.enable({ emitEvent: false });
@@ -2167,7 +2180,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     modalRef.result.then((result) => {
       if (result === 'confirmado') {
-        this.submitProjetoForm(form, false);
+        this.submitProjetoForm(form, false, true);
       }
     });
   }
@@ -2201,7 +2214,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           return;
         }
 
-        this.submitProjetoForm(form, false);
+        this.submitProjetoForm(form, false, true);
 
       }
     });
@@ -2390,7 +2403,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       indicadoresProjetoControl?.disable({ emitEvent: false });
 
-      const formValido = this.validarFormulario(form);
+      const formValido = this.validarFormulario(form, true);
 
       if (!estavaDisabled) {
         indicadoresProjetoControl?.enable({ emitEvent: false });
@@ -2502,7 +2515,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       indicadoresProjetoControl?.disable({ emitEvent: false });
 
-      const formValido = this.validarFormulario(form);
+      const formValido = this.validarFormulario(form, true);
 
       if (!estavaDisabled) {
         indicadoresProjetoControl?.enable({ emitEvent: false });
@@ -3224,7 +3237,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     if (parecerControl.invalid) {
       parecerControl.markAllAsTouched();
-      if (!this.validarFormulario(parecerControl)) return;
+      if (!this.validarFormulario(parecerControl, true)) return;
     }
 
     const modalRef = this._ngbModalService.open(
@@ -3319,12 +3332,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const campoOds = this.projetoForm.get('impactos');
 
-
     campoOds?.clearValidators();
     campoOds?.updateValueAndValidity();
 
     if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
-      if (!this.validarFormulario(this.projetoForm)) {
+      if (!this.validarFormulario(this.projetoForm, false)) {
         this.abrirAba('nav-indicadores');
         return;
       }
