@@ -1,16 +1,13 @@
 :host {
   display: block;
-
   --planejamento-blue: #1a6fc4;
   --planejamento-blue-light: #e8f1fb;
   --planejamento-blue-mid: #d0e4f7;
   --planejamento-blue-dark: #0f4e8e;
-
   --planejamento-gray-bg: #f2f5f8;
   --planejamento-gray-light: #f8fafc;
   --planejamento-gray-border: #c8d3de;
   --planejamento-gray-text: #5a6a7a;
-
   --planejamento-white: #ffffff;
   --planejamento-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -24,10 +21,6 @@
 .planejamento-section {
   width: 100%;
 }
-
-/* =========================================================
-   CABEÇALHO E FILTROS
-   ========================================================= */
 
 .filter-menu-card {
   display: flex;
@@ -205,8 +198,6 @@
   border-radius: 12px 12px 0 0;
 }
 
-/* PrimeNG: escrito como CSS puro, sem aninhamento SCSS. */
-
 ::ng-deep .btn-filtros.p-button {
   display: flex !important;
   gap: 8px !important;
@@ -240,10 +231,6 @@
   color: #000000 !important;
   font-size: 13px;
 }
-
-/* =========================================================
-   CARD PRINCIPAL
-   ========================================================= */
 
 .planejamento-card {
   margin-top: 20px;
@@ -291,10 +278,6 @@
   white-space: nowrap;
 }
 
-/* =========================================================
-   ESTADO VAZIO
-   ========================================================= */
-
 .planejamento-empty-state {
   display: flex;
   flex-direction: column;
@@ -330,10 +313,6 @@
   line-height: 1.5;
 }
 
-/* =========================================================
-   CONTAINER DAS AÇÕES
-   ========================================================= */
-
 .planejamento-cards-container {
   display: grid;
   grid-template-columns: repeat(
@@ -366,10 +345,6 @@
 .planejamento-cards-container::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
-
-/* =========================================================
-   CARD DA AÇÃO
-   ========================================================= */
 
 .acao-planejamento-card {
   display: flex;
@@ -498,10 +473,6 @@
   outline-offset: 2px;
 }
 
-/* =========================================================
-   DADOS DA AÇÃO
-   ========================================================= */
-
 .acao-planejamento-dados {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -528,9 +499,7 @@
 .acao-planejamento-label,
 .valor-loa-label {
   margin-bottom: 2px;
-
   color: var(--planejamento-gray-text);
-
   font-size: 9px;
   font-weight: 700;
   line-height: 1.4;
@@ -551,14 +520,9 @@
   font-weight: 800;
 }
 
-/* =========================================================
-   DESCRIÇÃO / DETALHAMENTO ORÇAMENTÁRIO
-   ========================================================= */
-
 .acao-planejamento-detalhamento {
   min-width: 0;
   padding: 12px;
-
   background: var(--planejamento-gray-light);
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -568,10 +532,8 @@
 .acao-planejamento-detalhamento-titulo {
   margin-bottom: 10px;
   padding-bottom: 8px;
-
   color: var(--planejamento-gray-text);
   border-bottom: 1px solid #e2e8f0;
-
   font-size: 10px;
   font-weight: 800;
   line-height: 1.4;
@@ -580,46 +542,28 @@
 
 .acao-planejamento-descricao {
   margin: 0;
-
   color: #334155;
-
   font-size: 12px;
   font-weight: 500;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
-/*
- * Grade visual do detalhamento:
- * GND | Modalidade | ID-USO | Fonte | Valor
- *
- * As quatro primeiras colunas têm largura controlada. Assim, a coluna
- * Valor não é empurrada para a extremidade direita do card.
- */
 .detalhamento-loa-cabecalho,
 .detalhamento-loa-linha {
   display: grid;
-  // grid-template-columns:
-  //   28px
-  //   64px
-  //   42px
-  //   48px
-  //   minmax(86px, 105px);
   grid-template-columns: 50px 70px 50px 48px minmax(100px, 170px);
   align-items: center;
   justify-content: start;
   column-gap: 4px;
-
   width: 100%;
   min-width: 0;
-  justify-items: center;
-  
+  justify-items: center; 
 }
 
 .detalhamento-loa-cabecalho {
   color: var(--planejamento-blue-dark);
   border-bottom: 1px solid #e2e8f0;
-
   font-size: 10px;
   font-weight: 800;
   line-height: 1.2;
@@ -640,7 +584,6 @@
 .detalhamento-loa-linha {
   color: var(--planejamento-gray-text);
   border-bottom: 1px dashed #e2e8f0;
-
   font-size: 11px;
   font-weight: 500;
 }
@@ -665,17 +608,11 @@
   white-space: nowrap;
 }
 
-/* =========================================================
-   RODAPÉ
-   ========================================================= */
-
 .planejamento-footer {
   display: flex;
   justify-content: flex-end;
-
   margin-top: 16px;
   padding-top: 16px;
-
   border-top: 1px solid #f1f5f9;
 }
 
@@ -683,18 +620,14 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
   padding: 7px 12px;
-
   color: #92400e;
   background: #fffbeb;
   border: 1px solid #fde68a;
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-
   font-size: 12px;
   font-weight: 600;
-
   cursor: pointer;
   transition:
     background-color 0.15s ease,
@@ -709,7 +642,6 @@
   width: 16px;
   height: 16px;
   margin: 0;
-
   accent-color: #f59e0b;
   cursor: pointer;
 }
@@ -727,10 +659,6 @@
 .nao-previsto-ppa-desabilitado input {
   cursor: not-allowed;
 }
-
-/* =========================================================
-   RESPONSIVIDADE
-   ========================================================= */
 
 @media (max-width: 768px) {
   .filter-menu-card {
@@ -773,7 +701,6 @@
     grid-column: auto;
   }
 
-  /* No celular, cada registro do detalhamento vira um pequeno card. */
   .detalhamento-loa-cabecalho {
     display: none;
   }
@@ -781,7 +708,6 @@
   .detalhamento-loa-linha {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px 16px;
-
     padding: 12px 0;
   }
 
@@ -789,15 +715,12 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-
     padding: 0;
   }
 
   .detalhamento-loa-celula::before {
     content: attr(data-label);
-
     color: var(--planejamento-gray-text);
-
     font-size: 9px;
     font-weight: 800;
     text-transform: uppercase;
@@ -816,7 +739,6 @@
   align-items: baseline;
   justify-content: flex-end;
   gap: 12px;
-
   width: 100%;
   padding: 4px 0 0;
 }
@@ -844,17 +766,13 @@
 .planejamento-acoes-loading {
   width: 100%;
   min-height: 220px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   gap: 12px;
-
   border: 1px solid var(--bs-border-color, #dee2e6);
   border-radius: 8px;
-
   background-color: #ffffff;
 }
 
