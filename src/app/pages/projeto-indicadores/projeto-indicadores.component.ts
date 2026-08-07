@@ -325,7 +325,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
       });
 
-    if (this.somenteLeitura) {
+    if (!this.isModoEdicao) {
       formArray.disable({ emitEvent: false });
     } else {
       formArray.enable({ emitEvent: false });

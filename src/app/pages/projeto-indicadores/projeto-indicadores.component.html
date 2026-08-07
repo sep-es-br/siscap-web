@@ -5,10 +5,10 @@
     <div class="badges-container">
       <app-indicador-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value" [type]="chip.type"
         [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)"
-        [somenteLeitura]="somenteLeitura">
+        [somenteLeitura]="!isModoEdicao">
       </app-indicador-chip>
     </div>
-    <p-button styleClass="btn-filtros" (click)="showModal = true" [disabled]="somenteLeitura">
+    <p-button styleClass="btn-filtros" (click)="showModal = true" [disabled]="!isModoEdicao">
       <span>Filtros</span>
       <span style="font-size:14px">▽</span>
     </p-button>
@@ -16,13 +16,13 @@
 
   <app-filtro-indicadores *ngIf="showModal" [gestao]="gestao" [desafios]="gestao?.desafios || []"
     [filtroAtual]="currentFilter" (apply)="onApply($event)" (close)="showModal = false" (restaurar)="onRestaurar()"
-    [somenteLeitura]="somenteLeitura"></app-filtro-indicadores>
+    [somenteLeitura]="!isModoEdicao"></app-filtro-indicadores>
 
 </div>
 
 <app-selecao-indicadores [indicadores]="indicadoresBI" [gestao]="gestao" [form]="formProjeto"
   [selecionados]="indicadoresSelecionados" [loading]="loading"
-  (selecionadosChange)="onSelecaoChange($event)" [podeEditar]="podeEditarIndicadores">
+  (selecionadosChange)="onSelecaoChange($event)" [podeEditar]="isModoEdicao">
 </app-selecao-indicadores>
 
 <!-- CARD: INDICADORES SELECIONADOS -->
@@ -51,7 +51,7 @@
             </div>
 
             <button type="button" class="remove-indicator-btn" aria-label="Remover indicador"
-              (click)="removeIndicator(item, false)" [disabled]="somenteLeitura">✖</button>
+              (click)="removeIndicator(item, false)" [disabled]="!isModoEdicao">✖</button>
 
           </div>
 
@@ -103,7 +103,7 @@
                     <validation-message class="meta-validation-message"
                       [control]="getMetaProjetoControl(i, j)"></validation-message>
                     <input type="text" class="meta-value-input" formControlName="valorMeta"
-                      placeholder="Digite a meta">
+                      placeholder="Digite a meta" [disabled]="!isModoEdicao">
                   </div>
                 </div>
               </div>
