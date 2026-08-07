@@ -1486,8 +1486,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private trocarModo(permitir: boolean): void {
+    
     this.isModoEdicao = permitir;
+
     const projetoFormControls = this.projetoForm.controls;
+
+    console.log('trocar modo :', this.isModoEdicao)
 
     alterarEstadoControlesFormulario(permitir, projetoFormControls);
 

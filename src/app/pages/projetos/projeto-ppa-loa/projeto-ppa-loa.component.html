@@ -6,10 +6,10 @@
       <div class="badges-container">
         <siscap-ppa-loa-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value" [type]="chip.type"
           [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)"
-          [somenteLeitura]="somenteLeitura">
+          [podeEditar]="podeEditar">
         </siscap-ppa-loa-chip>
       </div>
-      <p-button styleClass="btn-filtros" (click)="showModal = true" [disabled]="somenteLeitura">
+      <p-button styleClass="btn-filtros" (click)="showModal = true" [disabled]="!podeEditar">
         <span>Filtros</span>
         <span style="font-size:14px">▽</span>
       </p-button>
@@ -82,7 +82,7 @@
             </div>
 
             <button *ngIf="!somenteLeitura" type="button" class="acao-remover-btn" title="Remover ação"
-              aria-label="Remover ação do planejamento" (click)="onRemoverAcao(acao)">
+              aria-label="Remover ação do planejamento" (click)="onRemoverAcao(acao)" [disabled]="!podeEditar">
               &times;
             </button>
 
@@ -218,8 +218,8 @@
   <footer class="planejamento-footer">
 
     <label class="nao-previsto-ppa" [class.nao-previsto-ppa-ativo]="naoPrevistoPpa"
-      [class.nao-previsto-ppa-desabilitado]="somenteLeitura">
-      <input type="checkbox" [checked]="naoPrevistoPpa" [disabled]="somenteLeitura"
+      [class.nao-previsto-ppa-desabilitado]="podeEditar">
+      <input type="checkbox" [checked]="naoPrevistoPpa" [disabled]="!podeEditar"
         (change)="onNaoPrevistoPpaChange($event)" />
       <span>
         Não previsto no PPA {{ periodoPlanejamento?.descricao }}

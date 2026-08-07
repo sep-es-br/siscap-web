@@ -1,8 +1,8 @@
 <div
   [class]="type === 'base' ? 'gestao-badge' : 'filter-badge'"
   [class.removable]="removable"
-  [class.disabled]="somenteLeitura"
-  (click)="!somenteLeitura && handleClick()">
+  [class.disabled]="podeEditar"
+  (click)="!podeEditar && handleClick()">
 
   <div class="chip-content">
     <span class="gestao-label">{{ label }}</span>

@@ -18,7 +18,7 @@ export class PpaLoaChipComponent {
   @Output() onRemove = new EventEmitter<void>();
   @Output() onClick = new EventEmitter<void>();
 
-  @Input() somenteLeitura: boolean = false;
+  @Input() podeEditar: boolean = false;
 
   handleRemove(event: MouseEvent) {
     if (this.removable) {
