@@ -134,7 +134,7 @@
 
             <div class="acao-planejamento-campo" *ngIf="acao.valorPpa">
               <span class="acao-planejamento-label">
-                Valor PPA
+                Valor PPA {{ this.periodoPlanejamento?.descricao || '-' }}
               </span>
 
               <span class="acao-planejamento-valor">
@@ -145,7 +145,7 @@
             <div class="acao-planejamento-campo" *ngIf="acao.valorLoa">
 
               <span class="valor-loa-label">
-                Valor LOA
+                Valor LOA {{acao.anoAcao}}
               </span>
 
               <span class="valor-loa-total">
