@@ -599,18 +599,21 @@
 .detalhamento-loa-cabecalho,
 .detalhamento-loa-linha {
   display: grid;
-  grid-template-columns:
-    28px
-    64px
-    42px
-    48px
-    minmax(86px, 105px);
+  // grid-template-columns:
+  //   28px
+  //   64px
+  //   42px
+  //   48px
+  //   minmax(86px, 105px);
+  grid-template-columns: 50px 70px 50px 48px minmax(100px, 170px);
   align-items: center;
   justify-content: start;
   column-gap: 4px;
 
   width: 100%;
   min-width: 0;
+  justify-items: center;
+  
 }
 
 .detalhamento-loa-cabecalho {
