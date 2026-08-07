@@ -1570,10 +1570,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     const acoesPlanejamentoProjeto = this.projetoForm.get('acoesPlanejamentoProjeto')
-      ?.value as IAcaoPlanejamentoProjeto[];
+      ?.value as IAcaoPlanejamentoProjeto[] ?? [];
 
     const naoPrevistoNoPpa = this.projetoForm.get('naoPrevistoNoPpa')
-      ?.value as boolean;
+      ?.value as boolean ?? false;
 
     if (acoesPlanejamentoProjeto.length === 0 && isEnvioDic && !naoPrevistoNoPpa) {
       this._toastService.showToast('warning', 'O formulário contém erros.', [
@@ -1922,7 +1922,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         })
       );
 
-      console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho, formData)

@@ -374,5 +374,20 @@ export class IndicadorOdsComponent implements OnInit {
     }
   }
 
+  irParaPlanejamento() {
+
+    const tabTrigger = document.getElementById('nav-planejamento');
+
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+  }
+
 
 }

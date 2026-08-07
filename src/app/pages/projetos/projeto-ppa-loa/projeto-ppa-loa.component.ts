@@ -435,45 +435,85 @@ export class ProjetoPpaLoaComponent {
   }
 
   private carregarAcoesSelecionadas(
-    ppa: string, idFuncoes: number[], idsProgramas: number[], idAnos: number[], idUos: number[], idsAcoes: number[]
+    ppa: string,
+    idFuncoes: number[],
+    idsProgramas: number[],
+    idAnos: number[],
+    idUos: number[],
+    idsAcoes: number[]
   ): void {
 
     this.carregandoAcoes = true;
 
     this._ppaloaIntegracaoService
-      .buscarDadosAcoes(ppa, idFuncoes, idsProgramas, idAnos, idUos, idsAcoes)
+      .buscarDadosAcoes(
+        ppa,
+        idFuncoes,
+        idsProgramas,
+        idAnos,
+        idUos,
+        idsAcoes
+      )
       .pipe(
         finalize(() => {
           this.carregandoAcoes = false;
         })
       )
       .subscribe({
+
         next: acoes => {
 
           const novasAcoes: PlanejamentoAcao[] = acoes.map(acao => ({
             ...acao,
+
             valorTotalDetalhamento: (acao.detalhamentosLoa ?? [])
               .reduce(
                 (total, detalhe) =>
-                  total + Number(detalhe.valor ?? 0), 0)
+                  total + Number(detalhe.valor ?? 0),
+                0
+              )
           }));
 
-          const acoesPorChave = new Map<string, PlanejamentoAcao>();
+          const acoesPorChave =
+            new Map<string, PlanejamentoAcao>();
 
-          // Mantém as ações que já estavam na tela
+
+          // Primeiro mantém as ações que já estavam na tela
           this.acoesPlanejamento.forEach(acao => {
+
+            const chave = this.montarChavePlanejamento(
+              acao.codigoAcao,
+              acao.codigoFuncao,
+              acao.codigoPrograma,
+              acao.anoAcao,
+              acao.codigoUnidadeOrcamentaria
+            );
+
             acoesPorChave.set(
-              this.montarChaveAcao(acao),
+              chave,
               acao
             );
           });
 
-          // Acrescenta as novas e evita duplicidade
+
+          // Acrescenta apenas ações que ainda não existem
           novasAcoes.forEach(acao => {
-            acoesPorChave.set(
-              this.montarChaveAcao(acao),
-              acao
+
+            const chave = this.montarChavePlanejamento(
+              acao.codigoAcao,
+              acao.codigoFuncao,
+              acao.codigoPrograma,
+              acao.anoAcao,
+              acao.codigoUnidadeOrcamentaria
             );
+
+            if (!acoesPorChave.has(chave)) {
+              acoesPorChave.set(
+                chave,
+                acao
+              );
+            }
+
           });
 
           this.acoesPlanejamento =
@@ -482,64 +522,138 @@ export class ProjetoPpaLoaComponent {
           this.quantidadeAcoes =
             this.acoesPlanejamento.length;
 
-          this.quantidadeAcoes = this.acoesPlanejamento.length ?? 0;
-
           const controle = this.projetoForm.get(
             'acoesPlanejamentoProjeto'
           );
 
           if (!controle) {
-            console.log("Controle acoesPlanejamentoProjeto nao encontrado!!")
+
+            console.error(
+              'Controle acoesPlanejamentoProjeto não encontrado.'
+            );
+
             return;
           }
 
-          acoes.map(acaoBi => {
 
-            const novaAcao: IAcaoPlanejamentoProjeto = {
-              id: null,
-              idProjeto: null,
-              codAcao: Number(acaoBi.codigoAcao),
-              codFuncao: Number(acaoBi.codigoFuncao),
-              codPrograma: Number(acaoBi.codigoPrograma),
-              ano: String(acaoBi.anoAcao),
-              codUo: String(acaoBi.codigoUnidadeOrcamentaria)
-            };
+          const acoesAtuais =
+            (controle.value as IAcaoPlanejamentoProjeto[] | null)
+            ?? [];
 
-            const acoesAtuais =
-              (controle.value as IAcaoPlanejamentoProjeto[] | null) ?? [];
+          const acoesFormPorChave =
+            new Map<string, IAcaoPlanejamentoProjeto>();
 
-            controle.setValue([
-              ...acoesAtuais,
-              novaAcao
-            ]);
+
+          acoesAtuais.forEach(acao => {
+
+            const chave = this.montarChavePlanejamento(
+              acao.codAcao,
+              acao.codFuncao,
+              acao.codPrograma,
+              acao.ano,
+              acao.codUo
+            );
+
+            acoesFormPorChave.set(
+              chave,
+              acao
+            );
 
           });
 
+          acoes.forEach(acaoBi => {
+
+            const chave = this.montarChavePlanejamento(
+              acaoBi.codigoAcao,
+              acaoBi.codigoFuncao,
+              acaoBi.codigoPrograma,
+              acaoBi.anoAcao,
+              acaoBi.codigoUnidadeOrcamentaria
+            );
+
+
+            // Já existe no formulário?
+            if (acoesFormPorChave.has(chave)) {
+              return;
+            }
+
+
+            const novaAcao: IAcaoPlanejamentoProjeto = {
+
+              id: null,
+
+              idProjeto: null,
+
+              codAcao:
+                Number(acaoBi.codigoAcao),
+
+              codFuncao:
+                Number(acaoBi.codigoFuncao),
+
+              codPrograma:
+                Number(acaoBi.codigoPrograma),
+
+              ano:
+                String(acaoBi.anoAcao),
+
+              codUo:
+                String(acaoBi.codigoUnidadeOrcamentaria)
+            };
+
+
+            acoesFormPorChave.set(
+              chave,
+              novaAcao
+            );
+
+          });
+
+          controle.setValue(
+            Array.from(acoesFormPorChave.values())
+          );
+
           controle.markAsDirty();
+          controle.updateValueAndValidity();
 
           this.naoPrevistoPpa = false;
 
           const controleNaoPrevistoPpa =
             this.projetoForm.get('naoPrevistoNoPpa');
 
+
           if (!controleNaoPrevistoPpa) {
+
             console.error(
               'Controle naoPrevistoNoPpa não encontrado.'
             );
+
             return;
           }
 
-          controleNaoPrevistoPpa.setValue(this.naoPrevistoPpa);
+
+          controleNaoPrevistoPpa.setValue(
+            this.naoPrevistoPpa
+          );
+
           controleNaoPrevistoPpa.markAsDirty();
           controleNaoPrevistoPpa.markAsTouched();
           controleNaoPrevistoPpa.updateValueAndValidity();
 
-
         },
+
+
         error: erro => {
-          this.carregandoAcoes = false;
-          console.error('Erro ao consultar dados de ações no BI:', erro);
-          this._toastService.showToast('error', 'Não foi possível consultar os dados das ações selecionadas.');
+
+          console.error(
+            'Erro ao consultar dados de ações no BI:',
+            erro
+          );
+
+          this._toastService.showToast(
+            'error',
+            'Não foi possível consultar os dados das ações selecionadas.'
+          );
+
           this.quantidadeAcoes = 0;
         }
 
@@ -547,18 +661,34 @@ export class ProjetoPpaLoaComponent {
 
   }
 
-  private montarChaveAcao(acao: PlanejamentoAcao): string {
+  private montarChavePlanejamento(
+    codAcao: string | number | null | undefined,
+    codFuncao: string | number | null | undefined,
+    codPrograma: string | number | null | undefined,
+    ano: string | number | null | undefined,
+    codUo: string | number | null | undefined
+  ): string {
     return [
-      acao.codigoOrgao,
-      acao.codigoUnidadeOrcamentaria,
-      acao.codigoPrograma,
-      acao.codigoAcao,
-      acao.codigoFuncao,
-      acao.anoAcao
-    ]
-      .map(valor => String(valor ?? '').trim())
-      .join('|');
+      Number(codAcao),
+      Number(codFuncao),
+      Number(codPrograma),
+      Number(ano),
+      Number(codUo)
+    ].join('|');
   }
+
+  // private montarChaveAcao(acao: PlanejamentoAcao): string {
+  //   return [
+  //     acao.codigoOrgao,
+  //     acao.codigoUnidadeOrcamentaria,
+  //     acao.codigoPrograma,
+  //     acao.codigoAcao,
+  //     acao.codigoFuncao,
+  //     acao.anoAcao
+  //   ]
+  //     .map(valor => String(valor ?? '').trim())
+  //     .join('|');
+  // }
 
   formatarMoeda(valor: number | null | undefined): string {
 
