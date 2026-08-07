@@ -218,7 +218,7 @@
   <footer class="planejamento-footer">
 
     <label class="nao-previsto-ppa" [class.nao-previsto-ppa-ativo]="naoPrevistoPpa"
-      [class.nao-previsto-ppa-desabilitado]="podeEditar">
+      [class.nao-previsto-ppa-desabilitado]="!podeEditar">
       <input type="checkbox" [checked]="naoPrevistoPpa" [disabled]="!podeEditar"
         (change)="onNaoPrevistoPpaChange($event)" />
       <span>
