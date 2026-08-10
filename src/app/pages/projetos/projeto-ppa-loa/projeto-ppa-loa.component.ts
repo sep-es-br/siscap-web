@@ -113,7 +113,6 @@ export class ProjetoPpaLoaComponent {
   ngOnInit(): void {
     this.naoPrevistoPpa = this.projetoForm.get('naoPrevistoNoPpa')?.value ?? false;
     this.initBaseChip();
-    console.log("somente leitura :", this.somenteLeitura)
   }
 
   abrirModalFiltrosPlanejamento(modalTemplateRef: any): void {

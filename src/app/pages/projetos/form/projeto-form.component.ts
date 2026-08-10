@@ -369,7 +369,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", response)
+        // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -745,8 +745,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       titulo: 'Título',
       idOrganizacao: 'Organização',
       quantia: 'Valor Estimado',
-      moeda: 'Moeda',
-      tipo: 'Tipo Valor',
+      // moeda: 'Moeda',
+      // tipo: 'Tipo Valor',
       rateio: 'Rateio',
       objetivo: 'Objetivo',
       objetivoEspecifico: 'Objetivo Específico',
@@ -759,7 +759,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       pecasPlanejamento: 'Peças de Planejamento',
       subResponsavelProponente: 'Responsável Proponente',
       indicadores: 'Indicadores',
-      ods: 'ODS'
+      ods: 'ODS',
+      geral: 'Geral'
     };
 
     this.camposParaComplementacao = Object.entries(
@@ -1486,12 +1487,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private trocarModo(permitir: boolean): void {
-    
+
     this.isModoEdicao = permitir;
 
     const projetoFormControls = this.projetoForm.controls;
-
-    console.log('trocar modo :', this.isModoEdicao)
 
     alterarEstadoControlesFormulario(permitir, projetoFormControls);
 
@@ -2780,6 +2779,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .reentranharDicEdocs(this._idProjetoEdicao, payload)
       .pipe(
         tap(() => {
+
           this.autuacaoAcionada = true;
 
           this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
@@ -2790,9 +2790,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           );
 
           this.iniciarPollingEtapasIntegracaoModal();
+
         }),
 
         catchError(() => {
+
           this.autuacaoAcionada = false;
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
 
@@ -2802,11 +2804,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           );
 
           return EMPTY;
+
         }),
 
         finalize(() => {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
+
       )
       .subscribe();
 
@@ -2935,65 +2939,113 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private pararPolling$ = new Subject<void>();
 
   private iniciarPollingEtapasIntegracaoModal(): void {
+
     const INTERVALO = 2000;
 
     interval(INTERVALO)
       .pipe(
+
         switchMap(() =>
           this._projetosService
             .consultarFasesIntegracaoEdcosProjeto(this._idProjetoEdicao)
             .pipe(
+
               tap((response) => {
-                // console.log('Response da API:', response);
+                console.log('Response da API:', response);
               }),
+
               map((response) =>
                 response.map(
                   (fase) => new ProjetoIntegracaoEdocsFasesModel(fase),
                 ),
               ),
-              catchError((err) => {
-                console.error('Erro na requisição', err);
-                return of([]);
-              }),
+
             ),
         ),
 
         filter((lista) => lista.length > 0),
 
-        tap((lista) => this.atualizarStatusUI(lista)),
+        tap((lista) => {
+          this.atualizarStatusUI(lista);
+        }),
+
+        // Espera até chegar em um estado terminal:
+        // erro OU todas finalizadas.
+        filter((lista) => {
+
+          const possuiErro =
+            lista.some((fase) => fase.erro);
+
+          const todasFinalizadas =
+            lista.every((fase) => fase.finalizada);
+
+          return possuiErro || todasFinalizadas;
+        }),
+
+        // A primeira condição terminal encerra o polling.
+        take(1),
 
         tap((lista) => {
 
-          const faseComErro = lista.find((f) => f.erro);
+          const faseComErro =
+            lista.find((fase) => fase.erro);
 
           if (faseComErro) {
+
+            this.autuacaoAcionada = false;
+
+            this._projetosService.removerProjetoAguardando(
+              this._idProjetoEdicao
+            );
+
             this.tratarErro(faseComErro);
-            this.pararPolling$.next();
+
+            return;
           }
 
-        }),
+          // Se chegou aqui, terminou com sucesso.
+          this._projetosService.removerProjetoAguardando(
+            this._idProjetoEdicao
+          );
 
-        filter((lista) => lista.every((fase) => fase.finalizada)),
-
-        take(1),
-
-        tap(() => {
-          this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
-          this._projetosService.notificarAtualizacaoLista();
-          this.pararPolling$.next();
           this.assinarAutuar = false;
           this.finalizadoProcessamentoIntegracao = true;
           this.autuacaoAcionada = false;
-        }),
 
-        takeUntil(this.pararPolling$),
+          this._projetosService.notificarAtualizacaoLista();
+
+          this.executarAcaoBreadcrumb(
+            BreadcrumbAcoesEnum.Cancelar
+          );
+        }),
 
         finalize(() => {
           this.autuacaoAcionada = false;
           this.cdr.detectChanges();
         }),
+
       )
-      .subscribe();
+      .subscribe({
+        error: (err) => {
+
+          console.error(
+            'Erro ao consultar fases da integração:',
+            err
+          );
+
+          this.autuacaoAcionada = false;
+
+          this._projetosService.removerProjetoAguardando(
+            this._idProjetoEdicao
+          );
+
+          this._toastService.showToast(
+            'error',
+            'Erro ao consultar andamento da integração com o E-Docs.',
+          );
+        }
+        
+      });
 
   }
 
