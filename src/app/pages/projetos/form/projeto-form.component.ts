@@ -2970,7 +2970,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             .pipe(
 
               tap((response) => {
-                // console.log('Response da API:', response);
+                console.log('Response da API:', response);
               }),
 
               map((response) =>
@@ -3258,7 +3258,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return (
       this.listaFasesIntegracaoProjeto.length > 0 &&
       this.listaFasesIntegracaoProjeto.some(
-        (fase) => fase.erro && (fase.msgAlertaExibir?.length ?? 0) == 0,
+        (fase) => fase.erro && (fase.msgAlertaExibir?.trim().length ?? 0) > 0,
       )
     );
   }
