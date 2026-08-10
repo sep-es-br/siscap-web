@@ -145,34 +145,6 @@ export class ProjetoPpaLoaComponent {
     this.naoPrevistoPpa = naoPrevisto;
   }
 
-  // onRemoverAcao(acaoInformada: any) {
-  //   this.acoesPlanejamento = this.acoesPlanejamento.filter(acao =>
-  //     acao.codigoOrgao !== acaoInformada.codigoOrgao ||
-  //     acao.codigoUnidadeOrcamentaria !== acaoInformada.codigoUnidadeOrcamentaria ||
-  //     acao.codigoPrograma !== acaoInformada.codigoPrograma ||
-  //     acao.codigoAcao !== acaoInformada.codigoAcao ||
-  //     acao.codigoFuncao !== acaoInformada.codigoFuncao
-  //   );
-  //   this.quantidadeAcoes = this.acoesPlanejamento.length ?? 0;
-  //   if (this.quantidadeAcoes === 0) {
-  //     console.log('passou aqui...')
-  //     this.filtrosPlanejamento = [];
-  //     this.currentFilter = null;
-  //   }
-  //   const acoesPlanejamentoProjetoArray = this.projetoForm.get('acoesPlanejamentoProjeto') as FormArray;
-  //   const index = acoesPlanejamentoProjetoArray.controls.findIndex(control =>
-  //     control.get('codAcao')?.value === acaoInformada.codigoAcao &&
-  //     control.get('codFuncao')?.value === acaoInformada.codigoFuncao &&
-  //     control.get('codPrograma')?.value === acaoInformada.codigoPrograma &&
-  //     control.get('ano')?.value === acaoInformada.ano &&
-  //     control.get('codUo')?.value === acaoInformada.codUo
-  //   );
-  //   if (index >= 0) {
-  //     acoesPlanejamentoProjetoArray.removeAt(index);
-  //   }
-  //   this.initBaseChip();
-  // }
-
   onRemoverAcao(acaoInformada: PlanejamentoAcao): void {
 
     // 1. Remove da lista exibida na tela

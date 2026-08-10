@@ -769,7 +769,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       name: control,
       label,
       mensagemComplementacao: '',
-    })) as IEstruturaCamposComplementar[];
+    }))
+    .sort((a, b) => {
+
+      // "geral" sempre primeiro
+      if (a.name === 'geral') return -1;
+      if (b.name === 'geral') return 1;
+  
+      // restante em ordem alfabética pelo label
+      return a.label.localeCompare(b.label, 'pt-BR', {
+        sensitivity: 'base',}) 
+       
+    }) as IEstruturaCamposComplementar[];
 
     const rotaAtual = this.route.snapshot.routeConfig?.path;
     if (rotaAtual === 'criar') {
@@ -2731,6 +2742,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.exibeListaEtapasIntegracao = true;
 
+    this.loading = true;
+
     this._projetosService
       .enviarEmailAvisoComplementacaoProjeto(
         this._idProjetoEdicao,
@@ -2751,7 +2764,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
 
         catchError(() => {
+
           this.exibeListaEtapasIntegracao = false;
+
+          this.loading = false
+
           this._projetosService.removerProjetoAguardando(this._idProjetoEdicao);
 
           this._toastService.showToast(
@@ -2760,9 +2777,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           );
 
           return EMPTY;
+
         }),
 
         finalize(() => {
+          this.loading = false
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
 
@@ -2951,7 +2970,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             .pipe(
 
               tap((response) => {
-                console.log('Response da API:', response);
+                // console.log('Response da API:', response);
               }),
 
               map((response) =>
@@ -3008,15 +3027,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this._idProjetoEdicao
           );
 
+          // notificar a lista para que ela carregue novamente..
+          this._projetosService.notificarAtualizacaoLista();
+
           this.assinarAutuar = false;
           this.finalizadoProcessamentoIntegracao = true;
           this.autuacaoAcionada = false;
 
-          this._projetosService.notificarAtualizacaoLista();
+          // this._projetosService.notificarAtualizacaoLista();
 
-          this.executarAcaoBreadcrumb(
-            BreadcrumbAcoesEnum.Cancelar
-          );
+          // this.executarAcaoBreadcrumb(
+          //   BreadcrumbAcoesEnum.Cancelar
+          // );
+
         }),
 
         finalize(() => {
