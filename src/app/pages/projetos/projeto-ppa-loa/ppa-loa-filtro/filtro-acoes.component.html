@@ -28,14 +28,16 @@
                     Ano
                 </label>
 
-                <ng-select [items]="anos" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsAnos" [multiple]="true"
-                    [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="somenteLeitura"
-                    placeholder="Selecione..." class="select-filtro" (change)="onAnoChange()">
+                <ng-select [items]="anos" 
+                    bindLabel="nome" bindValue="id" 
+                    [ngModel]="filtro.idsAnos[0]" 
+                    [multiple]="false"
+                    [closeOnSelect]="true" 
+                    [searchable]="true" [clearable]="true" [disabled]="somenteLeitura"
+                    placeholder="Selecione..." class="select-filtro" (ngModelChange)="onAnoChange($event)">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
                         <div class="select-option-checkbox">
-                            <input type="checkbox" tabindex="-1" [checked]="item$.selected"
-                                style="margin-right: 8px; pointer-events: none;" />
                             <span>{{ item.nome }}</span>
                         </div>
                     </ng-template>

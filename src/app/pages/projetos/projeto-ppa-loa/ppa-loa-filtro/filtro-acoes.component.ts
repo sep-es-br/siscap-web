@@ -204,7 +204,9 @@ export class FiltroAcoesComponent
         });
   }
 
-  onAnoChange(): void {
+  onAnoChange(idAno: number | null): void {
+
+     this.filtro.idsAnos = idAno != null ? [idAno] : [];
 
     this.filtro.idsAnos =
       this.normalizarIds(this.filtro.idsAnos);
