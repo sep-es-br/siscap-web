@@ -67,7 +67,6 @@ import { ModalPendenciasProjetoComponent } from './projeto-modal-pendencias/proj
     ProjetosListComponent,
     ProjetoFormComponent,
     ProjetosSearchComponent
-
   ],
 })
 export class ProjetosModule {}

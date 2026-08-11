@@ -1,8 +1,12 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
 import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { NgbActiveModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { TemplatesModule } from '../../../shared/templates/templates.module';
+import { DialogModule } from 'primeng/dialog';
 
 interface IGrupoPendencias {
   aba: AbaProjeto;
@@ -11,8 +15,17 @@ interface IGrupoPendencias {
 }
 
 @Component({
-  selector: 'app-projeto-modal-pendencias',
+  selector: 'siscap-projeto-modal-pendencias',
   standalone: true,
+  imports: [CommonModule,
+      FormsModule,
+      ReactiveFormsModule,
+      NgSelectModule,
+      NgbTooltipModule,
+      NgbModalModule,
+      NgbPopoverModule,
+      TemplatesModule,
+      DialogModule],
   templateUrl: './projeto-modal-pendencias.component.html',
   styleUrl: './projeto-modal-pendencias.component.scss'
 })
@@ -20,21 +33,18 @@ export class ModalPendenciasProjetoComponent implements OnChanges {
 
   @Input()
   public pendencias: IPendenciaProjeto[] = [];
-
+  
   public pendenciasAgrupadas: IGrupoPendencias[] = [];
-
 
   constructor(
     public activeModal: NgbActiveModal,
   ) { }
-
 
   ngOnChanges(): void {
 
     this.agruparPendencias();
 
   }
-
 
   private agruparPendencias(): void {
 

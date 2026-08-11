@@ -1,1 +1,163 @@
-<p>projeto-modal-pendencias works!</p>
+<div class="modal-header py-3">
+
+    <div class="d-flex align-items-center gap-3">
+
+        <div class="icone-alerta">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+
+        <div>
+            <h4 class="modal-title text-primary fw-bold fs-4 mb-1">
+                Pendências do projeto
+            </h4>
+
+            <small class="text-muted">
+                Verifique os itens obrigatórios antes de enviar o projeto para análise.
+            </small>
+        </div>
+
+    </div>
+
+    <button type="button" class="btn-close" aria-label="Fechar" (click)="activeModal.dismiss()">
+    </button>
+
+</div>
+
+
+<div class="modal-body p-3 modal-body-scroll">
+
+    <!-- Resumo -->
+    <div class="alert alert-warning d-flex align-items-center justify-content-between
+             flex-wrap gap-2 mb-3" role="alert">
+
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+
+            <span>
+                O projeto possui campos obrigatórios ou informações incompletas.
+            </span>
+        </div>
+
+        <span class="badge bg-danger fs-6">
+            {{ pendencias.length }}
+            {{ pendencias.length === 1 ? 'pendência' : 'pendências' }}
+        </span>
+
+    </div>
+
+
+    <!-- Nenhuma pendência -->
+    <div *ngIf="pendencias.length === 0" class="alert alert-success mb-0">
+
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-circle-check"></i>
+
+            <div>
+                <strong>Projeto preenchido corretamente.</strong>
+
+                <div>
+                    Nenhuma pendência obrigatória foi encontrada.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Grupos de pendências -->
+    <div *ngFor="let grupo of pendenciasAgrupadas" class="pendencia-grupo mb-3">
+
+        <!-- Cabeçalho do grupo -->
+        <div class="pendencia-grupo-header">
+
+            <div class="d-flex align-items-center gap-2">
+
+                <div class="icone-secao">
+                    <i [class]="obterIconeAba(grupo.aba)"></i>
+                </div>
+
+                <strong class="text-primary">
+                    {{ grupo.nomeAba }}
+                </strong>
+
+                <span class="badge rounded-pill bg-danger">
+                    {{ grupo.pendencias.length }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- Pendências -->
+        <div class="pendencia-lista">
+
+            <div *ngFor="let pendencia of grupo.pendencias" class="pendencia-item">
+
+                <div class="pendencia-conteudo">
+
+                    <div class="pendencia-marcador">
+                        <i class="fa-solid fa-circle"></i>
+                    </div>
+
+                    <div class="flex-grow-1">
+
+                        <div class="fw-semibold">
+                            {{ pendencia.campo }}
+                        </div>
+
+                        <div class="text-muted small">
+                            {{ pendencia.mensagem }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Navegação para a pendência -->
+                <button type="button" class="btn btn-link text-decoration-none pendencia-link"
+                    (click)="irParaPendencia(pendencia)">
+
+                    <span>Ir para o campo</span>
+
+                    <i class="fa-solid fa-chevron-right ms-2"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Orientação -->
+    <div *ngIf="pendencias.length > 0" class="alert alert-primary d-flex align-items-start gap-2 mb-0">
+
+        <i class="fa-solid fa-circle-info mt-1"></i>
+
+        <span>
+            Clique em <strong>Ir para o campo</strong> para acessar diretamente
+            a seção onde a pendência deve ser corrigida.
+        </span>
+
+    </div>
+
+</div>
+
+
+<div class="modal-footer">
+    <div class="d-flex flex-column flex-sm-row
+             justify-content-end gap-2 w-100">
+        <button type="button" class="btn btn-outline-danger icon-text-btn" (click)="activeModal.dismiss()">
+            <i class="fa-solid fa-xmark me-2"></i>
+            Fechar
+        </button>
+        <button *ngIf="pendencias.length > 0" type="button" class="btn btn-primary icon-text-btn"
+            (click)="revisarPendencias()">
+            <i class="fa-solid fa-list-check me-2"></i>
+            Revisar pendências
+        </button>
+    </div>
+</div>

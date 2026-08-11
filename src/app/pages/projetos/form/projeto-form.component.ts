@@ -326,6 +326,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public indicadoresCatalogoBI: IIndicadoresCatalogoExterno[] = [];
 
+  public showModalPendencias: boolean = false;
+
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('confirmarRevisarProjetoModal') confirmarRevisarProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -3459,18 +3461,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
     }
-
-    // const campoOds = this.projetoForm.get('impactos');
-    // campoOds?.clearValidators();
-    // campoOds?.updateValueAndValidity();
-    // if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
-    //   if (!this.validarFormulario(this.projetoForm)) {
-    //     this.abrirAba('nav-indicadores');
-    //     return;
-    //   }
-    // }
-    // campoOds?.setValidators([Validators.required]);
-    // campoOds?.updateValueAndValidity();
 
     this.abrirAba('nav-planejamento');
 

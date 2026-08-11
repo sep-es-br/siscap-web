@@ -4,20 +4,29 @@
 
 <div class="row" *ngIf="!loading">
   <div class="mb-4 d-inline-flex justify-content-end">
+    
     <button *ngIf="mostrarBotaoStatusProjeto" class="btn btn-outline-success icon-text-btn me-2"
       (click)="abrirModalStatusProjeto(projetoStatusModal)">
       <i class="fa-solid fa-check"></i>
       <span>Status</span>
     </button>
+    
     <button *ngIf="mostrarBotaoPedirRevisaoDic" class="btn btn-warning icon-text-btn me-2"
       (click)="abrirRevisarModal(projetoForm)">
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Solicitar revisão a {{ nomeProponenteDIC }} </span>
     </button>
+
+    <p-button styleClass="btn-filtros" (click)="showModal = true" [disabled]="!podeEditar">
+      <span>Filtros</span>
+      <span style="font-size:14px">▽</span>
+    </p-button>
+
     <button *ngIf="mostrarBotaoBaixarDic" class="btn btn-outline-primary icon-text-btn" (click)="baixarDIC()">
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>Baixar DIC</span>
     </button>
+
   </div>
 </div>
 
@@ -438,6 +447,10 @@
 
         <div class="tab-pane fade" id="tab-ods-ppa-loa" role="tabpanel" aria-labelledby="nav-indicador-ppa-loa">
           <siscap-projeto-ppa-loa [projetoForm]="projetoForm" [podeEditar]="isModoEdicao"></siscap-projeto-ppa-loa>
+        </div>
+
+        <div class="tab-pane fade" id="modal-pendencias-dic" role="tabpanel" aria-labelledby="nav-modal-pendencias-dic">
+          <siscap-projeto-modal-pendencias *ngIf="showModalPendencias" (close)="showModalPendencias=false"  [pendencias]="pendenciasProjeto"></siscap-projeto-modal-pendencias>
         </div>
 
         <div class="tab-pane fade" [ngClass]="{'show active': aguardandoParecer()}"
