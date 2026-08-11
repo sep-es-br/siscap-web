@@ -27,13 +27,14 @@ import { ProgressoButtonComponent } from '../../shared/components/progresso-butt
 import { ProjetoIndicadoresComponent } from "../projeto-indicadores/projeto-indicadores.component";
 import { IndicadorOdsComponent } from '../projeto-indicadores/indicador-ods/indicador-ods.component';
 import { ProjetoPpaLoaComponent } from './projeto-ppa-loa/projeto-ppa-loa.component';
+import { ModalPendenciasProjetoComponent } from './projeto-modal-pendencias/projeto-modal-pendencias.component';
 
 @NgModule({
   declarations: [
     ProjetosComponent,
     ProjetosListComponent,
     ProjetoFormComponent,
-    ProjetosSearchComponent,
+    ProjetosSearchComponent
   ],
   imports: [
     CommonModule,
@@ -58,7 +59,8 @@ import { ProjetoPpaLoaComponent } from './projeto-ppa-loa/projeto-ppa-loa.compon
     ProjetoIndicadoresComponent,
     ProgressoButtonComponent,
     IndicadorOdsComponent,
-    ProjetoPpaLoaComponent
+    ProjetoPpaLoaComponent,
+    ModalPendenciasProjetoComponent
 ],
   exports: [
     ProjetosComponent,

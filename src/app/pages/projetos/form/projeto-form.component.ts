@@ -109,6 +109,8 @@ import { IIndicadorAvulso } from '../../../core/interfaces/indicador-avulso.inte
 import { CatalogoIndicadorService } from '../../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
+import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
+import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
 
 declare var bootstrap: any;
 
@@ -244,6 +246,83 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     'indicadores',
     'ods'
   ];
+
+  private readonly camposValidacao = [
+    {
+      path: 'sigla',
+      campo: 'Sigla',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'titulo',
+      campo: 'Título',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'idOrganizacao',
+      campo: 'Organização',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'idResponsavelProponente',
+      campo: 'Responsável Proponente',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'valor.quantia',
+      campo: 'Valor Estimado',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'situacaoProblema',
+      campo: 'Situação Problema',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'objetivo',
+      campo: 'Objetivo',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'objetivoEspecifico',
+      campo: 'Objetivo Específico',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'solucoesPropostas',
+      campo: 'Soluções Propostas',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'arranjosInstitucionais',
+      campo: 'Arranjos Institucionais',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'pecasPlanejamento',
+      campo: 'Peças de Planejamento',
+      aba: 'propriedades',
+      nomeAba: 'Dados do DIC',
+    },
+    {
+      path: 'impactos',
+      campo: 'Impactos',
+      aba: 'ods',
+      nomeAba: 'ODS',
+    },
+  ] as const;
+
+  public pendenciasProjeto: IPendenciaProjeto[] = [];
 
   public indicadoresCatalogoBI: IIndicadoresCatalogoExterno[] = [];
 
@@ -770,17 +849,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       label,
       mensagemComplementacao: '',
     }))
-    .sort((a, b) => {
+      .sort((a, b) => {
 
-      // "geral" sempre primeiro
-      if (a.name === 'geral') return -1;
-      if (b.name === 'geral') return 1;
-  
-      // restante em ordem alfabética pelo label
-      return a.label.localeCompare(b.label, 'pt-BR', {
-        sensitivity: 'base',}) 
-       
-    }) as IEstruturaCamposComplementar[];
+        // "geral" sempre primeiro
+        if (a.name === 'geral') return -1;
+        if (b.name === 'geral') return 1;
+
+        // restante em ordem alfabética pelo label
+        return a.label.localeCompare(b.label, 'pt-BR', {
+          sensitivity: 'base',
+        })
+
+      }) as IEstruturaCamposComplementar[];
 
     const rotaAtual = this.route.snapshot.routeConfig?.path;
     if (rotaAtual === 'criar') {
@@ -3067,7 +3147,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'Erro ao consultar andamento da integração com o E-Docs.',
           );
         }
-        
+
       });
 
   }
@@ -3513,6 +3593,295 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   parecerPossuiAnexo(parecer: IParecer): boolean {
     return parecer?.nomeArquivo?.trim().length > 0;
+  }
+
+  private obterPendenciasProjeto(
+    abas?: AbaProjeto[],
+  ): IPendenciaProjeto[] {
+
+    const pendencias: IPendenciaProjeto[] = [];
+
+    const deveValidarAba = (aba: AbaProjeto): boolean =>
+      !abas || abas.includes(aba);
+
+    this.projetoForm.updateValueAndValidity({
+      emitEvent: false,
+    });
+
+    // =====================================================
+    // CAMPOS DO REACTIVE FORM
+    // =====================================================
+
+    this.camposValidacao.forEach((campo) => {
+
+      if (!deveValidarAba(campo.aba)) {
+        return;
+      }
+
+      const control = this.projetoForm.get(campo.path);
+
+      if (!control) {
+        console.warn(
+          `Controle não encontrado na validação: ${campo.path}`,
+        );
+        return;
+      }
+
+      if (control.invalid) {
+        pendencias.push({
+          id: campo.path,
+          aba: campo.aba,
+          nomeAba: campo.nomeAba,
+          campo: campo.campo,
+          mensagem: this.obterMensagemErroControle(
+            campo.campo,
+            control,
+          ),
+          controlPath: campo.path,
+        });
+      }
+    });
+
+    // =====================================================
+    // EQUIPE DE ELABORAÇÃO
+    // =====================================================
+
+    if (deveValidarAba('propriedades')) {
+
+      const equipe =
+        (this.projetoForm.get('equipeElaboracao')?.value ?? []) as IEquipe[];
+
+      const possuiMembroAtivo =
+        equipe.some(
+          (membro: IEquipe) =>
+            membro.idStatus === TipoStatusEnum.Ativo &&
+            membro.idPapel !== TipoPapelEnum.Redator,
+        );
+
+      if (!possuiMembroAtivo) {
+        pendencias.push({
+          id: 'equipeElaboracao',
+          aba: 'propriedades',
+          nomeAba: 'Dados do DIC',
+          campo: 'Equipe de Elaboração',
+          mensagem:
+            'Informe pelo menos um membro ativo além do Redator.',
+          controlPath: 'equipeElaboracao',
+        });
+      }
+    }
+
+    // =====================================================
+    // AÇÕES DO PROJETO
+    // =====================================================
+
+    if (deveValidarAba('propriedades')) {
+
+      const acoes =
+        (this.projetoForm.get('acoesProjeto')?.value ?? []) as IAcao[];
+
+      const possuiAcaoAtiva =
+        acoes.some(
+          (acao: IAcao) =>
+            acao.idStatus === TipoStatusEnum.Ativo,
+        );
+
+      if (!possuiAcaoAtiva) {
+        pendencias.push({
+          id: 'acoesProjeto',
+          aba: 'propriedades',
+          nomeAba: 'Dados do DIC',
+          campo: 'Ações do Projeto',
+          mensagem:
+            'Informe pelo menos uma ação do projeto.',
+          controlPath: 'acoesProjeto',
+        });
+      }
+    }
+
+    // =====================================================
+    // INDICADORES
+    // =====================================================
+
+    if (deveValidarAba('indicadores')) {
+
+      const indicadores =
+        (this.projetoForm.get('indicadoresProjeto')?.value ?? []) as IIndicadores[];
+
+      const indicadoresAvulsos =
+        (this.projetoForm.get('indicadoresAvulsosProjeto')?.value ?? []) as IIndicadorAvulso[];
+
+      if (
+        indicadores.length === 0 &&
+        indicadoresAvulsos.length === 0
+      ) {
+        pendencias.push({
+          id: 'indicadores',
+          aba: 'indicadores',
+          nomeAba: 'Indicadores',
+          campo: 'Indicadores',
+          mensagem:
+            'Informe pelo menos um indicador.',
+        });
+      }
+
+      const algumIndicadorSemMeta =
+        indicadores.some((indicador: any) =>
+          indicador.metasIndicadorProjeto?.some(
+            (meta: any) => !meta.valorMeta,
+          ),
+        ) ||
+        indicadoresAvulsos.some((indicador: any) =>
+          indicador.metasIndicadorProjeto?.some(
+            (meta: any) => !meta.valorMeta,
+          ),
+        );
+
+      if (algumIndicadorSemMeta) {
+        pendencias.push({
+          id: 'metasIndicadores',
+          aba: 'indicadores',
+          nomeAba: 'Indicadores',
+          campo: 'Metas dos Indicadores',
+          mensagem:
+            'Preencha todas as metas dos indicadores.',
+        });
+      }
+    }
+
+    // =====================================================
+    // ODS
+    // =====================================================
+
+    if (deveValidarAba('ods')) {
+
+      const ods =
+        this.projetoForm.get('odsProjeto')?.value ?? [];
+
+      if (ods.length === 0) {
+        pendencias.push({
+          id: 'ods',
+          aba: 'ods',
+          nomeAba: 'ODS',
+          campo: 'ODS',
+          mensagem:
+            'Informe pelo menos um ODS.',
+          controlPath: 'odsProjeto',
+        });
+      }
+    }
+
+    // =====================================================
+    // PLANEJAMENTO PPA
+    // =====================================================
+
+    if (deveValidarAba('planejamento')) {
+
+      const valorPlanejamento =
+        this.projetoForm.get('acoesPlanejamentoProjeto')?.value;
+
+      const acoesPlanejamento =
+        Array.isArray(valorPlanejamento)
+          ? valorPlanejamento
+          : [];
+
+      const naoPrevistoNoPpa =
+        this.projetoForm.get('naoPrevistoNoPpa')?.value === true;
+
+      if (
+        acoesPlanejamento.length === 0 &&
+        !naoPrevistoNoPpa
+      ) {
+        pendencias.push({
+          id: 'planejamentoPpa',
+          aba: 'planejamento',
+          nomeAba: 'Planejamento',
+          campo: 'Planejamento PPA',
+          mensagem:
+            'Informe uma ação de planejamento ou marque que o projeto não está previsto no PPA.',
+        });
+      }
+    }
+
+    return pendencias;
+
+  }
+
+  private obterMensagemErroControle(
+    nomeCampo: string,
+    control: AbstractControl,
+  ): string {
+
+    if (control.hasError('required')) {
+      return `${nomeCampo} é obrigatório.`;
+    }
+
+    if (control.hasError('maxlength')) {
+      const limite =
+        control.getError('maxlength')?.requiredLength;
+
+      return `${nomeCampo} deve possuir no máximo ${limite} caracteres.`;
+    }
+
+    if (control.hasError('minlength')) {
+      const limite =
+        control.getError('minlength')?.requiredLength;
+
+      return `${nomeCampo} deve possuir no mínimo ${limite} caracteres.`;
+    }
+
+    return `${nomeCampo} possui informação inválida.`;
+
+  }
+
+  private validarProjeto(
+    abas?: AbaProjeto[],
+  ): boolean {
+
+    this.pendenciasProjeto =
+      this.obterPendenciasProjeto(abas);
+
+    this.marcarCamposPendentes(
+      this.pendenciasProjeto,
+    );
+
+    return this.pendenciasProjeto.length === 0;
+  }
+
+  private marcarCamposPendentes(
+    pendencias: IPendenciaProjeto[],
+  ): void {
+
+    pendencias.forEach((pendencia) => {
+
+      if (!pendencia.controlPath) {
+        return;
+      }
+
+      const control =
+        this.projetoForm.get(
+          pendencia.controlPath,
+        );
+
+      control?.markAsTouched();
+      control?.markAsDirty();
+
+    });
+  }
+
+  public abrirModalPendencias(): void {
+
+    this.pendenciasProjeto =
+      this.obterPendenciasProjeto();
+
+    // this._ngbModalService.open(
+    //   this.pendenciasProjetoModalTemplate,
+    //   {
+    //     centered: true,
+    //     size: 'lg',
+    //   },
+    // );
+    
   }
 
 }
