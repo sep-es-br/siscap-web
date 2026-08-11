@@ -3861,17 +3861,71 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirModalPendencias(): void {
 
+    this.showModalPendencias = true
+
     this.pendenciasProjeto =
       this.obterPendenciasProjeto();
 
-    // this._ngbModalService.open(
-    //   this.pendenciasProjetoModalTemplate,
-    //   {
-    //     centered: true,
-    //     size: 'lg',
-    //   },
-    // );
-    
   }
+
+  public irParaPendencia( pendencia: IPendenciaProjeto, ): void {
+
+    this.showModalPendencias = false;
+
+    this.abrirAbaPendencia(pendencia.aba);
+
+    setTimeout(() => {
+
+      if (!pendencia.controlPath) {
+        return;
+      }
+
+      const elemento =
+        document.querySelector<HTMLElement>(
+          `[data-control-path="${pendencia.controlPath}"]`,
+        );
+
+      if (!elemento) {
+        this._toastService.showToast('warning', 'Campo não encontrado:', [pendencia.controlPath,]);
+        console.warn(
+          'Campo não encontrado:',
+          pendencia.controlPath,
+        );
+        return;
+      }
+
+      elemento.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+
+      this.projetoForm
+        .get(pendencia.controlPath)
+        ?.markAsTouched();
+
+      const campo =
+        elemento.querySelector<HTMLElement>(
+          'input, textarea, select, [tabindex]',
+        );
+
+      campo?.focus();
+
+    }, 150);
+
+  }
+
+  private abrirAbaPendencia(aba: AbaProjeto): void {
+
+    const abas: Record<AbaProjeto, string> = {
+      propriedades: 'nav-propriedades',
+      indicadores: 'nav-indicadores',
+      ods: 'nav-ods-indicadores',
+      planejamento: 'nav-planejamento',
+    };
+
+    this.abrirAba(abas[aba]);
+
+  }
+
 
 }

@@ -102,7 +102,7 @@
                     </span>
                     <validation-message class="meta-validation-message"
                       [control]="getMetaProjetoControl(i, j)"></validation-message>
-                    <input type="text" class="meta-value-input" formControlName="valorMeta"
+                    <input type="text" class="meta-value-input" formControlName="valorMeta" maxlength="255"
                       placeholder="Digite a meta" [disabled]="!isModoEdicao">
                   </div>
                 </div>
@@ -199,7 +199,7 @@
                     <validation-message class="meta-validation-message" 
                       [control]="getMetaIndicadorAvulsoProjetoControl(i, j)"></validation-message>
 
-                    <input type="text" class="meta-value-input" formControlName="valorMeta"
+                    <input type="text" class="meta-value-input" formControlName="valorMeta" maxlength="255"
                       placeholder="Digite a meta">
 
                   </div>

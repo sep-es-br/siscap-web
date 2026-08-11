@@ -1,7 +1,7 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
 import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
-import { NgbActiveModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -18,14 +18,14 @@ interface IGrupoPendencias {
   selector: 'siscap-projeto-modal-pendencias',
   standalone: true,
   imports: [CommonModule,
-      FormsModule,
-      ReactiveFormsModule,
-      NgSelectModule,
-      NgbTooltipModule,
-      NgbModalModule,
-      NgbPopoverModule,
-      TemplatesModule,
-      DialogModule],
+    FormsModule,
+    ReactiveFormsModule,
+    NgSelectModule,
+    NgbTooltipModule,
+    NgbModalModule,
+    NgbPopoverModule,
+    TemplatesModule,
+    DialogModule],
   templateUrl: './projeto-modal-pendencias.component.html',
   styleUrl: './projeto-modal-pendencias.component.scss'
 })
@@ -33,11 +33,17 @@ export class ModalPendenciasProjetoComponent implements OnChanges {
 
   @Input()
   public pendencias: IPendenciaProjeto[] = [];
-  
+
+  @Output()
+  public close = new EventEmitter();
+
+  @Output()
+  public navegarPendencia = new EventEmitter<IPendenciaProjeto>();
+
   public pendenciasAgrupadas: IGrupoPendencias[] = [];
 
   constructor(
-    public activeModal: NgbActiveModal,
+
   ) { }
 
   ngOnChanges(): void {
@@ -103,25 +109,20 @@ export class ModalPendenciasProjetoComponent implements OnChanges {
 
   }
 
+  public revisarPendencias(): void {
+    // this.activeModal.close({
+    //   acao: 'revisarPendencias',
+    // });
+  }
 
   public irParaPendencia(
     pendencia: IPendenciaProjeto,
   ): void {
-
-    this.activeModal.close({
-      acao: 'irParaPendencia',
-      pendencia,
-    });
-
+    this.navegarPendencia.emit(pendencia);
   }
 
-
-  public revisarPendencias(): void {
-
-    this.activeModal.close({
-      acao: 'revisarPendencias',
-    });
-
+  fechar(): void {
+    this.close.emit();
   }
 
 }

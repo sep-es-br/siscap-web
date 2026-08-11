@@ -306,7 +306,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
                 anoMeta: [meta.anoMeta],
                 valorMeta: [
                   meta.valorMeta ?? null,
-                  [Validators.required]
+                  [Validators.required, Validators.maxLength(255)]
                 ]
               })
             )
