@@ -540,6 +540,19 @@
   text-transform: uppercase;
 }
 
+.acao-planejamento-detalhamento-sem-loa-titulo {
+  margin-bottom: 10px;
+  padding: 8px;
+  color: var(--planejamento-gray-text);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;      
+  justify-content: center;  
+  text-align: center;
+}
+
 .acao-planejamento-descricao {
   margin: 0;
   color: #334155;

@@ -142,7 +142,7 @@
               </span>
             </div>
 
-            <div class="acao-planejamento-campo" *ngIf="acao.valorLoa">
+            <div class="acao-planejamento-campo" *ngIf="acao.valorLoa != null">
 
               <span class="valor-loa-label">
                 Valor LOA {{acao.anoAcao}}
@@ -155,7 +155,15 @@
 
           </div>
 
-          <div class="acao-planejamento-detalhamento" *ngIf="acao.detalhamentosLoa?.length">
+          <div class="acao-planejamento-detalhamento" *ngIf="acao.valorLoa != null && acao.valorLoa == 0 ">
+
+            <div class="acao-planejamento-detalhamento-sem-loa-titulo">
+              Ação não possui orçamento definido na LOA
+            </div>
+          
+          </div>
+
+          <div class="acao-planejamento-detalhamento" *ngIf="acao.detalhamentosLoa?.length && acao.valorLoa != null && acao.valorLoa > 0 ">
 
             <div class="acao-planejamento-detalhamento-titulo">
               Detalhamento Orçamentário LOA
