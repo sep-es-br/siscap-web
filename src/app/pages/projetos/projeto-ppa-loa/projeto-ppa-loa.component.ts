@@ -255,6 +255,15 @@ export class ProjetoPpaLoaComponent {
       return;
     }
 
+    this.acoesPlanejamento = [];
+
+    this.quantidadeAcoes =
+      this.acoesPlanejamento.length;
+
+    this.projetoForm.get('acoesPlanejamentoProjeto')?.setValue([]);
+
+    this.initBaseChip()
+
     controleNaoPrevistoPpa.setValue(this.naoPrevistoPpa);
     controleNaoPrevistoPpa.markAsDirty();
     controleNaoPrevistoPpa.markAsTouched();
@@ -632,6 +641,15 @@ export class ProjetoPpaLoaComponent {
 
       });
 
+    if (idAnos.length > 0) {
+
+      this.currentFilter = {
+        ...this.currentFilter,
+        idsAnos: idAnos
+      };
+
+    }
+
   }
 
   private montarChavePlanejamento(
@@ -717,6 +735,7 @@ export class ProjetoPpaLoaComponent {
       idsUos,
       idsAcoes
     );
+
   }
 
 }

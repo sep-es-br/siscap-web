@@ -33,7 +33,7 @@
                     [ngModel]="filtro.idsAnos[0]" 
                     [multiple]="false"
                     [closeOnSelect]="true" 
-                    [searchable]="true" [clearable]="true" [disabled]="somenteLeitura"
+                    [searchable]="true" [clearable]="true" [disabled]="somenteLeitura || anoEscolhido"
                     placeholder="Selecione..." class="select-filtro" (ngModelChange)="onAnoChange($event)">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">

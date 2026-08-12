@@ -14,7 +14,6 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { finalize, Subscription, switchMap } from 'rxjs';
 
-import { ProjetosService } from '../../../../core/services/projetos/projetos.service';
 import { PpaloaIntegracaoBiService } from '../../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 
 export interface IOpcaoPlanejamento {
@@ -106,8 +105,9 @@ export class FiltroAcoesComponent
   private uosSubscription?: Subscription;
   private funcoesSubscription?: Subscription;
 
+  anoEscolhido: boolean = false
+
   constructor(
-    private readonly _projetosService: ProjetosService,
     private readonly _ppaloaIntegracaoService: PpaloaIntegracaoBiService
   ) { }
 
@@ -153,7 +153,7 @@ export class FiltroAcoesComponent
       this._ppaloaIntegracaoService
         .buscarPeriodoPpaVigente()
         .pipe(
-          switchMap(periodo => {
+          switchMap( periodo => {
             this.periodoPlanejamento = periodo;
             this.filtro.idPeriodoPlanejamento = periodo.id;
             return this._ppaloaIntegracaoService.listarAnosPpaLoa();
@@ -172,12 +172,12 @@ export class FiltroAcoesComponent
                 this.filtro.idsAnos,
                 this.anos
               );
-            
-            if (this.filtro.idsUos.length > 0){
+
+            if (this.filtro.idsUos.length > 0) {
               this.carregarUos(true);
             }
 
-            if (this.filtro.idsFuncoes.length > 0){
+            if (this.filtro.idsFuncoes.length > 0) {
               this.carregarFuncoes(true);
             }
 
@@ -205,8 +205,8 @@ export class FiltroAcoesComponent
   }
 
   onAnoChange(idAno: number | null): void {
-
-     this.filtro.idsAnos = idAno != null ? [idAno] : [];
+    
+    this.filtro.idsAnos = idAno != null ? [idAno] : [];
 
     this.filtro.idsAnos =
       this.normalizarIds(this.filtro.idsAnos);
@@ -581,6 +581,13 @@ export class FiltroAcoesComponent
 
     };
 
+    if(this.filtro.idsAnos?.length == 0){
+      this.anoEscolhido = false
+    }else{
+      this.anoEscolhido = true
+      this.carregarUos(true);
+    }
+
   }
 
   private criarFiltroVazio(): IFiltroPlanejamento {
@@ -689,7 +696,7 @@ export class FiltroAcoesComponent
     this.uosSubscription?.unsubscribe();
 
     const idsAnos = this.normalizarIds(this.filtro.idsAnos);
-    
+
     this.uos = [];
     this.programas = [];
     this.acoes = [];
