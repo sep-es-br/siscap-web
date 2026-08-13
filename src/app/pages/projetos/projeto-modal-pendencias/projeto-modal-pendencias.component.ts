@@ -84,30 +84,22 @@ export class ModalPendenciasProjetoComponent implements OnChanges {
   }
 
 
-  public obterIconeAba(
-    aba: AbaProjeto,
-  ): string {
-
-    switch (aba) {
-
-      case 'propriedades':
-        return 'fa-solid fa-file-lines';
-
-      case 'indicadores':
-        return 'fa-solid fa-bullseye';
-
-      case 'ods':
-        return 'fa-solid fa-globe';
-
-      case 'planejamento':
-        return 'fa-solid fa-chart-column';
-
-      default:
-        return 'fa-solid fa-circle-exclamation';
-
-    }
-
-  }
+  // public obterIconeAba(
+  //   aba: AbaProjeto,
+  // ): string {
+  //   switch (aba) {
+  //     case 'propriedades':
+  //       return 'fa-solid fa-file-lines';
+  //     case 'indicadores':
+  //       return 'fa-solid fa-bullseye';
+  //     case 'ods':
+  //       return 'fa-solid fa-globe';
+  //     case 'planejamento':
+  //       return 'fa-solid fa-chart-column';
+  //     default:
+  //       return 'fa-solid fa-circle-exclamation';
+  //   }
+  // }
 
   public revisarPendencias(): void {
     // this.activeModal.close({

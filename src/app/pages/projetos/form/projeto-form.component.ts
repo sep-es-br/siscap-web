@@ -88,7 +88,7 @@ import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { IAcao } from '../../../core/interfaces/acoes.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
-import { EquipeModel } from '../../../core/models/equipe.model';
+// import { EquipeModel } from '../../../core/models/equipe.model';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { ProjetoIntegracaoEdocsFasesModel } from '../../../core/models/projeto-integracao-edocs-fases.model';
 import {
@@ -108,7 +108,7 @@ import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
 import { IIndicadorAvulso } from '../../../core/interfaces/indicador-avulso.interface';
 import { CatalogoIndicadorService } from '../../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
-import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
+// import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
 import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
 import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
 
@@ -124,7 +124,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _subscription: Subscription = new Subscription();
 
   private _atualizarProjeto$: Observable<IProjeto> = EMPTY;
-  private _cadastrarProjeto$: Observable<number> = EMPTY;
+  // private _cadastrarProjeto$: Observable<number> = EMPTY;
 
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
@@ -252,67 +252,67 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       path: 'sigla',
       campo: 'Sigla',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'titulo',
       campo: 'Título',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'idOrganizacao',
       campo: 'Organização',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'idResponsavelProponente',
       campo: 'Responsável Proponente',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'valor.quantia',
       campo: 'Valor Estimado',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'situacaoProblema',
       campo: 'Situação Problema',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'objetivo',
       campo: 'Objetivo',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'objetivoEspecifico',
       campo: 'Objetivo Específico',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'solucoesPropostas',
       campo: 'Soluções Propostas',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'arranjosInstitucionais',
       campo: 'Arranjos Institucionais',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'pecasPlanejamento',
       campo: 'Peças de Planejamento',
       aba: 'propriedades',
-      nomeAba: 'Dados do DIC',
+      nomeAba: 'DIC',
     },
     {
       path: 'impactos',
@@ -327,6 +327,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public indicadoresCatalogoBI: IIndicadoresCatalogoExterno[] = [];
 
   public showModalPendencias: boolean = false;
+
+  public mostrarBotaoPendenciasDic: boolean = false;
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -734,13 +736,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             }
 
           }
-
+          
           // usa uma flag vinda da API informando se o DIC pode ser Editado..
           this.trocarModo(this.podeEditar);
 
           this.loading = false;
           this.isLoadingPessoas = false;
         });
+        
+        this.mostrarBotaoPendenciasDic = this.podeEditar;
 
       }),
 
@@ -905,11 +909,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               );
 
               this.trocarModo(true);
-              this.trocarModo(true);
-
+              
               this.mostrarBotaoBaixarDic = false;
               this.loading = false;
               this.isLoadingPessoas = false;
+
+              this.mostrarBotaoPendenciasDic = true;
+
             });
           }),
         );
@@ -1539,6 +1545,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private compararValorEstimadoValorAcoes(): boolean {
+
     const valorEstimadoProjeto = this.projetoForm.get(
       'valorEstimado',
     ) as FormControl<number>;
@@ -1546,9 +1553,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const valorFormGroup = this.projetoForm.get(
       'valor',
     ) as FormGroup<ValorFormType>;
+
     const quantiaFormControl = valorFormGroup.get('quantia') as FormControl<
       number | null
     >;
+
     const acoesProjetoValues = this.projetoForm.get('acoesProjeto')?.value;
 
     if (!acoesProjetoValues) return false;
@@ -1561,22 +1570,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }, 0);
 
     const valorSomaAcoes = Number(totalValorAcoesInformadas) || 0;
+
     const valorEstimadoTotal =
       Number(quantiaFormControl.value) || Number(valorEstimadoProjeto.value);
 
-    if (Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001) {
+    if ( Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001 ) {
       return true;
     }
 
-    this._toastService.showToast(
-      'error',
-      'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
-      [
-        'A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',
-      ],
-    );
+    // this._toastService.showToast(
+    //   'error',
+    //   'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
+    //   [
+    //     'A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',
+    //   ],
+    // );
 
     return false;
+
   }
 
   private trocarModo(permitir: boolean): void {
@@ -1661,92 +1672,97 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validarFormulario(form: FormGroup, isEnvioDic: boolean): boolean {
 
-    for (const key in form.controls) {
-      form.controls[key].markAllAsTouched();
-    }
-
-    const acoesPlanejamentoProjeto = this.projetoForm.get('acoesPlanejamentoProjeto')
-      ?.value as IAcaoPlanejamentoProjeto[] ?? [];
-
-    const naoPrevistoNoPpa = this.projetoForm.get('naoPrevistoNoPpa')
-      ?.value as boolean ?? false;
-
-    if (acoesPlanejamentoProjeto.length === 0 && isEnvioDic && !naoPrevistoNoPpa) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Para envio do DIC não havendo acoes de planejamento informadas é obrigatório informar que não há previsão no PPA.',
-      ]);
+    if (this.obterPendenciasProjeto()?.length > 0){
+      this.abrirModalPendencias()
       return false;
     }
 
-    const indicadoresProjeto = form.get('indicadoresProjeto');
-    const indicadoresAvulsosProjeto = form.get('indicadoresAvulsosProjeto');
+    // for (const key in form.controls) {
+    //   form.controls[key].markAllAsTouched();
+    // }
 
-    const qtdIndicadoresProjeto = indicadoresProjeto?.value?.length ?? 0;
-    const qtdIndicadoresAvulsos = indicadoresAvulsosProjeto?.value?.length ?? 0;
+    // const acoesPlanejamentoProjeto = this.projetoForm.get('acoesPlanejamentoProjeto')
+    //   ?.value as IAcaoPlanejamentoProjeto[] ?? [];
 
-    const temIndicadorProjeto = qtdIndicadoresProjeto > 0;
-    const temIndicadorAvulso = qtdIndicadoresAvulsos > 0;
+    // const naoPrevistoNoPpa = this.projetoForm.get('naoPrevistoNoPpa')
+    //   ?.value as boolean ?? false;
 
-    if (!temIndicadorProjeto && !temIndicadorAvulso) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'É obrigatório informar ao menos um indicador.',
-      ]);
-      return false;
-    }
+    // if (acoesPlanejamentoProjeto.length === 0 && isEnvioDic && !naoPrevistoNoPpa) {
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'Para envio do DIC não havendo acoes de planejamento informadas é obrigatório informar que não há previsão no PPA.',
+    //   ]);
+    //   return false;
+    // }
 
-    if (temIndicadorAvulso && indicadoresProjeto?.hasError('required')) {
-      const errors = { ...indicadoresProjeto.errors };
-      delete errors['required'];
+    // const indicadoresProjeto = form.get('indicadoresProjeto');
+    // const indicadoresAvulsosProjeto = form.get('indicadoresAvulsosProjeto');
 
-      indicadoresProjeto.setErrors(Object.keys(errors).length ? errors : null);
+    // const qtdIndicadoresProjeto = indicadoresProjeto?.value?.length ?? 0;
+    // const qtdIndicadoresAvulsos = indicadoresAvulsosProjeto?.value?.length ?? 0;
 
-    }
+    // const temIndicadorProjeto = qtdIndicadoresProjeto > 0;
+    // const temIndicadorAvulso = qtdIndicadoresAvulsos > 0;
 
-    if (form.invalid) {
-      Object.keys(form.controls).forEach((key) => {
-        const control = form.get(key);
-        if (control && control.invalid) {
-          console.warn(`Campo inválido: ${key}`, control.errors);
-        }
-      });
+    // if (!temIndicadorProjeto && !temIndicadorAvulso) {
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'É obrigatório informar ao menos um indicador.',
+    //   ]);
+    //   return false;
+    // }
 
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Por favor, verifique os campos.',
-      ]);
+    // if (temIndicadorAvulso && indicadoresProjeto?.hasError('required')) {
+    //   const errors = { ...indicadoresProjeto.errors };
+    //   delete errors['required'];
 
-      return false;
+    //   indicadoresProjeto.setErrors(Object.keys(errors).length ? errors : null);
 
-    }
+    // }
 
-    // valida se tem pelo menos uma acao ATIVA no form
-    const acoesAtivas = this.projetoForm
-      .get('acoesProjeto')
-      ?.value.filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo);
+    // if (form.invalid) {
+    //   Object.keys(form.controls).forEach((key) => {
+    //     const control = form.get(key);
+    //     if (control && control.invalid) {
+    //       console.warn(`Campo inválido: ${key}`, control.errors);
+    //     }
+    //   });
 
-    if (acoesAtivas.length === 0) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Nenhuma ação informada.',
-      ]);
-      return false;
-    }
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'Por favor, verifique os campos.',
+    //   ]);
 
-    // valida se tem pelo menos uma acao ATIVA no form
-    // e seja diferente do papel 'Redator'
-    const equipeElaboracao = this.projetoForm.get('equipeElaboracao')
-      ?.value as IEquipe[];
+    //   return false;
 
-    const membrosEquipeAtivas = equipeElaboracao.filter(
-      (membro: EquipeModel) =>
-        membro.idStatus === TipoStatusEnum.Ativo &&
-        membro.idPapel != TipoPapelEnum.Redator,
-    );
+    // }
 
-    if (membrosEquipeAtivas.length === 0) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Nenhum membro informado além do Redator.',
-      ]);
-      return false;
-    }
+    // // valida se tem pelo menos uma acao ATIVA no form
+    // const acoesAtivas = this.projetoForm
+    //   .get('acoesProjeto')
+    //   ?.value.filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo);
+
+    // if (acoesAtivas.length === 0) {
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'Nenhuma ação informada.',
+    //   ]);
+    //   return false;
+    // }
+
+    // // valida se tem pelo menos uma acao ATIVA no form
+    // // e seja diferente do papel 'Redator'
+    // const equipeElaboracao = this.projetoForm.get('equipeElaboracao')
+    //   ?.value as IEquipe[];
+
+    // const membrosEquipeAtivas = equipeElaboracao.filter(
+    //   (membro: EquipeModel) =>
+    //     membro.idStatus === TipoStatusEnum.Ativo &&
+    //     membro.idPapel != TipoPapelEnum.Redator,
+    // );
+
+    // if (membrosEquipeAtivas.length === 0) {
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'Nenhum membro informado além do Redator.',
+    //   ]);
+    //   return false;
+    // }
 
     return true;
 
@@ -1955,15 +1971,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           metasIndicadorProjeto: indicador.metasIndicadorProjeto
         }));
 
-      const temIndicador =
-        indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
+      // const temIndicador =
+      //   indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
 
-      if (!temIndicador) {
-        this._toastService.showToast('warning', 'O formulário contém erros.', [
-          'Informe pelo menos um indicador.'
-        ]);
-        return;
-      }
+      // if (!temIndicador) {
+      //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+      //     'Informe pelo menos um indicador.'
+      //   ]);
+      //   return;
+      // }
 
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
@@ -2005,9 +2021,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
 
-      if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
-        return;
-      }
+      // if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
+      //   return;
+      // }
 
       const formData = new FormData();
 
@@ -2060,13 +2076,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    const algumIndicadorComMetaInvalida =
-      indicadoresArray.some((i: any) =>
-        i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
-      ) ||
-      indicadoresAvulsosArray.some((i: any) =>
-        i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
-      );
+    // const algumIndicadorComMetaInvalida =
+    //   indicadoresArray.some((i: any) =>
+    //     i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
+    //   ) ||
+    //   indicadoresAvulsosArray.some((i: any) =>
+    //     i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
+    //   );
 
     // if (algumIndicadorComMetaInvalida) {
     //   this._toastService.showToast('warning', 'Erro ao validar indicadores', [
@@ -2076,6 +2092,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     // }
 
     return true;
+
   }
 
   onSelecionarOrganizacao(organizacao: any) {
@@ -2484,15 +2501,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           metasIndicadorProjeto: indicador.metasIndicadorProjeto
         }));
 
-      const temIndicador =
-        indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
+      // const temIndicador =
+      //   indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
 
-      if (!temIndicador) {
-        this._toastService.showToast('warning', 'O formulário contém erros.', [
-          'Informe pelo menos um indicador.'
-        ]);
-        return;
-      }
+      // if (!temIndicador) {
+      //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+      //     'Informe pelo menos um indicador.'
+      //   ]);
+      //   return;
+      // }
 
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
@@ -2539,7 +2556,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }
 
       // const payload = new ProjetoFormModel(form.value as IProjetoForm);
-
       payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
       this.reentranharDicProjetoAsync(payload);
@@ -3652,7 +3668,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         pendencias.push({
           id: 'equipeElaboracao',
           aba: 'propriedades',
-          nomeAba: 'Dados do DIC',
+          nomeAba: 'DIC',
           campo: 'Equipe de Elaboração',
           mensagem:
             'Informe pelo menos um membro ativo além do Redator.',
@@ -3677,16 +3693,33 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         );
 
       if (!possuiAcaoAtiva) {
+
         pendencias.push({
           id: 'acoesProjeto',
           aba: 'propriedades',
-          nomeAba: 'Dados do DIC',
+          nomeAba: 'DIC',
           campo: 'Ações do Projeto',
           mensagem:
             'Informe pelo menos uma ação do projeto.',
           controlPath: 'acoesProjeto',
         });
+
       }
+
+      if( !this.compararValorEstimadoValorAcoes() ){
+
+        pendencias.push({
+          id: 'acoesProjeto',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+          campo: 'Ações do Projeto',
+          mensagem:
+            'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
+          controlPath: 'acoesProjeto',
+        });
+
+      }
+
     }
 
     // =====================================================
@@ -3742,24 +3775,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     // =====================================================
     // ODS
     // =====================================================
-
-    if (deveValidarAba('ods')) {
-
-      const ods =
-        this.projetoForm.get('odsProjeto')?.value ?? [];
-
-      if (ods.length === 0) {
-        pendencias.push({
-          id: 'ods',
-          aba: 'ods',
-          nomeAba: 'ODS',
-          campo: 'ODS',
-          mensagem:
-            'Informe pelo menos um ODS.',
-          controlPath: 'odsProjeto',
-        });
-      }
-    }
+    // if (deveValidarAba('ods')) {
+    //   const ods =
+    //     this.projetoForm.get('odsProjeto')?.value ?? [];
+    //   if (ods.length === 0) {
+    //     pendencias.push({
+    //       id: 'ods',
+    //       aba: 'ods',
+    //       nomeAba: 'ODS',
+    //       campo: 'ODS',
+    //       mensagem:
+    //         'Informe pelo menos um ODS.',
+    //       controlPath: 'odsProjeto',
+    //     });
+    //   }
+    // }
 
     // =====================================================
     // PLANEJAMENTO PPA
@@ -3824,40 +3854,32 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  private validarProjeto(
-    abas?: AbaProjeto[],
-  ): boolean {
+  // private validarProjeto(
+  //   abas?: AbaProjeto[],
+  // ): boolean {
+  //   this.pendenciasProjeto =
+  //     this.obterPendenciasProjeto(abas);
+  //   this.marcarCamposPendentes(
+  //     this.pendenciasProjeto,
+  //   );
+  //   return this.pendenciasProjeto.length === 0;
+  // }
 
-    this.pendenciasProjeto =
-      this.obterPendenciasProjeto(abas);
-
-    this.marcarCamposPendentes(
-      this.pendenciasProjeto,
-    );
-
-    return this.pendenciasProjeto.length === 0;
-  }
-
-  private marcarCamposPendentes(
-    pendencias: IPendenciaProjeto[],
-  ): void {
-
-    pendencias.forEach((pendencia) => {
-
-      if (!pendencia.controlPath) {
-        return;
-      }
-
-      const control =
-        this.projetoForm.get(
-          pendencia.controlPath,
-        );
-
-      control?.markAsTouched();
-      control?.markAsDirty();
-
-    });
-  }
+  // private marcarCamposPendentes(
+  //   pendencias: IPendenciaProjeto[],
+  // ): void {
+  //   pendencias.forEach((pendencia) => {
+  //     if (!pendencia.controlPath) {
+  //       return;
+  //     }
+  //     const control =
+  //       this.projetoForm.get(
+  //         pendencia.controlPath,
+  //       );
+  //     control?.markAsTouched();
+  //     control?.markAsDirty();
+  //   });
+  // }
 
   public abrirModalPendencias(): void {
 
@@ -3868,7 +3890,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  public irParaPendencia( pendencia: IPendenciaProjeto, ): void {
+  public irParaPendencia(pendencia: IPendenciaProjeto,): void {
 
     this.showModalPendencias = false;
 

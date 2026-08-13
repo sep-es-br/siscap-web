@@ -77,9 +77,9 @@
 
                         <div class="d-flex align-items-center gap-2">
 
-                            <div class="icone-secao">
+                            <!-- <div class="icone-secao">
                                 <i [class]="obterIconeAba(grupo.aba)"></i>
-                            </div>
+                            </div> -->
 
                             <strong class="text-primary">
                                 {{ grupo.nomeAba }}
@@ -135,7 +135,6 @@
 
                 </div>
 
-
                 <!-- Orientação -->
                 <div *ngIf="pendencias.length > 0" class="alert alert-primary d-flex align-items-start gap-2 mb-0">
                     <i class="fa-solid fa-circle-info mt-1"></i>
@@ -147,18 +146,17 @@
 
             </div>
 
-
             <div class="modal-footer">
                 <div class="d-flex flex-column flex-sm-row  justify-content-end gap-2 w-100">
                     <button type="button" class="btn btn-outline-danger icon-text-btn" (click)="fechar()">
                         <i class="fa-solid fa-xmark me-2"></i>
                         Fechar
                     </button>
-                    <button *ngIf="pendencias.length > 0" type="button" class="btn btn-primary icon-text-btn"
+                    <!-- <button *ngIf="pendencias.length > 0" type="button" class="btn btn-primary icon-text-btn"
                         (click)="revisarPendencias()">
                         <i class="fa-solid fa-list-check me-2"></i>
                         Revisar pendências
-                    </button>
+                    </button> -->
                 </div>
             </div>
 

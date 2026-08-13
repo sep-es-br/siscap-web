@@ -17,7 +17,8 @@
       <span>Solicitar revisão a {{ nomeProponenteDIC }} </span>
     </button>
 
-    <button type="button" class="btn btn-outline-primary" (click)="abrirModalPendencias()">
+    <button *ngIf="mostrarBotaoPendenciasDic" type="button" class="btn btn-outline-primary icon-text-btn me-2" (click)="abrirModalPendencias()">
+      <i class="fa-solid fa-list-check"></i>
       Ver pendências
     </button>
 
@@ -360,7 +361,7 @@
                   maxLength="2000"></textarea>
               </div>
 
-              <div class="col-12">
+              <div data-control-path="acoesProjeto" class="col-12">
                 <siscap-valor-form [moedasList]="moedasList" [tiposValorOpcoes]="tiposValorOpcoes"
                   [camposComplementarProjeto]="camposComplementarProjeto"
                   [statusProjeto]="statusProjeto"></siscap-valor-form>
@@ -380,7 +381,7 @@
                 <siscap-acoes-form [isModoEdicao]="isModoEdicao"></siscap-acoes-form>
               </div>
 
-              <div class="col-12 mt-2">
+              <div data-control-path="rateio" class="col-12 mt-2">
                 <label for="rateio" class="form-label col-12" [ngClass]="{
                     'alerta-complementar-campo':
                       deveComplementarCampo('rateio'),
@@ -449,7 +450,7 @@
             (indicadoresCatalogoCarregados)="onIndicadoresCatalogoCarregados($event)"></siscap-projeto-indicadores>
         </div>
 
-        <div class="tab-pane fade" id="tab-ods-indicadores" role="tabpanel" aria-labelledby="nav-indicador-ods">
+        <div data-control-path="odsProjeto" class="tab-pane fade" id="tab-ods-indicadores" role="tabpanel" aria-labelledby="nav-indicador-ods">
           <siscap-indicador-ods [formProjeto]="projetoForm" [isModoEdicao]="isModoEdicao" [isSubcap]="isSubcapGeoc()"
             [statusProjeto]="statusProjeto"></siscap-indicador-ods>
         </div>
