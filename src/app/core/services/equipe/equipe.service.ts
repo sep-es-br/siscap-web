@@ -79,8 +79,9 @@ export class EquipeService {
   ): FormArray<FormGroup<EquipeFormType>> {
 
     const equipeFormArray = this._nnfb.array<FormGroup<EquipeFormType>>(
-      [],
-      [Validators.required, Validators.minLength(1), equipeValidator()]
+      [],[
+        // Validators.required, 
+        Validators.minLength(1), equipeValidator()]
     );
 
     if (equipe) {

@@ -201,7 +201,9 @@ export class RateioService {
     
     const rateioFormArray = this._nnfb.array<
       FormGroup<RateioLocalidadeFormType>
-    >([], [Validators.required, Validators.minLength(1)]);
+    >([], [
+      // Validators.required, 
+      Validators.minLength(1)]);
    
     if (rateioModelArray) {
       rateioModelArray.forEach((rateioModel) => {

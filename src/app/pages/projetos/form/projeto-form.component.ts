@@ -111,6 +111,7 @@ import { IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadore
 // import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
 import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
 import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
+import { ICamposValidacao } from '../../../core/interfaces/campos.validacao.dic.interface';
 
 declare var bootstrap: any;
 
@@ -247,80 +248,82 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     'ods'
   ];
 
-  private readonly camposValidacao = [
-    {
-      path: 'sigla',
-      campo: 'Sigla',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'titulo',
-      campo: 'Título',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'idOrganizacao',
-      campo: 'Organização',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'idResponsavelProponente',
-      campo: 'Responsável Proponente',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'valor.quantia',
-      campo: 'Valor Estimado',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'situacaoProblema',
-      campo: 'Situação Problema',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'objetivo',
-      campo: 'Objetivo',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'objetivoEspecifico',
-      campo: 'Objetivo Específico',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'solucoesPropostas',
-      campo: 'Soluções Propostas',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'arranjosInstitucionais',
-      campo: 'Arranjos Institucionais',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'pecasPlanejamento',
-      campo: 'Peças de Planejamento',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-    },
-    {
-      path: 'impactos',
-      campo: 'Impactos',
-      aba: 'ods',
-      nomeAba: 'ODS',
-    },
-  ] as const;
+  private camposValidacao: ICamposValidacao[] = [];
+
+  // private readonly camposValidacao = [
+  //   {
+  //     path: 'sigla',
+  //     campo: 'Sigla',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'titulo',
+  //     campo: 'Título',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'idOrganizacao',
+  //     campo: 'Organização',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'idResponsavelProponente',
+  //     campo: 'Responsável Proponente',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'valor.quantia',
+  //     campo: 'Valor Estimado',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'situacaoProblema',
+  //     campo: 'Situação Problema',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'objetivo',
+  //     campo: 'Objetivo',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'objetivoEspecifico',
+  //     campo: 'Objetivo Específico',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'solucoesPropostas',
+  //     campo: 'Soluções Propostas',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'arranjosInstitucionais',
+  //     campo: 'Arranjos Institucionais',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'pecasPlanejamento',
+  //     campo: 'Peças de Planejamento',
+  //     aba: 'propriedades',
+  //     nomeAba: 'DIC',
+  //   },
+  //   {
+  //     path: 'impactos',
+  //     campo: 'Impactos',
+  //     aba: 'ods',
+  //     nomeAba: 'ODS',
+  //   },
+  // ] as const;
 
   public pendenciasProjeto: IPendenciaProjeto[] = [];
 
@@ -736,14 +739,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             }
 
           }
-          
+
           // usa uma flag vinda da API informando se o DIC pode ser Editado..
           this.trocarModo(this.podeEditar);
 
           this.loading = false;
           this.isLoadingPessoas = false;
         });
-        
+
         this.mostrarBotaoPendenciasDic = this.podeEditar;
 
       }),
@@ -909,7 +912,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               );
 
               this.trocarModo(true);
-              
+
               this.mostrarBotaoBaixarDic = false;
               this.loading = false;
               this.isLoadingPessoas = false;
@@ -1079,28 +1082,32 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       nomeagente: this._nnfb.control(projetoFormModel?.nomeagente ?? null),
       objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
-        Validators.required,
+        // Validators.required,
         Validators.maxLength(2000),
       ]),
       objetivoEspecifico: this._nnfb.control(
-        projetoFormModel?.objetivoEspecifico ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        projetoFormModel?.objetivoEspecifico ?? null, [
+        // Validators.required, 
+        Validators.maxLength(2000)],
       ),
       situacaoProblema: this._nnfb.control(
-        projetoFormModel?.situacaoProblema ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        projetoFormModel?.situacaoProblema ?? null, [
+        // Validators.required, 
+        Validators.maxLength(2000)],
       ),
       solucoesPropostas: this._nnfb.control(
-        projetoFormModel?.solucoesPropostas ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        projetoFormModel?.solucoesPropostas ?? null, [
+        //Validators.required, 
+        Validators.maxLength(2000)],
       ),
       impactos: this._nnfb.control(projetoFormModel?.impactos ?? null, [
-        Validators.required,
+        //Validators.required,
         Validators.maxLength(2000),
       ]),
       arranjosInstitucionais: this._nnfb.control(
-        projetoFormModel?.arranjosInstitucionais ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        projetoFormModel?.arranjosInstitucionais ?? null, [
+        // Validators.required, 
+        Validators.maxLength(2000)],
       ),
       idResponsavelProponente: this._nnfb.control(
         projetoFormModel?.idResponsavelProponente ?? null,
@@ -1125,8 +1132,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.acoesProjeto,
       ),
       pecasPlanejamento: this._nnfb.control(
-        projetoFormModel?.pecasPlanejamento ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        projetoFormModel?.pecasPlanejamento ?? null, [
+        // Validators.required, 
+        Validators.maxLength(2000)],
       ),
       enviarProjetoGestor: this._nnfb.control(
         projetoFormModel?.enviarProjetoGestor ?? false,
@@ -1497,7 +1505,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         break;
 
       case BreadcrumbAcoesEnum.Arquivar:
-        this.abrirArquivarModal(this.projetoForm);
+        this.abrirArquivarModal();
         break;
 
       case BreadcrumbAcoesEnum.Complementar:
@@ -1574,7 +1582,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const valorEstimadoTotal =
       Number(quantiaFormControl.value) || Number(valorEstimadoProjeto.value);
 
-    if ( Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001 ) {
+    if (Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001) {
       return true;
     }
 
@@ -1672,7 +1680,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validarFormulario(form: FormGroup, isEnvioDic: boolean): boolean {
 
-    if (this.obterPendenciasProjeto()?.length > 0){
+    if (this.obterPendenciasProjeto()?.length > 0) {
       this.abrirModalPendencias()
       return false;
     }
@@ -1831,6 +1839,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean, isEnvioDic: boolean): void {
 
+    this.carregarCamposValidar(isEnvioDic);
+
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
       this.statusProjeto === StatusProjetoEnum.Elegivel
@@ -1988,12 +1998,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       const formValido = this.validarFormulario(form, isEnvioDic);
 
-      if (!estavaDisabled) {
-        indicadoresProjetoControl?.enable({ emitEvent: false });
-      }
-
       if (!formValido) {
         return;
+      }
+
+      if (!estavaDisabled) {
+        indicadoresProjetoControl?.enable({ emitEvent: false });
       }
 
       form.get('valor.tipo')?.enable();
@@ -2034,13 +2044,125 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         })
       );
 
-      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho, formData)
         : this.cadastrarProjeto(payload, isRascunho);
 
       requisicao.subscribe();
+
+    }
+
+  }
+
+  private carregarCamposValidar(isEnvioDic: boolean) {
+
+    if (isEnvioDic) { // envio do DIC
+
+      this.camposValidacao = [
+        {
+          path: 'sigla',
+          campo: 'Sigla',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'titulo',
+          campo: 'Título',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'idOrganizacao',
+          campo: 'Organização',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'idResponsavelProponente',
+          campo: 'Responsável Proponente',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'valor.quantia',
+          campo: 'Valor Estimado',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'situacaoProblema',
+          campo: 'Situação Problema',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'objetivo',
+          campo: 'Objetivo',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'objetivoEspecifico',
+          campo: 'Objetivo Específico',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'solucoesPropostas',
+          campo: 'Soluções Propostas',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'arranjosInstitucionais',
+          campo: 'Arranjos Institucionais',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'pecasPlanejamento',
+          campo: 'Peças de Planejamento',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'impactos',
+          campo: 'Impactos',
+          aba: 'ods',
+          nomeAba: 'ODS',
+        },
+      ] as const;
+
+
+    } else { // rascunho
+
+      this.camposValidacao = [
+        {
+          path: 'sigla',
+          campo: 'Sigla',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'titulo',
+          campo: 'Título',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'idOrganizacao',
+          campo: 'Organização',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'idResponsavelProponente',
+          campo: 'Responsável Proponente',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },]
 
     }
 
@@ -2330,15 +2452,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.submitProjetoForm(form, false, true);
 
       }
+
     });
+
   }
 
   public abrirRevisarModal(form: FormGroup) {
+
     const controlJustificativaRevisao = form.get('justificativaRevisao');
+
     controlJustificativaRevisao?.setValidators([
-      Validators.required,
-      Validators.maxLength(200),
-    ]);
+      Validators.required, Validators.maxLength(200),]);
+
     controlJustificativaRevisao?.updateValueAndValidity();
 
     const modalRef = this._ngbModalService.open(
@@ -2356,10 +2481,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  public abrirArquivarModal(form: FormGroup) {
+  public abrirArquivarModal() {
+
     const codigoMotivoArquivamento = this.projetoForm.get(
       'codigoMotivoArquivamento',
     );
+
     codigoMotivoArquivamento?.setValidators([
       Validators.required,
       Validators.maxLength(200),
@@ -3453,13 +3580,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     event.preventDefault();
 
-    if (!this.validarAbaDic()) {
-      this._toastService.showToast('warning', 'Erro ao avançar', [
-        'Verifique os campos obrigatórios antes de continuar.',
-      ]);
-      this.abrirAba('nav-propriedades');
-      return;
-    }
+    // if (!this.validarAbaDic()) {
+    //   this._toastService.showToast('warning', 'Erro ao avançar', [
+    //     'Verifique os campos obrigatórios antes de continuar.',
+    //   ]);
+    //   this.abrirAba('nav-propriedades');
+    //   return;
+    // }
 
     this.abrirAba('nav-indicadores');
 
@@ -3469,14 +3596,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     event.preventDefault();
 
-    if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
-      if (!this.validarAbaDic()) {
-        this._toastService.showToast('warning', 'Erro ao avançar', [
-          'Verifique os campos obrigatórios antes de continuar.',
-        ]);
-        return;
-      }
-    }
+    // if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
+    //   if (!this.validarAbaDic()) {
+    //     this._toastService.showToast('warning', 'Erro ao avançar', [
+    //       'Verifique os campos obrigatórios antes de continuar.',
+    //     ]);
+    //     return;
+    //   }
+    // }
 
     this.abrirAba('nav-planejamento');
 
@@ -3486,26 +3613,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     event.preventDefault();
 
-    if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
-      if (!this.validarAbaDic()) {
-        this._toastService.showToast('warning', 'Erro ao avançar', [
-          'Verifique os campos obrigatórios antes de continuar.',
-        ]);
-        return;
-      }
-    }
+    // if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
+    //   if (!this.validarAbaDic()) {
+    //     this._toastService.showToast('warning', 'Erro ao avançar', [
+    //       'Verifique os campos obrigatórios antes de continuar.',
+    //     ]);
+    //     return;
+    //   }
+    // }
 
     const campoOds = this.projetoForm.get('impactos');
 
     campoOds?.clearValidators();
     campoOds?.updateValueAndValidity();
 
-    if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
-      if (!this.validarFormulario(this.projetoForm, false)) {
-        this.abrirAba('nav-indicadores');
-        return;
-      }
-    }
+    // if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
+    //   if (!this.validarFormulario(this.projetoForm, false)) {
+    //     this.abrirAba('nav-indicadores');
+    //     return;
+    //   }
+    // }
 
     campoOds?.setValidators([Validators.required]);
     campoOds?.updateValueAndValidity();
@@ -3614,10 +3741,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       emitEvent: false,
     });
 
-    // =====================================================
-    // CAMPOS DO REACTIVE FORM
-    // =====================================================
-
     this.camposValidacao.forEach((campo) => {
 
       if (!deveValidarAba(campo.aba)) {
@@ -3637,7 +3760,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         pendencias.push({
           id: campo.path,
           aba: campo.aba,
-          nomeAba: campo.nomeAba,
+          nomeAba: campo.nomeAba as AbaProjeto,
           campo: campo.campo,
           mensagem: this.obterMensagemErroControle(
             campo.campo,
@@ -3646,6 +3769,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           controlPath: campo.path,
         });
       }
+
     });
 
     // =====================================================
@@ -3706,7 +3830,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       }
 
-      if( !this.compararValorEstimadoValorAcoes() ){
+      if (!this.compararValorEstimadoValorAcoes()) {
 
         pendencias.push({
           id: 'acoesProjeto',

@@ -110,8 +110,9 @@ export class AcoesService {
   ): FormArray<FormGroup<AcaoFormType>> {
 
     const acoesFormArray = this._nnfb.array<FormGroup<AcaoFormType>>(
-      [],
-      [Validators.required, Validators.minLength(1),]);
+      [],[
+        // Validators.required, 
+        Validators.minLength(1),]);
 
     if (acoes) {
       acoes.forEach((acao) => {
@@ -121,16 +122,18 @@ export class AcoesService {
 
     this.acoesFormArray = acoesFormArray;
     this.acoesFormArraySnapshot = this.acoesFormArray.value as Array<IAcao>;
+
     return this.acoesFormArray;
+    
   }
 
   public construirAcaoFormGroup(membro?: IAcao): FormGroup<AcaoFormType> {
     return this._nnfb.group<AcaoFormType>({
       idAcao: this._nnfb.control(membro?.idAcao ?? 0),
-      descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null, Validators.required),
-      descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null, Validators.required),
-      valorEstimadoAcaoPrincipal: this._nnfb.control(membro?.valorEstimadoAcaoPrincipal ?? 0, Validators.required),
-      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required
+      descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null ),//, Validators.required),
+      descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null ),//, Validators.required),
+      valorEstimadoAcaoPrincipal: this._nnfb.control(membro?.valorEstimadoAcaoPrincipal ?? 0 ), //, Validators.required),
+      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, // Validators.required
       ),
     });
   }
