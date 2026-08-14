@@ -1,0 +1,236 @@
+.siscap-filter-modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.siscap-filter-modal {
+  position: fixed;
+  top: 77px;
+  left: 50%;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  width: 62%;
+  max-width: 1180px;
+  max-height: calc(100vh - 48px);
+  overflow: visible;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: translateX(-50%);
+}
+
+.siscap-filter-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 0;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.siscap-filter-modal__close:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+.siscap-filter-modal__body {
+  padding: 24px 56px 18px 24px;
+  overflow: visible;
+}
+
+.siscap-filter-modal__footer {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  border-radius: 0 0 16px 16px;
+}
+
+.siscap-filter-modal__restore,
+.siscap-filter-modal__apply {
+  min-height: 34px;
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.siscap-filter-modal__restore {
+  color: #f59e0b;
+  background: #ffffff;
+  border: 1px solid #f59e0b;
+}
+
+.siscap-filter-modal__restore:hover:not(:disabled) {
+  background: #fffbeb;
+}
+
+.siscap-filter-modal__apply {
+  padding-inline: 18px;
+  color: #ffffff;
+  background: #10b981;
+  border: 1px solid #10b981;
+}
+
+.siscap-filter-modal__apply:hover:not(:disabled) {
+  background: #059669;
+}
+
+.siscap-filter-modal__restore:disabled,
+.siscap-filter-modal__apply:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.siscap-filter-modal .filter-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.siscap-filter-modal .filter-label {
+  margin-bottom: 4px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.siscap-filter-modal .filter-select {
+  width: 100%;
+  height: 36px;
+  padding: 6px 30px 6px 10px;
+  color: #0a1a30;
+  background-color: #fcfdfe;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23475569' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  border: 1px solid #c8d3de;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  appearance: none;
+}
+
+.siscap-filter-modal .filter-select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.siscap-filter-modal .select-filtro {
+  width: 100%;
+  min-width: 0;
+}
+
+.siscap-filter-modal .select-filtro .ng-select-container {
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  height: 36px;
+  overflow: hidden;
+  border: 1px solid #c8d3de;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.siscap-filter-modal .select-filtro .ng-value-container {
+  width: 100%;
+  min-width: 0;
+  padding-left: 10px;
+  overflow: hidden;
+  flex-wrap: nowrap;
+}
+
+.siscap-filter-modal .select-filtro .ng-value,
+.siscap-filter-modal .select-filtro .ng-input {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.siscap-filter-modal .select-filtro .ng-arrow-wrapper {
+  width: 28px;
+  padding-right: 8px;
+}
+
+.siscap-filter-modal .select-filtro .custom-selected-label {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.siscap-filter-modal .select-filtro .ng-dropdown-panel,
+.siscap-filter-modal .select-filtro .ng-dropdown-panel-items {
+  max-width: 100%;
+}
+
+.siscap-filter-modal .select-filtro .ng-dropdown-panel-items {
+  overflow-x: hidden;
+}
+
+.siscap-filter-modal .select-filtro .ng-option {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.siscap-filter-modal .select-filtro .ng-option-label,
+.siscap-filter-modal .select-option-checkbox span {
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.siscap-filter-modal .select-option-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.siscap-filter-modal .select-option-checkbox input {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+@media (max-width: 575.98px) {
+  .siscap-filter-modal {
+    top: 12px;
+    width: calc(100% - 24px);
+    max-height: calc(100vh - 24px);
+  }
+
+  .siscap-filter-modal__body {
+    padding: 52px 16px 16px;
+  }
+
+  .siscap-filter-modal__footer {
+    padding: 12px 16px;
+  }
+}

@@ -1,22 +1,15 @@
 <section class="planejamento-section">
 
-  <!-- CARD: FILTROS -->
-  <div class="card">
-    <div class="card-header">
-      <div class="badges-container">
-        <siscap-ppa-loa-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value" [type]="chip.type"
-          [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)"
-          [podeEditar]="podeEditar">
-        </siscap-ppa-loa-chip>
-      </div>
-      <p-button styleClass="btn-filtros" (click)="showModal = true" [disabled]="!podeEditar">
-        <span>Filtros</span>
-        <span style="font-size:14px">▽</span>
-      </p-button>
-    </div>
-    <siscap-filtro-ppa-loa *ngIf="showModal" [filtroAtual]="currentFilter" (apply)="onApply($event)"
-      (close)="showModal = false" (restaurar)="onRestaurar()" [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
-  </div>
+  <siscap-filter-card
+    [chips]="chips"
+    [disabled]="!podeEditar || naoPrevistoPpa"
+    [loading]="carregandoDadosIniciais || carregandoAcoes"
+    (openFilter)="abrirFiltroPlanejamento()"
+    (chipRemove)="removeChip($event)">
+  </siscap-filter-card>
+
+  <siscap-filtro-ppa-loa *ngIf="showModal" [filtroAtual]="currentFilter" (apply)="onApply($event)"
+    (close)="showModal = false" (restaurar)="onRestaurar()" [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
 
   <!-- Ações selecionadas -->
   <div class="planejamento-card">

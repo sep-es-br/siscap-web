@@ -1,23 +1,20 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
-import { Desafio, IGestoesCatalogoExterno, Label, LabelValor } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
+import { Desafio, IGestoesCatalogoExterno, Label } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { FilterModalComponent } from '../../../shared/components/filter-modal/filter-modal.component';
 
 @Component({
   selector: 'app-filtro-indicadores',
   standalone: true,
-  imports: [FormsModule,
-    CommonModule,
-    MultiSelectModule,
+  imports: [
     CommonModule,
     FormsModule,
-    NgSelectModule
+    NgSelectModule,
+    FilterModalComponent
   ],
   templateUrl: './filtro-indicadores.component.html',
-  styleUrl: './filtro-indicadores.component.scss'
 })
 export class FiltroIndicadoresComponent implements OnChanges {
 
@@ -34,6 +31,10 @@ export class FiltroIndicadoresComponent implements OnChanges {
 
   labelsOriginais: Label[] = [];
   labelsOrdenados: Label[] = [];
+
+  trackByLabel(_: number, label: Label): number {
+    return label.idLabel;
+  }
 
   listaDesafiosFiltrados: Desafio[] = [];
 

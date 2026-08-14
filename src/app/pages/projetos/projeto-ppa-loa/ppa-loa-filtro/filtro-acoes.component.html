@@ -1,28 +1,15 @@
-<!-- OVERLAY -->
-<div class="modal-overlay show" (click)="fecharModal()">
-</div>
+<siscap-filter-modal
+    ariaLabel="Filtros de planejamento"
+    [restoreDisabled]="somenteLeitura"
+    [applyDisabled]="somenteLeitura"
+    (closeModal)="fecharModal()"
+    (restore)="resetar()"
+    (applyFilter)="applyFilter()">
 
-<!-- MODAL -->
-<div class="filter-modal show">
-
-    <!-- HEADER -->
-    <div class="modal-header">
-        <h2 class="card-title">
-            FILTROS PLANEJAMENTO
-        </h2>
-
-        <button type="button" class="close-modal" aria-label="Fechar" (click)="fecharModal()">
-            ✕
-        </button>
-    </div>
-
-    <!-- BODY -->
-    <div class="filter-body">
-
-        <div class="filter-grid">
+    <div class="filter-grid row g-3">
 
             <!-- ANO DO PPA -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
 
                 <label class="filter-label">
                     Ano
@@ -33,7 +20,7 @@
                     [ngModel]="filtro.idsAnos[0]" 
                     [multiple]="false"
                     [closeOnSelect]="true" 
-                    [searchable]="true" [clearable]="true" [disabled]="somenteLeitura || anoEscolhido"
+                    [searchable]="false" [clearable]="true" [disabled]="somenteLeitura || anoEscolhido"
                     placeholder="Selecione..." class="select-filtro" (ngModelChange)="onAnoChange($event)">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
@@ -57,14 +44,14 @@
             </div>
 
             <!-- UO DO PPA -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
 
                 <label class="filter-label">
                     Unidade Orçamentária
                 </label>
 
                 <ng-select [items]="uos" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsUos" [multiple]="true"
-                    [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
+                    [closeOnSelect]="false" [searchable]="false" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsAnos.length
                     " [placeholder]="
@@ -96,14 +83,14 @@
             </div>
 
             <!-- FUNÇÕES -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
 
                 <label class="filter-label">
                     Função
                 </label>
 
                 <ng-select [items]="funcoes" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsFuncoes"
-                    [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
+                    [multiple]="true" [closeOnSelect]="false" [searchable]="false" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsUos.length
                     " [placeholder]="
@@ -136,13 +123,13 @@
             </div>
 
             <!-- PROGRAMA -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
                 <label class="filter-label">
                     Programa
                 </label>
 
                 <ng-select [items]="programas" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsProgramas"
-                    [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
+                    [multiple]="true" [closeOnSelect]="false" [searchable]="false" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsFuncoes.length
                     " [placeholder]="
@@ -176,13 +163,13 @@
             </div>
 
             <!-- AÇÃO -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
                 <label class="filter-label">
                     Ação
                 </label>
 
                 <ng-select [items]="acoes" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsAcoes"
-                    [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
+                    [multiple]="true" [closeOnSelect]="false" [searchable]="false" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsProgramas.length
                     " [placeholder]="
@@ -215,21 +202,6 @@
                 </ng-select>
             </div>
 
-        </div>
-
     </div>
 
-    <!-- FOOTER -->
-    <div class="modal-footer">
-
-        <button type="button" class="btn-restaurar" [disabled]="somenteLeitura" (click)="resetar()">
-            RESTAURAR FILTROS
-        </button>
-
-        <button type="button" class="btn-filtrar" (click)="applyFilter()">
-            FILTRAR
-        </button>
-
-    </div>
-
-</div>
+</siscap-filter-modal>

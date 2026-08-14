@@ -1,0 +1,35 @@
+<div class="filter-card">
+  <div class="filter-card__chips">
+    <div
+      *ngFor="let chip of chips"
+      class="filter-chip"
+      [class.filter-chip--base]="chip.type === 'base'"
+      [class.filter-chip--removable]="chip.removable && !disabled">
+      <span class="filter-chip__content">
+        <span class="filter-chip__label">{{ chip.label }}</span>
+        <span class="filter-chip__value" [title]="chip.value">{{ chip.value }}</span>
+      </span>
+
+      <button
+        *ngIf="chip.removable && !disabled"
+        type="button"
+        class="filter-chip__remove"
+        [attr.aria-label]="'Remover filtro ' + chip.label"
+        (keydown)="$event.stopPropagation()"
+        (click)="onChipRemove($event, chip)">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+
+  <p-button
+    styleClass="btn-filtros"
+    icon="pi pi-filter"
+    [rounded]="true"
+    [outlined]="true"
+    ariaLabel="Abrir filtros"
+    title="Filtros"
+    [disabled]="disabled || loading"
+    (click)="onOpenFilter()">
+  </p-button>
+</div>

@@ -1,24 +1,15 @@
 <!-- CARD: FILTROS -->
-<div class="card">
+<siscap-filter-card
+  [chips]="chips"
+  [disabled]="!isModoEdicao"
+  [loading]="loading"
+  (openFilter)="showModal = true"
+  (chipRemove)="removeChip($event)">
+</siscap-filter-card>
 
-  <div class="card-header">
-    <div class="badges-container">
-      <app-indicador-chip *ngFor="let chip of chips" [label]="chip.label" [value]="chip.value" [type]="chip.type"
-        [removable]="chip.removable" (onClick)="onChipClick(chip)" (onRemove)="removeChip(chip)"
-        [somenteLeitura]="!isModoEdicao">
-      </app-indicador-chip>
-    </div>
-    <p-button styleClass="btn-filtros" (click)="showModal = true" [disabled]="!isModoEdicao">
-      <span>Filtros</span>
-      <span style="font-size:14px">▽</span>
-    </p-button>
-  </div>
-
-  <app-filtro-indicadores *ngIf="showModal" [gestao]="gestao" [desafios]="gestao?.desafios || []"
-    [filtroAtual]="currentFilter" (apply)="onApply($event)" (close)="showModal = false" (restaurar)="onRestaurar()"
-    [somenteLeitura]="!isModoEdicao"></app-filtro-indicadores>
-
-</div>
+<app-filtro-indicadores *ngIf="showModal" [gestao]="gestao" [desafios]="gestao?.desafios || []"
+  [filtroAtual]="currentFilter" (apply)="onApply($event)" (close)="showModal = false" (restaurar)="onRestaurar()"
+  [somenteLeitura]="!isModoEdicao"></app-filtro-indicadores>
 
 <app-selecao-indicadores [indicadores]="indicadoresBI" [gestao]="gestao" [form]="formProjeto"
   [selecionados]="indicadoresSelecionados" [loading]="loading"

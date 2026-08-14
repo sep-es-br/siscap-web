@@ -2,18 +2,15 @@ import { Component, Input, TrackByFunction } from '@angular/core';
 import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { Button } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { PpaLoaChipComponent } from './ppa-loa-chip/ppa-loa-chip.component';
 import { FiltroAcoesComponent, IFiltroPlanejamento, IPeriodoPlanejamento } from './ppa-loa-filtro/filtro-acoes.component';
 import { finalize, Subscription } from 'rxjs';
-import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
-import { event } from 'jquery';
+import { FilterCardComponent } from '../../../shared/components/filter-card/filter-card.component';
+import { FilterChip } from '../../../shared/components/filter-card/filter-chip.interface';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -61,9 +58,7 @@ export interface PlanejamentoFiltroAplicado {
     NgbModalModule,
     NgbPopoverModule,
     TemplatesModule,
-    Button,
-    DialogModule,
-    PpaLoaChipComponent,
+    FilterCardComponent,
     FiltroAcoesComponent],
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
@@ -73,7 +68,7 @@ export class ProjetoPpaLoaComponent {
   @Input({ required: true }) projetoForm!: FormGroup;
   @Input() podeEditar!: boolean;
 
-  chips: any[] = [];
+  chips: FilterChip[] = [];
 
   private carregamentoInicialSubscription?: Subscription;
 
@@ -102,7 +97,6 @@ export class ProjetoPpaLoaComponent {
 
   showModal: boolean = false;
   carregandoDadosIniciais: boolean = false;
-  loading: boolean = false;
   carregandoAcoes: boolean = false;
 
   constructor(private readonly _ngbModalService: NgbModal,
@@ -194,6 +188,7 @@ export class ProjetoPpaLoaComponent {
 
       this.chips = [
         {
+          key: 'planejamento',
           label: 'PLANEJAMENTO',
           value: this.periodoPlanejamento?.descricao || '-',
           type: 'base',
@@ -244,6 +239,9 @@ export class ProjetoPpaLoaComponent {
     const input = event.currentTarget as HTMLInputElement;
 
     this.naoPrevistoPpa = input.checked;
+    if (this.naoPrevistoPpa) {
+      this.showModal = false;
+    }
 
     const controleNaoPrevistoPpa =
       this.projetoForm.get('naoPrevistoNoPpa');
@@ -271,14 +269,25 @@ export class ProjetoPpaLoaComponent {
 
   }
 
+  abrirFiltroPlanejamento(): void {
+    if (!this.podeEditar || this.naoPrevistoPpa) return;
+
+    this.showModal = true;
+  }
+
   initBaseChip() {
 
     this.carregamentoInicialSubscription?.unsubscribe();
 
     this.carregandoDadosIniciais = true;
 
-    this._ppaloaIntegracaoService
+    this.carregamentoInicialSubscription = this._ppaloaIntegracaoService
       .buscarPeriodoPpaVigente()
+      .pipe(
+        finalize(() => {
+          this.carregandoDadosIniciais = false;
+        })
+      )
       .subscribe({
         next: (periodo) => {
 
@@ -286,6 +295,7 @@ export class ProjetoPpaLoaComponent {
 
           this.chips = [
             {
+              key: 'planejamento',
               label: 'PLANEJAMENTO',
               value: periodo.descricao || '-',
               type: 'base',
@@ -309,38 +319,34 @@ export class ProjetoPpaLoaComponent {
 
   }
 
-  onChipClick(chip: any) {
-    if (chip.type === 'base') {
-      this.showModal = true;
-      return;
-    }
-
-    this.showModal = true;
-  }
-
-  removeChip(chip: any) {
-
+  removeChip(chip: FilterChip): void {
     if (!chip.removable) return;
 
-    this.chips = this.chips.filter((c) => c !== chip);
-
-    if (this.filtrosPlanejamento?.[chip.node]) {
-      delete this.filtrosPlanejamento[chip.node];
-
-      if (Object.keys(this.filtrosPlanejamento[chip.node]).length === 0) {
-        delete this.filtrosPlanejamento[chip.node];
-      }
-    }
-
+    this.removerCriterioPlanejamento(chip);
+    this.atualizarChipsFiltros();
   }
 
   onRestaurar(): void {
-    this.initBaseChip();
+    this.currentFilter = {
+      periodoPlanejamento: this.periodoPlanejamento,
+      idPeriodoPlanejamento: this.periodoPlanejamento?.id ?? null,
+      idsAnos: [],
+      idsUos: [],
+      idsFuncoes: [],
+      idsProgramas: [],
+      idsAcoes: [],
+      chips: {
+        anos: [],
+        uos: [],
+        funcoes: [],
+        programas: [],
+        acoes: []
+      }
+    };
+    this.atualizarChipsFiltros();
   }
 
   onApply(filter: any): void {
-
-    this.loading = true
 
     this.currentFilter = structuredClone(filter);
 
@@ -365,6 +371,7 @@ export class ProjetoPpaLoaComponent {
     this.chips = [
 
       {
+        key: 'planejamento',
         label: 'PLANEJAMENTO',
         value: this.periodoPlanejamento?.descricao || '-',
         type: 'base',
@@ -372,48 +379,104 @@ export class ProjetoPpaLoaComponent {
       },
 
       ...(this.currentFilter?.chips?.anos ?? []).map((ano: any) => ({
+        key: `anos:${ano.id}`,
         label: 'ANO',
         value: ano.nome,
-        type: 'filter',
+        type: 'filter' as const,
         removable: true,
-        idAno: ano.id
+        group: 'anos',
+        valueId: Number(ano.id)
       })),
 
       ...(this.currentFilter?.chips?.uos ?? []).map((uo: any) => ({
+        key: `uos:${uo.id}`,
         label: 'UO',
         value: uo.nome,
-        type: 'filter',
+        type: 'filter' as const,
         removable: true,
-        idUo: uo.id
+        group: 'uos',
+        valueId: Number(uo.id)
       })),
 
 
       ...(this.currentFilter?.chips?.funcoes ?? []).map((funcao: any) => ({
+        key: `funcoes:${funcao.id}`,
         label: 'FUNCAO',
         value: funcao.nome,
-        type: 'filter',
+        type: 'filter' as const,
         removable: true,
-        idFuncao: funcao.id
+        group: 'funcoes',
+        valueId: Number(funcao.id)
       })),
 
       ...(this.currentFilter?.chips?.programas ?? []).map((programa: any) => ({
+        key: `programas:${programa.id}`,
         label: 'PROGRAMA',
         value: programa.nome,
-        type: 'filter',
+        type: 'filter' as const,
         removable: true,
-        idDesafio: programa.id
+        group: 'programas',
+        valueId: Number(programa.id)
       })),
 
       ...(this.currentFilter?.chips?.acoes ?? []).map((acao: any) => ({
+        key: `acoes:${acao.id}`,
         label: 'AÇÃO',
         value: acao.nome,
-        type: 'filter',
+        type: 'filter' as const,
         removable: true,
-        idDesafio: acao.id
+        group: 'acoes',
+        valueId: Number(acao.id)
       }))
 
     ];
 
+  }
+
+  private removerCriterioPlanejamento(chip: FilterChip): void {
+    if (!this.currentFilter || !chip.group || chip.valueId == null) return;
+
+    type CampoIdsPlanejamento =
+      | 'idsAnos'
+      | 'idsUos'
+      | 'idsFuncoes'
+      | 'idsProgramas'
+      | 'idsAcoes';
+
+    const idsPorGrupo: Record<string, CampoIdsPlanejamento> = {
+      anos: 'idsAnos',
+      uos: 'idsUos',
+      funcoes: 'idsFuncoes',
+      programas: 'idsProgramas',
+      acoes: 'idsAcoes'
+    };
+    const campoIds = idsPorGrupo[chip.group];
+
+    if (!campoIds) return;
+
+    const idsAtuais = this.currentFilter[campoIds];
+    if (Array.isArray(idsAtuais)) {
+      (this.currentFilter as any)[campoIds] = idsAtuais.filter(
+        id => Number(id) !== chip.valueId
+      );
+    }
+
+    const ordemDependencias = ['anos', 'uos', 'funcoes', 'programas', 'acoes'];
+    const indiceGrupo = ordemDependencias.indexOf(chip.group);
+    const gruposParaLimpar = ordemDependencias.slice(indiceGrupo + 1);
+
+    gruposParaLimpar.forEach(grupo => {
+      (this.currentFilter as any)[idsPorGrupo[grupo]] = [];
+    });
+
+    const chipsAtuais = this.currentFilter.chips;
+    if (!chipsAtuais) return;
+
+    (chipsAtuais as any)[chip.group] = ((chipsAtuais as any)[chip.group] ?? [])
+      .filter((item: { id: number }) => Number(item.id) !== chip.valueId);
+    gruposParaLimpar.forEach(grupo => {
+      (chipsAtuais as any)[grupo] = [];
+    });
   }
 
   private carregarAcoesSelecionadas(
