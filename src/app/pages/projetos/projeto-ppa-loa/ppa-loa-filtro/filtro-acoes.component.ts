@@ -40,7 +40,7 @@ export interface IFiltroPlanejamento {
   idsUos: number[];
   idsFuncoes: number[];
   idsProgramas: number[];
-  idsAcoes: number[];
+  // idsAcoes: number[];
 
   chips: {
     anos: IChipPlanejamento[];
@@ -176,17 +176,17 @@ export class FiltroAcoesComponent
             if (this.filtro.idsUos.length > 0) {
               this.carregarUos(true);
             }
-
-            if (this.filtro.idsFuncoes.length > 0) {
-              this.carregarFuncoes(true);
-            }
-
+           
             if (this.filtro.idsAnos.length > 0) {
               this.carregarProgramas(true);
             }
 
-            if (this.filtro.idsAcoes.length > 0) {
-              this.carregarAcoes(true);
+            // if (this.filtro.idsAcoes.length > 0) {
+            //   this.carregarAcoes(true);
+            // }
+
+            if (this.filtro.idsAnos.length > 0) {
+              this.carregarFuncoes(true);
             }
 
           },
@@ -213,7 +213,7 @@ export class FiltroAcoesComponent
 
     this.filtro.idsUos = [];
     this.filtro.idsProgramas = [];
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
 
     this.uos = []
     this.programas = [];
@@ -234,7 +234,7 @@ export class FiltroAcoesComponent
 
     this.filtro.idsFuncoes = [];
     this.filtro.idsProgramas = [];
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
 
     this.funcoes = [];
     this.programas = [];
@@ -258,7 +258,7 @@ export class FiltroAcoesComponent
       this.normalizarIds(this.filtro.idsFuncoes);
 
     this.filtro.idsProgramas = [];
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
 
     this.programas = [];
     this.acoes = [];
@@ -279,7 +279,7 @@ export class FiltroAcoesComponent
     this.filtro.idsProgramas =
       this.normalizarIds(this.filtro.idsProgramas);
 
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
     this.acoes = [];
 
     if (this.filtro.idsProgramas.length === 0) {
@@ -308,12 +308,12 @@ export class FiltroAcoesComponent
 
     if (!preservarSelecaoAtual) {
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
     }
 
     if (idsFuncoes.length === 0 || idsAnos.length === 0 || idsUos.length === 0) {
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
       return;
     }
 
@@ -346,7 +346,7 @@ export class FiltroAcoesComponent
             ) {
               this.carregarAcoes(true);
             } else {
-              this.filtro.idsAcoes = [];
+              // this.filtro.idsAcoes = [];
               this.acoes = [];
             }
 
@@ -361,7 +361,7 @@ export class FiltroAcoesComponent
             this.acoes = [];
 
             this.filtro.idsProgramas = [];
-            this.filtro.idsAcoes = [];
+            // this.filtro.idsAcoes = [];
           }
         });
 
@@ -372,6 +372,7 @@ export class FiltroAcoesComponent
    * selecionados.
    */
   private carregarAcoes(
+
     preservarSelecaoAtual: boolean): void {
 
     this.acoesSubscription?.unsubscribe();
@@ -384,11 +385,11 @@ export class FiltroAcoesComponent
     this.acoes = [];
 
     if (!preservarSelecaoAtual) {
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
     }
 
     if (idFuncoes.length === 0 || idsProgramas.length === 0 || idAnos.length === 0 || idUos.length === 0) {
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
       return;
     }
 
@@ -412,13 +413,14 @@ export class FiltroAcoesComponent
 
             this.acoes = acoes ?? [];
 
-            this.filtro.idsAcoes =
-              preservarSelecaoAtual
-                ? this.manterSomenteIdsValidos(
-                  this.filtro.idsAcoes,
-                  this.acoes
-                )
-                : [];
+            // this.filtro.idsAcoes =
+            //   preservarSelecaoAtual
+            //     ? this.manterSomenteIdsValidos(
+            //       this.filtro.idsAcoes,
+            //       this.acoes
+            //     )
+            //     : [];
+
           },
           error: erro => {
             console.error(
@@ -427,9 +429,10 @@ export class FiltroAcoesComponent
             );
 
             this.acoes = [];
-            this.filtro.idsAcoes = [];
+            // this.filtro.idsAcoes = [];
           }
         });
+
   }
 
   /**
@@ -453,7 +456,7 @@ export class FiltroAcoesComponent
     this.acoes = [];
 
     this.filtro.idsProgramas = [];
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
   }
 
   resetar(): void {
@@ -501,9 +504,9 @@ export class FiltroAcoesComponent
         ...this.filtro.idsProgramas
       ],
 
-      idsAcoes: [
-        ...this.filtro.idsAcoes
-      ],
+      // idsAcoes: [
+      //   ...this.filtro.idsAcoes
+      // ],
 
       chips: {
         anos: [
@@ -567,9 +570,9 @@ export class FiltroAcoesComponent
         filtroAtual?.idsProgramas
       ),
 
-      idsAcoes: this.normalizarIds(
-        filtroAtual?.idsAcoes
-      ),
+      // idsAcoes: this.normalizarIds(
+      //   filtroAtual?.idsAcoes
+      // ),
 
       chips: {
         anos: [],
@@ -599,7 +602,7 @@ export class FiltroAcoesComponent
       idsUos: [],
       idsFuncoes: [],
       idsProgramas: [],
-      idsAcoes: [],
+      // idsAcoes: [],
 
       chips: {
         anos: [],
@@ -638,7 +641,7 @@ export class FiltroAcoesComponent
 
       acoes: this.obterOpcoesSelecionadas(
         this.acoes,
-        this.filtro.idsAcoes
+        []
       )
 
     };
@@ -704,12 +707,12 @@ export class FiltroAcoesComponent
     if (!preservarSelecaoAtual) {
       this.filtro.idsUos = [];
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
     }
 
     if (idsAnos.length === 0) {
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
       return;
     }
 
@@ -736,10 +739,7 @@ export class FiltroAcoesComponent
                 )
                 : [];
 
-            if (
-              preservarSelecaoAtual &&
-              this.filtro.idsUos.length > 0
-            ) {
+            if ( preservarSelecaoAtual && this.filtro.idsUos.length > 0 ) {
               this.carregarProgramas(true);
             } else {
               this.filtro.idsUos = [];
@@ -758,7 +758,7 @@ export class FiltroAcoesComponent
 
             this.filtro.idsUos = [];
             this.filtro.idsProgramas = [];
-            this.filtro.idsAcoes = [];
+            // this.filtro.idsAcoes = [];
 
           }
         });
@@ -779,14 +779,14 @@ export class FiltroAcoesComponent
 
     if (!preservarSelecaoAtual) {
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
     }
 
-    if (idsUos.length === 0 || idsAnos.length === 0) {
-      this.filtro.idsAnos = [];
-      this.filtro.idsUos = [];
-      return;
-    }
+    // if (idsUos.length === 0 || idsAnos.length === 0) {
+    //   this.filtro.idsAnos = [];
+    //   this.filtro.idsUos = [];
+    //   return;
+    // }
 
     this.carregandoFuncoes = true;
 
@@ -834,7 +834,7 @@ export class FiltroAcoesComponent
 
             this.filtro.idsUos = [];
             this.filtro.idsProgramas = [];
-            this.filtro.idsAcoes = [];
+            // this.filtro.idsAcoes = [];
 
           }
         });

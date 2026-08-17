@@ -160,14 +160,12 @@ export class ProjetoPpaLoaComponent {
 
   onRemoverAcao(acaoInformada: PlanejamentoAcao): void {
 
-    // 1. Remove da lista exibida na tela
     this.acoesPlanejamento = this.acoesPlanejamento.filter(
       acao => this.chaveAcaoBi(acao) !== this.chaveAcaoBi(acaoInformada)
     );
 
     this.quantidadeAcoes = this.acoesPlanejamento.length;
 
-    // 2. Recupera o controle do formulário
     const controleAcoes =
       this.projetoForm.get('acoesPlanejamentoProjeto');
 
@@ -184,7 +182,6 @@ export class ProjetoPpaLoaComponent {
     const chaveRemovida =
       this.chaveAcaoBi(acaoInformada);
 
-    // 3. Remove também do formulário
     const acoesAtualizadas = acoesDoFormulario.filter(
       acaoFormulario =>
         this.chaveAcaoFormulario(acaoFormulario) !== chaveRemovida
@@ -195,7 +192,6 @@ export class ProjetoPpaLoaComponent {
     controleAcoes.markAsTouched();
     controleAcoes.updateValueAndValidity();
 
-    // 4. Se não restou nenhuma ação, limpa somente os chips
     if (this.quantidadeAcoes === 0) {
 
       this.filtrosPlanejamento = [];
@@ -247,9 +243,8 @@ export class ProjetoPpaLoaComponent {
 
     const codigo = String(valor ?? '').trim();
 
-    // Remove zeros à esquerda:
-    // "0012" e 12 passam a ser considerados iguais.
     return codigo.replace(/^0+(?=\d)/, '');
+
   }
 
   onNaoPrevistoPpaChange(event: Event): void {
@@ -311,7 +306,6 @@ export class ProjetoPpaLoaComponent {
             idPeriodoPlanejamento: periodo.id
           };
 
-          // Carrega as ações existentes quando estiver editando
           this.carregarAcoesProjetoEdicao();
 
         },
@@ -356,20 +350,28 @@ export class ProjetoPpaLoaComponent {
     this.loading = true
 
     this.currentFilter = structuredClone(filter);
+        
+    if ( this.currentFilter?.idsAnos?.length == 0 || this.currentFilter?.idsUos?.length == 0 ){
+
+      this._toastService.showToast(
+        'error',
+        'Obrigatório informar ano e uo para carregamento das açoes.'
+      );
+
+      return;
+
+    }
 
     this.atualizarChipsFiltros();
 
     this.showModal = false;
 
-    if (this.currentFilter?.idsAcoes?.length == 0)
-      return
-
-    this.carregarAcoesSelecionadas(this.currentFilter?.periodoPlanejamento?.descricao ?? '',
-      this.currentFilter?.idsFuncoes ?? [],
-      this.currentFilter?.idsProgramas ?? [],
-      this.currentFilter?.idsAnos ?? [],
-      this.currentFilter?.idsUos ?? [],
-      this.currentFilter?.idsAcoes ?? []);
+    // this.carregarAcoesSelecionadas(this.currentFilter?.periodoPlanejamento?.descricao ?? '',
+    //   this.currentFilter?.idsFuncoes ?? [],
+    //   this.currentFilter?.idsProgramas ?? [],
+    //   this.currentFilter?.idsAnos ?? [],
+    //   this.currentFilter?.idsUos ?? [],
+    //   this.currentFilter?.idsAcoes ?? []);
 
   }
 
@@ -399,7 +401,6 @@ export class ProjetoPpaLoaComponent {
         removable: true,
         idUo: uo.id
       })),
-
 
       ...(this.currentFilter?.chips?.funcoes ?? []).map((funcao: any) => ({
         label: 'FUNCAO',

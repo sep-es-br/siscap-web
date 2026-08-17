@@ -176,11 +176,10 @@
             </div>
 
             <!-- AÇÃO -->
-            <div class="filter-field">
+            <!-- <div class="filter-field">
                 <label class="filter-label">
                     Ação
                 </label>
-
                 <ng-select [items]="acoes" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsAcoes"
                     [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
                         somenteLeitura ||
@@ -190,9 +189,7 @@
                             ? 'Selecione...'
                             : 'Selecione um Programa primeiro...'
                     " class="select-filtro">
-
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
-
                         <div class="select-option-checkbox">
                             <input type="checkbox" tabindex="-1" [checked]="item$.selected"
                                 style="margin-right: 8px; pointer-events: none;" />
@@ -200,20 +197,16 @@
                             <span>{{ item.nome }}</span>
                         </div>
                     </ng-template>
-
                     <ng-template ng-multi-label-tmp let-items="items">
-
                         <span class="custom-selected-label" *ngIf="items.length === 1">
                             {{ items[0].nome }}
                         </span>
-
                         <span class="custom-selected-label" *ngIf="items.length > 1">
                             {{ items.length }} selecionadas
                         </span>
                     </ng-template>
-
                 </ng-select>
-            </div>
+            </div> -->
 
         </div>
 
