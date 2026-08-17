@@ -1,4 +1,4 @@
-import { Component, Input, TrackByFunction } from '@angular/core';
+import { Component, ElementRef, Input, TrackByFunction, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { CommonModule } from '@angular/common';
@@ -14,6 +14,7 @@ import { ToastService } from '../../../core/services/toast/toast.service';
 import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
 import { event } from 'jquery';
+import { CheckboxModule } from 'primeng/checkbox';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -64,7 +65,8 @@ export interface PlanejamentoFiltroAplicado {
     Button,
     DialogModule,
     PpaLoaChipComponent,
-    FiltroAcoesComponent],
+    FiltroAcoesComponent,
+    CheckboxModule],
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
 })
@@ -92,7 +94,7 @@ export class ProjetoPpaLoaComponent {
 
   trackByFiltro: TrackByFunction<any> = (_, filtro) => filtro.id;
   trackByAcao: TrackByFunction<PlanejamentoAcao> = (_, acao) => acao.id;
-
+  
   trackByDetalhamentoLoa(
     index: number,
     detalhe: DetalhamentoOrcamentarioLoa
@@ -104,6 +106,17 @@ export class ProjetoPpaLoaComponent {
   carregandoDadosIniciais: boolean = false;
   loading: boolean = false;
   carregandoAcoes: boolean = false;
+
+  acoesFiltradas: any[] = [];
+
+  selectAll: boolean = false;
+
+  searchVisible: boolean = false;
+
+  @ViewChild('searchInput')
+    searchInput!: ElementRef<HTMLInputElement>;
+
+  filtroTexto: string = '';
 
   constructor(private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
@@ -401,7 +414,7 @@ export class ProjetoPpaLoaComponent {
         value: programa.nome,
         type: 'filter',
         removable: true,
-        idDesafio: programa.id
+        idPrograma: programa.id
       })),
 
       ...(this.currentFilter?.chips?.acoes ?? []).map((acao: any) => ({
@@ -409,7 +422,7 @@ export class ProjetoPpaLoaComponent {
         value: acao.nome,
         type: 'filter',
         removable: true,
-        idDesafio: acao.id
+        idAcao: acao.id
       }))
 
     ];
@@ -735,6 +748,79 @@ export class ProjetoPpaLoaComponent {
       idsUos,
       idsAcoes
     );
+
+  }
+
+  public toggleAcao(acao: any) {
+
+  }
+
+  isSelecionado(acao: any): boolean {
+    return ( this.acoesPlanejamento || []).some(i =>
+      this.mesmaAcao( i, acao )
+    );
+  }
+
+  private mesmaAcao(a: any, b: any): boolean {
+
+    return a.codigoAcao === b.codigoAcao;
+
+  }
+
+  toggleSelectAll(event: any): void {
+
+    // let novasSelecoes = [...this.selecionados];
+
+    // if (this.selectAll) {
+    //   const novos = this.indicadoresFiltrados.filter(i => !this.isSelecionado(i));
+    //   novasSelecoes = [...novasSelecoes, ...novos];
+    // } else {
+    //   const idsFiltrados = this.indicadoresFiltrados.map(i => i.idIndicador);
+    //   novasSelecoes = novasSelecoes.filter(i => !idsFiltrados.includes(i.idIndicador));
+    // }
+
+    // this.selecionadosChange.emit(novasSelecoes);
+
+  }
+
+  toggleSearch(): void {
+
+    if (!this.podeEditar) {
+      return;
+    }
+    this.searchVisible = !this.searchVisible;
+    if (this.searchVisible) {
+      setTimeout(() => {
+        this.searchInput?.nativeElement.focus();
+      });
+    }
+    
+  }
+
+   limparBusca(): void {
+    if (!this.podeEditar) {
+      return;
+    }
+    this.filtroTexto = '';
+    this.filtrarAcoes();
+    this.searchInput?.nativeElement.focus();
+  }
+
+  filtrarAcoes(): void {
+
+    const termo = this.filtroTexto
+      ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      : '';
+
+    // this.indicadoresFiltrados = this.montarIndicadoresExibicao().filter(i => {
+    //   const nomeNormalizado = i.nomeIndicador
+    //     ?.toLowerCase()
+    //     .normalize("NFD")
+    //     .replace(/[\u0300-\u036f]/g, "");
+    //   return nomeNormalizado?.includes(termo);
+    // });
+
+    // this.updateSelectAllState();
 
   }
 

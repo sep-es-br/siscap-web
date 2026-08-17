@@ -18,6 +18,49 @@
       (close)="showModal = false" (restaurar)="onRestaurar()" [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
   </div>
 
+  <!-- Ações para selecionar -->
+  <div class="card selection-card">
+
+    <div class="card-header-main">
+      <p class="lista-label">SELECIONE A AÇÃO</p>
+      <div class="search-container" [class.expanded]="searchVisible">
+        <span class="p-input-icon-left p-input-icon-right w-100">
+          <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
+          <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
+            class="w-100 search-input" placeholder="Nome da ação" [(ngModel)]="filtroTexto"
+            (ngModelChange)="filtrarAcoes()" [disabled]="!podeEditar" />
+          <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()"></i>
+        </span>
+      </div>
+    </div>
+
+    <div class="card-body">
+
+      <div class="acao-item select-all">
+        <label class="acao-label">
+          <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
+            [disabled]="!podeEditar"></p-checkbox>
+          <span class="text-blue-primary">SELECIONAR TODOS</span>
+        </label>
+      </div>
+
+      <ng-container *ngIf="!loading; else loadingTpl">
+        <ng-container *ngIf="acoesFiltradas.length > 0; else vazio">
+          <div class="acao-item" *ngFor="let acao of acoesFiltradas">
+            <label class="acao-label">
+              <p-checkbox [binary]="true" [ngModel]="isSelecionado(acao)" (ngModelChange)="toggleAcao(acao)"
+                [ngModelOptions]="{ standalone: true }" [disabled]="!podeEditar">
+              </p-checkbox>
+              <span>{{ acao.nomeAcao }}</span>
+            </label>
+          </div>
+        </ng-container>
+      </ng-container>
+
+    </div>
+
+  </div>
+
   <!-- Ações selecionadas -->
   <div class="planejamento-card">
 
@@ -160,10 +203,11 @@
             <div class="acao-planejamento-detalhamento-sem-loa-titulo">
               Ação não possui orçamento definido na LOA
             </div>
-          
+
           </div>
 
-          <div class="acao-planejamento-detalhamento" *ngIf="acao.detalhamentosLoa?.length && acao.valorLoa != null && acao.valorLoa > 0 ">
+          <div class="acao-planejamento-detalhamento"
+            *ngIf="acao.detalhamentosLoa?.length && acao.valorLoa != null && acao.valorLoa > 0 ">
 
             <div class="acao-planejamento-detalhamento-titulo">
               Detalhamento Orçamentário LOA
@@ -221,6 +265,20 @@
     </ng-container>
 
   </div>
+
+  <ng-template #loadingTpl>
+    <div class="estado-vazio">
+      <i class="pi pi-spin pi-spinner"></i>
+      Carregando acoes...
+    </div>
+  </ng-template>
+
+  <ng-template #vazio>
+    <div class="estado-vazio">
+      <i class="pi pi-inbox"></i>
+      Nenhuma acao encontrada
+    </div>
+  </ng-template>
 
   <!-- Rodapé -->
   <footer class="planejamento-footer">
