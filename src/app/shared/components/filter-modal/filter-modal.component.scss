@@ -161,6 +161,14 @@
   flex-wrap: nowrap;
 }
 
+.siscap-filter-modal .select-filtro.ng-select-multiple .ng-select-container .ng-value-container {
+  padding-top: 0;
+}
+
+.siscap-filter-modal .select-filtro.ng-select-multiple .ng-select-container .ng-value {
+  margin-bottom: 0;
+}
+
 .siscap-filter-modal .select-filtro .ng-value,
 .siscap-filter-modal .select-filtro .ng-input {
   max-width: 100%;
@@ -175,7 +183,7 @@
 
 .siscap-filter-modal .select-filtro .custom-selected-label {
   display: block;
-  width: 100%;
+  // width: 100%;
   max-width: 100%;
   min-width: 0;
   overflow: hidden;
