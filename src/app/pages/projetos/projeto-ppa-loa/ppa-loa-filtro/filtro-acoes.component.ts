@@ -823,8 +823,6 @@ export class FiltroAcoesComponent
               this.filtro.idsFuncoes.length > 0
             ) {
 
-              console.log('passou aqui no carregar funcoes.. ')
-
               this.carregarProgramas(true);
 
             } else {
