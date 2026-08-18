@@ -60,7 +60,7 @@ export class PpaloaIntegracaoBiService {
       map(funcoes =>
         funcoes.map(funcao => ({
           ...funcao,
-          nome: funcao.id.toString().padStart(2, '0') + '-' + funcao.nome
+          nome: funcao.nome
         }))
       )
     );

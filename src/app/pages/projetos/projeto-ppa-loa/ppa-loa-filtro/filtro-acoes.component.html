@@ -15,11 +15,11 @@
                     Ano
                 </label>
 
-                <ng-select [items]="anos" 
-                    bindLabel="nome" bindValue="id" 
-                    [ngModel]="filtro.idsAnos[0]" 
+                <ng-select [items]="anos"
+                    bindLabel="nome" bindValue="id"
+                    [ngModel]="filtro.idsAnos[0]"
                     [multiple]="false"
-                    [closeOnSelect]="true" 
+                    [closeOnSelect]="true"
                     [searchable]="false" [clearable]="true" [disabled]="somenteLeitura || anoEscolhido"
                     placeholder="Selecione..." class="select-filtro" (ngModelChange)="onAnoChange($event)">
 
@@ -51,7 +51,7 @@
                 </label>
 
                 <ng-select [items]="uos" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsUos" [multiple]="true"
-                    [closeOnSelect]="false" [searchable]="false" [clearable]="true" [disabled]="
+                    [closeOnSelect]="true" [searchable]="true" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsAnos.length
                     " [placeholder]="
@@ -90,7 +90,7 @@
                 </label>
 
                 <ng-select [items]="funcoes" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsFuncoes"
-                    [multiple]="true" [closeOnSelect]="false" [searchable]="false" [clearable]="true" [disabled]="
+                    [multiple]="true" [closeOnSelect]="true" [searchable]="true" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsUos.length
                     " [placeholder]="
@@ -129,7 +129,7 @@
                 </label>
 
                 <ng-select [items]="programas" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsProgramas"
-                    [multiple]="true" [closeOnSelect]="false" [searchable]="false" [clearable]="true" [disabled]="
+                    [multiple]="true" [closeOnSelect]="true" [searchable]="true" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsFuncoes.length
                     " [placeholder]="
@@ -162,46 +162,5 @@
                 </ng-select>
             </div>
 
-            <!-- AÇÃO -->
-            <div class="filter-field col-12 col-sm-6 col-xl-3">
-                <label class="filter-label">
-                    Ação
-                </label>
-
-                <ng-select [items]="acoes" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsAcoes"
-                    [multiple]="true" [closeOnSelect]="false" [searchable]="false" [clearable]="true" [disabled]="
-                        somenteLeitura ||
-                        !filtro.idsProgramas.length
-                    " [placeholder]="
-                        filtro.idsProgramas.length
-                            ? 'Selecione...'
-                            : 'Selecione um Programa primeiro...'
-                    " class="select-filtro">
-
-                    <ng-template ng-option-tmp let-item="item" let-item$="item$">
-
-                        <div class="select-option-checkbox">
-                            <input type="checkbox" tabindex="-1" [checked]="item$.selected"
-                                style="margin-right: 8px; pointer-events: none;" />
-
-                            <span>{{ item.nome }}</span>
-                        </div>
-                    </ng-template>
-
-                    <ng-template ng-multi-label-tmp let-items="items">
-
-                        <span class="custom-selected-label" *ngIf="items.length === 1">
-                            {{ items[0].nome }}
-                        </span>
-
-                        <span class="custom-selected-label" *ngIf="items.length > 1">
-                            {{ items.length }} selecionadas
-                        </span>
-                    </ng-template>
-
-                </ng-select>
-            </div>
-
-    </div>
-
+        </div>
 </siscap-filter-modal>

@@ -1,14 +1,16 @@
-import { Component, Input, TrackByFunction } from '@angular/core';
+import { Component, ElementRef, Input, TrackByFunction, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FiltroAcoesComponent, IFiltroPlanejamento, IPeriodoPlanejamento } from './ppa-loa-filtro/filtro-acoes.component';
+import { FiltroAcoesComponent, IFiltroPlanejamento, IOpcaoPlanejamento, IPeriodoPlanejamento } from './ppa-loa-filtro/filtro-acoes.component';
 import { finalize, Subscription } from 'rxjs';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FormControl, FormGroup, FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
 import { FilterCardComponent } from '../../../shared/components/filter-card/filter-card.component';
 import { FilterChip } from '../../../shared/components/filter-card/filter-chip.interface';
 
@@ -51,15 +53,16 @@ export interface PlanejamentoFiltroAplicado {
   selector: 'siscap-projeto-ppa-loa',
   standalone: true,
   imports: [CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
     NgSelectModule,
     NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
     TemplatesModule,
     FilterCardComponent,
-    FiltroAcoesComponent],
+    FiltroAcoesComponent,
+    CheckboxModule,
+    FormsModule,
+    InputTextModule],
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
 })
@@ -80,7 +83,6 @@ export class ProjetoPpaLoaComponent {
 
   naoPrevistoPpa = false;
   somenteLeitura: boolean = false;
-  quantidadeAcoes: number = 0;
   filtrosAplicados: any[] = [];
 
   currentFilter: Partial<IFiltroPlanejamento> | null = null;
@@ -98,6 +100,23 @@ export class ProjetoPpaLoaComponent {
   showModal: boolean = false;
   carregandoDadosIniciais: boolean = false;
   carregandoAcoes: boolean = false;
+
+  listaAcoes: any[] = [];
+  listaAcoesFiltradas: any[] = [];
+
+  selectAll: boolean = false;
+
+  searchVisible: boolean = false;
+
+  @ViewChild('searchInput')
+  searchInput!: ElementRef<HTMLInputElement>;
+
+  filtroTexto: string = '';
+
+  private acoesSubscription?: Subscription;
+
+  private acoesPlanejamentoBackup: PlanejamentoAcao[] = [];
+  private acoesPlanejamentoProjetoBackup: IAcaoPlanejamentoProjeto[] = [];
 
   constructor(private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
@@ -141,14 +160,12 @@ export class ProjetoPpaLoaComponent {
 
   onRemoverAcao(acaoInformada: PlanejamentoAcao): void {
 
-    // 1. Remove da lista exibida na tela
     this.acoesPlanejamento = this.acoesPlanejamento.filter(
       acao => this.chaveAcaoBi(acao) !== this.chaveAcaoBi(acaoInformada)
     );
 
-    this.quantidadeAcoes = this.acoesPlanejamento.length;
+    // this.quantidadeAcoes = this.acoesPlanejamento.length;
 
-    // 2. Recupera o controle do formulário
     const controleAcoes =
       this.projetoForm.get('acoesPlanejamentoProjeto');
 
@@ -165,7 +182,6 @@ export class ProjetoPpaLoaComponent {
     const chaveRemovida =
       this.chaveAcaoBi(acaoInformada);
 
-    // 3. Remove também do formulário
     const acoesAtualizadas = acoesDoFormulario.filter(
       acaoFormulario =>
         this.chaveAcaoFormulario(acaoFormulario) !== chaveRemovida
@@ -176,7 +192,6 @@ export class ProjetoPpaLoaComponent {
     controleAcoes.markAsTouched();
     controleAcoes.updateValueAndValidity();
 
-    // 4. Se não restou nenhuma ação, limpa somente os chips
     if (this.quantidadeAcoes === 0) {
 
       this.filtrosPlanejamento = [];
@@ -229,9 +244,8 @@ export class ProjetoPpaLoaComponent {
 
     const codigo = String(valor ?? '').trim();
 
-    // Remove zeros à esquerda:
-    // "0012" e 12 passam a ser considerados iguais.
     return codigo.replace(/^0+(?=\d)/, '');
+
   }
 
   onNaoPrevistoPpaChange(event: Event): void {
@@ -246,6 +260,9 @@ export class ProjetoPpaLoaComponent {
     const controleNaoPrevistoPpa =
       this.projetoForm.get('naoPrevistoNoPpa');
 
+    const controleAcoes =
+      this.projetoForm.get('acoesPlanejamentoProjeto') as FormControl<IAcaoPlanejamentoProjeto[]>;
+
     if (!controleNaoPrevistoPpa) {
       console.error(
         'Controle naoPrevistoNoPpa não encontrado.'
@@ -253,14 +270,48 @@ export class ProjetoPpaLoaComponent {
       return;
     }
 
-    this.acoesPlanejamento = [];
+    // this.acoesPlanejamento = [];
+    // this.projetoForm.get('acoesPlanejamentoProjeto')?.setValue([]);
 
-    this.quantidadeAcoes =
-      this.acoesPlanejamento.length;
+    // console.table(
+    //   this.acoesPlanejamento.map(a => ({
+    //     id: a.id,
+    //     codigoAcao: a.codigoAcao,
+    //     codigoPrograma: a.codigoPrograma,
+    //     anoAcao: a.anoAcao,
+    //     codigoUnidadeOrcamentaria: a.codigoUnidadeOrcamentaria
+    //   }))
+    // );
 
-    this.projetoForm.get('acoesPlanejamentoProjeto')?.setValue([]);
+    if (this.naoPrevistoPpa) {
 
-    this.initBaseChip()
+      if (this.acoesPlanejamento.length > 0) {
+
+        this.acoesPlanejamentoBackup =
+           structuredClone(this.acoesPlanejamento);
+
+        this.acoesPlanejamentoProjetoBackup =
+          structuredClone(controleAcoes.value);
+
+      }
+
+      this.acoesPlanejamento = [];
+
+      controleAcoes?.setValue([]);
+
+      this.initBaseChip()
+
+    } else {
+
+      // Restaura o que estava selecionado anteriormente
+      this.acoesPlanejamento =
+         structuredClone(this.acoesPlanejamentoBackup);
+
+      controleAcoes?.setValue(
+        structuredClone(this.acoesPlanejamentoProjetoBackup)
+      );
+
+    }
 
     controleNaoPrevistoPpa.setValue(this.naoPrevistoPpa);
     controleNaoPrevistoPpa.markAsDirty();
@@ -308,7 +359,9 @@ export class ProjetoPpaLoaComponent {
             idPeriodoPlanejamento: periodo.id
           };
 
-          // Carrega as ações existentes quando estiver editando
+          this.listaAcoes = [];
+          this.listaAcoesFiltradas = [];
+
           this.carregarAcoesProjetoEdicao();
 
         },
@@ -334,7 +387,6 @@ export class ProjetoPpaLoaComponent {
       idsUos: [],
       idsFuncoes: [],
       idsProgramas: [],
-      idsAcoes: [],
       chips: {
         anos: [],
         uos: [],
@@ -350,19 +402,22 @@ export class ProjetoPpaLoaComponent {
 
     this.currentFilter = structuredClone(filter);
 
+    if (this.currentFilter?.idsAnos?.length == 0 || this.currentFilter?.idsUos?.length == 0) {
+
+      this._toastService.showToast(
+        'error',
+        'Obrigatório informar ano e uo para carregamento das açoes.'
+      );
+
+      return;
+
+    }
+
     this.atualizarChipsFiltros();
 
+    this.carregarListaAcoes(true);
+
     this.showModal = false;
-
-    if (this.currentFilter?.idsAcoes?.length == 0)
-      return
-
-    this.carregarAcoesSelecionadas(this.currentFilter?.periodoPlanejamento?.descricao ?? '',
-      this.currentFilter?.idsFuncoes ?? [],
-      this.currentFilter?.idsProgramas ?? [],
-      this.currentFilter?.idsAnos ?? [],
-      this.currentFilter?.idsUos ?? [],
-      this.currentFilter?.idsAcoes ?? []);
 
   }
 
@@ -398,7 +453,6 @@ export class ProjetoPpaLoaComponent {
         valueId: Number(uo.id)
       })),
 
-
       ...(this.currentFilter?.chips?.funcoes ?? []).map((funcao: any) => ({
         key: `funcoes:${funcao.id}`,
         label: 'FUNCAO',
@@ -417,16 +471,6 @@ export class ProjetoPpaLoaComponent {
         removable: true,
         group: 'programas',
         valueId: Number(programa.id)
-      })),
-
-      ...(this.currentFilter?.chips?.acoes ?? []).map((acao: any) => ({
-        key: `acoes:${acao.id}`,
-        label: 'AÇÃO',
-        value: acao.nome,
-        type: 'filter' as const,
-        removable: true,
-        group: 'acoes',
-        valueId: Number(acao.id)
       }))
 
     ];
@@ -440,15 +484,13 @@ export class ProjetoPpaLoaComponent {
       | 'idsAnos'
       | 'idsUos'
       | 'idsFuncoes'
-      | 'idsProgramas'
-      | 'idsAcoes';
+      | 'idsProgramas';
 
     const idsPorGrupo: Record<string, CampoIdsPlanejamento> = {
       anos: 'idsAnos',
       uos: 'idsUos',
       funcoes: 'idsFuncoes',
-      programas: 'idsProgramas',
-      acoes: 'idsAcoes'
+      programas: 'idsProgramas'
     };
     const campoIds = idsPorGrupo[chip.group];
 
@@ -461,7 +503,7 @@ export class ProjetoPpaLoaComponent {
       );
     }
 
-    const ordemDependencias = ['anos', 'uos', 'funcoes', 'programas', 'acoes'];
+    const ordemDependencias = ['anos', 'uos', 'funcoes', 'programas'];
     const indiceGrupo = ordemDependencias.indexOf(chip.group);
     const gruposParaLimpar = ordemDependencias.slice(indiceGrupo + 1);
 
@@ -487,8 +529,6 @@ export class ProjetoPpaLoaComponent {
     idUos: number[],
     idsAcoes: number[]
   ): void {
-
-    this.carregandoAcoes = true;
 
     this._ppaloaIntegracaoService
       .buscarDadosAcoes(
@@ -522,7 +562,6 @@ export class ProjetoPpaLoaComponent {
           const acoesPorChave =
             new Map<string, PlanejamentoAcao>();
 
-
           // Primeiro mantém as ações que já estavam na tela
           this.acoesPlanejamento.forEach(acao => {
 
@@ -539,7 +578,6 @@ export class ProjetoPpaLoaComponent {
               acao
             );
           });
-
 
           // Acrescenta apenas ações que ainda não existem
           novasAcoes.forEach(acao => {
@@ -564,12 +602,10 @@ export class ProjetoPpaLoaComponent {
           this.acoesPlanejamento =
             Array.from(acoesPorChave.values());
 
-          this.quantidadeAcoes =
-            this.acoesPlanejamento.length;
+          // this.quantidadeAcoes =
+          //   this.acoesPlanejamento.length;
 
-          const controle = this.projetoForm.get(
-            'acoesPlanejamentoProjeto'
-          );
+          const controle = this.projetoForm.get('acoesPlanejamentoProjeto');
 
           if (!controle) {
 
@@ -579,7 +615,6 @@ export class ProjetoPpaLoaComponent {
 
             return;
           }
-
 
           const acoesAtuais =
             (controle.value as IAcaoPlanejamentoProjeto[] | null)
@@ -624,27 +659,19 @@ export class ProjetoPpaLoaComponent {
 
 
             const novaAcao: IAcaoPlanejamentoProjeto = {
-
               id: null,
-
               idProjeto: null,
-
               codAcao:
                 Number(acaoBi.codigoAcao),
-
               codFuncao:
                 Number(acaoBi.codigoFuncao),
-
               codPrograma:
                 Number(acaoBi.codigoPrograma),
-
               ano:
-                String(acaoBi.anoAcao),
-
+                String(idAnos[0]),
               codUo:
                 String(acaoBi.codigoUnidadeOrcamentaria)
             };
-
 
             acoesFormPorChave.set(
               chave,
@@ -699,7 +726,7 @@ export class ProjetoPpaLoaComponent {
             'Não foi possível consultar os dados das ações selecionadas.'
           );
 
-          this.quantidadeAcoes = 0;
+          // this.quantidadeAcoes = 0;
         }
 
       });
@@ -765,7 +792,6 @@ export class ProjetoPpaLoaComponent {
 
     const acoesProjeto =
       this.projetoForm.get('acoesPlanejamentoProjeto')?.value as IAcaoPlanejamentoProjeto[] ?? [];
-
     if (acoesProjeto.length === 0) {
       return;
     }
@@ -773,22 +799,23 @@ export class ProjetoPpaLoaComponent {
     const idsFuncoes = [
       ...new Set(acoesProjeto.map(acao => Number(acao.codFuncao)))
     ];
-
     const idsProgramas = [
       ...new Set(acoesProjeto.map(acao => Number(acao.codPrograma)))
     ];
-
     const idsAnos = [
       ...new Set(acoesProjeto.map(acao => Number(acao.ano)))
     ];
-
     const idsUos = [
       ...new Set(acoesProjeto.map(acao => Number(acao.codUo)))
     ];
-
     const idsAcoes = [
       ...new Set(acoesProjeto.map(acao => Number(acao.codAcao)))
     ];
+
+    this.currentFilter = {
+      ...this.currentFilter,
+      idsAnos: idsAnos
+    };
 
     this.carregarAcoesSelecionadas(
       this.periodoPlanejamento?.descricao ?? '',
@@ -799,6 +826,204 @@ export class ProjetoPpaLoaComponent {
       idsAcoes
     );
 
+  }
+
+  public toggleAcao(acao: IOpcaoPlanejamento) {
+
+    if (this.isSelecionado(acao)) {
+      this.acoesPlanejamento = this.acoesPlanejamento.filter(a =>
+        !this.mesmaAcao(a, acao)
+      );
+      // this.quantidadeAcoes = this.acoesPlanejamento.length;
+    } else {
+
+      const idsAnos = [
+        ...new Set(this.currentFilter?.idsAnos)
+      ];
+
+      const idsUos = [
+        ...new Set(this.currentFilter?.idsUos)
+      ];
+
+      const idsFuncoes = [
+        ...new Set(this.currentFilter?.idsFuncoes)
+      ];
+
+      const idsProgramas = [
+        ...new Set(this.currentFilter?.idsProgramas)
+      ];
+
+      const idsAcoes = [
+        ...new Set([acao.id])
+      ];
+
+      this.carregarAcoesSelecionadas(
+        this.periodoPlanejamento?.descricao ?? '',
+        idsFuncoes,
+        idsProgramas,
+        idsAnos,
+        idsUos,
+        idsAcoes
+      );
+
+    }
+
+  }
+
+  isSelecionado(acao: any): boolean {
+    return (this.acoesPlanejamento || []).some(i =>
+      this.mesmaAcao(i, acao)
+    );
+  }
+
+  private mesmaAcao(a: any, b: any): boolean {
+
+    return Number(a.codigoAcao) === b.id;
+
+  }
+
+  toggleSelectAll(event: any): void {
+
+    // let novasSelecoes = [...this.selecionados];
+
+    // if (this.selectAll) {
+    //   const novos = this.indicadoresFiltrados.filter(i => !this.isSelecionado(i));
+    //   novasSelecoes = [...novasSelecoes, ...novos];
+    // } else {
+    //   const idsFiltrados = this.indicadoresFiltrados.map(i => i.idIndicador);
+    //   novasSelecoes = novasSelecoes.filter(i => !idsFiltrados.includes(i.idIndicador));
+    // }
+
+    // this.selecionadosChange.emit(novasSelecoes);
+
+  }
+
+  toggleSearch(): void {
+
+    if (!this.podeEditar) {
+      return;
+    }
+
+    this.searchVisible = !this.searchVisible;
+    if (this.searchVisible) {
+      setTimeout(() => {
+        this.searchInput?.nativeElement.focus();
+      });
+    }
+
+  }
+
+  limparBusca(): void {
+
+    if (!this.podeEditar) {
+      return;
+    }
+
+    this.filtroTexto = '';
+    this.filtrarAcoes();
+    this.searchInput?.nativeElement.focus();
+
+  }
+
+  filtrarAcoes(): void {
+
+    const termo = this.filtroTexto
+      ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      : '';
+
+    this.listaAcoesFiltradas = this.listaAcoes.filter(acao => {
+      const nomeNormalizado = acao.nome
+        ?.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      return nomeNormalizado?.includes(termo);
+    });
+
+    this.updateSelectAllState();
+
+  }
+
+  private carregarListaAcoes(
+
+    preservarSelecaoAtual: boolean): void {
+
+    this.acoesSubscription?.unsubscribe();
+
+    const idAnos = this.currentFilter?.idsAnos;
+    const idUos = this.currentFilter?.idsUos;
+    const idFuncoes = this.currentFilter?.idsFuncoes;
+    const idsProgramas = this.currentFilter?.idsProgramas;
+
+    this.listaAcoes = [];
+    this.listaAcoesFiltradas = [];
+
+    if (!preservarSelecaoAtual) {
+      // this.currentFilter.idsAcoes = [];
+    }
+
+    if (idAnos?.length === 0 || idUos?.length === 0) {
+      if (this.currentFilter) {
+        this.currentFilter.idsFuncoes = [];
+        this.currentFilter.idsProgramas = [];
+      }
+      return;
+    }
+
+    this.carregandoAcoes = true;
+
+    this.acoesSubscription =
+      this._ppaloaIntegracaoService
+        .listarAcoesPorProgramas(
+          idFuncoes ?? [],
+          idsProgramas ?? [],
+          idAnos ?? [],
+          idUos ?? []
+        )
+        .pipe(
+          finalize(() => {
+            this.carregandoAcoes = false;
+          })
+        )
+        .subscribe({
+
+          next: acoes => {
+
+            this.listaAcoes = acoes ?? [];
+
+            this.listaAcoesFiltradas = this.listaAcoes;
+
+            this.carregandoAcoes = false;
+
+          },
+          error: erro => {
+
+            this.carregandoAcoes = false;
+
+            console.error(
+              'Erro ao carregar as ações.',
+              erro
+            );
+
+            this.listaAcoes = [];
+            this.listaAcoesFiltradas = [];
+
+          }
+        })
+      ;
+
+  }
+
+  ngOnDestroy(): void {
+    this.acoesSubscription?.unsubscribe();
+  }
+
+  private updateSelectAllState(): void {
+    this.selectAll = this.listaAcoesFiltradas.length > 0 &&
+      this.listaAcoesFiltradas.every(acao => this.isSelecionado(acao));
+  }
+
+  get quantidadeAcoes(): number {
+    return this.acoesPlanejamento?.length ?? 0;
   }
 
 }

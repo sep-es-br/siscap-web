@@ -41,7 +41,7 @@ export interface IFiltroPlanejamento {
   idsUos: number[];
   idsFuncoes: number[];
   idsProgramas: number[];
-  idsAcoes: number[];
+  // idsAcoes: number[];
 
   chips: {
     anos: IChipPlanejamento[];
@@ -102,7 +102,7 @@ export class FiltroAcoesComponent
 
   private carregamentoInicialSubscription?: Subscription;
   private programasSubscription?: Subscription;
-  private acoesSubscription?: Subscription;
+  // private acoesSubscription?: Subscription;
   private uosSubscription?: Subscription;
   private funcoesSubscription?: Subscription;
 
@@ -136,7 +136,7 @@ export class FiltroAcoesComponent
   ngOnDestroy(): void {
     this.carregamentoInicialSubscription?.unsubscribe();
     this.programasSubscription?.unsubscribe();
-    this.acoesSubscription?.unsubscribe();
+    // this.acoesSubscription?.unsubscribe();
     this.uosSubscription?.unsubscribe();
   }
 
@@ -178,16 +178,16 @@ export class FiltroAcoesComponent
               this.carregarUos(true);
             }
 
-            if (this.filtro.idsFuncoes.length > 0) {
-              this.carregarFuncoes(true);
-            }
-
             if (this.filtro.idsAnos.length > 0) {
               this.carregarProgramas(true);
             }
 
-            if (this.filtro.idsAcoes.length > 0) {
-              this.carregarAcoes(true);
+            // if (this.filtro.idsAcoes.length > 0) {
+            //   this.carregarAcoes(true);
+            // }
+
+            if (this.filtro.idsAnos.length > 0) {
+              this.carregarFuncoes(true);
             }
 
           },
@@ -214,7 +214,7 @@ export class FiltroAcoesComponent
 
     this.filtro.idsUos = [];
     this.filtro.idsProgramas = [];
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
 
     this.uos = []
     this.programas = [];
@@ -235,7 +235,7 @@ export class FiltroAcoesComponent
 
     this.filtro.idsFuncoes = [];
     this.filtro.idsProgramas = [];
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
 
     this.funcoes = [];
     this.programas = [];
@@ -259,7 +259,7 @@ export class FiltroAcoesComponent
       this.normalizarIds(this.filtro.idsFuncoes);
 
     this.filtro.idsProgramas = [];
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
 
     this.programas = [];
     this.acoes = [];
@@ -277,17 +277,19 @@ export class FiltroAcoesComponent
    * um Programa.
    */
   onProgramasChange(): void {
+
     this.filtro.idsProgramas =
       this.normalizarIds(this.filtro.idsProgramas);
 
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
     this.acoes = [];
 
     if (this.filtro.idsProgramas.length === 0) {
       return;
     }
 
-    this.carregarAcoes(false);
+    // this.carregarAcoes(false);
+
   }
 
   /**
@@ -309,12 +311,12 @@ export class FiltroAcoesComponent
 
     if (!preservarSelecaoAtual) {
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
     }
 
     if (idsFuncoes.length === 0 || idsAnos.length === 0 || idsUos.length === 0) {
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
       return;
     }
 
@@ -345,9 +347,9 @@ export class FiltroAcoesComponent
               preservarSelecaoAtual &&
               this.filtro.idsProgramas.length > 0
             ) {
-              this.carregarAcoes(true);
+              // this.carregarAcoes(true);
             } else {
-              this.filtro.idsAcoes = [];
+              // this.filtro.idsAcoes = [];
               this.acoes = [];
             }
 
@@ -362,7 +364,7 @@ export class FiltroAcoesComponent
             this.acoes = [];
 
             this.filtro.idsProgramas = [];
-            this.filtro.idsAcoes = [];
+            // this.filtro.idsAcoes = [];
           }
         });
 
@@ -372,66 +374,74 @@ export class FiltroAcoesComponent
    * Consulta as ações pertencentes aos programas
    * selecionados.
    */
-  private carregarAcoes(
-    preservarSelecaoAtual: boolean): void {
+  // private carregarAcoes(
 
-    this.acoesSubscription?.unsubscribe();
+  //   preservarSelecaoAtual: boolean): void {
 
-    const idFuncoes = this.normalizarIds(this.filtro.idsFuncoes);
-    const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
-    const idAnos = this.normalizarIds(this.filtro.idsAnos);
-    const idUos = this.normalizarIds(this.filtro.idsUos);
+  //   this.acoesSubscription?.unsubscribe();
 
-    this.acoes = [];
+  //   const idFuncoes = this.normalizarIds(this.filtro.idsFuncoes);
+  //   const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
+  //   const idAnos = this.normalizarIds(this.filtro.idsAnos);
+  //   const idUos = this.normalizarIds(this.filtro.idsUos);
 
-    if (!preservarSelecaoAtual) {
-      this.filtro.idsAcoes = [];
-    }
+  //   this.acoes = [];
 
-    if (idFuncoes.length === 0 || idsProgramas.length === 0 || idAnos.length === 0 || idUos.length === 0) {
-      this.filtro.idsAcoes = [];
-      return;
-    }
+  //   console.log('entrou aqui')
 
-    this.carregandoAcoes = true;
+  //   if (!preservarSelecaoAtual) {
+  //     // this.filtro.idsAcoes = [];
+  //   }
 
-    this.acoesSubscription =
-      this._ppaloaIntegracaoService
-        .listarAcoesPorProgramas(
-          idFuncoes,
-          idsProgramas,
-          idAnos,
-          idUos
-        )
-        .pipe(
-          finalize(() => {
-            this.carregandoAcoes = false;
-          })
-        )
-        .subscribe({
-          next: acoes => {
+  //   if ( idAnos.length === 0 || idUos.length === 0 ) {
+  //     // this.filtro.idsAcoes = [];
+  //     return;
+  //   }
 
-            this.acoes = acoes ?? [];
+  //   this.carregandoAcoes = true;
 
-            this.filtro.idsAcoes =
-              preservarSelecaoAtual
-                ? this.manterSomenteIdsValidos(
-                  this.filtro.idsAcoes,
-                  this.acoes
-                )
-                : [];
-          },
-          error: erro => {
-            console.error(
-              'Erro ao carregar as ações.',
-              erro
-            );
+  //   this.acoesSubscription =
+  //     this._ppaloaIntegracaoService
+  //       .listarAcoesPorProgramas(
+  //         idFuncoes,
+  //         idsProgramas,
+  //         idAnos,
+  //         idUos
+  //       )
+  //       .pipe(
+  //         finalize(() => {
+  //           this.carregandoAcoes = false;
+  //         })
+  //       )
+  //       .subscribe({
+  //         next: acoes => {
 
-            this.acoes = [];
-            this.filtro.idsAcoes = [];
-          }
-        });
-  }
+  //           console.log('acoes carregadas :', acoes)
+
+  //           this.acoes = acoes ?? [];
+
+  //           // this.filtro.idsAcoes =
+  //           //   preservarSelecaoAtual
+  //           //     ? this.manterSomenteIdsValidos(
+  //           //       this.filtro.idsAcoes,
+  //           //       this.acoes
+  //           //     )
+  //           //     : [];
+
+  //         },
+  //         error: erro => {
+  //           console.error(
+  //             'Erro ao carregar as ações.',
+  //             erro
+  //           );
+
+  //           this.acoes = [];
+  //           // this.filtro.idsAcoes = [];
+  //         }
+  //       })
+  //       ;
+
+  // }
 
   /**
    * Recarrega os programas e ações quando a modal
@@ -454,13 +464,13 @@ export class FiltroAcoesComponent
     this.acoes = [];
 
     this.filtro.idsProgramas = [];
-    this.filtro.idsAcoes = [];
+    // this.filtro.idsAcoes = [];
   }
 
   resetar(): void {
 
     this.programasSubscription?.unsubscribe();
-    this.acoesSubscription?.unsubscribe();
+    // this.acoesSubscription?.unsubscribe();
 
     this.programas = [];
     this.acoes = [];
@@ -502,9 +512,9 @@ export class FiltroAcoesComponent
         ...this.filtro.idsProgramas
       ],
 
-      idsAcoes: [
-        ...this.filtro.idsAcoes
-      ],
+      // idsAcoes: [
+      //   ...this.filtro.idsAcoes
+      // ],
 
       chips: {
         anos: [
@@ -568,9 +578,9 @@ export class FiltroAcoesComponent
         filtroAtual?.idsProgramas
       ),
 
-      idsAcoes: this.normalizarIds(
-        filtroAtual?.idsAcoes
-      ),
+      // idsAcoes: this.normalizarIds(
+      //   filtroAtual?.idsAcoes
+      // ),
 
       chips: {
         anos: [],
@@ -600,7 +610,7 @@ export class FiltroAcoesComponent
       idsUos: [],
       idsFuncoes: [],
       idsProgramas: [],
-      idsAcoes: [],
+      // idsAcoes: [],
 
       chips: {
         anos: [],
@@ -639,7 +649,7 @@ export class FiltroAcoesComponent
 
       acoes: this.obterOpcoesSelecionadas(
         this.acoes,
-        this.filtro.idsAcoes
+        []
       )
 
     };
@@ -705,12 +715,12 @@ export class FiltroAcoesComponent
     if (!preservarSelecaoAtual) {
       this.filtro.idsUos = [];
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
     }
 
     if (idsAnos.length === 0) {
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
       return;
     }
 
@@ -737,10 +747,7 @@ export class FiltroAcoesComponent
                 )
                 : [];
 
-            if (
-              preservarSelecaoAtual &&
-              this.filtro.idsUos.length > 0
-            ) {
+            if ( preservarSelecaoAtual && this.filtro.idsUos.length > 0 ) {
               this.carregarProgramas(true);
             } else {
               this.filtro.idsUos = [];
@@ -759,7 +766,7 @@ export class FiltroAcoesComponent
 
             this.filtro.idsUos = [];
             this.filtro.idsProgramas = [];
-            this.filtro.idsAcoes = [];
+            // this.filtro.idsAcoes = [];
 
           }
         });
@@ -780,14 +787,14 @@ export class FiltroAcoesComponent
 
     if (!preservarSelecaoAtual) {
       this.filtro.idsProgramas = [];
-      this.filtro.idsAcoes = [];
+      // this.filtro.idsAcoes = [];
     }
 
-    if (idsUos.length === 0 || idsAnos.length === 0) {
-      this.filtro.idsAnos = [];
-      this.filtro.idsUos = [];
-      return;
-    }
+    // if (idsUos.length === 0 || idsAnos.length === 0) {
+    //   this.filtro.idsAnos = [];
+    //   this.filtro.idsUos = [];
+    //   return;
+    // }
 
     this.carregandoFuncoes = true;
 
@@ -816,7 +823,9 @@ export class FiltroAcoesComponent
               preservarSelecaoAtual &&
               this.filtro.idsFuncoes.length > 0
             ) {
+
               this.carregarProgramas(true);
+
             } else {
               this.filtro.idsFuncoes = [];
             }
@@ -835,7 +844,7 @@ export class FiltroAcoesComponent
 
             this.filtro.idsUos = [];
             this.filtro.idsProgramas = [];
-            this.filtro.idsAcoes = [];
+            // this.filtro.idsAcoes = [];
 
           }
         });
