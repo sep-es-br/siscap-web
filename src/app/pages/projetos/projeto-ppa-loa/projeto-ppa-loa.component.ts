@@ -12,7 +12,7 @@ import { ToastService } from '../../../core/services/toast/toast.service';
 import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
 import { CheckboxModule } from 'primeng/checkbox';
-import { FormGroup, FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule } from '@angular/forms';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -84,7 +84,7 @@ export class ProjetoPpaLoaComponent {
 
   naoPrevistoPpa = false;
   somenteLeitura: boolean = false;
-  quantidadeAcoes: number = 0;
+  // quantidadeAcoes: number = 0;
   filtrosAplicados: any[] = [];
 
   currentFilter: Partial<IFiltroPlanejamento> | null = null;
@@ -116,6 +116,8 @@ export class ProjetoPpaLoaComponent {
   filtroTexto: string = '';
 
   private acoesSubscription?: Subscription;
+
+  private acoesPlanejamentoBackup: IAcaoPlanejamentoProjeto[] = [];
 
   constructor(private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
@@ -163,7 +165,7 @@ export class ProjetoPpaLoaComponent {
       acao => this.chaveAcaoBi(acao) !== this.chaveAcaoBi(acaoInformada)
     );
 
-    this.quantidadeAcoes = this.acoesPlanejamento.length;
+    // this.quantidadeAcoes = this.acoesPlanejamento.length;
 
     const controleAcoes =
       this.projetoForm.get('acoesPlanejamentoProjeto');
@@ -255,6 +257,9 @@ export class ProjetoPpaLoaComponent {
     const controleNaoPrevistoPpa =
       this.projetoForm.get('naoPrevistoNoPpa');
 
+    const controleAcoes =
+      this.projetoForm.get('acoesPlanejamentoProjeto') as FormControl<IAcaoPlanejamentoProjeto[]>;
+
     if (!controleNaoPrevistoPpa) {
       console.error(
         'Controle naoPrevistoNoPpa não encontrado.'
@@ -262,14 +267,53 @@ export class ProjetoPpaLoaComponent {
       return;
     }
 
-    this.acoesPlanejamento = [];
+    // this.acoesPlanejamento = [];
+    // this.projetoForm.get('acoesPlanejamentoProjeto')?.setValue([]);
 
-    this.quantidadeAcoes =
-      this.acoesPlanejamento.length;
+    console.table(
+      this.acoesPlanejamento.map(a => ({
+        id: a.id,
+        codigoAcao: a.codigoAcao,
+        codigoPrograma: a.codigoPrograma,
+        anoAcao: a.anoAcao,
+        codigoUnidadeOrcamentaria: a.codigoUnidadeOrcamentaria
+      }))
+    );
+    
+    if (this.naoPrevistoPpa) {
 
-    this.projetoForm.get('acoesPlanejamentoProjeto')?.setValue([]);
+      if (this.acoesPlanejamento.length > 0) {
+        this.acoesPlanejamentoBackup =
+          structuredClone(controleAcoes.value);
+      }
 
-    this.initBaseChip()
+      console.table(
+        this.acoesPlanejamentoBackup.map(a => ({
+          id: a.id,
+          codigoAcao: a.codAcao,
+          codigoPrograma: a.codPrograma,
+          anoAcao: a.ano,
+          codigoUnidadeOrcamentaria: a.codUo
+        }))
+      );
+      
+      this.acoesPlanejamento = [];
+
+      controleAcoes?.setValue([]);
+
+      this.initBaseChip()
+  
+    } else {
+  
+      // Restaura o que estava selecionado anteriormente
+      // this.acoesPlanejamento =
+      //   structuredClone(this.acoesPlanejamentoBackup);
+  
+      controleAcoes?.setValue(
+        structuredClone(this.acoesPlanejamentoBackup)
+      );
+
+    }
 
     controleNaoPrevistoPpa.setValue(this.naoPrevistoPpa);
     controleNaoPrevistoPpa.markAsDirty();
@@ -506,8 +550,8 @@ export class ProjetoPpaLoaComponent {
           this.acoesPlanejamento =
             Array.from(acoesPorChave.values());
 
-          this.quantidadeAcoes =
-            this.acoesPlanejamento.length;
+          // this.quantidadeAcoes =
+          //   this.acoesPlanejamento.length;
 
           const controle = this.projetoForm.get('acoesPlanejamentoProjeto');
 
@@ -630,7 +674,7 @@ export class ProjetoPpaLoaComponent {
             'Não foi possível consultar os dados das ações selecionadas.'
           );
 
-          this.quantidadeAcoes = 0;
+          // this.quantidadeAcoes = 0;
         }
 
       });
@@ -717,9 +761,9 @@ export class ProjetoPpaLoaComponent {
     ];
 
     this.currentFilter = {
-        ...this.currentFilter,
-        idsAnos: idsAnos
-      };
+      ...this.currentFilter,
+      idsAnos: idsAnos
+    };
 
     this.carregarAcoesSelecionadas(
       this.periodoPlanejamento?.descricao ?? '',
@@ -738,7 +782,7 @@ export class ProjetoPpaLoaComponent {
       this.acoesPlanejamento = this.acoesPlanejamento.filter(a =>
         !this.mesmaAcao(a, acao)
       );
-      this.quantidadeAcoes = this.acoesPlanejamento.length;
+      // this.quantidadeAcoes = this.acoesPlanejamento.length;
     } else {
 
       const idsAnos = [
@@ -924,6 +968,10 @@ export class ProjetoPpaLoaComponent {
   private updateSelectAllState(): void {
     this.selectAll = this.listaAcoesFiltradas.length > 0 &&
       this.listaAcoesFiltradas.every(acao => this.isSelecionado(acao));
+  }
+
+  get quantidadeAcoes(): number {
+    return this.acoesPlanejamento?.length ?? 0;
   }
 
 }
