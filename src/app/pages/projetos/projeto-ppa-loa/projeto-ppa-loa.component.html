@@ -117,7 +117,7 @@
 
         <!-- Estado vazio -->
         <div class="planejamento-empty-state" *ngIf="quantidadeAcoes === 0">
-          
+
           <div class="planejamento-empty-icon">
             📋
           </div>
@@ -295,18 +295,13 @@
   </div>
 
   <ng-template #loadingTpl>
-    <div class="estado-vazio">
-      <i class="pi pi-spin pi-spinner"></i>
-      Carregando acoes...
+    <div class="card-body">
+      <div class="spinner-carregando-acoes">
+        <i class="pi pi-spin pi-spinner"></i>
+        Carregando acoes...
+      </div>
     </div>
   </ng-template>
-
-  <!-- <ng-template #vazio>
-    <div class="estado-vazio">
-      <i class="pi pi-inbox"></i>
-      Nenhuma acao encontrada
-    </div>
-  </ng-template> -->
 
   <!-- Rodapé -->
   <footer class="planejamento-footer">

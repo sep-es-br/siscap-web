@@ -84,7 +84,6 @@ export class ProjetoPpaLoaComponent {
 
   naoPrevistoPpa = false;
   somenteLeitura: boolean = false;
-  // quantidadeAcoes: number = 0;
   filtrosAplicados: any[] = [];
 
   currentFilter: Partial<IFiltroPlanejamento> | null = null;
@@ -117,7 +116,8 @@ export class ProjetoPpaLoaComponent {
 
   private acoesSubscription?: Subscription;
 
-  private acoesPlanejamentoBackup: IAcaoPlanejamentoProjeto[] = [];
+  private acoesPlanejamentoBackup: PlanejamentoAcao[] = [];
+  private acoesPlanejamentoProjetoBackup: IAcaoPlanejamentoProjeto[] = [];
 
   constructor(private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
@@ -270,32 +270,27 @@ export class ProjetoPpaLoaComponent {
     // this.acoesPlanejamento = [];
     // this.projetoForm.get('acoesPlanejamentoProjeto')?.setValue([]);
 
-    console.table(
-      this.acoesPlanejamento.map(a => ({
-        id: a.id,
-        codigoAcao: a.codigoAcao,
-        codigoPrograma: a.codigoPrograma,
-        anoAcao: a.anoAcao,
-        codigoUnidadeOrcamentaria: a.codigoUnidadeOrcamentaria
-      }))
-    );
+    // console.table(
+    //   this.acoesPlanejamento.map(a => ({
+    //     id: a.id,
+    //     codigoAcao: a.codigoAcao,
+    //     codigoPrograma: a.codigoPrograma,
+    //     anoAcao: a.anoAcao,
+    //     codigoUnidadeOrcamentaria: a.codigoUnidadeOrcamentaria
+    //   }))
+    // );
     
     if (this.naoPrevistoPpa) {
 
       if (this.acoesPlanejamento.length > 0) {
-        this.acoesPlanejamentoBackup =
-          structuredClone(controleAcoes.value);
-      }
 
-      console.table(
-        this.acoesPlanejamentoBackup.map(a => ({
-          id: a.id,
-          codigoAcao: a.codAcao,
-          codigoPrograma: a.codPrograma,
-          anoAcao: a.ano,
-          codigoUnidadeOrcamentaria: a.codUo
-        }))
-      );
+        this.acoesPlanejamentoBackup = 
+           structuredClone(this.acoesPlanejamento);
+
+        this.acoesPlanejamentoProjetoBackup =
+          structuredClone(controleAcoes.value);
+
+      }
       
       this.acoesPlanejamento = [];
 
@@ -306,11 +301,11 @@ export class ProjetoPpaLoaComponent {
     } else {
   
       // Restaura o que estava selecionado anteriormente
-      // this.acoesPlanejamento =
-      //   structuredClone(this.acoesPlanejamentoBackup);
+      this.acoesPlanejamento =
+         structuredClone(this.acoesPlanejamentoBackup);
   
       controleAcoes?.setValue(
-        structuredClone(this.acoesPlanejamentoBackup)
+        structuredClone(this.acoesPlanejamentoProjetoBackup)
       );
 
     }
