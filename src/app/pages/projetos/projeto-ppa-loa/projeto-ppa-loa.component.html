@@ -22,21 +22,37 @@
   <div class="card selection-card">
 
     <div class="card-header-main">
-      <p class="lista-label">SELECIONE A AÇÃO</p>
-      <div class="search-container" [class.expanded]="searchVisible">
+      <h2 class="planejamento-card-title">Selecione a ação</h2>
+      <div *ngIf="listaAcoes.length > 0" class="search-container" [class.expanded]="searchVisible">
         <span class="p-input-icon-left p-input-icon-right w-100">
           <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
           <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
             class="w-100 search-input" placeholder="Nome da ação" [(ngModel)]="filtroTexto"
             (ngModelChange)="filtrarAcoes()" [disabled]="!podeEditar" />
-          <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()"></i>
+          <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible"
+            (click)="limparBusca()"></i>
         </span>
       </div>
     </div>
 
     <div class="card-body">
 
-      <div class="acao-item select-all">
+      <!-- Estado vazio -->
+      <div class="planejamento-empty-state" *ngIf="listaAcoesFiltradas.length === 0">
+        <div class="planejamento-empty-icon">
+          ☷
+        </div>
+
+        <div class="planejamento-empty-title">
+          Nenhuma ação encontrada para o filtro informado.
+        </div>
+
+        <div class="planejamento-empty-description">
+          Utilize os filtros acima para carregar a lista de ações (Ano e UO são obrigatórios).
+        </div>
+      </div>
+
+      <div *ngIf="listaAcoesFiltradas.length > 0" class="acao-item select-all">
         <label class="acao-label">
           <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
             [disabled]="!podeEditar"></p-checkbox>
@@ -44,14 +60,14 @@
         </label>
       </div>
 
-      <ng-container *ngIf="!loading; else loadingTpl">
-        <ng-container *ngIf="acoesFiltradas.length > 0; else vazio">
-          <div class="acao-item" *ngFor="let acao of acoesFiltradas">
+      <ng-container *ngIf="!carregandoAcoes; else loadingTpl">
+        <ng-container *ngIf="listaAcoesFiltradas.length > 0">
+          <div class="acao-item" *ngFor="let acao of listaAcoesFiltradas">
             <label class="acao-label">
               <p-checkbox [binary]="true" [ngModel]="isSelecionado(acao)" (ngModelChange)="toggleAcao(acao)"
                 [ngModelOptions]="{ standalone: true }" [disabled]="!podeEditar">
               </p-checkbox>
-              <span>{{ acao.nomeAcao }}</span>
+              <span>{{ acao.nome }}</span>
             </label>
           </div>
         </ng-container>
@@ -273,12 +289,12 @@
     </div>
   </ng-template>
 
-  <ng-template #vazio>
+  <!-- <ng-template #vazio>
     <div class="estado-vazio">
       <i class="pi pi-inbox"></i>
       Nenhuma acao encontrada
     </div>
-  </ng-template>
+  </ng-template> -->
 
   <!-- Rodapé -->
   <footer class="planejamento-footer">

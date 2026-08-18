@@ -101,7 +101,7 @@ export class FiltroAcoesComponent
 
   private carregamentoInicialSubscription?: Subscription;
   private programasSubscription?: Subscription;
-  private acoesSubscription?: Subscription;
+  // private acoesSubscription?: Subscription;
   private uosSubscription?: Subscription;
   private funcoesSubscription?: Subscription;
 
@@ -135,7 +135,7 @@ export class FiltroAcoesComponent
   ngOnDestroy(): void {
     this.carregamentoInicialSubscription?.unsubscribe();
     this.programasSubscription?.unsubscribe();
-    this.acoesSubscription?.unsubscribe();
+    // this.acoesSubscription?.unsubscribe();
     this.uosSubscription?.unsubscribe();
   }
 
@@ -276,6 +276,7 @@ export class FiltroAcoesComponent
    * um Programa.
    */
   onProgramasChange(): void {
+
     this.filtro.idsProgramas =
       this.normalizarIds(this.filtro.idsProgramas);
 
@@ -286,7 +287,8 @@ export class FiltroAcoesComponent
       return;
     }
 
-    this.carregarAcoes(false);
+    // this.carregarAcoes(false);
+
   }
 
   /**
@@ -344,7 +346,7 @@ export class FiltroAcoesComponent
               preservarSelecaoAtual &&
               this.filtro.idsProgramas.length > 0
             ) {
-              this.carregarAcoes(true);
+              // this.carregarAcoes(true);
             } else {
               // this.filtro.idsAcoes = [];
               this.acoes = [];
@@ -371,69 +373,74 @@ export class FiltroAcoesComponent
    * Consulta as ações pertencentes aos programas
    * selecionados.
    */
-  private carregarAcoes(
+  // private carregarAcoes(
 
-    preservarSelecaoAtual: boolean): void {
+  //   preservarSelecaoAtual: boolean): void {
 
-    this.acoesSubscription?.unsubscribe();
+  //   this.acoesSubscription?.unsubscribe();
 
-    const idFuncoes = this.normalizarIds(this.filtro.idsFuncoes);
-    const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
-    const idAnos = this.normalizarIds(this.filtro.idsAnos);
-    const idUos = this.normalizarIds(this.filtro.idsUos);
+  //   const idFuncoes = this.normalizarIds(this.filtro.idsFuncoes);
+  //   const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
+  //   const idAnos = this.normalizarIds(this.filtro.idsAnos);
+  //   const idUos = this.normalizarIds(this.filtro.idsUos);
 
-    this.acoes = [];
+  //   this.acoes = [];
 
-    if (!preservarSelecaoAtual) {
-      // this.filtro.idsAcoes = [];
-    }
+  //   console.log('entrou aqui')
 
-    if (idFuncoes.length === 0 || idsProgramas.length === 0 || idAnos.length === 0 || idUos.length === 0) {
-      // this.filtro.idsAcoes = [];
-      return;
-    }
+  //   if (!preservarSelecaoAtual) {
+  //     // this.filtro.idsAcoes = [];
+  //   }
 
-    this.carregandoAcoes = true;
+  //   if ( idAnos.length === 0 || idUos.length === 0 ) {
+  //     // this.filtro.idsAcoes = [];
+  //     return;
+  //   }
 
-    this.acoesSubscription =
-      this._ppaloaIntegracaoService
-        .listarAcoesPorProgramas(
-          idFuncoes,
-          idsProgramas,
-          idAnos,
-          idUos
-        )
-        .pipe(
-          finalize(() => {
-            this.carregandoAcoes = false;
-          })
-        )
-        .subscribe({
-          next: acoes => {
+  //   this.carregandoAcoes = true;
 
-            this.acoes = acoes ?? [];
+  //   this.acoesSubscription =
+  //     this._ppaloaIntegracaoService
+  //       .listarAcoesPorProgramas(
+  //         idFuncoes,
+  //         idsProgramas,
+  //         idAnos,
+  //         idUos
+  //       )
+  //       .pipe(
+  //         finalize(() => {
+  //           this.carregandoAcoes = false;
+  //         })
+  //       )
+  //       .subscribe({
+  //         next: acoes => {
 
-            // this.filtro.idsAcoes =
-            //   preservarSelecaoAtual
-            //     ? this.manterSomenteIdsValidos(
-            //       this.filtro.idsAcoes,
-            //       this.acoes
-            //     )
-            //     : [];
+  //           console.log('acoes carregadas :', acoes)
 
-          },
-          error: erro => {
-            console.error(
-              'Erro ao carregar as ações.',
-              erro
-            );
+  //           this.acoes = acoes ?? [];
 
-            this.acoes = [];
-            // this.filtro.idsAcoes = [];
-          }
-        });
+  //           // this.filtro.idsAcoes =
+  //           //   preservarSelecaoAtual
+  //           //     ? this.manterSomenteIdsValidos(
+  //           //       this.filtro.idsAcoes,
+  //           //       this.acoes
+  //           //     )
+  //           //     : [];
 
-  }
+  //         },
+  //         error: erro => {
+  //           console.error(
+  //             'Erro ao carregar as ações.',
+  //             erro
+  //           );
+
+  //           this.acoes = [];
+  //           // this.filtro.idsAcoes = [];
+  //         }
+  //       })
+  //       ;
+
+  // }
 
   /**
    * Recarrega os programas e ações quando a modal
@@ -462,7 +469,7 @@ export class FiltroAcoesComponent
   resetar(): void {
 
     this.programasSubscription?.unsubscribe();
-    this.acoesSubscription?.unsubscribe();
+    // this.acoesSubscription?.unsubscribe();
 
     this.programas = [];
     this.acoes = [];
@@ -815,7 +822,11 @@ export class FiltroAcoesComponent
               preservarSelecaoAtual &&
               this.filtro.idsFuncoes.length > 0
             ) {
+
+              console.log('passou aqui no carregar funcoes.. ')
+
               this.carregarProgramas(true);
+
             } else {
               this.filtro.idsFuncoes = [];
             }

@@ -2,19 +2,17 @@ import { Component, ElementRef, Input, TrackByFunction, ViewChild } from '@angul
 import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Button } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { PpaLoaChipComponent } from './ppa-loa-chip/ppa-loa-chip.component';
-import { FiltroAcoesComponent, IFiltroPlanejamento, IPeriodoPlanejamento } from './ppa-loa-filtro/filtro-acoes.component';
+import { FiltroAcoesComponent, IFiltroPlanejamento, IOpcaoPlanejamento, IPeriodoPlanejamento } from './ppa-loa-filtro/filtro-acoes.component';
 import { finalize, Subscription } from 'rxjs';
-import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
-import { event } from 'jquery';
 import { CheckboxModule } from 'primeng/checkbox';
+import { FormGroup, FormsModule } from '@angular/forms';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -55,8 +53,6 @@ export interface PlanejamentoFiltroAplicado {
   selector: 'siscap-projeto-ppa-loa',
   standalone: true,
   imports: [CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
     NgSelectModule,
     NgbTooltipModule,
     NgbModalModule,
@@ -66,7 +62,8 @@ export interface PlanejamentoFiltroAplicado {
     DialogModule,
     PpaLoaChipComponent,
     FiltroAcoesComponent,
-    CheckboxModule],
+    CheckboxModule,
+    FormsModule],
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
 })
@@ -94,7 +91,7 @@ export class ProjetoPpaLoaComponent {
 
   trackByFiltro: TrackByFunction<any> = (_, filtro) => filtro.id;
   trackByAcao: TrackByFunction<PlanejamentoAcao> = (_, acao) => acao.id;
-  
+
   trackByDetalhamentoLoa(
     index: number,
     detalhe: DetalhamentoOrcamentarioLoa
@@ -104,19 +101,21 @@ export class ProjetoPpaLoaComponent {
 
   showModal: boolean = false;
   carregandoDadosIniciais: boolean = false;
-  loading: boolean = false;
   carregandoAcoes: boolean = false;
 
-  acoesFiltradas: any[] = [];
+  listaAcoes: any[] = [];
+  listaAcoesFiltradas: any[] = [];
 
   selectAll: boolean = false;
 
   searchVisible: boolean = false;
 
   @ViewChild('searchInput')
-    searchInput!: ElementRef<HTMLInputElement>;
+  searchInput!: ElementRef<HTMLInputElement>;
 
   filtroTexto: string = '';
+
+  private acoesSubscription?: Subscription;
 
   constructor(private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
@@ -306,6 +305,9 @@ export class ProjetoPpaLoaComponent {
             idPeriodoPlanejamento: periodo.id
           };
 
+          this.listaAcoes = [];
+          this.listaAcoesFiltradas = [];
+
           this.carregarAcoesProjetoEdicao();
 
         },
@@ -347,11 +349,9 @@ export class ProjetoPpaLoaComponent {
 
   onApply(filter: any): void {
 
-    this.loading = true
-
     this.currentFilter = structuredClone(filter);
-        
-    if ( this.currentFilter?.idsAnos?.length == 0 || this.currentFilter?.idsUos?.length == 0 ){
+
+    if (this.currentFilter?.idsAnos?.length == 0 || this.currentFilter?.idsUos?.length == 0) {
 
       this._toastService.showToast(
         'error',
@@ -364,14 +364,9 @@ export class ProjetoPpaLoaComponent {
 
     this.atualizarChipsFiltros();
 
-    this.showModal = false;
+    this.carregarListaAcoes(true);
 
-    // this.carregarAcoesSelecionadas(this.currentFilter?.periodoPlanejamento?.descricao ?? '',
-    //   this.currentFilter?.idsFuncoes ?? [],
-    //   this.currentFilter?.idsProgramas ?? [],
-    //   this.currentFilter?.idsAnos ?? [],
-    //   this.currentFilter?.idsUos ?? [],
-    //   this.currentFilter?.idsAcoes ?? []);
+    this.showModal = false;
 
   }
 
@@ -439,8 +434,6 @@ export class ProjetoPpaLoaComponent {
     idsAcoes: number[]
   ): void {
 
-    this.carregandoAcoes = true;
-
     this._ppaloaIntegracaoService
       .buscarDadosAcoes(
         ppa,
@@ -473,7 +466,6 @@ export class ProjetoPpaLoaComponent {
           const acoesPorChave =
             new Map<string, PlanejamentoAcao>();
 
-
           // Primeiro mantém as ações que já estavam na tela
           this.acoesPlanejamento.forEach(acao => {
 
@@ -490,7 +482,6 @@ export class ProjetoPpaLoaComponent {
               acao
             );
           });
-
 
           // Acrescenta apenas ações que ainda não existem
           novasAcoes.forEach(acao => {
@@ -518,9 +509,7 @@ export class ProjetoPpaLoaComponent {
           this.quantidadeAcoes =
             this.acoesPlanejamento.length;
 
-          const controle = this.projetoForm.get(
-            'acoesPlanejamentoProjeto'
-          );
+          const controle = this.projetoForm.get('acoesPlanejamentoProjeto');
 
           if (!controle) {
 
@@ -530,7 +519,6 @@ export class ProjetoPpaLoaComponent {
 
             return;
           }
-
 
           const acoesAtuais =
             (controle.value as IAcaoPlanejamentoProjeto[] | null)
@@ -575,27 +563,19 @@ export class ProjetoPpaLoaComponent {
 
 
             const novaAcao: IAcaoPlanejamentoProjeto = {
-
               id: null,
-
               idProjeto: null,
-
               codAcao:
                 Number(acaoBi.codigoAcao),
-
               codFuncao:
                 Number(acaoBi.codigoFuncao),
-
               codPrograma:
                 Number(acaoBi.codigoPrograma),
-
               ano:
-                String(acaoBi.anoAcao),
-
+                String(idAnos[0]),
               codUo:
                 String(acaoBi.codigoUnidadeOrcamentaria)
             };
-
 
             acoesFormPorChave.set(
               chave,
@@ -716,7 +696,6 @@ export class ProjetoPpaLoaComponent {
 
     const acoesProjeto =
       this.projetoForm.get('acoesPlanejamentoProjeto')?.value as IAcaoPlanejamentoProjeto[] ?? [];
-
     if (acoesProjeto.length === 0) {
       return;
     }
@@ -724,22 +703,23 @@ export class ProjetoPpaLoaComponent {
     const idsFuncoes = [
       ...new Set(acoesProjeto.map(acao => Number(acao.codFuncao)))
     ];
-
     const idsProgramas = [
       ...new Set(acoesProjeto.map(acao => Number(acao.codPrograma)))
     ];
-
     const idsAnos = [
       ...new Set(acoesProjeto.map(acao => Number(acao.ano)))
     ];
-
     const idsUos = [
       ...new Set(acoesProjeto.map(acao => Number(acao.codUo)))
     ];
-
     const idsAcoes = [
       ...new Set(acoesProjeto.map(acao => Number(acao.codAcao)))
     ];
+
+    this.currentFilter = {
+        ...this.currentFilter,
+        idsAnos: idsAnos
+      };
 
     this.carregarAcoesSelecionadas(
       this.periodoPlanejamento?.descricao ?? '',
@@ -752,19 +732,57 @@ export class ProjetoPpaLoaComponent {
 
   }
 
-  public toggleAcao(acao: any) {
+  public toggleAcao(acao: IOpcaoPlanejamento) {
+
+    if (this.isSelecionado(acao)) {
+      this.acoesPlanejamento = this.acoesPlanejamento.filter(a =>
+        !this.mesmaAcao(a, acao)
+      );
+      this.quantidadeAcoes = this.acoesPlanejamento.length;
+    } else {
+
+      const idsAnos = [
+        ...new Set(this.currentFilter?.idsAnos)
+      ];
+
+      const idsUos = [
+        ...new Set(this.currentFilter?.idsUos)
+      ];
+
+      const idsFuncoes = [
+        ...new Set(this.currentFilter?.idsFuncoes)
+      ];
+
+      const idsProgramas = [
+        ...new Set(this.currentFilter?.idsProgramas)
+      ];
+
+      const idsAcoes = [
+        ...new Set([acao.id])
+      ];
+
+      this.carregarAcoesSelecionadas(
+        this.periodoPlanejamento?.descricao ?? '',
+        idsFuncoes,
+        idsProgramas,
+        idsAnos,
+        idsUos,
+        idsAcoes
+      );
+
+    }
 
   }
 
   isSelecionado(acao: any): boolean {
-    return ( this.acoesPlanejamento || []).some(i =>
-      this.mesmaAcao( i, acao )
+    return (this.acoesPlanejamento || []).some(i =>
+      this.mesmaAcao(i, acao)
     );
   }
 
   private mesmaAcao(a: any, b: any): boolean {
 
-    return a.codigoAcao === b.codigoAcao;
+    return Number(a.codigoAcao) === b.id;
 
   }
 
@@ -789,22 +807,26 @@ export class ProjetoPpaLoaComponent {
     if (!this.podeEditar) {
       return;
     }
+
     this.searchVisible = !this.searchVisible;
     if (this.searchVisible) {
       setTimeout(() => {
         this.searchInput?.nativeElement.focus();
       });
     }
-    
+
   }
 
-   limparBusca(): void {
+  limparBusca(): void {
+
     if (!this.podeEditar) {
       return;
     }
+
     this.filtroTexto = '';
     this.filtrarAcoes();
     this.searchInput?.nativeElement.focus();
+
   }
 
   filtrarAcoes(): void {
@@ -813,16 +835,95 @@ export class ProjetoPpaLoaComponent {
       ? this.filtroTexto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       : '';
 
-    // this.indicadoresFiltrados = this.montarIndicadoresExibicao().filter(i => {
-    //   const nomeNormalizado = i.nomeIndicador
-    //     ?.toLowerCase()
-    //     .normalize("NFD")
-    //     .replace(/[\u0300-\u036f]/g, "");
-    //   return nomeNormalizado?.includes(termo);
-    // });
+    this.listaAcoesFiltradas = this.listaAcoes.filter(acao => {
+      const nomeNormalizado = acao.nome
+        ?.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      return nomeNormalizado?.includes(termo);
+    });
 
-    // this.updateSelectAllState();
+    this.updateSelectAllState();
 
+  }
+
+  private carregarListaAcoes(
+
+    preservarSelecaoAtual: boolean): void {
+
+    this.acoesSubscription?.unsubscribe();
+
+    const idAnos = this.currentFilter?.idsAnos;
+    const idUos = this.currentFilter?.idsUos;
+    const idFuncoes = this.currentFilter?.idsFuncoes;
+    const idsProgramas = this.currentFilter?.idsProgramas;
+
+    this.listaAcoes = [];
+    this.listaAcoesFiltradas = [];
+
+    if (!preservarSelecaoAtual) {
+      // this.currentFilter.idsAcoes = [];
+    }
+
+    if (idAnos?.length === 0 || idUos?.length === 0) {
+      if (this.currentFilter) {
+        this.currentFilter.idsFuncoes = [];
+        this.currentFilter.idsProgramas = [];
+      }
+      return;
+    }
+
+    this.carregandoAcoes = true;
+
+    this.acoesSubscription =
+      this._ppaloaIntegracaoService
+        .listarAcoesPorProgramas(
+          idFuncoes ?? [],
+          idsProgramas ?? [],
+          idAnos ?? [],
+          idUos ?? []
+        )
+        .pipe(
+          finalize(() => {
+            this.carregandoAcoes = false;
+          })
+        )
+        .subscribe({
+
+          next: acoes => {
+
+            this.listaAcoes = acoes ?? [];
+
+            this.listaAcoesFiltradas = this.listaAcoes;
+
+            this.carregandoAcoes = false;
+
+          },
+          error: erro => {
+
+            this.carregandoAcoes = false;
+
+            console.error(
+              'Erro ao carregar as ações.',
+              erro
+            );
+
+            this.listaAcoes = [];
+            this.listaAcoesFiltradas = [];
+
+          }
+        })
+      ;
+
+  }
+
+  ngOnDestroy(): void {
+    this.acoesSubscription?.unsubscribe();
+  }
+
+  private updateSelectAllState(): void {
+    this.selectAll = this.listaAcoesFiltradas.length > 0 &&
+      this.listaAcoesFiltradas.every(acao => this.isSelecionado(acao));
   }
 
 }

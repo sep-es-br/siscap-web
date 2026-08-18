@@ -315,10 +315,8 @@
 
 .planejamento-cards-container {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(min(100%, 360px), 1fr)
-  );
+  grid-template-columns: repeat(auto-fill,
+      minmax(min(100%, 360px), 1fr));
   align-content: start;
   gap: 16px;
 
@@ -548,8 +546,8 @@
   font-weight: 800;
   text-transform: uppercase;
   display: flex;
-  align-items: center;      
-  justify-content: center;  
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
@@ -571,7 +569,7 @@
   column-gap: 4px;
   width: 100%;
   min-width: 0;
-  justify-items: center; 
+  justify-items: center;
 }
 
 .detalhamento-loa-cabecalho {
@@ -582,13 +580,13 @@
   line-height: 1.2;
 }
 
-.detalhamento-loa-cabecalho > div,
+.detalhamento-loa-cabecalho>div,
 .detalhamento-loa-celula {
   min-width: 0;
   padding: 8px 2px;
 }
 
-.detalhamento-loa-cabecalho > div {
+.detalhamento-loa-cabecalho>div {
   overflow-wrap: normal;
   word-break: normal;
   hyphens: none;
@@ -909,4 +907,11 @@
     color: #94a3b8;
     z-index: 10;
   }
+
+  .card-body {
+    padding: 8px 0;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
 }
