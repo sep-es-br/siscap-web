@@ -1,22 +1,18 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FiltroIndicadoresComponent } from './filtro-indicadores/filtro-indicadores.component';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { DialogModule } from 'primeng/dialog';
-import { Button } from 'primeng/button';
-import { ChipModule } from 'primeng/chip';
-import { FilterService } from '../../core/services/filter-service/filter-service.service';
-import { CheckboxModule } from 'primeng/checkbox';
-import { IndicadorChipComponent } from './indicador-chip/indicador-chip.component';
 import { SelecaoIndicadoresComponent } from './selecao-indicadores/selecao-indicadores.component';
 import { CatalogoIndicadorService } from '../../core/services/catalogo-indicadores/catalogo-indicador.service';
-import { BehaviorSubject, filter, map, switchMap, tap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IFiltroIndicador, IGestoesCatalogoExterno, IIndicadoresCatalogoExterno, IMetaIndicador } from '../../core/interfaces/indicadores-catalogo-externo.interface';
 import { StatusProjetoEnum } from '../../core/enums/status-projeto.enum';
 import { ToastService } from '../../core/services/toast/toast.service';
 import { TemplatesModule } from '../../shared/templates/templates.module';
+import { FilterCardComponent } from '../../shared/components/filter-card/filter-card.component';
+import { FilterChip } from '../../shared/components/filter-card/filter-chip.interface';
 
 export interface IndicadorProjetoForm {
   idIndicador: number;
@@ -38,12 +34,7 @@ declare var bootstrap: any;
     CommonModule,
     FormsModule,
     FiltroIndicadoresComponent,
-    OverlayPanelModule,
-    DialogModule,
-    Button,
-    ChipModule,
-    CheckboxModule,
-    IndicadorChipComponent,
+    FilterCardComponent,
     SelecaoIndicadoresComponent,
     ReactiveFormsModule,
     TemplatesModule
@@ -60,8 +51,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   @Output() indicadoresCatalogoCarregados = new EventEmitter<IIndicadoresCatalogoExterno[]>();
 
-  private reloadIndicadores$ = new BehaviorSubject<void>(undefined);
-
   showModal: boolean = false;
 
   indicadoresBI: IIndicadoresCatalogoExterno[] = [];
@@ -74,38 +63,20 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   loading: boolean = false;
 
-  chips: any[] = [];
+  chips: FilterChip[] = [];
 
   currentFilter: any = {};
 
   constructor(
-    private filterService: FilterService,
     private catalogoIndicadorService: CatalogoIndicadorService,
     private fb: FormBuilder,
     private readonly _toastService: ToastService,
+    private readonly destroyRef: DestroyRef,
   ) { }
 
   ngOnInit(): void {
 
     this.init();
-
-    this.initBaseChip();
-
-    this.filterService.filter$
-      .pipe(
-        filter((f): f is IFiltroIndicador => f !== null),
-        switchMap((filter) => {
-          return this.catalogoIndicadorService
-            .getIndicadoresPorGestaoCatalogoExternos(this.gestao?.idGestao || -1, filter);
-        })
-      )
-      .subscribe((indicadores) => {
-
-        this.indicadoresBI = indicadores;
-        this.indicadoresFiltrados = indicadores;
-        this.loading = false;
-
-      });
 
   }
 
@@ -113,26 +84,20 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     this.loading = true;
 
-    this.reloadIndicadores$
+    this.catalogoIndicadorService
+      .getGestoesIndicadoresCatalogoExternos()
       .pipe(
-
-        switchMap(() =>
-          this.catalogoIndicadorService
-            .getGestoesIndicadoresCatalogoExternos()
-        ),
-
         tap((gestao) => {
           this.gestao = gestao[0];
           this.initBaseChip();
         }),
-
-        switchMap((gestao) =>
+        switchMap(() =>
           this.catalogoIndicadorService
             .getIndicadoresPorGestaoCatalogoExternos(
               this.gestao?.idGestao || 0
             )
         ),
-
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (indicadores) => {
@@ -152,8 +117,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
           this.loading = false;
         }
       });
-
-    this.reloadIndicadores$.next();
 
   }
 
@@ -215,6 +178,14 @@ export class ProjetoIndicadoresComponent implements OnInit {
     return this.indicadoresSelecionados.some((i) => i.idIndicador === indicador.idIndicador);
   }
 
+  trackByIndicador(_: number, indicador: IIndicadoresCatalogoExterno): number | string {
+    return indicador.idIndicador ?? indicador.nomeIndicador;
+  }
+
+  trackByMeta(index: number, meta: any): number | string {
+    return meta?.get?.('anoMeta')?.value ?? meta?.anoMeta ?? index;
+  }
+
   removerIndicador(indicador: any): void {
 
     this.indicadoresSelecionados = this.indicadoresSelecionados.filter(
@@ -271,59 +242,50 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private atualizarFormulario(): void {
 
-    const formArray = this.formProjeto.get('indicadoresProjeto') as FormArray;
+    const formArrayAtual = this.formProjeto.get('indicadoresProjeto') as FormArray;
+    const controlesAtuais = new Map<number, FormGroup>();
 
-    const valoresAtuaisPorIndicador = new Map<number, any>();
-
-    formArray.getRawValue().forEach((item: any) => {
-      const id = item.idIndicadorExterno ?? item.idIndicadorCatalogoExterno;
-      if (id) {
-        valoresAtuaisPorIndicador.set(id, item);
+    formArrayAtual.controls.forEach(controle => {
+      const id = controle.get('idIndicadorExterno')?.value
+        ?? controle.get('idIndicadorCatalogoExterno')?.value;
+      if (id != null) {
+        controlesAtuais.set(Number(id), controle as FormGroup);
       }
     });
 
-    formArray.clear();
+    const controles = this.indicadoresSelecionados.map(indicador => {
+      const idIndicador = Number(indicador.idIndicador);
+      const controleExistente = controlesAtuais.get(idIndicador);
+      if (controleExistente) {
+        return controleExistente;
+      }
 
-    this.indicadoresSelecionados.forEach(
-      (indicador) => {
+      const metasProjetoArray = this.fb.array(
+        [...(indicador.metasIndicadorProjeto ?? [])]
+          .sort((a, b) => Number(a.anoMeta) - Number(b.anoMeta))
+          .map((meta: any) => this.fb.group({
+            id: [meta.id ?? null],
+            idFato: [meta.idFato ?? null],
+            anoMeta: [meta.anoMeta],
+            valorMeta: [
+              meta.valorMeta ?? null,
+              [Validators.required, Validators.maxLength(20)]
+            ]
+          }))
+      );
 
-        const idIndicador = indicador.idIndicador;
-
-        const valorAtual = valoresAtuaisPorIndicador.get(idIndicador);
-
-        const metasBase =
-          valorAtual?.metasIndicadorProjeto?.length
-            ? valorAtual.metasIndicadorProjeto
-            : indicador.metasIndicadorProjeto || [];
-
-        const metasProjetoArray = this.fb.array(
-          metasBase
-            .sort((a: { anoMeta: number; }, b: { anoMeta: number; }) => a.anoMeta - b.anoMeta)
-            .map((meta: any) =>
-              this.fb.group({
-                id: [meta.id ?? null],
-                idFato: [meta.idFato ?? null],
-                anoMeta: [meta.anoMeta],
-                valorMeta: [
-                  meta.valorMeta ?? null,
-                  [Validators.required, Validators.maxLength(20)]
-                ]
-              })
-            )
-        );
-
-        formArray.push(
-          this.fb.group({
-            idIndicador: [valorAtual?.idIndicador ?? indicador.idIndicadorProjeto ?? null],
-            idIndicadorExterno: [idIndicador],
-            idIndicadorCatalogoExterno: [idIndicador],
-            nomeIndicador: [indicador.nomeIndicador],
-            ods: [indicador.ods ?? []],
-            metasIndicadorProjeto: metasProjetoArray
-          })
-        );
-
+      return this.fb.group({
+        idIndicador: [indicador.idIndicadorProjeto ?? null],
+        idIndicadorExterno: [idIndicador],
+        idIndicadorCatalogoExterno: [idIndicador],
+        nomeIndicador: [indicador.nomeIndicador],
+        ods: [indicador.ods ?? []],
+        metasIndicadorProjeto: metasProjetoArray
       });
+    });
+
+    const formArray = this.fb.array(controles);
+    this.formProjeto.setControl('indicadoresProjeto', formArray, { emitEvent: false });
 
     if (!this.isModoEdicao) {
       formArray.disable({ emitEvent: false });
@@ -338,6 +300,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
   initBaseChip() {
     this.chips = [
       {
+        key: 'gestao',
         label: 'GESTÃO ADMINISTRATIVA',
         value: this.gestao?.nomeGestao || '-',
         type: 'base',
@@ -351,58 +314,48 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   onRestaurar(): void {
+    this.currentFilter = {};
     this.initBaseChip();
+    this.buscarIndicadores();
   }
 
   // executado quando o filtro é aplicado no componente filho
   onApply(filter: any): void {
-
-    this.loading = true
-
     this.currentFilter = structuredClone(filter);
-
     this.atualizarChipsFiltros();
-
     this.showModal = false;
-
-    const filtroFormatado: IFiltroIndicador = {
-      idGestao: filter.idGestao,
-      labels: Object.entries(filter.labels ?? {})
-        .filter(([_, valores]) => Array.isArray(valores) && valores.length > 0)
-        .map(([idLabel, idLabelValores]) => ({
-          idLabel: Number(idLabel),
-          idLabelValores: idLabelValores as number[]
-        })),
-      desafios: filter.desafio?.id ?? []
-    };
-
-    this.filterService.setFilter(filtroFormatado);
-
+    this.buscarIndicadores(this.formatarFiltroIndicadores(filter));
   }
 
-  removeChip(chip: any) {
-
+  removeChip(chip: FilterChip): void {
     if (!chip.removable) return;
 
-    this.chips = this.chips.filter((c) => c !== chip);
+    if (chip.group === 'label' && chip.valueId != null) {
+      const idLabel = Number(chip.key.split(':')[1]);
+      const selecionados = this.currentFilter?.labels?.[idLabel] ?? [];
+      this.currentFilter.labels[idLabel] = selecionados.filter(
+        (id: number) => Number(id) !== chip.valueId
+      );
 
-    if (this.currentFilter?.[chip.node]) {
-      delete this.currentFilter[chip.node][chip.field];
-
-      if (Object.keys(this.currentFilter[chip.node]).length === 0) {
-        delete this.currentFilter[chip.node];
-      }
+      this.currentFilter.chips.labels = (this.currentFilter.chips.labels ?? [])
+        .map((labelChip: any) => ({
+          ...labelChip,
+          valores: labelChip.idLabel === idLabel
+            ? labelChip.valores.filter((valor: any) => Number(valor.idValor) !== chip.valueId)
+            : labelChip.valores
+        }))
+        .filter((labelChip: any) => labelChip.valores.length > 0);
     }
 
-  }
-
-  onChipClick(chip: any) {
-    if (chip.type === 'base') {
-      this.showModal = true;
-      return;
+    if (chip.group === 'desafio' && chip.valueId != null) {
+      this.currentFilter.desafio.id = (this.currentFilter.desafio?.id ?? [])
+        .filter((id: number) => Number(id) !== chip.valueId);
+      this.currentFilter.chips.desafio = (this.currentFilter.chips.desafio ?? [])
+        .filter((desafio: any) => Number(desafio.idDesafio) !== chip.valueId);
     }
 
-    this.showModal = true;
+    this.atualizarChipsFiltros();
+    this.buscarIndicadores(this.formatarFiltroIndicadores(this.currentFilter));
   }
 
   removeIndicator(indicador: IIndicadoresCatalogoExterno, isChip: boolean = true): void {
@@ -583,6 +536,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.chips = [
 
       {
+        key: 'gestao',
         label: 'GESTÃO ADMINISTRATIVA',
         value: this.gestao?.nomeGestao || '-',
         type: 'base',
@@ -591,25 +545,62 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
       ...(this.currentFilter?.chips?.labels ?? []).flatMap((labelChip: any) =>
         labelChip.valores.map((valor: any) => ({
+          key: `label:${labelChip.idLabel}:${valor.idValor}`,
           label: labelChip.nomeLabel,
           value: valor.nomeValor,
           type: 'filter',
           removable: true,
-          idLabel: labelChip.idLabel,
-          idValor: valor.idValor
+          group: 'label',
+          valueId: Number(valor.idValor)
         }))
       ),
 
       ...(this.currentFilter?.chips?.desafio ?? []).map((desafio: any) => ({
+        key: `desafio:${desafio.idDesafio}`,
         label: 'DESAFIO',
         value: desafio.nomeDesafio,
         type: 'filter',
         removable: true,
-        idDesafio: desafio.idDesafio
+        group: 'desafio',
+        valueId: Number(desafio.idDesafio)
       }))
 
     ];
 
+  }
+
+  private formatarFiltroIndicadores(filter: any): IFiltroIndicador {
+    return {
+      idGestao: Number(filter?.idGestao ?? this.gestao?.idGestao ?? 0),
+      labels: Object.entries(filter?.labels ?? {})
+        .filter(([_, valores]) => Array.isArray(valores) && valores.length > 0)
+        .map(([idLabel, idLabelValores]) => ({
+          idLabel: Number(idLabel),
+          idLabelValores: (idLabelValores as number[]).map(Number)
+        })),
+      desafios: (filter?.desafio?.id ?? []).map(Number)
+    };
+  }
+
+  private buscarIndicadores(filter?: IFiltroIndicador): void {
+    if (!this.gestao) return;
+
+    this.loading = true;
+
+    this.catalogoIndicadorService
+      .getIndicadoresPorGestaoCatalogoExternos(this.gestao.idGestao, filter)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: indicadores => {
+          this.indicadoresBI = indicadores;
+          this.indicadoresFiltrados = indicadores;
+          this.loading = false;
+        },
+        error: erro => {
+          console.error('Erro ao filtrar indicadores.', erro);
+          this.loading = false;
+        }
+      });
   }
 
   bloquearCaracteresInvalidos(event: KeyboardEvent): void {

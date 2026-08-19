@@ -3,9 +3,6 @@ import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@n
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { Button } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { PpaLoaChipComponent } from './ppa-loa-chip/ppa-loa-chip.component';
 import { FiltroAcoesComponent, IFiltroPlanejamento, IOpcaoPlanejamento, IPeriodoPlanejamento } from './ppa-loa-filtro/filtro-acoes.component';
 import { finalize, Subscription } from 'rxjs';
 import { ToastService } from '../../../core/services/toast/toast.service';
@@ -13,6 +10,9 @@ import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integra
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormControl, FormGroup, FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { FilterCardComponent } from '../../../shared/components/filter-card/filter-card.component';
+import { FilterChip } from '../../../shared/components/filter-card/filter-chip.interface';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -58,12 +58,11 @@ export interface PlanejamentoFiltroAplicado {
     NgbModalModule,
     NgbPopoverModule,
     TemplatesModule,
-    Button,
-    DialogModule,
-    PpaLoaChipComponent,
+    FilterCardComponent,
     FiltroAcoesComponent,
     CheckboxModule,
-    FormsModule],
+    FormsModule,
+    InputTextModule],
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
 })
@@ -72,7 +71,7 @@ export class ProjetoPpaLoaComponent {
   @Input({ required: true }) projetoForm!: FormGroup;
   @Input() podeEditar!: boolean;
 
-  chips: any[] = [];
+  chips: FilterChip[] = [];
 
   private carregamentoInicialSubscription?: Subscription;
 
@@ -106,6 +105,7 @@ export class ProjetoPpaLoaComponent {
   listaAcoesFiltradas: any[] = [];
 
   selectAll: boolean = false;
+  private readonly idsAcoesSelecaoPendente = new Set<number>();
 
   searchVisible: boolean = false;
 
@@ -204,6 +204,7 @@ export class ProjetoPpaLoaComponent {
 
       this.chips = [
         {
+          key: 'planejamento',
           label: 'PLANEJAMENTO',
           value: this.periodoPlanejamento?.descricao || '-',
           type: 'base',
@@ -253,6 +254,9 @@ export class ProjetoPpaLoaComponent {
     const input = event.currentTarget as HTMLInputElement;
 
     this.naoPrevistoPpa = input.checked;
+    if (this.naoPrevistoPpa) {
+      this.showModal = false;
+    }
 
     const controleNaoPrevistoPpa =
       this.projetoForm.get('naoPrevistoNoPpa');
@@ -279,31 +283,31 @@ export class ProjetoPpaLoaComponent {
     //     codigoUnidadeOrcamentaria: a.codigoUnidadeOrcamentaria
     //   }))
     // );
-    
+
     if (this.naoPrevistoPpa) {
 
       if (this.acoesPlanejamento.length > 0) {
 
-        this.acoesPlanejamentoBackup = 
+        this.acoesPlanejamentoBackup =
            structuredClone(this.acoesPlanejamento);
 
         this.acoesPlanejamentoProjetoBackup =
           structuredClone(controleAcoes.value);
 
       }
-      
+
       this.acoesPlanejamento = [];
 
       controleAcoes?.setValue([]);
 
       this.initBaseChip()
-  
+
     } else {
-  
+
       // Restaura o que estava selecionado anteriormente
       this.acoesPlanejamento =
          structuredClone(this.acoesPlanejamentoBackup);
-  
+
       controleAcoes?.setValue(
         structuredClone(this.acoesPlanejamentoProjetoBackup)
       );
@@ -317,14 +321,25 @@ export class ProjetoPpaLoaComponent {
 
   }
 
+  abrirFiltroPlanejamento(): void {
+    if (!this.podeEditar || this.naoPrevistoPpa) return;
+
+    this.showModal = true;
+  }
+
   initBaseChip() {
 
     this.carregamentoInicialSubscription?.unsubscribe();
 
     this.carregandoDadosIniciais = true;
 
-    this._ppaloaIntegracaoService
+    this.carregamentoInicialSubscription = this._ppaloaIntegracaoService
       .buscarPeriodoPpaVigente()
+      .pipe(
+        finalize(() => {
+          this.carregandoDadosIniciais = false;
+        })
+      )
       .subscribe({
         next: (periodo) => {
 
@@ -332,6 +347,7 @@ export class ProjetoPpaLoaComponent {
 
           this.chips = [
             {
+              key: 'planejamento',
               label: 'PLANEJAMENTO',
               value: periodo.descricao || '-',
               type: 'base',
@@ -357,33 +373,30 @@ export class ProjetoPpaLoaComponent {
 
   }
 
-  onChipClick(chip: any) {
-    if (chip.type === 'base') {
-      this.showModal = true;
-      return;
-    }
-
-    this.showModal = true;
-  }
-
-  removeChip(chip: any) {
-
+  removeChip(chip: FilterChip): void {
     if (!chip.removable) return;
 
-    this.chips = this.chips.filter((c) => c !== chip);
-
-    if (this.filtrosPlanejamento?.[chip.node]) {
-      delete this.filtrosPlanejamento[chip.node];
-
-      if (Object.keys(this.filtrosPlanejamento[chip.node]).length === 0) {
-        delete this.filtrosPlanejamento[chip.node];
-      }
-    }
-
+    this.removerCriterioPlanejamento(chip);
+    this.atualizarChipsFiltros();
   }
 
   onRestaurar(): void {
-    this.initBaseChip();
+    this.currentFilter = {
+      periodoPlanejamento: this.periodoPlanejamento,
+      idPeriodoPlanejamento: this.periodoPlanejamento?.id ?? null,
+      idsAnos: [],
+      idsUos: [],
+      idsFuncoes: [],
+      idsProgramas: [],
+      chips: {
+        anos: [],
+        uos: [],
+        funcoes: [],
+        programas: [],
+        acoes: []
+      }
+    };
+    this.atualizarChipsFiltros();
   }
 
   onApply(filter: any): void {
@@ -414,6 +427,7 @@ export class ProjetoPpaLoaComponent {
     this.chips = [
 
       {
+        key: 'planejamento',
         label: 'PLANEJAMENTO',
         value: this.periodoPlanejamento?.descricao || '-',
         type: 'base',
@@ -421,47 +435,91 @@ export class ProjetoPpaLoaComponent {
       },
 
       ...(this.currentFilter?.chips?.anos ?? []).map((ano: any) => ({
+        key: `anos:${ano.id}`,
         label: 'ANO',
         value: ano.nome,
-        type: 'filter',
+        type: 'filter' as const,
         removable: true,
-        idAno: ano.id
+        group: 'anos',
+        valueId: Number(ano.id)
       })),
 
       ...(this.currentFilter?.chips?.uos ?? []).map((uo: any) => ({
+        key: `uos:${uo.id}`,
         label: 'UO',
         value: uo.nome,
-        type: 'filter',
+        type: 'filter' as const,
         removable: true,
-        idUo: uo.id
+        group: 'uos',
+        valueId: Number(uo.id)
       })),
 
       ...(this.currentFilter?.chips?.funcoes ?? []).map((funcao: any) => ({
+        key: `funcoes:${funcao.id}`,
         label: 'FUNCAO',
         value: funcao.nome,
-        type: 'filter',
+        type: 'filter' as const,
         removable: true,
-        idFuncao: funcao.id
+        group: 'funcoes',
+        valueId: Number(funcao.id)
       })),
 
       ...(this.currentFilter?.chips?.programas ?? []).map((programa: any) => ({
+        key: `programas:${programa.id}`,
         label: 'PROGRAMA',
         value: programa.nome,
-        type: 'filter',
+        type: 'filter' as const,
         removable: true,
-        idPrograma: programa.id
-      })),
-
-      ...(this.currentFilter?.chips?.acoes ?? []).map((acao: any) => ({
-        label: 'AÇÃO',
-        value: acao.nome,
-        type: 'filter',
-        removable: true,
-        idAcao: acao.id
+        group: 'programas',
+        valueId: Number(programa.id)
       }))
 
     ];
 
+  }
+
+  private removerCriterioPlanejamento(chip: FilterChip): void {
+    if (!this.currentFilter || !chip.group || chip.valueId == null) return;
+
+    type CampoIdsPlanejamento =
+      | 'idsAnos'
+      | 'idsUos'
+      | 'idsFuncoes'
+      | 'idsProgramas';
+
+    const idsPorGrupo: Record<string, CampoIdsPlanejamento> = {
+      anos: 'idsAnos',
+      uos: 'idsUos',
+      funcoes: 'idsFuncoes',
+      programas: 'idsProgramas'
+    };
+    const campoIds = idsPorGrupo[chip.group];
+
+    if (!campoIds) return;
+
+    const idsAtuais = this.currentFilter[campoIds];
+    if (Array.isArray(idsAtuais)) {
+      (this.currentFilter as any)[campoIds] = idsAtuais.filter(
+        id => Number(id) !== chip.valueId
+      );
+    }
+
+    const ordemDependencias = ['anos', 'uos', 'funcoes', 'programas'];
+    const indiceGrupo = ordemDependencias.indexOf(chip.group);
+    const gruposParaLimpar = ordemDependencias.slice(indiceGrupo + 1);
+
+    gruposParaLimpar.forEach(grupo => {
+      (this.currentFilter as any)[idsPorGrupo[grupo]] = [];
+    });
+
+    const chipsAtuais = this.currentFilter.chips;
+    if (!chipsAtuais) return;
+
+    (chipsAtuais as any)[chip.group] = ((chipsAtuais as any)[chip.group] ?? [])
+      .filter((item: { id: number }) => Number(item.id) !== chip.valueId);
+    gruposParaLimpar.forEach(grupo => {
+      (chipsAtuais as any)[grupo] = [];
+    });
   }
 
   private carregarAcoesSelecionadas(
@@ -490,6 +548,8 @@ export class ProjetoPpaLoaComponent {
       .subscribe({
 
         next: acoes => {
+
+          idsAcoes.forEach(id => this.idsAcoesSelecaoPendente.delete(Number(id)));
 
           const novasAcoes: PlanejamentoAcao[] = acoes.map(acao => ({
             ...acao,
@@ -630,6 +690,8 @@ export class ProjetoPpaLoaComponent {
           controle.markAsDirty();
           controle.updateValueAndValidity();
 
+          this.updateSelectAllState();
+
           this.naoPrevistoPpa = false;
 
           const controleNaoPrevistoPpa =
@@ -659,6 +721,8 @@ export class ProjetoPpaLoaComponent {
 
         error: erro => {
 
+          idsAcoes.forEach(id => this.idsAcoesSelecaoPendente.delete(Number(id)));
+
           console.error(
             'Erro ao consultar dados de ações no BI:',
             erro
@@ -668,6 +732,8 @@ export class ProjetoPpaLoaComponent {
             'error',
             'Não foi possível consultar os dados das ações selecionadas.'
           );
+
+          this.updateSelectAllState();
 
           // this.quantidadeAcoes = 0;
         }
@@ -814,9 +880,10 @@ export class ProjetoPpaLoaComponent {
   }
 
   isSelecionado(acao: any): boolean {
-    return (this.acoesPlanejamento || []).some(i =>
+    return this.idsAcoesSelecaoPendente.has(Number(acao.id)) ||
+      (this.acoesPlanejamento || []).some(i =>
       this.mesmaAcao(i, acao)
-    );
+      );
   }
 
   private mesmaAcao(a: any, b: any): boolean {
@@ -826,19 +893,68 @@ export class ProjetoPpaLoaComponent {
   }
 
   toggleSelectAll(event: any): void {
+    const checked = event?.checked ?? this.selectAll;
+    this.selectAll = checked;
 
-    // let novasSelecoes = [...this.selecionados];
+    const idsAcoesFiltradas = new Set(
+      this.listaAcoesFiltradas.map(acao => Number(acao.id))
+    );
 
-    // if (this.selectAll) {
-    //   const novos = this.indicadoresFiltrados.filter(i => !this.isSelecionado(i));
-    //   novasSelecoes = [...novasSelecoes, ...novos];
-    // } else {
-    //   const idsFiltrados = this.indicadoresFiltrados.map(i => i.idIndicador);
-    //   novasSelecoes = novasSelecoes.filter(i => !idsFiltrados.includes(i.idIndicador));
-    // }
+    if (idsAcoesFiltradas.size === 0) {
+      this.selectAll = false;
+      return;
+    }
 
-    // this.selecionadosChange.emit(novasSelecoes);
+    if (checked) {
+      const idsAcoesNaoSelecionadas = this.listaAcoesFiltradas
+        .filter(acao => !this.isSelecionado(acao))
+        .map(acao => Number(acao.id));
 
+      if (idsAcoesNaoSelecionadas.length === 0) {
+        this.updateSelectAllState();
+        return;
+      }
+
+      idsAcoesNaoSelecionadas.forEach(id =>
+        this.idsAcoesSelecaoPendente.add(id)
+      );
+      this.updateSelectAllState();
+
+      this.carregarAcoesSelecionadas(
+        this.periodoPlanejamento?.descricao ?? '',
+        [...new Set(this.currentFilter?.idsFuncoes ?? [])],
+        [...new Set(this.currentFilter?.idsProgramas ?? [])],
+        [...new Set(this.currentFilter?.idsAnos ?? [])],
+        [...new Set(this.currentFilter?.idsUos ?? [])],
+        idsAcoesNaoSelecionadas
+      );
+      return;
+    }
+
+    idsAcoesFiltradas.forEach(id =>
+      this.idsAcoesSelecaoPendente.delete(id)
+    );
+
+    this.acoesPlanejamento = this.acoesPlanejamento.filter(
+      acao => !idsAcoesFiltradas.has(Number(acao.codigoAcao))
+    );
+
+    const controle = this.projetoForm.get('acoesPlanejamentoProjeto');
+    if (controle) {
+      const acoesDoFormulario =
+        (controle.value as IAcaoPlanejamentoProjeto[] | null) ?? [];
+
+      controle.setValue(
+        acoesDoFormulario.filter(
+          acao => !idsAcoesFiltradas.has(Number(acao.codAcao))
+        )
+      );
+      controle.markAsDirty();
+      controle.markAsTouched();
+      controle.updateValueAndValidity();
+    }
+
+    this.updateSelectAllState();
   }
 
   toggleSearch(): void {

@@ -15,6 +15,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { finalize, Subscription, switchMap } from 'rxjs';
 
 import { PpaloaIntegracaoBiService } from '../../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
+import { FilterModalComponent } from '../../../../shared/components/filter-modal/filter-modal.component';
 
 export interface IOpcaoPlanejamento {
   id: number;
@@ -58,10 +59,10 @@ export interface IFiltroPlanejamento {
   imports: [
     CommonModule,
     FormsModule,
-    NgSelectModule
+    NgSelectModule,
+    FilterModalComponent
   ],
   templateUrl: './filtro-acoes.component.html',
-  styleUrl: './filtro-acoes.component.scss'
 })
 export class FiltroAcoesComponent
   implements OnInit, OnChanges, OnDestroy {
@@ -176,7 +177,7 @@ export class FiltroAcoesComponent
             if (this.filtro.idsUos.length > 0) {
               this.carregarUos(true);
             }
-           
+
             if (this.filtro.idsAnos.length > 0) {
               this.carregarProgramas(true);
             }
