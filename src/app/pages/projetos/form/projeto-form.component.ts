@@ -1750,9 +1750,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const indicadoresProjetoPayload = this.projetoForm.getRawValue()
         .indicadoresProjeto
         .filter((indicador: IIndicadores) =>
-          indicador.idIndicadorExterno !== null &&
-          indicador.idIndicadorExterno !== undefined &&
-          indicador.idIndicadorExterno !== 0
+          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
         )
         .map((indicador: IIndicadores) => ({
           idIndicador: indicador.idIndicador,
@@ -1760,7 +1758,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoIndicador: indicador.descricaoIndicador ?? null,
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno,
+          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
           metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
             id: meta.id,
             anoMeta: meta.anoMeta,
@@ -1837,9 +1835,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const indicadoresProjetoPayload = this.projetoForm.getRawValue()
         .indicadoresProjeto
         .filter((indicador: IIndicadores) =>
-          indicador.idIndicadorExterno !== null &&
-          indicador.idIndicadorExterno !== undefined &&
-          indicador.idIndicadorExterno !== 0
+          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
         )
         .map((indicador: IIndicadores) => ({
           idIndicador: indicador.idIndicador,
@@ -1847,7 +1843,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoIndicador: indicador.descricaoIndicador ?? null,
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno,
+          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
           metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
             id: meta.id,
             anoMeta: meta.anoMeta,
@@ -2367,9 +2363,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const indicadoresProjetoPayload = this.projetoForm.getRawValue()
         .indicadoresProjeto
         .filter((indicador: IIndicadores) =>
-          indicador.idIndicadorExterno !== null &&
-          indicador.idIndicadorExterno !== undefined &&
-          indicador.idIndicadorExterno !== 0
+          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
         )
         .map((indicador: IIndicadores) => ({
           idIndicador: indicador.idIndicador,
@@ -2377,7 +2371,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoIndicador: indicador.descricaoIndicador ?? null,
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno,
+          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
           metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
             id: meta.id,
             anoMeta: meta.anoMeta,
@@ -2479,9 +2473,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const indicadoresProjetoPayload = this.projetoForm.getRawValue()
         .indicadoresProjeto
         .filter((indicador: IIndicadores) =>
-          indicador.idIndicadorExterno !== null &&
-          indicador.idIndicadorExterno !== undefined &&
-          indicador.idIndicadorExterno !== 0
+          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
         )
         .map((indicador: IIndicadores) => ({
           idIndicador: indicador.idIndicador,
@@ -2489,7 +2481,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoIndicador: indicador.descricaoIndicador ?? null,
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno,
+          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
           metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
             id: meta.id,
             anoMeta: meta.anoMeta,
@@ -2587,9 +2579,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const indicadoresProjetoPayload = this.projetoForm.getRawValue()
       .indicadoresProjeto
       .filter((indicador: IIndicadores) =>
-        indicador.idIndicadorExterno !== null &&
-        indicador.idIndicadorExterno !== undefined &&
-        indicador.idIndicadorExterno !== 0
+        (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
       )
       .map((indicador: IIndicadores) => ({
         idIndicador: indicador.idIndicador,
@@ -2597,7 +2587,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         descricaoIndicador: indicador.descricaoIndicador ?? null,
         descricaoMeta: indicador.descricaoMeta ?? null,
         idStatus: indicador.idStatus ?? 1,
-        idIndicadorExterno: indicador.idIndicadorExterno,
+        idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
         metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
           id: meta.id,
           anoMeta: meta.anoMeta,
