@@ -178,6 +178,14 @@ export class ProjetoIndicadoresComponent implements OnInit {
     return this.indicadoresSelecionados.some((i) => i.idIndicador === indicador.idIndicador);
   }
 
+  trackByIndicador(_: number, indicador: IIndicadoresCatalogoExterno): number | string {
+    return indicador.idIndicador ?? indicador.nomeIndicador;
+  }
+
+  trackByMeta(index: number, meta: any): number | string {
+    return meta?.get?.('anoMeta')?.value ?? meta?.anoMeta ?? index;
+  }
+
   removerIndicador(indicador: any): void {
 
     this.indicadoresSelecionados = this.indicadoresSelecionados.filter(
@@ -234,59 +242,50 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   private atualizarFormulario(): void {
 
-    const formArray = this.formProjeto.get('indicadoresProjeto') as FormArray;
+    const formArrayAtual = this.formProjeto.get('indicadoresProjeto') as FormArray;
+    const controlesAtuais = new Map<number, FormGroup>();
 
-    const valoresAtuaisPorIndicador = new Map<number, any>();
-
-    formArray.getRawValue().forEach((item: any) => {
-      const id = item.idIndicadorExterno ?? item.idIndicadorCatalogoExterno;
-      if (id) {
-        valoresAtuaisPorIndicador.set(id, item);
+    formArrayAtual.controls.forEach(controle => {
+      const id = controle.get('idIndicadorExterno')?.value
+        ?? controle.get('idIndicadorCatalogoExterno')?.value;
+      if (id != null) {
+        controlesAtuais.set(Number(id), controle as FormGroup);
       }
     });
 
-    formArray.clear();
+    const controles = this.indicadoresSelecionados.map(indicador => {
+      const idIndicador = Number(indicador.idIndicador);
+      const controleExistente = controlesAtuais.get(idIndicador);
+      if (controleExistente) {
+        return controleExistente;
+      }
 
-    this.indicadoresSelecionados.forEach(
-      (indicador) => {
+      const metasProjetoArray = this.fb.array(
+        [...(indicador.metasIndicadorProjeto ?? [])]
+          .sort((a, b) => Number(a.anoMeta) - Number(b.anoMeta))
+          .map((meta: any) => this.fb.group({
+            id: [meta.id ?? null],
+            idFato: [meta.idFato ?? null],
+            anoMeta: [meta.anoMeta],
+            valorMeta: [
+              meta.valorMeta ?? null,
+              [Validators.required, Validators.maxLength(20)]
+            ]
+          }))
+      );
 
-        const idIndicador = indicador.idIndicador;
-
-        const valorAtual = valoresAtuaisPorIndicador.get(idIndicador);
-
-        const metasBase =
-          valorAtual?.metasIndicadorProjeto?.length
-            ? valorAtual.metasIndicadorProjeto
-            : indicador.metasIndicadorProjeto || [];
-
-        const metasProjetoArray = this.fb.array(
-          metasBase
-            .sort((a: { anoMeta: number; }, b: { anoMeta: number; }) => a.anoMeta - b.anoMeta)
-            .map((meta: any) =>
-              this.fb.group({
-                id: [meta.id ?? null],
-                idFato: [meta.idFato ?? null],
-                anoMeta: [meta.anoMeta],
-                valorMeta: [
-                  meta.valorMeta ?? null,
-                  [Validators.required, Validators.maxLength(20)]
-                ]
-              })
-            )
-        );
-
-        formArray.push(
-          this.fb.group({
-            idIndicador: [valorAtual?.idIndicador ?? indicador.idIndicadorProjeto ?? null],
-            idIndicadorExterno: [idIndicador],
-            idIndicadorCatalogoExterno: [idIndicador],
-            nomeIndicador: [indicador.nomeIndicador],
-            ods: [indicador.ods ?? []],
-            metasIndicadorProjeto: metasProjetoArray
-          })
-        );
-
+      return this.fb.group({
+        idIndicador: [indicador.idIndicadorProjeto ?? null],
+        idIndicadorExterno: [idIndicador],
+        idIndicadorCatalogoExterno: [idIndicador],
+        nomeIndicador: [indicador.nomeIndicador],
+        ods: [indicador.ods ?? []],
+        metasIndicadorProjeto: metasProjetoArray
       });
+    });
+
+    const formArray = this.fb.array(controles);
+    this.formProjeto.setControl('indicadoresProjeto', formArray, { emitEvent: false });
 
     if (!this.isModoEdicao) {
       formArray.disable({ emitEvent: false });

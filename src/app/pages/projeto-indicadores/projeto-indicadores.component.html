@@ -26,7 +26,8 @@
 
     <div id="indicatorsContainer">
 
-      <div class="indicador-selecionado" *ngFor="let item of indicadoresSelecionados; let i = index">
+      <div class="indicador-selecionado"
+        *ngFor="let item of indicadoresSelecionados; let i = index; trackBy: trackByIndicador">
 
         <div class="indicator-card" style="border: 2px solid #1a6fc4; padding: 20px;">
 
@@ -69,7 +70,8 @@
             <span *ngIf="!item.avulso" class="meta-section-label"
               style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META:</span>
             <div *ngIf="!item.avulso" class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-              <div class="mindicador-selecionado" *ngFor="let meta of getMetasIndicadorBi(i); let j = index">
+              <div class="mindicador-selecionado"
+                *ngFor="let meta of getMetasIndicadorBi(i); let j = index; trackBy: trackByMeta">
                 <div class="meta-item"
                   style="background: #f0f7ff; border: 1px solid #dbeafe; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
                   <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{ meta.anoMeta
@@ -84,7 +86,8 @@
             <div [formGroup]="getIndicadorForm(i)">
               <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;"
                 formArrayName="metasIndicadorProjeto">
-                <div class="mindicador-selecionado" *ngFor="let meta of getMetas(i).controls; let j = index"
+                <div class="mindicador-selecionado"
+                  *ngFor="let meta of getMetas(i).controls; let j = index; trackBy: trackByMeta"
                   [formGroupName]="j">
                   <div class="meta-item"
                     style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
@@ -94,7 +97,7 @@
                     <validation-message class="meta-validation-message"
                       [control]="getMetaProjetoControl(i, j)"></validation-message>
                     <input type="text" class="meta-value-input" formControlName="valorMeta" maxlength="20"
-                      placeholder="Digite a meta" [disabled]="!isModoEdicao">
+                      placeholder="Digite a meta">
                   </div>
                 </div>
               </div>

@@ -105,6 +105,7 @@ export class ProjetoPpaLoaComponent {
   listaAcoesFiltradas: any[] = [];
 
   selectAll: boolean = false;
+  private readonly idsAcoesSelecaoPendente = new Set<number>();
 
   searchVisible: boolean = false;
 
@@ -548,6 +549,8 @@ export class ProjetoPpaLoaComponent {
 
         next: acoes => {
 
+          idsAcoes.forEach(id => this.idsAcoesSelecaoPendente.delete(Number(id)));
+
           const novasAcoes: PlanejamentoAcao[] = acoes.map(acao => ({
             ...acao,
 
@@ -687,6 +690,8 @@ export class ProjetoPpaLoaComponent {
           controle.markAsDirty();
           controle.updateValueAndValidity();
 
+          this.updateSelectAllState();
+
           this.naoPrevistoPpa = false;
 
           const controleNaoPrevistoPpa =
@@ -716,6 +721,8 @@ export class ProjetoPpaLoaComponent {
 
         error: erro => {
 
+          idsAcoes.forEach(id => this.idsAcoesSelecaoPendente.delete(Number(id)));
+
           console.error(
             'Erro ao consultar dados de ações no BI:',
             erro
@@ -725,6 +732,8 @@ export class ProjetoPpaLoaComponent {
             'error',
             'Não foi possível consultar os dados das ações selecionadas.'
           );
+
+          this.updateSelectAllState();
 
           // this.quantidadeAcoes = 0;
         }
@@ -871,9 +880,10 @@ export class ProjetoPpaLoaComponent {
   }
 
   isSelecionado(acao: any): boolean {
-    return (this.acoesPlanejamento || []).some(i =>
+    return this.idsAcoesSelecaoPendente.has(Number(acao.id)) ||
+      (this.acoesPlanejamento || []).some(i =>
       this.mesmaAcao(i, acao)
-    );
+      );
   }
 
   private mesmaAcao(a: any, b: any): boolean {
@@ -883,19 +893,68 @@ export class ProjetoPpaLoaComponent {
   }
 
   toggleSelectAll(event: any): void {
+    const checked = event?.checked ?? this.selectAll;
+    this.selectAll = checked;
 
-    // let novasSelecoes = [...this.selecionados];
+    const idsAcoesFiltradas = new Set(
+      this.listaAcoesFiltradas.map(acao => Number(acao.id))
+    );
 
-    // if (this.selectAll) {
-    //   const novos = this.indicadoresFiltrados.filter(i => !this.isSelecionado(i));
-    //   novasSelecoes = [...novasSelecoes, ...novos];
-    // } else {
-    //   const idsFiltrados = this.indicadoresFiltrados.map(i => i.idIndicador);
-    //   novasSelecoes = novasSelecoes.filter(i => !idsFiltrados.includes(i.idIndicador));
-    // }
+    if (idsAcoesFiltradas.size === 0) {
+      this.selectAll = false;
+      return;
+    }
 
-    // this.selecionadosChange.emit(novasSelecoes);
+    if (checked) {
+      const idsAcoesNaoSelecionadas = this.listaAcoesFiltradas
+        .filter(acao => !this.isSelecionado(acao))
+        .map(acao => Number(acao.id));
 
+      if (idsAcoesNaoSelecionadas.length === 0) {
+        this.updateSelectAllState();
+        return;
+      }
+
+      idsAcoesNaoSelecionadas.forEach(id =>
+        this.idsAcoesSelecaoPendente.add(id)
+      );
+      this.updateSelectAllState();
+
+      this.carregarAcoesSelecionadas(
+        this.periodoPlanejamento?.descricao ?? '',
+        [...new Set(this.currentFilter?.idsFuncoes ?? [])],
+        [...new Set(this.currentFilter?.idsProgramas ?? [])],
+        [...new Set(this.currentFilter?.idsAnos ?? [])],
+        [...new Set(this.currentFilter?.idsUos ?? [])],
+        idsAcoesNaoSelecionadas
+      );
+      return;
+    }
+
+    idsAcoesFiltradas.forEach(id =>
+      this.idsAcoesSelecaoPendente.delete(id)
+    );
+
+    this.acoesPlanejamento = this.acoesPlanejamento.filter(
+      acao => !idsAcoesFiltradas.has(Number(acao.codigoAcao))
+    );
+
+    const controle = this.projetoForm.get('acoesPlanejamentoProjeto');
+    if (controle) {
+      const acoesDoFormulario =
+        (controle.value as IAcaoPlanejamentoProjeto[] | null) ?? [];
+
+      controle.setValue(
+        acoesDoFormulario.filter(
+          acao => !idsAcoesFiltradas.has(Number(acao.codAcao))
+        )
+      );
+      controle.markAsDirty();
+      controle.markAsTouched();
+      controle.updateValueAndValidity();
+    }
+
+    this.updateSelectAllState();
   }
 
   toggleSearch(): void {
