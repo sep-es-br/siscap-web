@@ -75,7 +75,7 @@ export class IndicadorOdsComponent implements OnInit {
       .subscribe({
         next: (ods) => {
           this.odsTodas = ods ?? [];
-          //this.sincronizarOdsComIndicadores();
+          this.sincronizarOdsComIndicadores();
         },
         error: (erro) => {
           console.error('Erro ao carregar ODS', erro);
@@ -174,7 +174,7 @@ export class IndicadorOdsComponent implements OnInit {
 
     const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
     const odsProjetoAtual = odsProjetoArray?.getRawValue() ?? [];
-    const indicadores = this.formProjeto.get('indicadoresProjeto')?.value ?? [];
+    const indicadores = this.formProjeto.get('indicadoresProjeto')?.getRawValue() ?? [];
 
     const odsPorId = new Map<number, IOdsIndicadorExterno>();
 
@@ -182,11 +182,13 @@ export class IndicadorOdsComponent implements OnInit {
       .filter((ods: any) => ods.idOdsProjeto != null)
       .forEach((ods: any) => {
 
-        odsPorId.set(ods.odsId, {
+        const odsId = Number(ods.odsId);
+
+        odsPorId.set(odsId, {
           idOdsProjeto: ods.idOdsProjeto,
           idOdsIndicadorExterno: ods.idOdsIndicadorExterno ?? null,
           idOdsExterno: ods.idOdsExterno ?? ods.odsId,
-          odsId: ods.odsId,
+          odsId,
           odsOrdem: ods.odsOrdem,
           odsNome: ods.odsNome,
           odsDescricao: ods.odsDescricao,
@@ -204,7 +206,11 @@ export class IndicadorOdsComponent implements OnInit {
 
       odsDoIndicador.forEach((odsIndicador: IOdsIndicadorExterno) => {
 
-        const odsId = odsIndicador.odsId;
+        const odsId = this.obterOdsId(odsIndicador);
+
+        if (odsId == null) {
+          return;
+        }
 
         // if (odsPorId.has(odsId)) {
         //   const existente = odsPorId.get(odsId);
@@ -242,7 +248,7 @@ export class IndicadorOdsComponent implements OnInit {
           
         }
 
-        const odsCatalogo = this.odsTodas.find(o => o.odsId === odsId);
+        const odsCatalogo = this.odsTodas.find(o => Number(o.odsId) === odsId);
 
         if (!odsCatalogo) {
           return;
@@ -262,6 +268,16 @@ export class IndicadorOdsComponent implements OnInit {
 
     this.atualizarOdsSugeridas();
 
+  }
+
+  private obterOdsId(ods: any): number | null {
+    const valor = ods?.odsId
+      ?? ods?.idOdsExterno
+      ?? ods?.idOdsIndicadorExterno
+      ?? ods?.id;
+    const id = Number(valor);
+
+    return Number.isFinite(id) && id > 0 ? id : null;
   }
 
   private montarOdsEscolhida(

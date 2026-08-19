@@ -257,6 +257,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
       const idIndicador = Number(indicador.idIndicador);
       const controleExistente = controlesAtuais.get(idIndicador);
       if (controleExistente) {
+        this.removerCamposLegadosDoIndicador(controleExistente);
         return controleExistente;
       }
 
@@ -284,8 +285,9 @@ export class ProjetoIndicadoresComponent implements OnInit {
       });
     });
 
-    const formArray = this.fb.array(controles);
-    this.formProjeto.setControl('indicadoresProjeto', formArray, { emitEvent: false });
+    formArrayAtual.clear({ emitEvent: false });
+    controles.forEach(controle => formArrayAtual.push(controle, { emitEvent: false }));
+    const formArray = formArrayAtual;
 
     if (!this.isModoEdicao) {
       formArray.disable({ emitEvent: false });
@@ -295,6 +297,11 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
     formArray.updateValueAndValidity({ emitEvent: true });
 
+  }
+
+  private removerCamposLegadosDoIndicador(controle: FormGroup): void {
+    ['tipoIndicador', 'descricaoIndicador', 'descricaoMeta', 'idStatus']
+      .forEach(campo => controle.removeControl(campo, { emitEvent: false }));
   }
 
   initBaseChip() {
