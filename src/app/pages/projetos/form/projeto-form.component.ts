@@ -267,6 +267,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   isMobile = window.innerWidth < 1200;
   subUsuario = '';
 
+  public loadingDownload: boolean = false;
+  public loadingSubmit: boolean = false;
+
   @HostListener('window:resize')
   onResize() {
     this.isMobile = window.innerWidth < 1200;
@@ -770,17 +773,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       label,
       mensagemComplementacao: '',
     }))
-    .sort((a, b) => {
+      .sort((a, b) => {
 
-      // "geral" sempre primeiro
-      if (a.name === 'geral') return -1;
-      if (b.name === 'geral') return 1;
-  
-      // restante em ordem alfabética pelo label
-      return a.label.localeCompare(b.label, 'pt-BR', {
-        sensitivity: 'base',}) 
-       
-    }) as IEstruturaCamposComplementar[];
+        // "geral" sempre primeiro
+        if (a.name === 'geral') return -1;
+        if (b.name === 'geral') return 1;
+
+        // restante em ordem alfabética pelo label
+        return a.label.localeCompare(b.label, 'pt-BR', {
+          sensitivity: 'base',
+        })
+
+      }) as IEstruturaCamposComplementar[];
 
     const rotaAtual = this.route.snapshot.routeConfig?.path;
     if (rotaAtual === 'criar') {
@@ -948,13 +952,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public baixarDIC(): void {
 
-    this.loading = true;
+    this.loadingDownload = true;
     this.textoSpinner = 'Baixando DIC...';
 
     this._projetosService.baixarDIC(this._idProjetoEdicao)
       .pipe(
         finalize(() => {
-          this.loading = false;
+          this.loadingDownload = false;
         })
       )
       .subscribe();
@@ -1421,7 +1425,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           enviarProjetoPedirParecer: true,
         });
         if (!this.validarFormulario(this.projetoForm, true)) break;
-        this.validacaoSomaValoresAcoesEnviarParecer(this.projetoForm, false);
+        this.validacaoSomaValoresAcoesEnviarParecer(this.projetoForm);
         break;
 
       case BreadcrumbAcoesEnum.EnviarEfetivacaoParecerEstrategicoOrgamentario:
@@ -1449,7 +1453,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validacaoSomaValoresAcoesEnviarParecer(
     form: FormGroup,
-    isRascunho: boolean,
   ): void {
     if (this.compararValorEstimadoValorAcoes()) {
       this.abrirConfirmarEnvioParecerModal(form);
@@ -1733,6 +1736,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean, isEnvioDic: boolean): void {
 
+    this.loadingSubmit = true;
+    this.textoSpinner = 'Salvando projeto...';
+
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
       this.statusProjeto === StatusProjetoEnum.Elegivel
@@ -1830,7 +1836,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       // console.log('PAYLOAD SUBMIT (PARECER):', payload);
 
-      this.atualizarProjeto(payload, isRascunho, formData).subscribe();
+      this.atualizarProjeto(payload, isRascunho, formData).pipe(
+        finalize(() => {
+          this.loadingSubmit = false;
+          this.textoSpinner = 'Salvando alterações...';
+        })
+      ).subscribe();
 
     } else {
 
@@ -1942,7 +1953,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         ? this.atualizarProjeto(payload, isRascunho, formData)
         : this.cadastrarProjeto(payload, isRascunho);
 
-      requisicao.subscribe();
+      this.loadingSubmit = true;
+      this.textoSpinner = this._idProjetoEdicao
+        ? 'Salvando alterações...'
+        : 'Cadastrando DIC...';
+
+      requisicao
+        .pipe(
+          finalize(() => {
+            this.loadingSubmit = false;
+            this.textoSpinner = 'Carregando...';
+          })
+        )
+        .subscribe();
 
     }
 
@@ -2216,16 +2239,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       if (result === 'confirmado') {
 
         if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) {
-          this.reenviarEmailPedidoParecer().subscribe({
-            error: (error) => {
-              console.error('[Reenvio Parecer] Erro:', error);
-              this._toastService.showToast(
-                'error',
-                'Erro ao reenviar e-mail de pedido de parecer.',
-              );
-            },
-          });
+
+          this.loadingSubmit = true;
+          this.textoSpinner = 'Reenviando pedido parecer...'
+
+          this.reenviarEmailPedidoParecer()
+            .pipe(finalize(() => { 
+              this.loadingSubmit = false; 
+              this.textoSpinner = 'Carregando...'; }))
+            .subscribe({
+              error: (error) => {
+                console.error('[Reenvio Parecer] Erro:', error);
+                this._toastService.showToast(
+                  'error',
+                  'Erro ao reenviar e-mail de pedido de parecer.',
+                );
+              },
+            });
+
           return;
+
         }
 
         this.submitProjetoForm(form, false, true);
@@ -3067,7 +3100,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'Erro ao consultar andamento da integração com o E-Docs.',
           );
         }
-        
+
       });
 
   }
