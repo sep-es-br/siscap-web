@@ -1,0 +1,160 @@
+.modal-body-scroll {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.icone-alerta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 42px;
+  width: 42px;
+  height: 42px;
+
+  border-radius: 8px;
+
+  background: #fff3cd;
+  color: #f59f00;
+
+  font-size: 22px;
+}
+
+.pendencia-grupo {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+
+  background-color: #fff;
+}
+
+.pendencia-grupo-header {
+  padding: 12px 16px;
+
+  border-bottom: 1px solid #dee2e6;
+
+  background-color: #f8f9fa;
+}
+
+.icone-secao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  color: var(--bs-primary);
+
+  font-size: 20px;
+}
+
+.pendencia-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.pendencia-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding: 12px 16px;
+
+  border-bottom: 1px solid #e9ecef;
+}
+
+.pendencia-item:last-child {
+  border-bottom: 0;
+}
+
+.pendencia-conteudo {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  flex: 1;
+
+  min-width: 0;
+}
+
+.pendencia-marcador {
+  padding-top: 5px;
+
+  font-size: 7px;
+
+  color: var(--bs-danger);
+}
+
+.pendencia-link {
+  display: flex;
+  align-items: center;
+
+  flex-shrink: 0;
+
+  padding-left: 8px;
+  padding-right: 8px;
+
+  white-space: nowrap;
+}
+
+
+/*
+ * Tablet / celular
+ */
+@media (max-width: 767.98px) {
+
+  .modal-body-scroll {
+    max-height: 65vh;
+  }
+
+  .pendencia-grupo-header {
+    padding: 10px 12px;
+  }
+
+  .pendencia-item {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 8px;
+
+    padding: 12px;
+  }
+
+  .pendencia-link {
+    align-self: flex-end;
+
+    padding: 4px 0;
+  }
+
+}
+
+
+/*
+ * Celulares menores
+ */
+@media (max-width: 575.98px) {
+
+  .icone-alerta {
+    min-width: 36px;
+    width: 36px;
+    height: 36px;
+
+    font-size: 18px;
+  }
+
+  .pendencia-link {
+    width: 100%;
+
+    justify-content: space-between;
+
+    border-top: 1px solid #e9ecef;
+
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+
+}

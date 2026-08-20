@@ -97,7 +97,7 @@
                     <validation-message class="meta-validation-message"
                       [control]="getMetaProjetoControl(i, j)"></validation-message>
                     <input type="text" class="meta-value-input" formControlName="valorMeta" maxlength="20"
-                      placeholder="Digite a meta">
+                      placeholder="Digite a meta" [disabled]="!isModoEdicao">
                   </div>
                 </div>
               </div>
