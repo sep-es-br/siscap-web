@@ -3,6 +3,7 @@
     <colgroup>
       <col class="sigla-col" />
       <col class="titulo-col" />
+      <col class="data-criacao-col" />
       <col class="rascunho-col" />
       <col class="status-col" />
       <col class="processoEdocs-col" />
@@ -15,12 +16,16 @@
           Sigla
         </th>
         <th [sortable]="'titulo'" (sort)="sortColumn($event)" class="pointer">
-          Título
-        </th>
+          Título</th>
+        <th [sortable]="'dataCriacaoDic'" (sort)="sortColumn($event)" class="pointer">
+          Criado Em</th>
         <th></th>
-        <th>Status</th>
-        <th>Processo<br>E-Docs</th>
-        <th>Valor<br>Estimado</th>
+        <th [sortable]="'status'" (sort)="sortColumn($event)" class="pointer">
+          Status</th>
+        <th [sortable]="'protocoloEdocs'" (sort)="sortColumn($event)" class="pointer">
+          Processo<br>E-Docs</th>
+        <th [sortable]="'valorEstimado'" (sort)="sortColumn($event)" class="pointer">
+          Valor<br>Estimado</th>
         <th></th>
       </tr>
     </thead>
@@ -28,8 +33,8 @@
       <tr *ngFor="let projeto of projetosList()" (click)="editarProjeto(projeto.id)">
         <td>{{ projeto.sigla }}</td>
         <td>{{ projeto.titulo }}</td>
-        <td>
-        </td>
+        <td>{{ projeto.dataCriacaoDic  | date:'dd/MM/yyyy' }}</td>
+        <td></td>
         <td>{{ projeto.status }}</td>
         <td style="white-space: nowrap; word-break: keep-all;">
           <a *ngIf="projeto.protocoloEdocs" [href]="urlEdocsBase + projeto.protocoloEdocs" target="_blank"
@@ -65,4 +70,5 @@
   </table>
 
   <ng-content select="siscap-pagination"></ng-content>
+
 </div>
