@@ -1,7 +1,11 @@
 <section class="planejamento-section">
 
-  <siscap-filter-card [chips]="chips" [disabled]="!podeEditar || naoPrevistoPpa"
-    [loading]="carregandoDadosIniciais || carregandoAcoes" (openFilter)="abrirFiltroPlanejamento()"
+  <siscap-filter-card
+    [chips]="chips"
+    [groupByField]="true"
+    [disabled]="!podeEditar || naoPrevistoPpa"
+    [loading]="carregandoDadosIniciais || carregandoAcoes"
+    (openFilter)="abrirFiltroPlanejamento()"
     (chipRemove)="removeChip($event)">
   </siscap-filter-card>
 

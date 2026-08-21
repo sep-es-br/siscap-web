@@ -58,7 +58,8 @@ export interface PlanejamentoFiltroAplicado {
 @Component({
   selector: 'siscap-projeto-ppa-loa',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     NgSelectModule,
     NgbTooltipModule,
     NgbModalModule,
@@ -68,8 +69,8 @@ export interface PlanejamentoFiltroAplicado {
     FiltroAcoesComponent,
     CheckboxModule,
     FormsModule,
-    InputTextModule,
-    TooltipModule],
+    InputTextModule
+  ],
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
 })
@@ -218,6 +219,8 @@ export class ProjetoPpaLoaComponent {
           removable: false
         }
       ];
+    } else {
+      this.reconstruirFiltroPelasAcoes();
     }
 
   }
@@ -388,21 +391,39 @@ export class ProjetoPpaLoaComponent {
   }
 
   onRestaurar(): void {
+    this.acoesSubscription?.unsubscribe();
+
+    const anoFixado = this.obterAnoFixadoPelasAcoes();
+    const chipAnoAtual = this.currentFilter?.chips?.anos?.find(
+      ano => Number(ano.id) === anoFixado
+    );
+
     this.currentFilter = {
       periodoPlanejamento: this.periodoPlanejamento,
       idPeriodoPlanejamento: this.periodoPlanejamento?.id ?? null,
-      idsAnos: [],
+      idsAnos: anoFixado != null ? [anoFixado] : [],
       idsUos: [],
       idsFuncoes: [],
       idsProgramas: [],
       chips: {
-        anos: [],
+        anos: anoFixado != null
+          ? [chipAnoAtual ?? { id: anoFixado, nome: String(anoFixado) }]
+          : [],
         uos: [],
         funcoes: [],
         programas: [],
         acoes: []
       }
     };
+
+    // A lista disponível pertence ao filtro anterior. Mantê-la após restaurar
+    // permite selecionar uma ação usando UO/função/programa já apagados.
+    this.listaAcoes = [];
+    this.listaAcoesFiltradas = [];
+    this.filtroTexto = '';
+    this.selectAll = false;
+    this.carregandoAcoes = false;
+
     this.atualizarChipsFiltros();
   }
 
@@ -431,7 +452,7 @@ export class ProjetoPpaLoaComponent {
 
   private atualizarChipsFiltros(): void {
 
-    this.chips = [
+    const chips: FilterChip[] = [
 
       {
         key: 'planejamento',
@@ -441,17 +462,16 @@ export class ProjetoPpaLoaComponent {
         removable: false,
       },
 
-      ...(this.currentFilter?.chips?.anos ?? []).map((ano: any) => ({
+      ...(this.currentFilter?.chips?.anos ?? []).map(ano => ({
         key: `anos:${ano.id}`,
         label: 'ANO',
         value: ano.nome,
         type: 'filter' as const,
-        removable: true,
+        removable: this.quantidadeAcoes === 0,
         group: 'anos',
         valueId: Number(ano.id)
       })),
-
-      ...(this.currentFilter?.chips?.uos ?? []).map((uo: any) => ({
+      ...(this.currentFilter?.chips?.uos ?? []).map(uo => ({
         key: `uos:${uo.id}`,
         label: 'UO',
         value: uo.nome,
@@ -460,18 +480,16 @@ export class ProjetoPpaLoaComponent {
         group: 'uos',
         valueId: Number(uo.id)
       })),
-
-      ...(this.currentFilter?.chips?.funcoes ?? []).map((funcao: any) => ({
+      ...(this.currentFilter?.chips?.funcoes ?? []).map(funcao => ({
         key: `funcoes:${funcao.id}`,
-        label: 'FUNCAO',
+        label: 'FUNÇÃO',
         value: funcao.nome,
         type: 'filter' as const,
         removable: true,
         group: 'funcoes',
         valueId: Number(funcao.id)
       })),
-
-      ...(this.currentFilter?.chips?.programas ?? []).map((programa: any) => ({
+      ...(this.currentFilter?.chips?.programas ?? []).map(programa => ({
         key: `programas:${programa.id}`,
         label: 'PROGRAMA',
         value: programa.nome,
@@ -483,10 +501,88 @@ export class ProjetoPpaLoaComponent {
 
     ];
 
+    this.chips = Array.from(
+      new Map(chips.map(chip => [chip.key, chip])).values()
+    );
+
+  }
+
+  private obterAnoFixadoPelasAcoes(): number | null {
+    const acoesFormulario =
+      (this.projetoForm.get('acoesPlanejamentoProjeto')?.value as IAcaoPlanejamentoProjeto[] | null)
+      ?? [];
+    const ano = acoesFormulario
+      .map(acao => Number(acao.ano))
+      .find(valor => Number.isFinite(valor) && valor > 0);
+
+    return ano ?? null;
+  }
+
+  private obterAnosParaRequisicao(): number[] {
+    const anosFiltro = Array.from(
+      new Set(
+        (this.currentFilter?.idsAnos ?? [])
+          .map(ano => Number(ano))
+          .filter(ano => Number.isFinite(ano) && ano > 0)
+      )
+    );
+
+    if (anosFiltro.length > 0) return anosFiltro;
+
+    const anoFixado = this.obterAnoFixadoPelasAcoes();
+    return anoFixado != null ? [anoFixado] : [];
+  }
+
+  private reconstruirFiltroPelasAcoes(): void {
+    if (this.acoesPlanejamento.length === 0) return;
+
+    const criarOpcoes = (
+      codigo: (acao: PlanejamentoAcao) => string | null,
+      nome: (acao: PlanejamentoAcao) => string | null
+    ) => Array.from(
+      new Map(
+        this.acoesPlanejamento
+          .map(acao => {
+            const codigoOriginal = String(codigo(acao) ?? '').trim();
+            const id = Number(codigoOriginal);
+            if (!codigoOriginal || !Number.isFinite(id)) return null;
+
+            const descricao = String(nome(acao) ?? '').trim();
+            return [
+              id,
+              {
+                id,
+                nome: descricao ? `${codigoOriginal} - ${descricao}` : codigoOriginal
+              }
+            ] as const;
+          })
+          .filter((item): item is readonly [number, { id: number; nome: string }] => item != null)
+      ).values()
+    );
+
+    const anos = criarOpcoes(acao => acao.anoAcao, () => null);
+    const uos = criarOpcoes(
+      acao => acao.codigoUnidadeOrcamentaria,
+      acao => acao.nomeUnidadeOrcamentaria
+    );
+    const funcoes = criarOpcoes(acao => acao.codigoFuncao, acao => acao.nomeFuncao);
+    const programas = criarOpcoes(acao => acao.codigoPrograma, acao => acao.nomePrograma);
+
+    this.currentFilter = {
+      periodoPlanejamento: this.periodoPlanejamento,
+      idPeriodoPlanejamento: this.periodoPlanejamento?.id ?? null,
+      idsAnos: anos.map(item => item.id),
+      idsUos: uos.map(item => item.id),
+      idsFuncoes: funcoes.map(item => item.id),
+      idsProgramas: programas.map(item => item.id),
+      chips: { anos, uos, funcoes, programas, acoes: [] }
+    };
+
+    this.atualizarChipsFiltros();
   }
 
   private removerCriterioPlanejamento(chip: FilterChip): void {
-    if (!this.currentFilter || !chip.group || chip.valueId == null) return;
+    if (!this.currentFilter || !chip.group) return;
 
     type CampoIdsPlanejamento =
       | 'idsAnos'
@@ -504,12 +600,7 @@ export class ProjetoPpaLoaComponent {
 
     if (!campoIds) return;
 
-    const idsAtuais = this.currentFilter[campoIds];
-    if (Array.isArray(idsAtuais)) {
-      (this.currentFilter as any)[campoIds] = idsAtuais.filter(
-        id => Number(id) !== chip.valueId
-      );
-    }
+    (this.currentFilter as any)[campoIds] = [];
 
     const ordemDependencias = ['anos', 'uos', 'funcoes', 'programas'];
     const indiceGrupo = ordemDependencias.indexOf(chip.group);
@@ -522,8 +613,7 @@ export class ProjetoPpaLoaComponent {
     const chipsAtuais = this.currentFilter.chips;
     if (!chipsAtuais) return;
 
-    (chipsAtuais as any)[chip.group] = ((chipsAtuais as any)[chip.group] ?? [])
-      .filter((item: { id: number }) => Number(item.id) !== chip.valueId);
+    (chipsAtuais as any)[chip.group] = [];
     gruposParaLimpar.forEach(grupo => {
       (chipsAtuais as any)[grupo] = [];
     });
@@ -535,8 +625,11 @@ export class ProjetoPpaLoaComponent {
     idsProgramas: number[],
     idAnos: number[],
     idUos: number[],
-    idsAcoes: number[]
+    idsAcoes: number[],
+    carregarListaFiltrada = false
   ): void {
+
+    let carregarListaAposConsulta = false;
 
     this._ppaloaIntegracaoService
       .buscarDadosAcoes(
@@ -550,6 +643,10 @@ export class ProjetoPpaLoaComponent {
       .pipe(
         finalize(() => {
           this.carregandoAcoes = false;
+
+          if (carregarListaAposConsulta) {
+            this.carregarListaAcoes(true);
+          }
         })
       )
       .subscribe({
@@ -611,6 +708,9 @@ export class ProjetoPpaLoaComponent {
 
           this.acoesPlanejamento =
             Array.from(acoesPorChave.values());
+
+          this.reconstruirFiltroPelasAcoes();
+          carregarListaAposConsulta = carregarListaFiltrada;
 
           // this.quantidadeAcoes =
           //   this.acoesPlanejamento.length;
@@ -839,7 +939,8 @@ export class ProjetoPpaLoaComponent {
       idsProgramas,
       idsAnos,
       idsUos,
-      idsAcoes
+      idsAcoes,
+      true
     );
 
   }
@@ -853,9 +954,7 @@ export class ProjetoPpaLoaComponent {
       // this.quantidadeAcoes = this.acoesPlanejamento.length;
     } else {
 
-      const idsAnos = [
-        ...new Set(this.currentFilter?.idsAnos)
-      ];
+      const idsAnos = this.obterAnosParaRequisicao();
 
       const idsUos = [
         ...new Set(this.currentFilter?.idsUos)
@@ -931,7 +1030,7 @@ export class ProjetoPpaLoaComponent {
         this.periodoPlanejamento?.descricao ?? '',
         [...new Set(this.currentFilter?.idsFuncoes ?? [])],
         [...new Set(this.currentFilter?.idsProgramas ?? [])],
-        [...new Set(this.currentFilter?.idsAnos ?? [])],
+        this.obterAnosParaRequisicao(),
         [...new Set(this.currentFilter?.idsUos ?? [])],
         idsAcoesNaoSelecionadas
       );
@@ -1015,7 +1114,7 @@ export class ProjetoPpaLoaComponent {
 
     this.acoesSubscription?.unsubscribe();
 
-    const idAnos = this.currentFilter?.idsAnos;
+    const idAnos = this.obterAnosParaRequisicao();
     const idUos = this.currentFilter?.idsUos;
     const idFuncoes = this.currentFilter?.idsFuncoes;
     const idsProgramas = this.currentFilter?.idsProgramas;
