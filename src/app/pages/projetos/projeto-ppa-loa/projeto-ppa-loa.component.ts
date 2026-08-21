@@ -13,6 +13,7 @@ import { FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { FilterCardComponent } from '../../../shared/components/filter-card/filter-card.component';
 import { FilterChip } from '../../../shared/components/filter-card/filter-chip.interface';
+import { TooltipModule } from 'primeng/tooltip';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -41,6 +42,11 @@ export interface DetalhamentoOrcamentarioLoa {
   idUso: string | null;
   fonte: string | null;
   valor: number | null;
+  nomeGrupoDespesa: string | null;
+  nomeModalidade: string | null;
+  nomeIdUso: string | null;
+  nomeFonte: string | null;
+
 }
 
 export interface PlanejamentoFiltroAplicado {
@@ -293,7 +299,7 @@ export class ProjetoPpaLoaComponent {
       if (this.acoesPlanejamento.length > 0) {
 
         this.acoesPlanejamentoBackup =
-           structuredClone(this.acoesPlanejamento);
+          structuredClone(this.acoesPlanejamento);
 
         this.acoesPlanejamentoProjetoBackup =
           structuredClone(controleAcoes.value);
@@ -310,7 +316,7 @@ export class ProjetoPpaLoaComponent {
 
       // Restaura o que estava selecionado anteriormente
       this.acoesPlanejamento =
-         structuredClone(this.acoesPlanejamentoBackup);
+        structuredClone(this.acoesPlanejamentoBackup);
 
       controleAcoes?.setValue(
         structuredClone(this.acoesPlanejamentoProjetoBackup)
@@ -982,7 +988,7 @@ export class ProjetoPpaLoaComponent {
   isSelecionado(acao: any): boolean {
     return this.idsAcoesSelecaoPendente.has(Number(acao.id)) ||
       (this.acoesPlanejamento || []).some(i =>
-      this.mesmaAcao(i, acao)
+        this.mesmaAcao(i, acao)
       );
   }
 
