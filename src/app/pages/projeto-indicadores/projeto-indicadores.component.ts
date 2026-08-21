@@ -337,28 +337,34 @@ export class ProjetoIndicadoresComponent implements OnInit {
   removeChip(chip: FilterChip): void {
     if (!chip.removable) return;
 
-    if (chip.group === 'label' && chip.valueId != null) {
-      const idLabel = Number(chip.key.split(':')[1]);
+    if (chip.group?.startsWith('label:')) {
+      const idLabel = Number(chip.group.split(':')[1]);
       const selecionados = this.currentFilter?.labels?.[idLabel] ?? [];
-      this.currentFilter.labels[idLabel] = selecionados.filter(
-        (id: number) => Number(id) !== chip.valueId
-      );
+      this.currentFilter.labels[idLabel] = chip.valueId == null
+        ? []
+        : selecionados.filter((id: number) => Number(id) !== chip.valueId);
 
       this.currentFilter.chips.labels = (this.currentFilter.chips.labels ?? [])
         .map((labelChip: any) => ({
           ...labelChip,
           valores: labelChip.idLabel === idLabel
-            ? labelChip.valores.filter((valor: any) => Number(valor.idValor) !== chip.valueId)
+            ? (chip.valueId == null
+              ? []
+              : labelChip.valores.filter((valor: any) => Number(valor.idValor) !== chip.valueId))
             : labelChip.valores
         }))
         .filter((labelChip: any) => labelChip.valores.length > 0);
     }
 
-    if (chip.group === 'desafio' && chip.valueId != null) {
-      this.currentFilter.desafio.id = (this.currentFilter.desafio?.id ?? [])
-        .filter((id: number) => Number(id) !== chip.valueId);
-      this.currentFilter.chips.desafio = (this.currentFilter.chips.desafio ?? [])
-        .filter((desafio: any) => Number(desafio.idDesafio) !== chip.valueId);
+    if (chip.group === 'desafio') {
+      this.currentFilter.desafio.id = chip.valueId == null
+        ? []
+        : (this.currentFilter.desafio?.id ?? [])
+          .filter((id: number) => Number(id) !== chip.valueId);
+      this.currentFilter.chips.desafio = chip.valueId == null
+        ? []
+        : (this.currentFilter.chips.desafio ?? [])
+          .filter((desafio: any) => Number(desafio.idDesafio) !== chip.valueId);
     }
 
     this.atualizarChipsFiltros();
@@ -557,7 +563,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
           value: valor.nomeValor,
           type: 'filter',
           removable: true,
-          group: 'label',
+          group: `label:${labelChip.idLabel}`,
           valueId: Number(valor.idValor)
         }))
       ),

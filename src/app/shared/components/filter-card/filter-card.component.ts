@@ -23,9 +23,22 @@ import { FilterChip } from './filter-chip.interface';
 export class FilterCardComponent implements AfterViewInit, OnDestroy {
   @ViewChild('chipsScroller') chipsScroller?: ElementRef<HTMLElement>;
 
-  @Input() chips: FilterChip[] = [];
+  @Input() set chips(value: FilterChip[]) {
+    this._chips = value ?? [];
+    this.updateDisplayedChips();
+  }
+  get chips(): FilterChip[] {
+    return this._chips;
+  }
   @Input() disabled = false;
   @Input() loading = false;
+  @Input() set groupByField(value: boolean) {
+    this._groupByField = value;
+    this.updateDisplayedChips();
+  }
+  get groupByField(): boolean {
+    return this._groupByField;
+  }
 
   @Output() openFilter = new EventEmitter<void>();
   @Output() chipRemove = new EventEmitter<FilterChip>();
@@ -33,8 +46,11 @@ export class FilterCardComponent implements AfterViewInit, OnDestroy {
   canScrollLeft = false;
   canScrollRight = false;
   isDragging = false;
+  displayedChips: FilterChip[] = [];
 
   private readonly dragThreshold = 5;
+  private _chips: FilterChip[] = [];
+  private _groupByField = false;
   private pointerId: number | null = null;
   private dragStartX = 0;
   private dragStartScrollLeft = 0;
@@ -43,6 +59,43 @@ export class FilterCardComponent implements AfterViewInit, OnDestroy {
   private resizeObserver?: ResizeObserver;
   private mutationObserver?: MutationObserver;
   private updateFrame?: number;
+
+  trackByChip(_: number, chip: FilterChip): string {
+    return chip.key;
+  }
+
+  private updateDisplayedChips(): void {
+    if (!this.groupByField) {
+      this.displayedChips = this.chips;
+      return;
+    }
+
+    const baseChips = this.chips.filter(chip => chip.type === 'base');
+    const grouped = new Map<string, FilterChip[]>();
+
+    this.chips
+      .filter(chip => chip.type === 'filter')
+      .forEach(chip => {
+        const key = chip.group ?? chip.key;
+        grouped.set(key, [...(grouped.get(key) ?? []), chip]);
+      });
+
+    const filterChips = Array.from(grouped.entries()).map(([key, chips]) => {
+      const first = chips[0];
+      const values = Array.from(new Set(chips.map(chip => chip.value)));
+
+      return {
+        ...first,
+        key,
+        value: values.join('; '),
+        removable: chips.every(chip => chip.removable),
+        valueId: undefined,
+        groupedChips: chips
+      };
+    });
+
+    this.displayedChips = [...baseChips, ...filterChips];
+  }
 
   ngAfterViewInit(): void {
     const scroller = this.chipsScroller?.nativeElement;
