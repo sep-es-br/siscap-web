@@ -161,6 +161,7 @@
   gap: 12px;
 
   min-width: 0;
+  min-height: 37px;
 }
 
 .acao-planejamento-cabecalho-conteudo {
@@ -523,7 +524,7 @@
   display: flex;
   align-items: baseline;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
   padding: 4px 0 0;
 }
@@ -539,6 +540,7 @@
   color: #059669;
   font-size: 17px;
   font-weight: 800;
+  text-align: right;
   white-space: nowrap;
 }
 
