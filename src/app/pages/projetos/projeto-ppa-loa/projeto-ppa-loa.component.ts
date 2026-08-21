@@ -69,7 +69,8 @@ export interface PlanejamentoFiltroAplicado {
     FiltroAcoesComponent,
     CheckboxModule,
     FormsModule,
-    InputTextModule
+    InputTextModule,
+    TooltipModule
   ],
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
