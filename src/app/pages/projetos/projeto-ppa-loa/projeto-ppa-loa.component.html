@@ -1,10 +1,7 @@
 <section class="planejamento-section">
 
-  <siscap-filter-card
-    [chips]="chips"
-    [disabled]="!podeEditar || naoPrevistoPpa"
-    [loading]="carregandoDadosIniciais || carregandoAcoes"
-    (openFilter)="abrirFiltroPlanejamento()"
+  <siscap-filter-card [chips]="chips" [disabled]="!podeEditar || naoPrevistoPpa"
+    [loading]="carregandoDadosIniciais || carregandoAcoes" (openFilter)="abrirFiltroPlanejamento()"
     (chipRemove)="removeChip($event)">
   </siscap-filter-card>
 
@@ -244,26 +241,40 @@
               <!-- Registros -->
               <div class="detalhamento-loa-linha"
                 *ngFor=" let detalhe of acao.detalhamentosLoa;  trackBy: trackByDetalhamentoLoa">
-                <div class="detalhamento-loa-celula" data-label="GND">
+
+                <div class="detalhamento-loa-celula" data-label="GND" 
+                  [pTooltip]="detalhe.nomeGrupoDespesa  ?? '' "
+                  tooltipPosition="top" 
+                  tooltipStyleClass="tooltip-pequeno">
                   {{ detalhe.codigoGnd }}
                 </div>
 
-                <div class="detalhamento-loa-celula" data-label="Modalidade">
+                <div class="detalhamento-loa-celula" data-label="Modalidade" 
+                  [pTooltip]="detalhe.nomeModalidade  ?? '' "
+                  tooltipPosition="top" 
+                  tooltipStyleClass="tooltip-pequeno">
                   {{ detalhe.codigoModalidade }}
                 </div>
 
-                <div class="detalhamento-loa-celula" data-label="ID-USO">
+                <div class="detalhamento-loa-celula" data-label="ID-USO"
+                  [pTooltip]="detalhe.nomeIdUso  ?? '' "
+                  tooltipPosition="top" 
+                  tooltipStyleClass="tooltip-pequeno">
                   {{ detalhe.idUso }}
                 </div>
 
-                <div class="detalhamento-loa-celula" data-label="Fonte">
+                <div class="detalhamento-loa-celula" data-label="Fonte" 
+                  [pTooltip]="detalhe.nomeFonte  ?? '' "
+                  tooltipPosition="top" 
+                  tooltipStyleClass="tooltip-pequeno">
                   {{ detalhe.fonte }}
                 </div>
 
                 <div class="detalhamento-loa-celula detalhamento-loa-coluna-valor detalhamento-loa-valor"
-                  data-label="Valor">
+                  data-label="Valor" >
                   {{ formatarMoeda(detalhe.valor) }}
                 </div>
+
               </div>
 
             </div>
