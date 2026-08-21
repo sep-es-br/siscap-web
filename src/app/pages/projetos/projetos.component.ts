@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 
 import { BehaviorSubject, finalize, Observable, Subject, Subscription, takeUntil, tap } from 'rxjs';
 
-import { UsuarioService } from '../../core/services/usuario/usuario.service';
+// import { UsuarioService } from '../../core/services/usuario/usuario.service';
 import { BreadcrumbService } from '../../core/services/breadcrumb/breadcrumb.service';
 import { ProjetosService } from '../../core/services/projetos/projetos.service';
 import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
@@ -26,6 +26,7 @@ import {
   styleUrl: './projetos.component.scss',
 })
 export class ProjetosComponent implements OnInit, OnDestroy {
+
   private readonly _subscription: Subscription = new Subscription();
 
   private readonly _pageConfig: IHttpGetRequestBody = {
@@ -58,13 +59,14 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private readonly _usuarioService: UsuarioService,
+    // private readonly _usuarioService: UsuarioService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _projetosService: ProjetosService,
     private readonly _navegacaoService: NavegacaoService,
     private readonly _r2: Renderer2
   ) {
-    const isProponente = this._usuarioService.usuarioPerfil.isProponente;
+
+    // const isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
     const botoesAcaoPropriedades = this._projetosService.gerarBotoesAcaoListagem();
 
@@ -81,6 +83,7 @@ export class ProjetosComponent implements OnInit, OnDestroy {
           );
       })
     );
+
   }
 
   ngOnInit(): void {
@@ -121,7 +124,11 @@ export class ProjetosComponent implements OnInit, OnDestroy {
       .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
+          
+          console.log('response lista projetos :', response)
+          
           this._projetosList$.next(response.content);
+          
           this.paginacaoDados = {
             paginaAtual: response.pageable.pageNumber + 1,
             itensPorPagina: response.pageable.pageSize,
@@ -129,7 +136,8 @@ export class ProjetosComponent implements OnInit, OnDestroy {
             ultimoItemPagina:
               response.pageable.offset + response.numberOfElements,
             totalRegistros: response.totalElements,
-          };
+          }
+          ;
         }),
         finalize(() => (this.loading = false))
       )
