@@ -8,4 +8,5 @@ export interface FilterChip {
   removable: boolean;
   group?: string;
   valueId?: number;
+  groupedChips?: FilterChip[];
 }

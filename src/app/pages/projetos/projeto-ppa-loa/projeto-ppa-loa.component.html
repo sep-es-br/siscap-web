@@ -2,6 +2,7 @@
 
   <siscap-filter-card
     [chips]="chips"
+    [groupByField]="true"
     [disabled]="!podeEditar || naoPrevistoPpa"
     [loading]="carregandoDadosIniciais || carregandoAcoes"
     (openFilter)="abrirFiltroPlanejamento()"

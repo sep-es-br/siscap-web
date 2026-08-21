@@ -228,10 +228,10 @@ export class FiltroAcoesComponent
 
   }
 
-  onUoChange(): void {
+  onUoChange(idsUos: number[] | null): void {
 
     this.filtro.idsUos =
-      this.normalizarIds(this.filtro.idsUos);
+      this.normalizarIds(idsUos);
 
     this.filtro.idsFuncoes = [];
     this.filtro.idsProgramas = [];
@@ -253,10 +253,10 @@ export class FiltroAcoesComponent
    * Executado quando o usuário seleciona ou remove
    * uma Função.
    */
-  onFuncoesChange(): void {
+  onFuncoesChange(idsFuncoes: number[] | null): void {
 
     this.filtro.idsFuncoes =
-      this.normalizarIds(this.filtro.idsFuncoes);
+      this.normalizarIds(idsFuncoes);
 
     this.filtro.idsProgramas = [];
     // this.filtro.idsAcoes = [];
@@ -276,10 +276,10 @@ export class FiltroAcoesComponent
    * Executado quando o usuário seleciona ou remove
    * um Programa.
    */
-  onProgramasChange(): void {
+  onProgramasChange(idsProgramas: number[] | null): void {
 
     this.filtro.idsProgramas =
-      this.normalizarIds(this.filtro.idsProgramas);
+      this.normalizarIds(idsProgramas);
 
     // this.filtro.idsAcoes = [];
     this.acoes = [];
@@ -475,10 +475,23 @@ export class FiltroAcoesComponent
     this.programas = [];
     this.acoes = [];
 
+    const idsAnos = this.anoEscolhido
+      ? this.normalizarIds(this.filtro.idsAnos)
+      : [];
+    const chipsAnos = idsAnos.length > 0
+      ? this.obterOpcoesSelecionadas(this.anos, idsAnos)
+      : [];
+
     this.filtro = {
       ...this.criarFiltroVazio(),
+      periodoPlanejamento: this.periodoPlanejamento,
       idPeriodoPlanejamento:
-        this.periodoPlanejamento?.id ?? null
+        this.periodoPlanejamento?.id ?? null,
+      idsAnos,
+      chips: {
+        ...this.criarFiltroVazio().chips,
+        anos: chipsAnos
+      }
     };
 
     this.restaurar.emit();
@@ -664,12 +677,16 @@ export class FiltroAcoesComponent
       this.normalizarIds(idsSelecionados)
     );
 
-    return opcoes
-      .filter(opcao => ids.has(Number(opcao.id)))
-      .map(opcao => ({
-        id: Number(opcao.id),
-        nome: opcao.nome
-      }));
+    return Array.from(
+      new Map(
+        opcoes
+          .filter(opcao => ids.has(Number(opcao.id)))
+          .map(opcao => [
+            Number(opcao.id),
+            { id: Number(opcao.id), nome: opcao.nome }
+          ] as const)
+      ).values()
+    );
   }
 
   private manterSomenteIdsValidos(
@@ -726,7 +743,7 @@ export class FiltroAcoesComponent
 
     this.carregandoUos = true;
 
-    this.uosSubscription =
+    this.funcoesSubscription =
       this._ppaloaIntegracaoService
         .listarUosPorAnosPpaLoa(idsAnos)
         .pipe(

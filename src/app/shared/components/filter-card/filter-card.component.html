@@ -14,7 +14,7 @@
       (pointercancel)="onPointerEnd($event)"
       (lostpointercapture)="onPointerEnd($event)">
       <div
-        *ngFor="let chip of chips"
+        *ngFor="let chip of displayedChips; trackBy: trackByChip"
         class="filter-chip"
         [class.filter-chip--base]="chip.type === 'base'"
         [class.filter-chip--removable]="chip.removable && !disabled">

@@ -43,4 +43,20 @@ describe('FilterCardComponent', () => {
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(component.chipRemove.emit).toHaveBeenCalledWith(chip);
   });
+
+  it('agrupa chips do mesmo campo quando habilitado', () => {
+    component.groupByField = true;
+    component.chips = [
+      { ...chip, key: 'desafio:1', value: 'Desafio 1' },
+      { ...chip, key: 'desafio:2', value: 'Desafio 2', valueId: 2 }
+    ];
+
+    expect(component.displayedChips).toEqual([
+      jasmine.objectContaining({
+        key: 'desafio',
+        value: 'Desafio 1; Desafio 2',
+        valueId: undefined
+      })
+    ]);
+  });
 });
