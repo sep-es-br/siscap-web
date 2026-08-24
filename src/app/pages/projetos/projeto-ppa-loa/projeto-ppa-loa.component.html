@@ -9,7 +9,7 @@
     (chipRemove)="removeChip($event)">
   </siscap-filter-card>
 
-  <siscap-filtro-ppa-loa *ngIf="showModal" [filtroAtual]="currentFilter" (apply)="onApply($event)"
+  <siscap-filtro-ppa-loa *ngIf="showModal" [filtroAtual]="currentFilter" [bloquearAno]="quantidadeAcoes > 0" (apply)="onApply($event)"
     (close)="showModal = false" (restaurar)="onRestaurar()" [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
 
   <!-- Ações para selecionar -->
