@@ -136,8 +136,8 @@ export class FiltroAcoesComponent
   ngOnDestroy(): void {
     this.carregamentoInicialSubscription?.unsubscribe();
     this.programasSubscription?.unsubscribe();
-    // this.acoesSubscription?.unsubscribe();
     this.uosSubscription?.unsubscribe();
+    this.funcoesSubscription?.unsubscribe();
   }
 
   /**
@@ -174,20 +174,8 @@ export class FiltroAcoesComponent
                 this.anos
               );
 
-            if (this.filtro.idsUos.length > 0) {
+            if (this.filtro.idsAnos.length > 0) {
               this.carregarUos(true);
-            }
-
-            if (this.filtro.idsAnos.length > 0) {
-              this.carregarProgramas(true);
-            }
-
-            // if (this.filtro.idsAcoes.length > 0) {
-            //   this.carregarAcoes(true);
-            // }
-
-            if (this.filtro.idsAnos.length > 0) {
-              this.carregarFuncoes(true);
             }
 
           },
@@ -206,13 +194,15 @@ export class FiltroAcoesComponent
   }
 
   onAnoChange(idAno: number | null): void {
-    
+    this.programasSubscription?.unsubscribe();
+    this.funcoesSubscription?.unsubscribe();
     this.filtro.idsAnos = idAno != null ? [idAno] : [];
 
     this.filtro.idsAnos =
       this.normalizarIds(this.filtro.idsAnos);
 
     this.filtro.idsUos = [];
+    this.filtro.idsFuncoes = [];
     this.filtro.idsProgramas = [];
     // this.filtro.idsAcoes = [];
 
@@ -229,6 +219,8 @@ export class FiltroAcoesComponent
   }
 
   onUoChange(idsUos: number[] | null): void {
+
+    this.programasSubscription?.unsubscribe();
 
     this.filtro.idsUos =
       this.normalizarIds(idsUos);
@@ -743,7 +735,7 @@ export class FiltroAcoesComponent
 
     this.carregandoUos = true;
 
-    this.funcoesSubscription =
+    this.uosSubscription =
       this._ppaloaIntegracaoService
         .listarUosPorAnosPpaLoa(idsAnos)
         .pipe(
@@ -764,10 +756,12 @@ export class FiltroAcoesComponent
                 )
                 : [];
 
-            if ( preservarSelecaoAtual && this.filtro.idsUos.length > 0 ) {
-              this.carregarProgramas(true);
+            if (preservarSelecaoAtual && this.filtro.idsUos.length > 0) {
+              this.carregarFuncoes(true);
             } else {
               this.filtro.idsUos = [];
+              this.filtro.idsFuncoes = [];
+              this.filtro.idsProgramas = [];
             }
 
           },
@@ -815,7 +809,7 @@ export class FiltroAcoesComponent
 
     this.carregandoFuncoes = true;
 
-    this.uosSubscription =
+    this.funcoesSubscription =
       this._ppaloaIntegracaoService
         .listarFuncoesPpaLoa(idsAnos, idsUos)
         .pipe(
