@@ -17,10 +17,10 @@
         </th>
         <th [sortable]="'titulo'" (sort)="sortColumn($event)" class="pointer">
           Título</th>
-        <th [sortable]="'dataCriacaoDic'" (sort)="sortColumn($event)" class="pointer">
+        <th [sortable]="'criadoEm'" (sort)="sortColumn($event)" class="pointer">
           Criado Em</th>
         <th></th>
-        <th [sortable]="'status'" (sort)="sortColumn($event)" class="pointer">
+        <th [sortable]="'historicoStatus.status'" (sort)="sortColumn($event)" class="pointer">
           Status</th>
         <th [sortable]="'protocoloEdocs'" (sort)="sortColumn($event)" class="pointer">
           Processo<br>E-Docs</th>
@@ -36,17 +36,15 @@
         <td>{{ projeto.dataCriacaoDic  | date:'dd/MM/yyyy' }}</td>
         <td></td>
         <td>{{ projeto.status }}</td>
-        <td style="white-space: nowrap; word-break: keep-all;">
-          <a *ngIf="projeto.protocoloEdocs" [href]="urlEdocsBase + projeto.protocoloEdocs" target="_blank"
-            rel="noopener noreferrer">
+        <td class="processo-edocs" >
+          <a *ngIf="projeto.protocoloEdocs" [href]="urlEdocsBase + projeto.protocoloEdocs" target="_blank"  rel="noopener noreferrer">
             {{ projeto.protocoloEdocs }}
           </a>
-          <span class="badge rounded-pill text-bg-warning d-inline-flex align-items-center gap-1"
-            *ngIf="projetosAguardando.has(projeto.id)">
+          <span class="badge rounded-pill text-bg-warning d-inline-flex align-items-center gap-1" *ngIf="projetosAguardando.has(projeto.id)">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             Aguardando E-Docs</span>
         </td>
-        <td style="text-align: right; white-space: nowrap; ">
+        <td class="valor-estimado" >
           {{
           projeto.valorEstimado
           | mask
@@ -60,9 +58,8 @@
           }}
         </td>
         <td (click)="podeDeletarDic(projeto.id) ? $event.stopPropagation() : undefined">
-          <button class="btn border-none" (click)="deletarProjeto(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)"
-            title="Excluir">
-            <i class="fa-solid fa-trash-can me-2"></i>
+          <button type="button" class="btn-excluir" (click)="deletarProjeto(projeto.id)" [hidden]="!podeDeletarDic(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)"  title="Excluir">
+            <i class="fa-solid fa-trash-can"></i>
           </button>
         </td>
       </tr>
