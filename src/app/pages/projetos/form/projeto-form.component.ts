@@ -1523,6 +1523,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       case BreadcrumbAcoesEnum.CapturarparecerGEOC:
         this.abrirEfetivarParecerModal();
         break;
+
+      case BreadcrumbAcoesEnum.PendenciasDIC:
+        this.abrirModalPendencias();
+        break;
+
     }
   }
 
