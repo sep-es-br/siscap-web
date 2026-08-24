@@ -708,3 +708,18 @@
   margin-bottom: 8px;
   font-size: 24px;
 }
+
+.planejamento-loading-state {
+  display: flex;
+  flex-direction: column;
+  min-height: 132px;
+  justify-content: center;
+  color: #98a2b3;
+  font-size: 13px;
+}
+
+.planejamento-loading-state i {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 18px;
+}

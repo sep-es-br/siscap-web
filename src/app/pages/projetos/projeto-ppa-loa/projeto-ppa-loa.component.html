@@ -1,7 +1,11 @@
 <section class="planejamento-section">
 
-  <siscap-filter-card [chips]="chips" [disabled]="!podeEditar || naoPrevistoPpa"
-    [loading]="carregandoDadosIniciais || carregandoAcoes" (openFilter)="abrirFiltroPlanejamento()"
+  <siscap-filter-card
+    [chips]="chips"
+    [groupByField]="true"
+    [disabled]="!podeEditar || naoPrevistoPpa"
+    [loading]="carregandoDadosIniciais || carregandoAcoes"
+    (openFilter)="abrirFiltroPlanejamento()"
     (chipRemove)="removeChip($event)">
   </siscap-filter-card>
 
@@ -26,34 +30,16 @@
     </div>
 
     <div class="card-body">
-
-      <!-- Estado vazio -->
-      <div class="planejamento-empty-state" *ngIf="listaAcoesFiltradas.length === 0">
-
-        <div class="planejamento-empty-icon">
-          ☷
-        </div>
-
-        <div class="planejamento-empty-title">
-          Nenhuma ação encontrada para o filtro informado.
-        </div>
-
-        <div class="planejamento-empty-description">
-          Utilize os filtros acima para carregar a lista de ações (Ano e UO são obrigatórios).
-        </div>
-
-      </div>
-
-      <div *ngIf="listaAcoesFiltradas.length > 0" class="acao-item select-all">
-        <label class="acao-label">
-          <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
-            [disabled]="!podeEditar"></p-checkbox>
-          <span class="text-blue-primary">SELECIONAR TODOS</span>
-        </label>
-      </div>
-
       <ng-container *ngIf="!carregandoAcoes; else loadingTpl">
-        <ng-container *ngIf="listaAcoesFiltradas.length > 0">
+        <ng-container *ngIf="listaAcoesFiltradas.length > 0; else vazioTpl">
+
+          <div class="acao-item select-all">
+            <label class="acao-label">
+              <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
+                [disabled]="!podeEditar"></p-checkbox>
+              <span class="text-blue-primary">SELECIONAR TODOS</span>
+            </label>
+          </div>
 
           <div class="acoes-lista">
             <div class="acao-item" *ngFor="let acao of listaAcoesFiltradas">
@@ -299,10 +285,18 @@
   </div>
 
   <ng-template #loadingTpl>
-    <div class="card-body">
-      <div class="spinner-carregando-acoes">
-        <i class="pi pi-spin pi-spinner"></i>
-        Carregando acoes...
+    <div class="planejamento-empty-state planejamento-loading-state" role="status" aria-live="polite">
+      <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+      <span>Carregando ações...</span>
+    </div>
+  </ng-template>
+
+  <ng-template #vazioTpl>
+    <div class="planejamento-empty-state">
+      <div class="planejamento-empty-icon">☷</div>
+      <div class="planejamento-empty-title">Nenhuma ação encontrada para o filtro informado.</div>
+      <div class="planejamento-empty-description">
+        Utilize os filtros acima para carregar a lista de ações (Ano e UO são obrigatórios).
       </div>
     </div>
   </ng-template>
