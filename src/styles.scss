@@ -58,9 +58,9 @@ th {
   font-size: $small-4-font-size;
   font-weight: normal;
 
-  &[ng-reflect-sortable]::after {
-    content: url(./assets/icons/sort-none-solid.svg);
-  }
+  // &[ng-reflect-sortable]::after {
+  //   content: url(./assets/icons/sort-none-solid.svg);
+  // }
 
   &.asc::after {
     content: url(./assets/icons/sort-up-solid.svg);
