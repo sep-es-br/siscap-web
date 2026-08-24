@@ -389,6 +389,7 @@ export class ProjetoPpaLoaComponent {
 
     this.removerCriterioPlanejamento(chip);
     this.atualizarChipsFiltros();
+    this.carregarListaAcoes(true);
   }
 
   onRestaurar(): void {
@@ -417,8 +418,6 @@ export class ProjetoPpaLoaComponent {
       }
     };
 
-    // A lista disponível pertence ao filtro anterior. Mantê-la após restaurar
-    // permite selecionar uma ação usando UO/função/programa já apagados.
     this.listaAcoes = [];
     this.listaAcoesFiltradas = [];
     this.filtroTexto = '';
@@ -477,7 +476,9 @@ export class ProjetoPpaLoaComponent {
         label: 'UO',
         value: uo.nome,
         type: 'filter' as const,
-        removable: true,
+        // UO é obrigatória para consultar ações. A alteração deve acontecer
+        // pela modal, para que as dependências do filtro sejam recarregadas.
+        removable: false,
         group: 'uos',
         valueId: Number(uo.id)
       })),
@@ -687,7 +688,6 @@ export class ProjetoPpaLoaComponent {
             );
           });
 
-          // Acrescenta apenas ações que ainda não existem
           novasAcoes.forEach(acao => {
 
             const chave = this.montarChavePlanejamento(
@@ -710,7 +710,9 @@ export class ProjetoPpaLoaComponent {
           this.acoesPlanejamento =
             Array.from(acoesPorChave.values());
 
-          this.reconstruirFiltroPelasAcoes();
+          if (carregarListaFiltrada) {
+            this.reconstruirFiltroPelasAcoes();
+          }
           carregarListaAposConsulta = carregarListaFiltrada;
 
           // this.quantidadeAcoes =
