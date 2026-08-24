@@ -14,6 +14,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FilterCardComponent } from '../../../shared/components/filter-card/filter-card.component';
 import { FilterChip } from '../../../shared/components/filter-card/filter-chip.interface';
 import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
 
 export interface PlanejamentoAcao {
   id: number;
@@ -263,8 +264,44 @@ export class ProjetoPpaLoaComponent {
   onNaoPrevistoPpaChange(event: Event): void {
 
     const input = event.currentTarget as HTMLInputElement;
+    const naoPrevistoSolicitado = input.checked;
 
-    this.naoPrevistoPpa = input.checked;
+    // O navegador já alternou o checkbox. Mantém o estado atual até o usuário
+    // confirmar a ação no modal.
+    input.checked = this.naoPrevistoPpa;
+
+    if (naoPrevistoSolicitado === this.naoPrevistoPpa) {
+      return;
+    }
+
+    if (!naoPrevistoSolicitado) {
+      this.aplicarNaoPrevistoPpa(false);
+      return;
+    }
+
+    const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
+      centered: true
+    });
+
+    modalRef.componentInstance.config = {
+      titulo: 'Confirmar ação',
+      headerCustomClass: 'bg-warning-subtle',
+      textoPrincipal: 'Deseja marcar este projeto como não previsto no PPA?',
+      textoSecundario:
+        'As ações do planejamento serão ocultadas e poderão ser restauradas ao desmarcar esta opção.',
+      textoPrincipalCustomClass: 'fw-bold'
+    };
+
+    modalRef.result.catch(resultado => {
+      if (resultado === 'confirmar') {
+        this.aplicarNaoPrevistoPpa(true);
+      }
+    });
+  }
+
+  private aplicarNaoPrevistoPpa(naoPrevisto: boolean): void {
+
+    this.naoPrevistoPpa = naoPrevisto;
     if (this.naoPrevistoPpa) {
       this.showModal = false;
     }
@@ -323,6 +360,10 @@ export class ProjetoPpaLoaComponent {
         structuredClone(this.acoesPlanejamentoProjetoBackup)
       );
 
+      // A restauração também precisa atualizar imediatamente os chips, sem
+      // depender da abertura da modal de filtro.
+      this.reconstruirFiltroPelasAcoes();
+
     }
 
     controleNaoPrevistoPpa.setValue(this.naoPrevistoPpa);
@@ -334,6 +375,13 @@ export class ProjetoPpaLoaComponent {
 
   abrirFiltroPlanejamento(): void {
     if (!this.podeEditar || this.naoPrevistoPpa) return;
+
+    if (this.quantidadeAcoes > 0) {
+      this.reconstruirFiltroPelasAcoes();
+    } else {
+      this.sincronizarAnoDasAcoesNoFiltro();
+      this.atualizarChipsFiltros();
+    }
 
     this.showModal = true;
   }
@@ -520,6 +568,29 @@ export class ProjetoPpaLoaComponent {
     return ano ?? null;
   }
 
+  private sincronizarAnoDasAcoesNoFiltro(): void {
+    const anoFixado = this.obterAnoFixadoPelasAcoes();
+    if (anoFixado == null) return;
+
+    const chipAnoExistente = this.currentFilter?.chips?.anos?.find(
+      ano => Number(ano.id) === anoFixado
+    );
+
+    this.currentFilter = {
+      ...this.currentFilter,
+      periodoPlanejamento: this.periodoPlanejamento,
+      idPeriodoPlanejamento: this.periodoPlanejamento?.id ?? null,
+      idsAnos: [anoFixado],
+      chips: {
+        anos: [chipAnoExistente ?? { id: anoFixado, nome: String(anoFixado) }],
+        uos: this.currentFilter?.chips?.uos ?? [],
+        funcoes: this.currentFilter?.chips?.funcoes ?? [],
+        programas: this.currentFilter?.chips?.programas ?? [],
+        acoes: this.currentFilter?.chips?.acoes ?? []
+      }
+    };
+  }
+
   private obterAnosParaRequisicao(): number[] {
     const anosFiltro = Array.from(
       new Set(
@@ -533,6 +604,28 @@ export class ProjetoPpaLoaComponent {
 
     const anoFixado = this.obterAnoFixadoPelasAcoes();
     return anoFixado != null ? [anoFixado] : [];
+  }
+
+  private validarAnoDasAcoes(idsAnos: number[]): boolean {
+    if (idsAnos.length === 0) {
+      this._toastService.showToast(
+        'error',
+        'Informe o ano antes de adicionar uma ação.'
+      );
+      return false;
+    }
+
+    const anoDasAcoesExistentes = this.obterAnoFixadoPelasAcoes();
+
+    if (anoDasAcoesExistentes == null || idsAnos.every(ano => ano === anoDasAcoesExistentes)) {
+      return true;
+    }
+
+    this._toastService.showToast(
+      'error',
+      `Só é permitido adicionar ações do ano ${anoDasAcoesExistentes}. Remova as ações atuais para trocar o ano.`
+    );
+    return false;
   }
 
   private reconstruirFiltroPelasAcoes(): void {
@@ -954,21 +1047,41 @@ export class ProjetoPpaLoaComponent {
       this.acoesPlanejamento = this.acoesPlanejamento.filter(a =>
         !this.mesmaAcao(a, acao)
       );
-      // this.quantidadeAcoes = this.acoesPlanejamento.length;
+
+      const controle = this.projetoForm.get('acoesPlanejamentoProjeto');
+      if (controle) {
+        const acoesDoFormulario =
+          (controle.value as IAcaoPlanejamentoProjeto[] | null) ?? [];
+
+        controle.setValue(
+          acoesDoFormulario.filter(
+            acaoFormulario => Number(acaoFormulario.codAcao) !== Number(acao.id)
+          )
+        );
+        controle.markAsDirty();
+        controle.markAsTouched();
+        controle.updateValueAndValidity();
+      }
+
+      this.updateSelectAllState();
     } else {
 
       const idsAnos = this.obterAnosParaRequisicao();
 
+      if (!this.validarAnoDasAcoes(idsAnos)) {
+        return;
+      }
+
       const idsUos = [
-        ...new Set(this.currentFilter?.idsUos)
+        ...new Set(this.currentFilter?.idsUos ?? [])
       ];
 
       const idsFuncoes = [
-        ...new Set(this.currentFilter?.idsFuncoes)
+        ...new Set(this.currentFilter?.idsFuncoes ?? [])
       ];
 
       const idsProgramas = [
-        ...new Set(this.currentFilter?.idsProgramas)
+        ...new Set(this.currentFilter?.idsProgramas ?? [])
       ];
 
       const idsAcoes = [
@@ -1015,6 +1128,12 @@ export class ProjetoPpaLoaComponent {
     }
 
     if (checked) {
+      const idsAnos = this.obterAnosParaRequisicao();
+      if (!this.validarAnoDasAcoes(idsAnos)) {
+        this.selectAll = false;
+        return;
+      }
+
       const idsAcoesNaoSelecionadas = this.listaAcoesFiltradas
         .filter(acao => !this.isSelecionado(acao))
         .map(acao => Number(acao.id));
@@ -1033,7 +1152,7 @@ export class ProjetoPpaLoaComponent {
         this.periodoPlanejamento?.descricao ?? '',
         [...new Set(this.currentFilter?.idsFuncoes ?? [])],
         [...new Set(this.currentFilter?.idsProgramas ?? [])],
-        this.obterAnosParaRequisicao(),
+        idsAnos,
         [...new Set(this.currentFilter?.idsUos ?? [])],
         idsAcoesNaoSelecionadas
       );

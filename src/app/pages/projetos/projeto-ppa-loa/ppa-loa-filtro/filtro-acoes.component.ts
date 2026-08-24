@@ -80,6 +80,9 @@ export class FiltroAcoesComponent
   somenteLeitura = false;
 
   @Input()
+  bloquearAno = false;
+
+  @Input()
   filtroAtual: Partial<IFiltroPlanejamento> | null = null;
 
   periodoPlanejamento: IPeriodoPlanejamento | null = null;
@@ -105,8 +108,6 @@ export class FiltroAcoesComponent
   // private acoesSubscription?: Subscription;
   private uosSubscription?: Subscription;
   private funcoesSubscription?: Subscription;
-
-  anoEscolhido: boolean = false
 
   constructor(
     private readonly _ppaloaIntegracaoService: PpaloaIntegracaoBiService
@@ -467,7 +468,7 @@ export class FiltroAcoesComponent
     this.programas = [];
     this.acoes = [];
 
-    const idsAnos = this.anoEscolhido
+    const idsAnos = this.bloquearAno
       ? this.normalizarIds(this.filtro.idsAnos)
       : [];
     const chipsAnos = idsAnos.length > 0
@@ -597,10 +598,7 @@ export class FiltroAcoesComponent
 
     };
 
-    if(this.filtro.idsAnos?.length == 0){
-      this.anoEscolhido = false
-    }else{
-      this.anoEscolhido = true
+    if (this.filtro.idsAnos.length > 0) {
       this.carregarUos(true);
     }
 
