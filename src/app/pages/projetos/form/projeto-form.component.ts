@@ -88,7 +88,7 @@ import { IEquipe } from '../../../core/interfaces/equipe.interface';
 import { IAcao } from '../../../core/interfaces/acoes.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TipoPapelEnum } from '../../../core/enums/tipo-papel.enum';
-import { EquipeModel } from '../../../core/models/equipe.model';
+// import { EquipeModel } from '../../../core/models/equipe.model';
 import { TipoStatusEnum } from '../../../core/enums/tipo-status.enum';
 import { ProjetoIntegracaoEdocsFasesModel } from '../../../core/models/projeto-integracao-edocs-fases.model';
 import {
@@ -108,7 +108,9 @@ import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
 import { IIndicadorAvulso } from '../../../core/interfaces/indicador-avulso.interface';
 import { CatalogoIndicadorService } from '../../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
-import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
+// import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
+import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
+import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
 
 declare var bootstrap: any;
 
@@ -122,7 +124,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _subscription: Subscription = new Subscription();
 
   private _atualizarProjeto$: Observable<IProjeto> = EMPTY;
-  private _cadastrarProjeto$: Observable<number> = EMPTY;
+  // private _cadastrarProjeto$: Observable<number> = EMPTY;
 
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
@@ -245,7 +247,88 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     'ods'
   ];
 
+  private readonly camposValidacao = [
+    {
+      path: 'sigla',
+      campo: 'Sigla',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'titulo',
+      campo: 'Título',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'idOrganizacao',
+      campo: 'Organização',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'idResponsavelProponente',
+      campo: 'Responsável Proponente',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'valor.quantia',
+      campo: 'Valor Estimado',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'situacaoProblema',
+      campo: 'Situação Problema',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'objetivo',
+      campo: 'Objetivo',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'objetivoEspecifico',
+      campo: 'Objetivo Específico',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'solucoesPropostas',
+      campo: 'Soluções Propostas',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'arranjosInstitucionais',
+      campo: 'Arranjos Institucionais',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'pecasPlanejamento',
+      campo: 'Peças de Planejamento',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+    },
+    {
+      path: 'impactos',
+      campo: 'Impactos',
+      aba: 'ods',
+      nomeAba: 'ODS',
+    },
+  ] as const;
+
+  public pendenciasProjeto: IPendenciaProjeto[] = [];
+
   public indicadoresCatalogoBI: IIndicadoresCatalogoExterno[] = [];
+
+  public showModalPendencias: boolean = false;
+
+  public mostrarBotaoPendenciasDic: boolean = false;
 
   @ViewChild('enviarProjetoModal') enviarProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('autuarConfirmacaoProjetoModal') confirmarIntegracaoProjetoModalTemplate: TemplateRef<any> | undefined;
@@ -266,6 +349,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   accordionCollapsed = true;
   isMobile = window.innerWidth < 1200;
   subUsuario = '';
+
+  public loadingDownload: boolean = false;
+  public loadingSubmit: boolean = false;
 
   @HostListener('window:resize')
   onResize() {
@@ -369,7 +455,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", response)
+        // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -653,13 +739,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             }
 
           }
-
+          
           // usa uma flag vinda da API informando se o DIC pode ser Editado..
           this.trocarModo(this.podeEditar);
 
           this.loading = false;
           this.isLoadingPessoas = false;
         });
+        
+        this.mostrarBotaoPendenciasDic = this.podeEditar;
 
       }),
 
@@ -770,17 +858,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       label,
       mensagemComplementacao: '',
     }))
-    .sort((a, b) => {
+      .sort((a, b) => {
 
-      // "geral" sempre primeiro
-      if (a.name === 'geral') return -1;
-      if (b.name === 'geral') return 1;
-  
-      // restante em ordem alfabética pelo label
-      return a.label.localeCompare(b.label, 'pt-BR', {
-        sensitivity: 'base',}) 
-       
-    }) as IEstruturaCamposComplementar[];
+        // "geral" sempre primeiro
+        if (a.name === 'geral') return -1;
+        if (b.name === 'geral') return 1;
+
+        // restante em ordem alfabética pelo label
+        return a.label.localeCompare(b.label, 'pt-BR', {
+          sensitivity: 'base',
+        })
+
+      }) as IEstruturaCamposComplementar[];
 
     const rotaAtual = this.route.snapshot.routeConfig?.path;
     if (rotaAtual === 'criar') {
@@ -823,11 +912,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               );
 
               this.trocarModo(true);
-              this.trocarModo(true);
-
+              
               this.mostrarBotaoBaixarDic = false;
               this.loading = false;
               this.isLoadingPessoas = false;
+
+              this.mostrarBotaoPendenciasDic = true;
+
             });
           }),
         );
@@ -948,13 +1039,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public baixarDIC(): void {
 
-    this.loading = true;
+    this.loadingDownload = true;
     this.textoSpinner = 'Baixando DIC...';
 
     this._projetosService.baixarDIC(this._idProjetoEdicao)
       .pipe(
         finalize(() => {
-          this.loading = false;
+          this.loadingDownload = false;
         })
       )
       .subscribe();
@@ -1421,7 +1512,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           enviarProjetoPedirParecer: true,
         });
         if (!this.validarFormulario(this.projetoForm, true)) break;
-        this.validacaoSomaValoresAcoesEnviarParecer(this.projetoForm, false);
+        this.validacaoSomaValoresAcoesEnviarParecer(this.projetoForm);
         break;
 
       case BreadcrumbAcoesEnum.EnviarEfetivacaoParecerEstrategicoOrgamentario:
@@ -1449,7 +1540,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validacaoSomaValoresAcoesEnviarParecer(
     form: FormGroup,
-    isRascunho: boolean,
   ): void {
     if (this.compararValorEstimadoValorAcoes()) {
       this.abrirConfirmarEnvioParecerModal(form);
@@ -1457,6 +1547,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private compararValorEstimadoValorAcoes(): boolean {
+
     const valorEstimadoProjeto = this.projetoForm.get(
       'valorEstimado',
     ) as FormControl<number>;
@@ -1464,9 +1555,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const valorFormGroup = this.projetoForm.get(
       'valor',
     ) as FormGroup<ValorFormType>;
+
     const quantiaFormControl = valorFormGroup.get('quantia') as FormControl<
       number | null
     >;
+
     const acoesProjetoValues = this.projetoForm.get('acoesProjeto')?.value;
 
     if (!acoesProjetoValues) return false;
@@ -1479,22 +1572,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }, 0);
 
     const valorSomaAcoes = Number(totalValorAcoesInformadas) || 0;
+
     const valorEstimadoTotal =
       Number(quantiaFormControl.value) || Number(valorEstimadoProjeto.value);
 
-    if (Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001) {
+    if ( Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001 ) {
       return true;
     }
 
-    this._toastService.showToast(
-      'error',
-      'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
-      [
-        'A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',
-      ],
-    );
+    // this._toastService.showToast(
+    //   'error',
+    //   'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
+    //   [
+    //     'A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',
+    //   ],
+    // );
 
     return false;
+
   }
 
   private trocarModo(permitir: boolean): void {
@@ -1579,92 +1674,97 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validarFormulario(form: FormGroup, isEnvioDic: boolean): boolean {
 
-    for (const key in form.controls) {
-      form.controls[key].markAllAsTouched();
-    }
-
-    const acoesPlanejamentoProjeto = this.projetoForm.get('acoesPlanejamentoProjeto')
-      ?.value as IAcaoPlanejamentoProjeto[] ?? [];
-
-    const naoPrevistoNoPpa = this.projetoForm.get('naoPrevistoNoPpa')
-      ?.value as boolean ?? false;
-
-    if (acoesPlanejamentoProjeto.length === 0 && isEnvioDic && !naoPrevistoNoPpa) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Para envio do DIC não havendo acoes de planejamento informadas é obrigatório informar que não há previsão no PPA.',
-      ]);
+    if (this.obterPendenciasProjeto()?.length > 0){
+      this.abrirModalPendencias()
       return false;
     }
 
-    const indicadoresProjeto = form.get('indicadoresProjeto');
-    const indicadoresAvulsosProjeto = form.get('indicadoresAvulsosProjeto');
+    // for (const key in form.controls) {
+    //   form.controls[key].markAllAsTouched();
+    // }
 
-    const qtdIndicadoresProjeto = indicadoresProjeto?.value?.length ?? 0;
-    const qtdIndicadoresAvulsos = indicadoresAvulsosProjeto?.value?.length ?? 0;
+    // const acoesPlanejamentoProjeto = this.projetoForm.get('acoesPlanejamentoProjeto')
+    //   ?.value as IAcaoPlanejamentoProjeto[] ?? [];
 
-    const temIndicadorProjeto = qtdIndicadoresProjeto > 0;
-    const temIndicadorAvulso = qtdIndicadoresAvulsos > 0;
+    // const naoPrevistoNoPpa = this.projetoForm.get('naoPrevistoNoPpa')
+    //   ?.value as boolean ?? false;
 
-    if (!temIndicadorProjeto && !temIndicadorAvulso) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'É obrigatório informar ao menos um indicador.',
-      ]);
-      return false;
-    }
+    // if (acoesPlanejamentoProjeto.length === 0 && isEnvioDic && !naoPrevistoNoPpa) {
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'Para envio do DIC não havendo acoes de planejamento informadas é obrigatório informar que não há previsão no PPA.',
+    //   ]);
+    //   return false;
+    // }
 
-    if (temIndicadorAvulso && indicadoresProjeto?.hasError('required')) {
-      const errors = { ...indicadoresProjeto.errors };
-      delete errors['required'];
+    // const indicadoresProjeto = form.get('indicadoresProjeto');
+    // const indicadoresAvulsosProjeto = form.get('indicadoresAvulsosProjeto');
 
-      indicadoresProjeto.setErrors(Object.keys(errors).length ? errors : null);
+    // const qtdIndicadoresProjeto = indicadoresProjeto?.value?.length ?? 0;
+    // const qtdIndicadoresAvulsos = indicadoresAvulsosProjeto?.value?.length ?? 0;
 
-    }
+    // const temIndicadorProjeto = qtdIndicadoresProjeto > 0;
+    // const temIndicadorAvulso = qtdIndicadoresAvulsos > 0;
 
-    if (form.invalid) {
-      Object.keys(form.controls).forEach((key) => {
-        const control = form.get(key);
-        if (control && control.invalid) {
-          console.warn(`Campo inválido: ${key}`, control.errors);
-        }
-      });
+    // if (!temIndicadorProjeto && !temIndicadorAvulso) {
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'É obrigatório informar ao menos um indicador.',
+    //   ]);
+    //   return false;
+    // }
 
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Por favor, verifique os campos.',
-      ]);
+    // if (temIndicadorAvulso && indicadoresProjeto?.hasError('required')) {
+    //   const errors = { ...indicadoresProjeto.errors };
+    //   delete errors['required'];
 
-      return false;
+    //   indicadoresProjeto.setErrors(Object.keys(errors).length ? errors : null);
 
-    }
+    // }
 
-    // valida se tem pelo menos uma acao ATIVA no form
-    const acoesAtivas = this.projetoForm
-      .get('acoesProjeto')
-      ?.value.filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo);
+    // if (form.invalid) {
+    //   Object.keys(form.controls).forEach((key) => {
+    //     const control = form.get(key);
+    //     if (control && control.invalid) {
+    //       console.warn(`Campo inválido: ${key}`, control.errors);
+    //     }
+    //   });
 
-    if (acoesAtivas.length === 0) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Nenhuma ação informada.',
-      ]);
-      return false;
-    }
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'Por favor, verifique os campos.',
+    //   ]);
 
-    // valida se tem pelo menos uma acao ATIVA no form
-    // e seja diferente do papel 'Redator'
-    const equipeElaboracao = this.projetoForm.get('equipeElaboracao')
-      ?.value as IEquipe[];
+    //   return false;
 
-    const membrosEquipeAtivas = equipeElaboracao.filter(
-      (membro: EquipeModel) =>
-        membro.idStatus === TipoStatusEnum.Ativo &&
-        membro.idPapel != TipoPapelEnum.Redator,
-    );
+    // }
 
-    if (membrosEquipeAtivas.length === 0) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Nenhum membro informado além do Redator.',
-      ]);
-      return false;
-    }
+    // // valida se tem pelo menos uma acao ATIVA no form
+    // const acoesAtivas = this.projetoForm
+    //   .get('acoesProjeto')
+    //   ?.value.filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo);
+
+    // if (acoesAtivas.length === 0) {
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'Nenhuma ação informada.',
+    //   ]);
+    //   return false;
+    // }
+
+    // // valida se tem pelo menos uma acao ATIVA no form
+    // // e seja diferente do papel 'Redator'
+    // const equipeElaboracao = this.projetoForm.get('equipeElaboracao')
+    //   ?.value as IEquipe[];
+
+    // const membrosEquipeAtivas = equipeElaboracao.filter(
+    //   (membro: EquipeModel) =>
+    //     membro.idStatus === TipoStatusEnum.Ativo &&
+    //     membro.idPapel != TipoPapelEnum.Redator,
+    // );
+
+    // if (membrosEquipeAtivas.length === 0) {
+    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+    //     'Nenhum membro informado além do Redator.',
+    //   ]);
+    //   return false;
+    // }
 
     return true;
 
@@ -1732,6 +1832,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean, isEnvioDic: boolean): void {
+
+    this.loadingSubmit = true;
+    this.textoSpinner = 'Salvando projeto...';
 
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
@@ -1828,7 +1931,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       // console.log('PAYLOAD SUBMIT (PARECER):', payload);
 
-      this.atualizarProjeto(payload, isRascunho, formData).subscribe();
+      this.atualizarProjeto(payload, isRascunho, formData).pipe(
+        finalize(() => {
+          this.loadingSubmit = false;
+          this.textoSpinner = 'Salvando alterações...';
+        })
+      ).subscribe();
 
     } else {
 
@@ -1869,15 +1977,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           metasIndicadorProjeto: indicador.metasIndicadorProjeto
         }));
 
-      const temIndicador =
-        indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
+      // const temIndicador =
+      //   indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
 
-      if (!temIndicador) {
-        this._toastService.showToast('warning', 'O formulário contém erros.', [
-          'Informe pelo menos um indicador.'
-        ]);
-        return;
-      }
+      // if (!temIndicador) {
+      //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+      //     'Informe pelo menos um indicador.'
+      //   ]);
+      //   return;
+      // }
 
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
@@ -1919,9 +2027,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
 
-      if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
-        return;
-      }
+      // if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
+      //   return;
+      // }
 
       const formData = new FormData();
 
@@ -1938,7 +2046,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         ? this.atualizarProjeto(payload, isRascunho, formData)
         : this.cadastrarProjeto(payload, isRascunho);
 
-      requisicao.subscribe();
+      this.loadingSubmit = true;
+      this.textoSpinner = this._idProjetoEdicao
+        ? 'Salvando alterações...'
+        : 'Cadastrando DIC...';
+
+      requisicao
+        .pipe(
+          finalize(() => {
+            this.loadingSubmit = false;
+            this.textoSpinner = 'Carregando...';
+          })
+        )
+        .subscribe();
 
     }
 
@@ -1974,13 +2094,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    const algumIndicadorComMetaInvalida =
-      indicadoresArray.some((i: any) =>
-        i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
-      ) ||
-      indicadoresAvulsosArray.some((i: any) =>
-        i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
-      );
+    // const algumIndicadorComMetaInvalida =
+    //   indicadoresArray.some((i: any) =>
+    //     i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
+    //   ) ||
+    //   indicadoresAvulsosArray.some((i: any) =>
+    //     i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
+    //   );
 
     // if (algumIndicadorComMetaInvalida) {
     //   this._toastService.showToast('warning', 'Erro ao validar indicadores', [
@@ -1990,6 +2110,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     // }
 
     return true;
+
   }
 
   onSelecionarOrganizacao(organizacao: any) {
@@ -2212,16 +2333,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       if (result === 'confirmado') {
 
         if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) {
-          this.reenviarEmailPedidoParecer().subscribe({
-            error: (error) => {
-              console.error('[Reenvio Parecer] Erro:', error);
-              this._toastService.showToast(
-                'error',
-                'Erro ao reenviar e-mail de pedido de parecer.',
-              );
-            },
-          });
+
+          this.loadingSubmit = true;
+          this.textoSpinner = 'Reenviando pedido parecer...'
+
+          this.reenviarEmailPedidoParecer()
+            .pipe(finalize(() => { 
+              this.loadingSubmit = false; 
+              this.textoSpinner = 'Carregando...'; }))
+            .subscribe({
+              error: (error) => {
+                console.error('[Reenvio Parecer] Erro:', error);
+                this._toastService.showToast(
+                  'error',
+                  'Erro ao reenviar e-mail de pedido de parecer.',
+                );
+              },
+            });
+
           return;
+
         }
 
         this.submitProjetoForm(form, false, true);
@@ -2396,15 +2527,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           metasIndicadorProjeto: indicador.metasIndicadorProjeto
         }));
 
-      const temIndicador =
-        indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
+      // const temIndicador =
+      //   indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
 
-      if (!temIndicador) {
-        this._toastService.showToast('warning', 'O formulário contém erros.', [
-          'Informe pelo menos um indicador.'
-        ]);
-        return;
-      }
+      // if (!temIndicador) {
+      //   this._toastService.showToast('warning', 'O formulário contém erros.', [
+      //     'Informe pelo menos um indicador.'
+      //   ]);
+      //   return;
+      // }
 
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
@@ -2451,7 +2582,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }
 
       // const payload = new ProjetoFormModel(form.value as IProjetoForm);
-
       payload.idOrganizacao = this.projetoForm.get('idOrganizacao')?.value;
 
       this.reentranharDicProjetoAsync(payload);
@@ -3057,7 +3187,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'Erro ao consultar andamento da integração com o E-Docs.',
           );
         }
-        
+
       });
 
   }
@@ -3370,18 +3500,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }
     }
 
-    // const campoOds = this.projetoForm.get('impactos');
-    // campoOds?.clearValidators();
-    // campoOds?.updateValueAndValidity();
-    // if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
-    //   if (!this.validarFormulario(this.projetoForm)) {
-    //     this.abrirAba('nav-indicadores');
-    //     return;
-    //   }
-    // }
-    // campoOds?.setValidators([Validators.required]);
-    // campoOds?.updateValueAndValidity();
-
     this.abrirAba('nav-planejamento');
 
   }
@@ -3504,5 +3622,354 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   parecerPossuiAnexo(parecer: IParecer): boolean {
     return parecer?.nomeArquivo?.trim().length > 0;
   }
+
+  private obterPendenciasProjeto(
+    abas?: AbaProjeto[],
+  ): IPendenciaProjeto[] {
+
+    const pendencias: IPendenciaProjeto[] = [];
+
+    const deveValidarAba = (aba: AbaProjeto): boolean =>
+      !abas || abas.includes(aba);
+
+    this.projetoForm.updateValueAndValidity({
+      emitEvent: false,
+    });
+
+    // =====================================================
+    // CAMPOS DO REACTIVE FORM
+    // =====================================================
+
+    this.camposValidacao.forEach((campo) => {
+
+      if (!deveValidarAba(campo.aba)) {
+        return;
+      }
+
+      const control = this.projetoForm.get(campo.path);
+
+      if (!control) {
+        console.warn(
+          `Controle não encontrado na validação: ${campo.path}`,
+        );
+        return;
+      }
+
+      if (control.invalid) {
+        pendencias.push({
+          id: campo.path,
+          aba: campo.aba,
+          nomeAba: campo.nomeAba,
+          campo: campo.campo,
+          mensagem: this.obterMensagemErroControle(
+            campo.campo,
+            control,
+          ),
+          controlPath: campo.path,
+        });
+      }
+    });
+
+    // =====================================================
+    // EQUIPE DE ELABORAÇÃO
+    // =====================================================
+
+    if (deveValidarAba('propriedades')) {
+
+      const equipe =
+        (this.projetoForm.get('equipeElaboracao')?.value ?? []) as IEquipe[];
+
+      const possuiMembroAtivo =
+        equipe.some(
+          (membro: IEquipe) =>
+            membro.idStatus === TipoStatusEnum.Ativo &&
+            membro.idPapel !== TipoPapelEnum.Redator,
+        );
+
+      if (!possuiMembroAtivo) {
+        pendencias.push({
+          id: 'equipeElaboracao',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+          campo: 'Equipe de Elaboração',
+          mensagem:
+            'Informe pelo menos um membro ativo além do Redator.',
+          controlPath: 'equipeElaboracao',
+        });
+      }
+    }
+
+    // =====================================================
+    // AÇÕES DO PROJETO
+    // =====================================================
+
+    if (deveValidarAba('propriedades')) {
+
+      const acoes =
+        (this.projetoForm.get('acoesProjeto')?.value ?? []) as IAcao[];
+
+      const possuiAcaoAtiva =
+        acoes.some(
+          (acao: IAcao) =>
+            acao.idStatus === TipoStatusEnum.Ativo,
+        );
+
+      if (!possuiAcaoAtiva) {
+
+        pendencias.push({
+          id: 'acoesProjeto',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+          campo: 'Ações do Projeto',
+          mensagem:
+            'Informe pelo menos uma ação do projeto.',
+          controlPath: 'acoesProjeto',
+        });
+
+      }
+
+      if( !this.compararValorEstimadoValorAcoes() ){
+
+        pendencias.push({
+          id: 'acoesProjeto',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+          campo: 'Ações do Projeto',
+          mensagem:
+            'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
+          controlPath: 'acoesProjeto',
+        });
+
+      }
+
+    }
+
+    // =====================================================
+    // INDICADORES
+    // =====================================================
+
+    if (deveValidarAba('indicadores')) {
+
+      const indicadores =
+        (this.projetoForm.get('indicadoresProjeto')?.value ?? []) as IIndicadores[];
+
+      const indicadoresAvulsos =
+        (this.projetoForm.get('indicadoresAvulsosProjeto')?.value ?? []) as IIndicadorAvulso[];
+
+      if (
+        indicadores.length === 0 &&
+        indicadoresAvulsos.length === 0
+      ) {
+        pendencias.push({
+          id: 'indicadores',
+          aba: 'indicadores',
+          nomeAba: 'Indicadores',
+          campo: 'Indicadores',
+          mensagem:
+            'Informe pelo menos um indicador.',
+        });
+      }
+
+      const algumIndicadorSemMeta =
+        indicadores.some((indicador: any) =>
+          indicador.metasIndicadorProjeto?.some(
+            (meta: any) => !meta.valorMeta,
+          ),
+        ) ||
+        indicadoresAvulsos.some((indicador: any) =>
+          indicador.metasIndicadorProjeto?.some(
+            (meta: any) => !meta.valorMeta,
+          ),
+        );
+
+      if (algumIndicadorSemMeta) {
+        pendencias.push({
+          id: 'metasIndicadores',
+          aba: 'indicadores',
+          nomeAba: 'Indicadores',
+          campo: 'Metas dos Indicadores',
+          mensagem:
+            'Preencha todas as metas dos indicadores.',
+        });
+      }
+    }
+
+    // =====================================================
+    // ODS
+    // =====================================================
+    // if (deveValidarAba('ods')) {
+    //   const ods =
+    //     this.projetoForm.get('odsProjeto')?.value ?? [];
+    //   if (ods.length === 0) {
+    //     pendencias.push({
+    //       id: 'ods',
+    //       aba: 'ods',
+    //       nomeAba: 'ODS',
+    //       campo: 'ODS',
+    //       mensagem:
+    //         'Informe pelo menos um ODS.',
+    //       controlPath: 'odsProjeto',
+    //     });
+    //   }
+    // }
+
+    // =====================================================
+    // PLANEJAMENTO PPA
+    // =====================================================
+
+    if (deveValidarAba('planejamento')) {
+
+      const valorPlanejamento =
+        this.projetoForm.get('acoesPlanejamentoProjeto')?.value;
+
+      const acoesPlanejamento =
+        Array.isArray(valorPlanejamento)
+          ? valorPlanejamento
+          : [];
+
+      const naoPrevistoNoPpa =
+        this.projetoForm.get('naoPrevistoNoPpa')?.value === true;
+
+      if (
+        acoesPlanejamento.length === 0 &&
+        !naoPrevistoNoPpa
+      ) {
+        pendencias.push({
+          id: 'planejamentoPpa',
+          aba: 'planejamento',
+          nomeAba: 'Planejamento',
+          campo: 'Planejamento PPA',
+          mensagem:
+            'Informe uma ação de planejamento ou marque que o projeto não está previsto no PPA.',
+        });
+      }
+    }
+
+    return pendencias;
+
+  }
+
+  private obterMensagemErroControle(
+    nomeCampo: string,
+    control: AbstractControl,
+  ): string {
+
+    if (control.hasError('required')) {
+      return `${nomeCampo} é obrigatório.`;
+    }
+
+    if (control.hasError('maxlength')) {
+      const limite =
+        control.getError('maxlength')?.requiredLength;
+
+      return `${nomeCampo} deve possuir no máximo ${limite} caracteres.`;
+    }
+
+    if (control.hasError('minlength')) {
+      const limite =
+        control.getError('minlength')?.requiredLength;
+
+      return `${nomeCampo} deve possuir no mínimo ${limite} caracteres.`;
+    }
+
+    return `${nomeCampo} possui informação inválida.`;
+
+  }
+
+  // private validarProjeto(
+  //   abas?: AbaProjeto[],
+  // ): boolean {
+  //   this.pendenciasProjeto =
+  //     this.obterPendenciasProjeto(abas);
+  //   this.marcarCamposPendentes(
+  //     this.pendenciasProjeto,
+  //   );
+  //   return this.pendenciasProjeto.length === 0;
+  // }
+
+  // private marcarCamposPendentes(
+  //   pendencias: IPendenciaProjeto[],
+  // ): void {
+  //   pendencias.forEach((pendencia) => {
+  //     if (!pendencia.controlPath) {
+  //       return;
+  //     }
+  //     const control =
+  //       this.projetoForm.get(
+  //         pendencia.controlPath,
+  //       );
+  //     control?.markAsTouched();
+  //     control?.markAsDirty();
+  //   });
+  // }
+
+  public abrirModalPendencias(): void {
+
+    this.showModalPendencias = true
+
+    this.pendenciasProjeto =
+      this.obterPendenciasProjeto();
+
+  }
+
+  public irParaPendencia(pendencia: IPendenciaProjeto,): void {
+
+    this.showModalPendencias = false;
+
+    this.abrirAbaPendencia(pendencia.aba);
+
+    setTimeout(() => {
+
+      if (!pendencia.controlPath) {
+        return;
+      }
+
+      const elemento =
+        document.querySelector<HTMLElement>(
+          `[data-control-path="${pendencia.controlPath}"]`,
+        );
+
+      if (!elemento) {
+        this._toastService.showToast('warning', 'Campo não encontrado:', [pendencia.controlPath,]);
+        console.warn(
+          'Campo não encontrado:',
+          pendencia.controlPath,
+        );
+        return;
+      }
+
+      elemento.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+
+      this.projetoForm
+        .get(pendencia.controlPath)
+        ?.markAsTouched();
+
+      const campo =
+        elemento.querySelector<HTMLElement>(
+          'input, textarea, select, [tabindex]',
+        );
+
+      campo?.focus();
+
+    }, 150);
+
+  }
+
+  private abrirAbaPendencia(aba: AbaProjeto): void {
+
+    const abas: Record<AbaProjeto, string> = {
+      propriedades: 'nav-propriedades',
+      indicadores: 'nav-indicadores',
+      ods: 'nav-ods-indicadores',
+      planejamento: 'nav-planejamento',
+    };
+
+    this.abrirAba(abas[aba]);
+
+  }
+
 
 }

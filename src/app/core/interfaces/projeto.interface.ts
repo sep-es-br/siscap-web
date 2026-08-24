@@ -76,6 +76,7 @@ export interface IProjetoTableData
   isRascunho: boolean;
   protocoloEdocs: string;
   aguardandoProtocolo: boolean;
+  dataCriacaoDic: string;
 }
 
 export interface IProjetoFiltroPesquisa

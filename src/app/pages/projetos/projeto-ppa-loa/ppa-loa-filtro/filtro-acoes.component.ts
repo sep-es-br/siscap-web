@@ -735,7 +735,7 @@ export class FiltroAcoesComponent
 
     this.carregandoUos = true;
 
-    this.uosSubscription =
+    this.funcoesSubscription =
       this._ppaloaIntegracaoService
         .listarUosPorAnosPpaLoa(idsAnos)
         .pipe(
