@@ -3,6 +3,7 @@
     <colgroup>
       <col class="sigla-col" />
       <col class="titulo-col" />
+      <col class="data-criacao-col" />
       <col class="rascunho-col" />
       <col class="status-col" />
       <col class="processoEdocs-col" />
@@ -15,12 +16,16 @@
           Sigla
         </th>
         <th [sortable]="'titulo'" (sort)="sortColumn($event)" class="pointer">
-          Título
-        </th>
+          Título</th>
+        <th [sortable]="'criadoEm'" (sort)="sortColumn($event)" class="pointer">
+          Criado Em</th>
         <th></th>
-        <th>Status</th>
-        <th>Processo<br>E-Docs</th>
-        <th>Valor<br>Estimado</th>
+        <th [sortable]="'historicoStatus.status'" (sort)="sortColumn($event)" class="pointer">
+          Status</th>
+        <th [sortable]="'protocoloEdocs'" (sort)="sortColumn($event)" class="pointer">
+          Processo<br>E-Docs</th>
+        <th [sortable]="'valorEstimado'" (sort)="sortColumn($event)" class="pointer">
+          Valor<br>Estimado</th>
         <th></th>
       </tr>
     </thead>
@@ -28,20 +33,18 @@
       <tr *ngFor="let projeto of projetosList()" (click)="editarProjeto(projeto.id)">
         <td>{{ projeto.sigla }}</td>
         <td>{{ projeto.titulo }}</td>
-        <td>
-        </td>
+        <td>{{ projeto.dataCriacaoDic  | date:'dd/MM/yyyy' }}</td>
+        <td></td>
         <td>{{ projeto.status }}</td>
-        <td style="white-space: nowrap; word-break: keep-all;">
-          <a *ngIf="projeto.protocoloEdocs" [href]="urlEdocsBase + projeto.protocoloEdocs" target="_blank"
-            rel="noopener noreferrer">
+        <td class="processo-edocs" >
+          <a *ngIf="projeto.protocoloEdocs" [href]="urlEdocsBase + projeto.protocoloEdocs" target="_blank"  rel="noopener noreferrer">
             {{ projeto.protocoloEdocs }}
           </a>
-          <span class="badge rounded-pill text-bg-warning d-inline-flex align-items-center gap-1"
-            *ngIf="projetosAguardando.has(projeto.id)">
+          <span class="badge rounded-pill text-bg-warning d-inline-flex align-items-center gap-1" *ngIf="projetosAguardando.has(projeto.id)">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             Aguardando E-Docs</span>
         </td>
-        <td style="text-align: right; white-space: nowrap; ">
+        <td class="valor-estimado" >
           {{
           projeto.valorEstimado
           | mask
@@ -55,9 +58,8 @@
           }}
         </td>
         <td (click)="podeDeletarDic(projeto.id) ? $event.stopPropagation() : undefined">
-          <button class="btn border-none" (click)="deletarProjeto(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)"
-            title="Excluir">
-            <i class="fa-solid fa-trash-can me-2"></i>
+          <button type="button" class="btn-excluir" (click)="deletarProjeto(projeto.id)" [hidden]="!podeDeletarDic(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)"  title="Excluir">
+            <i class="fa-solid fa-trash-can"></i>
           </button>
         </td>
       </tr>
@@ -65,4 +67,5 @@
   </table>
 
   <ng-content select="siscap-pagination"></ng-content>
+
 </div>
