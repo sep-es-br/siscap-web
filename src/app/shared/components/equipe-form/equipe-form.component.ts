@@ -35,7 +35,8 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
   templateUrl: './equipe-form.component.html',
   styleUrl: './equipe-form.component.scss',
 })
-export class EquipeFormComponent implements OnDestroy {
+export class EquipeFormComponent {
+
   @Input() public tiposPapelOpcoes: IOpcoesDropdown[] = [];
 
   @Input() public isModoEdicao: boolean = false;
@@ -64,10 +65,6 @@ export class EquipeFormComponent implements OnDestroy {
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
     this.permissaoRemoverMembro = this._usuarioService.verificarPermissao('adminAuth');
-  }
-
-  ngOnDestroy(): void {
-    this.equipeService.equipeFormArray.clear();
   }
 
   public getMembroNome(subPessoa: string | null | undefined): string {

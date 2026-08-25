@@ -1,0 +1,67 @@
+<div class="filter-card">
+  <div
+    class="filter-card__chips-navigation"
+    [class.filter-card__chips-navigation--fade-left]="canScrollLeft"
+    [class.filter-card__chips-navigation--fade-right]="canScrollRight">
+    <div
+      #chipsScroller
+      class="filter-card__chips"
+      [class.filter-card__chips--dragging]="isDragging"
+      (scroll)="updateNavVisibility()"
+      (pointerdown)="onPointerDown($event)"
+      (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerEnd($event)"
+      (pointercancel)="onPointerEnd($event)"
+      (lostpointercapture)="onPointerEnd($event)">
+      <div
+        *ngFor="let chip of displayedChips; trackBy: trackByChip"
+        class="filter-chip"
+        [class.filter-chip--base]="chip.type === 'base'"
+        [class.filter-chip--removable]="chip.removable && !disabled">
+        <span class="filter-chip__content">
+          <span class="filter-chip__label">{{ chip.label }}</span>
+          <span class="filter-chip__value" [title]="chip.value">{{ chip.value }}</span>
+        </span>
+
+        <button
+          *ngIf="chip.removable && !disabled"
+          type="button"
+          class="filter-chip__remove"
+          [attr.aria-label]="'Remover filtro ' + chip.label"
+          (keydown)="$event.stopPropagation()"
+          (click)="onChipRemove($event, chip)">
+          <i class="pi pi-times" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <button
+      *ngIf="canScrollLeft"
+      type="button"
+      class="filter-card__nav filter-card__nav--left"
+      aria-label="Rolar filtros selecionados para a esquerda"
+      (click)="scrollChips('left')">
+      <i class="pi pi-chevron-left" aria-hidden="true"></i>
+    </button>
+
+    <button
+      *ngIf="canScrollRight"
+      type="button"
+      class="filter-card__nav filter-card__nav--right"
+      aria-label="Rolar filtros selecionados para a direita"
+      (click)="scrollChips('right')">
+      <i class="pi pi-chevron-right" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <p-button
+    styleClass="btn-filtros"
+    icon="pi pi-filter"
+    [rounded]="true"
+    [outlined]="true"
+    ariaLabel="Abrir filtros"
+    title="Filtros"
+    [disabled]="disabled || loading"
+    (click)="onOpenFilter()">
+  </p-button>
+</div>

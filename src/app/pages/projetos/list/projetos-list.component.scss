@@ -1,37 +1,67 @@
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
 .sigla-col {
   width: 10%;
 }
 
 .titulo-col {
-  width: 50%;
+  width: 40%;
 }
 
-.status-col {
-  width: 12%;
-}
-
-.valorEstimado-col {
-  width: 12%;
-}
-
-.processoEdocs-col {
-  width: 12%;
-}
-
-.rascunho-col {
+.data-criacao-col {
   width: 11%;
 }
 
+.rascunho-col {
+  width: 4%;
+}
+
+.status-col {
+  width: 11%;
+}
+
+.processoEdocs-col {
+  width: 10%;
+}
+
+.valorEstimado-col {
+  width: 10%;
+}
+
 .acoes-col {
-  width: 5%;
+  width: 4%;
 }
 
-button {
-  all: unset;
-
-  &:disabled, &:disabled * {
-    visibility: hidden;
-  }
+.valor-estimado {
+  text-align: right;
+  white-space: nowrap;
 }
 
+.processo-edocs {
+  white-space: nowrap;
+}
 
+td,
+th {
+  vertical-align: middle;
+}
+
+// .btn-excluir {
+//   all: unset;
+//   &:disabled,
+//   &:disabled * {
+//     visibility: hidden;
+//   }
+// }
+
+.btn-excluir {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  cursor: pointer;
+}

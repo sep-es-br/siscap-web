@@ -1,41 +1,30 @@
-<!-- OVERLAY -->
-<div class="modal-overlay show" (click)="fecharModal()">
-</div>
+<siscap-filter-modal
+    ariaLabel="Filtros de planejamento"
+    [restoreDisabled]="somenteLeitura"
+    [applyDisabled]="somenteLeitura"
+    (closeModal)="fecharModal()"
+    (restore)="resetar()"
+    (applyFilter)="applyFilter()">
 
-<!-- MODAL -->
-<div class="filter-modal show">
-
-    <!-- HEADER -->
-    <div class="modal-header">
-        <h2 class="card-title">
-            FILTROS PLANEJAMENTO
-        </h2>
-
-        <button type="button" class="close-modal" aria-label="Fechar" (click)="fecharModal()">
-            ✕
-        </button>
-    </div>
-
-    <!-- BODY -->
-    <div class="filter-body">
-
-        <div class="filter-grid">
+    <div class="filter-grid row g-3">
 
             <!-- ANO DO PPA -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
 
                 <label class="filter-label">
                     Ano
                 </label>
 
-                <ng-select [items]="anos" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsAnos" [multiple]="true"
-                    [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="somenteLeitura"
-                    placeholder="Selecione..." class="select-filtro" (change)="onAnoChange()">
+                <ng-select [items]="anos"
+                    bindLabel="nome" bindValue="id"
+                    [ngModel]="filtro.idsAnos[0]"
+                    [multiple]="false"
+                    [closeOnSelect]="true"
+                    [searchable]="false" [clearable]="true" [disabled]="somenteLeitura || bloquearAno"
+                    placeholder="Selecione..." class="select-filtro" (ngModelChange)="onAnoChange($event)">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
                         <div class="select-option-checkbox">
-                            <input type="checkbox" tabindex="-1" [checked]="item$.selected"
-                                style="margin-right: 8px; pointer-events: none;" />
                             <span>{{ item.nome }}</span>
                         </div>
                     </ng-template>
@@ -55,13 +44,13 @@
             </div>
 
             <!-- UO DO PPA -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
 
                 <label class="filter-label">
                     Unidade Orçamentária
                 </label>
 
-                <ng-select [items]="uos" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsUos" [multiple]="true"
+                <ng-select [items]="uos" bindLabel="nome" bindValue="id" [ngModel]="filtro.idsUos" [multiple]="true"
                     [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsAnos.length
@@ -69,7 +58,7 @@
                         filtro.idsAnos.length
                             ? 'Selecione...'
                             : 'Selecione um Ano primeiro...'
-                    " class="select-filtro" (change)="onUoChange()">
+                    " class="select-filtro" (ngModelChange)="onUoChange($event)">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
                         <div class="select-option-checkbox">
@@ -94,13 +83,13 @@
             </div>
 
             <!-- FUNÇÕES -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
 
                 <label class="filter-label">
                     Função
                 </label>
 
-                <ng-select [items]="funcoes" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsFuncoes"
+                <ng-select [items]="funcoes" bindLabel="nome" bindValue="id" [ngModel]="filtro.idsFuncoes"
                     [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsUos.length
@@ -108,7 +97,7 @@
                         filtro.idsUos.length
                             ? 'Selecione...'
                             : 'Selecione uma UO primeiro...'
-                    " class="select-filtro" (change)="onFuncoesChange()">
+                    " class="select-filtro" (ngModelChange)="onFuncoesChange($event)">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
 
@@ -134,12 +123,12 @@
             </div>
 
             <!-- PROGRAMA -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
                 <label class="filter-label">
                     Programa
                 </label>
 
-                <ng-select [items]="programas" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsProgramas"
+                <ng-select [items]="programas" bindLabel="nome" bindValue="id" [ngModel]="filtro.idsProgramas"
                     [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
                         somenteLeitura ||
                         !filtro.idsFuncoes.length
@@ -147,7 +136,7 @@
                         filtro.idsFuncoes.length
                             ? 'Selecione...'
                             : 'Selecione uma Função primeiro...'
-                    " class="select-filtro" (change)="onProgramasChange()">
+                    " class="select-filtro" (ngModelChange)="onProgramasChange($event)">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
 
@@ -173,61 +162,5 @@
                 </ng-select>
             </div>
 
-            <!-- AÇÃO -->
-            <div class="filter-field">
-                <label class="filter-label">
-                    Ação
-                </label>
-
-                <ng-select [items]="acoes" bindLabel="nome" bindValue="id" [(ngModel)]="filtro.idsAcoes"
-                    [multiple]="true" [closeOnSelect]="false" [searchable]="true" [clearable]="true" [disabled]="
-                        somenteLeitura ||
-                        !filtro.idsProgramas.length
-                    " [placeholder]="
-                        filtro.idsProgramas.length
-                            ? 'Selecione...'
-                            : 'Selecione um Programa primeiro...'
-                    " class="select-filtro">
-
-                    <ng-template ng-option-tmp let-item="item" let-item$="item$">
-
-                        <div class="select-option-checkbox">
-                            <input type="checkbox" tabindex="-1" [checked]="item$.selected"
-                                style="margin-right: 8px; pointer-events: none;" />
-
-                            <span>{{ item.nome }}</span>
-                        </div>
-                    </ng-template>
-
-                    <ng-template ng-multi-label-tmp let-items="items">
-
-                        <span class="custom-selected-label" *ngIf="items.length === 1">
-                            {{ items[0].nome }}
-                        </span>
-
-                        <span class="custom-selected-label" *ngIf="items.length > 1">
-                            {{ items.length }} selecionadas
-                        </span>
-                    </ng-template>
-
-                </ng-select>
-            </div>
-
         </div>
-
-    </div>
-
-    <!-- FOOTER -->
-    <div class="modal-footer">
-
-        <button type="button" class="btn-restaurar" [disabled]="somenteLeitura" (click)="resetar()">
-            RESTAURAR FILTROS
-        </button>
-
-        <button type="button" class="btn-filtrar" (click)="applyFilter()">
-            FILTRAR
-        </button>
-
-    </div>
-
-</div>
+</siscap-filter-modal>

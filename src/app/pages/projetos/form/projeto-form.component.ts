@@ -353,6 +353,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   isMobile = window.innerWidth < 1200;
   subUsuario = '';
 
+  public loadingDownload: boolean = false;
+  public loadingSubmit: boolean = false;
+
   @HostListener('window:resize')
   onResize() {
     this.isMobile = window.innerWidth < 1200;
@@ -1039,13 +1042,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public baixarDIC(): void {
 
-    this.loading = true;
+    this.loadingDownload = true;
     this.textoSpinner = 'Baixando DIC...';
 
     this._projetosService.baixarDIC(this._idProjetoEdicao)
       .pipe(
         finalize(() => {
-          this.loading = false;
+          this.loadingDownload = false;
         })
       )
       .subscribe();
@@ -1517,7 +1520,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           enviarProjetoPedirParecer: true,
         });
         if (!this.validarFormulario(this.projetoForm, true)) break;
-        this.validacaoSomaValoresAcoesEnviarParecer(this.projetoForm, false);
+        this.validacaoSomaValoresAcoesEnviarParecer(this.projetoForm);
         break;
 
       case BreadcrumbAcoesEnum.EnviarEfetivacaoParecerEstrategicoOrgamentario:
@@ -1545,7 +1548,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validacaoSomaValoresAcoesEnviarParecer(
     form: FormGroup,
-    isRascunho: boolean,
   ): void {
     if (this.compararValorEstimadoValorAcoes()) {
       this.abrirConfirmarEnvioParecerModal(form);
@@ -1841,6 +1843,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.carregarCamposValidar(isEnvioDic);
 
+    this.loadingSubmit = true;
+    this.textoSpinner = 'Salvando projeto...';
+
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
       this.statusProjeto === StatusProjetoEnum.Elegivel
@@ -1858,9 +1863,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const indicadoresProjetoPayload = this.projetoForm.getRawValue()
         .indicadoresProjeto
         .filter((indicador: IIndicadores) =>
-          indicador.idIndicadorExterno !== null &&
-          indicador.idIndicadorExterno !== undefined &&
-          indicador.idIndicadorExterno !== 0
+          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
         )
         .map((indicador: IIndicadores) => ({
           idIndicador: indicador.idIndicador,
@@ -1868,7 +1871,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoIndicador: indicador.descricaoIndicador ?? null,
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno,
+          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
           metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
             id: meta.id,
             anoMeta: meta.anoMeta,
@@ -1938,16 +1941,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       // console.log('PAYLOAD SUBMIT (PARECER):', payload);
 
-      this.atualizarProjeto(payload, isRascunho, formData).subscribe();
+      this.atualizarProjeto(payload, isRascunho, formData).pipe(
+        finalize(() => {
+          this.loadingSubmit = false;
+          this.textoSpinner = 'Salvando alterações...';
+        })
+      ).subscribe();
 
     } else {
 
       const indicadoresProjetoPayload = this.projetoForm.getRawValue()
         .indicadoresProjeto
         .filter((indicador: IIndicadores) =>
-          indicador.idIndicadorExterno !== null &&
-          indicador.idIndicadorExterno !== undefined &&
-          indicador.idIndicadorExterno !== 0
+          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
         )
         .map((indicador: IIndicadores) => ({
           idIndicador: indicador.idIndicador,
@@ -1955,7 +1961,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoIndicador: indicador.descricaoIndicador ?? null,
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno,
+          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
           metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
             id: meta.id,
             anoMeta: meta.anoMeta,
@@ -2050,7 +2056,131 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         ? this.atualizarProjeto(payload, isRascunho, formData)
         : this.cadastrarProjeto(payload, isRascunho);
 
-      requisicao.subscribe();
+      this.loadingSubmit = true;
+      this.textoSpinner = this._idProjetoEdicao
+        ? 'Salvando alterações...'
+        : 'Cadastrando DIC...';
+
+      requisicao
+        .pipe(
+          finalize(() => {
+            this.loadingSubmit = false;
+            this.textoSpinner = 'Carregando...';
+          })
+        )
+        .subscribe();
+
+    }
+
+  }
+
+  private carregarCamposValidar(isEnvioDic: boolean) {
+
+    if (isEnvioDic) { // envio do DIC
+
+      this.camposValidacao = [
+        {
+          path: 'sigla',
+          campo: 'Sigla',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'titulo',
+          campo: 'Título',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'idOrganizacao',
+          campo: 'Organização',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'idResponsavelProponente',
+          campo: 'Responsável Proponente',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'valor.quantia',
+          campo: 'Valor Estimado',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'situacaoProblema',
+          campo: 'Situação Problema',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'objetivo',
+          campo: 'Objetivo',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'objetivoEspecifico',
+          campo: 'Objetivo Específico',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'solucoesPropostas',
+          campo: 'Soluções Propostas',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'arranjosInstitucionais',
+          campo: 'Arranjos Institucionais',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'pecasPlanejamento',
+          campo: 'Peças de Planejamento',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'impactos',
+          campo: 'Impactos',
+          aba: 'ods',
+          nomeAba: 'ODS',
+        },
+      ] as const;
+
+
+    } else { // rascunho
+
+      this.camposValidacao = [
+        {
+          path: 'sigla',
+          campo: 'Sigla',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'titulo',
+          campo: 'Título',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'idOrganizacao',
+          campo: 'Organização',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },
+        {
+          path: 'idResponsavelProponente',
+          campo: 'Responsável Proponente',
+          aba: 'propriedades',
+          nomeAba: 'DIC',
+        },]
 
     }
 
@@ -2437,16 +2567,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       if (result === 'confirmado') {
 
         if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) {
-          this.reenviarEmailPedidoParecer().subscribe({
-            error: (error) => {
-              console.error('[Reenvio Parecer] Erro:', error);
-              this._toastService.showToast(
-                'error',
-                'Erro ao reenviar e-mail de pedido de parecer.',
-              );
-            },
-          });
+
+          this.loadingSubmit = true;
+          this.textoSpinner = 'Reenviando pedido parecer...'
+
+          this.reenviarEmailPedidoParecer()
+            .pipe(finalize(() => { 
+              this.loadingSubmit = false; 
+              this.textoSpinner = 'Carregando...'; }))
+            .subscribe({
+              error: (error) => {
+                console.error('[Reenvio Parecer] Erro:', error);
+                this._toastService.showToast(
+                  'error',
+                  'Erro ao reenviar e-mail de pedido de parecer.',
+                );
+              },
+            });
+
           return;
+
         }
 
         this.submitProjetoForm(form, false, true);
@@ -2593,9 +2733,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const indicadoresProjetoPayload = this.projetoForm.getRawValue()
         .indicadoresProjeto
         .filter((indicador: IIndicadores) =>
-          indicador.idIndicadorExterno !== null &&
-          indicador.idIndicadorExterno !== undefined &&
-          indicador.idIndicadorExterno !== 0
+          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
         )
         .map((indicador: IIndicadores) => ({
           idIndicador: indicador.idIndicador,
@@ -2603,7 +2741,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoIndicador: indicador.descricaoIndicador ?? null,
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno,
+          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
           metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
             id: meta.id,
             anoMeta: meta.anoMeta,
@@ -2704,9 +2842,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       const indicadoresProjetoPayload = this.projetoForm.getRawValue()
         .indicadoresProjeto
         .filter((indicador: IIndicadores) =>
-          indicador.idIndicadorExterno !== null &&
-          indicador.idIndicadorExterno !== undefined &&
-          indicador.idIndicadorExterno !== 0
+          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
         )
         .map((indicador: IIndicadores) => ({
           idIndicador: indicador.idIndicador,
@@ -2714,7 +2850,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           descricaoIndicador: indicador.descricaoIndicador ?? null,
           descricaoMeta: indicador.descricaoMeta ?? null,
           idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno,
+          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
           metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
             id: meta.id,
             anoMeta: meta.anoMeta,
@@ -2812,9 +2948,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const indicadoresProjetoPayload = this.projetoForm.getRawValue()
       .indicadoresProjeto
       .filter((indicador: IIndicadores) =>
-        indicador.idIndicadorExterno !== null &&
-        indicador.idIndicadorExterno !== undefined &&
-        indicador.idIndicadorExterno !== 0
+        (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
       )
       .map((indicador: IIndicadores) => ({
         idIndicador: indicador.idIndicador,
@@ -2822,7 +2956,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         descricaoIndicador: indicador.descricaoIndicador ?? null,
         descricaoMeta: indicador.descricaoMeta ?? null,
         idStatus: indicador.idStatus ?? 1,
-        idIndicadorExterno: indicador.idIndicadorExterno,
+        idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
         metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
           id: meta.id,
           anoMeta: meta.anoMeta,
@@ -3195,7 +3329,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             .pipe(
 
               tap((response) => {
-                console.log('Response da API:', response);
+                // console.log('Response da API:', response);
               }),
 
               map((response) =>

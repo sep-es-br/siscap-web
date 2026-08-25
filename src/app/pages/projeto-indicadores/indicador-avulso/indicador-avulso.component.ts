@@ -70,7 +70,8 @@ export class IndicadorAvulsoComponent {
           anoMeta: [ano],
           valorMeta: [
                 null,
-                [Validators.required]
+                [Validators.required, 
+                 Validators.maxLength(20)]
                 ]
         })
       );
