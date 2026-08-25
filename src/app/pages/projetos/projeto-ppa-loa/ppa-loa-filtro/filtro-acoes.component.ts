@@ -309,7 +309,6 @@ export class FiltroAcoesComponent
 
     if (idsFuncoes.length === 0 || idsAnos.length === 0 || idsUos.length === 0) {
       this.filtro.idsProgramas = [];
-      // this.filtro.idsAcoes = [];
       return;
     }
 
@@ -317,7 +316,7 @@ export class FiltroAcoesComponent
 
     this.programasSubscription =
       this._ppaloaIntegracaoService
-        .listarProgramasPorFuncoes(idsAnos, idsFuncoes, idsUos)
+        .listarProgramasPorFuncoes(this.periodoPlanejamento?.descricao??'', idsFuncoes, idsUos)
         .pipe(
           finalize(() => {
             this.carregandoProgramas = false;
@@ -364,79 +363,6 @@ export class FiltroAcoesComponent
   }
 
   /**
-   * Consulta as ações pertencentes aos programas
-   * selecionados.
-   */
-  // private carregarAcoes(
-
-  //   preservarSelecaoAtual: boolean): void {
-
-  //   this.acoesSubscription?.unsubscribe();
-
-  //   const idFuncoes = this.normalizarIds(this.filtro.idsFuncoes);
-  //   const idsProgramas = this.normalizarIds(this.filtro.idsProgramas);
-  //   const idAnos = this.normalizarIds(this.filtro.idsAnos);
-  //   const idUos = this.normalizarIds(this.filtro.idsUos);
-
-  //   this.acoes = [];
-
-  //   console.log('entrou aqui')
-
-  //   if (!preservarSelecaoAtual) {
-  //     // this.filtro.idsAcoes = [];
-  //   }
-
-  //   if ( idAnos.length === 0 || idUos.length === 0 ) {
-  //     // this.filtro.idsAcoes = [];
-  //     return;
-  //   }
-
-  //   this.carregandoAcoes = true;
-
-  //   this.acoesSubscription =
-  //     this._ppaloaIntegracaoService
-  //       .listarAcoesPorProgramas(
-  //         idFuncoes,
-  //         idsProgramas,
-  //         idAnos,
-  //         idUos
-  //       )
-  //       .pipe(
-  //         finalize(() => {
-  //           this.carregandoAcoes = false;
-  //         })
-  //       )
-  //       .subscribe({
-  //         next: acoes => {
-
-  //           console.log('acoes carregadas :', acoes)
-
-  //           this.acoes = acoes ?? [];
-
-  //           // this.filtro.idsAcoes =
-  //           //   preservarSelecaoAtual
-  //           //     ? this.manterSomenteIdsValidos(
-  //           //       this.filtro.idsAcoes,
-  //           //       this.acoes
-  //           //     )
-  //           //     : [];
-
-  //         },
-  //         error: erro => {
-  //           console.error(
-  //             'Erro ao carregar as ações.',
-  //             erro
-  //           );
-
-  //           this.acoes = [];
-  //           // this.filtro.idsAcoes = [];
-  //         }
-  //       })
-  //       ;
-
-  // }
-
-  /**
    * Recarrega os programas e ações quando a modal
    * recebe um filtro já preenchido.
    */
@@ -457,13 +383,11 @@ export class FiltroAcoesComponent
     this.acoes = [];
 
     this.filtro.idsProgramas = [];
-    // this.filtro.idsAcoes = [];
   }
 
   resetar(): void {
 
     this.programasSubscription?.unsubscribe();
-    // this.acoesSubscription?.unsubscribe();
 
     this.programas = [];
     this.acoes = [];
@@ -722,12 +646,10 @@ export class FiltroAcoesComponent
     if (!preservarSelecaoAtual) {
       this.filtro.idsUos = [];
       this.filtro.idsProgramas = [];
-      // this.filtro.idsAcoes = [];
     }
 
     if (idsAnos.length === 0) {
       this.filtro.idsProgramas = [];
-      // this.filtro.idsAcoes = [];
       return;
     }
 
@@ -735,7 +657,7 @@ export class FiltroAcoesComponent
 
     this.funcoesSubscription =
       this._ppaloaIntegracaoService
-        .listarUosPorAnosPpaLoa(idsAnos)
+        .listarUosPorPpaLoa(this.filtro.periodoPlanejamento?.descricao??'')
         .pipe(
           finalize(() => {
             this.carregandoUos = false;
@@ -809,7 +731,7 @@ export class FiltroAcoesComponent
 
     this.funcoesSubscription =
       this._ppaloaIntegracaoService
-        .listarFuncoesPpaLoa(idsAnos, idsUos)
+        .listarFuncoesPpaLoa(this.periodoPlanejamento?.descricao??'', idsUos)
         .pipe(
           finalize(() => {
             this.carregandoFuncoes = false;

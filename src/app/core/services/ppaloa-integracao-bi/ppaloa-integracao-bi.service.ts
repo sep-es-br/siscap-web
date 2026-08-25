@@ -16,15 +16,6 @@ export class PpaloaIntegracaoBiService {
 
   buscarPeriodoPpaVigente(): Observable<IPeriodoPlanejamento> {
 
-    const usarMock = false;
-
-    if (usarMock) {
-      return of({
-        id: 1,
-        descricao: '2024-2027'
-      } as IPeriodoPlanejamento);
-    }
-
     return this._http.get<IPeriodoPlanejamento>(
       `${this._url}/ppa`
     );
@@ -39,18 +30,18 @@ export class PpaloaIntegracaoBiService {
 
   }
 
-  listarUosPorAnosPpaLoa(idAnos: number[]): Observable<IOpcaoPlanejamento[]> {
+  listarUosPorPpaLoa(ppa: string): Observable<IOpcaoPlanejamento[]> {
 
     return this._http.get<IOpcaoPlanejamento[]>(
-      `${this._url}/ppa/uos/${idAnos[0]}`
+      `${this._url}/ppa/uos/${ppa}`
     );
 
   }
 
-  listarFuncoesPpaLoa(idsAnos: number[], idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
+  listarFuncoesPpaLoa(ppa: string, idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
 
     const params = new HttpParams()
-      .set('anos', idsAnos.join(','))
+      .set('ppa', ppa)
       .set('uos', idsUos.join(','));
 
     return this._http.get<IOpcaoPlanejamento[]>(
@@ -67,10 +58,10 @@ export class PpaloaIntegracaoBiService {
 
   }
 
-  listarProgramasPorFuncoes(idsAnos: number[], idsFuncoes: number[], idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
+  listarProgramasPorFuncoes(ppa: string, idsFuncoes: number[], idsUos: number[]): Observable<IOpcaoPlanejamento[]> {
 
     const params = new HttpParams()
-      .set('anos', idsAnos.join(','))
+      .set('ppa', ppa)
       .set('uos', idsUos.join(','))
       .set('funcoes', idsFuncoes.join(','));
 
@@ -81,12 +72,12 @@ export class PpaloaIntegracaoBiService {
 
   }
 
-  listarAcoesPorProgramas(idFuncoes: number[], idsProgramas: number[], idAnos: number[], idUos: number[]): Observable<IOpcaoPlanejamento[]> {
+  listarAcoesPorProgramas(idFuncoes: number[], idsProgramas: number[], ppa: string, idUos: number[]): Observable<IOpcaoPlanejamento[]> {
 
     const params = new HttpParams()
       .set('funcoes', idFuncoes.join(','))
       .set('programas', idsProgramas.join(','))
-      .set('anos', idAnos.join(','))
+      .set('ppa', ppa)
       .set('uos', idUos.join(','));
 
     return this._http.get<IOpcaoPlanejamento[]>(
