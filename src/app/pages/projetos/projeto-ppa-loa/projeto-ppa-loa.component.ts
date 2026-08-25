@@ -1263,7 +1263,7 @@ export class ProjetoPpaLoaComponent {
         .listarAcoesPorProgramas(
           idFuncoes ?? [],
           idsProgramas ?? [],
-          idAnos ?? [],
+          this.periodoPlanejamento?.descricao??'',
           idUos ?? []
         )
         .pipe(

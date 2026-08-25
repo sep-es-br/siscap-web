@@ -1684,93 +1684,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    // for (const key in form.controls) {
-    //   form.controls[key].markAllAsTouched();
-    // }
-
-    // const acoesPlanejamentoProjeto = this.projetoForm.get('acoesPlanejamentoProjeto')
-    //   ?.value as IAcaoPlanejamentoProjeto[] ?? [];
-
-    // const naoPrevistoNoPpa = this.projetoForm.get('naoPrevistoNoPpa')
-    //   ?.value as boolean ?? false;
-
-    // if (acoesPlanejamentoProjeto.length === 0 && isEnvioDic && !naoPrevistoNoPpa) {
-    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
-    //     'Para envio do DIC não havendo acoes de planejamento informadas é obrigatório informar que não há previsão no PPA.',
-    //   ]);
-    //   return false;
-    // }
-
-    // const indicadoresProjeto = form.get('indicadoresProjeto');
-    // const indicadoresAvulsosProjeto = form.get('indicadoresAvulsosProjeto');
-
-    // const qtdIndicadoresProjeto = indicadoresProjeto?.value?.length ?? 0;
-    // const qtdIndicadoresAvulsos = indicadoresAvulsosProjeto?.value?.length ?? 0;
-
-    // const temIndicadorProjeto = qtdIndicadoresProjeto > 0;
-    // const temIndicadorAvulso = qtdIndicadoresAvulsos > 0;
-
-    // if (!temIndicadorProjeto && !temIndicadorAvulso) {
-    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
-    //     'É obrigatório informar ao menos um indicador.',
-    //   ]);
-    //   return false;
-    // }
-
-    // if (temIndicadorAvulso && indicadoresProjeto?.hasError('required')) {
-    //   const errors = { ...indicadoresProjeto.errors };
-    //   delete errors['required'];
-
-    //   indicadoresProjeto.setErrors(Object.keys(errors).length ? errors : null);
-
-    // }
-
-    // if (form.invalid) {
-    //   Object.keys(form.controls).forEach((key) => {
-    //     const control = form.get(key);
-    //     if (control && control.invalid) {
-    //       console.warn(`Campo inválido: ${key}`, control.errors);
-    //     }
-    //   });
-
-    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
-    //     'Por favor, verifique os campos.',
-    //   ]);
-
-    //   return false;
-
-    // }
-
-    // // valida se tem pelo menos uma acao ATIVA no form
-    // const acoesAtivas = this.projetoForm
-    //   .get('acoesProjeto')
-    //   ?.value.filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo);
-
-    // if (acoesAtivas.length === 0) {
-    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
-    //     'Nenhuma ação informada.',
-    //   ]);
-    //   return false;
-    // }
-
-    // // valida se tem pelo menos uma acao ATIVA no form
-    // // e seja diferente do papel 'Redator'
-    // const equipeElaboracao = this.projetoForm.get('equipeElaboracao')
-    //   ?.value as IEquipe[];
-
-    // const membrosEquipeAtivas = equipeElaboracao.filter(
-    //   (membro: EquipeModel) =>
-    //     membro.idStatus === TipoStatusEnum.Ativo &&
-    //     membro.idPapel != TipoPapelEnum.Redator,
-    // );
-
-    // if (membrosEquipeAtivas.length === 0) {
-    //   this._toastService.showToast('warning', 'O formulário contém erros.', [
-    //     'Nenhum membro informado além do Redator.',
-    //   ]);
-    //   return false;
-    // }
-
     return true;
 
   }
@@ -3526,13 +3439,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     campoOds?.clearValidators();
     campoOds?.updateValueAndValidity();
-
-    if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
-      if (!this.validarFormulario(this.projetoForm, false)) {
-        this.abrirAba('nav-indicadores');
-        return;
-      }
-    }
 
     campoOds?.setValidators([Validators.required]);
     campoOds?.updateValueAndValidity();
