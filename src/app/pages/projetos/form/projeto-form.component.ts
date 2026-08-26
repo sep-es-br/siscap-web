@@ -1910,15 +1910,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       indicadoresProjetoControl?.disable({ emitEvent: false });
 
-      const formValido = this.validarFormulario(form, isEnvioDic);
+      // const formValido = this.validarFormulario(form, isEnvioDic);
 
       if (!estavaDisabled) {
         indicadoresProjetoControl?.enable({ emitEvent: false });
       }
 
-      if (!formValido) {
-        return;
-      }
+      // if (!formValido) {
+      //   return;
+      // }
 
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
