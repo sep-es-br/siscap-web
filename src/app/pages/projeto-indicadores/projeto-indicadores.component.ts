@@ -436,9 +436,9 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   irParaODS() {
 
-    if (!this.validarObrigatoriedadeIndicadores()) {
-      return;
-    }
+    // if (!this.validarObrigatoriedadeIndicadores()) {
+    //   return;
+    // }
 
     const abaOds = document.getElementById('nav-ods-indicadores');
     abaOds?.click();
