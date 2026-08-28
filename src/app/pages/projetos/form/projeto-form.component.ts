@@ -1756,7 +1756,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
   }
 
-  private submitProjetoForm(form: FormGroup, isRascunho: boolean, isEnvioDic: boolean): void {
+  private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
     this.loadingSubmit = true;
     this.textoSpinner = 'Salvando projeto...';
@@ -2018,12 +2018,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   onSelecionarPessoa(pessoa: any) {
 
-    console.log('[GESTOR] pessoa recebida:', pessoa);
-    console.log(
-      '[GESTOR] valor ANTES:',
-      this.projetoForm.get('idResponsavelProponente')?.value
-    );
-
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
@@ -2044,11 +2038,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       this.lotacaoGestorProjeto = '';
     }
-
-    console.log(
-      '[GESTOR] valor DEPOIS:',
-      this.projetoForm.get('idResponsavelProponente')?.value
-    );
 
   }
 
@@ -2215,7 +2204,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     modalRef.result.then((result) => {
       if (result === 'confirmado') {
-        this.submitProjetoForm(form, false, true);
+        this.submitProjetoForm(form, false);
       }
     });
   }
@@ -2260,7 +2249,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         }
 
-        this.submitProjetoForm(form, false, true);
+        this.submitProjetoForm(form, false);
 
       }
     });
@@ -3741,8 +3730,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.submitProjetoForm(
       this.projetoForm,
-      true,
-      false
+      true
     );
 
   }
@@ -3842,7 +3830,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.submitProjetoForm(
       this.projetoForm,
       false,
-      true
     );
 
   }

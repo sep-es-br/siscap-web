@@ -125,8 +125,6 @@ export class ProjetosComponent implements OnInit, OnDestroy {
       .pipe(
         tap((response) => {
           
-          console.log('response lista projetos :', response)
-          
           this._projetosList$.next(response.content);
           
           this.paginacaoDados = {
