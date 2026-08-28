@@ -3572,19 +3572,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             acao.idStatus === TipoStatusEnum.Ativo,
         );
 
-      if (!possuiAcaoAtiva) {
+      // if (!possuiAcaoAtiva) {
 
-        pendencias.push({
-          id: 'acoesProjeto',
-          aba: 'propriedades',
-          nomeAba: 'DIC',
-          campo: 'Ações do Projeto',
-          mensagem:
-            'Informe pelo menos uma ação do projeto.',
-          controlPath: 'acoesProjeto',
-        });
+      //   pendencias.push({
+      //     id: 'acoesProjeto',
+      //     aba: 'propriedades',
+      //     nomeAba: 'DIC',
+      //     campo: 'Ações do Projeto',
+      //     mensagem:
+      //       'Informe pelo menos uma ação do projeto.',
+      //     controlPath: 'acoesProjeto',
+      //   });
 
-      }
+      // }
 
       if (!this.compararValorEstimadoValorAcoes()) {
 
