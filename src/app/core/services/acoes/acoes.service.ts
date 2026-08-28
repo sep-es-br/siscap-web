@@ -13,6 +13,7 @@ import { IOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
 import { IAcao } from '../../interfaces/acoes.interface';
 import { AcaoFormType } from '../../types/form/acao-form.type';
 import { limiteAcoesValidator } from '../../validators/acoes.validator';
+import { noWhitespaceValidator } from '../../validators/nowhitespacevalidator.validator';
 
 @Injectable({
   providedIn: 'root',
@@ -127,8 +128,8 @@ export class AcoesService {
   public construirAcaoFormGroup(membro?: IAcao): FormGroup<AcaoFormType> {
     return this._nnfb.group<AcaoFormType>({
       idAcao: this._nnfb.control(membro?.idAcao ?? 0),
-      descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null, Validators.required),
-      descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null, Validators.required),
+      descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null, [ Validators.required, noWhitespaceValidator() ]),
+      descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null, [ Validators.required, noWhitespaceValidator() ]),
       valorEstimadoAcaoPrincipal: this._nnfb.control(membro?.valorEstimadoAcaoPrincipal ?? 0, Validators.required),
       idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required
       ),

@@ -52,22 +52,22 @@
           <div *ngIf="isAcaoAtiva(i)" class="row g-2">
             <div class="col-12 col-md-8">
               <label [for]="'acaoNome_' + i" class="form-label">
-                <validation-message [control]="acoesFormGroup.get('descricaoAcaoPrincipal')!">
+                <!-- <validation-message [control]="acoesFormGroup.get('descricaoAcaoPrincipal')!"> -->
                   Ação Principal
                   <form-helper-tooltip [texto]="projetoTooltip['descricaoAcaoPrincipal']">
                   </form-helper-tooltip>
-                </validation-message>
+                <!-- </validation-message> -->
               </label>
               <input type="text" class="form-control" [id]="'acaoNome_' + i" formControlName="descricaoAcaoPrincipal"
                 maxlength="2000" />
             </div>
             <div class="col-12 col-md-4">
               <label [for]="'acaoValor_' + i" class="form-label">
-                <validation-message [control]="acoesFormGroup.get('valorEstimadoAcaoPrincipal')!">
+                <!-- <validation-message [control]="acoesFormGroup.get('valorEstimadoAcaoPrincipal')!"> -->
                   Valor Estimado
                   <form-helper-tooltip [texto]="projetoTooltip['valorEstimadoAcaoPrincipal']">
                   </form-helper-tooltip>
-                </validation-message>
+                <!-- </validation-message> -->
               </label>
               <input mask="separator.2" [prefix]="getSimboloMoeda(moedaProjeto)" thousandSeparator="." decimalMarker=","
                 [inputTransformFn]="rtlCurrencyInputTransformFn" [outputTransformFn]="rtlCurrencyOutputTransformFn"
@@ -76,11 +76,11 @@
             </div>
             <div class="col-12">
               <label [for]="'acaoDescricao_' + i" class="form-label">
-                <validation-message [control]="acoesFormGroup.get('descricaoAcaoSecundaria')!">
+                <!-- <validation-message [control]="acoesFormGroup.get('descricaoAcaoSecundaria')!"> -->
                   Descrição de ações secundárias e produtos
                   <form-helper-tooltip [texto]="projetoTooltip['descricaoAcoesSecudariasProdutos']">
                   </form-helper-tooltip>
-                </validation-message>
+                <!-- </validation-message> -->
               </label>
               <textarea class="form-control" [id]="'acaoDescricao_' + i" formControlName="descricaoAcaoSecundaria"
                 rows="3" maxlength="2000"></textarea>
