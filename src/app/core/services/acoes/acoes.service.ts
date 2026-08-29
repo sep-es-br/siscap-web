@@ -106,6 +106,7 @@ export class AcoesService {
     return membroFormGroup;
   }
 
+  
   public construirAcoesFormArray(
     acoes?: Array<IAcao>
   ): FormArray<FormGroup<AcaoFormType>> {
@@ -181,5 +182,26 @@ export class AcoesService {
       this.acoesWarnings['limiteAcoes'] = !!limiteAcoesError;
       // this.acoesFormArray.setErrors(resultErrors);
     }
+
+  public construirAcoesRateioFormArray(
+    acoes?: Array<IAcao>
+  ): FormArray<FormGroup<AcaoFormType>> {
+
+    const acoesFormArray = this._nnfb.array<FormGroup<AcaoFormType>>(
+      [],
+      [Validators.required, Validators.minLength(1),]);
+
+    if (acoes) {
+      acoes.forEach((acao) => {
+        acoesFormArray.push(this.construirAcaoFormGroup(acao));
+      });
+    }
+
+    this.acoesFormArray = acoesFormArray;
+    this.acoesFormArraySnapshot = this.acoesFormArray.value as Array<IAcao>;
+    
+    return this.acoesFormArray;
+
+  }
 
 }

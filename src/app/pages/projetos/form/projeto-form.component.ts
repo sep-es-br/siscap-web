@@ -7,6 +7,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
+
 import {
   AbstractControl,
   FormArray,
@@ -1239,7 +1240,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             odsCor: this._nnfb.control(ods.odsCor ?? null),
           })
         ) ?? []
-      )
+      ),
+
+      acoesRateioProjeto: this.acoesService.construirAcoesRateioFormArray(
+        projetoFormModel?.acoesProjeto,
+      ),
 
     });
 
@@ -3480,8 +3485,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      console.log(' path.campo : ', campo.path)
-
       if (campo.path === 'acoesProjeto') {
 
         const acoesFormArray =
@@ -3905,6 +3908,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return this.loading
       || this.isLoadingPessoas
       || this.loadingDownload;
+  }
+
+  public irParaAcoes(event: MouseEvent): void {
+
+    event.preventDefault();
+
+    this.abrirAba('nav-acoes-rateio');
+
   }
 
 }

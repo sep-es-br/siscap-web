@@ -131,6 +131,16 @@
           </li>
 
           <li class="nav-item">
+            <button class="nav-link" id="nav-acoes-rateio" data-bs-target="#tab-acoes-rateio" type="button"
+              (click)="irParaAcoes($event)" 
+                  [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('planejamento'),}">
+              <form-warning-tooltip *ngIf="deveComplementarCampo('acoes-rateio')" [texto]="mensagemComplementarCampo('acoes-rateio')"></form-warning-tooltip>
+              Ações
+              <span *ngIf="getControl('acoesRateioProjeto').invalid && getControl('acoesRateioProjeto').touched" class="text-danger"></span>
+            </button>
+          </li>
+
+          <li class="nav-item">
             <button class="nav-link" id="nav-planejamento" data-bs-target="#tab-ods-ppa-loa" type="button"
               (click)="irParaPlanejamento($event)" 
                   [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('planejamento'),}">
@@ -355,40 +365,36 @@
                   maxLength="2000"></textarea>
               </div>
 
-              <div data-control-path="valor" class="col-12">
+              <!-- <div data-control-path="valor" class="col-12">
                 <siscap-valor-form [moedasList]="moedasList" [tiposValorOpcoes]="tiposValorOpcoes"
                   [camposComplementarProjeto]="camposComplementarProjeto"
                   [statusProjeto]="statusProjeto"></siscap-valor-form>
-              </div>
+              </div> -->
 
-              <div data-control-path="acoesProjeto" class="col-12">
+              <!-- <div data-control-path="acoesProjeto" class="col-12">
                 <label for="acoes" class="form-label col-12" [ngClass]="{
                     'alerta-complementar-campo':
                       deveComplementarCampo('acoesProjeto'),
                   }">
-                  <!-- <validation-message [control]="getControl('acoesProjeto')"> -->
                     Ações
                     <form-warning-tooltip *ngIf="deveComplementarCampo('acoesProjeto')"
                       [texto]="mensagemComplementarCampo('acoesProjeto')"></form-warning-tooltip>
-                  <!-- </validation-message> -->
                 </label>
                 <siscap-acoes-form [isModoEdicao]="isModoEdicao"></siscap-acoes-form>
-              </div>
+              </div> -->
 
-              <div data-control-path="rateio" class="col-12 mt-2">
+              <!-- <div data-control-path="rateio" class="col-12 mt-2">
                 <label for="rateio" class="form-label col-12" [ngClass]="{
                     'alerta-complementar-campo':
                       deveComplementarCampo('rateio'),
                   }">
-                  <!-- <validation-message [control]="getControl('rateio')"> -->
                     Regiões Geográficas Atendidas
                     <form-helper-tooltip [texto]="projetoTooltip['rateio']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('rateio')"
                       [texto]="mensagemComplementarCampo('rateio')"></form-warning-tooltip>
-                  <!-- </validation-message> -->
                 </label>
                 <siscap-rateio-form [isModoEdicao]="isModoEdicao"></siscap-rateio-form>
-              </div>
+              </div> -->
 
               <div data-control-path="arranjosInstitucionais" class="col-12">
                 <label for="arranjosInstitucionais" class="form-label col-12" [ngClass]="{
@@ -447,6 +453,11 @@
         <div data-control-path="odsProjeto" class="tab-pane fade" id="tab-ods-indicadores" role="tabpanel" aria-labelledby="nav-indicador-ods">
           <siscap-indicador-ods [formProjeto]="projetoForm" [isModoEdicao]="isModoEdicao" [isSubcap]="isSubcapGeoc()"
             [statusProjeto]="statusProjeto"></siscap-indicador-ods>
+        </div>
+
+        <div class="tab-pane fade" id="tab-acoes-rateio" role="tabpanel" aria-labelledby="nav-acoes-rateio">
+          <siscap-projeto-acoes-rateio [formProjeto]="projetoForm" [isModoEdicao]="isModoEdicao"
+            [isSubcap]="isSubcapGeoc()" [statusProjeto]="statusProjeto"></siscap-projeto-acoes-rateio>
         </div>
 
         <div class="tab-pane fade" id="tab-ods-ppa-loa" role="tabpanel" aria-labelledby="nav-indicador-ppa-loa">

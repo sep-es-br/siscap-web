@@ -28,6 +28,7 @@ import { ProjetoIndicadoresComponent } from "../projeto-indicadores/projeto-indi
 import { IndicadorOdsComponent } from '../projeto-indicadores/indicador-ods/indicador-ods.component';
 import { ProjetoPpaLoaComponent } from './projeto-ppa-loa/projeto-ppa-loa.component';
 import { ModalPendenciasProjetoComponent } from './projeto-modal-pendencias/projeto-modal-pendencias.component';
+import { ProjetoAcoesRateioComponent } from './projeto-acoes-rateio/projeto-acoes-rateio.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { ModalPendenciasProjetoComponent } from './projeto-modal-pendencias/proj
     ProgressoButtonComponent,
     IndicadorOdsComponent,
     ProjetoPpaLoaComponent,
-    ModalPendenciasProjetoComponent
+    ModalPendenciasProjetoComponent,
+    ProjetoAcoesRateioComponent
 ],
   exports: [
     ProjetosComponent,
