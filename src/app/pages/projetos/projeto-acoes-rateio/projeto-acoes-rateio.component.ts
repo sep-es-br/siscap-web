@@ -1,10 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AcoesFormComponent } from '../../../shared/components/acoes-form/acoes-form.component';
-import { ValorFormComponent } from '../../../shared/components/valor-form/valor-form.component';
 import { IMoeda } from '../../../core/interfaces/moeda.interface';
 import { CommonModule } from '@angular/common';
-import { FormWarningTooltipComponent } from '../../../shared/templates/form-warning-tooltip/form-warning-tooltip.component';
 import { IOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { IEstruturaCamposComplementarProjeto } from '../../../core/interfaces/estrutura.campo.complementar.dic.interface';
 import { SharedModule } from 'primeng/api';
@@ -17,14 +14,14 @@ import { TooltipModule } from 'primeng/tooltip';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import { RateioFormComponent } from '../../../shared/components/rateio-form/rateio-form.component';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
-import { IAcao } from '../../../core/interfaces/acoes.interface';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
+import { RateioService } from '../../../core/services/rateio/rateio.service';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
 @Component({
   selector: 'siscap-projeto-acoes-rateio',
   standalone: true,
-  imports: [ValorFormComponent,
-    AcoesFormComponent,
+  imports: [
     RateioFormComponent,
     CommonModule,
     SharedModule,
@@ -37,8 +34,10 @@ import { AcoesService } from '../../../core/services/acoes/acoes.service';
     FormsModule,
     InputTextModule,
     TooltipModule,
-    ReactiveFormsModule
-  ],
+    ReactiveFormsModule,
+    NgxMaskPipe,
+    NgxMaskDirective
+],
   templateUrl: './projeto-acoes-rateio.component.html',
   styleUrl: './projeto-acoes-rateio.component.scss'
 })
@@ -54,7 +53,8 @@ export class ProjetoAcoesRateioComponent {
   @Input() camposComplementarProjeto: IEstruturaCamposComplementarProjeto[] = [];
 
   constructor(
-    private readonly acoesService: AcoesService
+    private readonly acoesService: AcoesService,
+    public rateioService: RateioService
   ) { }
 
   public projetoTooltip: Record<string, string> =

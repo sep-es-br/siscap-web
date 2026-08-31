@@ -33,7 +33,17 @@
                 </div>
 
                 <div class="fw-bold">
-                    {{ valorTotalAcoes | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+                    {{
+                    valorTotalAcoes
+                    | mask
+                    : "separator.2"
+                    : {
+                    prefix: rateioService.simboloMoeda + " ",
+                    leadZero: true,
+                    thousandSeparator: ".",
+                    decimalMarker: ","
+                    }
+                    }}
                 </div>
 
             </div>
@@ -92,13 +102,15 @@
                             <span class="text-danger">*</span>
                         </label>
 
-                        <input type="number" class="form-control" [id]="'valorEstimadoAcaoPrincipal-' + i"
-                            formControlName="valorEstimadoAcaoPrincipal" />
+                        <!-- <input type="number" class="form-control" [id]="'valorEstimadoAcaoPrincipal-' + i"
+                            formControlName="valorEstimadoAcaoPrincipal" /> -->
+                        <input type="text" class="form-control" [id]="'valorEstimadoAcaoPrincipal-' + i"
+                            formControlName="valorEstimadoAcaoPrincipal" mask="separator.2" prefix="R$ "
+                            thousandSeparator="." decimalMarker="," [leadZero]="true" />
 
                     </div>
 
                 </div>
-
 
                 <!-- AÇÕES SECUNDÁRIAS -->
                 <div class="row">
@@ -116,7 +128,6 @@
                     </div>
 
                 </div>
-
 
                 <!-- REGIÕES GEOGRÁFICAS / RATEIO -->
                 <div class="row">

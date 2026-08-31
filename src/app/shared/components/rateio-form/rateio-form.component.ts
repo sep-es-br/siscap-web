@@ -50,7 +50,7 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
       this.rateioService.buscarIndiceControleRateioLocalidadeFormGroup(1);
 
     if (controlIndex !== -1) {
-      this.estadoBooleanCheckbox = true;
+      this.estadoBooleanCheckbox = false;
       this.notificarEstadoCheckboxChange();
     }
   }

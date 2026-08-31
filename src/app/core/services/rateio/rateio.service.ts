@@ -22,6 +22,7 @@ import { limiteRateioValidator } from '../../validators/rateio.validator';
 
 import { TEMPO_INPUT_USUARIO, TEMPO_RECALCULO } from '../../utils/constants';
 import { getSimboloMoeda } from '../../utils/functions';
+import { TipoDistribuicaoRateio } from '../../enums/tipo-distribuicao-rateio.enum';
 
 export interface ILocalidadeCheckboxChange {
   idLocalidade: number;
@@ -67,6 +68,20 @@ export class RateioService {
   }
 
   private _estadoBooleanCheckboxReferencia: boolean = false;
+
+  private _tipoDistribuicaoReferencia: TipoDistribuicaoRateio =
+    TipoDistribuicaoRateio.Manual;
+
+  public get tipoDistribuicaoReferencia(): TipoDistribuicaoRateio {
+    return this._tipoDistribuicaoReferencia;
+  }
+
+  private _tipoDistribuicaoChange$ =
+    new Subject<TipoDistribuicaoRateio>();
+
+  public get tipoDistribuicaoChange$(): Subject<TipoDistribuicaoRateio> {
+    return this._tipoDistribuicaoChange$;
+  }
 
   public get estadoBooleanCheckboxReferencia(): boolean {
     return this._estadoBooleanCheckboxReferencia;
@@ -150,15 +165,42 @@ export class RateioService {
         this.simboloMoeda = getSimboloMoeda(moedaValue);
       });
 
+    // this.quantiaFormControlReferencia$
+    //   .pipe(debounceTime(TEMPO_INPUT_USUARIO))
+    //   .subscribe((quantiaValue) => {
+    //     this.quantiaFormControlReferencia = quantiaValue;
+    //     if (this.quantiaFormControlReferencia != null)
+    //       this.recalcularRateioPorPercentual();
+    //     this.validarRateio(quantiaValue, this.rateioFormArray.value);
+    //   });
+
     this.quantiaFormControlReferencia$
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
       .subscribe((quantiaValue) => {
+
         this.quantiaFormControlReferencia = quantiaValue;
 
-        if (this.quantiaFormControlReferencia != null)
-          this.recalcularRateioPorPercentual();
+        if (this.quantiaFormControlReferencia != null) {
 
-        this.validarRateio(quantiaValue, this.rateioFormArray.value);
+          if (
+            this.tipoDistribuicaoReferencia ===
+            TipoDistribuicaoRateio.Linear
+          ) {
+
+            this.distribuirRateioLinearmente();
+
+          } else {
+
+            this.recalcularRateioPorPercentual();
+
+          }
+        }
+
+        this.validarRateio(
+          quantiaValue,
+          this.rateioFormArray.value
+        );
+
       });
 
     merge(
@@ -198,11 +240,11 @@ export class RateioService {
   public construirRateioFormArray(
     rateioModelArray?: Array<RateioModel>
   ): FormArray<FormGroup<RateioLocalidadeFormType>> {
-    
+
     const rateioFormArray = this._nnfb.array<
       FormGroup<RateioLocalidadeFormType>
     >([], [Validators.required, Validators.minLength(1)]);
-   
+
     if (rateioModelArray) {
       rateioModelArray.forEach((rateioModel) => {
         rateioFormArray.push(
@@ -266,13 +308,38 @@ export class RateioService {
   public incluirLocalidadeNoRateio(
     rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType>
   ): void {
+  
     this.rateioFormArray.push(rateioLocalidadeFormGroup);
+  
+    if (
+      this.tipoDistribuicaoReferencia ===
+      TipoDistribuicaoRateio.Linear
+    ) {
+      this.distribuirRateioLinearmente();
+    }
   }
 
-  public removerLocalidadeDoRateio(idLocalidade: number): void {
+  public removerLocalidadeDoRateio(
+    idLocalidade: number
+  ): void {
+  
     const controlIndex =
-      this.buscarIndiceControleRateioLocalidadeFormGroup(idLocalidade);   
+      this.buscarIndiceControleRateioLocalidadeFormGroup(
+        idLocalidade
+      );
+  
+    if (controlIndex < 0) {
+      return;
+    }
+  
     this.rateioFormArray.removeAt(controlIndex);
+  
+    if (
+      this.tipoDistribuicaoReferencia ===
+      TipoDistribuicaoRateio.Linear
+    ) {
+      this.distribuirRateioLinearmente();
+    }
   }
 
   // Verifica se os valores dos checkboxes de todos os municípios daquela microrregiãoo são true
@@ -280,6 +347,7 @@ export class RateioService {
     localidadeCheckboxChange: ILocalidadeCheckboxChange,
     idMicrorregiao: number
   ): boolean | null {
+    
     const municipiosDaMicrorregiao =
       this.filtrarLocalidadesPorTipoMunicipioEIdMicrorregiao(idMicrorregiao);
 
@@ -348,7 +416,7 @@ export class RateioService {
     rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType>,
     isModoEdicao: boolean
   ): string {
-    
+
     const isPercentualValueNotNull =
       !!rateioLocalidadeFormGroup.value.percentual;
 
@@ -374,17 +442,17 @@ export class RateioService {
     this.rateioFormArraySnapshot = this.rateioFormArray.value;
 
     const estadoFormGroup = this.construirRateioLocalidadeFormGroupPorIdLocalidade(1);
-    estadoFormGroup.controls.quantia.setValue( this.quantiaFormControlReferencia );
+    estadoFormGroup.controls.quantia.setValue(this.quantiaFormControlReferencia);
     estadoFormGroup.controls.percentual.setValue(100);
 
     if (this.rateioFormArray.value.length > 0) this.rateioFormArray.clear();
-    
+
     this.incluirLocalidadeNoRateio(estadoFormGroup);
 
   }
 
   private removerEstadoDoRateio(): void {
-    
+
     const isEstadoInclusoNoRateio = this.rateioFormArray.value.some(
       (rateioLocalidadeValue) => rateioLocalidadeValue.idLocalidade == 1
     );
@@ -452,8 +520,8 @@ export class RateioService {
 
   private rateioFormArrayValueChanges(): void {
     this.rateioFormArray.valueChanges
-    .pipe(
-      debounceTime(TEMPO_RECALCULO))
+      .pipe(
+        debounceTime(TEMPO_RECALCULO))
       .subscribe((rateioFormArrayValue) => {
         this.calcularTotalRateio(rateioFormArrayValue);
         this.validarRateio(
@@ -494,9 +562,9 @@ export class RateioService {
 
     this.microrregiaoBooleanCheckboxChange$.next(
       {
-      idLocalidade: 0, 
-      checkboxValue: false
-    });
+        idLocalidade: 0,
+        checkboxValue: false
+      });
 
     this.municipioBooleanCheckboxChange$.next({
       idLocalidade: 0,
@@ -505,8 +573,72 @@ export class RateioService {
 
   }
 
-  public limparTotalRateio(){
+  public limparTotalRateio() {
     this.totalRateio = { percentual: 0, quantia: 0 };
+  }
+
+  private distribuirRateioLinearmente(): void {
+
+    const quantiaTotal = this.quantiaFormControlReferencia;
+    const quantidadeLocalidades = this.rateioFormArray.length;
+
+    if (
+      quantiaTotal == null ||
+      quantiaTotal <= 0 ||
+      quantidadeLocalidades === 0
+    ) {
+      return;
+    }
+
+    const totalCentavos = Math.round(quantiaTotal * 100);
+
+    const valorBaseCentavos = Math.floor(
+      totalCentavos / quantidadeLocalidades
+    );
+
+    const restoCentavos =
+      totalCentavos % quantidadeLocalidades;
+
+    let percentualAcumulado = 0;
+
+    const novosValores = this.rateioFormArray.controls.map(
+      (rateioLocalidadeFormGroup, index) => {
+
+        // resolve a dizima..
+        const centavos =
+          valorBaseCentavos +
+          (index < restoCentavos ? 1 : 0);
+
+        const quantia = centavos / 100;
+
+        let percentual: number;
+
+        if (index === quantidadeLocalidades - 1) {
+
+          percentual = Number(
+            (100 - percentualAcumulado).toFixed(6)
+          );
+
+        } else {
+
+          percentual = Number(
+            ((quantia / quantiaTotal) * 100).toFixed(6)
+          );
+
+          percentualAcumulado += percentual;
+        }
+
+        return {
+          idLocalidade:
+            rateioLocalidadeFormGroup.controls.idLocalidade.value,
+
+          percentual,
+          quantia,
+        };
+      }
+    );
+
+    this.rateioFormArray.patchValue(novosValores);
   }
 
 }

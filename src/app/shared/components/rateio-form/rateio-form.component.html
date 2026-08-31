@@ -1,61 +1,60 @@
 <div class="card">
   <div class="card-body">
     <div
-      class="col-12 mb-2 d-flex flex-wrap justify-content-between justify-content-sm-end justify-content-lg-between align-items-center"
-    >
+      class="col-12 mb-2 d-flex flex-wrap justify-content-between justify-content-sm-end justify-content-lg-between align-items-center">
       <div class="col-12 col-sm-6 col-lg-4">
-        <div id="estado-checkbox-div" class="form-check">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            name="estado-checkbox"
-            id="estado-checkbox"
-            [disabled]="!isModoEdicao"
-            [(ngModel)]="estadoBooleanCheckbox"
-            (change)="notificarEstadoCheckboxChange()"
-          />
-          <label class="form-check-label text-nowrap" for="estado-checkbox"
-            >Todo o Estado</label
-          >
+        <div class="d-flex gap-4">
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="tipo-distribuicao" id="todo-estado-radio"
+              [disabled]="!isModoEdicao" [(ngModel)]="estadoBooleanCheckbox" [value]="true"
+              (change)="notificarEstadoCheckboxChange()" />
+            <label class="form-check-label text-nowrap" for="todo-estado-radio">
+              Todo o Estado
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="tipo-distribuicao" id="distribuicao-linear-radio"
+              [disabled]="!isModoEdicao" [(ngModel)]="estadoBooleanCheckbox" [value]="false"
+              (change)="notificarEstadoCheckboxChange()" />
+            <label class="form-check-label text-nowrap" for="distribuicao-linear-radio">
+              Distribuição linear
+            </label>
+          </div>
+
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-4 d-inline-flex flex-row justify-content-between" >
-        <ng-container
-          *ngIf="rateioService.quantiaFormControlReferencia; else nullQuantiaFormControlValue" >
+      <div class="col-12 col-sm-6 col-lg-4 d-inline-flex flex-row justify-content-between">
+        <ng-container *ngIf="rateioService.quantiaFormControlReferencia; else nullQuantiaFormControlValue">
           <div class="col-5 col-sm-4">
-            <span
-              class="fs-small-3 total-percentual"
-              [ngClass]="{
+            <span class="fs-small-3 total-percentual" [ngClass]="{
               'error-message':
                 rateioService.rateioFormArray.errors?.['limiteRateio']
-            }"
-            >
+            }">
               {{
-                rateioService.totalRateio.percentual
-                  .toFixed(2)
-                  .replace(".", ",") + "%"
+              rateioService.totalRateio.percentual
+              .toFixed(2)
+              .replace(".", ",") + "%"
               }}
             </span>
           </div>
           <div class="col-7 col-sm-8">
-            <span
-              class="fs-small-3 total-quantia"
-              [ngClass]="{
+            <span class="fs-small-3 total-quantia" [ngClass]="{
                 'error-message':
                   rateioService.rateioFormArray.errors?.['limiteRateio']
-              }"
-            >
+              }">
               {{
-                rateioService.totalRateio.quantia
-                  | mask
-                    : "separator.2"
-                    : {
-                        prefix: rateioService.simboloMoeda + " ",
-                        leadZero: true,
-                        thousandSeparator: ".",
-                        decimalMarker: ","
-                      }
+              rateioService.totalRateio.quantia
+              | mask
+              : "separator.2"
+              : {
+              prefix: rateioService.simboloMoeda + " ",
+              leadZero: true,
+              thousandSeparator: ".",
+              decimalMarker: ","
+              }
               }}
             </span>
           </div>
@@ -65,45 +64,29 @@
 
     <div class="col-12">
       <div ngbAccordion>
-        <ng-container
-          *ngFor="
+        <ng-container *ngFor="
             let microrregiao of rateioService.filtrarLocalidadesPorTipoMicrorregiao()
-          "
-        >
-          <div
-            [ngbAccordionItem]="
+          ">
+          <div [ngbAccordionItem]="
               'rateio-microrregiao-accordion-item-' + microrregiao.id
-            "
-            #rateioMicrorregiaoAccordionItem="ngbAccordionItem"
-            [destroyOnHide]="false"
-          >
+            " #rateioMicrorregiaoAccordionItem="ngbAccordionItem" [destroyOnHide]="false">
             <div ngbAccordionHeader>
-              <rateio-microrregiao-form-card
-                [microrregiao]="microrregiao"
-                [isModoEdicao]="isModoEdicao"
-              >
-                <button
-                  ngbAccordionButton
-                  class="m-0 p-0 bg-transparent justify-content-center justify-content-md-start"
-                ></button>
+              <rateio-microrregiao-form-card [microrregiao]="microrregiao" [isModoEdicao]="isModoEdicao">
+                <button ngbAccordionButton
+                  class="m-0 p-0 bg-transparent justify-content-center justify-content-md-start"></button>
               </rateio-microrregiao-form-card>
               <div ngbAccordionCollapse>
                 <div ngbAccordionBody>
                   <ng-template>
-                    <ng-container
-                      *ngFor="
+                    <ng-container *ngFor="
                         let municipio of rateioService.filtrarLocalidadesPorTipoMunicipioEIdMicrorregiao(
                           microrregiao.id
                         )
-                      "
-                    >
-                      <rateio-municipio-form-card
-                        [municipio]="municipio"
-                        [isModoEdicao]="isModoEdicao"
+                      ">
+                      <rateio-municipio-form-card [municipio]="municipio" [isModoEdicao]="isModoEdicao"
                         (municipioSelectedInitCheck)="
                           expandirMicrorregiaoAccordionItem($event)
-                        "
-                      ></rateio-municipio-form-card>
+                        "></rateio-municipio-form-card>
                     </ng-container>
                   </ng-template>
                 </div>
