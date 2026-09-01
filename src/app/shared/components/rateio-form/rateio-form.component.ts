@@ -6,9 +6,9 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormGroup, FormsModule } from '@angular/forms';
 
-import { fromEvent } from 'rxjs';
+import { fromEvent, startWith } from 'rxjs';
 import {
   NgbAccordionDirective,
   NgbAccordionModule,
@@ -21,6 +21,8 @@ import { RateioMunicipioFormCardComponent } from './rateio-municipio-form-card/r
 import { RateioService } from '../../../core/services/rateio/rateio.service';
 
 import { SIDEWAYS_SHAKE } from '../../../core/utils/animations';
+import { AcaoFormType } from '../../../core/types/form/acao-form.type';
+import { ILocalidadeOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 @Component({
   selector: 'siscap-rateio-form',
@@ -33,19 +35,70 @@ import { SIDEWAYS_SHAKE } from '../../../core/utils/animations';
     RateioMicrorregiaoFormCardComponent,
     RateioMunicipioFormCardComponent,
   ],
+
+  providers: [RateioService],
+
   templateUrl: './rateio-form.component.html',
   styleUrl: './rateio-form.component.scss',
+
 })
 export class RateioFormComponent implements OnInit, AfterViewInit {
+
   @ViewChild(NgbAccordionDirective)
   public rateioNgbAccordion!: NgbAccordionDirective;
+
   @Input() public isModoEdicao: boolean = false;
 
   public estadoBooleanCheckbox: boolean = false;
 
-  constructor(public rateioService: RateioService) {}
+  @Input({ required: true }) formAcao!: FormGroup<AcaoFormType>;
+
+  @Input({ required: true })
+  public localidadesOpcoes!: Array<ILocalidadeOpcoesDropdown>;
+
+  constructor(public rateioService: RateioService) { }
 
   ngOnInit(): void {
+
+    // Alimenta a instância PARTICULAR do RateioService
+    // com a lista compartilhada de localidades.
+    this.rateioService.localidadesOpcoes =
+      this.localidadesOpcoes;
+
+    const quantiaFormControl =
+      this.formAcao.controls.valorEstimadoAcaoPrincipal;
+
+    quantiaFormControl.valueChanges
+      .pipe(
+        startWith(quantiaFormControl.value)
+      )
+      .subscribe((quantiaValue) => {
+
+        this.rateioService
+          .quantiaFormControlReferencia$
+          .next(quantiaValue);
+      });
+
+
+    // const quantiaFormControl =
+    //   this.formAcao.controls.valorEstimadoAcaoPrincipal;
+
+    // manda o valor inicial
+    this.rateioService.quantiaFormControlReferencia$.next(
+      quantiaFormControl.value
+    );
+
+    // acompanha alterações
+    quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
+      console.log(
+        'valorEstimadoAcaoPrincipal alterado:',
+        quantiaValue
+      );
+      this.rateioService.quantiaFormControlReferencia$.next(
+        quantiaValue
+      );
+    });
+
     const controlIndex =
       this.rateioService.buscarIndiceControleRateioLocalidadeFormGroup(1);
 
@@ -53,6 +106,7 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
       this.estadoBooleanCheckbox = false;
       this.notificarEstadoCheckboxChange();
     }
+
   }
 
   ngAfterViewInit(): void {

@@ -1377,6 +1377,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
+      console.log('valueChanges.subscribe', quantiaValue)
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
     });
 
@@ -3485,44 +3486,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      if (campo.path === 'acoesProjeto') {
-
-        const acoesFormArray =
-          this.projetoForm.get('acoesProjeto') as FormArray<FormGroup<AcaoFormType>>;
-
-        console.log('=== AÇÕES FORM ARRAY ===');
-        console.log({
-          status: acoesFormArray.status,
-          valid: acoesFormArray.valid,
-          invalid: acoesFormArray.invalid,
-          errors: acoesFormArray.errors,
-          length: acoesFormArray.length,
-        });
-
-        acoesFormArray.controls.forEach((acaoForm, index) => {
-
-          console.log(`=== AÇÃO ${index + 1} ===`, {
-            status: acaoForm.status,
-            valid: acaoForm.valid,
-            invalid: acaoForm.invalid,
-            errors: acaoForm.errors,
-          });
-
-          Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
-
-            console.log(nome, {
-              value: JSON.stringify(controle.value),
-              status: controle.status,
-              valid: controle.valid,
-              invalid: controle.invalid,
-              errors: controle.errors,
-              disabled: controle.disabled,
-            });
-
-          });
-        });
-      }
-
       if (control.invalid) {
         pendencias.push({
           id: campo.path,
@@ -3830,8 +3793,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           nomeAba: campo.nomeAba,
           mensagem: 'Campo obrigatório.'
         })));
-
-    console.log('pendencias :', pendencias)
 
     return pendencias;
 

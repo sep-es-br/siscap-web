@@ -33,6 +33,12 @@ export interface ILocalidadeCheckboxChange {
   providedIn: 'root',
 })
 export class RateioService {
+
+  private static contadorInstancias = 0;
+
+  public readonly instanciaId =
+    ++RateioService.contadorInstancias;
+
   public rateioFormArray: FormArray<FormGroup<RateioLocalidadeFormType>> =
     new FormArray<FormGroup<RateioLocalidadeFormType>>([]);
 
@@ -159,6 +165,11 @@ export class RateioService {
 
   constructor(private readonly _nnfb: NonNullableFormBuilder) {
 
+    console.log(
+      `>>> CRIOU RateioService #${this.instanciaId}`
+    );
+
+
     this.moedaFormControlReferencia$
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
       .subscribe((moedaValue) => {
@@ -180,19 +191,16 @@ export class RateioService {
 
         this.quantiaFormControlReferencia = quantiaValue;
 
-        if (this.quantiaFormControlReferencia != null) {
+        // console.log('passou aqui no pipe da quantia...')
 
+        if (this.quantiaFormControlReferencia != null) {
           if (
             this.tipoDistribuicaoReferencia ===
             TipoDistribuicaoRateio.Linear
           ) {
-
             this.distribuirRateioLinearmente();
-
           } else {
-
             this.recalcularRateioPorPercentual();
-
           }
         }
 
@@ -213,10 +221,13 @@ export class RateioService {
     });
 
     this.estadoBooleanCheckboxChange$.subscribe((estadoCheckboxChange) => {
+
       this.estadoBooleanCheckboxReferencia = estadoCheckboxChange;
+
       estadoCheckboxChange
         ? this.incluirEstadoNoRateio()
-        : this.removerEstadoDoRateio();
+        : this.distribuirRateioLinearmente();
+
     });
 
   }
@@ -308,38 +319,48 @@ export class RateioService {
   public incluirLocalidadeNoRateio(
     rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType>
   ): void {
-  
+
     this.rateioFormArray.push(rateioLocalidadeFormGroup);
-  
+
+    // console.log('tipo de distribuição..', this.tipoDistribuicaoReferencia)
+
     if (
       this.tipoDistribuicaoReferencia ===
       TipoDistribuicaoRateio.Linear
     ) {
+      // console.log('entrou no tipo de distribuicao..')
       this.distribuirRateioLinearmente();
     }
+
   }
 
   public removerLocalidadeDoRateio(
     idLocalidade: number
   ): void {
-  
+
     const controlIndex =
       this.buscarIndiceControleRateioLocalidadeFormGroup(
         idLocalidade
       );
-  
+
     if (controlIndex < 0) {
       return;
     }
-  
+
     this.rateioFormArray.removeAt(controlIndex);
-  
+
     if (
       this.tipoDistribuicaoReferencia ===
       TipoDistribuicaoRateio.Linear
     ) {
       this.distribuirRateioLinearmente();
     }
+
+    // console.log(
+    //   'RATEIO APÓS REMOVER LOCALIDADE:',
+    //   this.rateioFormArray.getRawValue()
+    // );
+
   }
 
   // Verifica se os valores dos checkboxes de todos os municípios daquela microrregiãoo são true
@@ -347,7 +368,7 @@ export class RateioService {
     localidadeCheckboxChange: ILocalidadeCheckboxChange,
     idMicrorregiao: number
   ): boolean | null {
-    
+
     const municipiosDaMicrorregiao =
       this.filtrarLocalidadesPorTipoMunicipioEIdMicrorregiao(idMicrorregiao);
 
@@ -579,66 +600,83 @@ export class RateioService {
 
   private distribuirRateioLinearmente(): void {
 
-    const quantiaTotal = this.quantiaFormControlReferencia;
-    const quantidadeLocalidades = this.rateioFormArray.length;
+    // console.log('>>> DISTRIBUIÇÃO LINEAR');
+
+    const quantiaTotal =
+      Number(this.quantiaFormControlReferencia);
+
+    // console.log('quantiaTotal:', quantiaTotal);
+
+    const localidades =
+      this.rateioFormArray.controls.filter(
+        control =>
+          control.controls.idLocalidade.value !== 1
+      );
+
+    // console.log(
+    //   'localidades:',
+    //   localidades.map(
+    //     c => c.controls.idLocalidade.value
+    //   )
+    // );
+
+    const quantidadeLocalidades =
+      localidades.length;
+
+    // console.log(
+    //   'quantidadeLocalidades:',
+    //   quantidadeLocalidades
+    // );
 
     if (
-      quantiaTotal == null ||
+      !Number.isFinite(quantiaTotal) ||
       quantiaTotal <= 0 ||
       quantidadeLocalidades === 0
     ) {
+      // console.log('>>> SAIU PELO RETURN');
       return;
     }
 
-    const totalCentavos = Math.round(quantiaTotal * 100);
+    const quantiaPorLocalidade =
+      quantiaTotal / quantidadeLocalidades;
 
-    const valorBaseCentavos = Math.floor(
-      totalCentavos / quantidadeLocalidades
-    );
+    const percentualPorLocalidade =
+      100 / quantidadeLocalidades;
 
-    const restoCentavos =
-      totalCentavos % quantidadeLocalidades;
+    // console.log(
+    //   'quantiaPorLocalidade:',
+    //   quantiaPorLocalidade
+    // );
 
-    let percentualAcumulado = 0;
+    // console.log(
+    //   'percentualPorLocalidade:',
+    //   percentualPorLocalidade
+    // );
 
-    const novosValores = this.rateioFormArray.controls.map(
-      (rateioLocalidadeFormGroup, index) => {
+    localidades.forEach(control => {
 
-        // resolve a dizima..
-        const centavos =
-          valorBaseCentavos +
-          (index < restoCentavos ? 1 : 0);
+      // console.log(
+      //   'ANTES:',
+      //   control.getRawValue()
+      // );
 
-        const quantia = centavos / 100;
+      control.patchValue({
+        quantia: quantiaPorLocalidade,
+        percentual: percentualPorLocalidade
+      });
 
-        let percentual: number;
+      // console.log(
+      //   'DEPOIS:',
+      //   control.getRawValue()
+      // );
+      
+    });
 
-        if (index === quantidadeLocalidades - 1) {
+    // console.log(
+    //   'FORM ARRAY FINAL:',
+    //   this.rateioFormArray.getRawValue()
+    // );
 
-          percentual = Number(
-            (100 - percentualAcumulado).toFixed(6)
-          );
-
-        } else {
-
-          percentual = Number(
-            ((quantia / quantiaTotal) * 100).toFixed(6)
-          );
-
-          percentualAcumulado += percentual;
-        }
-
-        return {
-          idLocalidade:
-            rateioLocalidadeFormGroup.controls.idLocalidade.value,
-
-          percentual,
-          quantia,
-        };
-      }
-    );
-
-    this.rateioFormArray.patchValue(novosValores);
   }
 
 }

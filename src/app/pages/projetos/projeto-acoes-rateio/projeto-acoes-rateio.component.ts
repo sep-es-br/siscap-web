@@ -17,6 +17,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { RateioService } from '../../../core/services/rateio/rateio.service';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
+import { AcaoFormType } from '../../../core/types/form/acao-form.type';
 
 @Component({
   selector: 'siscap-projeto-acoes-rateio',
@@ -93,8 +94,8 @@ export class ProjetoAcoesRateioComponent {
     return this.rateiosAbertos.has(index);
   }
 
-  public get acoesProjeto(): FormArray {
-    return this.formProjeto.get('acoesProjeto') as FormArray;
+  public get acoesProjeto(): FormArray<FormGroup<AcaoFormType>> {
+    return this.formProjeto.get('acoesProjeto') as FormArray<FormGroup<AcaoFormType>>;
   }
 
   public adicionarAcao(): void {
@@ -113,8 +114,7 @@ export class ProjetoAcoesRateioComponent {
         total +
         Number(
           acao.get('valorEstimadoAcaoPrincipal')?.value ?? 0
-        ),
-      0
+        ),0
     );
   }
 
