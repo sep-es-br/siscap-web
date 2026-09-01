@@ -57,19 +57,39 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
 
   public distribuicaoLinearCheckbox: boolean = false;
 
+  private static contadorInstancias = 0;
+
+  public readonly instanciaId =
+    ++RateioFormComponent.contadorInstancias;
+
   constructor(
     public rateioService: RateioService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 
-    this.rateioService.localidadesOpcoes =
-      this.localidadesOpcoes;
+  console.log(
+    `🔥 RATEIO COMPONENTE ${this.instanciaId}`
+  );
 
-    this.inicializarValorAcao();
+  console.log(
+    `🔥 RATEIO SERVICE ${this.rateioService.instanciaId}`
+  );
 
-    this.inicializarTodoEstado();
-  }
+  this.rateioService.localidadesOpcoes =
+    this.localidadesOpcoes;
+
+  // O service desta ação passa a trabalhar
+  // com o FormArray real desta ação.
+  this.rateioService.vincularRateioFormArray(
+    this.formAcao.controls.rateio
+  );
+
+  this.inicializarValorAcao();
+
+  this.inicializarTodoEstado();
+  
+}
 
   ngAfterViewInit(): void {
 
@@ -123,7 +143,8 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
     this.todoEstadoCheckbox =
       controlIndex !== -1;
 
-    this.notificarTodoEstadoChange();
+    // this.notificarTodoEstadoChange();
+
   }
 
   public expandirMicrorregiaoAccordionItem(
@@ -144,13 +165,20 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
       }
 
     }, 0);
+
   }
 
   public notificarTodoEstadoChange(): void {
 
+    console.log(
+      '1 >>> COMPONENTE - todoEstadoCheckbox:',
+      this.todoEstadoCheckbox
+    );
+
     this.rateioService
       .estadoBooleanCheckboxChange$
       .next(this.todoEstadoCheckbox);
+
   }
 
   public notificarDistribuicaoLinearChange(): void {
@@ -159,4 +187,12 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
       .distribuicaoLinearCheckboxChange$
       .next(this.distribuicaoLinearCheckbox);
   }
+
+  ngOnDestroy(): void {
+
+    console.log(
+      `💀 RATEIO COMPONENTE ngOnDestroy - instância ${this.instanciaId}`
+    );
+  }
+
 }

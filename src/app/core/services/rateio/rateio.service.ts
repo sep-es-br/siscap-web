@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { debounceTime, merge, Subject, tap } from 'rxjs';
+import { debounceTime, merge, Subject, Subscription, tap } from 'rxjs';
 
 import { ILocalidadeOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
 
@@ -46,6 +46,8 @@ export class RateioService {
 
   private _localidadesOpcoes: Array<ILocalidadeOpcoesDropdown> = [];
 
+  private rateioFormArraySubscription?: Subscription;
+
   public get localidadesOpcoes(): Array<ILocalidadeOpcoesDropdown> {
     return this._localidadesOpcoes;
   }
@@ -61,8 +63,7 @@ export class RateioService {
   private _controleLocalidadesCheckboxObj: Record<number, boolean> = {};
 
   private set controleLocalidadesCheckboxObj(
-    controleLocalidadesCheckboxObj: Record<number, boolean> ) 
-  {
+    controleLocalidadesCheckboxObj: Record<number, boolean>) {
     this._controleLocalidadesCheckboxObj = controleLocalidadesCheckboxObj;
   }
 
@@ -174,33 +175,26 @@ export class RateioService {
         this.simboloMoeda = getSimboloMoeda(moedaValue);
       });
 
-    // this.quantiaFormControlReferencia$
-    //   .pipe(debounceTime(TEMPO_INPUT_USUARIO))
-    //   .subscribe((quantiaValue) => {
-    //     this.quantiaFormControlReferencia = quantiaValue;
-    //     if (this.quantiaFormControlReferencia != null)
-    //       this.recalcularRateioPorPercentual();
-    //     this.validarRateio(quantiaValue, this.rateioFormArray.value);
-    //   });
-
     this.quantiaFormControlReferencia$
-      .pipe(debounceTime(TEMPO_INPUT_USUARIO))
+      .pipe(
+        tap((quantiaValue) => {
+          this.quantiaFormControlReferencia = quantiaValue;
+        }),
+        debounceTime(TEMPO_INPUT_USUARIO)
+      )
       .subscribe((quantiaValue) => {
 
-        this.quantiaFormControlReferencia = quantiaValue;
+        if (quantiaValue != null) {
 
-        // console.log('passou aqui no pipe da quantia...')
-
-        // if (this.quantiaFormControlReferencia != null) {
-        //   if (
-        //     this.tipoDistribuicaoReferencia ===
-        //     TipoDistribuicaoRateio.Linear
-        //   ) {
-        //     this.distribuirRateioLinearmente();
-        //   } else {
-        //     this.recalcularRateioPorPercentual();
-        //   }
-        // }
+          if (
+            this.tipoDistribuicaoReferencia ===
+            TipoDistribuicaoRateio.Linear
+          ) {
+            this.distribuirRateioLinearmente();
+          } else {
+            this.recalcularRateioPorPercentual();
+          }
+        }
 
         this.validarRateio(
           quantiaValue,
@@ -221,11 +215,16 @@ export class RateioService {
 
     this.estadoBooleanCheckboxChange$.subscribe((estadoCheckboxChange) => {
 
+      console.log(
+        '2 >>> SERVICE RECEBEU ESTADO:',
+        estadoCheckboxChange
+      );
+
       this.estadoBooleanCheckboxReferencia = estadoCheckboxChange;
 
       estadoCheckboxChange
         ? this.incluirEstadoNoRateio()
-        : this.distribuirRateioLinearmente();
+        : this.removerEstadoDoRateio(); //this.distribuirRateioLinearmente();
 
     });
 
@@ -247,28 +246,48 @@ export class RateioService {
     );
   }
 
-  public construirRateioFormArray(
-    rateioModelArray?: Array<RateioModel>
-  ): FormArray<FormGroup<RateioLocalidadeFormType>> {
+  // public construirRateioFormArray(
+  //   rateioModelArray?: Array<RateioModel>
+  // ): FormArray<FormGroup<RateioLocalidadeFormType>> {
+  //   console.log(
+  //     '🔥 SERVICE QUE CONSTRUIU O RATEIO:',
+  //     this.instanciaId
+  //   );
+  //   const rateioFormArray = this._nnfb.array<
+  //     FormGroup<RateioLocalidadeFormType>
+  //   >([], [Validators.required, Validators.minLength(1)]);
+  //   if (rateioModelArray) {
+  //     rateioModelArray.forEach((rateioModel) => {
+  //       rateioFormArray.push(
+  //         this.construirRateioLocalidadeFormGroupPorRateioModel(rateioModel)
+  //       );
+  //     });
+  //   }
+  //   this.rateioFormArray = rateioFormArray;
+  //   this.rateioFormArraySnapshot = rateioFormArray.value;
+  //   this.rateioFormArrayValueChanges();
+  //   return this.rateioFormArray;
+  // }
 
-    const rateioFormArray = this._nnfb.array<
-      FormGroup<RateioLocalidadeFormType>
-    >([], [Validators.required, Validators.minLength(1)]);
+  public construirRateioFormArray(rateioModelArray?: Array<RateioModel>):
+    FormArray<FormGroup<RateioLocalidadeFormType>> {
 
-    if (rateioModelArray) {
-      rateioModelArray.forEach((rateioModel) => {
-        rateioFormArray.push(
-          this.construirRateioLocalidadeFormGroupPorRateioModel(rateioModel)
-        );
-      });
-    }
+    const rateioFormArray =
+      this._nnfb.array<FormGroup<RateioLocalidadeFormType>>(
+        [],
+        [Validators.required, Validators.minLength(1)]
+      );
 
-    this.rateioFormArray = rateioFormArray;
-    this.rateioFormArraySnapshot = rateioFormArray.value;
+    rateioModelArray?.forEach(rateioModel => {
+      rateioFormArray.push(
+        this.construirRateioLocalidadeFormGroupPorRateioModel(
+          rateioModel
+        )
+      );
+    });
 
-    this.rateioFormArrayValueChanges();
+    return rateioFormArray;
 
-    return this.rateioFormArray;
   }
 
   public construirRateioLocalidadeFormGroupPorRateioModel(
@@ -315,24 +334,13 @@ export class RateioService {
     );
   }
 
-  public incluirLocalidadeNoRateio( rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType> ): void 
-  {
-
-    console.log(
-      '>>> FORM ARRAY NO PUSH',
-      this.rateioFormArray
-    );
+  public incluirLocalidadeNoRateio(rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType>): void {
 
     this.rateioFormArray.push(rateioLocalidadeFormGroup);
 
-    if ( this.tipoDistribuicaoReferencia === TipoDistribuicaoRateio.Linear ) {
+    if (this.tipoDistribuicaoReferencia === TipoDistribuicaoRateio.Linear) {
       this.distribuirRateioLinearmente();
     }
-
-    console.log(
-    '>>> RATEIO APÓS PUSH',
-    this.rateioFormArray.getRawValue()
-  );
 
   }
 
@@ -357,11 +365,6 @@ export class RateioService {
     ) {
       this.distribuirRateioLinearmente();
     }
-
-    // console.log(
-    //   'RATEIO APÓS REMOVER LOCALIDADE:',
-    //   this.rateioFormArray.getRawValue()
-    // );
 
   }
 
@@ -454,38 +457,105 @@ export class RateioService {
     return check ? 'visible' : 'invisible';
   }
 
+  // private incluirEstadoNoRateio(): void {
+
+
+  //   const isEstadoInclusoNoRateio = this.rateioFormArray.value.some(
+  //     (rateioLocalidadeValue) => rateioLocalidadeValue.idLocalidade == 1
+  //   );
+
+  //    console.log(
+  //     '3 >>> INCLUINDO ESTADO NO RATEIO:',
+  //     isEstadoInclusoNoRateio
+  //   );
+
+  //   if (isEstadoInclusoNoRateio) return;
+
+  //   this.rateioFormArraySnapshot = this.rateioFormArray.value;
+
+  //   const estadoFormGroup = this.construirRateioLocalidadeFormGroupPorIdLocalidade(1);
+
+  //   estadoFormGroup.controls.quantia.setValue(this.quantiaFormControlReferencia);
+  //   estadoFormGroup.controls.percentual.setValue(100);
+
+  //   if (this.rateioFormArray.value.length > 0) this.rateioFormArray.clear();
+
+  //   this.incluirLocalidadeNoRateio(estadoFormGroup);
+
+  // }
+
   private incluirEstadoNoRateio(): void {
 
-    console.log('>>> INCLUINDO ESTADO NO RATEIO');
+    console.log(
+      '3 >>> RATEIO ANTES:',
+      this.rateioFormArray.getRawValue()
+    );
 
-    const isEstadoInclusoNoRateio = this.rateioFormArray.value.some(
-      (rateioLocalidadeValue) => rateioLocalidadeValue.idLocalidade == 1
+    console.log(
+      '4 >>> QUANTIA REFERÊNCIA:',
+      this.quantiaFormControlReferencia
+    );
+
+    const isEstadoInclusoNoRateio =
+      this.rateioFormArray.value.some(
+        rateio => rateio.idLocalidade == 1
+      );
+
+    console.log(
+      '5 >>> ESTADO JÁ EXISTE?',
+      isEstadoInclusoNoRateio
     );
 
     if (isEstadoInclusoNoRateio) return;
 
-    console.log('>>> ESTADO NÃO INCLUSO NO RATEIO, INCLUINDO...');
 
-    this.rateioFormArraySnapshot = this.rateioFormArray.value;
+    this.rateioFormArraySnapshot =
+      this.rateioFormArray.getRawValue();
 
-    const estadoFormGroup = this.construirRateioLocalidadeFormGroupPorIdLocalidade(1);
+    console.log(
+      '6 >>> SNAPSHOT:',
+      this.rateioFormArraySnapshot
+    );
 
-    estadoFormGroup.controls.quantia.setValue(this.quantiaFormControlReferencia);
+
+    const estadoFormGroup =
+      this.construirRateioLocalidadeFormGroupPorIdLocalidade(1);
+
+    estadoFormGroup.controls.quantia.setValue(
+      this.quantiaFormControlReferencia
+    );
+
     estadoFormGroup.controls.percentual.setValue(100);
 
-    if (this.rateioFormArray.value.length > 0) this.rateioFormArray.clear();
+    console.log(
+      '7 >>> ESTADO FORM GROUP:',
+      estadoFormGroup.getRawValue()
+    );
 
-    console.log('>>> RATEIO FORM ARRAY ANTES DE INCLUIR ESTADO:', this.rateioFormArray.getRawValue());
+
+    if (this.rateioFormArray.length > 0) {
+      this.rateioFormArray.clear();
+    }
+
+    console.log(
+      '8 >>> RATEIO DEPOIS DO CLEAR:',
+      this.rateioFormArray.getRawValue()
+    );
+
 
     this.incluirLocalidadeNoRateio(estadoFormGroup);
+
+    console.log(
+      '9 >>> RATEIO FINAL:',
+      this.rateioFormArray.getRawValue()
+    );
 
   }
 
   private removerEstadoDoRateio(): void {
 
     const isEstadoInclusoNoRateio = this.rateioFormArray.value.some(
-      (rateioLocalidadeValue) => rateioLocalidadeValue.idLocalidade == 1
-    );
+      (rateioLocalidadeValue) => rateioLocalidadeValue.idLocalidade == 1);
 
     if (!isEstadoInclusoNoRateio) return;
 
@@ -532,6 +602,7 @@ export class RateioService {
   }
 
   private recalcularRateioPorPercentual(): void {
+
     const rateioFormArrayNovosValores = this.rateioFormArray.value.map(
       (rateioLocalidadeValue) => {
         return {
@@ -549,30 +620,31 @@ export class RateioService {
   }
 
   private rateioFormArrayValueChanges(): void {
-    
-    console.log(
-      '>>> CRIANDO SUBSCRIBE',
-      this.rateioFormArray
-    );
 
-    this.rateioFormArray.valueChanges
-      .pipe(
-        debounceTime(TEMPO_RECALCULO))
-      .subscribe((rateioFormArrayValue) => {
+    this.rateioFormArraySubscription?.unsubscribe();
 
-        console.log(
-          '>>> VALUE CHANGES DISPAROU',
-          rateioFormArrayValue
-        );
+    this.rateioFormArraySubscription =
+      this.rateioFormArray.valueChanges
+        .pipe(
+          debounceTime(TEMPO_RECALCULO)
+        )
+        .subscribe((rateioFormArrayValue) => {
 
-        this.calcularTotalRateio(rateioFormArrayValue);
-        
-        this.validarRateio(
-          this.quantiaFormControlReferencia,
-          rateioFormArrayValue
-        );
+          console.log(
+            '>>> VALUE CHANGES:',
+            rateioFormArrayValue
+          );
 
-      });
+          this.calcularTotalRateio(
+            rateioFormArrayValue
+          );
+
+          this.validarRateio(
+            this.quantiaFormControlReferencia,
+            rateioFormArrayValue
+          );
+
+        });
 
   }
 
@@ -624,12 +696,8 @@ export class RateioService {
 
   private distribuirRateioLinearmente(): void {
 
-    // console.log('>>> DISTRIBUIÇÃO LINEAR');
-
     const quantiaTotal =
       Number(this.quantiaFormControlReferencia);
-
-    // console.log('quantiaTotal:', quantiaTotal);
 
     const localidades =
       this.rateioFormArray.controls.filter(
@@ -637,27 +705,14 @@ export class RateioService {
           control.controls.idLocalidade.value !== 1
       );
 
-    // console.log(
-    //   'localidades:',
-    //   localidades.map(
-    //     c => c.controls.idLocalidade.value
-    //   )
-    // );
-
     const quantidadeLocalidades =
       localidades.length;
-
-    // console.log(
-    //   'quantidadeLocalidades:',
-    //   quantidadeLocalidades
-    // );
 
     if (
       !Number.isFinite(quantiaTotal) ||
       quantiaTotal <= 0 ||
       quantidadeLocalidades === 0
     ) {
-      // console.log('>>> SAIU PELO RETURN');
       return;
     }
 
@@ -667,39 +722,31 @@ export class RateioService {
     const percentualPorLocalidade =
       100 / quantidadeLocalidades;
 
-    // console.log(
-    //   'quantiaPorLocalidade:',
-    //   quantiaPorLocalidade
-    // );
-
-    // console.log(
-    //   'percentualPorLocalidade:',
-    //   percentualPorLocalidade
-    // );
-
     localidades.forEach(control => {
-
-      // console.log(
-      //   'ANTES:',
-      //   control.getRawValue()
-      // );
 
       control.patchValue({
         quantia: quantiaPorLocalidade,
         percentual: percentualPorLocalidade
       });
 
-      // console.log(
-      //   'DEPOIS:',
-      //   control.getRawValue()
-      // );
-
     });
 
-    // console.log(
-    //   'FORM ARRAY FINAL:',
-    //   this.rateioFormArray.getRawValue()
-    // );
+  }
+
+  public vincularRateioFormArray(
+    rateioFormArray: FormArray<FormGroup<RateioLocalidadeFormType>>
+  ): void {
+
+    this.rateioFormArray = rateioFormArray;
+
+    this.rateioFormArraySnapshot =
+      this.rateioFormArray.getRawValue();
+
+    this.rateioFormArrayValueChanges();
+
+    this.calcularTotalRateio(
+      this.rateioFormArray.getRawValue()
+    );
 
   }
 

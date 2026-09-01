@@ -1,4 +1,5 @@
-import { FormControl } from '@angular/forms';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { RateioLocalidadeFormType } from './rateio-form.type';
 
 export type AcaoFormType = {
   idAcao: FormControl<number>;
@@ -6,6 +7,7 @@ export type AcaoFormType = {
   descricaoAcaoSecundaria: FormControl<string | null>;
   valorEstimadoAcaoPrincipal: FormControl<number>;
   idStatus: FormControl<number>;
+  rateio: FormArray<FormGroup<RateioLocalidadeFormType>>;
 };
 
 export type AcaoFormTypeValue = Array<
