@@ -4,47 +4,48 @@
       class="col-12 mb-2 d-flex flex-wrap justify-content-between justify-content-sm-end justify-content-lg-between align-items-center">
       <div class="col-12 col-sm-6 col-lg-4">
         <div class="d-flex gap-4">
-
+      
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="tipo-distribuicao" id="todo-estado-radio"
-              [disabled]="!isModoEdicao" [(ngModel)]="estadoBooleanCheckbox" [value]="true"
-              (change)="notificarEstadoCheckboxChange()" />
-            <label class="form-check-label text-nowrap" for="todo-estado-radio">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="todo-estado-checkbox"
+              [disabled]="!isModoEdicao"
+              [(ngModel)]="todoEstadoCheckbox"
+              (change)="notificarTodoEstadoChange()" />
+      
+            <label class="form-check-label text-nowrap" for="todo-estado-checkbox">
               Todo o Estado
             </label>
           </div>
-
+      
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="tipo-distribuicao" id="distribuicao-linear-radio"
-              [disabled]="!isModoEdicao" [(ngModel)]="estadoBooleanCheckbox" [value]="false"
-              (change)="notificarEstadoCheckboxChange()" />
-            <label class="form-check-label text-nowrap" for="distribuicao-linear-radio">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="distribuicao-linear-checkbox"
+              [disabled]="!isModoEdicao"
+              [(ngModel)]="distribuicaoLinearCheckbox"
+              (change)="notificarDistribuicaoLinearChange()" />
+            <label  class="form-check-label text-nowrap" for="distribuicao-linear-checkbox" >
               Distribuição linear
             </label>
           </div>
-
         </div>
       </div>
 
       <div class="col-12 col-sm-6 col-lg-4 d-inline-flex flex-row justify-content-between">
         <ng-container *ngIf="rateioService.quantiaFormControlReferencia; else nullQuantiaFormControlValue">
           <div class="col-5 col-sm-4">
-            <span class="fs-small-3 total-percentual" [ngClass]="{
-              'error-message':
-                rateioService.rateioFormArray.errors?.['limiteRateio']
-            }">
-              {{
-              rateioService.totalRateio.percentual
+            <span class="fs-small-3 total-percentual" [ngClass]="{'error-message': rateioService.rateioFormArray.errors?.['limiteRateio']}">
+              {{ rateioService.totalRateio.percentual
               .toFixed(2)
               .replace(".", ",") + "%"
               }}
             </span>
           </div>
           <div class="col-7 col-sm-8">
-            <span class="fs-small-3 total-quantia" [ngClass]="{
-                'error-message':
-                  rateioService.rateioFormArray.errors?.['limiteRateio']
-              }">
+            <span class="fs-small-3 total-quantia" [ngClass]="{'error-message': rateioService.rateioFormArray.errors?.['limiteRateio']}">
               {{
               rateioService.totalRateio.quantia
               | mask
@@ -60,6 +61,7 @@
           </div>
         </ng-container>
       </div>
+      
     </div>
 
     <div class="col-12">

@@ -61,12 +61,15 @@ export class RateioService {
   private _controleLocalidadesCheckboxObj: Record<number, boolean> = {};
 
   private set controleLocalidadesCheckboxObj(
-    controleLocalidadesCheckboxObj: Record<number, boolean>
-  ) {
+    controleLocalidadesCheckboxObj: Record<number, boolean> ) 
+  {
     this._controleLocalidadesCheckboxObj = controleLocalidadesCheckboxObj;
   }
 
   private _estadoBooleanCheckboxChange$: Subject<boolean> =
+    new Subject<boolean>();
+
+  public distribuicaoLinearCheckboxChange$ =
     new Subject<boolean>();
 
   public get estadoBooleanCheckboxChange$(): Subject<boolean> {
@@ -165,11 +168,6 @@ export class RateioService {
 
   constructor(private readonly _nnfb: NonNullableFormBuilder) {
 
-    console.log(
-      `>>> CRIOU RateioService #${this.instanciaId}`
-    );
-
-
     this.moedaFormControlReferencia$
       .pipe(debounceTime(TEMPO_INPUT_USUARIO))
       .subscribe((moedaValue) => {
@@ -193,16 +191,16 @@ export class RateioService {
 
         // console.log('passou aqui no pipe da quantia...')
 
-        if (this.quantiaFormControlReferencia != null) {
-          if (
-            this.tipoDistribuicaoReferencia ===
-            TipoDistribuicaoRateio.Linear
-          ) {
-            this.distribuirRateioLinearmente();
-          } else {
-            this.recalcularRateioPorPercentual();
-          }
-        }
+        // if (this.quantiaFormControlReferencia != null) {
+        //   if (
+        //     this.tipoDistribuicaoReferencia ===
+        //     TipoDistribuicaoRateio.Linear
+        //   ) {
+        //     this.distribuirRateioLinearmente();
+        //   } else {
+        //     this.recalcularRateioPorPercentual();
+        //   }
+        // }
 
         this.validarRateio(
           quantiaValue,
@@ -214,6 +212,7 @@ export class RateioService {
     merge(
       this.microrregiaoBooleanCheckboxChange$,
       this.municipioBooleanCheckboxChange$
+
     ).subscribe((localidadeCheckboxChange) => {
       this._controleLocalidadesCheckboxObj[
         localidadeCheckboxChange.idLocalidade
@@ -316,21 +315,24 @@ export class RateioService {
     );
   }
 
-  public incluirLocalidadeNoRateio(
-    rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType>
-  ): void {
+  public incluirLocalidadeNoRateio( rateioLocalidadeFormGroup: FormGroup<RateioLocalidadeFormType> ): void 
+  {
+
+    console.log(
+      '>>> FORM ARRAY NO PUSH',
+      this.rateioFormArray
+    );
 
     this.rateioFormArray.push(rateioLocalidadeFormGroup);
 
-    // console.log('tipo de distribuição..', this.tipoDistribuicaoReferencia)
-
-    if (
-      this.tipoDistribuicaoReferencia ===
-      TipoDistribuicaoRateio.Linear
-    ) {
-      // console.log('entrou no tipo de distribuicao..')
+    if ( this.tipoDistribuicaoReferencia === TipoDistribuicaoRateio.Linear ) {
       this.distribuirRateioLinearmente();
     }
+
+    console.log(
+    '>>> RATEIO APÓS PUSH',
+    this.rateioFormArray.getRawValue()
+  );
 
   }
 
@@ -454,19 +456,26 @@ export class RateioService {
 
   private incluirEstadoNoRateio(): void {
 
+    console.log('>>> INCLUINDO ESTADO NO RATEIO');
+
     const isEstadoInclusoNoRateio = this.rateioFormArray.value.some(
       (rateioLocalidadeValue) => rateioLocalidadeValue.idLocalidade == 1
     );
 
     if (isEstadoInclusoNoRateio) return;
 
+    console.log('>>> ESTADO NÃO INCLUSO NO RATEIO, INCLUINDO...');
+
     this.rateioFormArraySnapshot = this.rateioFormArray.value;
 
     const estadoFormGroup = this.construirRateioLocalidadeFormGroupPorIdLocalidade(1);
+
     estadoFormGroup.controls.quantia.setValue(this.quantiaFormControlReferencia);
     estadoFormGroup.controls.percentual.setValue(100);
 
     if (this.rateioFormArray.value.length > 0) this.rateioFormArray.clear();
+
+    console.log('>>> RATEIO FORM ARRAY ANTES DE INCLUIR ESTADO:', this.rateioFormArray.getRawValue());
 
     this.incluirLocalidadeNoRateio(estadoFormGroup);
 
@@ -540,16 +549,31 @@ export class RateioService {
   }
 
   private rateioFormArrayValueChanges(): void {
+    
+    console.log(
+      '>>> CRIANDO SUBSCRIBE',
+      this.rateioFormArray
+    );
+
     this.rateioFormArray.valueChanges
       .pipe(
         debounceTime(TEMPO_RECALCULO))
       .subscribe((rateioFormArrayValue) => {
+
+        console.log(
+          '>>> VALUE CHANGES DISPAROU',
+          rateioFormArrayValue
+        );
+
         this.calcularTotalRateio(rateioFormArrayValue);
+        
         this.validarRateio(
           this.quantiaFormControlReferencia,
           rateioFormArrayValue
         );
+
       });
+
   }
 
   private calcularTotalRateio(
@@ -669,7 +693,7 @@ export class RateioService {
       //   'DEPOIS:',
       //   control.getRawValue()
       // );
-      
+
     });
 
     // console.log(

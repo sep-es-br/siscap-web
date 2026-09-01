@@ -35,35 +35,70 @@ import { ILocalidadeOpcoesDropdown } from '../../../core/interfaces/opcoes-dropd
     RateioMicrorregiaoFormCardComponent,
     RateioMunicipioFormCardComponent,
   ],
-
   providers: [RateioService],
-
   templateUrl: './rateio-form.component.html',
   styleUrl: './rateio-form.component.scss',
-
 })
 export class RateioFormComponent implements OnInit, AfterViewInit {
 
   @ViewChild(NgbAccordionDirective)
   public rateioNgbAccordion!: NgbAccordionDirective;
 
-  @Input() public isModoEdicao: boolean = false;
+  @Input()
+  public isModoEdicao: boolean = false;
 
-  public estadoBooleanCheckbox: boolean = false;
-
-  @Input({ required: true }) formAcao!: FormGroup<AcaoFormType>;
+  @Input({ required: true })
+  public formAcao!: FormGroup<AcaoFormType>;
 
   @Input({ required: true })
   public localidadesOpcoes!: Array<ILocalidadeOpcoesDropdown>;
 
-  constructor(public rateioService: RateioService) { }
+  public todoEstadoCheckbox: boolean = false;
+
+  public distribuicaoLinearCheckbox: boolean = false;
+
+  constructor(
+    public rateioService: RateioService
+  ) {}
 
   ngOnInit(): void {
 
-    // Alimenta a instância PARTICULAR do RateioService
-    // com a lista compartilhada de localidades.
     this.rateioService.localidadesOpcoes =
       this.localidadesOpcoes;
+
+    this.inicializarValorAcao();
+
+    this.inicializarTodoEstado();
+  }
+
+  ngAfterViewInit(): void {
+
+    const estadoCheckboxDiv =
+      document.querySelector('div#estado-checkbox-div');
+
+    if (!estadoCheckboxDiv) {
+      return;
+    }
+
+    fromEvent(estadoCheckboxDiv, 'click')
+      .subscribe((clickEvent) => {
+
+        if (this.rateioService.quantiaFormControlReferencia) {
+          return;
+        }
+
+        clickEvent.preventDefault();
+
+        document
+          .querySelector('div#nullQuantiaFormControlValueCol')
+          ?.animate(
+            SIDEWAYS_SHAKE.keyframes,
+            SIDEWAYS_SHAKE.options
+          );
+      });
+  }
+
+  private inicializarValorAcao(): void {
 
     const quantiaFormControl =
       this.formAcao.controls.valorEstimadoAcaoPrincipal;
@@ -73,69 +108,55 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
         startWith(quantiaFormControl.value)
       )
       .subscribe((quantiaValue) => {
-
         this.rateioService
           .quantiaFormControlReferencia$
           .next(quantiaValue);
       });
+  }
 
-
-    // const quantiaFormControl =
-    //   this.formAcao.controls.valorEstimadoAcaoPrincipal;
-
-    // manda o valor inicial
-    this.rateioService.quantiaFormControlReferencia$.next(
-      quantiaFormControl.value
-    );
-
-    // acompanha alterações
-    quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
-      console.log(
-        'valorEstimadoAcaoPrincipal alterado:',
-        quantiaValue
-      );
-      this.rateioService.quantiaFormControlReferencia$.next(
-        quantiaValue
-      );
-    });
+  private inicializarTodoEstado(): void {
 
     const controlIndex =
-      this.rateioService.buscarIndiceControleRateioLocalidadeFormGroup(1);
+      this.rateioService
+        .buscarIndiceControleRateioLocalidadeFormGroup(1);
 
-    if (controlIndex !== -1) {
-      this.estadoBooleanCheckbox = false;
-      this.notificarEstadoCheckboxChange();
-    }
+    this.todoEstadoCheckbox =
+      controlIndex !== -1;
 
+    this.notificarTodoEstadoChange();
   }
 
-  ngAfterViewInit(): void {
-    const estadoCheckboxDiv = document.querySelector('div#estado-checkbox-div');
+  public expandirMicrorregiaoAccordionItem(
+    idLocalidade: number
+  ): void {
 
-    if (estadoCheckboxDiv) {
-      fromEvent(estadoCheckboxDiv, 'click').subscribe((clickEvent) => {
-        if (!this.rateioService.quantiaFormControlReferencia) {
-          clickEvent.preventDefault();
-          document
-            .querySelector('div#nullQuantiaFormControlValueCol')
-            ?.animate(SIDEWAYS_SHAKE.keyframes, SIDEWAYS_SHAKE.options);
-        }
-      });
-    }
-  }
-
-  public expandirMicrorregiaoAccordionItem(idLocalidade: number): void {
-    const accordionItemId = `rateio-microrregiao-accordion-item-${idLocalidade}`;
+    const accordionItemId =
+      `rateio-microrregiao-accordion-item-${idLocalidade}`;
 
     setTimeout(() => {
-      if (!this.rateioNgbAccordion.isExpanded(accordionItemId))
-        this.rateioNgbAccordion.expand(accordionItemId);
+
+      if (
+        !this.rateioNgbAccordion
+          .isExpanded(accordionItemId)
+      ) {
+        this.rateioNgbAccordion
+          .expand(accordionItemId);
+      }
+
     }, 0);
   }
 
-  public notificarEstadoCheckboxChange(): void {
-    this.rateioService.estadoBooleanCheckboxChange$.next(
-      this.estadoBooleanCheckbox
-    );
+  public notificarTodoEstadoChange(): void {
+
+    this.rateioService
+      .estadoBooleanCheckboxChange$
+      .next(this.todoEstadoCheckbox);
+  }
+
+  public notificarDistribuicaoLinearChange(): void {
+
+    this.rateioService
+      .distribuicaoLinearCheckboxChange$
+      .next(this.distribuicaoLinearCheckbox);
   }
 }

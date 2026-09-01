@@ -1377,7 +1377,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     quantiaFormControl.valueChanges.subscribe((quantiaValue) => {
-      console.log('valueChanges.subscribe', quantiaValue)
       this._rateioService.quantiaFormControlReferencia$.next(quantiaValue);
     });
 
