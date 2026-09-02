@@ -215,11 +215,6 @@ export class RateioService {
 
     this.estadoBooleanCheckboxChange$.subscribe((estadoCheckboxChange) => {
 
-      console.log(
-        '2 >>> SERVICE RECEBEU ESTADO:',
-        estadoCheckboxChange
-      );
-
       this.estadoBooleanCheckboxReferencia = estadoCheckboxChange;
 
       estadoCheckboxChange
@@ -271,6 +266,8 @@ export class RateioService {
 
   public construirRateioFormArray(rateioModelArray?: Array<RateioModel>):
     FormArray<FormGroup<RateioLocalidadeFormType>> {
+
+      console.log('🔥 SERVICE QUE CONSTRUIU O RATEIO:', rateioModelArray );
 
     const rateioFormArray =
       this._nnfb.array<FormGroup<RateioLocalidadeFormType>>(
@@ -486,37 +483,15 @@ export class RateioService {
 
   private incluirEstadoNoRateio(): void {
 
-    console.log(
-      '3 >>> RATEIO ANTES:',
-      this.rateioFormArray.getRawValue()
-    );
-
-    console.log(
-      '4 >>> QUANTIA REFERÊNCIA:',
-      this.quantiaFormControlReferencia
-    );
-
     const isEstadoInclusoNoRateio =
       this.rateioFormArray.value.some(
         rateio => rateio.idLocalidade == 1
       );
 
-    console.log(
-      '5 >>> ESTADO JÁ EXISTE?',
-      isEstadoInclusoNoRateio
-    );
-
     if (isEstadoInclusoNoRateio) return;
-
 
     this.rateioFormArraySnapshot =
       this.rateioFormArray.getRawValue();
-
-    console.log(
-      '6 >>> SNAPSHOT:',
-      this.rateioFormArraySnapshot
-    );
-
 
     const estadoFormGroup =
       this.construirRateioLocalidadeFormGroupPorIdLocalidade(1);
@@ -527,28 +502,11 @@ export class RateioService {
 
     estadoFormGroup.controls.percentual.setValue(100);
 
-    console.log(
-      '7 >>> ESTADO FORM GROUP:',
-      estadoFormGroup.getRawValue()
-    );
-
-
     if (this.rateioFormArray.length > 0) {
       this.rateioFormArray.clear();
     }
 
-    console.log(
-      '8 >>> RATEIO DEPOIS DO CLEAR:',
-      this.rateioFormArray.getRawValue()
-    );
-
-
     this.incluirLocalidadeNoRateio(estadoFormGroup);
-
-    console.log(
-      '9 >>> RATEIO FINAL:',
-      this.rateioFormArray.getRawValue()
-    );
 
   }
 
@@ -629,11 +587,6 @@ export class RateioService {
           debounceTime(TEMPO_RECALCULO)
         )
         .subscribe((rateioFormArrayValue) => {
-
-          console.log(
-            '>>> VALUE CHANGES:',
-            rateioFormArrayValue
-          );
 
           this.calcularTotalRateio(
             rateioFormArrayValue

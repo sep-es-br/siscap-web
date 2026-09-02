@@ -1964,7 +1964,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         })
       );
 
-      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho, formData)

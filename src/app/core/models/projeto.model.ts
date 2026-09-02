@@ -71,6 +71,7 @@ export class ProjetoFormModel implements IProjetoForm {
   }>;
   public acoesPlanejamentoProjeto: Array<IAcaoPlanejamentoProjeto>;
   public naoPrevistoNoPpa: boolean | false;
+  public acoesRateioProjeto: Array<IAcao>;
 
   constructor(projetoForm?: IProjetoForm) {
 
@@ -131,6 +132,10 @@ export class ProjetoFormModel implements IProjetoForm {
 
     this.naoPrevistoNoPpa = projetoForm?.naoPrevistoNoPpa ?? false;
 
+    this.acoesRateioProjeto = this.construirAcoesRateioProjeto(
+      projetoForm?.acoesProjeto
+    );
+
   }
 
   private construirRateioModelArray(
@@ -178,6 +183,15 @@ export class ProjetoFormModel implements IProjetoForm {
       return [];
     }
     return acoesProjeto.map((acoes) => new AcaoModel(acoes));
+  }
+
+  private construirAcoesRateioProjeto(
+    acoesRateioProjeto?: Array<IAcao>
+  ): Array<AcaoModel> {
+    if (!acoesRateioProjeto) {
+      return [];
+    }
+    return acoesRateioProjeto.map((acoes) => new AcaoModel(acoes));
   }
 
   private montarIndicadorAvulsoProjeto(item: Array<any>): Array<IndicadorAvulsoModel> {

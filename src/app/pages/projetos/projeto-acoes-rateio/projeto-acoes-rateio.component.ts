@@ -95,7 +95,7 @@ export class ProjetoAcoesRateioComponent {
   }
 
   public get acoesProjeto(): FormArray<FormGroup<AcaoFormType>> {
-    return this.formProjeto.get('acoesProjeto') as FormArray<FormGroup<AcaoFormType>>;
+    return this.formProjeto.get('acoesRateioProjeto') as FormArray<FormGroup<AcaoFormType>>;
   }
 
   public adicionarAcao(): void {
@@ -116,6 +116,12 @@ export class ProjetoAcoesRateioComponent {
           acao.get('valorEstimadoAcaoPrincipal')?.value ?? 0
         ),0
     );
+  }
+
+  public getAcaoRateioForm(
+    index: number
+  ): FormGroup<AcaoFormType> {
+    return this.acoesProjeto.at(index);
   }
 
 }

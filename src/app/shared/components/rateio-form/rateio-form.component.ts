@@ -68,28 +68,33 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
 
-  console.log(
-    `🔥 RATEIO COMPONENTE ${this.instanciaId}`
-  );
+    this.rateioService.localidadesOpcoes =
+      this.localidadesOpcoes;
 
-  console.log(
-    `🔥 RATEIO SERVICE ${this.rateioService.instanciaId}`
-  );
+    this.rateioService.vincularRateioFormArray(
+      this.formAcao.controls.rateio
+    );
 
-  this.rateioService.localidadesOpcoes =
-    this.localidadesOpcoes;
+    console.log(
+      '1 - SERVICE E AÇÃO USAM MESMO RATEIO?',
+      this.rateioService.rateioFormArray ===
+      this.formAcao.controls.rateio
+    );
 
-  // O service desta ação passa a trabalhar
-  // com o FormArray real desta ação.
-  this.rateioService.vincularRateioFormArray(
-    this.formAcao.controls.rateio
-  );
+    console.log(
+      '2 - PAI DA AÇÃO:',
+      this.formAcao.parent
+    );
 
-  this.inicializarValorAcao();
+    console.log(
+      '3 - ROOT DA AÇÃO:',
+      this.formAcao.root.getRawValue()
+    );
 
-  this.inicializarTodoEstado();
-  
-}
+    this.inicializarValorAcao();
+    this.inicializarTodoEstado();
+    
+  }
 
   ngAfterViewInit(): void {
 
@@ -122,6 +127,11 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
 
     const quantiaFormControl =
       this.formAcao.controls.valorEstimadoAcaoPrincipal;
+
+    console.log(
+      '4 - VALOR ESTIMADO AÇÃO PRINCIPAL:',
+      quantiaFormControl.value
+    );
 
     quantiaFormControl.valueChanges
       .pipe(
@@ -170,11 +180,6 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
 
   public notificarTodoEstadoChange(): void {
 
-    console.log(
-      '1 >>> COMPONENTE - todoEstadoCheckbox:',
-      this.todoEstadoCheckbox
-    );
-
     this.rateioService
       .estadoBooleanCheckboxChange$
       .next(this.todoEstadoCheckbox);
@@ -186,13 +191,6 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
     this.rateioService
       .distribuicaoLinearCheckboxChange$
       .next(this.distribuicaoLinearCheckbox);
-  }
-
-  ngOnDestroy(): void {
-
-    console.log(
-      `💀 RATEIO COMPONENTE ngOnDestroy - instância ${this.instanciaId}`
-    );
   }
 
 }

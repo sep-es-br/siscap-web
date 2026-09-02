@@ -50,12 +50,10 @@
 
         </div>
 
-
         <hr class="mt-0 mb-4">
 
-
         <!-- FORM ARRAY DAS AÇÕES -->
-        <div formArrayName="acoesProjeto">
+        <div formArrayName="acoesRateioProjeto">
 
             <div *ngFor="let acao of acoesProjeto.controls; let i = index" [formGroupName]="i" class="acao-container">
 
@@ -151,7 +149,7 @@
 
                             <!-- CONTEÚDO -->
                             <div *ngIf="rateioAberto(i)" class="rateio-conteudo">
-                                <siscap-rateio-form [isModoEdicao]="isModoEdicao" [formAcao]="acao"
+                                <siscap-rateio-form [isModoEdicao]="isModoEdicao" [formAcao]="getAcaoRateioForm(i)"
                                     [localidadesOpcoes]="rateioService.localidadesOpcoes"></siscap-rateio-form>
                             </div>
                         </div>
