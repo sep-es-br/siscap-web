@@ -1,5 +1,4 @@
-import { FormArray, FormGroup } from "@angular/forms";
-import { RateioLocalidadeFormType } from "../types/form/rateio-form.type";
+import { RateioModel } from "../models/rateio.model";
 
 export interface IAcao {
   idAcao: number;
@@ -7,5 +6,5 @@ export interface IAcao {
   descricaoAcaoSecundaria: string | null;
   valorEstimadoAcaoPrincipal: number | null;
   idStatus: number;
-  rateio: FormArray<FormGroup<RateioLocalidadeFormType>>;
+  rateio?: RateioModel[];
 }

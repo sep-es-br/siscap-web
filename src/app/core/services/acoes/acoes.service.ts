@@ -47,8 +47,8 @@ export class AcoesService {
     return this._acoesFormArraySnapshot;
   }
 
-  private set acoesFormArraySnapshot(indicadoresFormArrayValue: Array<IAcao>) {
-    this._acoesFormArraySnapshot = indicadoresFormArrayValue;
+  private set acoesFormArraySnapshot(acoesFormArrayValue: Array<IAcao>) {
+    this._acoesFormArraySnapshot = acoesFormArrayValue;
   }
 
   private _totalAcoes: { percentual: number; quantia: number } = {
@@ -126,19 +126,12 @@ export class AcoesService {
 
     this.acoesFormArray = acoesFormArray;
     this.acoesFormArraySnapshot = this.acoesFormArray.value as Array<IAcao>;
+
     return this.acoesFormArray;
+
   }
 
   public construirAcaoFormGroup(membro?: IAcao): FormGroup<AcaoFormType> {
-
-    // return this._nnfb.group<AcaoFormType>({
-    //   idAcao: this._nnfb.control(membro?.idAcao ?? 0),
-    //   descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null, [ Validators.required, noWhitespaceValidator() ]),
-    //   descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null, [ Validators.required, noWhitespaceValidator() ]),
-    //   valorEstimadoAcaoPrincipal: this._nnfb.control(membro?.valorEstimadoAcaoPrincipal ?? 0, Validators.required),
-    //   idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required
-    //   ),
-    // });
 
     return this._nnfb.group<AcaoFormType>({
 
@@ -167,7 +160,6 @@ export class AcoesService {
     });
 
   }
-
 
   public incluirAcao(
     acaoFormGroup: FormGroup<AcaoFormType>

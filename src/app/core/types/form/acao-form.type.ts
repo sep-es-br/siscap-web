@@ -17,5 +17,6 @@ export type AcaoFormTypeValue = Array<
     descricaoAcaoSecundaria: string | null;
     valorEstimadoAcaoPrincipal: number;
     idStatus: number;
+    rateio: RateioLocalidadeFormType[];
   }>
 >;
