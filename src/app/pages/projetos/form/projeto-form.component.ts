@@ -2895,14 +2895,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
         catchError((error) => {
           this.autuacaoAcionada = false;
+          this.assinarAutuar = true;
+          this.exibeListaEtapasIntegracao = false;
           this._toastService.showToast(
             'error',
             'Erro ao iniciar autuação no E-Docs.',
           );
-          return of([]);
-        }),
-        finalize(() => {
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          return EMPTY;
         }),
       )
       .subscribe(() => {
@@ -3164,6 +3163,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.pararPolling$.next();
+    this.pararPolling$.complete();
     this._subscription.unsubscribe();
     this._breadcrumbService.listaBotaoAcaoPropriedades$.next([]);
   }
