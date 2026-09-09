@@ -1795,10 +1795,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
 
       if (this.arquivoParecerSelecionado) {
+        console.log('Arquivo de parecer selecionado:', this.arquivoParecerSelecionado);
         formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
       }
 
-      // console.log('PAYLOAD SUBMIT (PARECER):', payload);
+      console.log('PAYLOAD SUBMIT (PARECER):', payload);
 
       this.atualizarProjeto(payload, isRascunho, formData).subscribe();
 
