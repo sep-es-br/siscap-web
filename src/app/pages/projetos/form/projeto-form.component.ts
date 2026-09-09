@@ -1799,7 +1799,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
       }
 
-      console.log('PAYLOAD SUBMIT (PARECER):', payload);
+      // console.log('PAYLOAD SUBMIT (PARECER):', payload);
 
       this.atualizarProjeto(payload, isRascunho, formData).subscribe();
 
@@ -1982,7 +1982,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   onSelecionarPessoa(pessoa: any) {
     
-    console.log('Pessoa selecionada:', pessoa);
+    // console.log('Pessoa selecionada:', pessoa);
     
     if (pessoa) {
       this.projetoForm.patchValue({
