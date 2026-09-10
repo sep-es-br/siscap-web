@@ -27,7 +27,8 @@ export type TBotaoAcao =
   | 'exportar'
   | 'solicitarAutorizacao'
   | 'autuar'
-  | 'fechar';
+  | 'fechar'
+  | 'pendenciasDic';
 
 export abstract class BotoesConfig {
   private static readonly BOTOESCONFIG_BASE: Record<
@@ -35,155 +36,162 @@ export abstract class BotoesConfig {
     IBotaoPropriedades
   > = {
     confirmar: {
-      classesCSS: ['btn-success'],
+      classesCSS: ['btn-success', 'btn-sm'],
       icone: ['fa-solid', 'fa-thumbs-up'],
       texto: 'Confirmar',
       acao: 'confirmar',
     },
     criar: {
-      classesCSS: ['btn-outline-primary'],
+      classesCSS: ['btn-outline-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-plus'],
       texto: 'Criar',
       acao: 'criar',
     },
     cancelar: {
-      classesCSS: ['btn-outline-danger'],
+      classesCSS: ['btn-outline-danger', 'btn-sm'],
       icone: ['fa-solid', 'fa-close'],
       texto: 'Cancelar',
       acao: 'cancelar',
     },
     voltar: {
-      classesCSS: ['btn-outline-primary'],
+      classesCSS: ['btn-outline-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-arrow-turn-up', 'fa-rotate-270'],
       texto: 'Voltar',
       acao: 'voltar',
     },
     salvar: {
-      classesCSS: ['btn-success'],
+      classesCSS: ['btn-success', 'btn-sm'],
       icone: ['fa-solid', 'fa-save'],
       texto: 'Salvar Rascunho',
       acao: 'salvar',
     },
     editar: {
-      classesCSS: ['btn-primary'],
+      classesCSS: ['btn-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-edit'],
       texto: 'Editar',
       acao: 'editar',
     },
     deletar: {
-      classesCSS: ['btn-danger'],
+      classesCSS: ['btn-danger', 'btn-sm'],
       icone: ['fa-solid', 'fa-trash'],
       texto: 'Deletar',
       acao: 'deletar',
     },
     enviar: {
-      classesCSS: ['btn-primary'],
+      classesCSS: ['btn-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Salvar e Enviar',
       acao: 'enviar',
     },
     prospectar: {
-      classesCSS: ['btn-outline-success'],
+      classesCSS: ['btn-outline-success', 'btn-sm'],
       icone: ['fa-solid', 'fa-paper-plane'],
       texto: 'Prospectar',
       acao: 'prospectar',
     },
     autuarEdocs: {
-      classesCSS: ['btn-success'],
+      classesCSS: ['btn-success', 'btn-sm'],
       icone: ['fa-solid', 'fa-paper-plane'],
       texto: 'Assinar e Autuar',
       acao: 'autuarEdocs',
     },
     revisar: {
-      classesCSS: ['btn-outline-warning'],
+      classesCSS: ['btn-outline-warning', 'btn-sm'],
       icone: ['fa-solid', 'fa-pen-to-square'],
       texto: 'Revisar',
       acao: 'revisar',
     },
     recusar: {
-      classesCSS: ['btn-danger'],
+      classesCSS: ['btn-danger', 'btn-sm'],
       icone: ['fa-solid', 'fa-ban'],
       texto: 'Recusar',
       acao: 'recusar',
     },
     arquivar: {
-      classesCSS: ['btn-outline-danger'],
+      classesCSS: ['btn-outline-danger', 'btn-sm'],
       icone: ['fa-solid', 'fa-box-archive'],
       texto: 'Arquivar',
       acao: 'arquivar',
     },
     complementar: {
-      classesCSS: ['btn-primary'],
+      classesCSS: ['btn-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-edit'],
       texto: 'Complementar',
       acao: 'complementar',
     },
     parecerestrategicoorcamentario: {
-      classesCSS: ['btn-primary'],
+      classesCSS: ['btn-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Pedir Parecer',
       acao: 'parecerestrategicoorcamentario',
     },
     salvarparecer: {
-      classesCSS: ['btn-success'],
+      classesCSS: ['btn-success', 'btn-sm'],
       icone: ['fa-solid', 'fa-save'],
       texto: 'Salvar Parecer',
       acao: 'salvar',
     },
     efetivarparecerestrategicoorcamentario: {
-      classesCSS: ['btn-primary'],
+      classesCSS: ['btn-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Enviar Parecer',
       acao: 'efetivarparecerestrategicoorcamentario',
     },
     entranharPareceresProcessoEdocs: {
-      classesCSS: ['btn-primary'],
+      classesCSS: ['btn-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Entranhar Pareceres',
       acao: 'entranharPareceresProcessoEdocs',
     },
     entranharParecerGEOCdocs: {
-      classesCSS: ['btn-primary'],
+      classesCSS: ['btn-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-upload'],
       texto: 'Entranhar Parecer',
       acao: 'entranharParecerGEOCdocs',
     },
     capturarparecerGEOC: {
-      classesCSS: ['btn-primary'],
+      classesCSS: ['btn-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-gavel'],
       texto: 'Concluir Parecer',
       acao: 'capturarparecerGEOC',
     },
     salvarAposElaboracao: {
-      classesCSS: ['btn-success'],
+      classesCSS: ['btn-success', 'btn-sm'],
       icone: ['fa-solid', 'fa-save'],
       texto: 'Salvar',
       acao: 'salvar',
     },
     exportar: {
-      classesCSS: ['btn-warning'],
+      classesCSS: ['btn-warning', 'btn-sm'],
       icone: ['fa-solid', 'fa-file-arrow-down'],
       texto: 'Exportar',
       acao: 'exportar',
     },
     solicitarAutorizacao: {
-      classesCSS: ['btn-success'],
+      classesCSS: ['btn-success', 'btn-sm'],
       icone: ['fa-solid', 'fa-share'],
       texto: 'Solicitar Autorização',
       acao: 'solicitarAutorizacao',
     },
     autuar: {
-      classesCSS: ['btn-success'],
+      classesCSS: ['btn-success', 'btn-sm'],
       icone: ['fa-solid fa-folder-plus'],
       texto: 'Autuar',
       acao: 'autuar',
     },
     fechar: {
-      classesCSS: ['btn-secondary'],
+      classesCSS: ['btn-secondary', 'btn-sm'],
       icone: [],
       texto: 'Fechar',
       acao: 'fechar',
     },
+    pendenciasDic: {
+      classesCSS: ['btn-primary', 'btn-sm'],
+      icone: ['fa-solid fa-list-check'],
+      texto: 'Pendências',
+      acao: 'pendenciasDic',
+    },
+    
   };
 
   public static gerarBotaoPropriedades(

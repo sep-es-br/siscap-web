@@ -26,13 +26,15 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ProgressoButtonComponent } from '../../shared/components/progresso-button/progresso-button.component';
 import { ProjetoIndicadoresComponent } from "../projeto-indicadores/projeto-indicadores.component";
 import { IndicadorOdsComponent } from '../projeto-indicadores/indicador-ods/indicador-ods.component';
+import { ProjetoPpaLoaComponent } from './projeto-ppa-loa/projeto-ppa-loa.component';
+import { ModalPendenciasProjetoComponent } from './projeto-modal-pendencias/projeto-modal-pendencias.component';
 
 @NgModule({
   declarations: [
     ProjetosComponent,
     ProjetosListComponent,
     ProjetoFormComponent,
-    ProjetosSearchComponent,
+    ProjetosSearchComponent
   ],
   imports: [
     CommonModule,
@@ -56,14 +58,15 @@ import { IndicadorOdsComponent } from '../projeto-indicadores/indicador-ods/indi
     TooltipModule,
     ProjetoIndicadoresComponent,
     ProgressoButtonComponent,
-    IndicadorOdsComponent
+    IndicadorOdsComponent,
+    ProjetoPpaLoaComponent,
+    ModalPendenciasProjetoComponent
 ],
   exports: [
     ProjetosComponent,
     ProjetosListComponent,
     ProjetoFormComponent,
     ProjetosSearchComponent
-
   ],
 })
 export class ProjetosModule {}

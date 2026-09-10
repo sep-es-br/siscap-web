@@ -43,6 +43,9 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   searchVisible: boolean = false;
   selectAll: boolean = false;
   showModalIndicadorAvulso: boolean = false;
+  private chavesSelecionadas = new Set<string>();
+  private emissaoSelecaoFrame?: number;
+  private emissaoSelecaoTimer?: ReturnType<typeof setTimeout>;
 
   ngOnInit() {
     this.indicadoresFiltrados = this.indicadores;
@@ -50,7 +53,10 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    
+    if (changes['selecionados']) {
+      this.sincronizarChavesSelecionadas();
+      this.updateSelectAllState();
+    }
   }
 
   filtrarIndicadores(): void {
@@ -85,22 +91,34 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
       ];
     }
 
+    this.sincronizarChavesSelecionadas();
+    this.updateSelectAllState();
     this.selecionadosChange.emit([...this.selecionados]);
 
   }
 
   toggleSelectAll(event: any): void {
+    const checked = event?.checked ?? this.selectAll;
     let novasSelecoes = [...this.selecionados];
+    const chavesFiltradas = new Set(
+      this.indicadoresFiltrados.map(indicador => this.chaveIndicador(indicador))
+    );
 
-    if (this.selectAll) {
-      const novos = this.indicadoresFiltrados.filter(i => !this.isSelecionado(i));
+    if (checked) {
+      const novos = this.indicadoresFiltrados
+        .filter(indicador => !this.chavesSelecionadas.has(this.chaveIndicador(indicador)))
+        .map(indicador => this.montarIndicadorSelecionado(indicador));
       novasSelecoes = [...novasSelecoes, ...novos];
     } else {
-      const idsFiltrados = this.indicadoresFiltrados.map(i => i.idIndicador);
-      novasSelecoes = novasSelecoes.filter(i => !idsFiltrados.includes(i.idIndicador));
+      novasSelecoes = novasSelecoes.filter(
+        indicador => !chavesFiltradas.has(this.chaveIndicador(indicador))
+      );
     }
 
-    this.selecionadosChange.emit(novasSelecoes);
+    this.selecionados = novasSelecoes;
+    this.sincronizarChavesSelecionadas();
+    this.updateSelectAllState();
+    this.emitirSelecaoAposRender(novasSelecoes);
   }
 
   private updateSelectAllState(): void {
@@ -109,9 +127,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   isSelecionado(indicador: any): boolean {
-    return (this.selecionados || []).some(i =>
-      this.mesmoIndicador(i, indicador)
-    );
+    return this.chavesSelecionadas.has(this.chaveIndicador(indicador));
   }
 
   showNewIndicatorForm(): void {
@@ -167,6 +183,38 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
     }
 
     return a.idIndicador === b.idIndicador;
+  }
+
+  private chaveIndicador(indicador: any): string {
+    if (indicador?.avulso === true) {
+      return `avulso:${(indicador.nomeIndicador ?? '').trim().toLowerCase()}`;
+    }
+
+    return `catalogo:${indicador?.idIndicador}`;
+  }
+
+  private sincronizarChavesSelecionadas(): void {
+    this.chavesSelecionadas = new Set(
+      (this.selecionados ?? []).map(indicador => this.chaveIndicador(indicador))
+    );
+  }
+
+  private emitirSelecaoAposRender(selecionados: IIndicadoresCatalogoExterno[]): void {
+    if (this.emissaoSelecaoFrame !== undefined) {
+      cancelAnimationFrame(this.emissaoSelecaoFrame);
+    }
+    if (this.emissaoSelecaoTimer !== undefined) {
+      clearTimeout(this.emissaoSelecaoTimer);
+    }
+
+    const selecaoAtual = [...selecionados];
+    this.emissaoSelecaoFrame = requestAnimationFrame(() => {
+      this.emissaoSelecaoFrame = undefined;
+      this.emissaoSelecaoTimer = setTimeout(() => {
+        this.emissaoSelecaoTimer = undefined;
+        this.selecionadosChange.emit(selecaoAtual);
+      });
+    });
   }
 
   private montarIndicadorSelecionado(indicador: any): any {

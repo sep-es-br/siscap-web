@@ -1,3 +1,4 @@
+import { IAcaoPlanejamentoProjeto } from './acao-planejamento-projeto.interface';
 import { IAcao } from './acoes.interface';
 import { IEquipe } from './equipe.interface';
 import { IEstruturaCamposComplementar, IEstruturaCamposComplementarProjeto } from './estrutura.campo.complementar.dic.interface';
@@ -61,6 +62,8 @@ export interface IProjeto {
     odsDescricao: string;
     odsCor: string;
   }>;
+  acoesPlanejamentoProjeto: Array<IAcaoPlanejamentoProjeto>;
+  naoPrevistoNoPpa: boolean;
 }
 
 export interface IProjetoForm
@@ -73,6 +76,7 @@ export interface IProjetoTableData
   isRascunho: boolean;
   protocoloEdocs: string;
   aguardandoProtocolo: boolean;
+  dataCriacaoDic: string;
 }
 
 export interface IProjetoFiltroPesquisa

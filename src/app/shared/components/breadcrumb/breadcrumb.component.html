@@ -6,11 +6,14 @@
   }"
 >
   <div
-    class="col-10 col-xl-8 mx-auto d-flex flex-column"
+    class="col-10 col-xl-8 mx-auto d-flex flex-column flex-md-row
+           justify-content-between align-items-md-start gap-2"
   >
+
+    <!-- Título + breadcrumb -->
     <div
       id="current-page-title-breadcrumb"
-      class="col-12 d-inline-flex flex-column mb-2"
+      class="col-12 col-md mb-2 mb-md-0"
     >
       <h1 class="current-page-title mb-0 text-truncate">
         {{ paginaAtual.titulo }}
@@ -34,12 +37,14 @@
           </ng-container>
         </ol>
       </nav>
-
     </div>
 
+    <!-- Botões -->
     <div
       id="action-buttons"
-      class="col-12 mt-2 mt-md-0 d-flex flex-column-reverse flex-md-row-reverse justify-content-end justify-content-md-start align-self-end gap-2"
+      class="col-12 col-md-auto
+             d-flex flex-column-reverse flex-md-row-reverse
+             justify-content-end gap-1"
     >
       <ng-container *ngFor="let propriedades of botoesAcaoPropriedades">
         <div class="col-12 col-sm-auto">
@@ -50,5 +55,6 @@
         </div>
       </ng-container>
     </div>
+
   </div>
 </div>

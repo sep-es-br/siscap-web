@@ -33,6 +33,7 @@ export class ConfirmationModalComponent {
 
   } = {
       titulo: 'Título',
+      headerCustomClass: 'bg-warning-subtle',
       textoPrincipal: 'Conteúdo',
       textoPrincipalCustomClass: 'fw-bold',
     };

@@ -19,6 +19,7 @@ export enum BreadcrumbAcoesEnum {
   Exportar = 'exportar',
   SolicitarAutorizacao = 'solicitarAutorizacao',
   Autuar = 'autuar',
+  PendenciasDIC = 'pendenciasDic'
 }
 
 export enum BreadcrumbContextoEnum {

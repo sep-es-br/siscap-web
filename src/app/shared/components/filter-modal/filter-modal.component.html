@@ -1,0 +1,37 @@
+<div class="siscap-filter-modal__overlay" (click)="closeModal.emit()"></div>
+
+<section
+  class="siscap-filter-modal"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="ariaLabel">
+  <button
+    type="button"
+    class="siscap-filter-modal__close"
+    aria-label="Fechar"
+    (click)="closeModal.emit()">
+    ✕
+  </button>
+
+  <div class="siscap-filter-modal__body">
+    <ng-content></ng-content>
+  </div>
+
+  <footer class="siscap-filter-modal__footer">
+    <button
+      type="button"
+      class="siscap-filter-modal__restore"
+      [disabled]="restoreDisabled"
+      (click)="restore.emit()">
+      RESTAURAR FILTROS
+    </button>
+
+    <button
+      type="button"
+      class="siscap-filter-modal__apply"
+      [disabled]="applyDisabled"
+      (click)="applyFilter.emit()">
+      FILTRAR
+    </button>
+  </footer>
+</section>

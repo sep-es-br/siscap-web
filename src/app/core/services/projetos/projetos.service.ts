@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
-import { BehaviorSubject, filter, Observable, Subject, tap } from 'rxjs';
+import { BehaviorSubject, filter, Observable, of, Subject, tap } from 'rxjs';
 
 import { BaseHttpService } from '../http/base-http.service';
 
@@ -87,7 +87,8 @@ export class ProjetosService extends BaseHttpService<
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
-    return [botaoCancelar, botaoSalvar, botaoEnviar];
+    const botaoPendencias = BotoesConfig.gerarBotaoPropriedades('pendenciasDic');
+    return [botaoCancelar, botaoSalvar, botaoEnviar, botaoPendencias];
   }
 
   public gerarBotoesAcaoFormularioUsuarioProponenteResponsavel(): Array<BotaoPropriedadesModel> {
@@ -95,14 +96,16 @@ export class ProjetosService extends BaseHttpService<
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
     const botaoArquivar = BotoesConfig.gerarBotaoPropriedades('arquivar');
-    return [botaoVoltar, botaoSalvar, botaoAutuar, botaoArquivar];
+    const botaoPendencias = BotoesConfig.gerarBotaoPropriedades('pendenciasDic');
+    return [botaoVoltar, botaoSalvar, botaoAutuar, botaoArquivar, botaoPendencias];
   }
 
   public gerarBotoesAcaoFormularioProponente(): Array<BotaoPropriedadesModel> {
     const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
     const botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
     const botaoEnviar = BotoesConfig.gerarBotaoPropriedades('enviar');
-    return [botaoVoltar, botaoSalvar, botaoEnviar];
+    const botaoPendencias = BotoesConfig.gerarBotaoPropriedades('pendenciasDic');
+    return [botaoVoltar, botaoSalvar, botaoEnviar, botaoPendencias];
   }
 
   public gerarBotoesAcaoFormularioProponenteEmAnalise(): Array<BotaoPropriedadesModel> {
@@ -138,7 +141,8 @@ export class ProjetosService extends BaseHttpService<
       const botaoSalvar = BotoesConfig.gerarBotaoPropriedades('salvar');
       const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
       const botaoAutuar = BotoesConfig.gerarBotaoPropriedades('autuarEdocs');
-      return [botaoCancelar, botaoSalvar, botaoAutuar];
+      const botaoPendencias = BotoesConfig.gerarBotaoPropriedades('pendenciasDic');
+      return [botaoCancelar, botaoSalvar, botaoAutuar, botaoPendencias];
     }
     const botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar');
     return [botaoCancelar];
@@ -314,7 +318,7 @@ export class ProjetosService extends BaseHttpService<
   }
 
   public baixarDIC(id: number): Observable<any> {
-    
+
     const downloadURL = `${this._url}/dic/${id}`;
 
     return this.filesService.requestPDF(downloadURL).pipe(
@@ -333,7 +337,7 @@ export class ProjetosService extends BaseHttpService<
     //     }
     //   },
     // });
-    
+
   }
 
   public autuarProjetoEdocs(

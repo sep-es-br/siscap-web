@@ -47,7 +47,7 @@
                                 <validation-message [control]="getMetaProjetoControl(i)"> {{ (gestao?.deAnoMeta ?? 0) + i }}
                                 </validation-message>
                             </div>
-                            <input type="text" pInputText inputmode="text" formControlName="valorMeta"
+                            <input type="text" pInputText inputmode="text" formControlName="valorMeta" maxlength="20"
                                 style="width:100%; border-radius:6px;" />
                         </div>
                     </div>

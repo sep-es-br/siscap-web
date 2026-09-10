@@ -1,21 +1,15 @@
-<!-- OVERLAY (fundo escuro) -->
-<div class="modal-overlay show" (click)="applyFilter()"></div>
+<siscap-filter-modal
+    ariaLabel="Filtros de indicadores"
+    [restoreDisabled]="somenteLeitura"
+    [applyDisabled]="somenteLeitura"
+    (closeModal)="fechar()"
+    (restore)="resetar()"
+    (applyFilter)="applyFilter()">
 
-<!-- MODAL -->
-<div class="filter-modal show">
-
-    <!-- HEADER -->
-    <div class="modal-header">
-        <h2 class="card-title">Filtros</h2>
-        <button class="close-modal" (click)="applyFilter()">✕</button>
-    </div>
-
-    <!-- BODY -->
-    <div class="filter-body">
-        <div class="filter-grid">
+    <div class="filter-grid row g-3">
 
             <!-- GESTÃO (linha inteira) -->
-            <div class="filter-field full-width">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
                 <label class="filter-label">Gestão Administrativa</label>
                 <select class="filter-select" [(ngModel)]="filtro.idGestao">
                     <option *ngIf="gestao" [value]="gestao.idGestao">
@@ -25,8 +19,8 @@
             </div>
 
             <!-- LABELS DINÂMICOS -->
-            <ng-container *ngFor="let label of labelsOrdenados">
-                <div class="filter-field">
+            <ng-container *ngFor="let label of labelsOrdenados; trackBy: trackByLabel">
+                <div class="filter-field col-12 col-sm-6 col-xl-3">
                     <label class="filter-label">{{ label.nome }}</label>
 
                     <ng-select [items]="label.valores"
@@ -35,7 +29,7 @@
                         [(ngModel)]="filtro.labels[label.idLabel]"
                         [multiple]="true"
                         [closeOnSelect]="false"
-                        [searchable]="true"
+                        [searchable]="false"
                         [clearable]="true"
                         placeholder="Selecionar..."
                         class="select-filtro"
@@ -63,7 +57,7 @@
             </ng-container>
 
             <!-- DESAFIOS -->
-            <div class="filter-field">
+            <div class="filter-field col-12 col-sm-6 col-xl-3">
                 <label class="filter-label">
                     Desafios
                 </label>
@@ -73,7 +67,7 @@
                     [(ngModel)]="filtro.desafio.id"
                     [multiple]="true" 
                     [closeOnSelect]="false" 
-                    [searchable]="true" 
+                    [searchable]="false"
                     [clearable]="true"
                     placeholder="Selecionar..." 
                     class="select-filtro" 
@@ -96,18 +90,6 @@
                 </ng-select>
             </div>
 
-        </div>
-
     </div>
 
-    <!-- FOOTER -->
-    <div class="modal-footer">
-        <button class="btn-restaurar" (click)="resetar()">
-            RESTAURAR FILTROS
-        </button>
-        <button class="btn-filtrar" (click)="applyFilter();">
-            FILTRAR
-        </button>
-    </div>
-
-</div>
+</siscap-filter-modal>
