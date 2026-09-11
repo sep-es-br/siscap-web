@@ -75,22 +75,6 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
       this.formAcao.controls.rateio
     );
 
-    console.log(
-      '1 - SERVICE E AÇÃO USAM MESMO RATEIO?',
-      this.rateioService.rateioFormArray ===
-      this.formAcao.controls.rateio
-    );
-
-    console.log(
-      '2 - PAI DA AÇÃO:',
-      this.formAcao.parent
-    );
-
-    console.log(
-      '3 - ROOT DA AÇÃO:',
-      this.formAcao.root.getRawValue()
-    );
-
     this.inicializarValorAcao();
     this.inicializarTodoEstado();
     
@@ -128,11 +112,6 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
     const quantiaFormControl =
       this.formAcao.controls.valorEstimadoAcaoPrincipal;
 
-    console.log(
-      '4 - VALOR ESTIMADO AÇÃO PRINCIPAL:',
-      quantiaFormControl.value
-    );
-
     quantiaFormControl.valueChanges
       .pipe(
         startWith(quantiaFormControl.value)
@@ -152,8 +131,6 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
 
     this.todoEstadoCheckbox =
       controlIndex !== -1;
-
-    // this.notificarTodoEstadoChange();
 
   }
 

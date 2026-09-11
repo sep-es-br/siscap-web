@@ -241,33 +241,8 @@ export class RateioService {
     );
   }
 
-  // public construirRateioFormArray(
-  //   rateioModelArray?: Array<RateioModel>
-  // ): FormArray<FormGroup<RateioLocalidadeFormType>> {
-  //   console.log(
-  //     '🔥 SERVICE QUE CONSTRUIU O RATEIO:',
-  //     this.instanciaId
-  //   );
-  //   const rateioFormArray = this._nnfb.array<
-  //     FormGroup<RateioLocalidadeFormType>
-  //   >([], [Validators.required, Validators.minLength(1)]);
-  //   if (rateioModelArray) {
-  //     rateioModelArray.forEach((rateioModel) => {
-  //       rateioFormArray.push(
-  //         this.construirRateioLocalidadeFormGroupPorRateioModel(rateioModel)
-  //       );
-  //     });
-  //   }
-  //   this.rateioFormArray = rateioFormArray;
-  //   this.rateioFormArraySnapshot = rateioFormArray.value;
-  //   this.rateioFormArrayValueChanges();
-  //   return this.rateioFormArray;
-  // }
-
   public construirRateioFormArray(rateioModelArray?: Array<RateioModel>):
     FormArray<FormGroup<RateioLocalidadeFormType>> {
-
-      console.log('🔥 SERVICE QUE CONSTRUIU O RATEIO:', rateioModelArray );
 
     const rateioFormArray =
       this._nnfb.array<FormGroup<RateioLocalidadeFormType>>(

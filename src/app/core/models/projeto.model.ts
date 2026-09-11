@@ -133,7 +133,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.naoPrevistoNoPpa = projetoForm?.naoPrevistoNoPpa ?? false;
 
     this.acoesRateioProjeto = this.construirAcoesRateioProjeto(
-      projetoForm?.acoesProjeto
+      projetoForm?.acoesRateioProjeto
     );
 
   }
