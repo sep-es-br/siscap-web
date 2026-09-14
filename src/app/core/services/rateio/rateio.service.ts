@@ -239,6 +239,11 @@ export class RateioService {
 
     this.distribuicaoLinearCheckboxChange$.subscribe((distribuicaoLinearCheckboxChange) => {
 
+      console.log(
+        '>>> distribuicaoLinearCheckboxChange:',
+        distribuicaoLinearCheckboxChange
+      );
+
       this.distribuicaoLinearCheckboxReferencia = distribuicaoLinearCheckboxChange;
 
       distribuicaoLinearCheckboxChange
@@ -453,33 +458,6 @@ export class RateioService {
     return check ? 'visible' : 'invisible';
   }
 
-  // private incluirEstadoNoRateio(): void {
-
-
-  //   const isEstadoInclusoNoRateio = this.rateioFormArray.value.some(
-  //     (rateioLocalidadeValue) => rateioLocalidadeValue.idLocalidade == 1
-  //   );
-
-  //    console.log(
-  //     '3 >>> INCLUINDO ESTADO NO RATEIO:',
-  //     isEstadoInclusoNoRateio
-  //   );
-
-  //   if (isEstadoInclusoNoRateio) return;
-
-  //   this.rateioFormArraySnapshot = this.rateioFormArray.value;
-
-  //   const estadoFormGroup = this.construirRateioLocalidadeFormGroupPorIdLocalidade(1);
-
-  //   estadoFormGroup.controls.quantia.setValue(this.quantiaFormControlReferencia);
-  //   estadoFormGroup.controls.percentual.setValue(100);
-
-  //   if (this.rateioFormArray.value.length > 0) this.rateioFormArray.clear();
-
-  //   this.incluirLocalidadeNoRateio(estadoFormGroup);
-
-  // }
-
   private incluirEstadoNoRateio(): void {
 
     const isEstadoInclusoNoRateio =
@@ -648,23 +626,68 @@ export class RateioService {
 
   private distribuirRateioLinearmente(): void {
 
-    const quantiaTotal =
-      Number(this.quantiaFormControlReferencia);
+    console.log(
+      '>>> Distribuição linear:',
+      this.distribuicaoLinearCheckboxReferencia
+    );
 
+    console.log(
+      '>>> Todo o Estado:',
+      this.estadoBooleanCheckboxReferencia
+    );
+
+    /*
+     * IMPORTANTE:
+     * esse valor precisa ser o valor estimado da AÇÃO.
+     *
+     * Exemplo:
+     * valorEstimadoAcaoPrincipal
+     */
+    const quantiaTotal = Number(this.totalRateio.quantia);
+
+    if (
+      !Number.isFinite(quantiaTotal) ||
+      quantiaTotal <= 0
+    ) {
+      console.log(
+        '>>> Valor estimado da ação inválido:',
+        quantiaTotal
+      );
+
+      return;
+    }
+
+    /*
+     * Se Todo o Estado estiver marcado,
+     * precisamos garantir que TODOS os municípios
+     * estejam dentro do FormArray.
+     */
+    if (this.estadoBooleanCheckboxReferencia) {
+
+      this.preencherRateioComTodosMunicipios();
+
+    }
+
+    /*
+     * Depois disso podemos usar normalmente o FormArray.
+     *
+     * O id 1 representa o Estado, portanto não entra
+     * na distribuição.
+     */
     const localidades =
       this.rateioFormArray.controls.filter(
         control =>
           control.controls.idLocalidade.value !== 1
       );
 
-    const quantidadeLocalidades =
-      localidades.length;
+    const quantidadeLocalidades = localidades.length;
 
-    if (
-      !Number.isFinite(quantiaTotal) ||
-      quantiaTotal <= 0 ||
-      quantidadeLocalidades === 0
-    ) {
+    if (quantidadeLocalidades === 0) {
+
+      console.log(
+        '>>> Não existem localidades para distribuir.'
+      );
+
       return;
     }
 
@@ -674,7 +697,22 @@ export class RateioService {
     const percentualPorLocalidade =
       100 / quantidadeLocalidades;
 
+    console.log(
+      '>>> quantidadeLocalidades:',
+      quantidadeLocalidades
+    );
+
+    console.log(
+      '>>> quantiaPorLocalidade:',
+      quantiaPorLocalidade
+    );
+
     localidades.forEach(control => {
+
+      console.log(
+        '>>> distribuindo para:',
+        control.controls.idLocalidade.value
+      );
 
       control.patchValue({
         quantia: quantiaPorLocalidade,
@@ -700,6 +738,46 @@ export class RateioService {
       this.rateioFormArray.getRawValue()
     );
 
+  }
+
+  private preencherRateioComTodosMunicipios(): void {
+
+    const municipios =
+      this.localidadesOpcoes.filter(
+        localidade =>
+          localidade.tipo === 'Municipio'
+      );
+  
+    console.log(
+      '>>> municípios do Estado:',
+      municipios.length
+    );
+  
+    /*
+     * Remove o que estiver atualmente no rateio.
+     *
+     * Inclusive aquele registro do Estado id = 1.
+     */
+    this.rateioFormArray.clear({
+      emitEvent: false
+    });
+  
+    municipios.forEach(municipio => {
+  
+      const municipioFormGroup =
+        this.construirRateioLocalidadeFormGroupPorIdLocalidade(
+          municipio.id
+        );
+  
+      this.rateioFormArray.push(
+        municipioFormGroup,
+        {
+          emitEvent: false
+        }
+      );
+  
+    });
+  
   }
 
 }
