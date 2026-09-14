@@ -1865,6 +1865,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
 
       if (this.arquivoParecerSelecionado) {
+        console.log('Arquivo de parecer selecionado:', this.arquivoParecerSelecionado);
         formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
       }
 
@@ -2031,7 +2032,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   onSelecionarPessoa(pessoa: any) {
-
+    
+    // console.log('Pessoa selecionada:', pessoa);
+    
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
