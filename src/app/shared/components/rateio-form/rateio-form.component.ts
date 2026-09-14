@@ -77,7 +77,7 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
 
     this.inicializarValorAcao();
     this.inicializarTodoEstado();
-    
+
   }
 
   ngAfterViewInit(): void {
@@ -156,15 +156,12 @@ export class RateioFormComponent implements OnInit, AfterViewInit {
   }
 
   public notificarTodoEstadoChange(): void {
-
     this.rateioService
       .estadoBooleanCheckboxChange$
       .next(this.todoEstadoCheckbox);
-
   }
 
   public notificarDistribuicaoLinearChange(): void {
-
     this.rateioService
       .distribuicaoLinearCheckboxChange$
       .next(this.distribuicaoLinearCheckbox);

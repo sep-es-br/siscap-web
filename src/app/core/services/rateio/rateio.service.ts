@@ -70,11 +70,15 @@ export class RateioService {
   private _estadoBooleanCheckboxChange$: Subject<boolean> =
     new Subject<boolean>();
 
-  public distribuicaoLinearCheckboxChange$ =
+  public _distribuicaoLinearCheckboxChange$ =
     new Subject<boolean>();
 
   public get estadoBooleanCheckboxChange$(): Subject<boolean> {
     return this._estadoBooleanCheckboxChange$;
+  }
+
+  public get distribuicaoLinearCheckboxChange$(): Subject<boolean> {
+    return this._distribuicaoLinearCheckboxChange$;
   }
 
   private _estadoBooleanCheckboxReferencia: boolean = false;
@@ -99,6 +103,16 @@ export class RateioService {
 
   private set estadoBooleanCheckboxReferencia(estadoBooleanCheckbox: boolean) {
     this._estadoBooleanCheckboxReferencia = estadoBooleanCheckbox;
+  }
+
+  private set distribuicaoLinearCheckboxReferencia(distribuicaoLinearCheckbox: boolean) {
+    this._distribuicaoLinearCheckboxReferencia = distribuicaoLinearCheckbox;
+  }
+
+  private _distribuicaoLinearCheckboxReferencia: boolean = false;
+
+  public get distribuicaoLinearCheckboxReferencia(): boolean {
+    return this._distribuicaoLinearCheckboxReferencia;
   }
 
   private _microrregiaoBooleanCheckboxChange$: Subject<ILocalidadeCheckboxChange> =
@@ -220,6 +234,16 @@ export class RateioService {
       estadoCheckboxChange
         ? this.incluirEstadoNoRateio()
         : this.removerEstadoDoRateio(); //this.distribuirRateioLinearmente();
+
+    });
+
+    this.distribuicaoLinearCheckboxChange$.subscribe((distribuicaoLinearCheckboxChange) => {
+
+      this.distribuicaoLinearCheckboxReferencia = distribuicaoLinearCheckboxChange;
+
+      distribuicaoLinearCheckboxChange
+        ? this.distribuirRateioLinearmente()
+        : this.recalcularRateioPorPercentual();
 
     });
 
