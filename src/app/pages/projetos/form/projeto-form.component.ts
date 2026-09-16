@@ -135,7 +135,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _subscription: Subscription = new Subscription();
 
   private _atualizarProjeto$: Observable<IProjeto> = EMPTY;
-  // private _cadastrarProjeto$: Observable<number> = EMPTY;
 
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
@@ -863,8 +862,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       titulo: 'Título',
       idOrganizacao: 'Organização',
       quantia: 'Valor Estimado',
-      // moeda: 'Moeda',
-      // tipo: 'Tipo Valor',
       rateio: 'Rateio',
       objetivo: 'Objetivo',
       objetivoEspecifico: 'Objetivo Específico',
@@ -1282,7 +1279,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.projetoForm.patchValue({
         idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
         nomeResponsavelProponente:
-          this.pessoasOpcoes[indexGestor].nome.toLowerCase,
+          this.pessoasOpcoes[indexGestor].nome.toUpperCase(),
         papelResponsavelProponente:
           this.pessoasOpcoes[indexGestor].papelPrioritario,
         subResponsavelProponente:
@@ -2029,12 +2026,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.lotacaoGestorProjeto = '';
 
     this.idOrganizacaoChange(organizacao);
+
   }
 
   onSelecionarPessoa(pessoa: any) {
-    
-    // console.log('Pessoa selecionada:', pessoa);
-    
+  
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
@@ -2076,9 +2072,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           );
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
-        // finalize(() =>
-        //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        // ),
       );
     }
 
@@ -2120,9 +2113,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             );
             this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
           }),
-          // finalize(() =>
-          //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-          // ),
         );
 
     }
@@ -2137,9 +2127,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           );
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
-        // finalize(() =>
-        //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        // ),
       );
 
   }

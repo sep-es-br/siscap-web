@@ -245,15 +245,11 @@
 
               <div data-control-path="membroEquipeElaboracao" class="col-12">
                 <label for="membroEquipeElaboracao" class="form-label col-12" [ngClass]="{
-                    'alerta-complementar-campo':
-                      deveComplementarCampo('equipeElaboracao'),
-                  }">
-                  <!-- <validation-message [control]="getControl('equipeElaboracao')"> -->
+                    'alerta-complementar-campo': deveComplementarCampo('equipeElaboracao'), }">
                     Equipe de Elaboração
                     <form-helper-tooltip [texto]="projetoTooltip['equipeElaboracao']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('equipeElaboracao')"
                       [texto]="mensagemComplementarCampo('equipeElaboracao')"></form-warning-tooltip>
-                  <!-- </validation-message> -->
                 </label>
                 <div class="input-group">
                   <input type="text" class="form-control" placeholder="Digite o nome" id="nomeagente"
@@ -274,12 +270,10 @@
                   <div class="card-body p-0">
                     <ul class="list-group list-group-flush lista-rolavel" style="max-height: 300px; overflow-y: auto">
                       <li class="list-group-item list-group-item-action cursor-pointer"
-                        *ngFor="let agente of pessoasOpcoesGoves" (click)="idMembroNgSelectChangeEvent(agente)">
+                        *ngFor="let agente of pessoasOpcoesGoves"  (click)="idMembroNgSelectChangeEvent(agente)">
                         <div class="d-flex flex-column">
                           <span>{{ agente.nome }}</span>
-                          <small class="text-muted">{{
-                            agente.papelPrioritario
-                            }}</small>
+                          <small class="text-muted">{{ agente.papelPrioritario }}</small>
                         </div>
                       </li>
                     </ul>
