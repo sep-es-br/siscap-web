@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { debounceTime, merge, Subject, Subscription, tap } from 'rxjs';
+import { debounceTime, merge, ReplaySubject, Subject, Subscription, tap } from 'rxjs';
 
 import { ILocalidadeOpcoesDropdown } from '../../interfaces/opcoes-dropdown.interface';
 
@@ -157,9 +157,7 @@ export class RateioService {
     this._quantiaFormControlReferencia = quantia;
   }
 
-  private _quantiaFormControlReferencia$: Subject<number | null> = new Subject<
-    number | null
-  >();
+  private _quantiaFormControlReferencia$: Subject<number | null> = new Subject<number | null>();
 
   public get quantiaFormControlReferencia$(): Subject<number | null> {
     return this._quantiaFormControlReferencia$;
@@ -181,7 +179,8 @@ export class RateioService {
     this._totalRateio = totalRateio;
   }
 
-  public rateioRecalculado$ = new Subject<void>();
+  public rateioRecalculado$ =
+    new ReplaySubject<void>(1);
 
   constructor(private readonly _nnfb: NonNullableFormBuilder) {
 
@@ -202,10 +201,7 @@ export class RateioService {
 
         if (quantiaValue != null) {
 
-          if (
-            this.tipoDistribuicaoReferencia ===
-            TipoDistribuicaoRateio.Linear
-          ) {
+          if (this.tipoDistribuicaoReferencia === TipoDistribuicaoRateio.Linear) {
             this.distribuirRateioLinearmente();
           } else {
             this.recalcularRateioPorPercentual();
@@ -235,18 +231,28 @@ export class RateioService {
 
       estadoCheckboxChange
         ? this.incluirEstadoNoRateio()
-        : this.removerEstadoDoRateio(); //this.distribuirRateioLinearmente();
+        : this.removerEstadoDoRateio();
 
     });
 
+    // this.distribuicaoLinearCheckboxChange$
+    //   .subscribe((distribuicaoLinearCheckboxChange) => {
+    //     this.distribuicaoLinearCheckboxReferencia = distribuicaoLinearCheckboxChange;
+    //     distribuicaoLinearCheckboxChange
+    //       ? this.distribuirRateioLinearmente()
+    //       : this.recalcularRateioPorPercentual();
+    //   });
+
     this.distribuicaoLinearCheckboxChange$
-      .subscribe((distribuicaoLinearCheckboxChange) => {
+      .subscribe((distribuicaoLinear) => {
 
-        this.distribuicaoLinearCheckboxReferencia = distribuicaoLinearCheckboxChange;
+        this.alterarTipoDistribuicao(
+          distribuicaoLinear
+        );
 
-        distribuicaoLinearCheckboxChange
-          ? this.distribuirRateioLinearmente()
-          : this.recalcularRateioPorPercentual();
+        if (distribuicaoLinear) {
+          this.distribuirRateioLinearmente();
+        }
 
       });
 
@@ -337,9 +343,7 @@ export class RateioService {
 
     this.rateioFormArray.push(rateioLocalidadeFormGroup);
 
-    if (this.tipoDistribuicaoReferencia === TipoDistribuicaoRateio.Linear) {
-      this.distribuirRateioLinearmente();
-    }
+    this.recalcularSeDistribuicaoLinear();
 
   }
 
@@ -358,12 +362,7 @@ export class RateioService {
 
     this.rateioFormArray.removeAt(controlIndex);
 
-    if (
-      this.tipoDistribuicaoReferencia ===
-      TipoDistribuicaoRateio.Linear
-    ) {
-      this.distribuirRateioLinearmente();
-    }
+    this.recalcularSeDistribuicaoLinear();
 
   }
 
@@ -744,7 +743,7 @@ export class RateioService {
     );
 
     this.rateioRecalculado$.next();
-    
+
   }
 
   public vincularRateioFormArray(
@@ -801,6 +800,35 @@ export class RateioService {
       );
 
     });
+
+  }
+
+  private alterarTipoDistribuicao(
+    distribuicaoLinear: boolean
+  ): void {
+
+    this.distribuicaoLinearCheckboxReferencia =
+      distribuicaoLinear;
+
+    this._tipoDistribuicaoReferencia =
+      distribuicaoLinear
+        ? TipoDistribuicaoRateio.Linear
+        : TipoDistribuicaoRateio.Manual;
+
+    this.tipoDistribuicaoChange$.next(
+      this._tipoDistribuicaoReferencia
+    );
+
+  }
+
+  private recalcularSeDistribuicaoLinear(): void {
+
+    if (this.tipoDistribuicaoReferencia !== TipoDistribuicaoRateio.Linear
+    ) {
+      return;
+    }
+
+    this.distribuirRateioLinearmente();
 
   }
 
