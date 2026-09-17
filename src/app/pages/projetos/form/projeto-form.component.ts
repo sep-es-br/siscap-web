@@ -3838,11 +3838,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.validacaoSomaValoresAcoesEnviar(this.projetoForm);
 
-    this.submitProjetoForm(
-      this.projetoForm,
-      false,
-    );
-
   }
 
   private campoPossuiPendencia(path: string): boolean {
