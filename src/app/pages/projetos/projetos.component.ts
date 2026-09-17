@@ -59,14 +59,11 @@ export class ProjetosComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    // private readonly _usuarioService: UsuarioService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _projetosService: ProjetosService,
     private readonly _navegacaoService: NavegacaoService,
     private readonly _r2: Renderer2
   ) {
-
-    // const isProponente = this._usuarioService.usuarioPerfil.isProponente;
 
     const botoesAcaoPropriedades = this._projetosService.gerarBotoesAcaoListagem();
 
@@ -124,8 +121,6 @@ export class ProjetosComponent implements OnInit, OnDestroy {
       .getAllPaged(tempPageConfig, searchFilter)
       .pipe(
         tap((response) => {
-          
-          console.log('response lista projetos :', response)
           
           this._projetosList$.next(response.content);
           

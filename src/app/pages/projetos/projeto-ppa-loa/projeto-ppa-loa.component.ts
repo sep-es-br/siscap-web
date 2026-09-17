@@ -56,6 +56,8 @@ export interface PlanejamentoFiltroAplicado {
   valor: string;
 }
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'siscap-projeto-ppa-loa',
   standalone: true,
@@ -1263,7 +1265,7 @@ export class ProjetoPpaLoaComponent {
         .listarAcoesPorProgramas(
           idFuncoes ?? [],
           idsProgramas ?? [],
-          this.periodoPlanejamento?.descricao??'',
+          this.periodoPlanejamento?.descricao ?? '',
           idUos ?? []
         )
         .pipe(
@@ -1311,6 +1313,20 @@ export class ProjetoPpaLoaComponent {
 
   get quantidadeAcoes(): number {
     return this.acoesPlanejamento?.length ?? 0;
+  }
+
+  voltarParaOds() {
+    const tabTrigger = document.getElementById('nav-ods-indicadores');
+
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
   }
 
 }

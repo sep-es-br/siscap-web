@@ -187,7 +187,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       });
 
     forkJoin({
-      organizacoesOpcoes: this._opcoesDropdownService.getOpcoesOrganizacoes(TipoOrganizacaoEnum.Secretaria),
+      organizacoesOpcoes: this._opcoesDropdownService.getOpcoesOrganizacoes(),
       pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
       tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
       projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
@@ -202,18 +202,19 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         programasOpcoes,
         tiposValorOpcoes
       }) => {
+
         this.organizacoesOpcoes = organizacoesOpcoes;
+
         this.pessoasOpcoes = pessoasOpcoes;
         this.projetosPropostosOpcoes = projetosPropostosOpcoes;
         this.programasOpcoes = programasOpcoes;
+
         // 07/10/2024 - Somente exibir tipos de valor 'Estimado', 'Em captação' e 'Captado'
         this.tiposValorOpcoes = tiposValorOpcoes.filter((tipoValor) => tipoValor.id <= 3);
-
 
         this.tiposPapelOpcoes = tiposPapelOpcoes;
         const idsPermitidos = [
           TipoPapelEnum.Gerente_de_Projeto,
-          // TipoPapelEnum.Redator,
           TipoPapelEnum.Membro_do_Projeto
         ];
         this.tiposPapelOpcoesVisiveis = tiposPapelOpcoes.filter((papel) =>
@@ -228,8 +229,6 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
           switchMap(idPrograma => idPrograma > 0 ? this._programasService.getById(idPrograma) : of(undefined))
         ).subscribe(
           programa => {
-
-            // console.log(' response byId programa : ', programa);
 
             const programaModel = programa && new ProgramaModel(programa);
 
@@ -363,6 +362,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     this._projetosService.getById(event.id).subscribe(
       projeto => {
+        
         const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
 
         orgaosEnvolvidosList.patchValue([

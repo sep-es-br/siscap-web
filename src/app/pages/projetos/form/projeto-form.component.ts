@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import {
   AbstractControl,
+  FormArray,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
@@ -108,11 +109,21 @@ import { IIndicadores } from '../../../core/interfaces/indicadores.interface';
 import { IIndicadorAvulso } from '../../../core/interfaces/indicador-avulso.interface';
 import { CatalogoIndicadorService } from '../../../core/services/catalogo-indicadores/catalogo-indicador.service';
 import { IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
-// import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
 import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
 import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
+import { noWhitespaceValidator } from '../../../core/validators/nowhitespacevalidator.validator';
+import { AcaoFormType } from '../../../core/types/form/acao-form.type';
 
 declare var bootstrap: any;
+
+type ContextoValidacao = 'rascunho' | 'envio'
+interface CampoValidacao {
+  path: string;
+  campo: string;
+  aba: AbaProjeto;
+  nomeAba: string;
+  validarEm: readonly ContextoValidacao[];
+}
 
 @Component({
   selector: 'siscap-projeto-form',
@@ -124,7 +135,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly _subscription: Subscription = new Subscription();
 
   private _atualizarProjeto$: Observable<IProjeto> = EMPTY;
-  // private _cadastrarProjeto$: Observable<number> = EMPTY;
 
   private readonly _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private readonly _getPlanosOpcoes$: Observable<IOpcoesDropdown[]>;
@@ -247,80 +257,99 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     'ods'
   ];
 
-  private readonly camposValidacao = [
+  private readonly camposValidacao: readonly CampoValidacao[] = [
     {
       path: 'sigla',
       campo: 'Sigla',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['rascunho', 'envio'],
     },
     {
       path: 'titulo',
       campo: 'Título',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['rascunho', 'envio'],
     },
     {
       path: 'idOrganizacao',
-      campo: 'Organização',
+      campo: 'Proponente',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['rascunho', 'envio'],
     },
     {
       path: 'idResponsavelProponente',
-      campo: 'Responsável Proponente',
+      campo: 'Gestor Proponente',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['rascunho', 'envio'],
     },
     {
       path: 'valor.quantia',
       campo: 'Valor Estimado',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['envio'],
     },
     {
       path: 'situacaoProblema',
       campo: 'Situação Problema',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['envio'],
     },
     {
       path: 'objetivo',
-      campo: 'Objetivo',
+      campo: 'Objetivo Geral',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['envio'],
     },
     {
       path: 'objetivoEspecifico',
-      campo: 'Objetivo Específico',
+      campo: 'Objetivos Específicos',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['envio'],
     },
     {
       path: 'solucoesPropostas',
       campo: 'Soluções Propostas',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['envio'],
     },
     {
       path: 'arranjosInstitucionais',
       campo: 'Arranjos Institucionais',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['envio'],
     },
     {
       path: 'pecasPlanejamento',
       campo: 'Peças de Planejamento',
       aba: 'propriedades',
       nomeAba: 'DIC',
+      validarEm: ['envio'],
     },
     {
       path: 'impactos',
       campo: 'Impactos',
       aba: 'ods',
       nomeAba: 'ODS',
+      validarEm: ['envio'],
     },
-  ] as const;
+    {
+      path: 'acoesProjeto',
+      campo: 'Ações',
+      aba: 'propriedades',
+      nomeAba: 'DIC',
+      validarEm: ['envio'],
+    },
+  ];
 
   public pendenciasProjeto: IPendenciaProjeto[] = [];
 
@@ -377,7 +406,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     public parecerService: ParecerService,
     public catalogoIndicadoresService: CatalogoIndicadorService,
-    private _router: Router
+    private _router: Router,
   ) {
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
@@ -455,7 +484,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        // console.log("Buscar projeto por ID: ", response)
+        console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -833,8 +862,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       titulo: 'Título',
       idOrganizacao: 'Organização',
       quantia: 'Valor Estimado',
-      // moeda: 'Moeda',
-      // tipo: 'Tipo Valor',
       rateio: 'Rateio',
       objetivo: 'Objetivo',
       objetivoEspecifico: 'Objetivo Específico',
@@ -1083,27 +1110,31 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       nomeagente: this._nnfb.control(projetoFormModel?.nomeagente ?? null),
       objetivo: this._nnfb.control(projetoFormModel?.objetivo ?? null, [
         Validators.required,
+        noWhitespaceValidator(),
         Validators.maxLength(2000),
       ]),
       objetivoEspecifico: this._nnfb.control(
         projetoFormModel?.objetivoEspecifico ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        [Validators.required,
+        noWhitespaceValidator(),
+        Validators.maxLength(2000)],
       ),
       situacaoProblema: this._nnfb.control(
         projetoFormModel?.situacaoProblema ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        [Validators.required, noWhitespaceValidator(), Validators.maxLength(2000)],
       ),
       solucoesPropostas: this._nnfb.control(
         projetoFormModel?.solucoesPropostas ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        [Validators.required, noWhitespaceValidator(), Validators.maxLength(2000)],
       ),
       impactos: this._nnfb.control(projetoFormModel?.impactos ?? null, [
         Validators.required,
+        noWhitespaceValidator(),
         Validators.maxLength(2000),
       ]),
       arranjosInstitucionais: this._nnfb.control(
         projetoFormModel?.arranjosInstitucionais ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        [Validators.required, noWhitespaceValidator(), Validators.maxLength(2000)],
       ),
       idResponsavelProponente: this._nnfb.control(
         projetoFormModel?.idResponsavelProponente ?? null,
@@ -1129,7 +1160,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
       pecasPlanejamento: this._nnfb.control(
         projetoFormModel?.pecasPlanejamento ?? null,
-        [Validators.required, Validators.maxLength(2000)],
+        [Validators.required, noWhitespaceValidator(), Validators.maxLength(2000)],
       ),
       enviarProjetoGestor: this._nnfb.control(
         projetoFormModel?.enviarProjetoGestor ?? false,
@@ -1248,7 +1279,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.projetoForm.patchValue({
         idResponsavelProponente: this.pessoasOpcoes[indexGestor].id,
         nomeResponsavelProponente:
-          this.pessoasOpcoes[indexGestor].nome.toLowerCase,
+          this.pessoasOpcoes[indexGestor].nome.toUpperCase(),
         papelResponsavelProponente:
           this.pessoasOpcoes[indexGestor].papelPrioritario,
         subResponsavelProponente:
@@ -1446,10 +1477,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         );
         break;
 
-      // case BreadcrumbAcoesEnum.Salvar:
-      //   this.submitProjetoForm(this.projetoForm, true, false);
-      //   break;
-
       case BreadcrumbAcoesEnum.Salvar:
         this.salvarRascunho();
         break;
@@ -1457,13 +1484,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       case BreadcrumbAcoesEnum.Enviar:
         this.salvarEEnviar();
         break;
-
-      // this.projetoForm.patchValue({
-      //   enviarProjetoGestor: true,
-      // });
-      // if (!this.validarFormulario(this.projetoForm, true)) break;
-      // this.validacaoSomaValoresAcoesEnviar(this.projetoForm);
-      // break;
 
       case BreadcrumbAcoesEnum.AssinarAutuar:
         this.projetoForm.patchValue({
@@ -1590,14 +1610,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     if (Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001) {
       return true;
     }
-
-    // this._toastService.showToast(
-    //   'error',
-    //   'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
-    //   [
-    //     'A soma dos valores estimado das ações deve ser igual ao valor estimado do projeto.',
-    //   ],
-    // );
 
     return false;
 
@@ -1755,7 +1767,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
   }
 
-  private submitProjetoForm(form: FormGroup, isRascunho: boolean, isEnvioDic: boolean): void {
+  private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
     this.loadingSubmit = true;
     this.textoSpinner = 'Salvando projeto...';
@@ -1850,6 +1862,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
 
       if (this.arquivoParecerSelecionado) {
+        console.log('Arquivo de parecer selecionado:', this.arquivoParecerSelecionado);
         formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
       }
 
@@ -1901,30 +1914,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           metasIndicadorProjeto: indicador.metasIndicadorProjeto
         }));
 
-      // const temIndicador =
-      //   indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
-
-      // if (!temIndicador) {
-      //   this._toastService.showToast('warning', 'O formulário contém erros.', [
-      //     'Informe pelo menos um indicador.'
-      //   ]);
-      //   return;
-      // }
-
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
 
       indicadoresProjetoControl?.disable({ emitEvent: false });
 
-      // const formValido = this.validarFormulario(form, isEnvioDic);
-
       if (!estavaDisabled) {
         indicadoresProjetoControl?.enable({ emitEvent: false });
       }
-
-      // if (!formValido) {
-      //   return;
-      // }
 
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
@@ -1950,10 +1947,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       payload.indicadoresProjeto = indicadoresProjetoPayload;
       payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
       payload.odsProjeto = odsProjetoPayload;
-
-      // if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
-      //   return;
-      // }
 
       const formData = new FormData();
 
@@ -2018,21 +2011,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    // const algumIndicadorComMetaInvalida =
-    //   indicadoresArray.some((i: any) =>
-    //     i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
-    //   ) ||
-    //   indicadoresAvulsosArray.some((i: any) =>
-    //     i.metasIndicadorProjeto?.some((m: any) => Number(m.valorMeta) <= 0)
-    //   );
-
-    // if (algumIndicadorComMetaInvalida) {
-    //   this._toastService.showToast('warning', 'Erro ao validar indicadores', [
-    //     'Todas as metas dos indicadores devem ser preenchidas com valores maiores que zero.',
-    //   ]);
-    //   return false;
-    // }
-
     return true;
 
   }
@@ -2048,10 +2026,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.lotacaoGestorProjeto = '';
 
     this.idOrganizacaoChange(organizacao);
+
   }
 
   onSelecionarPessoa(pessoa: any) {
-
+  
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
@@ -2059,7 +2038,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         papelResponsavelProponente: pessoa.papelPrioritario,
         subResponsavelProponente: pessoa.agentePublicoSub,
       });
+
       this.lotacaoGestorProjeto = pessoa.papelPrioritario;
+
     } else {
       this.projetoForm.patchValue({
         idResponsavelProponente: null,
@@ -2067,6 +2048,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         papelResponsavelProponente: '',
         subResponsavelProponente: '',
       });
+
       this.lotacaoGestorProjeto = '';
     }
 
@@ -2090,9 +2072,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           );
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
-        // finalize(() =>
-        //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        // ),
       );
     }
 
@@ -2134,9 +2113,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             );
             this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
           }),
-          // finalize(() =>
-          //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-          // ),
         );
 
     }
@@ -2151,9 +2127,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           );
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
-        // finalize(() =>
-        //   this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar),
-        // ),
       );
 
   }
@@ -2235,7 +2208,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     modalRef.result.then((result) => {
       if (result === 'confirmado') {
-        this.submitProjetoForm(form, false, true);
+        this.submitProjetoForm(form, false);
       }
     });
   }
@@ -2280,7 +2253,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
         }
 
-        this.submitProjetoForm(form, false, true);
+        this.submitProjetoForm(form, false);
 
       }
     });
@@ -2451,16 +2424,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           },
           metasIndicadorProjeto: indicador.metasIndicadorProjeto
         }));
-
-      // const temIndicador =
-      //   indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
-
-      // if (!temIndicador) {
-      //   this._toastService.showToast('warning', 'O formulário contém erros.', [
-      //     'Informe pelo menos um indicador.'
-      //   ]);
-      //   return;
-      // }
 
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
@@ -2895,31 +2858,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           );
         }),
 
-        // catchError((error) => {
-        //   console.error(' autuarProjetoAsync Erro ao iniciar autuação no E-Docs:', error);
-        //   this.autuacaoAcionada = false;
-        //   if (
-        //     error.status === 401 &&
-        //     error.error?.titulo === 'EDOCS_TOKEN_EXPIRADO'
-        //   ) {
-        //     return throwError(() => error);
-        //   }
-        //   this._toastService.showToast(
-        //     'error',
-        //     'Erro ao iniciar autuação no E-Docs.',
-        //   );
-        //   return EMPTY;
-        // }),
-
-        // catchError((error) => {
-        //   this.autuacaoAcionada = false;
-        //   this._toastService.showToast(
-        //     'error',
-        //     'Erro ao iniciar autuação no E-Docs.',
-        //   );
-        //   return of([]);
-        // }),
-
         finalize(() => {
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
@@ -3032,7 +2970,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.atualizarStatusUI(lista);
         }),
 
-        // Espera até chegar em um estado terminal:
+        // Espera até chegar em um estado final:
         // erro OU todas finalizadas.
         filter((lista) => {
 
@@ -3045,7 +2983,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           return possuiErro || todasFinalizadas;
         }),
 
-        // A primeira condição terminal encerra o polling.
         take(1),
 
         tap((lista) => {
@@ -3066,23 +3003,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             return;
           }
 
-          // Se chegou aqui, terminou com sucesso.
           this._projetosService.removerProjetoAguardando(
             this._idProjetoEdicao
           );
 
-          // notificar a lista para que ela carregue novamente..
           this._projetosService.notificarAtualizacaoLista();
 
           this.assinarAutuar = false;
           this.finalizadoProcessamentoIntegracao = true;
           this.autuacaoAcionada = false;
-
-          // this._projetosService.notificarAtualizacaoLista();
-
-          // this.executarAcaoBreadcrumb(
-          //   BreadcrumbAcoesEnum.Cancelar
-          // );
 
         }),
 
@@ -3401,14 +3330,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     event.preventDefault();
 
-    if (!this.validarAbaDic()) {
-      this._toastService.showToast('warning', 'Erro ao avançar', [
-        'Verifique os campos obrigatórios antes de continuar.',
-      ]);
-      this.abrirAba('nav-propriedades');
-      return;
-    }
-
     this.abrirAba('nav-indicadores');
 
   }
@@ -3417,15 +3338,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     event.preventDefault();
 
-    if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
-      if (!this.validarAbaDic()) {
-        this._toastService.showToast('warning', 'Erro ao avançar', [
-          'Verifique os campos obrigatórios antes de continuar.',
-        ]);
-        return;
-      }
-    }
-
     this.abrirAba('nav-planejamento');
 
   }
@@ -3433,15 +3345,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public irParaOds(event: MouseEvent): void {
 
     event.preventDefault();
-
-    if (this.statusProjeto === StatusProjetoEnum.Em_Elaboracao) {
-      if (!this.validarAbaDic()) {
-        this._toastService.showToast('warning', 'Erro ao avançar', [
-          'Verifique os campos obrigatórios antes de continuar.',
-        ]);
-        return;
-      }
-    }
 
     const campoOds = this.projetoForm.get('impactos');
 
@@ -3542,9 +3445,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return parecer?.nomeArquivo?.trim().length > 0;
   }
 
-  private obterPendenciasProjeto(
-    abas?: AbaProjeto[],
-  ): IPendenciaProjeto[] {
+  private obterPendenciasProjeto(abas?: AbaProjeto[],): IPendenciaProjeto[] {
 
     const pendencias: IPendenciaProjeto[] = [];
 
@@ -3568,6 +3469,46 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           `Controle não encontrado na validação: ${campo.path}`,
         );
         return;
+      }
+
+      console.log(' path.campo : ', campo.path)
+
+      if (campo.path === 'acoesProjeto') {
+
+        const acoesFormArray =
+          this.projetoForm.get('acoesProjeto') as FormArray<FormGroup<AcaoFormType>>;
+
+        console.log('=== AÇÕES FORM ARRAY ===');
+        console.log({
+          status: acoesFormArray.status,
+          valid: acoesFormArray.valid,
+          invalid: acoesFormArray.invalid,
+          errors: acoesFormArray.errors,
+          length: acoesFormArray.length,
+        });
+
+        acoesFormArray.controls.forEach((acaoForm, index) => {
+
+          console.log(`=== AÇÃO ${index + 1} ===`, {
+            status: acaoForm.status,
+            valid: acaoForm.valid,
+            invalid: acaoForm.invalid,
+            errors: acaoForm.errors,
+          });
+
+          Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
+
+            console.log(nome, {
+              value: JSON.stringify(controle.value),
+              status: controle.status,
+              valid: controle.valid,
+              invalid: controle.invalid,
+              errors: controle.errors,
+              disabled: controle.disabled,
+            });
+
+          });
+        });
       }
 
       if (control.invalid) {
@@ -3608,6 +3549,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           controlPath: 'equipeElaboracao',
         });
       }
+
     }
 
     if (deveValidarAba('propriedades')) {
@@ -3621,19 +3563,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             acao.idStatus === TipoStatusEnum.Ativo,
         );
 
-      if (!possuiAcaoAtiva) {
+      // if (!possuiAcaoAtiva) {
 
-        pendencias.push({
-          id: 'acoesProjeto',
-          aba: 'propriedades',
-          nomeAba: 'DIC',
-          campo: 'Ações do Projeto',
-          mensagem:
-            'Informe pelo menos uma ação do projeto.',
-          controlPath: 'acoesProjeto',
-        });
+      //   pendencias.push({
+      //     id: 'acoesProjeto',
+      //     aba: 'propriedades',
+      //     nomeAba: 'DIC',
+      //     campo: 'Ações do Projeto',
+      //     mensagem:
+      //       'Informe pelo menos uma ação do projeto.',
+      //     controlPath: 'acoesProjeto',
+      //   });
 
-      }
+      // }
 
       if (!this.compararValorEstimadoValorAcoes()) {
 
@@ -3756,40 +3698,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-  // private validarProjeto(
-  //   abas?: AbaProjeto[],
-  // ): boolean {
-  //   this.pendenciasProjeto =
-  //     this.obterPendenciasProjeto(abas);
-  //   this.marcarCamposPendentes(
-  //     this.pendenciasProjeto,
-  //   );
-  //   return this.pendenciasProjeto.length === 0;
-  // }
-
-  // private marcarCamposPendentes(
-  //   pendencias: IPendenciaProjeto[],
-  // ): void {
-  //   pendencias.forEach((pendencia) => {
-  //     if (!pendencia.controlPath) {
-  //       return;
-  //     }
-  //     const control =
-  //       this.projetoForm.get(
-  //         pendencia.controlPath,
-  //       );
-  //     control?.markAsTouched();
-  //     control?.markAsDirty();
-  //   });
-  // }
-
   public abrirModalPendencias(pendencias: IPendenciaProjeto[]): void {
 
     this.showModalPendencias = true
 
     this.pendenciasProjeto = pendencias;
-
-    // this.obterPendenciasProjeto();
 
   }
 
@@ -3863,8 +3776,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this.submitProjetoForm(
       this.projetoForm,
-      true,
-      false
+      true
     );
 
   }
@@ -3873,52 +3785,41 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const pendencias: IPendenciaProjeto[] = [];
 
-    const sigla = this.projetoForm.get('sigla');
-    const titulo = this.projetoForm.get('titulo');
-    const organizacao = this.projetoForm.get('idOrganizacao');
-    const equipe = this.projetoForm.get('equipeElaboracao');
+    const equipe =
+      (this.projetoForm.get('equipeElaboracao')?.value ?? []) as IEquipe[];
 
-    if (!sigla?.value?.trim()) {
-      pendencias.push({
-        id: 'sigla',
-        aba: 'propriedades',
-        nomeAba: 'Dados do DIC',
-        campo: 'Sigla',
-        mensagem: 'Informe a sigla.'
-      });
-    }
+    const possuiMembroAtivo =
+      equipe.some(
+        (membro: IEquipe) =>
+          membro.idStatus === TipoStatusEnum.Ativo &&
+          membro.idPapel !== TipoPapelEnum.Redator,
+      );
 
-    if (!titulo?.value?.trim()) {
-      pendencias.push({
-        id: 'titulo',
-        aba: 'propriedades',
-        nomeAba: 'Dados do DIC',
-        campo: 'Título',
-        mensagem: 'Informe o título.'
-      });
-    }
-
-    if (!organizacao?.value) {
-      pendencias.push({
-        id: 'idOrganizacao',
-        aba: 'propriedades',
-        nomeAba: 'Dados do DIC',
-        campo: 'Órgão Proponente',
-        mensagem: 'Informe o órgão proponente.'
-      });
-    }
-
-    const equipeElaboracao = equipe?.value ?? [];
-
-    if (!equipeElaboracao.length) {
+    if (!possuiMembroAtivo) {
       pendencias.push({
         id: 'equipeElaboracao',
         aba: 'propriedades',
-        nomeAba: 'Equipe de Elaboração',
+        nomeAba: 'DIC',
         campo: 'Equipe de Elaboração',
-        mensagem: 'Informe pelo menos um integrante da equipe.'
+        mensagem:
+          'Informe pelo menos um membro ativo além do Redator.',
+        controlPath: 'equipeElaboracao',
       });
     }
+
+    pendencias.push(
+      ...this.camposValidacao
+        .filter(campo => campo.validarEm.includes('rascunho'))
+        .filter(campo => this.campoPossuiPendencia(campo.path))
+        .map(campo => ({
+          id: campo.path,
+          campo: campo.campo,
+          aba: campo.aba,
+          nomeAba: campo.nomeAba,
+          mensagem: 'Campo obrigatório.'
+        })));
+
+    console.log('pendencias :', pendencias)
 
     return pendencias;
 
@@ -3933,16 +3834,68 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.projetoForm.patchValue({enviarProjetoGestor: true,});
-    
+    this.projetoForm.patchValue({ enviarProjetoGestor: true, });
+
     this.validacaoSomaValoresAcoesEnviar(this.projetoForm);
 
     this.submitProjetoForm(
       this.projetoForm,
       false,
-      true
     );
 
+  }
+
+  private campoPossuiPendencia(path: string): boolean {
+
+    const control = this.projetoForm.get(path);
+
+    if (!control) {
+      console.warn(`[Validação] Campo não encontrado: ${path}`);
+      return false;
+    }
+
+    const valor = control.value;
+
+    switch (path) {
+
+      case 'idResponsavelProponente': {
+
+        const idResponsavel =
+          this.projetoForm.get('idResponsavelProponente')?.value;
+
+        const subResponsavel =
+          this.projetoForm.get('subResponsavelProponente')?.value;
+
+        return !idResponsavel && !subResponsavel;
+
+      }
+
+    }
+
+    if (valor === null || valor === undefined) {
+      return true;
+    }
+
+    if (typeof valor === 'string' && valor.trim() === '') {
+      return true;
+    }
+
+    if (Array.isArray(valor) && valor.length === 0) {
+      return true;
+    }
+
+    if (control.invalid) {
+      return true;
+    }
+
+    return false;
+
+  }
+
+  get carregandoTela(): boolean {
+    return this.loading
+      || this.isLoadingPessoas
+      || this.loadingDownload;
   }
 
 }

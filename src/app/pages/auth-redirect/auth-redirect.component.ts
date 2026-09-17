@@ -28,7 +28,9 @@ export class AuthRedirectComponent implements OnInit {
 
     this._usuarioService.buscarUsuario().subscribe({
       next: (response: IUsuario) => {
+
         sessionStorage.setItem('token', response.token);
+        
         this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
 
         const redirectUrl = localStorage.getItem('redirectUrl');
