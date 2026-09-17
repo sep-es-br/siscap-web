@@ -33,8 +33,7 @@ import { SIDEWAYS_SHAKE } from '../../../../core/utils/animations';
   styleUrl: './rateio-municipio-form-card.component.scss',
 })
 export class RateioMunicipioFormCardComponent
-  implements OnInit, OnChanges, AfterViewInit
-{
+  implements OnInit, OnChanges, AfterViewInit {
   @Input() public municipio!: ILocalidadeOpcoesDropdown;
   @Input() public isModoEdicao: boolean = false;
 
@@ -56,22 +55,28 @@ export class RateioMunicipioFormCardComponent
   public percentOutputTransformFn =
     NgxMaskTransformFunctionHelper.percentOutputTransformFn;
 
-  constructor(public rateioService: RateioService) {}
+  constructor(public rateioService: RateioService) { }
 
   ngOnInit(): void {
+
     this.inicializarRateioLocalidadeFormGroupMunicipio();
+
+    this.rateioService.rateioRecalculado$
+      .subscribe(() => {
+        this.sincronizarMunicipioComRateio();
+      });
 
     this.rateioService.estadoBooleanCheckboxChange$.subscribe(
       (estadoCheckboxChange) => {
         this.bloquearMunicipioBooleanCheckbox = estadoCheckboxChange;
-        if( estadoCheckboxChange && this.municipioBooleanCheckbox ) {
+        if (estadoCheckboxChange && this.municipioBooleanCheckbox) {
           this.incluirMunicipioNoRateio()
           this.municipioBooleanCheckbox = false;
           this.rateioLocalidadeFormGroupMunicipio.disable();
           this.rateioService.limparCheckboxesFilhos();
           this.rateioService.limparTotalRateio();
-        }else{
-          if( !estadoCheckboxChange ) {
+        } else {
+          if (!estadoCheckboxChange) {
             this.removerMunicipioDoRateio();
           }
         }
@@ -79,7 +84,7 @@ export class RateioMunicipioFormCardComponent
     );
 
     this.rateioService.microrregiaoBooleanCheckboxChange$.subscribe(
-      
+
       (localidadeCheckboxChange) => {
         const resultadoMunicipioCheckbox =
           this.rateioService.checarValorCheckboxPorMunicipio(
@@ -91,8 +96,14 @@ export class RateioMunicipioFormCardComponent
           this.bloquearMunicipioBooleanCheckbox = resultadoMunicipioCheckbox;
 
       }
-      
+
     );
+
+    this.rateioService.rateioRecalculado$
+      .subscribe(() => {
+        this.sincronizarMunicipioComRateio();
+      });
+
   }
 
   /*
@@ -182,34 +193,100 @@ export class RateioMunicipioFormCardComponent
       : this.removerMunicipioDoRateio();
 
     this.notificarMunicipioCheckboxChange();
+
   }
 
+  // private inicializarRateioLocalidadeFormGroupMunicipio(): void {
+  //   const controlIndex =
+  //     this.rateioService.buscarIndiceControleRateioLocalidadeFormGroup(
+  //       this.municipio.id
+  //     );
+  //   if (controlIndex !== -1) {
+  //     // Município já pertence ao rateio
+  //     this.rateioLocalidadeFormGroupMunicipio =
+  //       this.rateioService.rateioFormArray.controls[controlIndex];
+  //     this.municipioBooleanCheckbox = true;
+  //     this.municipioSelectedInitCheck.emit(
+  //       this.municipio.idLocalidadePai
+  //     );
+  //     if (this.isModoEdicao) {
+  //       this.rateioLocalidadeFormGroupMunicipio.enable({
+  //         emitEvent: false
+  //       });
+  //     } else {
+  //       this.rateioLocalidadeFormGroupMunicipio.disable({
+  //         emitEvent: false
+  //       });
+  //     }
+  //     this.notificarMunicipioCheckboxChange();
+  //   } else {
+  //     // Município não pertence ao rateio
+  //     this.rateioLocalidadeFormGroupMunicipio =
+  //       this.rateioService
+  //         .construirRateioLocalidadeFormGroupPorIdLocalidade(
+  //           this.municipio.id
+  //         );
+  //     this.rateioLocalidadeFormGroupMunicipio.disable({
+  //       emitEvent: false
+  //     });
+  //   }
+  // }
+
   private inicializarRateioLocalidadeFormGroupMunicipio(): void {
+
     const controlIndex =
       this.rateioService.buscarIndiceControleRateioLocalidadeFormGroup(
         this.municipio.id
       );
 
     if (controlIndex !== -1) {
+
       this.rateioLocalidadeFormGroupMunicipio =
         this.rateioService.rateioFormArray.controls[controlIndex];
+
       this.municipioBooleanCheckbox = true;
-      this.municipioSelectedInitCheck.emit(this.municipio.idLocalidadePai);
-      this.notificarMunicipioCheckboxChange();
-    } else {
-      this.rateioLocalidadeFormGroupMunicipio =
-        this.rateioService.construirRateioLocalidadeFormGroupPorIdLocalidade(
-          this.municipio.id
+
+      setTimeout(() => {
+
+        this.municipioSelectedInitCheck.emit(
+          this.municipio.idLocalidadePai
         );
+
+        this.notificarMunicipioCheckboxChange();
+
+      }, 0);
+
+      if (this.isModoEdicao) {
+        this.rateioLocalidadeFormGroupMunicipio.enable({
+          emitEvent: false
+        });
+      } else {
+        this.rateioLocalidadeFormGroupMunicipio.disable({
+          emitEvent: false
+        });
+      }
+
+      return;
+      
     }
 
-    this.rateioLocalidadeFormGroupMunicipio.disable();
+    this.rateioLocalidadeFormGroupMunicipio =
+      this.rateioService
+        .construirRateioLocalidadeFormGroupPorIdLocalidade(
+          this.municipio.id
+        );
+
+    this.rateioLocalidadeFormGroupMunicipio.disable({
+      emitEvent: false
+    });
+
   }
 
   private incluirMunicipioNoRateio(): void {
     this.rateioLocalidadeFormGroupMunicipio.reset({
       percentual: null,
-      quantia: null }, { emitEvent: false });
+      quantia: null
+    }, { emitEvent: false });
     this.rateioLocalidadeFormGroupMunicipio.enable();
     this.rateioService.incluirLocalidadeNoRateio(
       this.rateioLocalidadeFormGroupMunicipio
@@ -228,4 +305,87 @@ export class RateioMunicipioFormCardComponent
       checkboxValue: this.municipioBooleanCheckbox,
     });
   }
+
+  // private sincronizarMunicipioComRateio(): void {
+  //   const controlIndex =
+  //     this.rateioService
+  //       .buscarIndiceControleRateioLocalidadeFormGroup(
+  //         this.municipio.id
+  //       );
+  //   if (controlIndex === -1) {
+  //     return;
+  //   }
+  //   this.rateioLocalidadeFormGroupMunicipio =
+  //     this.rateioService
+  //       .rateioFormArray
+  //       .controls[controlIndex];
+  //   this.municipioBooleanCheckbox = true;
+  //   this.municipioSelectedInitCheck.emit(
+  //     this.municipio.idLocalidadePai
+  //   );
+  // }
+
+  private sincronizarMunicipioComRateio(): void {
+
+    const controlIndex =
+      this.rateioService
+        .buscarIndiceControleRateioLocalidadeFormGroup(
+          this.municipio.id
+        );
+
+    if (controlIndex === -1) {
+      return;
+    }
+
+    /*
+     * Este é o FormGroup novo criado pelo RateioService
+     * e que contém o cálculo linear.
+     */
+    const rateioCalculado =
+      this.rateioService
+        .rateioFormArray
+        .controls[controlIndex]
+        .getRawValue();
+
+    /*
+     * NÃO trocamos a instância do FormGroup do componente.
+     *
+     * Apenas atualizamos o FormGroup que já está conectado
+     * aos formControlName do HTML.
+     */
+    this.rateioLocalidadeFormGroupMunicipio.patchValue(
+      {
+        idLocalidade: this.municipio.id,
+        percentual: rateioCalculado.percentual,
+        quantia: rateioCalculado.quantia
+      },
+      {
+        emitEvent: false
+      }
+    );
+
+    this.rateioLocalidadeFormGroupMunicipio.enable({
+      emitEvent: false
+    });
+
+    /*
+     * Agora fazemos o FormArray utilizar justamente
+     * o FormGroup que está ligado ao componente.
+     */
+    this.rateioService.rateioFormArray.setControl(
+      controlIndex,
+      this.rateioLocalidadeFormGroupMunicipio,
+      {
+        emitEvent: false
+      }
+    );
+
+    this.municipioBooleanCheckbox = true;
+
+    this.municipioSelectedInitCheck.emit(
+      this.municipio.idLocalidadePai
+    );
+
+  }
+
 }

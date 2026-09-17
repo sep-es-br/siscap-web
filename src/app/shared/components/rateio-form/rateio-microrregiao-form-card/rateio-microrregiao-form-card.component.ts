@@ -31,8 +31,7 @@ import { TEMPO_INPUT_USUARIO } from '../../../../core/utils/constants';
   styleUrl: './rateio-microrregiao-form-card.component.scss',
 })
 export class RateioMicrorregiaoFormCardComponent
-  implements OnInit, OnChanges, AfterViewInit
-{
+  implements OnInit, OnChanges, AfterViewInit {
   @Input() public microrregiao!: ILocalidadeOpcoesDropdown;
   @Input() public isModoEdicao: boolean = false;
 
@@ -51,22 +50,23 @@ export class RateioMicrorregiaoFormCardComponent
   public percentOutputTransformFn =
     NgxMaskTransformFunctionHelper.percentOutputTransformFn;
 
-  constructor(public rateioService: RateioService) {}
+  constructor(public rateioService: RateioService) { }
 
   ngOnInit(): void {
+
 
     this.inicializarRateioLocalidadeFormGroupMicrorregiao();
 
     this.rateioService.estadoBooleanCheckboxChange$.subscribe(
       (estadoCheckboxChange) => {
         this.bloquearMicrorregiaoBooleanCheckbox = estadoCheckboxChange;
-        if( estadoCheckboxChange ) {
+        if (estadoCheckboxChange) {
           this.microrregiaoBooleanCheckbox = false;
           this.rateioLocalidadeFormGroupMicrorregiao.disable();
           this.rateioService.limparCheckboxesFilhos();
           //this.rateioService.limparTotalRateio();
-        }else{
-          if( !estadoCheckboxChange ) {
+        } else {
+          if (!estadoCheckboxChange) {
             this.removerMicrorregiaoDoRateio();
           }
         }
@@ -75,7 +75,7 @@ export class RateioMicrorregiaoFormCardComponent
 
     this.rateioService.municipioBooleanCheckboxChange$.subscribe(
       (localidadeCheckboxChange) => {
-        
+
         const resultadoMicrorregiaoCheckbox =
           this.rateioService.checarValorCheckboxPorMicrorregiao(
             localidadeCheckboxChange,
@@ -167,31 +167,53 @@ export class RateioMicrorregiaoFormCardComponent
   }
 
   private inicializarRateioLocalidadeFormGroupMicrorregiao(): void {
+
     const controlIndex =
       this.rateioService.buscarIndiceControleRateioLocalidadeFormGroup(
         this.microrregiao.id
       );
 
     if (controlIndex !== -1) {
+
+      // Já existe no rateio
       this.rateioLocalidadeFormGroupMicrorregiao =
         this.rateioService.rateioFormArray.controls[controlIndex];
 
       this.microrregiaoBooleanCheckbox = true;
-      this.notificarMicrorregiaoCheckboxChange();
-    } else {
-      this.rateioLocalidadeFormGroupMicrorregiao =
-        this.rateioService.construirRateioLocalidadeFormGroupPorIdLocalidade(
-          this.microrregiao.id
-        );
-    }
 
-    this.rateioLocalidadeFormGroupMicrorregiao.disable();
+      // Está selecionada: mantém percentual e quantia e habilita os campos
+      if (this.isModoEdicao) {
+        this.rateioLocalidadeFormGroupMicrorregiao.enable({
+          emitEvent: false
+        });
+      } else {
+        this.rateioLocalidadeFormGroupMicrorregiao.disable({
+          emitEvent: false
+        });
+      }
+
+      this.notificarMicrorregiaoCheckboxChange();
+
+    } else {
+
+      // Não pertence ao rateio
+      this.rateioLocalidadeFormGroupMicrorregiao =
+        this.rateioService
+          .construirRateioLocalidadeFormGroupPorIdLocalidade(
+            this.microrregiao.id
+          );
+
+      this.rateioLocalidadeFormGroupMicrorregiao.disable({
+        emitEvent: false
+      });
+    }
   }
 
   private incluirMicrorregiaoNoRateio(): void {
     this.rateioLocalidadeFormGroupMicrorregiao.reset({
       percentual: null,
-      quantia: null }, { emitEvent: false });
+      quantia: null
+    }, { emitEvent: false });
     this.rateioLocalidadeFormGroupMicrorregiao.enable();
     this.rateioService.incluirLocalidadeNoRateio(
       this.rateioLocalidadeFormGroupMicrorregiao

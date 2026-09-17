@@ -61,7 +61,7 @@ export class ParecerService {
 
   excluirAnexoParecer(idParecer: AbstractControl<any, any> | null) {
     const deleteURL = `${this._url}/dic/parecer/${idParecer}/arquivo`;
-    console.log("chamando endpoint para excluir o parecer.. {}", deleteURL)
+    // console.log("chamando endpoint para excluir o parecer.. {}", deleteURL)
     return this._http.delete(deleteURL, {
         responseType: 'text',
       });

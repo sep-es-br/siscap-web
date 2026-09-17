@@ -7,6 +7,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
+
 import {
   AbstractControl,
   FormArray,
@@ -1236,7 +1237,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             odsCor: this._nnfb.control(ods.odsCor ?? null),
           })
         ) ?? []
-      )
+      ),
+
+      acoesRateioProjeto: this.acoesService.construirAcoesRateioFormArray(
+        projetoFormModel?.acoesProjeto,
+      ),
 
     });
 
@@ -1957,7 +1962,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         })
       );
 
-      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho, formData)
@@ -3471,46 +3476,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      console.log(' path.campo : ', campo.path)
-
-      if (campo.path === 'acoesProjeto') {
-
-        const acoesFormArray =
-          this.projetoForm.get('acoesProjeto') as FormArray<FormGroup<AcaoFormType>>;
-
-        console.log('=== AÇÕES FORM ARRAY ===');
-        console.log({
-          status: acoesFormArray.status,
-          valid: acoesFormArray.valid,
-          invalid: acoesFormArray.invalid,
-          errors: acoesFormArray.errors,
-          length: acoesFormArray.length,
-        });
-
-        acoesFormArray.controls.forEach((acaoForm, index) => {
-
-          console.log(`=== AÇÃO ${index + 1} ===`, {
-            status: acaoForm.status,
-            valid: acaoForm.valid,
-            invalid: acaoForm.invalid,
-            errors: acaoForm.errors,
-          });
-
-          Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
-
-            console.log(nome, {
-              value: JSON.stringify(controle.value),
-              status: controle.status,
-              valid: controle.valid,
-              invalid: controle.invalid,
-              errors: controle.errors,
-              disabled: controle.disabled,
-            });
-
-          });
-        });
-      }
-
       if (control.invalid) {
         pendencias.push({
           id: campo.path,
@@ -3819,8 +3784,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           mensagem: 'Campo obrigatório.'
         })));
 
-    console.log('pendencias :', pendencias)
-
     return pendencias;
 
   }
@@ -3896,6 +3859,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return this.loading
       || this.isLoadingPessoas
       || this.loadingDownload;
+  }
+
+  public irParaAcoes(event: MouseEvent): void {
+
+    event.preventDefault();
+
+    this.abrirAba('nav-acoes-rateio');
+
   }
 
 }
