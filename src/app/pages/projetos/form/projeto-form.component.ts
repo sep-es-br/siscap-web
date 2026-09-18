@@ -1214,10 +1214,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       acoesPlanejamentoProjeto: this._nnfb.control(
         projetoFormModel?.acoesPlanejamentoProjeto ?? false,
+        [Validators.required],
       ),
 
       naoPrevistoNoPpa: this._nnfb.control(
         projetoFormModel?.naoPrevistoNoPpa ?? false,
+        [Validators.required],
       ),
 
       pareceresProjeto: this._nnfb.array([]),

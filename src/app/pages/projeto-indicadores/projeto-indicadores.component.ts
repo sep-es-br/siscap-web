@@ -1,5 +1,5 @@
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FiltroIndicadoresComponent } from './filtro-indicadores/filtro-indicadores.component';
@@ -631,6 +631,10 @@ export class ProjetoIndicadoresComponent implements OnInit {
       event.preventDefault();
     }
 
+  }
+
+  public getControl(controlName: string): AbstractControl<any, any> {
+    return this.formProjeto.get(controlName) as AbstractControl<any, any>;
   }
 
 }
