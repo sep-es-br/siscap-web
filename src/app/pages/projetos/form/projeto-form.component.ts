@@ -34,6 +34,8 @@ import {
   filter,
   forkJoin,
   throwError,
+  concatMap,
+  defer,
 } from 'rxjs';
 import {
   NgbActiveModal,
@@ -123,6 +125,43 @@ interface CampoValidacao {
   aba: AbaProjeto;
   nomeAba: string;
   validarEm: readonly ContextoValidacao[];
+}
+
+type IMetaIndicadorProjetoPayload = Pick<
+  NonNullable<IIndicadores['metasIndicadorProjeto']>[number],
+  'id' | 'anoMeta' | 'valorMeta'
+>;
+
+interface IIndicadorProjetoPayload {
+  idIndicador: IIndicadores['idIndicador'];
+  tipoIndicador: IIndicadores['tipoIndicador'] | null;
+  descricaoIndicador: IIndicadores['descricaoIndicador'] | null;
+  descricaoMeta: IIndicadores['descricaoMeta'] | null;
+  idStatus: IIndicadores['idStatus'];
+  idIndicadorExterno:
+    | IIndicadores['idIndicadorExterno']
+    | IIndicadores['idIndicadorCatalogoExterno'];
+  metasIndicadorProjeto: IMetaIndicadorProjetoPayload[];
+}
+
+interface IIndicadorAvulsoProjetoPayload {
+  id: IIndicadorAvulso['id'] | null;
+  idIndicadorAvulso: IIndicadorAvulso['idIndicador'] | null;
+  indicadorAvulso: {
+    id: IIndicadorAvulso['idIndicador'] | null;
+    nomeIndicador: IIndicadorAvulso['nomeIndicador'];
+    unidadeMedida: IIndicadorAvulso['unidadeMedida'];
+    fonteIndicador: IIndicadorAvulso['fonteIndicador'];
+    formulaCalculo?: IIndicadorAvulso['formulaCalculo'];
+    medidoPor: IIndicadorAvulso['medidoPor'];
+    baseDeReferencia: IIndicadorAvulso['basedeReferencia'];
+  };
+  metasIndicadorProjeto: IIndicadorAvulso['metasIndicadorProjeto'];
+}
+
+interface IMontarPayloadProjetoOpcoes {
+  incluirFormulaCalculoIndicadorAvulso?: boolean;
+  ajustarOrganizacaoProponente?: boolean;
 }
 
 @Component({
@@ -381,6 +420,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public loadingDownload: boolean = false;
   public loadingSubmit: boolean = false;
+
+  private readonly autoSave$ =
+    new Subject<ProjetoFormModel>();
+
+  private ultimoRascunhoSalvo:
+    string | null = null;
+
+  private autoSaveComErro = false;
 
   @HostListener('window:resize')
   onResize() {
@@ -856,6 +903,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    this.inicializarAutoSave();
 
     const camposPedidoComplementacao: Record<string, string> = {
       sigla: 'Sigla',
@@ -1788,42 +1837,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      const indicadoresProjetoPayload = this.projetoForm.getRawValue()
-        .indicadoresProjeto
-        .filter((indicador: IIndicadores) =>
-          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
-        )
-        .map((indicador: IIndicadores) => ({
-          idIndicador: indicador.idIndicador,
-          tipoIndicador: indicador.tipoIndicador ?? null,
-          descricaoIndicador: indicador.descricaoIndicador ?? null,
-          descricaoMeta: indicador.descricaoMeta ?? null,
-          idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
-            id: meta.id,
-            anoMeta: meta.anoMeta,
-            valorMeta: meta.valorMeta
-          })) ?? []
-        }));
-
-      const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
-        .indicadoresAvulsosProjeto
-        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
-        .map((indicador: IIndicadorAvulso) => ({
-          id: indicador.id ?? null,
-          idIndicadorAvulso: indicador.idIndicador ?? null,
-          indicadorAvulso: {
-            id: indicador.idIndicador ?? null,
-            nomeIndicador: indicador.nomeIndicador,
-            unidadeMedida: indicador.unidadeMedida,
-            fonteIndicador: indicador.fonteIndicador,
-            medidoPor: indicador.medidoPor,
-            baseDeReferencia: indicador.basedeReferencia
-          },
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto
-        }));
-
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
 
@@ -1833,22 +1846,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         indicadoresProjetoControl?.enable({ emitEvent: false });
       }
 
-      const odsProjetoPayload = this.projetoForm.getRawValue()
-        .odsProjeto
-        ?.map((ods: any) => ({
-          idOdsProjeto: ods.idOdsProjeto ?? null,
-          odsId: ods.odsId,
-          odsOrdem: ods.odsOrdem,
-          odsNome: ods.odsNome,
-          odsDescricao: ods.odsDescricao
-        })) ?? [];
-
-      const payload =
-        new ProjetoFormModel(form.getRawValue() as IProjetoForm);
-
-      payload.indicadoresProjeto = indicadoresProjetoPayload;
-      payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
-      payload.odsProjeto = odsProjetoPayload;
+      const payload = this.montarPayloadProjeto(form);
 
       payload.parecerProjetoUsuario = this.projetoForm
         .get('parecerProjetoUsuario')
@@ -1879,43 +1877,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     } else {
 
-      const indicadoresProjetoPayload = this.projetoForm.getRawValue()
-        .indicadoresProjeto
-        .filter((indicador: IIndicadores) =>
-          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
-        )
-        .map((indicador: IIndicadores) => ({
-          idIndicador: indicador.idIndicador,
-          tipoIndicador: indicador.tipoIndicador ?? null,
-          descricaoIndicador: indicador.descricaoIndicador ?? null,
-          descricaoMeta: indicador.descricaoMeta ?? null,
-          idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
-            id: meta.id,
-            anoMeta: meta.anoMeta,
-            valorMeta: meta.valorMeta
-          })) ?? []
-        }));
-
-      const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
-        .indicadoresAvulsosProjeto
-        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
-        .map((indicador: IIndicadorAvulso) => ({
-          id: indicador.id ?? null,
-          idIndicadorAvulso: indicador.idIndicador ?? null,
-          indicadorAvulso: {
-            id: indicador.idIndicador ?? null,
-            nomeIndicador: indicador.nomeIndicador,
-            unidadeMedida: indicador.unidadeMedida,
-            fonteIndicador: indicador.fonteIndicador,
-            formulaCalculo: indicador.formulaCalculo,
-            medidoPor: indicador.medidoPor,
-            baseDeReferencia: indicador.basedeReferencia
-          },
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto
-        }));
-
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
 
@@ -1928,27 +1889,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
 
-      const odsProjetoPayload = this.projetoForm.getRawValue()
-        .odsProjeto
-        ?.map((ods: any) => ({
-          idOdsProjeto: ods.idOdsProjeto ?? null,
-          odsId: ods.odsId,
-          odsOrdem: ods.odsOrdem,
-          odsNome: ods.odsNome,
-          odsDescricao: ods.odsDescricao
-        })) ?? [];
-
-      const payload =
-        new ProjetoFormModel(form.getRawValue() as IProjetoForm);
-
-      if (this.isProponente) {
-        payload.idOrganizacao =
-          form.get('idOrganizacao')?.value;
-      }
-
-      payload.indicadoresProjeto = indicadoresProjetoPayload;
-      payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
-      payload.odsProjeto = odsProjetoPayload;
+      const payload = this.montarPayloadProjeto(form, {
+        incluirFormulaCalculoIndicadorAvulso: true,
+        ajustarOrganizacaoProponente: true,
+      });
 
       const formData = new FormData();
 
@@ -2032,7 +1976,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   onSelecionarPessoa(pessoa: any) {
-  
+
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
@@ -2391,42 +2335,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
 
-      const indicadoresProjetoPayload = this.projetoForm.getRawValue()
-        .indicadoresProjeto
-        .filter((indicador: IIndicadores) =>
-          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
-        )
-        .map((indicador: IIndicadores) => ({
-          idIndicador: indicador.idIndicador,
-          tipoIndicador: indicador.tipoIndicador ?? null,
-          descricaoIndicador: indicador.descricaoIndicador ?? null,
-          descricaoMeta: indicador.descricaoMeta ?? null,
-          idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
-            id: meta.id,
-            anoMeta: meta.anoMeta,
-            valorMeta: meta.valorMeta
-          })) ?? []
-        }));
-
-      const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
-        .indicadoresAvulsosProjeto
-        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
-        .map((indicador: IIndicadorAvulso) => ({
-          id: indicador.id ?? null,
-          idIndicadorAvulso: indicador.idIndicador ?? null,
-          indicadorAvulso: {
-            id: indicador.idIndicador ?? null,
-            nomeIndicador: indicador.nomeIndicador,
-            unidadeMedida: indicador.unidadeMedida,
-            fonteIndicador: indicador.fonteIndicador,
-            medidoPor: indicador.medidoPor,
-            baseDeReferencia: indicador.basedeReferencia
-          },
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto
-        }));
-
       const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
       const estavaDisabled = indicadoresProjetoControl?.disabled;
 
@@ -2445,27 +2353,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
 
-      const odsProjetoPayload = this.projetoForm.getRawValue()
-        .odsProjeto
-        ?.map((ods: any) => ({
-          idOdsProjeto: ods.idOdsProjeto ?? null,
-          odsId: ods.odsId,
-          odsOrdem: ods.odsOrdem,
-          odsNome: ods.odsNome,
-          odsDescricao: ods.odsDescricao
-        })) ?? [];
-
-      const payload =
-        new ProjetoFormModel(form.getRawValue() as IProjetoForm);
+      const payload = this.montarPayloadProjeto(form);
 
       if (this.isProponente) {
         payload.idOrganizacao =
           form.get('idOrganizacao')?.value;
       }
-
-      payload.indicadoresProjeto = indicadoresProjetoPayload;
-      payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
-      payload.odsProjeto = odsProjetoPayload;
 
       if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
         return;
@@ -2490,41 +2383,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
 
-      const indicadoresProjetoPayload = this.projetoForm.getRawValue()
-        .indicadoresProjeto
-        .filter((indicador: IIndicadores) =>
-          (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
-        )
-        .map((indicador: IIndicadores) => ({
-          idIndicador: indicador.idIndicador,
-          tipoIndicador: indicador.tipoIndicador ?? null,
-          descricaoIndicador: indicador.descricaoIndicador ?? null,
-          descricaoMeta: indicador.descricaoMeta ?? null,
-          idStatus: indicador.idStatus ?? 1,
-          idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
-            id: meta.id,
-            anoMeta: meta.anoMeta,
-            valorMeta: meta.valorMeta
-          })) ?? []
-        }));
-
-      const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
-        .indicadoresAvulsosProjeto
-        .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
-        .map((indicador: IIndicadorAvulso) => ({
-          id: indicador.id ?? null,
-          idIndicadorAvulso: indicador.idIndicador ?? null,
-          indicadorAvulso: {
-            id: indicador.idIndicador ?? null,
-            nomeIndicador: indicador.nomeIndicador,
-            unidadeMedida: indicador.unidadeMedida,
-            fonteIndicador: indicador.fonteIndicador,
-            medidoPor: indicador.medidoPor,
-            baseDeReferencia: indicador.basedeReferencia
-          },
-          metasIndicadorProjeto: indicador.metasIndicadorProjeto
-        }));
+      const indicadoresProjetoPayload = this.montarIndicadoresProjetoPayload(form);
+      const indicadoresAvulsosPayload = this.montarIndicadoresAvulsosProjetoPayload(form);
 
       const temIndicador =
         indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
@@ -2554,27 +2414,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       form.get('valor.tipo')?.enable();
       form.get('valor.moeda')?.enable();
 
-      const odsProjetoPayload = this.projetoForm.getRawValue()
-        .odsProjeto
-        ?.map((ods: any) => ({
-          idOdsProjeto: ods.idOdsProjeto ?? null,
-          odsId: ods.odsId,
-          odsOrdem: ods.odsOrdem,
-          odsNome: ods.odsNome,
-          odsDescricao: ods.odsDescricao
-        })) ?? [];
-
-      const payload =
-        new ProjetoFormModel(form.getRawValue() as IProjetoForm);
-
-      if (this.isProponente) {
-        payload.idOrganizacao =
-          form.get('idOrganizacao')?.value;
-      }
-
-      payload.indicadoresProjeto = indicadoresProjetoPayload;
-      payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
-      payload.odsProjeto = odsProjetoPayload;
+      const payload = this.montarPayloadProjeto(form, {
+        ajustarOrganizacaoProponente: true,
+      });
 
       if (!this.validarIndicadores(payload.indicadoresProjeto, payload.indicadoresAvulsosProjeto)) {
         return;
@@ -2596,43 +2438,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     form.get('valor.tipo')?.enable();
     form.get('valor.moeda')?.enable();
 
-    const indicadoresProjetoPayload = this.projetoForm.getRawValue()
-      .indicadoresProjeto
-      .filter((indicador: IIndicadores) =>
-        (indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno ?? 0) !== 0
-      )
-      .map((indicador: IIndicadores) => ({
-        idIndicador: indicador.idIndicador,
-        tipoIndicador: indicador.tipoIndicador ?? null,
-        descricaoIndicador: indicador.descricaoIndicador ?? null,
-        descricaoMeta: indicador.descricaoMeta ?? null,
-        idStatus: indicador.idStatus ?? 1,
-        idIndicadorExterno: indicador.idIndicadorExterno ?? indicador.idIndicadorCatalogoExterno,
-        metasIndicadorProjeto: indicador.metasIndicadorProjeto?.map(meta => ({
-          id: meta.id,
-          anoMeta: meta.anoMeta,
-          valorMeta: meta.valorMeta
-        })) ?? []
-      }));
-
-    const indicadoresAvulsosPayload = this.projetoForm.getRawValue()
-      .indicadoresAvulsosProjeto
-      .filter((indicador: IIndicadorAvulso) => indicador?.nomeIndicador?.trim())
-      .map((indicador: IIndicadorAvulso) => ({
-        id: indicador.id ?? null,
-        idIndicadorAvulso: indicador.idIndicador ?? null,
-        indicadorAvulso: {
-          id: indicador.idIndicador ?? null,
-          nomeIndicador: indicador.nomeIndicador,
-          unidadeMedida: indicador.unidadeMedida,
-          fonteIndicador: indicador.fonteIndicador,
-          medidoPor: indicador.medidoPor,
-          baseDeReferencia: indicador.basedeReferencia
-        },
-        metasIndicadorProjeto: indicador.metasIndicadorProjeto
-      }));
-
-
     const indicadoresProjetoControl = this.projetoForm.get('indicadoresProjeto');
     const estavaDisabled = indicadoresProjetoControl?.disabled;
 
@@ -2642,22 +2447,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       indicadoresProjetoControl?.enable({ emitEvent: false });
     }
 
-    const odsProjetoPayload = this.projetoForm.getRawValue()
-      .odsProjeto
-      ?.map((ods: any) => ({
-        idOdsProjeto: ods.idOdsProjeto ?? null,
-        odsId: ods.odsId,
-        odsOrdem: ods.odsOrdem,
-        odsNome: ods.odsNome,
-        odsDescricao: ods.odsDescricao
-      })) ?? [];
-
-    const payload =
-      new ProjetoFormModel(form.getRawValue() as IProjetoForm);
-
-    payload.indicadoresProjeto = indicadoresProjetoPayload;
-    payload.indicadoresAvulsosProjeto = indicadoresAvulsosPayload;
-    payload.odsProjeto = odsProjetoPayload;
+    const payload = this.montarPayloadProjeto(form);
 
     const formData = new FormData();
 
@@ -3330,6 +3120,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public irParaIndicadores(event: MouseEvent): void {
 
+    this.solicitarAutoSave();
+
     event.preventDefault();
 
     this.abrirAba('nav-indicadores');
@@ -3338,6 +3130,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public irParaPlanejamento(event: MouseEvent): void {
 
+    this.solicitarAutoSave();
+
     event.preventDefault();
 
     this.abrirAba('nav-planejamento');
@@ -3345,6 +3139,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public irParaOds(event: MouseEvent): void {
+
+    this.solicitarAutoSave();
 
     event.preventDefault();
 
@@ -3893,6 +3689,243 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     return this.loading
       || this.isLoadingPessoas
       || this.loadingDownload;
+  }
+
+  private inicializarAutoSave(): void {
+
+    this.autoSave$
+      .pipe(
+
+        concatMap(payload => {
+
+          const assinatura =
+            JSON.stringify(payload);
+
+          if (
+            assinatura ===
+            this.ultimoRascunhoSalvo
+          ) {
+            return EMPTY;
+          }
+
+          return this.salvarRascunhoAutomaticamente(payload).pipe(
+
+            tap(projeto => {
+
+              this.ultimoRascunhoSalvo = assinatura;
+
+              this.autoSaveComErro = false;
+
+              // if (!this._idProjetoEdicao && projeto?.id) {
+              //   this._idProjetoEdicao = projeto.id;
+              // }
+
+            }),
+
+            catchError(error => {
+
+              this.autoSaveComErro = true;
+
+              console.error(
+                '[AUTOSAVE DIC] Erro ao salvar rascunho',
+                error
+              );
+
+              return EMPTY;
+
+            })
+
+          );
+
+        })
+
+      )
+      .subscribe();
+  }
+
+  private solicitarAutoSave(): void {
+
+    const pendencias =
+      this.obterPendenciasRascunho();
+
+    if (pendencias.length > 0) {
+      return;
+    }
+
+    const payload = this.montarPayloadProjeto(this.projetoForm, {
+      incluirFormulaCalculoIndicadorAvulso: true,
+      ajustarOrganizacaoProponente: true,
+    });
+
+    this.autoSave$.next(payload);
+
+  }
+
+  private salvarRascunhoAutomaticamente(
+    payload: ProjetoFormModel
+  ): Observable<IProjeto> {
+
+    return defer(() => {
+
+      if (this._idProjetoEdicao || this._idProjetoEdicao == 0) {
+
+        return this._projetosService
+          .post(
+            payload,
+            true
+          );
+
+      }
+
+      const formData = new FormData();
+
+      formData.append(
+        'projeto',
+        new Blob([JSON.stringify(payload)], {
+          type: 'application/json'
+        })
+      );
+
+      return this._projetosService
+        .put(
+          this._idProjetoEdicao,
+          payload,
+          true,
+          formData
+        );
+
+    });
+
+  }
+
+  // private podeSalvarRascunhoAutomaticamente(): boolean {
+  //   const camposObrigatoriosRascunho = [
+  //     'sigla',
+  //     'titulo',
+  //     'idOrganizacao',
+  //     'idResponsavelProponente',
+  //     'equipeElaboracao'
+  //   ];
+  //   return camposObrigatoriosRascunho.every(
+  //     campo => this.getControl(campo)?.valid
+  //   );
+  // }
+
+  private montarIndicadoresProjetoPayload(
+    form: FormGroup = this.projetoForm,
+  ): IIndicadorProjetoPayload[] {
+
+    const formRaw = form.getRawValue() as IProjetoForm;
+
+    return (formRaw.indicadoresProjeto ?? [])
+      .filter(
+        (indicador: IIndicadores) =>
+          (
+            indicador.idIndicadorExterno ??
+            indicador.idIndicadorCatalogoExterno ??
+            0
+          ) !== 0,
+      )
+      .map((indicador: IIndicadores) => ({
+        idIndicador: indicador.idIndicador,
+        tipoIndicador: indicador.tipoIndicador ?? null,
+        descricaoIndicador: indicador.descricaoIndicador ?? null,
+        descricaoMeta: indicador.descricaoMeta ?? null,
+        idStatus: indicador.idStatus ?? 1,
+        idIndicadorExterno:
+          indicador.idIndicadorExterno ??
+          indicador.idIndicadorCatalogoExterno,
+        metasIndicadorProjeto:
+          indicador.metasIndicadorProjeto?.map(meta => ({
+            id: meta.id,
+            anoMeta: meta.anoMeta,
+            valorMeta: meta.valorMeta,
+          })) ?? [],
+      }));
+
+  }
+
+  private montarIndicadoresAvulsosProjetoPayload(
+    form: FormGroup = this.projetoForm,
+    incluirFormulaCalculo: boolean = false,
+  ): IIndicadorAvulsoProjetoPayload[] {
+
+    const formRaw = form.getRawValue() as IProjetoForm;
+
+    return (formRaw.indicadoresAvulsosProjeto ?? [])
+      .filter(
+        (indicador: IIndicadorAvulso) =>
+          indicador?.nomeIndicador?.trim(),
+      )
+      .map((indicador: IIndicadorAvulso) => {
+
+        const indicadorAvulso: IIndicadorAvulsoProjetoPayload['indicadorAvulso'] = {
+          id: indicador.idIndicador ?? null,
+          nomeIndicador: indicador.nomeIndicador,
+          unidadeMedida: indicador.unidadeMedida,
+          fonteIndicador: indicador.fonteIndicador,
+          medidoPor: indicador.medidoPor,
+          baseDeReferencia: indicador.basedeReferencia,
+        };
+
+        if (incluirFormulaCalculo) {
+          indicadorAvulso.formulaCalculo = indicador.formulaCalculo;
+        }
+
+        return {
+          id: indicador.id ?? null,
+          idIndicadorAvulso: indicador.idIndicador ?? null,
+          indicadorAvulso,
+          metasIndicadorProjeto: indicador.metasIndicadorProjeto,
+        };
+
+      });
+
+  }
+
+  private montarOdsProjetoPayload(form: FormGroup = this.projetoForm) {
+
+    const formRaw = form.getRawValue() as IProjetoForm;
+
+    return formRaw.odsProjeto
+      ?.map((ods: any) => ({
+        idOdsProjeto: ods.idOdsProjeto ?? null,
+        odsId: ods.odsId,
+        odsOrdem: ods.odsOrdem,
+        odsNome: ods.odsNome,
+        odsDescricao: ods.odsDescricao,
+      })) ?? [];
+
+  }
+
+  private montarPayloadProjeto(
+    form: FormGroup = this.projetoForm,
+    opcoes: IMontarPayloadProjetoOpcoes = {},
+  ): ProjetoFormModel {
+
+    const formRaw = form.getRawValue() as IProjetoForm;
+    const payload = new ProjetoFormModel(formRaw);
+
+    const indicadoresProjeto = this.montarIndicadoresProjetoPayload(form);
+    const indicadoresAvulsosProjeto =
+      this.montarIndicadoresAvulsosProjetoPayload(
+        form,
+        opcoes.incluirFormulaCalculoIndicadorAvulso ?? false,
+      );
+    const odsProjeto = this.montarOdsProjetoPayload(form);
+
+    Object.assign(payload, {
+      indicadoresProjeto,
+      indicadoresAvulsosProjeto,
+      odsProjeto,
+    });
+
+    if (opcoes.ajustarOrganizacaoProponente && this.isProponente) {
+      payload.idOrganizacao = form.get('idOrganizacao')?.value;
+    }
+
+    return payload;
+
   }
 
 }
