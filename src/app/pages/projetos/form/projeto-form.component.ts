@@ -817,6 +817,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           }
 
+          this.ultimoRascunhoSalvo =
+            this.gerarAssinaturaAtualProjeto();
+
           // usa uma flag vinda da API informando se o DIC pode ser Editado..
           this.trocarModo(this.podeEditar);
 
@@ -3661,7 +3664,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .pipe(
 
         concatMap(payload => {
-          
+
           if (
             this.statusProjeto !==
             StatusProjetoEnum.Em_Elaboracao
@@ -3679,12 +3682,22 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             return EMPTY;
           }
 
-
           return this.salvarRascunhoAutomaticamente(payload).pipe(
 
-            tap(projeto => {
+            tap(() => {
 
-              this.ultimoRascunhoSalvo = assinatura;
+              /*
+               * IMPORTANTE:
+               * salvarRascunhoAutomaticamente()
+               * já sincronizou o retorno da API no form.
+               *
+               * Portanto o baseline deve refletir
+               * o estado ATUAL do formulário.
+               */
+              this.ultimoRascunhoSalvo =
+                this.gerarAssinaturaAtualProjeto();
+
+              this.projetoForm.markAsPristine();
 
               this.autoSaveComErro = false;
 
@@ -3709,6 +3722,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       )
       .subscribe();
+
   }
 
   private solicitarAutoSave(): void {
@@ -4103,13 +4117,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private sincronizarIndicadoresProjeto(projetoSalvo: IProjeto): void {
     const indicadoresForm =
       this.projetoForm.get('indicadoresProjeto') as FormArray;
-  
+
     indicadoresForm.controls.forEach(control => {
       // No form, o identificador vindo do BI fica neste campo
       const idIndicadorExterno =
         control.get('idIndicadorCatalogoExterno')?.value ??
         control.get('idIndicadorExterno')?.value;
-  
+
       const indicadorSalvo = projetoSalvo.indicadoresProjeto?.find(
         indicador =>
           (
@@ -4117,15 +4131,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             indicador.idIndicadorCatalogoExterno
           ) === idIndicadorExterno
       );
-  
+
       if (!indicadorSalvo) {
         return;
       }
-  
+
       control.patchValue(
         {
           ...indicadorSalvo,
-  
+
           // Mantém o de/para usado pelo FormArray
           idIndicadorCatalogoExterno:
             indicadorSalvo.idIndicadorExterno ??
@@ -4142,16 +4156,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private sincronizarIndicadoresAvulsosProjeto(
     projetoSalvo: IProjeto
   ): void {
-  
+
     const indicadoresAvulsosForm =
       this.projetoForm.get('indicadoresAvulsosProjeto') as FormArray;
-  
+
     indicadoresAvulsosForm.controls.forEach(control => {
       const idIndicador = control.get('idIndicador')?.value;
       const nomeIndicador = control.get('nomeIndicador')?.value;
-  
+
       let indicadorSalvo: IIndicadorAvulso | undefined;
-  
+
       // Se já existe ID do indicador, essa é a melhor chave
       if (idIndicador != null) {
         indicadorSalvo =
@@ -4160,7 +4174,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               indicador.idIndicador === idIndicador
           );
       }
-  
+
       // Caso tenha sido criado justamente neste autosave,
       // ainda pode não haver idIndicador no form.
       if (!indicadorSalvo && nomeIndicador) {
@@ -4171,11 +4185,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               nomeIndicador.trim()
           );
       }
-  
+
       if (!indicadorSalvo) {
         return;
       }
-  
+
       control.patchValue(
         indicadorSalvo,
         {
@@ -4183,6 +4197,20 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }
       );
     });
+
+  }
+
+  private gerarAssinaturaAtualProjeto(): string {
+
+    const payload = this.montarPayloadProjeto(
+      this.projetoForm,
+      {
+        incluirFormulaCalculoIndicadorAvulso: true,
+        ajustarOrganizacaoProponente: true,
+      }
+    );
+
+    return JSON.stringify(payload);
 
   }
 
