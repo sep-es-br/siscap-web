@@ -139,8 +139,8 @@ interface IIndicadorProjetoPayload {
   descricaoMeta: IIndicadores['descricaoMeta'] | null;
   idStatus: IIndicadores['idStatus'];
   idIndicadorExterno:
-    | IIndicadores['idIndicadorExterno']
-    | IIndicadores['idIndicadorCatalogoExterno'];
+  | IIndicadores['idIndicadorExterno']
+  | IIndicadores['idIndicadorCatalogoExterno'];
   metasIndicadorProjeto: IMetaIndicadorProjetoPayload[];
 }
 
@@ -525,13 +525,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         this.executarAcaoBreadcrumb(acao),
       ),
     );
+
   }
 
   private carregarProjetoEditar(idProjeto: number): void {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", response)
+        // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -3269,44 +3270,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      console.log(' path.campo : ', campo.path)
-
       if (campo.path === 'acoesProjeto') {
 
         const acoesFormArray =
           this.projetoForm.get('acoesProjeto') as FormArray<FormGroup<AcaoFormType>>;
 
-        console.log('=== AÇÕES FORM ARRAY ===');
-        console.log({
-          status: acoesFormArray.status,
-          valid: acoesFormArray.valid,
-          invalid: acoesFormArray.invalid,
-          errors: acoesFormArray.errors,
-          length: acoesFormArray.length,
-        });
-
         acoesFormArray.controls.forEach((acaoForm, index) => {
-
-          console.log(`=== AÇÃO ${index + 1} ===`, {
-            status: acaoForm.status,
-            valid: acaoForm.valid,
-            invalid: acaoForm.invalid,
-            errors: acaoForm.errors,
-          });
-
           Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
-
-            console.log(nome, {
-              value: JSON.stringify(controle.value),
-              status: controle.status,
-              valid: controle.valid,
-              invalid: controle.invalid,
-              errors: controle.errors,
-              disabled: controle.disabled,
-            });
-
+            // console.log(nome, {
+            //   value: JSON.stringify(controle.value),
+            //   status: controle.status,
+            //   valid: controle.valid,
+            //   invalid: controle.invalid,
+            //   errors: controle.errors,
+            //   disabled: controle.disabled,
+            // });
           });
         });
+
       }
 
       if (control.invalid) {
@@ -3322,6 +3303,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           controlPath: campo.path,
         });
       }
+
     });
 
     if (deveValidarAba('propriedades')) {
@@ -3361,22 +3343,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             acao.idStatus === TipoStatusEnum.Ativo,
         );
 
-      // if (!possuiAcaoAtiva) {
-
-      //   pendencias.push({
-      //     id: 'acoesProjeto',
-      //     aba: 'propriedades',
-      //     nomeAba: 'DIC',
-      //     campo: 'Ações do Projeto',
-      //     mensagem:
-      //       'Informe pelo menos uma ação do projeto.',
-      //     controlPath: 'acoesProjeto',
-      //   });
-
-      // }
-
       if (!this.compararValorEstimadoValorAcoes()) {
-
         pendencias.push({
           id: 'acoesProjeto',
           aba: 'propriedades',
@@ -3386,7 +3353,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
           controlPath: 'acoesProjeto',
         });
-
       }
 
     }
@@ -3617,8 +3583,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           mensagem: 'Campo obrigatório.'
         })));
 
-    console.log('pendencias :', pendencias)
-
     return pendencias;
 
   }
@@ -3697,6 +3661,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       .pipe(
 
         concatMap(payload => {
+          
+          if (
+            this.statusProjeto !==
+            StatusProjetoEnum.Em_Elaboracao
+          ) {
+            return EMPTY;
+          }
 
           const assinatura =
             JSON.stringify(payload);
@@ -3708,6 +3679,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             return EMPTY;
           }
 
+
           return this.salvarRascunhoAutomaticamente(payload).pipe(
 
             tap(projeto => {
@@ -3715,10 +3687,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               this.ultimoRascunhoSalvo = assinatura;
 
               this.autoSaveComErro = false;
-
-              // if (!this._idProjetoEdicao && projeto?.id) {
-              //   this._idProjetoEdicao = projeto.id;
-              // }
 
             }),
 
@@ -3767,12 +3735,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     return defer(() => {
 
-      if (this._idProjetoEdicao || this._idProjetoEdicao == 0) {
+      if (!this._idProjetoEdicao || this._idProjetoEdicao == 0) {
 
         return this._projetosService
-          .post(
-            payload,
-            true
+          .post(payload, true)
+          .pipe(
+            tap((projetoSalvo: IProjeto) => {
+              this.sincronizarProjetoAposPersistencia(projetoSalvo);
+            })
           );
 
       }
@@ -3792,24 +3762,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           payload,
           true,
           formData
+        ).pipe(
+          tap((projetoSalvo: IProjeto) => {
+            this.sincronizarProjetoAposPersistencia(projetoSalvo);
+          })
         );
 
     });
 
   }
-
-  // private podeSalvarRascunhoAutomaticamente(): boolean {
-  //   const camposObrigatoriosRascunho = [
-  //     'sigla',
-  //     'titulo',
-  //     'idOrganizacao',
-  //     'idResponsavelProponente',
-  //     'equipeElaboracao'
-  //   ];
-  //   return camposObrigatoriosRascunho.every(
-  //     campo => this.getControl(campo)?.valid
-  //   );
-  // }
 
   private montarIndicadoresProjetoPayload(
     form: FormGroup = this.projetoForm,
@@ -3925,6 +3886,303 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     return payload;
+
+  }
+
+  // private sincronizarIdsRelacionamentos(projetoSalvo: IProjeto): void {
+  //   const odsProjeto = this.projetoForm.get('odsProjeto') as FormArray;
+  //   odsProjeto.controls.forEach(control => {
+  //     const odsId = control.get('odsId')?.value;
+  //     const odsPersistida = projetoSalvo.odsProjeto?.find(
+  //       ods => ods.odsId === odsId
+  //     );
+  //     if (odsPersistida) {
+  //       control.patchValue(
+  //         {
+  //           idOdsProjeto: odsPersistida.idOdsProjeto
+  //         },
+  //         { emitEvent: false }
+  //       );
+  //     }
+  //   });
+  //   // Indicadores do catálogo
+  //   const indicadoresProjeto =
+  //     this.projetoForm.get('indicadoresProjeto') as FormArray;
+  //   indicadoresProjeto.controls.forEach(control => {
+  //     const idIndicadorExterno =
+  //       control.get('idIndicadorExterno')?.value ??
+  //       control.get('idIndicadorCatalogoExterno')?.value;
+  //     const indicadorPersistido = projetoSalvo.indicadoresProjeto?.find(
+  //       indicador =>
+  //         (
+  //           indicador.idIndicadorExterno ??
+  //           indicador.idIndicadorCatalogoExterno
+  //         ) === idIndicadorExterno
+  //     );
+  //     if (indicadorPersistido) {
+  //       control.patchValue(
+  //         {
+  //           idIndicador: indicadorPersistido.idIndicador
+  //         },
+  //         { emitEvent: false }
+  //       );
+  //     }
+  //   });
+  //   // Indicadores avulsos
+  //   const indicadoresAvulsosProjeto =
+  //     this.projetoForm.get('indicadoresAvulsosProjeto') as FormArray;
+  //   indicadoresAvulsosProjeto.controls.forEach(control => {
+  //     // ID funcional do indicador avulso
+  //     const idIndicador = control.get('idIndicador')?.value;
+  //     const indicadorPersistido =
+  //       projetoSalvo.indicadoresAvulsosProjeto?.find(
+  //         indicador => indicador.idIndicador === idIndicador
+  //       );
+  //     if (indicadorPersistido) {
+  //       control.patchValue(
+  //         {
+  //           // ID do relacionamento Projeto x Indicador Avulso
+  //           id: indicadorPersistido.id
+  //         },
+  //         { emitEvent: false }
+  //       );
+  //     }
+  //   });
+  // }
+
+  private sincronizarProjetoAposPersistencia(
+    projetoSalvo: IProjeto
+  ): void {
+
+    // Identificador principal do projeto usado fora do form
+    this._idProjetoEdicao = projetoSalvo.id;
+
+    this.projetoForm.patchValue(
+      {
+        id: projetoSalvo.id,
+        idStatus: projetoSalvo.idStatus,
+        status: projetoSalvo.status,
+
+        sigla: projetoSalvo.sigla,
+        titulo: projetoSalvo.titulo,
+        idOrganizacao: projetoSalvo.idOrganizacao,
+
+        valor: projetoSalvo.valor,
+
+        objetivo: projetoSalvo.objetivo,
+        objetivoEspecifico: projetoSalvo.objetivoEspecifico,
+        situacaoProblema: projetoSalvo.situacaoProblema,
+        solucoesPropostas: projetoSalvo.solucoesPropostas,
+        impactos: projetoSalvo.impactos,
+        arranjosInstitucionais: projetoSalvo.arranjosInstitucionais,
+
+        idResponsavelProponente:
+          projetoSalvo.idResponsavelProponente,
+
+        nomeResponsavelProponente:
+          projetoSalvo.nomeResponsavelProponente,
+
+        papelResponsavelProponente:
+          projetoSalvo.papelResponsavelProponente,
+
+        subResponsavelProponente:
+          projetoSalvo.subResponsavelProponente,
+
+        nomeagente: projetoSalvo.nomeagente,
+        pecasPlanejamento: projetoSalvo.pecasPlanejamento,
+
+        enviarProjetoGestor:
+          projetoSalvo.enviarProjetoGestor,
+
+        justificativaRevisao:
+          projetoSalvo.justificativaRevisao,
+
+        justificativaArquivamento:
+          projetoSalvo.justificativaArquivamento,
+
+        protocoloEdocs:
+          projetoSalvo.protocoloEdocs,
+
+        codigoMotivoArquivamento:
+          projetoSalvo.codigoMotivoArquivamento,
+
+        lotacaoProponenteResponsavel:
+          projetoSalvo.lotacaoProponenteResponsavel,
+
+        nomeProponenteResponsavel:
+          projetoSalvo.nomeProponenteResponsavel,
+
+        subProponente:
+          projetoSalvo.subProponente,
+
+        nomeProponente:
+          projetoSalvo.nomeProponente,
+
+        naoPrevistoNoPpa:
+          projetoSalvo.naoPrevistoNoPpa
+      },
+      {
+        emitEvent: false
+      }
+    );
+
+    this.sincronizarColecoes(projetoSalvo);
+
+  }
+
+  private sincronizarColecoes(
+    projetoSalvo: IProjeto
+  ): void {
+
+    this.sincronizarOdsProjeto(projetoSalvo);
+
+    this.sincronizarAcoesProjeto(projetoSalvo);
+
+    this.sincronizarIndicadoresProjeto(projetoSalvo);
+
+    this.sincronizarIndicadoresAvulsosProjeto(projetoSalvo);
+
+  }
+
+  private sincronizarAcoesProjeto(
+    projetoSalvo: IProjeto
+  ): void {
+
+    const acoesForm =
+      this.projetoForm.get('acoesProjeto') as FormArray;
+
+    acoesForm.controls.forEach(control => {
+
+      const idAcao = control.get('idAcao')?.value;
+
+      const acaoSalva =
+        projetoSalvo.acoesProjeto?.find(
+          acao => acao.idAcao === idAcao
+        );
+
+      if (acaoSalva) {
+        control.patchValue(
+          acaoSalva,
+          {
+            emitEvent: false
+          }
+        );
+      }
+    });
+
+  }
+
+  private sincronizarOdsProjeto(
+    projetoSalvo: IProjeto
+  ): void {
+
+    const odsForm =
+      this.projetoForm.get('odsProjeto') as FormArray;
+
+    odsForm.controls.forEach(control => {
+
+      const odsId = control.get('odsId')?.value;
+
+      const odsSalva =
+        projetoSalvo.odsProjeto?.find(
+          ods => ods.odsId === odsId
+        );
+
+      if (odsSalva) {
+        control.patchValue(
+          odsSalva,
+          {
+            emitEvent: false
+          }
+        );
+      }
+    });
+
+  }
+
+  private sincronizarIndicadoresProjeto(projetoSalvo: IProjeto): void {
+    const indicadoresForm =
+      this.projetoForm.get('indicadoresProjeto') as FormArray;
+  
+    indicadoresForm.controls.forEach(control => {
+      // No form, o identificador vindo do BI fica neste campo
+      const idIndicadorExterno =
+        control.get('idIndicadorCatalogoExterno')?.value ??
+        control.get('idIndicadorExterno')?.value;
+  
+      const indicadorSalvo = projetoSalvo.indicadoresProjeto?.find(
+        indicador =>
+          (
+            indicador.idIndicadorExterno ??
+            indicador.idIndicadorCatalogoExterno
+          ) === idIndicadorExterno
+      );
+  
+      if (!indicadorSalvo) {
+        return;
+      }
+  
+      control.patchValue(
+        {
+          ...indicadorSalvo,
+  
+          // Mantém o de/para usado pelo FormArray
+          idIndicadorCatalogoExterno:
+            indicadorSalvo.idIndicadorExterno ??
+            indicadorSalvo.idIndicadorCatalogoExterno
+        },
+        {
+          emitEvent: false
+        }
+      );
+    });
+
+  }
+
+  private sincronizarIndicadoresAvulsosProjeto(
+    projetoSalvo: IProjeto
+  ): void {
+  
+    const indicadoresAvulsosForm =
+      this.projetoForm.get('indicadoresAvulsosProjeto') as FormArray;
+  
+    indicadoresAvulsosForm.controls.forEach(control => {
+      const idIndicador = control.get('idIndicador')?.value;
+      const nomeIndicador = control.get('nomeIndicador')?.value;
+  
+      let indicadorSalvo: IIndicadorAvulso | undefined;
+  
+      // Se já existe ID do indicador, essa é a melhor chave
+      if (idIndicador != null) {
+        indicadorSalvo =
+          projetoSalvo.indicadoresAvulsosProjeto?.find(
+            indicador =>
+              indicador.idIndicador === idIndicador
+          );
+      }
+  
+      // Caso tenha sido criado justamente neste autosave,
+      // ainda pode não haver idIndicador no form.
+      if (!indicadorSalvo && nomeIndicador) {
+        indicadorSalvo =
+          projetoSalvo.indicadoresAvulsosProjeto?.find(
+            indicador =>
+              indicador.nomeIndicador?.trim() ===
+              nomeIndicador.trim()
+          );
+      }
+  
+      if (!indicadorSalvo) {
+        return;
+      }
+  
+      control.patchValue(
+        indicadorSalvo,
+        {
+          emitEvent: false
+        }
+      );
+    });
 
   }
 
