@@ -9,7 +9,7 @@ import { ToastService } from '../../../core/services/toast/toast.service';
 import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
 import { CheckboxModule } from 'primeng/checkbox';
-import { FormControl, FormGroup, FormsModule } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { FilterCardComponent } from '../../../shared/components/filter-card/filter-card.component';
 import { FilterChip } from '../../../shared/components/filter-card/filter-chip.interface';
@@ -1328,5 +1328,10 @@ export class ProjetoPpaLoaComponent {
     }
 
   }
+
+  public getControl(controlName: string): AbstractControl<any, any> {
+      return this.projetoForm.get(controlName) as AbstractControl<any, any>;
+    }
+  
 
 }

@@ -32,8 +32,7 @@
             <div class="modal-body p-3 modal-body-scroll">
 
                 <!-- Resumo -->
-                <div class="alert alert-warning d-flex align-items-center justify-content-between
-             flex-wrap gap-2 mb-3" role="alert">
+                <div *ngIf="pendencias.length > 0" class="alert alert-warning d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" role="alert">
 
                     <div class="d-flex align-items-center gap-2">
                         <i class="fa-solid fa-circle-exclamation"></i>
@@ -77,10 +76,6 @@
 
                         <div class="d-flex align-items-center gap-2">
 
-                            <!-- <div class="icone-secao">
-                                <i [class]="obterIconeAba(grupo.aba)"></i>
-                            </div> -->
-
                             <strong class="text-primary">
                                 {{ grupo.nomeAba }}
                             </strong>
@@ -92,7 +87,6 @@
                         </div>
 
                     </div>
-
 
                     <!-- Pendências -->
                     <div class="pendencia-lista">
@@ -152,11 +146,6 @@
                         <i class="fa-solid fa-xmark me-2"></i>
                         Fechar
                     </button>
-                    <!-- <button *ngIf="pendencias.length > 0" type="button" class="btn btn-primary icon-text-btn"
-                        (click)="revisarPendencias()">
-                        <i class="fa-solid fa-list-check me-2"></i>
-                        Revisar pendências
-                    </button> -->
                 </div>
             </div>
 

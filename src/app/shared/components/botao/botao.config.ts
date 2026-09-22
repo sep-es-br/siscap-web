@@ -62,7 +62,7 @@ export abstract class BotoesConfig {
     salvar: {
       classesCSS: ['btn-success', 'btn-sm'],
       icone: ['fa-solid', 'fa-save'],
-      texto: 'Salvar Rascunho',
+      texto: 'Salvar',
       acao: 'salvar',
     },
     editar: {
@@ -80,7 +80,7 @@ export abstract class BotoesConfig {
     enviar: {
       classesCSS: ['btn-primary', 'btn-sm'],
       icone: ['fa-solid', 'fa-upload'],
-      texto: 'Salvar e Enviar',
+      texto: 'Enviar',
       acao: 'enviar',
     },
     prospectar: {

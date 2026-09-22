@@ -70,8 +70,10 @@ export class EquipeFormComponent {
   public getMembroNome(subPessoa: string | null | undefined): string {
     const nomePadrao = this.pessoasOpcoesGoves.find(p => p.agentePublicoSub === subPessoa)?.nome;
     if (!nomePadrao) {
+      console.log('nomePadrao-0', nomePadrao);
       return this.equipeProjeto.find(p => p.subPessoa === subPessoa)?.nome ?? '';
     }
+    console.log('nomePadrao-1', nomePadrao);
     return nomePadrao ?? '';
   }
 
@@ -149,7 +151,6 @@ export class EquipeFormComponent {
       papel.id === TipoPapelEnum.Redator &&
       this.hasMembroRedator() &&
       !this.isMembroRedator(indexMembro)
-      // Desativa a opção "Redator" dos papeis se já houver um membro incluso com o papel selecionado
     );
   }
 
