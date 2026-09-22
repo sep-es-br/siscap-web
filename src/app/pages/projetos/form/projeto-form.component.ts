@@ -4219,4 +4219,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
+   public irParaAcoes(event: MouseEvent): void {
+
+    this.solicitarAutoSave();
+
+    event.preventDefault();
+
+    const campoAcoes = this.projetoForm.get('acoesProjeto');
+
+    campoAcoes?.clearValidators();
+    campoAcoes?.updateValueAndValidity();
+
+    this.abrirAba('nav-acoes-rateio');
+
+  }
+
 }
