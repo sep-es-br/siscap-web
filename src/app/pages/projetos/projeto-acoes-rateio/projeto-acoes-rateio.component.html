@@ -138,7 +138,8 @@
                         </div>
 
                         <!-- CONTAINER GERAL DO RATEIO -->
-                        <div class="rateio-container">
+                        <div class="rateio-container"
+                            [class.rateio-container-aberto]="rateioAberto(i)">
                             <!-- CABEÇALHO -->
                             <div class="rateio-header" (click)="alternarRateio(i)" [attr.aria-expanded]="rateioAberto(i)">
                                 <span class="rateio-header-titulo">

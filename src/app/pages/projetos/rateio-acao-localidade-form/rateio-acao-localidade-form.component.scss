@@ -157,30 +157,33 @@
   }
 
   :host {
-    display: block;
-    position: relative;
-    overflow: visible;
-  }
-  
-  .rateio-acao-card {
-    position: relative;
-    overflow: visible;
-  }
-  
-  .rateio-acao-card .card-body {
-    overflow: visible;
-  }
-  
-  .locality-selector {
-    position: relative;
-    overflow: visible;
-  }
-  
-  .locality-dropdown {
-    position: absolute;
-    z-index: 1060;
-    top: calc(100% + 2px);
-    left: 0;
-    right: 0;
-  }
+  display: block;
+  position: relative;
+  overflow: visible !important;
+}
+
+.rateio-acao-localidade-form {
+  position: relative;
+  overflow: visible !important;
+}
+
+.locality-selector {
+  position: relative;
+  overflow: visible !important;
+}
+
+.locality-dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+
+  z-index: 2000;
+
+  background: #fff;
+}
+
+.rateio-item:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
   
