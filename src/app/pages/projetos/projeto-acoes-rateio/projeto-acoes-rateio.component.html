@@ -149,8 +149,10 @@
 
                             <!-- CONTEÚDO -->
                             <div *ngIf="rateioAberto(i)" class="rateio-conteudo">
-                                <siscap-rateio-form [isModoEdicao]="isModoEdicao" [formAcao]="getAcaoRateioForm(i)"
-                                    [localidadesOpcoes]="rateioService.localidadesOpcoes"></siscap-rateio-form>
+                                <app-rateio-acao-localidade-form 
+                                    [isModoEdicao]="isModoEdicao" 
+                                    [formAcao]="getAcaoRateioForm(i)"
+                                    [localidadesOpcoes]="rateioService.localidadesOpcoes"></app-rateio-acao-localidade-form>
                             </div>
                         </div>
 

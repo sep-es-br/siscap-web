@@ -12,18 +12,17 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
-import { RateioFormComponent } from '../../../shared/components/rateio-form/rateio-form.component';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { RateioService } from '../../../core/services/rateio/rateio.service';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { AcaoFormType } from '../../../core/types/form/acao-form.type';
+import { RateioAcaoLocalidadeFormComponent } from '../rateio-acao-localidade-form/rateio-acao-localidade-form.component';
 
 @Component({
   selector: 'siscap-projeto-acoes-rateio',
   standalone: true,
   imports: [
-    RateioFormComponent,
     CommonModule,
     SharedModule,
     NgSelectModule,
@@ -37,7 +36,8 @@ import { AcaoFormType } from '../../../core/types/form/acao-form.type';
     TooltipModule,
     ReactiveFormsModule,
     NgxMaskPipe,
-    NgxMaskDirective
+    NgxMaskDirective,
+    RateioAcaoLocalidadeFormComponent
 ],
   templateUrl: './projeto-acoes-rateio.component.html',
   styleUrl: './projeto-acoes-rateio.component.scss'
