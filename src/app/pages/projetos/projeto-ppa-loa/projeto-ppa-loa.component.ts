@@ -9,7 +9,7 @@ import { ToastService } from '../../../core/services/toast/toast.service';
 import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
 import { CheckboxModule } from 'primeng/checkbox';
-import { FormControl, FormGroup, FormsModule } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { FilterCardComponent } from '../../../shared/components/filter-card/filter-card.component';
 import { FilterChip } from '../../../shared/components/filter-card/filter-chip.interface';
@@ -78,6 +78,7 @@ declare var bootstrap: any;
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
 })
+
 export class ProjetoPpaLoaComponent {
 
   @Input({ required: true }) projetoForm!: FormGroup;
@@ -1315,8 +1316,13 @@ export class ProjetoPpaLoaComponent {
     return this.acoesPlanejamento?.length ?? 0;
   }
 
-  voltarParaOds() {
-    const tabTrigger = document.getElementById('nav-ods-indicadores');
+  public getControl(controlName: string): AbstractControl<any, any> {
+    return this.projetoForm.get(controlName) as AbstractControl<any, any>;
+  }
+
+  public voltarParaAcoes() {
+
+    const tabTrigger = document.getElementById('nav-acoes-rateio');
 
     if (tabTrigger) {
       const tab = new bootstrap.Tab(tabTrigger);

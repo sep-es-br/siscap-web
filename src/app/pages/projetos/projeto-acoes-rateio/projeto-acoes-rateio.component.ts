@@ -12,18 +12,19 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
-import { RateioFormComponent } from '../../../shared/components/rateio-form/rateio-form.component';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { RateioService } from '../../../core/services/rateio/rateio.service';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { AcaoFormType } from '../../../core/types/form/acao-form.type';
+import { RateioAcaoLocalidadeFormComponent } from '../rateio-acao-localidade-form/rateio-acao-localidade-form.component';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'siscap-projeto-acoes-rateio',
   standalone: true,
   imports: [
-    RateioFormComponent,
     CommonModule,
     SharedModule,
     NgSelectModule,
@@ -37,7 +38,8 @@ import { AcaoFormType } from '../../../core/types/form/acao-form.type';
     TooltipModule,
     ReactiveFormsModule,
     NgxMaskPipe,
-    NgxMaskDirective
+    NgxMaskDirective,
+    RateioAcaoLocalidadeFormComponent
 ],
   templateUrl: './projeto-acoes-rateio.component.html',
   styleUrl: './projeto-acoes-rateio.component.scss'
@@ -52,7 +54,7 @@ export class ProjetoAcoesRateioComponent {
   @Input() moedasList: IMoeda[] = [];
   @Input() tiposValorOpcoes: IOpcoesDropdown[] = [];
   @Input() camposComplementarProjeto: IEstruturaCamposComplementarProjeto[] = [];
-
+  
   constructor(
     private readonly acoesService: AcoesService,
     public rateioService: RateioService
@@ -122,6 +124,35 @@ export class ProjetoAcoesRateioComponent {
     index: number
   ): FormGroup<AcaoFormType> {
     return this.acoesProjeto.at(index);
+  }
+
+  voltarParaOds() {
+    const tabTrigger = document.getElementById('nav-ods-indicadores');
+
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+  }
+
+  irParaPlanejamento() {
+
+    const tabTrigger = document.getElementById('nav-planejamento');
+
+    if (tabTrigger) {
+      const tab = new bootstrap.Tab(tabTrigger);
+      tab.show();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
   }
 
 }

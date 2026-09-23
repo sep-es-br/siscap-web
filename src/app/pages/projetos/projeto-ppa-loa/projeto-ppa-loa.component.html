@@ -1,16 +1,13 @@
 <section class="planejamento-section">
 
-  <siscap-filter-card
-    [chips]="chips"
-    [groupByField]="true"
-    [disabled]="!podeEditar || naoPrevistoPpa"
-    [loading]="carregandoDadosIniciais || carregandoAcoes"
-    (openFilter)="abrirFiltroPlanejamento()"
+  <siscap-filter-card [chips]="chips" [groupByField]="true" [disabled]="!podeEditar || naoPrevistoPpa"
+    [loading]="carregandoDadosIniciais || carregandoAcoes" (openFilter)="abrirFiltroPlanejamento()"
     (chipRemove)="removeChip($event)">
   </siscap-filter-card>
 
-  <siscap-filtro-ppa-loa *ngIf="showModal" [filtroAtual]="currentFilter" [bloquearAno]="quantidadeAcoes > 0" (apply)="onApply($event)"
-    (close)="showModal = false" (restaurar)="onRestaurar()" [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
+  <siscap-filtro-ppa-loa *ngIf="showModal" [filtroAtual]="currentFilter" [bloquearAno]="quantidadeAcoes > 0"
+    (apply)="onApply($event)" (close)="showModal = false" (restaurar)="onRestaurar()"
+    [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
 
   <!-- Ações para selecionar -->
   <div class="card selection-card">
@@ -81,7 +78,9 @@
         <header class="planejamento-card-header">
 
           <h2 class="planejamento-card-title">
-            Ações do planejamento
+            <validation-message [control]="getControl('acoesPlanejamentoProjeto')">
+              Ações do planejamento
+            </validation-message>
           </h2>
 
           <span class="planejamento-count-badge">
@@ -228,36 +227,28 @@
               <div class="detalhamento-loa-linha"
                 *ngFor=" let detalhe of acao.detalhamentosLoa;  trackBy: trackByDetalhamentoLoa">
 
-                <div class="detalhamento-loa-celula" data-label="GND" 
-                  [pTooltip]="detalhe.nomeGrupoDespesa  ?? '' "
-                  tooltipPosition="top" 
-                  tooltipStyleClass="tooltip-pequeno">
+                <div class="detalhamento-loa-celula" data-label="GND" [pTooltip]="detalhe.nomeGrupoDespesa  ?? '' "
+                  tooltipPosition="top" tooltipStyleClass="tooltip-pequeno">
                   {{ detalhe.codigoGnd }}
                 </div>
 
-                <div class="detalhamento-loa-celula" data-label="Modalidade" 
-                  [pTooltip]="detalhe.nomeModalidade  ?? '' "
-                  tooltipPosition="top" 
-                  tooltipStyleClass="tooltip-pequeno">
+                <div class="detalhamento-loa-celula" data-label="Modalidade" [pTooltip]="detalhe.nomeModalidade  ?? '' "
+                  tooltipPosition="top" tooltipStyleClass="tooltip-pequeno">
                   {{ detalhe.codigoModalidade }}
                 </div>
 
-                <div class="detalhamento-loa-celula" data-label="ID-USO"
-                  [pTooltip]="detalhe.nomeIdUso  ?? '' "
-                  tooltipPosition="top" 
-                  tooltipStyleClass="tooltip-pequeno">
+                <div class="detalhamento-loa-celula" data-label="ID-USO" [pTooltip]="detalhe.nomeIdUso  ?? '' "
+                  tooltipPosition="top" tooltipStyleClass="tooltip-pequeno">
                   {{ detalhe.idUso }}
                 </div>
 
-                <div class="detalhamento-loa-celula" data-label="Fonte" 
-                  [pTooltip]="detalhe.nomeFonte  ?? '' "
-                  tooltipPosition="top" 
-                  tooltipStyleClass="tooltip-pequeno">
+                <div class="detalhamento-loa-celula" data-label="Fonte" [pTooltip]="detalhe.nomeFonte  ?? '' "
+                  tooltipPosition="top" tooltipStyleClass="tooltip-pequeno">
                   {{ detalhe.fonte }}
                 </div>
 
                 <div class="detalhamento-loa-celula detalhamento-loa-coluna-valor detalhamento-loa-valor"
-                  data-label="Valor" >
+                  data-label="Valor">
                   {{ formatarMoeda(detalhe.valor) }}
                 </div>
 
@@ -309,7 +300,9 @@
       <input type="checkbox" [checked]="naoPrevistoPpa" [disabled]="!podeEditar"
         (change)="onNaoPrevistoPpaChange($event)" />
       <span>
-        Não previsto no PPA {{ periodoPlanejamento?.descricao }}
+        <validation-message [control]="getControl('naoPrevistoNoPpa')">
+          Não previsto no PPA {{ periodoPlanejamento?.descricao }}
+        </validation-message>
       </span>
     </label>
 
@@ -317,7 +310,7 @@
 
   <div class="navigation-buttons">
     <button class="nav-btn" id="voltarBtn" style="background:var(--blue); color:white; border-color:var(--blue);"
-      (click)="voltarParaOds()"><i class="pi pi-arrow-left"></i></button>
+      (click)="voltarParaAcoes()"><i class="pi pi-arrow-left"></i></button>
   </div>
 
 </section>
