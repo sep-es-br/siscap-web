@@ -14,9 +14,9 @@
 
 <!-- CARD: INDICADORES SELECIONADOS -->
 <div class="card">
-
+  
   <div class="card-selecionados">
-
+    
     <p class="lista-label">
       <validation-message [control]="getControl('indicadoresProjeto')">
         INDICADORES SELECIONADOS
@@ -213,10 +213,14 @@
     </div>
 
   </div>
-  <div class="navigation-buttons">
-    <button class="nav-btn" id="voltarBtn" style="background:var(--blue); color:white; border-color:var(--blue);"
-      (click)="voltarParaDic()"><i class="pi pi-arrow-left"></i></button>
-    <button class="nav-btn" id="avancarBtn" style="background:var(--blue); color:white; border-color:var(--blue);"
-      (click)="irParaODS()"><i class="pi pi-arrow-right"></i></button>
-  </div>
+
+</div>
+
+<p> * FORA.</p>
+
+<div class="navigation-buttons">
+  <button class="nav-btn" id="voltarBtn" style="background:var(--blue); color:white; border-color:var(--blue);"
+    (click)="voltarParaDic()"><i class="pi pi-arrow-left"></i></button>
+  <button class="nav-btn" id="avancarBtn" style="background:var(--blue); color:white; border-color:var(--blue);"
+    (click)="irParaODS()"><i class="pi pi-arrow-right"></i></button>
 </div>
