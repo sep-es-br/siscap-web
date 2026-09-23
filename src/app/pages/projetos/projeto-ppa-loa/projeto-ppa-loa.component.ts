@@ -78,6 +78,7 @@ declare var bootstrap: any;
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
 })
+
 export class ProjetoPpaLoaComponent {
 
   @Input({ required: true }) projetoForm!: FormGroup;
@@ -1315,8 +1316,13 @@ export class ProjetoPpaLoaComponent {
     return this.acoesPlanejamento?.length ?? 0;
   }
 
-  voltarParaOds() {
-    const tabTrigger = document.getElementById('nav-ods-indicadores');
+  public getControl(controlName: string): AbstractControl<any, any> {
+    return this.projetoForm.get(controlName) as AbstractControl<any, any>;
+  }
+
+  public voltarParaAcoes() {
+
+    const tabTrigger = document.getElementById('nav-acoes-rateio');
 
     if (tabTrigger) {
       const tab = new bootstrap.Tab(tabTrigger);
@@ -1328,10 +1334,5 @@ export class ProjetoPpaLoaComponent {
     }
 
   }
-
-  public getControl(controlName: string): AbstractControl<any, any> {
-      return this.projetoForm.get(controlName) as AbstractControl<any, any>;
-    }
-  
 
 }

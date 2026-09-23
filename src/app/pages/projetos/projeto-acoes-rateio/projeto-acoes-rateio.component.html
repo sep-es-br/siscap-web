@@ -138,20 +138,20 @@
                         </div>
 
                         <!-- CONTAINER GERAL DO RATEIO -->
-                        <div class="rateio-container"
-                            [class.rateio-container-aberto]="rateioAberto(i)">
+                        <div class="rateio-container" [class.rateio-container-aberto]="rateioAberto(i)">
                             <!-- CABEÇALHO -->
-                            <div class="rateio-header" (click)="alternarRateio(i)" [attr.aria-expanded]="rateioAberto(i)">
+                            <div class="rateio-header" (click)="alternarRateio(i)"
+                                [attr.aria-expanded]="rateioAberto(i)">
                                 <span class="rateio-header-titulo">
                                     Selecione as regiões de impacto
                                 </span>
-                                <i class="fa-solid" [ngClass]="{'fa-chevron-down': !rateioAberto(i),'fa-chevron-up': rateioAberto(i) }"></i>
+                                <i class="fa-solid"
+                                    [ngClass]="{'fa-chevron-down': !rateioAberto(i),'fa-chevron-up': rateioAberto(i) }"></i>
                             </div>
 
                             <!-- CONTEÚDO -->
                             <div *ngIf="rateioAberto(i)" class="rateio-conteudo">
-                                <app-rateio-acao-localidade-form 
-                                    [isModoEdicao]="isModoEdicao" 
+                                <app-rateio-acao-localidade-form [isModoEdicao]="isModoEdicao"
                                     [formAcao]="getAcaoRateioForm(i)"
                                     [localidadesOpcoes]="rateioService.localidadesOpcoes"></app-rateio-acao-localidade-form>
                             </div>
@@ -167,6 +167,13 @@
 
         </div>
 
+    </div>
+
+    <div class="navigation-buttons" style="margin-top:20px;">
+        <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);"
+            (click)="voltarParaOds()"><i class="pi pi-arrow-left"></i></button>
+        <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);"
+            (click)="irParaPlanejamento()"><i class="pi pi-arrow-right"></i></button>
     </div>
 
 </div>

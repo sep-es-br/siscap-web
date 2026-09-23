@@ -390,9 +390,9 @@ export class IndicadorOdsComponent implements OnInit {
     }
   }
 
-  irParaPlanejamento() {
+  irParaAcoes() {
 
-    const tabTrigger = document.getElementById('nav-planejamento');
+    const tabTrigger = document.getElementById('nav-acoes-rateio');
 
     if (tabTrigger) {
       const tab = new bootstrap.Tab(tabTrigger);
@@ -404,6 +404,5 @@ export class IndicadorOdsComponent implements OnInit {
     }
 
   }
-
 
 }
