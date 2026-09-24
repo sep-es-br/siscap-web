@@ -374,14 +374,20 @@ export class FiltroAcoesComponent
     this.filtro.idPeriodoPlanejamento =
       this.periodoPlanejamento.id;
 
-    if (this.filtro.idsFuncoes.length > 0) {
-      this.carregarProgramas(true);
+    if (this.filtro.idsAnos.length > 0) {
+      // Recarrega a cadeia na ordem correta para manter as seleções múltiplas
+      // após as opções dependentes chegarem da API.
+      this.carregarUos(true);
       return;
     }
 
+    this.uos = [];
+    this.funcoes = [];
     this.programas = [];
     this.acoes = [];
 
+    this.filtro.idsUos = [];
+    this.filtro.idsFuncoes = [];
     this.filtro.idsProgramas = [];
   }
 
@@ -522,10 +528,6 @@ export class FiltroAcoesComponent
 
     };
 
-    if (this.filtro.idsAnos.length > 0) {
-      this.carregarUos(true);
-    }
-
   }
 
   private criarFiltroVazio(): IFiltroPlanejamento {
@@ -636,6 +638,7 @@ export class FiltroAcoesComponent
   ): void {
 
     this.uosSubscription?.unsubscribe();
+    this.funcoesSubscription?.unsubscribe();
 
     const idsAnos = this.normalizarIds(this.filtro.idsAnos);
 
@@ -655,7 +658,7 @@ export class FiltroAcoesComponent
 
     this.carregandoUos = true;
 
-    this.funcoesSubscription =
+    this.uosSubscription =
       this._ppaloaIntegracaoService
         .listarUosPorPpaLoa(this.filtro.periodoPlanejamento?.descricao??'')
         .pipe(
