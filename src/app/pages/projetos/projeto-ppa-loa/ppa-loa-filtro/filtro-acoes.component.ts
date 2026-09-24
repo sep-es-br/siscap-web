@@ -398,23 +398,11 @@ export class FiltroAcoesComponent
     this.programas = [];
     this.acoes = [];
 
-    const idsAnos = this.bloquearAno
-      ? this.normalizarIds(this.filtro.idsAnos)
-      : [];
-    const chipsAnos = idsAnos.length > 0
-      ? this.obterOpcoesSelecionadas(this.anos, idsAnos)
-      : [];
-
     this.filtro = {
       ...this.criarFiltroVazio(),
       periodoPlanejamento: this.periodoPlanejamento,
       idPeriodoPlanejamento:
-        this.periodoPlanejamento?.id ?? null,
-      idsAnos,
-      chips: {
-        ...this.criarFiltroVazio().chips,
-        anos: chipsAnos
-      }
+        this.periodoPlanejamento?.id ?? null
     };
 
     this.restaurar.emit();
