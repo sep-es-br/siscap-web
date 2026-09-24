@@ -164,6 +164,8 @@
                   <validation-message [control]="getControl('sigla')">
                     Sigla do DIC
                     <form-helper-tooltip [texto]="projetoTooltip['sigla']"></form-helper-tooltip>
+                    <form-warning-tooltip *ngIf="siglaEmUso"
+                      [texto]="'A sigla informada já está em uso por outro DIC.'"></form-warning-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('sigla')"
                       [texto]="mensagemComplementarCampo('sigla')"></form-warning-tooltip>
                   </validation-message>
@@ -171,6 +173,10 @@
                 <input mask="" [inputTransformFn]="toUppercaseInputTransformFn"
                   [outputTransformFn]="toUppercaseOutputTransformFn" type="text" class="form-control" id="sigla"
                   formControlName="sigla" maxlength="12" />
+                <small *ngIf="siglaEmUso" class="text-warning d-block mt-1" role="status">
+                  <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                  A sigla informada já está em uso por outro DIC.
+                </small>
               </div>
 
               <div data-control-path="titulo" class="col-12 col-md-9">

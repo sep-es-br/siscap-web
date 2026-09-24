@@ -18,6 +18,8 @@ import {
 
 import {
   concat,
+  debounceTime,
+  distinctUntilChanged,
   finalize,
   map,
   Observable,
@@ -84,7 +86,10 @@ import {
 } from '../../../core/enums/breadcrumb.enum';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
-import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+import {
+  COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO,
+  TEMPO_INPUT_USUARIO,
+} from '../../../core/utils/constants';
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
@@ -194,6 +199,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public usuario_IdOrganizacoes: Array<number> = [];
 
   public projetoForm: FormGroup = new FormGroup({});
+  public siglaEmUso = false;
   public projetoTooltip: Record<string, string> =
     COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
@@ -1295,6 +1301,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     });
 
+    this.configurarValidacaoSigla();
+
     const mapSubObs: { [index: string]: Observable<string> } = {};
     projetoFormModel?.pareceresProjeto
       ?.filter((p) => p.usuarioFezEnvioParecer)
@@ -1391,6 +1399,36 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.equipeService.equipeFormArray.clear();
         }
       },
+    );
+  }
+
+  private configurarValidacaoSigla(): void {
+    const siglaControl = this.projetoForm.get('sigla');
+
+    if (!siglaControl) {
+      return;
+    }
+
+    this._subscription.add(
+      siglaControl.valueChanges
+        .pipe(
+          map((value) => String(value ?? '').trim().toUpperCase()),
+          debounceTime(TEMPO_INPUT_USUARIO),
+          distinctUntilChanged(),
+          tap(() => (this.siglaEmUso = false)),
+          switchMap((sigla) => {
+            if (this._idProjetoEdicao > 0 || !sigla) {
+              return of(false);
+            }
+
+            return this._projetosService.verificarSigla(sigla).pipe(
+              catchError(() => of(false)),
+            );
+          }),
+        )
+        .subscribe((siglaEmUso) => {
+          this.siglaEmUso = siglaEmUso;
+        }),
     );
   }
 
