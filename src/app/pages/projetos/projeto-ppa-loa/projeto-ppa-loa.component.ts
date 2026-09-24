@@ -452,22 +452,26 @@ export class ProjetoPpaLoaComponent {
   onRestaurar(): void {
     this.acoesSubscription?.unsubscribe();
 
-    const anoFixado = this.obterAnoFixadoPelasAcoes();
-    const chipAnoAtual = this.currentFilter?.chips?.anos?.find(
-      ano => Number(ano.id) === anoFixado
-    );
+    // As ações fixam o Ano do PPA. Para iniciar uma nova seleção com outro
+    // ano, a restauração remove também os cards e o valor no formulário.
+    this.acoesPlanejamento = [];
+    this.idsAcoesSelecaoPendente.clear();
+
+    const controleAcoes = this.projetoForm.get('acoesPlanejamentoProjeto');
+    controleAcoes?.setValue([]);
+    controleAcoes?.markAsDirty();
+    controleAcoes?.markAsTouched();
+    controleAcoes?.updateValueAndValidity();
 
     this.currentFilter = {
       periodoPlanejamento: this.periodoPlanejamento,
       idPeriodoPlanejamento: this.periodoPlanejamento?.id ?? null,
-      idsAnos: anoFixado != null ? [anoFixado] : [],
+      idsAnos: [],
       idsUos: [],
       idsFuncoes: [],
       idsProgramas: [],
       chips: {
-        anos: anoFixado != null
-          ? [chipAnoAtual ?? { id: anoFixado, nome: String(anoFixado) }]
-          : [],
+        anos: [],
         uos: [],
         funcoes: [],
         programas: [],
@@ -475,13 +479,13 @@ export class ProjetoPpaLoaComponent {
       }
     };
 
-    this.listaAcoes = [];
-    this.listaAcoesFiltradas = [];
     this.filtroTexto = '';
     this.selectAll = false;
-    this.carregandoAcoes = false;
 
     this.atualizarChipsFiltros();
+    this.listaAcoes = [];
+    this.listaAcoesFiltradas = [];
+    this.carregandoAcoes = false;
   }
 
   onApply(filter: any): void {
