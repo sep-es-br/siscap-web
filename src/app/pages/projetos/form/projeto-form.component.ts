@@ -88,7 +88,7 @@ import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
 import {
   COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO,
-  TEMPO_INPUT_USUARIO,
+  TEMPO_VALIDACAO_SIGLA,
 } from '../../../core/utils/constants';
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
@@ -200,6 +200,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public projetoForm: FormGroup = new FormGroup({});
   public siglaEmUso = false;
+  private siglaOriginal = '';
   public projetoTooltip: Record<string, string> =
     COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
@@ -1140,6 +1141,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): Observable<any> {
 
+    this.siglaOriginal = String(projetoFormModel?.sigla ?? '')
+      .trim()
+      .toUpperCase();
+
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(
         projetoFormModel?.valor,
@@ -1413,11 +1418,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       siglaControl.valueChanges
         .pipe(
           map((value) => String(value ?? '').trim().toUpperCase()),
-          debounceTime(TEMPO_INPUT_USUARIO),
+          debounceTime(TEMPO_VALIDACAO_SIGLA),
           distinctUntilChanged(),
           tap(() => (this.siglaEmUso = false)),
           switchMap((sigla) => {
-            if (this._idProjetoEdicao > 0 || !sigla) {
+            const siglaFoiAlterada = sigla !== this.siglaOriginal;
+            const deveValidarNaEdicao =
+              this._idProjetoEdicao > 0 &&
+              this.statusProjeto === StatusProjetoEnum.Em_Elaboracao &&
+              siglaFoiAlterada;
+
+            if (!sigla || (this._idProjetoEdicao > 0 && !deveValidarNaEdicao)) {
               return of(false);
             }
 
@@ -4008,6 +4019,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // Identificador principal do projeto usado fora do form
     this._idProjetoEdicao = projetoSalvo.id;
+    this.siglaOriginal = String(projetoSalvo.sigla ?? '')
+      .trim()
+      .toUpperCase();
 
     this.projetoForm.patchValue(
       {
