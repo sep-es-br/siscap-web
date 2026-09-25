@@ -135,7 +135,6 @@
                 <!-- ================================================= -->
                 <!-- CONTEÚDO DA AÇÃO ATIVA                            -->
                 <!-- ================================================= -->
-
                 <div [class.d-none]="acaoAtivaIndex !== i" [formGroupName]="i" class="acao-container">
 
                     <!-- ================================================= -->
@@ -150,11 +149,10 @@
                                 <span class="text-danger">*</span>
                             </label>
 
-                            <input type="text" class="form-control" [id]="
-                                    'valorEstimadoAcaoPrincipal-' + i
-                                " formControlName="
-                                    valorEstimadoAcaoPrincipal
-                                " mask="separator.2" prefix="R$ " thousandSeparator="." decimalMarker=","
+                            <input type="text" class="form-control" [id]="'valorEstimadoAcaoPrincipal-' + i" 
+                                formControlName="valorEstimadoAcaoPrincipal" 
+                                mask="separator.2" prefix="R$ " 
+                                thousandSeparator="." decimalMarker=","
                                 [leadZero]="true" />
 
                         </div>
@@ -164,99 +162,48 @@
                     <!-- ================================================= -->
                     <!-- AÇÃO PRINCIPAL                                    -->
                     <!-- ================================================= -->
-
                     <div class="row">
-
                         <div class="col-12 mb-3">
-
                             <label [for]="'descricaoAcaoPrincipal-' + i" class="form-label">
                                 Título
                                 <span class="text-danger">*</span>
                             </label>
-
-                            <input type="text" class="form-control" [id]="
-                                    'descricaoAcaoPrincipal-' + i
-                                " formControlName="
-                                    descricaoAcaoPrincipal
-                                " />
-
+                            <input type="text" class="form-control" [id]="'descricaoAcaoPrincipal-' + i" 
+                                formControlName="descricaoAcaoPrincipal" />
                         </div>
-
                     </div>
 
                     <!-- ================================================= -->
                     <!-- AÇÕES SECUNDÁRIAS                                 -->
                     <!-- ================================================= -->
-
                     <div class="row">
-
                         <div class="col-12 mb-3">
-
-                            <label [for]="
-                                    'descricaoAcaoSecundaria-' + i
-                                " class="form-label">
-
-                                Descrição de ações secundárias
-                                e produtos
-
-                                <span class="text-danger">
-                                    *
-                                </span>
-
+                            <label [for]="'descricaoAcaoSecundaria-' + i" class="form-label">
+                                Descrição de ações secundárias e produtos
+                                <span class="text-danger">*</span>
                             </label>
-
-                            <textarea class="form-control" rows="3" [id]="
-                                    'descricaoAcaoSecundaria-' + i
-                                " formControlName="
-                                    descricaoAcaoSecundaria
-                                ">
-                            </textarea>
-
+                            <textarea class="form-control" rows="3" [id]="'descricaoAcaoSecundaria-' + i" formControlName="descricaoAcaoSecundaria"></textarea>
                         </div>
-
                     </div>
-
 
                     <!-- REGIÕES GEOGRÁFICAS / RATEIO -->
                     <div class="row">
-
                         <div class="col-12">
-
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-
-                                <label class="fw-semibold mb-0">
-                                    Regiões Geográficas Atendidas
-                                    <span class="text-danger">*</span>
-                                </label>
-
-                            </div>
 
                             <!-- CONTAINER DO RATEIO -->
                             <div class="rateio-container rateio-container-aberto">
 
-                                <!-- CABEÇALHO -->
-                                <div class="rateio-header">
-
-                                    <span class="rateio-header-titulo">
-                                        Selecione as regiões de impacto
-                                    </span>
-
-                                </div>
-
                                 <!-- CONTEÚDO SEMPRE ABERTO -->
                                 <div class="rateio-conteudo">
-
-                                    <app-rateio-acao-localidade-form [isModoEdicao]="isModoEdicao"
+                                    <app-rateio-acao-localidade-form class="d-block w-100" [isModoEdicao]="isModoEdicao"
                                         [formAcao]="getAcaoRateioForm(i)"
                                         [localidadesOpcoes]="rateioService.localidadesOpcoes">
                                     </app-rateio-acao-localidade-form>
-
                                 </div>
 
                             </div>
 
                         </div>
-
                     </div>
 
                 </div>

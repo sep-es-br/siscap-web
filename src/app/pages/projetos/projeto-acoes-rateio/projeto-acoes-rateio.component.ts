@@ -111,7 +111,31 @@ export class ProjetoAcoesRateioComponent {
   }
 
   public removerAcao(index: number): void {
+
+    const eraAcaoAtiva =
+      this.acaoAtivaIndex === index;
+
+    const acaoAtivaEstavaDepois =
+      this.acaoAtivaIndex > index;
+
     this.acoesProjeto.removeAt(index);
+
+    if (this.acoesProjeto.length === 0) {
+      this.acaoAtivaIndex = 0;
+      return;
+    }
+
+    if (eraAcaoAtiva) {
+      this.acaoAtivaIndex =
+        Math.max(0, index - 1);
+
+      return;
+    }
+
+    if (acaoAtivaEstavaDepois) {
+      this.acaoAtivaIndex--;
+    }
+    
   }
 
   public get valorTotalAcoes(): number {

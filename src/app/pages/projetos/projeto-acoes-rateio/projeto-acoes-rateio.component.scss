@@ -255,15 +255,18 @@
   border-color: #dc3545;
 }
 
-/* ============================================================= */
-/* SOMATÓRIO                                                     */
-/* ============================================================= */
+/* SOMATÓRIO */
 .acoes-resumo {
   flex: 0 0 230px;
   width: 230px;
+  min-height: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
   text-align: right;
-  padding-top: 0.35rem;
-  padding-bottom: 0.75rem;
+  /* IMPORTANTE: não aumentar a altura da linha */
+  padding: 0 0 4px 0;
 }
 
 /* ============================================================= */
@@ -277,9 +280,9 @@
 /* RATEIO                                                        */
 /* ============================================================= */
 .rateio-container {
-    overflow: visible;
-    border: none;
-    border-radius: 0;
+  overflow: visible;
+  border: none;
+  border-radius: 0;
 }
 
 .rateio-header {
@@ -293,5 +296,5 @@
 }
 
 .rateio-conteudo {
-  padding: 1rem;
+  padding: 0;
 }
