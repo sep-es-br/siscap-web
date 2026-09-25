@@ -40,7 +40,7 @@ declare var bootstrap: any;
     NgxMaskPipe,
     NgxMaskDirective,
     RateioAcaoLocalidadeFormComponent
-],
+  ],
   templateUrl: './projeto-acoes-rateio.component.html',
   styleUrl: './projeto-acoes-rateio.component.scss'
 })
@@ -54,7 +54,9 @@ export class ProjetoAcoesRateioComponent {
   @Input() moedasList: IMoeda[] = [];
   @Input() tiposValorOpcoes: IOpcoesDropdown[] = [];
   @Input() camposComplementarProjeto: IEstruturaCamposComplementarProjeto[] = [];
-  
+
+  acaoAtivaIndex = 0;
+
   constructor(
     private readonly acoesService: AcoesService,
     public rateioService: RateioService
@@ -104,6 +106,8 @@ export class ProjetoAcoesRateioComponent {
     this.acoesProjeto.push(
       this.acoesService.construirAcaoFormGroup()
     );
+    this.acaoAtivaIndex =
+      this.acoesProjeto.length - 1;
   }
 
   public removerAcao(index: number): void {
@@ -116,7 +120,7 @@ export class ProjetoAcoesRateioComponent {
         total +
         Number(
           acao.get('valorEstimadoAcaoPrincipal')?.value ?? 0
-        ),0
+        ), 0
     );
   }
 
@@ -154,5 +158,20 @@ export class ProjetoAcoesRateioComponent {
     }
 
   }
+
+  selecionarAcao(index: number): void {
+    this.acaoAtivaIndex = index;
+  }
+
+  // adicionarAcao(): void {
+
+  //   const novaAcao = this.criarFormAcao();
+
+  //   this.acoesProjeto.push(novaAcao);
+
+  //   this.acaoAtivaIndex =
+  //     this.acoesProjeto.length - 1;
+
+  // }
 
 }

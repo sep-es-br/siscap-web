@@ -2,37 +2,86 @@
 
     <div class="card-body">
 
-        <!-- CABEÇALHO -->
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+        <!-- ===================================================== -->
+        <!-- ABAS DAS AÇÕES + SOMATÓRIO                            -->
+        <!-- ===================================================== -->
 
-            <!-- TÍTULO + BOTÃO -->
-            <div class="d-flex align-items-center gap-3">
+        <div class="acoes-cabecalho">
 
-                <div>
-                    <span class="fw-semibold">
-                        Ações
-                    </span>
+            <!-- ÁREA DAS ABAS -->
+            <div class="acoes-tabs-area">
 
-                    <span class="text-danger">*</span>
-                </div>
+                <ul class="nav nav-tabs">
 
-                <button type="button" class="btn btn-sm btn-outline-primary" (click)="adicionarAcao()"
-                    [disabled]="!isModoEdicao">
-                    <i class="fa-solid fa-plus me-1"></i>
-                    CRIAR AÇÃO
-                </button>
+                    <!-- ================================================= -->
+                    <!-- ADICIONAR AÇÃO                                    -->
+                    <!-- ================================================= -->
+
+                    <li class="nav-item">
+
+                        <button type="button" class="acao-tab acao-add-tab" title="Criar nova ação"
+                            (click)="adicionarAcao()" [disabled]="!isModoEdicao">
+
+                            <i class="fa-solid fa-plus"></i>
+
+                        </button>
+
+                    </li>
+
+
+                    <!-- ================================================= -->
+                    <!-- ABAS DAS AÇÕES                                    -->
+                    <!-- ================================================= -->
+
+                    <li class="nav-item acao-tab-item" *ngFor="
+                            let acao of acoesProjeto.controls;
+                            let i = index
+                        ">
+
+                        <div class="acao-tab-group" [class.active]="acaoAtivaIndex === i">
+
+
+                            <!-- SELECIONAR AÇÃO -->
+                            <button type="button" class="acao-tab acao-tab-select" [class.active]="acaoAtivaIndex === i"
+                                (click)="selecionarAcao(i)">
+
+                                Ação #{{ i + 1 }}
+
+                            </button>
+
+
+                            <!-- EXCLUIR AÇÃO ATIVA -->
+                            <button *ngIf="
+                                    isModoEdicao &&
+                                    acaoAtivaIndex === i
+                                " type="button" class="acao-tab-delete" title="Excluir Ação #{{ i + 1 }}"
+                                (click)="removerAcao(i)">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                            </button>
+
+                        </div>
+
+                    </li>
+
+                </ul>
 
             </div>
 
 
-            <!-- SOMATÓRIO -->
-            <div class="text-end">
+            <!-- ================================================= -->
+            <!-- SOMATÓRIO                                         -->
+            <!-- ================================================= -->
+
+            <div class="acoes-resumo">
 
                 <div class="text-muted small">
                     Soma valor estimado das ações
                 </div>
 
                 <div class="fw-bold">
+
                     {{
                     valorTotalAcoes
                     | mask
@@ -44,136 +93,205 @@
                     decimalMarker: ","
                     }
                     }}
+
                 </div>
 
             </div>
 
         </div>
 
-        <hr class="mt-0 mb-4">
 
-        <!-- FORM ARRAY DAS AÇÕES -->
-        <div formArrayName="acoesRateioProjeto">
+        <!-- ===================================================== -->
+        <!-- NENHUMA AÇÃO                                         -->
+        <!-- ===================================================== -->
 
-            <div *ngFor="let acao of acoesProjeto.controls; let i = index" [formGroupName]="i" class="acao-container">
+        <div *ngIf="acoesProjeto.length === 0" class="
+                alert
+                alert-light
+                border
+                text-muted
+                text-center
+                mt-4
+                py-4
+            ">
 
-                <!-- CABEÇALHO DA AÇÃO -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
+            Nenhuma ação cadastrada.
 
-                    <span class="fw-semibold">
-                        Ação #{{ i + 1 }}
-                    </span>
-
-                    <button *ngIf="isModoEdicao" type="button" class="btn btn-sm btn-outline-danger"
-                        title="Excluir ação" (click)="removerAcao(i)">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-
-                </div>
+        </div>
 
 
-                <!-- AÇÃO PRINCIPAL -->
-                <div class="row">
+        <!-- ===================================================== -->
+        <!-- FORM ARRAY DAS AÇÕES                                  -->
+        <!-- ===================================================== -->
 
-                    <div class="col-12 mb-3">
+        <div *ngIf="acoesProjeto.length > 0" formArrayName="acoesRateioProjeto" class="acao-conteudo">
 
-                        <label [for]="'descricaoAcaoPrincipal-' + i" class="form-label">
-                            Ação Principal
-                            <span class="text-danger">*</span>
-                        </label>
+            <ng-container *ngFor="
+                    let acao of acoesProjeto.controls;
+                    let i = index
+                ">
 
-                        <input type="text" class="form-control" [id]="'descricaoAcaoPrincipal-' + i"
-                            formControlName="descricaoAcaoPrincipal" />
 
-                    </div>
+                <!-- ================================================= -->
+                <!-- CONTEÚDO DA AÇÃO ATIVA                            -->
+                <!-- ================================================= -->
 
-                </div>
+                <div [class.d-none]="acaoAtivaIndex !== i" [formGroupName]="i" class="acao-container">
 
-                <!-- VALOR ESTIMADO -->
-                <div class="row">
+                    <!-- ================================================= -->
+                    <!-- VALOR ESTIMADO                                    -->
+                    <!-- ================================================= -->
+                    <div class="row">
 
-                    <div class="col-12 col-md-4 mb-3">
+                        <div class="col-12 col-md-4 mb-3">
 
-                        <label [for]="'valorEstimadoAcaoPrincipal-' + i" class="form-label">
-                            Valor Estimado
-                            <span class="text-danger">*</span>
-                        </label>
-
-                        <!-- <input type="number" class="form-control" [id]="'valorEstimadoAcaoPrincipal-' + i"
-                            formControlName="valorEstimadoAcaoPrincipal" /> -->
-                        <input type="text" class="form-control" [id]="'valorEstimadoAcaoPrincipal-' + i"
-                            formControlName="valorEstimadoAcaoPrincipal" mask="separator.2" prefix="R$ "
-                            thousandSeparator="." decimalMarker="," [leadZero]="true" />
-
-                    </div>
-
-                </div>
-
-                <!-- AÇÕES SECUNDÁRIAS -->
-                <div class="row">
-
-                    <div class="col-12 mb-3">
-
-                        <label [for]="'descricaoAcaoSecundaria-' + i" class="form-label">
-                            Descrição de ações secundárias e produtos
-                            <span class="text-danger">*</span>
-                        </label>
-
-                        <textarea class="form-control" rows="3" [id]="'descricaoAcaoSecundaria-' + i"
-                            formControlName="descricaoAcaoSecundaria"></textarea>
-
-                    </div>
-
-                </div>
-
-                <!-- REGIÕES GEOGRÁFICAS / RATEIO -->
-                <div class="row">
-                    <div class="col-12">
-
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label class="fw-semibold mb-0">
-                                Regiões Geográficas Atendidas
+                            <label [for]=" 'valorEstimadoAcaoPrincipal-' + i" class="form-label">
+                                Valor Estimado
                                 <span class="text-danger">*</span>
                             </label>
-                        </div>
 
-                        <!-- CONTAINER GERAL DO RATEIO -->
-                        <div class="rateio-container" [class.rateio-container-aberto]="rateioAberto(i)">
-                            <!-- CABEÇALHO -->
-                            <div class="rateio-header" (click)="alternarRateio(i)"
-                                [attr.aria-expanded]="rateioAberto(i)">
-                                <span class="rateio-header-titulo">
-                                    Selecione as regiões de impacto
-                                </span>
-                                <i class="fa-solid"
-                                    [ngClass]="{'fa-chevron-down': !rateioAberto(i),'fa-chevron-up': rateioAberto(i) }"></i>
-                            </div>
+                            <input type="text" class="form-control" [id]="
+                                    'valorEstimadoAcaoPrincipal-' + i
+                                " formControlName="
+                                    valorEstimadoAcaoPrincipal
+                                " mask="separator.2" prefix="R$ " thousandSeparator="." decimalMarker=","
+                                [leadZero]="true" />
 
-                            <!-- CONTEÚDO -->
-                            <div *ngIf="rateioAberto(i)" class="rateio-conteudo">
-                                <app-rateio-acao-localidade-form [isModoEdicao]="isModoEdicao"
-                                    [formAcao]="getAcaoRateioForm(i)"
-                                    [localidadesOpcoes]="rateioService.localidadesOpcoes"></app-rateio-acao-localidade-form>
-                            </div>
                         </div>
 
                     </div>
+
+                    <!-- ================================================= -->
+                    <!-- AÇÃO PRINCIPAL                                    -->
+                    <!-- ================================================= -->
+
+                    <div class="row">
+
+                        <div class="col-12 mb-3">
+
+                            <label [for]="'descricaoAcaoPrincipal-' + i" class="form-label">
+                                Título
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <input type="text" class="form-control" [id]="
+                                    'descricaoAcaoPrincipal-' + i
+                                " formControlName="
+                                    descricaoAcaoPrincipal
+                                " />
+
+                        </div>
+
+                    </div>
+
+                    <!-- ================================================= -->
+                    <!-- AÇÕES SECUNDÁRIAS                                 -->
+                    <!-- ================================================= -->
+
+                    <div class="row">
+
+                        <div class="col-12 mb-3">
+
+                            <label [for]="
+                                    'descricaoAcaoSecundaria-' + i
+                                " class="form-label">
+
+                                Descrição de ações secundárias
+                                e produtos
+
+                                <span class="text-danger">
+                                    *
+                                </span>
+
+                            </label>
+
+                            <textarea class="form-control" rows="3" [id]="
+                                    'descricaoAcaoSecundaria-' + i
+                                " formControlName="
+                                    descricaoAcaoSecundaria
+                                ">
+                            </textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- REGIÕES GEOGRÁFICAS / RATEIO -->
+                    <div class="row">
+
+                        <div class="col-12">
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                <label class="fw-semibold mb-0">
+                                    Regiões Geográficas Atendidas
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                            </div>
+
+                            <!-- CONTAINER DO RATEIO -->
+                            <div class="rateio-container rateio-container-aberto">
+
+                                <!-- CABEÇALHO -->
+                                <div class="rateio-header">
+
+                                    <span class="rateio-header-titulo">
+                                        Selecione as regiões de impacto
+                                    </span>
+
+                                </div>
+
+                                <!-- CONTEÚDO SEMPRE ABERTO -->
+                                <div class="rateio-conteudo">
+
+                                    <app-rateio-acao-localidade-form [isModoEdicao]="isModoEdicao"
+                                        [formAcao]="getAcaoRateioForm(i)"
+                                        [localidadesOpcoes]="rateioService.localidadesOpcoes">
+                                    </app-rateio-acao-localidade-form>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <!-- SEPARADOR ENTRE AÇÕES -->
-                <hr *ngIf="i < acoesProjeto.length - 1" class="my-4">
-
-            </div>
+            </ng-container>
 
         </div>
 
     </div>
 
-    <div class="navigation-buttons" style="margin-top:20px;">
-        <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);"
-            (click)="voltarParaOds()"><i class="pi pi-arrow-left"></i></button>
-        <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);"
-            (click)="irParaPlanejamento()"><i class="pi pi-arrow-right"></i></button>
-    </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- NAVEGAÇÃO ENTRE AS ABAS PRINCIPAIS                            -->
+<!-- ============================================================= -->
+<div class="navigation-buttons" style="margin-top: 20px">
+
+    <button class="nav-btn" style="
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        " (click)="voltarParaOds()">
+
+        <i class="pi pi-arrow-left"></i>
+
+    </button>
+
+    <button class="nav-btn" style="
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        " (click)="irParaPlanejamento()">
+
+        <i class="pi pi-arrow-right"></i>
+
+    </button>
 
 </div>
