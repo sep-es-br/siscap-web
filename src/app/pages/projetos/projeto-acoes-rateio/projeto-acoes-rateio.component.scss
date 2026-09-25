@@ -1,7 +1,7 @@
 .rateio-container {
   border: 1px solid #d1d5db;
   border-radius: 8px;
-   position: relative;
+  position: relative;
   overflow: hidden;
 }
 
@@ -55,4 +55,246 @@
 .nav-btn:hover {
   background: var(--gray-bg);
   border-color: var(--navy-dark)
+}
+
+.acoes-cabecalho {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 1.5rem;
+
+  border-bottom: 1px solid #dee2e6;
+}
+
+
+/* ============================================================= */
+/* ÁREA DAS ABAS                                                 */
+/* ============================================================= */
+
+.acoes-tabs-area {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.acoes-tabs-area .nav-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+
+  gap: 4px;
+
+  margin: 0;
+  padding: 0;
+
+  border-bottom: 0;
+}
+
+.acoes-tabs-area .nav-item {
+  display: flex;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ============================================================= */
+/* TAMANHO BASE DAS ABAS                                         */
+/* ============================================================= */
+
+.acao-tab {
+  height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 1rem;
+
+  font-size: 0.875rem;
+
+  line-height: 1;
+
+  border: 1px solid #d7dce1;
+
+  background-color: #fff;
+
+  color: var(--blue);
+
+  cursor: pointer;
+}
+
+
+/* ============================================================= */
+/* BOTÃO +                                                       */
+/* ============================================================= */
+
+.acao-add-tab {
+  width: 48px;
+  min-width: 48px;
+
+  padding: 0;
+
+  color: #fff;
+
+  background-color: var(--blue);
+
+  border-color: var(--blue);
+
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.acao-add-tab i {
+  color: #fff;
+
+  font-size: 1rem;
+}
+
+.acao-add-tab:hover:not(:disabled) {
+  color: #fff;
+
+  background-color: #075eb8;
+
+  border-color: #075eb8;
+}
+
+.acao-add-tab:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+
+/* ============================================================= */
+/* GRUPO ABA + EXCLUSÃO                                          */
+/* ============================================================= */
+
+.acao-tab-group {
+  display: inline-flex;
+  align-items: stretch;
+
+  height: 42px;
+
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+
+/* ============================================================= */
+/* ABA DA AÇÃO                                                   */
+/* ============================================================= */
+
+.acao-tab-select {
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.acao-tab-select:hover {
+  background-color: #f8f9fa;
+
+  border-color: #c7ccd1;
+}
+
+
+/* ABA ATIVA SEM BOTÃO DE EXCLUSÃO */
+.acao-tab-select.active {
+  color: var(--blue);
+
+  background-color: #f8f9fa;
+
+  border-color: #bfc5ca;
+
+  font-weight: 600;
+}
+
+
+/* ============================================================= */
+/* QUANDO A ABA ATIVA POSSUI LIXEIRA                             */
+/* ============================================================= */
+
+.acao-tab-group.active .acao-tab-select {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+
+  border-right: 0;
+}
+
+
+/* ============================================================= */
+/* EXCLUIR AÇÃO                                                  */
+/* ============================================================= */
+
+.acao-tab-delete {
+  width: 38px;
+  min-width: 38px;
+
+  height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  color: #dc3545;
+
+  background-color: #f8f9fa;
+
+  border: 1px solid #bfc5ca;
+  border-left: 1px solid #dee2e6;
+
+  border-radius: 0 0.375rem 0 0;
+
+  cursor: pointer;
+}
+
+.acao-tab-delete i {
+  font-size: 0.8rem;
+}
+
+.acao-tab-delete:hover {
+  color: #fff;
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+/* SOMATÓRIO */
+.acoes-resumo {
+  flex: 0 0 230px;
+  width: 230px;
+  min-height: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  text-align: right;
+  /* IMPORTANTE: não aumentar a altura da linha */
+  padding: 0 0 4px 0;
+}
+
+/* ============================================================= */
+/* CONTEÚDO DA AÇÃO                                              */
+/* ============================================================= */
+.acao-conteudo {
+  padding-top: 1.5rem;
+}
+
+/* ============================================================= */
+/* RATEIO                                                        */
+/* ============================================================= */
+.rateio-container {
+  overflow: visible;
+  border: none;
+  border-radius: 0;
+}
+
+.rateio-header {
+  padding: 0.75rem 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.rateio-header-titulo {
+  font-weight: 500;
+}
+
+.rateio-conteudo {
+  padding: 0;
 }
