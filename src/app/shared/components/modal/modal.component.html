@@ -1,21 +1,21 @@
-<div class="modal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header" [ngClass]="headerClasses">
-        <h4 class="modal-title">{{ titulo }}</h4>
+<div class="modal siscap-modal" tabindex="-1" role="dialog" aria-modal="true" [attr.aria-label]="titulo">
+  <div class="modal-dialog siscap-modal__dialog">
+    <div class="modal-content siscap-modal__content">
+      <div class="modal-header siscap-modal__header" [ngClass]="headerClasses">
+        <h4 class="modal-title siscap-modal__title">{{ titulo }}</h4>
         <button
-          class="btn-close"
+          class="btn-close siscap-modal__close"
           type="button"
           data-bs-dismiss="modal"
-          aria-label="Close"
+          aria-label="Fechar modal"
           (click)="fecharModal.emit()"
         >
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body siscap-modal__body">
         <ng-content select="[modalBody]"></ng-content>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer siscap-modal__footer">
         <ng-content select="[modalFooter]"></ng-content>
       </div>
     </div>
