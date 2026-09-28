@@ -51,8 +51,8 @@ export const pollingEtapasConfig: Array<{
   descricao: string;
 }> = [
   { etapa: PollingEtapas.CAPTURA_ASSINATURA, descricao: 'Assinatura foi enviada com sucesso' },
-  { etapa: PollingEtapas.AUTUAR, descricao: 'Autuar o Programa' },
-  { etapa: PollingEtapas.ENTRANHAR_ARQUIVO, descricao: 'Entranhar Arquivo' },
+  { etapa: PollingEtapas.AUTUAR, descricao: 'Autuar Programa' },
+  { etapa: PollingEtapas.ENTRANHAR_ARQUIVO, descricao: 'Entranhar Programa' },
   { etapa: PollingEtapas.DESPACHAR_PROCESSO, descricao: 'Despachar Processo' },
   { etapa: PollingEtapas.AVOCAR, descricao: 'Avocar' },
   { etapa: PollingEtapas.DESENTRANHAR, descricao: 'Desentranhar' },

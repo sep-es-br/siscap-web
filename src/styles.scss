@@ -20,6 +20,21 @@
 
 @import "primeicons/primeicons.css";
 
+// O ng-bootstrap cria o .modal-dialog fora do componente de conteúdo.
+.modal-dialog:has(siscap-modal[data-tamanho-card='padrao']) {
+  --bs-modal-width: 500px;
+}
+
+.modal-dialog:has(siscap-modal[data-tamanho-card='amplo']) {
+  --bs-modal-width: 800px;
+}
+
+siscap-modal [modalHeader] {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
 /* Estilo global do componente QuillEditorComponente (ngx-quill) */
 
 quill-editor {

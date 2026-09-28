@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, map, Observable, of, switchMap, takeWhile, tap, timer } from 'rxjs';
+import { catchError, filter, map, Observable, of, switchMap, takeWhile, tap, timer } from 'rxjs';
 import { IPollingFases } from '../../interfaces/polling.interface';
 import { environment } from '../../../../environments/environment';
 import { PollingFasesModel } from '../../models/polling.model';
@@ -57,6 +57,9 @@ export class PollingService {
             })
           ),
       ),
+      // A API pode ainda não ter registrado fases quando o polling começa.
+      // Uma lista vazia não representa um processo concluído.
+      filter(lista => lista.length > 0),
       takeWhile(
         lista => !lista.every(fase => fase.finalizada) && !lista.some(fase => fase.erro),
         true

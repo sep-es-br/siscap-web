@@ -1,7 +1,5 @@
-<div class="modal-header bg-secondary-subtle">
-  <h4 class="modal-title">Processo E-Docs</h4>
-</div>
-<div class="modal-body d-flex flex-column">
+<siscap-modal titulo="Processo E-Docs" [tamanhoCard]="tamanhoCard" [exibirFecharCabecalho]="false">
+<div modalBody class="d-flex flex-column">
   @for (fase of fasesPolling; track fase) {
     <div class="d-flex flex-row align-items-center">
       <span class="pe-2">
@@ -32,10 +30,16 @@
       </div>
     }
   }
+  @if (mensagemSucesso && etapasFinalizadas) {
+    <div class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
+      {{ mensagemSucesso }}
+    </div>
+  }
 </div>
-<div class="modal-footer d-flex justify-content-center">
+<div modalFooter>
   <siscap-botao
     [propriedades]="botaoFechar"
     (acao)="activeModal.dismiss()"
   ></siscap-botao>
 </div>
+</siscap-modal>

@@ -6,7 +6,10 @@ export enum FasesEdocsIntegracaoEnum {
   despacharprocesso = 'DESPACHARPROCESSO',
   erro_fase = 'ERROFASE',
   desentranhamento = 'DESENTRANHAR',
-  avocamento = 'AVOCAR'
+  avocamento = 'AVOCAR',
+  geracaoPdfParecer = 'GERACAOPDFPARECER',
+  assinaturaParecer = 'ASSINATURAPARECER',
+  capturaParecer = 'CAPTURAPARECER'
 }
 
 export enum FaseStatuEnum {

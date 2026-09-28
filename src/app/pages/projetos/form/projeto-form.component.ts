@@ -239,6 +239,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public aguardandoDespacho: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public aguardandoAvocamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public aguardandoDesentranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
+  public etapasEnvioParecer = [
+    { codigo: FasesEdocsIntegracaoEnum.geracaoPdfParecer, descricao: 'Geração do PDF' },
+    { codigo: FasesEdocsIntegracaoEnum.assinaturaParecer, descricao: 'Assinatura' },
+    { codigo: FasesEdocsIntegracaoEnum.capturaParecer, descricao: 'Captura' },
+  ];
+  public statusEtapasParecer: Record<string, FaseStatuEnum> = {
+    [FasesEdocsIntegracaoEnum.geracaoPdfParecer]: FaseStatuEnum.NAO_INICIADA,
+    [FasesEdocsIntegracaoEnum.assinaturaParecer]: FaseStatuEnum.NAO_INICIADA,
+    [FasesEdocsIntegracaoEnum.capturaParecer]: FaseStatuEnum.NAO_INICIADA,
+  };
   public FaseStatusEnum = FaseStatuEnum;
   public FasesEdocsIntegracaoEnum = FasesEdocsIntegracaoEnum;
 
@@ -2725,7 +2735,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
           this._toastService.showToast(
             'info',
-            'Processo de autuação iniciado no E-Docs.',
+            'Assinatura e captura do parecer iniciadas no E-Docs.',
           );
         }),
         catchError((error) => {
@@ -2734,7 +2744,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.exibeListaEtapasIntegracao = false;
           this._toastService.showToast(
             'error',
-            'Erro ao iniciar autuação no E-Docs.',
+            'Erro ao iniciar a assinatura e captura do parecer no E-Docs.',
           );
           return EMPTY;
         }),
@@ -2893,6 +2903,17 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private atualizarStatusUI(lista: ProjetoIntegracaoEdocsFasesModel[]) {
     lista.forEach((fase) => {
       switch (fase.etapa) {
+        case FasesEdocsIntegracaoEnum.geracaoPdfParecer:
+        case FasesEdocsIntegracaoEnum.assinaturaParecer:
+        case FasesEdocsIntegracaoEnum.capturaParecer:
+          this.statusEtapasParecer[fase.etapa] = fase.erro
+            ? FaseStatuEnum.ERROFASE
+            : fase.finalizada
+              ? FaseStatuEnum.FINALIZADA
+              : fase.iniciada
+                ? FaseStatuEnum.EM_ANDAMENTO
+                : FaseStatuEnum.NAO_INICIADA;
+          break;
         case FasesEdocsIntegracaoEnum.captura_assinatura:
           if (fase.erro) {
             this.aguardandoAssinatura = FaseStatuEnum.ERROFASE;
@@ -3138,6 +3159,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       parecerControl.markAllAsTouched();
       if (!this.validarFormulario(parecerControl, true)) return;
     }
+
+    for (const etapa of this.etapasEnvioParecer) {
+      this.statusEtapasParecer[etapa.codigo] = FaseStatuEnum.NAO_INICIADA;
+    }
+    this.exibeListaEtapasIntegracao = false;
+    this.finalizadoProcessamentoIntegracao = false;
+    this.erroEmAlgumaFaseModalAutuacao = false;
 
     const modalRef = this._ngbModalService.open(
       this.efetivarParecerProjetoModalTemplate,
