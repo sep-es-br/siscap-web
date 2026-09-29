@@ -131,46 +131,36 @@
                     let i = index
                 ">
 
-
                 <!-- ================================================= -->
                 <!-- CONTEÚDO DA AÇÃO ATIVA                            -->
                 <!-- ================================================= -->
                 <div [class.d-none]="acaoAtivaIndex !== i" [formGroupName]="i" class="acao-container">
 
                     <!-- ================================================= -->
-                    <!-- VALOR ESTIMADO                                    -->
+                    <!-- AÇÃO PRINCIPAL / VALOR ESTIMADO                   -->
                     <!-- ================================================= -->
                     <div class="row">
-
-                        <div class="col-12 col-md-4 mb-3">
-
-                            <label [for]=" 'valorEstimadoAcaoPrincipal-' + i" class="form-label">
-                                Valor Estimado
-                                <span class="text-danger">*</span>
-                            </label>
-
-                            <input type="text" class="form-control" [id]="'valorEstimadoAcaoPrincipal-' + i" 
-                                formControlName="valorEstimadoAcaoPrincipal" 
-                                mask="separator.2" prefix="R$ " 
-                                thousandSeparator="." decimalMarker=","
-                                [leadZero]="true" />
-
-                        </div>
-
-                    </div>
-
-                    <!-- ================================================= -->
-                    <!-- AÇÃO PRINCIPAL                                    -->
-                    <!-- ================================================= -->
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <label [for]="'descricaoAcaoPrincipal-' + i" class="form-label">
+                        <div class="col-12 col-md-10 mb-3">
+                            <label [for]="'descricaoAcaoPrincipal-' + i" class="form-label" >
                                 Título
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control" [id]="'descricaoAcaoPrincipal-' + i" 
                                 formControlName="descricaoAcaoPrincipal" />
                         </div>
+
+                         <div class="col-12 col-md-2 mb-3">
+                            <label [for]=" 'valorEstimadoAcaoPrincipal-' + i" class="form-label d-block text-end" >
+                                Valor Estimado
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control text-end" [id]="'valorEstimadoAcaoPrincipal-' + i" 
+                                formControlName="valorEstimadoAcaoPrincipal" 
+                                mask="separator.2" prefix="R$ " 
+                                thousandSeparator="." decimalMarker=","
+                                [leadZero]="true" />
+                        </div>
+
                     </div>
 
                     <!-- ================================================= -->
