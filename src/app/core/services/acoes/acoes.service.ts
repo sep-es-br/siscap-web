@@ -14,6 +14,7 @@ import { IAcao } from '../../interfaces/acoes.interface';
 import { AcaoFormType } from '../../types/form/acao-form.type';
 import { limiteAcoesValidator } from '../../validators/acoes.validator';
 import { noWhitespaceValidator } from '../../validators/nowhitespacevalidator.validator';
+import { RateioService } from '../rateio/rateio.service';
 
 @Injectable({
   providedIn: 'root',
@@ -46,8 +47,8 @@ export class AcoesService {
     return this._acoesFormArraySnapshot;
   }
 
-  private set acoesFormArraySnapshot(indicadoresFormArrayValue: Array<IAcao>) {
-    this._acoesFormArraySnapshot = indicadoresFormArrayValue;
+  private set acoesFormArraySnapshot(acoesFormArrayValue: Array<IAcao>) {
+    this._acoesFormArraySnapshot = acoesFormArrayValue;
   }
 
   private _totalAcoes: { percentual: number; quantia: number } = {
@@ -92,7 +93,9 @@ export class AcoesService {
 
   public acoesWarnings: { [key: string]: boolean } = {};
 
-  constructor(private _nnfb: NonNullableFormBuilder) {
+  constructor(private _nnfb: NonNullableFormBuilder,
+    public rateioService: RateioService
+  ) {
     this.idAcaoAcoesValue$.subscribe((idAcaoAcoesValue: number) => {
       const indicadorMontado = this.construirAcaoFormGroupNgSelectValue(idAcaoAcoesValue);
       this.incluirAcao(indicadorMontado);
@@ -105,6 +108,7 @@ export class AcoesService {
     const membroFormGroup = this.construirAcaoFormGroup();
     return membroFormGroup;
   }
+
 
   public construirAcoesFormArray(
     acoes?: Array<IAcao>
@@ -122,20 +126,40 @@ export class AcoesService {
 
     this.acoesFormArray = acoesFormArray;
     this.acoesFormArraySnapshot = this.acoesFormArray.value as Array<IAcao>;
+
     return this.acoesFormArray;
+
   }
 
   public construirAcaoFormGroup(membro?: IAcao): FormGroup<AcaoFormType> {
-    return this._nnfb.group<AcaoFormType>({
-      idAcao: this._nnfb.control(membro?.idAcao ?? 0),
-      descricaoAcaoPrincipal: this._nnfb.control(membro?.descricaoAcaoPrincipal ?? null, [ Validators.required, noWhitespaceValidator() ]),
-      descricaoAcaoSecundaria: this._nnfb.control(membro?.descricaoAcaoSecundaria ?? null, [ Validators.required, noWhitespaceValidator() ]),
-      valorEstimadoAcaoPrincipal: this._nnfb.control(membro?.valorEstimadoAcaoPrincipal ?? 0, Validators.required),
-      idStatus: this._nnfb.control(membro?.idStatus ?? TipoStatusEnum.Ativo, Validators.required
-      ),
-    });
-  }
 
+    return this._nnfb.group<AcaoFormType>({
+
+      idAcao: this._nnfb.control(membro?.idAcao ?? 0),
+
+      descricaoAcaoPrincipal: this._nnfb.control(
+        membro?.descricaoAcaoPrincipal ?? null
+      ),
+
+      descricaoAcaoSecundaria: this._nnfb.control(
+        membro?.descricaoAcaoSecundaria ?? null
+      ),
+
+      valorEstimadoAcaoPrincipal: this._nnfb.control(
+        membro?.valorEstimadoAcaoPrincipal ?? 0
+      ),
+
+      idStatus: this._nnfb.control(
+        membro?.idStatus ?? TipoStatusEnum.Ativo
+      ),
+
+      rateio: this.rateioService.construirRateioFormArray(
+        membro?.rateio
+      )
+
+    });
+
+  }
 
   public incluirAcao(
     acaoFormGroup: FormGroup<AcaoFormType>
@@ -168,18 +192,39 @@ export class AcoesService {
   }
 
   public validarAcoes(
-      quantiaFormControlValue: number | null
-    ): void {
-      const acoesFormArrayErrors = this.acoesFormArray.errors;
-      const limiteAcoesError = limiteAcoesValidator(
-        quantiaFormControlValue,
-        this );
-      const resultErrors =
+    quantiaFormControlValue: number | null
+  ): void {
+    const acoesFormArrayErrors = this.acoesFormArray.errors;
+    const limiteAcoesError = limiteAcoesValidator(
+      quantiaFormControlValue,
+      this);
+    const resultErrors =
       limiteAcoesError != null
-          ? { ...acoesFormArrayErrors, ...limiteAcoesError }
-          : acoesFormArrayErrors;
-      this.acoesWarnings['limiteAcoes'] = !!limiteAcoesError;
-      // this.acoesFormArray.setErrors(resultErrors);
+        ? { ...acoesFormArrayErrors, ...limiteAcoesError }
+        : acoesFormArrayErrors;
+    this.acoesWarnings['limiteAcoes'] = !!limiteAcoesError;
+    // this.acoesFormArray.setErrors(resultErrors);
+  }
+
+  public construirAcoesRateioFormArray(
+    acoes?: Array<IAcao>
+  ): FormArray<FormGroup<AcaoFormType>> {
+
+    const acoesFormArray = this._nnfb.array<FormGroup<AcaoFormType>>(
+      [],
+      [Validators.required, Validators.minLength(1),]);
+
+    if (acoes) {
+      acoes.forEach((acao) => {
+        acoesFormArray.push(this.construirAcaoFormGroup(acao));
+      });
     }
+
+    this.acoesFormArray = acoesFormArray;
+    this.acoesFormArraySnapshot = this.acoesFormArray.value as Array<IAcao>;
+
+    return this.acoesFormArray;
+
+  }
 
 }

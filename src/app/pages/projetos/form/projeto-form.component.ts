@@ -7,6 +7,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
+
 import {
   AbstractControl,
   FormArray,
@@ -539,7 +540,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        // console.log("Buscar projeto por ID: ", response)
+        console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -1302,7 +1303,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             odsCor: this._nnfb.control(ods.odsCor ?? null),
           })
         ) ?? []
-      )
+      ),
+
+      acoesRateioProjeto: this.acoesService.construirAcoesRateioFormArray(
+        projetoFormModel?.acoesProjeto,
+      ),
 
     });
 
@@ -1956,7 +1961,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         })
       );
 
-      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho, formData)
@@ -4263,6 +4268,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     );
 
     return JSON.stringify(payload);
+
+  }
+
+   public irParaAcoes(event: MouseEvent): void {
+
+    this.solicitarAutoSave();
+
+    event.preventDefault();
+
+    const campoAcoes = this.projetoForm.get('acoesProjeto');
+
+    campoAcoes?.clearValidators();
+    campoAcoes?.updateValueAndValidity();
+
+    this.abrirAba('nav-acoes-rateio');
 
   }
 

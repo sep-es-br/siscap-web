@@ -1,0 +1,234 @@
+<div [formGroup]="formProjeto" class="card">
+
+    <div class="card-body">
+
+        <!-- ===================================================== -->
+        <!-- ABAS DAS AÇÕES + SOMATÓRIO                            -->
+        <!-- ===================================================== -->
+
+        <div class="acoes-cabecalho">
+
+            <!-- ÁREA DAS ABAS -->
+            <div class="acoes-tabs-area">
+
+                <ul class="nav nav-tabs">
+
+                    <!-- ================================================= -->
+                    <!-- ADICIONAR AÇÃO                                    -->
+                    <!-- ================================================= -->
+
+                    <li class="nav-item">
+
+                        <button type="button" class="acao-tab acao-add-tab" title="Criar nova ação"
+                            (click)="adicionarAcao()" [disabled]="!isModoEdicao">
+
+                            <i class="fa-solid fa-plus"></i>
+
+                        </button>
+
+                    </li>
+
+
+                    <!-- ================================================= -->
+                    <!-- ABAS DAS AÇÕES                                    -->
+                    <!-- ================================================= -->
+
+                    <li class="nav-item acao-tab-item" *ngFor="
+                            let acao of acoesProjeto.controls;
+                            let i = index
+                        ">
+
+                        <div class="acao-tab-group" [class.active]="acaoAtivaIndex === i">
+
+
+                            <!-- SELECIONAR AÇÃO -->
+                            <button type="button" class="acao-tab acao-tab-select" [class.active]="acaoAtivaIndex === i"
+                                (click)="selecionarAcao(i)">
+
+                                Ação #{{ i + 1 }}
+
+                            </button>
+
+
+                            <!-- EXCLUIR AÇÃO ATIVA -->
+                            <button *ngIf="
+                                    isModoEdicao &&
+                                    acaoAtivaIndex === i
+                                " type="button" class="acao-tab-delete" title="Excluir Ação #{{ i + 1 }}"
+                                (click)="removerAcao(i)">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                            </button>
+
+                        </div>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- SOMATÓRIO                                         -->
+            <!-- ================================================= -->
+
+            <div class="acoes-resumo">
+
+                <div class="text-muted small">
+                    Soma valor estimado das ações
+                </div>
+
+                <div class="fw-bold">
+
+                    {{
+                    valorTotalAcoes
+                    | mask
+                    : "separator.2"
+                    : {
+                    prefix: rateioService.simboloMoeda + " ",
+                    leadZero: true,
+                    thousandSeparator: ".",
+                    decimalMarker: ","
+                    }
+                    }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- NENHUMA AÇÃO                                         -->
+        <!-- ===================================================== -->
+
+        <div *ngIf="acoesProjeto.length === 0" class="
+                alert
+                alert-light
+                border
+                text-muted
+                text-center
+                mt-4
+                py-4
+            ">
+
+            Nenhuma ação cadastrada.
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- FORM ARRAY DAS AÇÕES                                  -->
+        <!-- ===================================================== -->
+
+        <div *ngIf="acoesProjeto.length > 0" formArrayName="acoesRateioProjeto" class="acao-conteudo">
+
+            <ng-container *ngFor="
+                    let acao of acoesProjeto.controls;
+                    let i = index
+                ">
+
+                <!-- ================================================= -->
+                <!-- CONTEÚDO DA AÇÃO ATIVA                            -->
+                <!-- ================================================= -->
+                <div [class.d-none]="acaoAtivaIndex !== i" [formGroupName]="i" class="acao-container">
+
+                    <!-- ================================================= -->
+                    <!-- AÇÃO PRINCIPAL / VALOR ESTIMADO                   -->
+                    <!-- ================================================= -->
+                    <div class="row">
+                        <div class="col-12 col-md-10 mb-3">
+                            <label [for]="'descricaoAcaoPrincipal-' + i" class="form-label" >
+                                Título
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" [id]="'descricaoAcaoPrincipal-' + i" 
+                                formControlName="descricaoAcaoPrincipal" />
+                        </div>
+
+                         <div class="col-12 col-md-2 mb-3">
+                            <label [for]=" 'valorEstimadoAcaoPrincipal-' + i" class="form-label d-block text-end" >
+                                Valor Estimado
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control text-end" [id]="'valorEstimadoAcaoPrincipal-' + i" 
+                                formControlName="valorEstimadoAcaoPrincipal" 
+                                mask="separator.2" prefix="R$ " 
+                                thousandSeparator="." decimalMarker=","
+                                [leadZero]="true" />
+                        </div>
+
+                    </div>
+
+                    <!-- ================================================= -->
+                    <!-- AÇÕES SECUNDÁRIAS                                 -->
+                    <!-- ================================================= -->
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label [for]="'descricaoAcaoSecundaria-' + i" class="form-label">
+                                Descrição de ações secundárias e produtos
+                                <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" rows="3" [id]="'descricaoAcaoSecundaria-' + i" formControlName="descricaoAcaoSecundaria"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- REGIÕES GEOGRÁFICAS / RATEIO -->
+                    <div class="row">
+                        <div class="col-12">
+
+                            <!-- CONTAINER DO RATEIO -->
+                            <div class="rateio-container rateio-container-aberto">
+
+                                <!-- CONTEÚDO SEMPRE ABERTO -->
+                                <div class="rateio-conteudo">
+                                    <app-rateio-acao-localidade-form class="d-block w-100" [isModoEdicao]="isModoEdicao"
+                                        [formAcao]="getAcaoRateioForm(i)"
+                                        [localidadesOpcoes]="rateioService.localidadesOpcoes">
+                                    </app-rateio-acao-localidade-form>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </ng-container>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ============================================================= -->
+<!-- NAVEGAÇÃO ENTRE AS ABAS PRINCIPAIS                            -->
+<!-- ============================================================= -->
+<div class="navigation-buttons" style="margin-top: 20px">
+
+    <button class="nav-btn" style="
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        " (click)="voltarParaOds()">
+
+        <i class="pi pi-arrow-left"></i>
+
+    </button>
+
+    <button class="nav-btn" style="
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        " (click)="irParaPlanejamento()">
+
+        <i class="pi pi-arrow-right"></i>
+
+    </button>
+
+</div>
