@@ -12,13 +12,13 @@
                 <span [hidden]="!editMode" (click)="removeImage()" class="position-absolute pointer top-0 z-1 me-2 mt-0 start-100 translate-middle fs-5 badge border border-light rounded-pill p-2 bg-light shadow"  data-bs-toggle="tooltip" data-bs-title="Default tooltip">
                     <i class="material-symbols-outlined text-danger">close</i>
                 </span>
-                <div class="edit-filter" (click)="open()" [hidden]="!editMode" ><span>Editar</span></div>
+                <div class="edit-filter" (click)="open()" [hidden]="!editMode" ><span>{{ MENSAGENS.EDITAR }}</span></div>
             </div>
         </div>
         <div class="col-8 col-sm-7 col-md-9 col-lg-8 mt-3 ">
             <ngb-alert class="fs- mt-3" type="info" [dismissible]="false" >
                 <small>
-                    <b>Formatos aceitos:</b> JPEG, JPG, GIF ou PNG.<br><b>Tamanho máximo:</b> 5mb
+                    <b>{{ MENSAGENS.FORMATOS_ACEITOS }}</b> {{ MENSAGENS.JPEG_JPG_GIF_OU_PNG }}<br><b>{{ MENSAGENS.TAMANHO_MAXIMO }}</b> {{ MENSAGENS.TEXTO_5MB }}
                 </small>
             </ngb-alert>
         </div>
@@ -26,12 +26,12 @@
 </div>
 <ng-template #cropperModal let-modal>
     <div class="modal-header">
-      <h4 class="modal-title text-dark">Editar Foto</h4>
+      <h4 class="modal-title text-dark">{{ MENSAGENS.EDITAR_FOTO }}</h4>
     </div>
     <div class="modal-body">
         <div class="row">
             <div class="col-md-8">
-                <h4 class="text-dark">Edição</h4>
+                <h4 class="text-dark">{{ MENSAGENS.EDICAO }}</h4>
                 <image-cropper
                 [imageFile]="CropFile"
                 [imageChangedEvent]="imageChangedEvent"
@@ -55,7 +55,7 @@
             </div>
             <div class="col-md-4">
                 <div class="preview">
-                    <h4 class="text-dark">Visualização</h4>
+                    <h4 class="text-dark">{{ MENSAGENS.VISUALIZACAO }}</h4>
                     <img class="img-fluid" [src]="croppedImage" />
                 </div>
             </div>
@@ -63,18 +63,18 @@
 
     </div>
     <div class="modal-footer justify-content-center text-light">
-        <button type="button" class="btn btn-primary btn-icon" (click)="rotateLeft()" title="Girar para a esquerda"><i class="material-symbols-outlined">rotate_left</i></button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="rotateRight()" title="Girar para a direita" ><i class="material-symbols-outlined">rotate_right</i></button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="flipHorizontal()" title="Inverter posição horizontal"><i class="material-symbols-outlined"  style="transform: rotate(90deg);">swap_vert</i></button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="flipVertical()" title="Inverter posição vertical"><i class="material-symbols-outlined">swap_vert</i></button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="resetImage()" title="Resetar imagem" ><i class="material-symbols-outlined">history</i></button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="zoomOut()" title="Reduzir o zoom"><i class="material-symbols-outlined">zoom_out</i></button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="zoomIn()" title="Aumentar o zoom"><i class="material-symbols-outlined"> zoom_in </i></button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="moveLeft()" title="Mover para a esquerda" ><i class="material-symbols-outlined">arrow_back</i> </button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="moveRight()" title="Mover para a direita" ><i class="material-symbols-outlined">arrow_forward</i> </button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="moveUp()" title="Mover para cima" ><i class="material-symbols-outlined">arrow_upward</i> </button>
-        <button type="button" class="btn btn-primary btn-icon" (click)="moveDown()" title="Mover para baixo" ><i class="material-symbols-outlined">arrow_downward</i></button>
-        <button type="button" class="btn btn-outline-success btn-icon" (click)="crop()" title="Cortar Imagem" ><i class="material-symbols-outlined">crop</i></button>
-        <button type="button" class="btn btn-outline-danger" (click)="cancelOperation()" title="Cancelar operação"><i class="material-symbols-outlined">close</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="rotateLeft()" title="{{ MENSAGENS.GIRAR_PARA_A_ESQUERDA }}"><i class="material-symbols-outlined">rotate_left</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="rotateRight()" title="{{ MENSAGENS.GIRAR_PARA_A_DIREITA }}" ><i class="material-symbols-outlined">rotate_right</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="flipHorizontal()" title="{{ MENSAGENS.INVERTER_POSICAO_HORIZONTAL }}"><i class="material-symbols-outlined"  style="transform: rotate(90deg);">swap_vert</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="flipVertical()" title="{{ MENSAGENS.INVERTER_POSICAO_VERTICAL }}"><i class="material-symbols-outlined">swap_vert</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="resetImage()" title="{{ MENSAGENS.RESETAR_IMAGEM }}" ><i class="material-symbols-outlined">history</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="zoomOut()" title="{{ MENSAGENS.REDUZIR_O_ZOOM }}"><i class="material-symbols-outlined">zoom_out</i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="zoomIn()" title="{{ MENSAGENS.AUMENTAR_O_ZOOM }}"><i class="material-symbols-outlined"> zoom_in </i></button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="moveLeft()" title="{{ MENSAGENS.MOVER_PARA_A_ESQUERDA }}" ><i class="material-symbols-outlined">arrow_back</i> </button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="moveRight()" title="{{ MENSAGENS.MOVER_PARA_A_DIREITA }}" ><i class="material-symbols-outlined">arrow_forward</i> </button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="moveUp()" title="{{ MENSAGENS.MOVER_PARA_CIMA }}" ><i class="material-symbols-outlined">arrow_upward</i> </button>
+        <button type="button" class="btn btn-primary btn-icon" (click)="moveDown()" title="{{ MENSAGENS.MOVER_PARA_BAIXO }}" ><i class="material-symbols-outlined">arrow_downward</i></button>
+        <button type="button" class="btn btn-outline-success btn-icon" (click)="crop()" title="{{ MENSAGENS.CORTAR_IMAGEM }}" ><i class="material-symbols-outlined">crop</i></button>
+        <button type="button" class="btn btn-outline-danger" (click)="cancelOperation()" title="{{ MENSAGENS.CANCELAR_OPERACAO }}"><i class="material-symbols-outlined">close</i></button>
     </div>
 </ng-template>

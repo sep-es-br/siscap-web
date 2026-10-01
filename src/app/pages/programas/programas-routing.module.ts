@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../core/utils/constants';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -10,25 +11,25 @@ import { isProponenteGuard } from '../../core/guards/is-proponente/is-proponente
 
 const PROGRAMAS_ROUTES: Routes = [
   {
-    title: 'Programas',
+    title: MENSAGENS.PROGRAMAS,
     path: '',
     component: ProgramasComponent,
     canActivate: [isProponenteGuard],
   },
   {
-    title: 'Cadastrar Programa',
+    title: MENSAGENS.CADASTRAR_PROGRAMA,
     path: 'criar',
     component: ProgramaFormComponent,
     canActivate: [isProponenteGuard],
   },
   {
-    title: 'Editar Programa',
+    title: MENSAGENS.EDITAR_PROGRAMA,
     path: 'editar',
     component: ProgramaFormComponent,
     canActivate: [programas_NoIdEditarGuard, isProponenteGuard],
   },
   {
-    title: 'Autorizações Programa',
+    title: MENSAGENS.AUTORIZACOES_PROGRAMA,
     path: ':id/assinaturas',
     component: ProgramaAssinaturasComponent,
   }

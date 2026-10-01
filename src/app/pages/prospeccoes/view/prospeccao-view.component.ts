@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { finalize, map, Observable, Subscription, switchMap, tap } from 'rxjs';
@@ -31,6 +32,8 @@ import { getSimboloMoeda } from '../../../core/utils/functions';
   styleUrl: './prospeccao-view.component.scss',
 })
 export class ProspeccaoViewComponent implements OnInit, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+
   private readonly _subscription: Subscription = new Subscription();
 
   private readonly _getProspeccaoDetalhes$: Observable<IProspeccaoDetalhes>;

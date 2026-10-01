@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
@@ -37,6 +38,8 @@ import { SIDEWAYS_SHAKE } from '../../../core/utils/animations';
   styleUrl: './rateio-form.component.scss',
 })
 export class RateioFormComponent implements OnInit, AfterViewInit {
+  public readonly MENSAGENS = MENSAGENS;
+
   @ViewChild(NgbAccordionDirective)
   public rateioNgbAccordion!: NgbAccordionDirective;
   @Input() public isModoEdicao: boolean = false;

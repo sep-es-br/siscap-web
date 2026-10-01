@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
@@ -31,6 +32,9 @@ import {
   styleUrl: './programa-assinaturas.component.scss',
 })
 export class ProgramaAssinaturasComponent implements OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
   appStatus: AppStatus = AppStatus.LOADING;
 
   programaAtual!: IProgramaAssinaturasForm;
@@ -122,7 +126,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
             );
             this._toastService.showToast(
               'warning',
-              'A lista de assinantes não existe ou está vazia! É necessário solicitar as Autorizações primeiro.'
+              MENSAGENS.A_LISTA_DE_ASSINANTES_NAO_EXISTE_OU_ESTA_VAZIA_E_NECESSARIO_SOLICITAR_AS_AUTORIZACOES_PRIMEIRO
             );
 
             this.programaAtual = {
@@ -223,9 +227,9 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
     });
 
     modalRef.componentInstance.config = {
-      titulo: 'Assinar',
+      titulo: MENSAGENS.ASSINAR,
       textoPrincipal:
-        'Sua confirmação autorizará o início dos procedimentos de captação de recursos deste programa.',
+        MENSAGENS.SUA_CONFIRMACAO_AUTORIZARA_O_INICIO_DOS_PROCEDIMENTOS_DE_CAPTACAO_DE_RECURSOS_DESTE_PROGRAMA,
     };
 
     modalRef.result.then(
@@ -238,7 +242,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
             // Verificação extra para garantir que o usuário não tente assinar um Programa que já foi recusado por outra pessoa
             this._toastService.showToast(
               'error',
-              'Impossível assinar o Programa pois um dos assinantes já o Recusou',
+              MENSAGENS.IMPOSSIVEL_ASSINAR_O_PROGRAMA_POIS_UM_DOS_ASSINANTES_JA_O_RECUSOU,
             );
           } else {
             this._programasService
@@ -260,7 +264,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
                   );
                   this._toastService.showToast(
                     'error',
-                    'Ocorreu um erro ao tentar assinar o Programa!'
+                    MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_ASSINAR_O_PROGRAMA
                   );
                   this.appStatus = AppStatus.ERROR;
               },
@@ -322,7 +326,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
         },
         error: (err: any) => {
           console.error('Ocorreu um erro ao fazer o pooling.\n', err);
-          this._toastService.showToast('error', 'Ocorreu um erro!');
+          this._toastService.showToast('error', MENSAGENS.OCORREU_UM_ERRO_2);
 
           this.appStatus = AppStatus.EMPTY;
         },
@@ -333,7 +337,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
               next: (programa: IPrograma) => {
                 this._toastService.showToast(
                   'success',
-                  'Assinado com sucesso!'
+                  MENSAGENS.ASSINADO_COM_SUCESSO
                 );
                 const assinaturaUsuarioAtual =
                   programa.programaAssinantesEdocsDto?.find(
@@ -367,7 +371,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
                 // Ocorreu um erro na chamada do GET de Programa, mas a essa altura a assinatura já foi feita com sucesso
                 this._toastService.showToast(
                   'success',
-                  'Assinado com sucesso!'
+                  MENSAGENS.ASSINADO_COM_SUCESSO
                 );
                 if (this.programaAtual.assinaturaUsuarioAtual) {
                   this.programaAtual.assinaturaUsuarioAtual.statusAssinatura =
@@ -388,7 +392,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
       centered: true,
     });
 
-    let textoPrincipal = 'Sua recusa a assinar esse Programa o impossibilitará de ser Autuado.';
+    let textoPrincipal = MENSAGENS.SUA_RECUSA_A_ASSINAR_ESSE_PROGRAMA_O_IMPOSSIBILITARA_DE_SER_AUTUADO;
 
     if (
       this.programaAtual.assinaturaUsuarioAtual &&
@@ -398,7 +402,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
     }
 
     modalRef.componentInstance.config = {
-      titulo: 'Não Autorizo',
+      titulo: MENSAGENS.NAO_AUTORIZO,
       textoPrincipal,
     };
 
@@ -421,14 +425,14 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
 
               this._toastService.showToast(
                 'success',
-                'Recusa registrada com sucesso',
+                MENSAGENS.RECUSA_REGISTRADA_COM_SUCESSO,
               );
             },
             error: (err) => {
               console.error('Ocorreu um erro ao tentar recusar a assinatura do Programa!\n', err);
               this._toastService.showToast(
                 'error',
-                'Ocorreu um erro ao tentar recusar a assinatura do Programa!',
+                MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_RECUSAR_A_ASSINATURA_DO_PROGRAMA,
               );
             }
           });

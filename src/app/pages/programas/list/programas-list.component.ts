@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, input, OnDestroy, output } from '@angular/core';
 
 import { Subject, take, takeUntil, tap } from 'rxjs';
@@ -34,6 +35,8 @@ import { PollingService } from '../../../core/services/polling/polling.service';
   styleUrl: './programas-list.component.scss',
 })
 export class ProgramasListComponent implements OnDestroy{
+  public readonly MENSAGENS = MENSAGENS;
+
   public programasList = input<Array<IProgramaTableData> | null>([]);
 
   public sortableDirectiveOutput = output<string>();
@@ -202,7 +205,7 @@ export class ProgramasListComponent implements OnDestroy{
           const faseAutuacaoErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.AUTUAR && fase.erro);
 
           if (faseAutorizacaoEnviada) {
-            this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
+            this._toastService.showToast('success', MENSAGENS.AS_AUTORIZACOES_FORAM_ENVIADAS_COM_SUCESSO);
             const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === this.currentPolling.idPrograma);
               if (programaNaLista) {
                 programaNaLista.statusPrograma = StatusPrograma.AGUARDANDO_ASSINATURAS
@@ -210,7 +213,7 @@ export class ProgramasListComponent implements OnDestroy{
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
 
           } else if (faseAutuacaoConfirmada) {
-            this._toastService.showToast('success', 'A Autuação foi realizada com sucesso!');
+            this._toastService.showToast('success', MENSAGENS.A_AUTUACAO_FOI_REALIZADA_COM_SUCESSO);
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
 
           } else if (faseAutorizacaoErro) {
@@ -219,7 +222,7 @@ export class ProgramasListComponent implements OnDestroy{
               faseAutorizacaoErro.msgAlertaExibir.length > 0
             )
               ? faseAutorizacaoErro.msgAlertaExibir
-              : 'Ocorreu um erro ao tentar processar as Autorizações!';
+              : MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_PROCESSAR_AS_AUTORIZACOES;
             this._toastService.showToast('error', errorMessage);
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           } else if (faseAutuacaoErro) {
@@ -228,7 +231,7 @@ export class ProgramasListComponent implements OnDestroy{
               faseAutuacaoErro.msgAlertaExibir.length > 0
             )
               ? faseAutuacaoErro.msgAlertaExibir
-              : 'Ocorreu um erro ao tentar Autuar o programa!';
+              : MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_AUTUAR_O_PROGRAMA_2;
             this._toastService.showToast('error', errorMessage);
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           }
@@ -258,7 +261,7 @@ export class ProgramasListComponent implements OnDestroy{
               },
               error: (err) => {
                 console.error('Ocorreu um erro ao tentar atualizar o Programa!\n', err);
-                this._toastService.showToast('error', 'Ocorreu um erro ao tentar atualizar o Programa');
+                this._toastService.showToast('error', MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_ATUALIZAR_O_PROGRAMA);
 
                 this.currentPolling.idPrograma = -1;
                 this.currentPolling.status = PollingEtapasStatus.FINALIZADA;

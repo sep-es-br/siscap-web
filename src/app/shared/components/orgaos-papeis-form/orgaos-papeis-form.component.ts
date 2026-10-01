@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { IPapeisOrgaoProgramaDropdownOpcoes } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -17,6 +18,8 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './orgaos-papeis-form.component.scss'
 })
 export class OrgaosPapeisFormComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() orgaosSelecionados: Array<IPapeisOrgaoProgramaDropdownOpcoes> = [];
 
   @Input() isModoEdicao: boolean = true;

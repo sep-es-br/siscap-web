@@ -1,19 +1,19 @@
 <div class="mx-3">
   <div id="header" class="row mb-2 flex-nowrap">
     <div class="col-2 id-col ms-4 ms-md-2 ms-lg-4 text-truncate">
-      <span class="fs-small-4">Pesquisa</span>
+      <span class="fs-small-4">{{ MENSAGENS.PESQUISA }}</span>
     </div>
     <div class="col-2 operacao-col">
-      <span class="fs-small-4">Operação</span>
+      <span class="fs-small-4">{{ MENSAGENS.OPERACAO }}</span>
     </div>
     <div class="col-6 col-md-5 col-lg-6">
-      <span class="fs-small-4">Programa</span>
+      <span class="fs-small-4">{{ MENSAGENS.PROGRAMA }}</span>
     </div>
     <div class="col-1 col-md-2 col-lg-1">
-      <span class="fs-small-4">Data</span>
+      <span class="fs-small-4">{{ MENSAGENS.DATA }}</span>
     </div>
     <div class="col-1 acoes-col">
-      <span class="fs-small-4">Ações</span>
+      <span class="fs-small-4">{{ MENSAGENS.ACOES }}</span>
     </div>
   </div>
   <ng-container *ngFor="let cartaConsulta of cartasConsultaList()">
@@ -52,7 +52,7 @@
             (click)="visualizarCartaConsulta(cartaConsulta.id)"
           >
             <i class="fa-regular fa-clipboard me-2"></i>
-            <span>Visualizar</span>
+            <span>{{ MENSAGENS.VISUALIZAR }}</span>
           </button>
         </table-actions-dropdown>
       </div>

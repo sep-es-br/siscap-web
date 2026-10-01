@@ -1,12 +1,12 @@
 <div class="card selection-card">
 
   <div class="card-header-main">
-    <p class="lista-label">SELECIONE O INDICADOR ESTRATÉGICO</p>
+    <p class="lista-label">{{ MENSAGENS.SELECIONE_O_INDICADOR_ESTRATEGICO }}</p>
     <div class="search-container" [class.expanded]="searchVisible">
       <span class="p-input-icon-left p-input-icon-right w-100">
         <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
         <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
-          class="w-100 search-input" placeholder="Nome do indicador" [(ngModel)]="filtroTexto"
+          class="w-100 search-input" placeholder="{{ MENSAGENS.NOME_DO_INDICADOR_2 }}" [(ngModel)]="filtroTexto"
           (ngModelChange)="filtrarIndicadores()" [disabled]="!podeEditar" />
         <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()"></i>
       </span>
@@ -19,7 +19,7 @@
       <label class="indicador-label">
         <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
           [disabled]="!podeEditar"></p-checkbox>
-        <span class="text-blue-primary">SELECIONAR TODOS</span>
+        <span class="text-blue-primary">{{ MENSAGENS.SELECIONAR_TODOS }}</span>
       </label>
     </div>
 
@@ -32,7 +32,7 @@
               [disabled]="!podeEditar">
             </p-checkbox>
             <span>{{ indicador.nomeIndicador }} <small *ngIf="indicador.avulso" class="indicador-avulso-label">
-                (Indicador de projeto)</small> </span>
+                {{ MENSAGENS.INDICADOR_DE_PROJETO_2 }}</small> </span>
           </label>
         </div>
       </ng-container>
@@ -43,10 +43,10 @@
   <div class="card-footer-selection">
     <div class="create-special-link"
       style="cursor:pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s;"
-      title="Se não encontrar o indicador estratégico desejado, crie um novo"
+      title="{{ MENSAGENS.SE_NAO_ENCONTRAR_O_INDICADOR_ESTRATEGICO_DESEJADO_CRIE_UM_NOVO }}"
       (click)="podeEditar && showNewIndicatorForm(); $event.stopPropagation()"
       onmouseover="this.style.background='#eef6ff'" onmouseout="this.style.background='transparent'">
-      <span style="color:var(--blue); font-weight:700; font-size:12px;">+ Criar um Indicador de Projeto</span>
+      <span style="color:var(--blue); font-weight:700; font-size:12px;">{{ MENSAGENS.CRIAR_UM_INDICADOR_DE_PROJETO_2 }}</span>
     </div>
   </div>
 
@@ -59,13 +59,13 @@
 <ng-template #loadingTpl>
   <div class="estado-vazio">
     <i class="pi pi-spin pi-spinner"></i>
-    Carregando indicadores...
+    {{ MENSAGENS.CARREGANDO_INDICADORES }}
   </div>
 </ng-template>
 
 <ng-template #vazio>
   <div class="estado-vazio">
     <i class="pi pi-inbox"></i>
-    Nenhum indicador encontrado
+    {{ MENSAGENS.NENHUM_INDICADOR_ENCONTRADO }}
   </div>
 </ng-template>

@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -16,6 +17,8 @@ import { BotoesConfig } from '../../components/botao/botao.config';
   ],
 })
 export class ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() public nomeProjeto: string = 'placeholder';
   @Input() public nomePrograma: string = 'placeholder';
 
@@ -23,7 +26,7 @@ export class ProgramaProjetoPropostoParecerGeocEnviadoWarningModalComponent {
 
   constructor(public activeModal: NgbActiveModal) {
     this.botaoEntendi = BotoesConfig.gerarBotaoPropriedades('confirmar', {
-      texto: 'Entendi',
+      texto: MENSAGENS.ENTENDI,
     });
   }
 }

@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { BotaoPropriedadesModel } from '../../components/botao/botao.model';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -11,6 +12,8 @@ import { IPollingFasesForm } from '../../../core/interfaces/polling.interface';
   styleUrl: './polling-modal.component.scss'
 })
 export class PollingModalComponent implements OnChanges {
+  public readonly MENSAGENS = MENSAGENS;
+
  @Input() fasesPolling: Array<IPollingFasesForm> = [];
 
   botaoFechar: BotaoPropriedadesModel;

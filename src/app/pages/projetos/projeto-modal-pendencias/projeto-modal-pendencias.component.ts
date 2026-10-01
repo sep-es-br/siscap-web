@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
 import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
@@ -30,6 +31,8 @@ interface IGrupoPendencias {
   styleUrl: './projeto-modal-pendencias.component.scss'
 })
 export class ModalPendenciasProjetoComponent implements OnChanges {
+  public readonly MENSAGENS = MENSAGENS;
+
 
   @Input()
   public pendencias: IPendenciaProjeto[] = [];

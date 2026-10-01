@@ -15,7 +15,7 @@
             (change)="notificarEstadoCheckboxChange()"
           />
           <label class="form-check-label text-nowrap" for="estado-checkbox"
-            >Todo o Estado</label
+            >{{ MENSAGENS.TODO_O_ESTADO }}</label
           >
         </div>
       </div>
@@ -118,6 +118,6 @@
 
 <ng-template #nullQuantiaFormControlValue>
   <div id="nullQuantiaFormControlValueCol" class="col-12 text-center">
-    <span class="fs-small-3 text-danger">Sem Valor Estimado</span>
+    <span class="fs-small-3 text-danger">{{ MENSAGENS.SEM_VALOR_ESTIMADO }}</span>
   </div>
 </ng-template>

@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -73,6 +74,8 @@ import {
   styleUrl: './meu-perfil.component.scss',
 })
 export class MeuPerfilComponent implements OnInit, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+
   private readonly _subscription: Subscription = new Subscription();
 
   private readonly _atualizarMeuPerfil$: Observable<IPessoa>;
@@ -359,8 +362,8 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
     }
 
     if (form.invalid) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Por favor, verifique os campos.',
+      this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+        MENSAGENS.POR_FAVOR_VERIFIQUE_OS_CAMPOS,
       ]);
       return;
     }
@@ -380,7 +383,7 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
         tap((response: IPessoa) => {
           this._toastService.showToast(
             'success',
-            'Perfil atualizado com sucesso.'
+            MENSAGENS.PERFIL_ATUALIZADO_COM_SUCESSO
           );
 
           const usuarioPerfilAtual = this._usuarioService.usuarioPerfil;

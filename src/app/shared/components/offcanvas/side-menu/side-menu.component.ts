@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
@@ -18,6 +19,8 @@ import { OffcanvasUserProfileComponent } from '../user-profile/user-profile.comp
   styleUrl: './side-menu.component.scss',
 })
 export class SideMenuComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() public menuCategoriaAtiva: string = '';
   @Input() public subMenuCategoriaAtiva: string = '';
 

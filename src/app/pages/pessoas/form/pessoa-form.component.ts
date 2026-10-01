@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import {
   Component,
   OnDestroy,
@@ -80,6 +81,8 @@ import { CPFValidator } from '../../../core/validators/cpf.validator';
   styleUrl: './pessoa-form.component.scss',
 })
 export class PessoaFormComponent implements OnInit, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+
   @ViewChild('importarPessoaCPFModal')
   private readonly _importarPessoaCPFModal!: TemplateRef<NgbModal>;
 
@@ -437,8 +440,8 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
     }
 
     if (form.invalid) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Por favor, verifique os campos.',
+      this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+        MENSAGENS.POR_FAVOR_VERIFIQUE_OS_CAMPOS,
       ]);
       return;
     }
@@ -460,7 +463,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
       tap((response: IPessoa) => {
         this._toastService.showToast(
           'success',
-          'Pessoa cadastrada com sucesso.'
+          MENSAGENS.PESSOA_CADASTRADA_COM_SUCESSO
         );
       }),
       finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
@@ -474,7 +477,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
         tap((response: IPessoa) => {
           this._toastService.showToast(
             'success',
-            'Pessoa alterada com sucesso.'
+            MENSAGENS.PESSOA_ALTERADA_COM_SUCESSO
           );
         }),
         finalize(() =>

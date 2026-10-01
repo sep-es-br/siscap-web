@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { map, Observable, Subscription, switchMap, tap } from 'rxjs';
@@ -27,6 +28,8 @@ import { getSimboloMoeda } from '../../../core/utils/functions';
   styleUrl: './carta-consulta-view.component.scss',
 })
 export class CartaConsultaViewComponent implements OnInit, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+
   private readonly _subscription: Subscription = new Subscription();
 
   private readonly _getCartaConsultaDetalhes$: Observable<ICartaConsultaDetalhes>;

@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, input, output } from '@angular/core';
 
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
@@ -14,6 +15,8 @@ import {
   styleUrls: ['./table-actions-dropdown.component.scss'],
 })
 export class TableActionsDropdownComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   public tableActionInput = input.required<number>();
   public tableActionOutput = output<ITableActionOutput>();
 

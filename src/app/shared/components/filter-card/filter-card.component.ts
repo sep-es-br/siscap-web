@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
@@ -21,6 +22,9 @@ import { FilterChip } from './filter-chip.interface';
   styleUrl: './filter-card.component.scss'
 })
 export class FilterCardComponent implements AfterViewInit, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
   @ViewChild('chipsScroller') chipsScroller?: ElementRef<HTMLElement>;
 
   @Input() set chips(value: FilterChip[]) {

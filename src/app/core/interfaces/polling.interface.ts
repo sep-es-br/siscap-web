@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../utils/constants';
 export enum PollingEtapas {
   CAPTURA_ASSINATURA = 'CAPTURAASSINA',
   AUTUAR = 'AUTUAR',
@@ -50,15 +51,15 @@ export const pollingEtapasConfig: Array<{
   etapa: PollingEtapas;
   descricao: string;
 }> = [
-  { etapa: PollingEtapas.CAPTURA_ASSINATURA, descricao: 'Assinatura foi enviada com sucesso' },
-  { etapa: PollingEtapas.AUTUAR, descricao: 'Autuar o Programa' },
-  { etapa: PollingEtapas.ENTRANHAR_ARQUIVO, descricao: 'Entranhar Arquivo' },
-  { etapa: PollingEtapas.DESPACHAR_PROCESSO, descricao: 'Despachar Processo' },
-  { etapa: PollingEtapas.AVOCAR, descricao: 'Avocar' },
-  { etapa: PollingEtapas.DESENTRANHAR, descricao: 'Desentranhar' },
-  { etapa: PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, descricao: 'Assinaturas Solicitadas' },
-  { etapa: PollingEtapas.ASSINADO, descricao: 'Assinatura confirmada' },
-  { etapa: PollingEtapas.ERRO_FASE, descricao: 'Ocorreu um erro' },
+  { etapa: PollingEtapas.CAPTURA_ASSINATURA, descricao: MENSAGENS.ASSINATURA_FOI_ENVIADA_COM_SUCESSO },
+  { etapa: PollingEtapas.AUTUAR, descricao: MENSAGENS.AUTUAR_O_PROGRAMA },
+  { etapa: PollingEtapas.ENTRANHAR_ARQUIVO, descricao: MENSAGENS.ENTRANHAR_ARQUIVO },
+  { etapa: PollingEtapas.DESPACHAR_PROCESSO, descricao: MENSAGENS.DESPACHAR_PROCESSO },
+  { etapa: PollingEtapas.AVOCAR, descricao: MENSAGENS.AVOCAR },
+  { etapa: PollingEtapas.DESENTRANHAR, descricao: MENSAGENS.DESENTRANHAR },
+  { etapa: PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, descricao: MENSAGENS.ASSINATURAS_SOLICITADAS },
+  { etapa: PollingEtapas.ASSINADO, descricao: MENSAGENS.ASSINATURA_CONFIRMADA },
+  { etapa: PollingEtapas.ERRO_FASE, descricao: MENSAGENS.OCORREU_UM_ERRO },
 ];
 
 export const acharDescricaoEtapaPorEtapa = (etapa: PollingEtapas): string => {

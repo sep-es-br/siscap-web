@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
@@ -19,6 +20,8 @@ import { UsuarioService } from '../../../core/services/usuario/usuario.service';
   styleUrl: './projetos-search.component.scss',
 })
 export class ProjetosSearchComponent implements OnInit {
+  public readonly MENSAGENS = MENSAGENS;
+
   private _getOrganizacoesOpcoes$: Observable<IOpcoesDropdown[]>;
   private usuario_IdOrganizacoes: number[] = [];
 
@@ -63,7 +66,7 @@ export class ProjetosSearchComponent implements OnInit {
             );
             this.organizacoesOpcoes = organizacoesOpcoesFiltradas;
           } else {
-            this.organizacoesOpcoes = [{ id: 0, nome: 'Todas' }];
+            this.organizacoesOpcoes = [{ id: 0, nome: MENSAGENS.TODAS }];
             this.organizacoesOpcoes = this.organizacoesOpcoes.concat(response);
           }
         })

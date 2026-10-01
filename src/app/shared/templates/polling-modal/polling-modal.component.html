@@ -1,5 +1,5 @@
 <div class="modal-header bg-secondary-subtle">
-  <h4 class="modal-title">Processo E-Docs</h4>
+  <h4 class="modal-title">{{ MENSAGENS.PROCESSO_E_DOCS }}</h4>
 </div>
 <div class="modal-body d-flex flex-column">
   @for (fase of fasesPolling; track fase) {
@@ -28,7 +28,7 @@
       </div>
     } @else if (fase.erro) {
       <div class="row">
-        <span class="text-danger">Ocorreu um erro!</span>
+        <span class="text-danger">{{ MENSAGENS.OCORREU_UM_ERRO_2 }}</span>
       </div>
     }
   }

@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../utils/constants';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -51,7 +52,7 @@ export class CartasConsultaService
 
   public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
     const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
-      texto: 'Nova Pesquisa Fonte Financiamento',
+      texto: MENSAGENS.NOVA_PESQUISA_FONTE_FINANCIAMENTO,
     });
 
     return [botaoCriar];

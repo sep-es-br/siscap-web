@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 import { BotaoPropriedadesModel } from '../../components/botao/botao.model';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -32,9 +33,9 @@ export class ConfirmationModalComponent {
     };
 
   } = {
-      titulo: 'Título',
+      titulo: MENSAGENS.TITULO,
       headerCustomClass: 'bg-warning-subtle',
-      textoPrincipal: 'Conteúdo',
+      textoPrincipal: MENSAGENS.CONTEUDO,
       textoPrincipalCustomClass: 'fw-bold',
     };
 

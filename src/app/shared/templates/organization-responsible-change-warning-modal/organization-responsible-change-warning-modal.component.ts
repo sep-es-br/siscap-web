@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,13 +14,15 @@ import { BotoesConfig } from '../../components/botao/botao.config';
   styleUrls: ['./organization-responsible-change-warning-modal.component.scss'],
 })
 export class OrganizationResponsibleChangeWarningModalComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() public conteudo: string = 'placeholder';
 
   public botaoEntendi: BotaoPropriedadesModel;
 
   constructor(public activeModal: NgbActiveModal) {
     this.botaoEntendi = BotoesConfig.gerarBotaoPropriedades('confirmar', {
-      texto: 'Entendi',
+      texto: MENSAGENS.ENTENDI,
     });
   }
 }

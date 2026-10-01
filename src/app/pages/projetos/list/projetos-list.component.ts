@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, input, output } from '@angular/core';
 
 import { Subject, takeUntil, tap } from 'rxjs';
@@ -32,6 +33,8 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
   styleUrl: './projetos-list.component.scss',
 })
 export class ProjetosListComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
 
   public projetosList = input<Array<IProjetoTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();

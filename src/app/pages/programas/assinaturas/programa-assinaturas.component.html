@@ -9,14 +9,14 @@
       (click)="voltarParaLista()"
     >
       <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
-      <span>Voltar</span>
+      <span>{{ MENSAGENS.VOLTAR }}</span>
     </button>
     <button
       class="btn btn-outline-primary icon-text-btn col-12 col-sm-3"
       (click)="exportarPrograma()"
     >
       <i class="fa-solid fa-file-arrow-down"></i>
-      <span>Baixar Programa</span>
+      <span>{{ MENSAGENS.BAIXAR_PROGRAMA }}</span>
     </button>
   </div>
 
@@ -24,11 +24,11 @@
     <div class="card-body">
       <form class="row g-3" [formGroup]="formPrograma">
         <div class="col-12 col-sm-4">
-          <label class="form-label no-pointer-effects" for="inputSigla">Sigla</label>
+          <label class="form-label no-pointer-effects" for="inputSigla">{{ MENSAGENS.SIGLA }}</label>
           <input class="form-control no-pointer-effects" type="text" formControlName="siglaPrograma" id="inputSigla" readonly />
         </div>
         <div class="col-12 col-sm-8">
-          <label class="form-label no-pointer-effects" for="inputTitulo">Título</label>
+          <label class="form-label no-pointer-effects" for="inputTitulo">{{ MENSAGENS.TITULO }}</label>
           <input class="form-control no-pointer-effects" type="text" formControlName="tituloPrograma" id="inputTitulo" readonly />
         </div>
         <div class="col-12">
@@ -44,7 +44,7 @@
           </ng-select>
         </div>
         <div class="col-12">
-          <label class="form-label no-pointer-effects" for="inputDics">DICS Propostos</label>
+          <label class="form-label no-pointer-effects" for="inputDics">{{ MENSAGENS.DICS_PROPOSTOS }}</label>
           <ng-select id="inputDics" [multiple]="true" formControlName="dicsPrograma">
             @for (dic of programaAtual.listaDICSPropostos; track dic) {
               <ng-option [value]="dic">
@@ -54,7 +54,7 @@
           </ng-select>
         </div>
         <div class="col-12 col-sm-4">
-          <label class="form-label no-pointer-effects" for="inputValor">Valor Total Estimado</label>
+          <label class="form-label no-pointer-effects" for="inputValor">{{ MENSAGENS.VALOR_TOTAL_ESTIMADO }}</label>
           <input class="form-control no-pointer-effects" type="text" formControlName="valorTotalEstimadoProgama" id="inputValor" readonly />
         </div>
       </form>
@@ -62,12 +62,10 @@
       <div class="assinaturas mt-4">
         @if (programaAtual.assinaturaUsuarioAtual) {
           <div class="assinatura-wrap col-12">
-            <p class="assinatura-title">Minha Autorização</p>
+            <p class="assinatura-title">{{ MENSAGENS.MINHA_AUTORIZACAO }}</p>
             <div class="assinatura-box col-12 p-4 d-flex flex-column justify-content-center align-items-center">
               <p class="assinatura-termo mb-5">
-                Autorizo a assinatura eletrônica do Programa "{{ programaAtual.titulo }}", destinado à prospecção de recursos, conforme documento apresentado nesta tela.
-                Declaro ciência de que a assinatura será realizada por meio do sistema SISCAP, com registro e validade no e-Docs.
-              </p>
+                {{ formatarMensagem(MENSAGENS.AUTORIZO_A_ASSINATURA_ELETRONICA_DO_PROGRAMA_VALOR_DESTINADO_A_PROSPECCAO_DE_RECURSOS_CONFORME_DOCUMENTO_APRES, { p0: (programaAtual.titulo) }) }}</p>
 
               <span class="nome-assinante">{{ programaAtual.assinaturaUsuarioAtual.nomeAssinante }}</span>
               <span class="cargo-assinante mb-5">{{ programaAtual.assinaturaUsuarioAtual.papelAssinante }}</span>
@@ -75,13 +73,13 @@
               @if (statusAssinatura === 'EM_ANDAMENTO') {
                 <span class="badge rounded-pill text-bg-warning">
                   <i class="fa-solid fa-circle-notch fa-spin"></i>
-                  Assinando
+                  {{ MENSAGENS.ASSINANDO }}
                 </span>
               } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1) {
                 <div class="d-flex flex-column flex-md-row align-items-center justify-content-center w-100 acoes-assinatura">
                   <button class="botao-recusar btn btn-danger icon-text-btn text-nowrap p-2 mb-2 mb-md-0 me-md-1" (click)="dispararModalRecusarAutorizacao()">
                     <i class="fa-solid fa-xmark"></i>
-                    <span>Não Autorizo</span>
+                    <span>{{ MENSAGENS.NAO_AUTORIZO }}</span>
                   </button>
                   <button
                     class="botao-assinar btn btn-success icon-text-btn text-nowrap p-2 ms-md-1"
@@ -89,21 +87,21 @@
                     (click)="dispararModalConfirmarAssinatura()"
                   >
                     <i class="fa-solid fa-pen-fancy"></i>
-                    <span>Assinar</span>
+                    <span>{{ MENSAGENS.ASSINAR }}</span>
                   </button>
                 </div>
               } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 2) {
                 <span>
                   <i class="status-assinatura check-icon fa-solid fa-check"></i>
-                  Assinado
+                  {{ MENSAGENS.ASSINADO }}
                 </span>
                 @if (programaAtual.assinaturaUsuarioAtual.dataAssinatura) {
-                  <span class="data-assinatura">{{ programaAtual.assinaturaUsuarioAtual.dataAssinatura | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
+                  <span class="data-assinatura">{{ programaAtual.assinaturaUsuarioAtual.dataAssinatura | date : MENSAGENS.DD_MM_YYYY_HH_MM_SS }}</span>
                 }
               } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 4) {
                 <span>
                   <i class="status-assinatura refused-icon fa-solid fa-xmark"></i>
-                  Recusado
+                  {{ MENSAGENS.RECUSADO }}
                 </span>
               }
             </div>
@@ -126,22 +124,22 @@
                     @if (assinatura.statusAssinatura === 2) {
                       <span>
                         <i class="status-assinatura check-icon fa-solid fa-check"></i>
-                        Assinado
+                        {{ MENSAGENS.ASSINADO }}
                       </span>
                     } @else if (assinatura.statusAssinatura === 4) {
                       <span>
                         <i class="status-assinatura refused-icon fa-solid fa-xmark"></i>
-                        Recusado
+                        {{ MENSAGENS.RECUSADO }}
                       </span>
                     } @else {
                       <span>
                         <i class="status-assinatura pending-icon fa-regular fa-clock"></i>
-                        Pendente
+                        {{ MENSAGENS.PENDENTE }}
                       </span>
                     }
 
                     @if (assinatura.dataAssinatura) {
-                      <span class="data-assinatura">{{ assinatura.dataAssinatura | date : 'dd/MM/yyyy HH:mm:ss' }}</span>
+                      <span class="data-assinatura">{{ assinatura.dataAssinatura | date : MENSAGENS.DD_MM_YYYY_HH_MM_SS }}</span>
                     }
                   </div>
                 </div>
@@ -151,9 +149,9 @@
             <div class="assinatura-wrap col-12">
               <div class="assinatura-box w-100 d-flex justify-content-center align-items-center p-4">
                 @if (appStatus === 'Error') {
-                  <span class="erro-assinatura">Ocorreu algum erro ao carregar as assinaturas</span>
+                  <span class="erro-assinatura">{{ MENSAGENS.OCORREU_ALGUM_ERRO_AO_CARREGAR_AS_ASSINATURAS }}</span>
                 } @else if (appStatus === 'Success' && programaAtual.demaisAssinaturas.length === 0) {
-                  <span class="erro-assinatura">Não existem assinaturas pendentes para este Programa. É necessário Solicitar Autorização primeiro.</span>
+                  <span class="erro-assinatura">{{ MENSAGENS.NAO_EXISTEM_ASSINATURAS_PENDENTES_PARA_ESTE_PROGRAMA_E_NECESSARIO_SOLICITAR_AUTORIZACAO_PRIMEIRO }}</span>
                 }
               </div>
             </div>

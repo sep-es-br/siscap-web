@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, input, output } from '@angular/core';
 
 import { tap } from 'rxjs';
@@ -31,12 +32,14 @@ import {
   styleUrl: './prospeccoes-list.component.scss',
 })
 export class ProspeccoesListComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   private readonly _textoConteudoPrevinirAcaoModal: Partial<
     Record<TTableActions, string>
   > = {
     editar:
-      'Não é possível alterar os dados de uma prospecção que já foi prospectada.',
-    deletar: 'Não é possível excluir uma prospecção que já foi prospectada.',
+      MENSAGENS.NAO_E_POSSIVEL_ALTERAR_OS_DADOS_DE_UMA_PROSPECCAO_QUE_JA_FOI_PROSPECTADA,
+    deletar: MENSAGENS.NAO_E_POSSIVEL_EXCLUIR_UMA_PROSPECCAO_QUE_JA_FOI_PROSPECTADA,
   };
 
   public prospeccoesList = input<Array<IProspeccaoTableData> | null>([]);
