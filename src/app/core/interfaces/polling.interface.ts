@@ -7,6 +7,7 @@ export enum PollingEtapas {
   DESENTRANHAR = 'DESENTRANHAR',
   CAPTURA_ASSINATURA_PENDENTE = 'CAPTURAASSINAPENDENTE',
   ASSINADO = 'ASSINADO',
+  ENCERRAR_PROCESSO = 'ENCERRARPROCESSO',
   ERRO_FASE = 'ERROFASE',
 }
 
@@ -58,6 +59,7 @@ export const pollingEtapasConfig: Array<{
   { etapa: PollingEtapas.DESENTRANHAR, descricao: 'Desentranhar' },
   { etapa: PollingEtapas.CAPTURA_ASSINATURA_PENDENTE, descricao: 'Assinaturas Solicitadas' },
   { etapa: PollingEtapas.ASSINADO, descricao: 'Assinatura confirmada' },
+  { etapa: PollingEtapas.ENCERRAR_PROCESSO, descricao: 'Encerrar Processo' },
   { etapa: PollingEtapas.ERRO_FASE, descricao: 'Ocorreu um erro' },
 ];
 

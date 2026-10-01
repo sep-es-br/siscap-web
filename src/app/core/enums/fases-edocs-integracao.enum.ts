@@ -9,7 +9,8 @@ export enum FasesEdocsIntegracaoEnum {
   avocamento = 'AVOCAR',
   geracaoPdfParecer = 'GERACAOPDFPARECER',
   assinaturaParecer = 'ASSINATURAPARECER',
-  capturaParecer = 'CAPTURAPARECER'
+  capturaParecer = 'CAPTURAPARECER',
+  encerrarprocesso = 'ENCERRARPROCESSO'
 }
 
 export enum FaseStatuEnum {
