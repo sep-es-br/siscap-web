@@ -13,99 +13,68 @@
         </div> -->
 
         <!-- CABEÇALHO / STATUS COMPACTO DO RATEIO -->
-        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
-            <!-- TÍTULO -->
+        <!-- <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
             <div>
                 <span class="fw-semibold">
                     Regiões Geográficas Atendidas
                 </span>
                 <span class="text-danger">*</span>
             </div>
-
-            <!-- STATUS DO RATEIO -->
             <div class="d-flex align-items-center justify-content-end flex-wrap gap-2">
-                <!-- SITUAÇÃO -->
                 <span class="badge rounded-pill px-3 py-2" [ngClass]="{
-        'bg-success': rateioValido,
-        'bg-danger': !rateioValido && rateioFormArray.length > 0,
-        'bg-secondary': rateioFormArray.length === 0
-      }">
-                    <i class="fa-solid me-1" [ngClass]="{
-          'fa-circle-check': rateioValido,
-          'fa-triangle-exclamation':
-            !rateioValido && rateioFormArray.length > 0,
-          'fa-circle-info': rateioFormArray.length === 0
-        }"></i>
-
+                        'bg-success': rateioValido,
+                        'bg-danger': !rateioValido && rateioFormArray.length > 0,
+                        'bg-secondary': rateioFormArray.length === 0
+                    }">
+                                    <i class="fa-solid me-1" [ngClass]="{
+                        'fa-circle-check': rateioValido,
+                        'fa-triangle-exclamation':
+                            !rateioValido && rateioFormArray.length > 0,
+                        'fa-circle-info': rateioFormArray.length === 0
+                        }"></i>
                     <ng-container *ngIf="rateioFormArray.length === 0">
                         Rateio não iniciado
                     </ng-container>
-
                     <ng-container *ngIf="rateioFormArray.length > 0 && !rateioValido">
                         Rateio pendente
                     </ng-container>
-
                     <ng-container *ngIf="rateioValido">
                         Rateio concluído
                     </ng-container>
                 </span>
-
-                <!-- SEPARADOR -->
                 <span class="text-muted">
                     |
                 </span>
-
-                <!-- LOCALIDADES -->
                 <span class="small fw-semibold text-nowrap">
                     <i class="fa-solid fa-location-dot text-muted me-1"></i>
-
                     {{ rateioFormArray.length }}
-
                     {{
                     rateioFormArray.length === 1
                     ? 'localidade'
                     : 'localidades'
                     }}
                 </span>
-
-                <!-- SEPARADOR -->
                 <span class="text-muted">
                     |
-                </span>
-
-                <!-- PERCENTUAL -->
-                <span class="small fw-semibold text-nowrap" [ngClass]="{
-        'text-success': percentualRateioValido,
-        'text-danger': !percentualRateioValido
-      }">
+                </span
+                <span class="small fw-semibold text-nowrap" [ngClass]="{'text-success': percentualRateioValido, 'text-danger': !percentualRateioValido }">
                     <i class="fa-solid fa-chart-pie me-1"></i>
-
                     {{ formatarPercentual(totalPercentualDistribuido) }}
                 </span>
-
-                <!-- SEPARADOR -->
                 <span class="text-muted">
                     |
                 </span>
-
-                <!-- VALOR -->
-                <span class="small fw-semibold text-nowrap" [ngClass]="{
-        'text-success': valorRateioValido,
-        'text-danger': !valorRateioValido
-      }">
+                <span class="small fw-semibold text-nowrap" [ngClass]="{'text-success': valorRateioValido, 'text-danger': !valorRateioValido }">
                     <i class="fa-solid fa-circle-dollar-to-slot me-1"></i>
-
                     {{ formatarMoeda(totalValorDistribuido) }}
-
                     /
-
                     {{ formatarMoeda(valorEstimadoAcao) }}
                 </span>
             </div>
-        </div>
+        </div> -->
 
-        <!-- COMPLEMENTO DO STATUS -->
-        <!-- <div *ngIf="rateioFormArray.length > 0 && !rateioValido" class="d-flex justify-content-end flex-wrap gap-1 mb-2">
+            <!-- COMPLEMENTO DO STATUS -->
+            <!-- <div *ngIf="rateioFormArray.length > 0 && !rateioValido" class="d-flex justify-content-end flex-wrap gap-1 mb-2">
             <small class="text-danger">
                 <ng-container *ngIf="!percentualRateioValido && diferencaPercentualRateio < 0 ">
                     Faltam
@@ -372,16 +341,14 @@
             </span>
         </div>
 
-        <div class="alert alert-info
+        <!-- <div class="alert alert-info
                d-flex align-items-center gap-2 py-2 mb-3">
-
             <i class="fas fa-info-circle"></i>
-
             <small>
                 Selecione uma ou mais localidades e informe o rateio
                 manualmente ou use a distribuição igualitária.
             </small>
-        </div>
+        </div> -->
 
         <!-- Distribuição -->
         <div class="d-flex flex-wrap
@@ -417,9 +384,9 @@
             a lista de distribuição.
         </div>
 
-        <div *ngIf="rateioFormArray.length > 0" class="table-responsive border rounded">
+        <div *ngIf="rateioFormArray.length > 0" class="border rounded">
 
-            <div class="border rounded">
+            <!-- <div class="border rounded"> -->
 
                 <!-- CABEÇALHO - SOMENTE DESKTOP -->
                 <div class="d-none d-md-block bg-light border-bottom">
@@ -450,11 +417,7 @@
 
 
                 <!-- ITENS -->
-                <div *ngFor="
-      let item of itensRateio;
-      trackBy: trackByRateio;
-      let ultimo = last
-    " class="px-3 py-3" [class.border-bottom]="!ultimo">
+                <div *ngFor="let item of itensRateio; trackBy: trackByRateio; let ultimo = last" class="px-3 py-3" [class.border-bottom]="!ultimo">
 
                     <div class="row align-items-center g-3">
 
@@ -533,7 +496,7 @@
 
                 </div>
 
-            </div>
+            <!-- </div> -->
 
             <!-- <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
