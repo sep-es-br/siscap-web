@@ -240,6 +240,12 @@ export class ProjetosService extends BaseHttpService<
     );
   }
 
+  public verificarSigla(sigla: string): Observable<boolean> {
+    return this._http.get<boolean>(`${this._url}/verificar-sigla`, {
+      params: { sigla: sigla.trim().toUpperCase() },
+    });
+  }
+
   public put(
     id: number,
     body: ProjetoFormModel,

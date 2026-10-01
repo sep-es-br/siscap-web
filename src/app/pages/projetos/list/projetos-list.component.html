@@ -33,7 +33,7 @@
       <tr *ngFor="let projeto of projetosList()" (click)="editarProjeto(projeto.id)">
         <td>{{ projeto.sigla }}</td>
         <td>{{ projeto.titulo }}</td>
-        <td>{{ projeto.dataCriacaoDic  | date:'dd/MM/yyyy' }}</td>
+        <td>{{ projeto.criadoEm | date:'dd/MM/yyyy' }}</td>
         <td></td>
         <td>{{ projeto.status }}</td>
         <td class="processo-edocs" >

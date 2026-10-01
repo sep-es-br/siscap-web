@@ -216,6 +216,11 @@ export const LISTA_GENEROS: Array<string> = ['Masculino', 'Feminino', 'Outro'];
 export const TEMPO_INPUT_USUARIO: number = 750;
 
 /**
+ * Tempo de espera reduzido para validar a disponibilidade da sigla do DIC.
+ */
+export const TEMPO_VALIDACAO_SIGLA: number = 300;
+
+/**
  * Tempo de espera (em milisegundos) para recálculo de valores.
  * Dependente de `TEMPO_INPUT_USUARIO` a fim de evitar conflito
  * entre dados novos (após o input do usuário) e antigos.

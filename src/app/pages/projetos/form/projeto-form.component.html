@@ -177,6 +177,8 @@
                   <validation-message [control]="getControl('sigla')">
                     Sigla do DIC
                     <form-helper-tooltip [texto]="projetoTooltip['sigla']"></form-helper-tooltip>
+                    <form-warning-tooltip *ngIf="siglaEmUso"
+                      [texto]="'A sigla informada já está em uso por outro DIC.'"></form-warning-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('sigla')"
                       [texto]="mensagemComplementarCampo('sigla')"></form-warning-tooltip>
                   </validation-message>
@@ -184,6 +186,10 @@
                 <input mask="" [inputTransformFn]="toUppercaseInputTransformFn"
                   [outputTransformFn]="toUppercaseOutputTransformFn" type="text" class="form-control" id="sigla"
                   formControlName="sigla" maxlength="12" />
+                <small *ngIf="siglaEmUso" class="text-warning d-block mt-1" role="status">
+                  <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                  A sigla informada já está em uso por outro DIC.
+                </small>
               </div>
 
               <div data-control-path="titulo" class="col-12 col-md-9">
@@ -651,17 +657,18 @@
 </ng-template>
 
 <ng-template #autuarConfirmacaoProjetoModal let-modal>
-  <div class="modal-header py-3 justify-content-center">
+  <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
+<div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
       Assinar e Autuar
     </h4>
   </div>
 
-  <div class="modal-body">
+  <div modalBody>
     <p>
       Esta ação realizará no E-Docs a assinatura do DIC e a autuação
       do processo de elegibilidade do projeto, utilizando a sua identidade
-      - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }})
+      - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
     </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
@@ -770,7 +777,7 @@
     </div>
   </div>
 
-  <div class="modal-footer">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>{{
@@ -805,20 +812,22 @@
       </div>
     </div>
   </div>
+</siscap-modal>
 </ng-template>
 
 <ng-template #autuarConfirmacaoReentramentoDicProjetoModal let-modal>
-  <div class="modal-header py-3 justify-content-center">
+  <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
+<div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
       Assinar e Autuar
     </h4>
   </div>
 
-  <div class="modal-body">
+  <div modalBody>
     <p>
       Esta ação realizará no E-Docs a assinatura do DIC e a autuação do processo
       de elegibilidade do projeto, utilizando a sua identidade -
-      {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }})
+      {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
     </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
@@ -953,7 +962,7 @@
 
   </div>
 
-  <div class="modal-footer">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>{{
@@ -987,6 +996,7 @@
       </div>
     </div>
   </div>
+</siscap-modal>
 </ng-template>
 
 <ng-template #confirmarRevisarProjetoModal let-modal>
@@ -1076,13 +1086,8 @@
 </ng-template>
 
 <ng-template #informarComplementacoesProjetoModal let-modal>
-  <div class="modal-header py-2 justify-content-center">
-    <h4 class="modal-title text-primary fw-bold fs-5 text-center">
-      Complementar
-    </h4>
-  </div>
-
-  <div class="modal-body p-3 modal-body-scroll">
+  <siscap-modal titulo="Complementar" [tamanhoCard]="'amplo'" [exibirFecharCabecalho]="false">
+  <div modalBody class="modal-body-scroll">
     <div ngbAccordion [closeOthers]="true">
       <div *ngFor="let campo of camposParaComplementacao" [ngbAccordionItem]="campo.name">
         <h2 ngbAccordionHeader>
@@ -1103,7 +1108,7 @@
     </div>
   </div>
 
-  <div class="modal-footer py-2">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>Cancelar</span>
@@ -1116,15 +1121,17 @@
       </button>
     </div>
   </div>
+  </siscap-modal>
 </ng-template>
 
 <ng-template #efetivarParecerProjetoModal let-modal>
-  <div class="modal-header py-3 justify-content-center">
+  <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
+<div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
       {{ isParecerGeoc ? "Concluir Parecer" : "Enviar Parecer" }}
     </h4>
   </div>
-  <div class="modal-body">
+  <div modalBody>
     <p *ngIf="!isParecerGeoc; else geocAviso">
       Esta ação realizará a captura e assinatura do parecer no E-Docs,
       usando a sua identidade - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
@@ -1139,42 +1146,38 @@
       </p>
     </ng-template>
     <div *ngIf="exibeListaEtapasIntegracao">
-      <div class="d-flex align-items-center gap-2">
+      <div *ngFor="let etapa of etapasEnvioParecer" class="d-flex align-items-center gap-2 mb-2">
         <div>
-          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
+          <span *ngIf="statusEtapasParecer[etapa.codigo] === FaseStatusEnum.NAO_INICIADA">
             <i class="fa-regular fa-circle text-secondary"></i>
           </span>
-          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+          <span *ngIf="statusEtapasParecer[etapa.codigo] === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
             <i class="fa-solid fa-circle-notch fa-spin"></i>
           </span>
-          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.FINALIZADA" class="icon-container">
+          <span *ngIf="statusEtapasParecer[etapa.codigo] === FaseStatusEnum.FINALIZADA" class="icon-container">
             <i class="fa-regular fa-circle-check text-success"></i>
           </span>
-          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.ERROFASE" class="icon-container">
-            <i [ngClass]="
-                iconeClasse(FasesEdocsIntegracaoEnum.captura_assinatura)
-              ">
-            </i>
+          <span *ngIf="statusEtapasParecer[etapa.codigo] === FaseStatusEnum.ERROFASE" class="icon-container">
+            <i class="fa-regular fa-circle-xmark text-danger"></i>
           </span>
         </div>
         <div [style.font-weight]="
-            aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 500 : 'normal'
+            statusEtapasParecer[etapa.codigo] === FaseStatusEnum.FINALIZADA ? 500 : 'normal'
           " [style.color]="
-            aguardandoAssinatura === FaseStatusEnum.FINALIZADA
+            statusEtapasParecer[etapa.codigo] === FaseStatusEnum.FINALIZADA
               ? 'black'
               : '#cccccc'
           ">
-          Assinatura e captura do parecer, gerado em PDF a partir dos dados
-          informados neste formulário;
+          {{ etapa.descricao }}
         </div>
       </div>
       <div *ngIf="finalizadoProcessamentoIntegracao"
         class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
-        <span>ASSINATURA E CAPTURA FINALIZADAS COM SUCESSO!</span>
+        <span>PDF, ASSINATURA E CAPTURA FINALIZADOS COM SUCESSO!</span>
       </div>
     </div>
   </div>
-  <div class="modal-footer">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>{{
@@ -1223,15 +1226,17 @@
       </div>
     </div>
   </div>
+</siscap-modal>
 </ng-template>
 
 <ng-template #entranharPareceresEdocsProjetoModal let-modal>
-  <div class="modal-header py-3 justify-content-center">
+  <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
+<div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
       Entranhar Pareceres
     </h4>
   </div>
-  <div class="modal-body">
+  <div modalBody>
     <p>
       Esta ação realizará o entranhamento dos pareceres orçamentário e
       estratégico ao processo {{ processoEdocsProtocolo }} utilizando a sua
@@ -1275,7 +1280,7 @@
     </div>
   </div>
 
-  <div class="modal-footer">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>{{
@@ -1309,6 +1314,7 @@
       </div>
     </div>
   </div>
+</siscap-modal>
 </ng-template>
 
 <siscap-projeto-modal-pendencias *ngIf="showModalPendencias" (close)="showModalPendencias=false"

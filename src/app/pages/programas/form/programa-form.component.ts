@@ -824,6 +824,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
       centered: true,
     });
+    modalRef.componentInstance.usarModalCentralizado = true;
     
 
     const assinantes = this.programaAtual.programaAssinantesEdocsDto?.map( (assinante) => ({
@@ -887,6 +888,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
       centered: true,
     });
+    modalRef.componentInstance.usarModalCentralizado = true;
 
     modalRef.componentInstance.config = {
       titulo: 'Autuar',

@@ -19,6 +19,8 @@ import {
 
 import {
   concat,
+  debounceTime,
+  distinctUntilChanged,
   finalize,
   map,
   Observable,
@@ -85,7 +87,10 @@ import {
 } from '../../../core/enums/breadcrumb.enum';
 import { TipoValorEnum } from '../../../core/enums/tipo-valor.enum';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
-import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+import {
+  COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO,
+  TEMPO_VALIDACAO_SIGLA,
+} from '../../../core/utils/constants';
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { IEquipe } from '../../../core/interfaces/equipe.interface';
@@ -195,6 +200,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public usuario_IdOrganizacoes: Array<number> = [];
 
   public projetoForm: FormGroup = new FormGroup({});
+  public siglaEmUso = false;
+  private siglaOriginal = '';
   public projetoTooltip: Record<string, string> =
     COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
@@ -233,6 +240,29 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public aguardandoDespacho: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public aguardandoAvocamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public aguardandoDesentranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
+  public get etapasEnvioParecer() {
+    const etapas = [
+      { codigo: FasesEdocsIntegracaoEnum.geracaoPdfParecer, descricao: 'Geração do PDF' },
+      { codigo: FasesEdocsIntegracaoEnum.assinaturaParecer, descricao: 'Assinatura' },
+      { codigo: FasesEdocsIntegracaoEnum.capturaParecer, descricao: 'Captura' },
+    ];
+
+    if (this.isParecerGeoc) {
+      etapas.push(
+        { codigo: FasesEdocsIntegracaoEnum.entranhararquivo, descricao: 'Entranhamento do parecer' },
+        { codigo: FasesEdocsIntegracaoEnum.encerrarprocesso, descricao: 'Encerramento do processo' },
+      );
+    }
+
+    return etapas;
+  }
+  public statusEtapasParecer: Record<string, FaseStatuEnum> = {
+    [FasesEdocsIntegracaoEnum.geracaoPdfParecer]: FaseStatuEnum.NAO_INICIADA,
+    [FasesEdocsIntegracaoEnum.assinaturaParecer]: FaseStatuEnum.NAO_INICIADA,
+    [FasesEdocsIntegracaoEnum.capturaParecer]: FaseStatuEnum.NAO_INICIADA,
+    [FasesEdocsIntegracaoEnum.entranhararquivo]: FaseStatuEnum.NAO_INICIADA,
+    [FasesEdocsIntegracaoEnum.encerrarprocesso]: FaseStatuEnum.NAO_INICIADA,
+  };
   public FaseStatusEnum = FaseStatuEnum;
   public FasesEdocsIntegracaoEnum = FasesEdocsIntegracaoEnum;
 
@@ -1135,6 +1165,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private iniciarForm(projetoFormModel?: ProjetoFormModel): Observable<any> {
 
+    this.siglaOriginal = String(projetoFormModel?.sigla ?? '')
+      .trim()
+      .toUpperCase();
+
     const valorInicialControleValorEstimado = projetoFormModel?.valor
       ? this._projetosService.construirValorControleValorEstimado(
         projetoFormModel?.valor,
@@ -1300,6 +1334,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     });
 
+    this.configurarValidacaoSigla();
+
     const mapSubObs: { [index: string]: Observable<string> } = {};
     projetoFormModel?.pareceresProjeto
       ?.filter((p) => p.usuarioFezEnvioParecer)
@@ -1396,6 +1432,42 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.equipeService.equipeFormArray.clear();
         }
       },
+    );
+  }
+
+  private configurarValidacaoSigla(): void {
+    const siglaControl = this.projetoForm.get('sigla');
+
+    if (!siglaControl) {
+      return;
+    }
+
+    this._subscription.add(
+      siglaControl.valueChanges
+        .pipe(
+          map((value) => String(value ?? '').trim().toUpperCase()),
+          debounceTime(TEMPO_VALIDACAO_SIGLA),
+          distinctUntilChanged(),
+          tap(() => (this.siglaEmUso = false)),
+          switchMap((sigla) => {
+            const siglaFoiAlterada = sigla !== this.siglaOriginal;
+            const deveValidarNaEdicao =
+              this._idProjetoEdicao > 0 &&
+              this.statusProjeto === StatusProjetoEnum.Em_Elaboracao &&
+              siglaFoiAlterada;
+
+            if (!sigla || (this._idProjetoEdicao > 0 && !deveValidarNaEdicao)) {
+              return of(false);
+            }
+
+            return this._projetosService.verificarSigla(sigla).pipe(
+              catchError(() => of(false)),
+            );
+          }),
+        )
+        .subscribe((siglaEmUso) => {
+          this.siglaEmUso = siglaEmUso;
+        }),
     );
   }
 
@@ -2324,6 +2396,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.autuacaoAcionada = true;
     this.assinarAutuar = false;
     this.finalizadoProcessamentoIntegracao = false;
+    this.statusEtapasParecer[FasesEdocsIntegracaoEnum.geracaoPdfParecer] = FaseStatuEnum.EM_ANDAMENTO;
+    this.statusEtapasParecer[FasesEdocsIntegracaoEnum.assinaturaParecer] = FaseStatuEnum.NAO_INICIADA;
+    this.statusEtapasParecer[FasesEdocsIntegracaoEnum.capturaParecer] = FaseStatuEnum.NAO_INICIADA;
     this.projetoForm.get('parecerProjetoUsuario')?.patchValue({
       ...this.projetoForm.get('parecerProjetoUsuario')?.getRawValue(),
       elegivel,
@@ -2335,6 +2410,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.autuacaoAcionada = true;
     this.assinarAutuar = false;
     this.finalizadoProcessamentoIntegracao = false;
+    this.aguardandoEntranhamento = FaseStatuEnum.EM_ANDAMENTO;
     this.efetivarEntranhamentoPareceresProjetoForm(this.projetoForm);
   }
 
@@ -2681,7 +2757,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
           this._toastService.showToast(
             'info',
-            'Processo de autuação iniciado no E-Docs.',
+            'Assinatura e captura do parecer iniciadas no E-Docs.',
           );
         }),
         catchError((error) => {
@@ -2690,7 +2766,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.exibeListaEtapasIntegracao = false;
           this._toastService.showToast(
             'error',
-            'Erro ao iniciar autuação no E-Docs.',
+            'Erro ao iniciar a assinatura e captura do parecer no E-Docs.',
           );
           return EMPTY;
         }),
@@ -2849,7 +2925,27 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private atualizarStatusUI(lista: ProjetoIntegracaoEdocsFasesModel[]) {
     lista.forEach((fase) => {
       switch (fase.etapa) {
+        case FasesEdocsIntegracaoEnum.geracaoPdfParecer:
+        case FasesEdocsIntegracaoEnum.assinaturaParecer:
+        case FasesEdocsIntegracaoEnum.capturaParecer:
+          this.statusEtapasParecer[fase.etapa] = fase.erro
+            ? FaseStatuEnum.ERROFASE
+            : fase.finalizada
+              ? FaseStatuEnum.FINALIZADA
+              : fase.iniciada
+                ? FaseStatuEnum.EM_ANDAMENTO
+                : FaseStatuEnum.NAO_INICIADA;
+          break;
         case FasesEdocsIntegracaoEnum.captura_assinatura:
+          const statusCapturaAssinatura = fase.erro
+            ? FaseStatuEnum.ERROFASE
+            : fase.finalizada
+              ? FaseStatuEnum.FINALIZADA
+              : fase.iniciada
+                ? FaseStatuEnum.EM_ANDAMENTO
+                : FaseStatuEnum.NAO_INICIADA;
+          this.statusEtapasParecer[FasesEdocsIntegracaoEnum.assinaturaParecer] = statusCapturaAssinatura;
+          this.statusEtapasParecer[FasesEdocsIntegracaoEnum.capturaParecer] = statusCapturaAssinatura;
           if (fase.erro) {
             this.aguardandoAssinatura = FaseStatuEnum.ERROFASE;
             break;
@@ -2859,6 +2955,26 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           if (fase.iniciada && fase.finalizada) {
             this.aguardandoAssinatura = FaseStatuEnum.FINALIZADA;
           }
+          break;
+        case FasesEdocsIntegracaoEnum.entranhararquivo:
+          const statusEntranhamento = fase.erro
+            ? FaseStatuEnum.ERROFASE
+            : fase.finalizada
+              ? FaseStatuEnum.FINALIZADA
+              : fase.iniciada
+                ? FaseStatuEnum.EM_ANDAMENTO
+                : FaseStatuEnum.NAO_INICIADA;
+          this.statusEtapasParecer[fase.etapa] = statusEntranhamento;
+          this.aguardandoEntranhamento = statusEntranhamento;
+          break;
+        case FasesEdocsIntegracaoEnum.encerrarprocesso:
+          this.statusEtapasParecer[fase.etapa] = fase.erro
+            ? FaseStatuEnum.ERROFASE
+            : fase.finalizada
+              ? FaseStatuEnum.FINALIZADA
+              : fase.iniciada
+                ? FaseStatuEnum.EM_ANDAMENTO
+                : FaseStatuEnum.NAO_INICIADA;
           break;
         case FasesEdocsIntegracaoEnum.autuar:
           if (fase.erro) {
@@ -3095,6 +3211,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       if (!this.validarFormulario(parecerControl, true)) return;
     }
 
+    for (const etapa of this.etapasEnvioParecer) {
+      this.statusEtapasParecer[etapa.codigo] = FaseStatuEnum.NAO_INICIADA;
+    }
+    this.exibeListaEtapasIntegracao = false;
+    this.finalizadoProcessamentoIntegracao = false;
+    this.erroEmAlgumaFaseModalAutuacao = false;
+
     const modalRef = this._ngbModalService.open(
       this.efetivarParecerProjetoModalTemplate,
       {
@@ -3111,6 +3234,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public abrirEntranhamentoPareceresModal() {
+    this.aguardandoEntranhamento = FaseStatuEnum.NAO_INICIADA;
+    this.exibeListaEtapasIntegracao = false;
+    this.finalizadoProcessamentoIntegracao = false;
+    this.erroEmAlgumaFaseModalAutuacao = false;
+
     const modalRef = this._ngbModalService.open(
       this.entranharPareceresEdocsProjetoModalTemplate,
       {
@@ -3975,6 +4103,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     // Identificador principal do projeto usado fora do form
     this._idProjetoEdicao = projetoSalvo.id;
+    this.siglaOriginal = String(projetoSalvo.sigla ?? '')
+      .trim()
+      .toUpperCase();
 
     this.projetoForm.patchValue(
       {

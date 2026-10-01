@@ -8,7 +8,7 @@ import {
 } from '../../../core/interfaces/programa.interface';
 import { OpcoesDropdownService } from '../../../core/services/opcoes-dropdown/opcoes-dropdown.service';
 import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { UsuarioPerfilModel } from '../../../core/models/usuario.model';
@@ -53,6 +53,8 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
   fasesPollingAssinatura: Array<IPollingFases> = [];
 
   statusAssinatura: PollingEtapasStatus = PollingEtapasStatus.NAO_INICIADA;
+  private pollingSubscription?: Subscription;
+  private pollingModalRef?: NgbModalRef;
 
   assinaturaPropria: boolean = false;
 
@@ -163,6 +165,8 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.pollingSubscription?.unsubscribe();
+    this.pollingModalRef?.dismiss();
     this._programasService.idPrograma$.next(0);
   }
 
@@ -221,6 +225,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
     const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
       centered: true,
     });
+    modalRef.componentInstance.usarModalCentralizado = true;
 
     modalRef.componentInstance.config = {
       titulo: 'Assinar',
@@ -272,9 +277,8 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
   }
 
   dispararModalPollingPrograma() {
-    let pollingModalRef: NgbModalRef;
-
-    this._programasService
+    this.pollingSubscription?.unsubscribe();
+    this.pollingSubscription = this._programasService
       .executarPollingFasesProgramas(this.programaAtual.id)
       .subscribe({
         next: (res: IPollingFases[]) => {
@@ -293,29 +297,23 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
             };
           });
 
-          if (
-            pollingModalRef &&
-            pollingModalRef.componentInstance &&
-            pollingModalRef.componentInstance.fasesPolling
-          ) {
-            pollingModalRef.componentInstance.fasesPolling =
+          if (this.pollingModalRef) {
+            this.pollingModalRef.componentInstance.fasesPolling =
               this.fasesPollingAssinatura;
           } else {
             this.statusAssinatura = PollingEtapasStatus.EM_ANDAMENTO;
 
-            pollingModalRef = this._ngbModalService.open(
+            this.pollingModalRef = this._ngbModalService.open(
               PollingModalComponent,
               { centered: true }
             );
 
-            pollingModalRef.componentInstance.fasesPolling =
+            this.pollingModalRef.componentInstance.fasesPolling =
               this.fasesPollingAssinatura;
-            pollingModalRef.result.then(
-              (resolve) => {},
+            this.pollingModalRef.result.then(
+              () => { this.pollingModalRef = undefined; },
               (result) => {
-                if (result === 'fechar') {
-                  pollingModalRef.close();
-                }
+                this.pollingModalRef = undefined;
               }
             );
           }
@@ -387,6 +385,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
     const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
       centered: true,
     });
+    modalRef.componentInstance.usarModalCentralizado = true;
 
     let textoPrincipal = 'Sua recusa a assinar esse Programa o impossibilitará de ser Autuado.';
 

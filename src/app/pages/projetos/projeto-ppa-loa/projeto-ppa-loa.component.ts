@@ -206,27 +206,35 @@ export class ProjetoPpaLoaComponent {
     controleAcoes.markAsTouched();
     controleAcoes.updateValueAndValidity();
 
+    this.idsAcoesSelecaoPendente.delete(Number(acaoInformada.codigoAcao));
+
     if (this.quantidadeAcoes === 0) {
-
+      // Sem ações, inicia uma nova consulta sem reaproveitar os filtros da
+      // seleção anterior. A seção "Selecione a ação" continua renderizada.
       this.filtrosPlanejamento = [];
-
       this.currentFilter = {
         periodoPlanejamento: this.periodoPlanejamento,
-        idPeriodoPlanejamento: this.periodoPlanejamento?.id
-      };
-
-      this.chips = [
-        {
-          key: 'planejamento',
-          label: 'PLANEJAMENTO',
-          value: this.periodoPlanejamento?.descricao || '-',
-          type: 'base',
-          removable: false
+        idPeriodoPlanejamento: this.periodoPlanejamento?.id ?? null,
+        idsAnos: [],
+        idsUos: [],
+        idsFuncoes: [],
+        idsProgramas: [],
+        chips: {
+          anos: [],
+          uos: [],
+          funcoes: [],
+          programas: [],
+          acoes: []
         }
-      ];
-    } else {
-      this.reconstruirFiltroPelasAcoes();
+      };
+      this.listaAcoes = [];
+      this.listaAcoesFiltradas = [];
+      this.filtroTexto = '';
+      this.selectAll = false;
     }
+
+    this.atualizarChipsFiltros();
+    this.updateSelectAllState();
 
   }
 
@@ -366,6 +374,7 @@ export class ProjetoPpaLoaComponent {
       // A restauração também precisa atualizar imediatamente os chips, sem
       // depender da abertura da modal de filtro.
       this.reconstruirFiltroPelasAcoes();
+      this.carregarListaAcoes(true);
 
     }
 
@@ -379,12 +388,10 @@ export class ProjetoPpaLoaComponent {
   abrirFiltroPlanejamento(): void {
     if (!this.podeEditar || this.naoPrevistoPpa) return;
 
-    if (this.quantidadeAcoes > 0) {
-      this.reconstruirFiltroPelasAcoes();
-    } else {
-      this.sincronizarAnoDasAcoesNoFiltro();
-      this.atualizarChipsFiltros();
-    }
+    // Não reconstrói os critérios pelas ações ao abrir a modal: isso restaura
+    // filtros que já foram removidos diretamente pelos chips.
+    this.sincronizarAnoDasAcoesNoFiltro();
+    this.atualizarChipsFiltros();
 
     this.showModal = true;
   }
@@ -446,22 +453,26 @@ export class ProjetoPpaLoaComponent {
   onRestaurar(): void {
     this.acoesSubscription?.unsubscribe();
 
-    const anoFixado = this.obterAnoFixadoPelasAcoes();
-    const chipAnoAtual = this.currentFilter?.chips?.anos?.find(
-      ano => Number(ano.id) === anoFixado
-    );
+    // As ações fixam o Ano do PPA. Para iniciar uma nova seleção com outro
+    // ano, a restauração remove também os cards e o valor no formulário.
+    this.acoesPlanejamento = [];
+    this.idsAcoesSelecaoPendente.clear();
+
+    const controleAcoes = this.projetoForm.get('acoesPlanejamentoProjeto');
+    controleAcoes?.setValue([]);
+    controleAcoes?.markAsDirty();
+    controleAcoes?.markAsTouched();
+    controleAcoes?.updateValueAndValidity();
 
     this.currentFilter = {
       periodoPlanejamento: this.periodoPlanejamento,
       idPeriodoPlanejamento: this.periodoPlanejamento?.id ?? null,
-      idsAnos: anoFixado != null ? [anoFixado] : [],
+      idsAnos: [],
       idsUos: [],
       idsFuncoes: [],
       idsProgramas: [],
       chips: {
-        anos: anoFixado != null
-          ? [chipAnoAtual ?? { id: anoFixado, nome: String(anoFixado) }]
-          : [],
+        anos: [],
         uos: [],
         funcoes: [],
         programas: [],
@@ -469,13 +480,13 @@ export class ProjetoPpaLoaComponent {
       }
     };
 
-    this.listaAcoes = [];
-    this.listaAcoesFiltradas = [];
     this.filtroTexto = '';
     this.selectAll = false;
-    this.carregandoAcoes = false;
 
     this.atualizarChipsFiltros();
+    this.listaAcoes = [];
+    this.listaAcoesFiltradas = [];
+    this.carregandoAcoes = false;
   }
 
   onApply(filter: any): void {

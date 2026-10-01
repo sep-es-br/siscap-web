@@ -1,8 +1,26 @@
-<div class="modal-header" [ngClass]="config.headerCustomClass ?? 'bg-warning-subtle'">
-  <h4 class="modal-title">{{ config.titulo }}</h4>
-  <button class="btn-close" (click)="activeModal.dismiss()"></button>
-</div>
-<div class="modal-body text-center">
+@if (usarModalCentralizado) {
+  <siscap-modal [titulo]="config.titulo" [tamanhoCard]="config.itensDetalhe ? 'amplo' : 'padrao'">
+    <div modalBody class="text-center">
+      <ng-container *ngTemplateOutlet="conteudoConfirmacao"></ng-container>
+    </div>
+    <div modalFooter class="d-flex gap-2">
+      <ng-container *ngTemplateOutlet="botoesConfirmacao"></ng-container>
+    </div>
+  </siscap-modal>
+} @else {
+  <div class="modal-header" [ngClass]="config.headerCustomClass ?? 'bg-warning-subtle'">
+    <h4 class="modal-title">{{ config.titulo }}</h4>
+    <button class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+  <div class="modal-body text-center">
+    <ng-container *ngTemplateOutlet="conteudoConfirmacao"></ng-container>
+  </div>
+  <div class="modal-footer d-flex justify-content-center">
+    <ng-container *ngTemplateOutlet="botoesConfirmacao"></ng-container>
+  </div>
+}
+
+<ng-template #conteudoConfirmacao>
   <p [ngClass]="config.textoPrincipalCustomClass">{{ config.textoPrincipal }}</p>
   @if (config.textoSecundario) {
   <p [ngClass]="config.textoSecundarioCustomClass">{{ config.textoSecundario }}</p>
@@ -38,8 +56,9 @@
 
   }
   }
-</div>
-<div class="modal-footer d-flex justify-content-center">
+</ng-template>
+
+<ng-template #botoesConfirmacao>
   <siscap-botao [propriedades]="botaoCancelar" (acao)="activeModal.dismiss('cancelar')"></siscap-botao>
   <siscap-botao [propriedades]="botaoProsseguir" (acao)="activeModal.dismiss('confirmar')"></siscap-botao>
-</div>
+</ng-template>
