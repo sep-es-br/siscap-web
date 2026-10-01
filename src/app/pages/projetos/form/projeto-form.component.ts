@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import {
   ChangeDetectorRef,
   Component,
@@ -177,6 +178,9 @@ interface IMontarPayloadProjetoOpcoes {
   styleUrl: './projeto-form.component.scss',
 })
 export class ProjetoFormComponent implements OnInit, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
   private readonly _subscription: Subscription = new Subscription();
 
   private _atualizarProjeto$: Observable<IProjeto> = EMPTY;
@@ -242,15 +246,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public aguardandoDesentranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public get etapasEnvioParecer() {
     const etapas = [
-      { codigo: FasesEdocsIntegracaoEnum.geracaoPdfParecer, descricao: 'Geração do PDF' },
+      { codigo: FasesEdocsIntegracaoEnum.geracaoPdfParecer, descricao: MENSAGENS.GERACAO_DO_PDF },
       { codigo: FasesEdocsIntegracaoEnum.assinaturaParecer, descricao: 'Assinatura' },
       { codigo: FasesEdocsIntegracaoEnum.capturaParecer, descricao: 'Captura' },
     ];
 
     if (this.isParecerGeoc) {
       etapas.push(
-        { codigo: FasesEdocsIntegracaoEnum.entranhararquivo, descricao: 'Entranhamento do parecer' },
-        { codigo: FasesEdocsIntegracaoEnum.encerrarprocesso, descricao: 'Encerramento do processo' },
+        { codigo: FasesEdocsIntegracaoEnum.entranhararquivo, descricao: MENSAGENS.ENTRANHAMENTO_DO_PARECER },
+        { codigo: FasesEdocsIntegracaoEnum.encerrarprocesso, descricao: MENSAGENS.ENCERRAMENTO_DO_PROCESSO },
       );
     }
 
@@ -305,7 +309,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public indicadoresProjeto: IIndicadores[] = [];
   public indicadoresAvulsosProjeto: IIndicadorAvulso[] = [];
 
-  public textoSpinner: string = 'Carregando...';
+  public textoSpinner: string = MENSAGENS.CARREGANDO;
 
   arquivoParecerSelecionado: File | null = null;
 
@@ -330,30 +334,30 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private readonly camposValidacao: readonly CampoValidacao[] = [
     {
       path: 'sigla',
-      campo: 'Sigla',
+      campo: MENSAGENS.SIGLA,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['rascunho', 'envio'],
     },
     {
       path: 'titulo',
-      campo: 'Título',
+      campo: MENSAGENS.TITULO,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['rascunho', 'envio'],
     },
     {
       path: 'idOrganizacao',
-      campo: 'Proponente',
+      campo: MENSAGENS.PROPONENTE,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['rascunho', 'envio'],
     },
     {
       path: 'idResponsavelProponente',
-      campo: 'Gestor Proponente',
+      campo: MENSAGENS.GESTOR_PROPONENTE,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['rascunho', 'envio'],
     },
     // {
@@ -365,58 +369,58 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     // },
     {
       path: 'situacaoProblema',
-      campo: 'Situação Problema',
+      campo: MENSAGENS.SITUACAO_PROBLEMA,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['envio'],
     },
     {
       path: 'objetivo',
-      campo: 'Objetivo Geral',
+      campo: MENSAGENS.OBJETIVO_GERAL,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['envio'],
     },
     {
       path: 'objetivoEspecifico',
-      campo: 'Objetivos Específicos',
+      campo: MENSAGENS.OBJETIVOS_ESPECIFICOS,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['envio'],
     },
     {
       path: 'solucoesPropostas',
-      campo: 'Soluções Propostas',
+      campo: MENSAGENS.SOLUCOES_PROPOSTAS,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['envio'],
     },
     {
       path: 'arranjosInstitucionais',
-      campo: 'Arranjos Institucionais',
+      campo: MENSAGENS.ARRANJOS_INSTITUCIONAIS,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['envio'],
     },
     {
       path: 'pecasPlanejamento',
-      campo: 'Peças de Planejamento',
+      campo: MENSAGENS.PECAS_DE_PLANEJAMENTO,
       aba: 'propriedades',
-      nomeAba: 'DIC',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['envio'],
     },
     {
       path: 'impactos',
-      campo: 'Impactos',
+      campo: MENSAGENS.IMPACTOS,
       aba: 'ods',
-      nomeAba: 'ODS',
+      nomeAba: MENSAGENS.ODS,
       validarEm: ['envio'],
     },
     {
       path: 'acoesRateioProjeto',
-      campo: 'Ações',
+      campo: MENSAGENS.ACOES,
       aba: 'acoes',
-      nomeAba: 'Ações',
+      nomeAba: MENSAGENS.ACOES,
       validarEm: ['envio'],
     },
   ];
@@ -508,7 +512,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.localidadesOpcoes = response;
 
           const microrregioesOpcoes: IOpcoesDropdown[] = [
-            { id: 1, nome: 'Todo o Estado' },
+            { id: 1, nome: MENSAGENS.TODO_O_ESTADO },
           ];
 
           this.microrregioesOpcoes = microrregioesOpcoes.concat(
@@ -571,8 +575,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         (response: IProjeto) => new ProjetoModel(response),
       ),
       catchError((error) => {
-        this._toastService.showToast('error', 'Erro ao carregar projeto', [
-          'Verifique se o projeto está válido.',
+        this._toastService.showToast('error', MENSAGENS.ERRO_AO_CARREGAR_PROJETO, [
+          MENSAGENS.VERIFIQUE_SE_O_PROJETO_ESTA_VALIDO,
         ]);
         this.loading = false;
         this.isLoadingPessoasFiltroTermo = false;
@@ -944,24 +948,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.inicializarAutoSave();
 
     const camposPedidoComplementacao: Record<string, string> = {
-      sigla: 'Sigla',
-      titulo: 'Título',
-      idOrganizacao: 'Organização',
-      quantia: 'Valor Estimado',
-      rateio: 'Rateio',
-      objetivo: 'Objetivo',
-      objetivoEspecifico: 'Objetivo Específico',
-      situacaoProblema: 'Situação Problema',
-      solucoesPropostas: 'Soluções Propostas',
-      impactos: 'Impactos',
-      arranjosInstitucionais: 'Arranjos Institucionais',
-      equipeElaboracao: 'Equipe de Elaboração',
-      acoesProjeto: 'Ações do Projeto',
-      pecasPlanejamento: 'Peças de Planejamento',
-      subResponsavelProponente: 'Responsável Proponente',
-      indicadores: 'Indicadores',
-      ods: 'ODS',
-      geral: 'Geral'
+      sigla: MENSAGENS.SIGLA,
+      titulo: MENSAGENS.TITULO,
+      idOrganizacao: MENSAGENS.ORGANIZACAO,
+      quantia: MENSAGENS.VALOR_ESTIMADO_2,
+      rateio: MENSAGENS.RATEIO,
+      objetivo: MENSAGENS.OBJETIVO,
+      objetivoEspecifico: MENSAGENS.OBJETIVO_ESPECIFICO,
+      situacaoProblema: MENSAGENS.SITUACAO_PROBLEMA,
+      solucoesPropostas: MENSAGENS.SOLUCOES_PROPOSTAS,
+      impactos: MENSAGENS.IMPACTOS,
+      arranjosInstitucionais: MENSAGENS.ARRANJOS_INSTITUCIONAIS,
+      equipeElaboracao: MENSAGENS.EQUIPE_DE_ELABORACAO,
+      acoesProjeto: MENSAGENS.ACOES_DO_PROJETO,
+      pecasPlanejamento: MENSAGENS.PECAS_DE_PLANEJAMENTO,
+      subResponsavelProponente: MENSAGENS.RESPONSAVEL_PROPONENTE,
+      indicadores: MENSAGENS.INDICADORES,
+      ods: MENSAGENS.ODS,
+      geral: MENSAGENS.GERAL
     };
 
     this.camposParaComplementacao = Object.entries(
@@ -1136,7 +1140,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       )
 
     if (jaExiste) {
-      this._toastService.showToast('info', 'Pessoa já incluso na equipe');
+      this._toastService.showToast('info', MENSAGENS.PESSOA_JA_INCLUSO_NA_EQUIPE);
     } else {
       this.equipeService.idMembroNgSelectValue$.next(event);
     }
@@ -1153,7 +1157,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public baixarDIC(): void {
 
     this.loadingDownload = true;
-    this.textoSpinner = 'Baixando DIC...';
+    this.textoSpinner = MENSAGENS.BAIXANDO_DIC;
 
     this._projetosService.baixarDIC(this._idProjetoEdicao)
       .pipe(
@@ -1428,8 +1432,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         ) {
           this._toastService.showToast(
             'info',
-            'Responsável proponente já incluso na equipe',
-            ['Limpando membros da equipe.'],
+            MENSAGENS.RESPONSAVEL_PROPONENTE_JA_INCLUSO_NA_EQUIPE,
+            [MENSAGENS.LIMPANDO_MEMBROS_DA_EQUIPE],
           );
           this.equipeService.equipeFormArray.clear();
         }
@@ -1838,11 +1842,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   getLotacao(nLotacao: number) {
     switch (nLotacao) {
       case LotacaoUsuarioEnum.SUBCAP:
-        return 'Captação';
+        return MENSAGENS.CAPTACAO;
       case LotacaoUsuarioEnum.SUBEO:
-        return 'Orçamentário';
+        return MENSAGENS.ORCAMENTARIO;
       case LotacaoUsuarioEnum.SUBEPP:
-        return 'Estratégico';
+        return MENSAGENS.ESTRATEGICO;
     }
     return undefined;
   }
@@ -1887,7 +1891,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         tap(() => {
           this._toastService.showToast(
             'success',
-            'E-mail de pedido de parecer reenviado com sucesso.',
+            MENSAGENS.E_MAIL_DE_PEDIDO_DE_PARECER_REENVIADO_COM_SUCESSO,
           );
         }),
         finalize(() => {
@@ -1899,7 +1903,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
     this.loadingSubmit = true;
-    this.textoSpinner = 'Salvando projeto...';
+    this.textoSpinner = MENSAGENS.SALVANDO_PROJETO;
 
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
@@ -1949,7 +1953,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.atualizarProjeto(payload, isRascunho, formData).pipe(
         finalize(() => {
           this.loadingSubmit = false;
-          this.textoSpinner = 'Salvando alterações...';
+          this.textoSpinner = MENSAGENS.SALVANDO_ALTERACOES;
         })
       ).subscribe();
 
@@ -1989,14 +1993,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       this.loadingSubmit = true;
       this.textoSpinner = this._idProjetoEdicao
-        ? 'Salvando alterações...'
-        : 'Cadastrando DIC...';
+        ? MENSAGENS.SALVANDO_ALTERACOES
+        : MENSAGENS.CADASTRANDO_DIC;
 
       requisicao
         .pipe(
           finalize(() => {
             this.loadingSubmit = false;
-            this.textoSpinner = 'Carregando...';
+            this.textoSpinner = MENSAGENS.CARREGANDO;
           })
         )
         .subscribe();
@@ -2014,8 +2018,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     const temIndicadoresAvulsos = indicadoresAvulsosArray?.length > 0;
 
     if (!temIndicadores && !temIndicadoresAvulsos) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'É obrigatório informar ao menos um indicador.',
+      this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+        MENSAGENS.E_OBRIGATORIO_INFORMAR_AO_MENOS_UM_INDICADOR,
       ]);
       return false;
     }
@@ -2029,8 +2033,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
 
     if (algumIndicadorSemMeta) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'É obrigatório preencher todas as metas dos indicadores.',
+      this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+        MENSAGENS.E_OBRIGATORIO_PREENCHER_TODAS_AS_METAS_DOS_INDICADORES,
       ]);
       return false;
     }
@@ -2092,7 +2096,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         tap(() => {
           this._toastService.showToast(
             'success',
-            'Projeto cadastrado com sucesso.',
+            MENSAGENS.PROJETO_CADASTRADO_COM_SUCESSO,
           );
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
@@ -2103,7 +2107,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       tap((response: IProjeto) => {
         this._toastService.showToast(
           'success',
-          'Projeto cadastrado com sucesso.',
+          MENSAGENS.PROJETO_CADASTRADO_COM_SUCESSO,
         );
       }),
       finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)),
@@ -2133,7 +2137,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           tap(() => {
             this._toastService.showToast(
               'success',
-              'Projeto alterado com sucesso.',
+              MENSAGENS.PROJETO_ALTERADO_COM_SUCESSO,
             );
             this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
           }),
@@ -2147,7 +2151,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         tap((response: IProjeto) => {
           this._toastService.showToast(
             'success',
-            'Projeto alterado com sucesso.',
+            MENSAGENS.PROJETO_ALTERADO_COM_SUCESSO,
           );
           this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
         }),
@@ -2177,7 +2181,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     if (termo.length < 3) {
       this._toastService.showToast(
         'info',
-        'Informe pelo menos um nome com no mínimo 3 caracteres.',
+        MENSAGENS.INFORME_PELO_MENOS_UM_NOME_COM_NO_MINIMO_3_CARACTERES,
       );
       this.pessoasOpcoesGoves = [];
       this.isLoadingPessoasFiltroTermo = false;
@@ -2198,8 +2202,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         );
 
         if (this.pessoasOpcoesGoves.length === 0) {
-          this._toastService.showToast('info', 'Nenhum agente encontrado.', [
-            'Verifique se já faz parte da equipe.',
+          this._toastService.showToast('info', MENSAGENS.NENHUM_AGENTE_ENCONTRADO, [
+            MENSAGENS.VERIFIQUE_SE_JA_FAZ_PARTE_DA_EQUIPE,
           ]);
         }
 
@@ -2258,19 +2262,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         if (this.statusProjeto == StatusProjetoEnum.Parecer_SEP) {
 
           this.loadingSubmit = true;
-          this.textoSpinner = 'Reenviando pedido parecer...'
+          this.textoSpinner = MENSAGENS.REENVIANDO_PEDIDO_PARECER
 
           this.reenviarEmailPedidoParecer()
             .pipe(finalize(() => {
               this.loadingSubmit = false;
-              this.textoSpinner = 'Carregando...';
+              this.textoSpinner = MENSAGENS.CARREGANDO;
             }))
             .subscribe({
               error: (error) => {
                 console.error('[Reenvio Parecer] Erro:', error);
                 this._toastService.showToast(
                   'error',
-                  'Erro ao reenviar e-mail de pedido de parecer.',
+                  MENSAGENS.ERRO_AO_REENVIAR_E_MAIL_DE_PEDIDO_DE_PARECER,
                 );
               },
             });
@@ -2475,8 +2479,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         indicadoresProjetoPayload.length > 0 || indicadoresAvulsosPayload.length > 0;
 
       if (!temIndicador) {
-        this._toastService.showToast('warning', 'O formulário contém erros.', [
-          'Informe pelo menos um indicador.'
+        this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+          MENSAGENS.INFORME_PELO_MENOS_UM_INDICADOR
         ]);
         return;
       }
@@ -2580,7 +2584,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         error: (err) => {
           this._toastService.showToast(
             'error',
-            'Erro ao enviar revisão: ' + err,
+            formatarMensagem(MENSAGENS.REVISAO_ERRO_DETALHE, { erro: err }),
           );
         },
       });
@@ -2608,7 +2612,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         error: (err) => {
           this._toastService.showToast(
             'error',
-            'Erro ao enviar aviso de arquivamento: ' + err,
+            formatarMensagem(MENSAGENS.ARQUIVAMENTO_ERRO_DETALHE, { erro: err }),
           );
         },
       });
@@ -2621,7 +2625,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     );
 
     if (!possuiComplemento) {
-      this._toastService.showToast('error', 'Nenhum complemento informado.');
+      this._toastService.showToast('error', MENSAGENS.NENHUM_COMPLEMENTO_INFORMADO);
       return;
     }
 
@@ -2639,7 +2643,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this._toastService.showToast(
             'info',
-            'Envio de aviso de complementação iniciado no E-Docs.',
+            MENSAGENS.ENVIO_DE_AVISO_DE_COMPLEMENTACAO_INICIADO_NO_E_DOCS,
           );
 
           this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
@@ -2658,7 +2662,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this._toastService.showToast(
             'error',
-            'Erro ao iniciar o envio de aviso de complementação.',
+            MENSAGENS.ERRO_AO_INICIAR_O_ENVIO_DE_AVISO_DE_COMPLEMENTACAO,
           );
 
           return EMPTY;
@@ -2690,7 +2694,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this._toastService.showToast(
             'info',
-            'Processo reentranhar DIC com correções iniciado no E-Docs.',
+            MENSAGENS.PROCESSO_REENTRANHAR_DIC_COM_CORRECOES_INICIADO_NO_E_DOCS,
           );
 
           this.iniciarPollingEtapasIntegracaoModal();
@@ -2704,7 +2708,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this._toastService.showToast(
             'error',
-            'Erro ao iniciar autuação no E-Docs.',
+            MENSAGENS.ERRO_AO_INICIAR_AUTUACAO_NO_E_DOCS,
           );
 
           return EMPTY;
@@ -2733,7 +2737,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this._toastService.showToast(
             'info',
-            'Processo de autuação iniciado no E-Docs.',
+            MENSAGENS.PROCESSO_DE_AUTUACAO_INICIADO_NO_E_DOCS,
           );
         }),
 
@@ -2771,7 +2775,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this._toastService.showToast(
             'error',
-            'Não foi possível iniciar a autuação no E-Docs.',
+            MENSAGENS.NAO_FOI_POSSIVEL_INICIAR_A_AUTUACAO_NO_E_DOCS,
             [
               error?.error?.message ??
               error?.message ??
@@ -2795,7 +2799,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
           this._toastService.showToast(
             'info',
-            'Assinatura e captura do parecer iniciadas no E-Docs.',
+            MENSAGENS.ASSINATURA_E_CAPTURA_DO_PARECER_INICIADAS_NO_E_DOCS,
           );
         }),
         catchError((error) => {
@@ -2804,7 +2808,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.exibeListaEtapasIntegracao = false;
           this._toastService.showToast(
             'error',
-            'Erro ao iniciar a assinatura e captura do parecer no E-Docs.',
+            MENSAGENS.ERRO_AO_INICIAR_A_ASSINATURA_E_CAPTURA_DO_PARECER_NO_E_DOCS,
           );
           return EMPTY;
         }),
@@ -2831,14 +2835,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
           this._toastService.showToast(
             'info',
-            'Processo de entranhamento de pareceres do DIC iniciado no E-Docs.',
+            MENSAGENS.PROCESSO_DE_ENTRANHAMENTO_DE_PARECERES_DO_DIC_INICIADO_NO_E_DOCS,
           );
         }),
         catchError((error) => {
           this.autuacaoAcionada = false;
           this._toastService.showToast(
             'error',
-            'Erro ao iniciar entranhamento de pareceres do DIC no E-Docs.',
+            MENSAGENS.ERRO_AO_INICIAR_ENTRANHAMENTO_DE_PARECERES_DO_DIC_NO_E_DOCS,
           );
           return of([]);
         }),
@@ -2952,7 +2956,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
           this._toastService.showToast(
             'error',
-            'Erro ao consultar andamento da integração com o E-Docs.',
+            MENSAGENS.ERRO_AO_CONSULTAR_ANDAMENTO_DA_INTEGRACAO_COM_O_E_DOCS,
           );
         }
 
@@ -3095,7 +3099,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     } else {
       this._toastService.showToast(
         'error',
-        'Ocorreu erro na integração com o E-Docs.',
+        MENSAGENS.OCORREU_ERRO_NA_INTEGRACAO_COM_O_E_DOCS,
       );
     }
 
@@ -3139,7 +3143,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     ) {
       this._toastService.showToast(
         'error',
-        'Informe o motivo para arquivamento.',
+        MENSAGENS.INFORME_O_MOTIVO_PARA_ARQUIVAMENTO,
       );
       return;
     }
@@ -3496,10 +3500,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         pendencias.push({
           id: 'equipeElaboracao',
           aba: 'propriedades',
-          nomeAba: 'DIC',
-          campo: 'Equipe de Elaboração',
+          nomeAba: MENSAGENS.DIC,
+          campo: MENSAGENS.EQUIPE_DE_ELABORACAO,
           mensagem:
-            'Informe pelo menos um membro ativo além do Redator.',
+            MENSAGENS.INFORME_PELO_MENOS_UM_MEMBRO_ATIVO_ALEM_DO_REDATOR,
           controlPath: 'equipeElaboracao',
         });
       }
@@ -3512,10 +3516,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         pendencias.push({
           id: 'acoesRateioProjeto',
           aba: 'acoes',
-          nomeAba: 'Ações',
-          campo: 'Ações do Projeto',
+          nomeAba: MENSAGENS.ACOES,
+          campo: MENSAGENS.ACOES_DO_PROJETO,
           mensagem:
-            'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
+            MENSAGENS.VALOR_ESTIMADO_DO_PROJETO_INCOMPATIVEL_COM_SOMATORIO_DE_VALORES_INFORMADO_NAS_ACOES,
           controlPath: 'acoesRateioProjeto',
         });
       }
@@ -3537,10 +3541,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         pendencias.push({
           id: 'indicadores',
           aba: 'indicadores',
-          nomeAba: 'Indicadores',
-          campo: 'Indicadores',
+          nomeAba: MENSAGENS.INDICADORES,
+          campo: MENSAGENS.INDICADORES,
           mensagem:
-            'Informe pelo menos um indicador.',
+            MENSAGENS.INFORME_PELO_MENOS_UM_INDICADOR,
         });
       }
 
@@ -3560,10 +3564,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         pendencias.push({
           id: 'metasIndicadores',
           aba: 'indicadores',
-          nomeAba: 'Indicadores',
-          campo: 'Metas dos Indicadores',
+          nomeAba: MENSAGENS.INDICADORES,
+          campo: MENSAGENS.METAS_DOS_INDICADORES,
           mensagem:
-            'Preencha todas as metas dos indicadores.',
+            MENSAGENS.PREENCHA_TODAS_AS_METAS_DOS_INDICADORES,
         });
       }
     }
@@ -3588,10 +3592,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         pendencias.push({
           id: 'planejamentoPpa',
           aba: 'planejamento',
-          nomeAba: 'Planejamento',
-          campo: 'Planejamento PPA',
+          nomeAba: MENSAGENS.PLANEJAMENTO,
+          campo: MENSAGENS.PLANEJAMENTO_PPA,
           mensagem:
-            'Informe uma ação de planejamento ou marque que o projeto não está previsto no PPA.',
+            MENSAGENS.INFORME_UMA_ACAO_DE_PLANEJAMENTO_OU_MARQUE_QUE_O_PROJETO_NAO_ESTA_PREVISTO_NO_PPA,
         });
       }
     }
@@ -3606,24 +3610,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   ): string {
 
     if (control.hasError('required')) {
-      return `${nomeCampo} é obrigatório.`;
+      return formatarMensagem(MENSAGENS.PARAMETRO_E_OBRIGATORIO, { p0: nomeCampo });
     }
 
     if (control.hasError('maxlength')) {
       const limite =
         control.getError('maxlength')?.requiredLength;
 
-      return `${nomeCampo} deve possuir no máximo ${limite} caracteres.`;
+      return formatarMensagem(MENSAGENS.PARAMETRO_DEVE_POSSUIR_NO_MAXIMO_PARAMETRO_CARACTERES, { p0: nomeCampo, p1: limite });
     }
 
     if (control.hasError('minlength')) {
       const limite =
         control.getError('minlength')?.requiredLength;
 
-      return `${nomeCampo} deve possuir no mínimo ${limite} caracteres.`;
+      return formatarMensagem(MENSAGENS.PARAMETRO_DEVE_POSSUIR_NO_MINIMO_PARAMETRO_CARACTERES, { p0: nomeCampo, p1: limite });
     }
 
-    return `${nomeCampo} possui informação inválida.`;
+    return formatarMensagem(MENSAGENS.PARAMETRO_POSSUI_INFORMACAO_INVALIDA, { p0: nomeCampo });
 
   }
 
@@ -3653,7 +3657,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         );
 
       if (!elemento) {
-        this._toastService.showToast('warning', 'Campo não encontrado:', [pendencia.controlPath,]);
+        this._toastService.showToast('warning', MENSAGENS.CAMPO_NAO_ENCONTRADO, [pendencia.controlPath,]);
         console.warn(
           'Campo não encontrado:',
           pendencia.controlPath,
@@ -3729,10 +3733,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       pendencias.push({
         id: 'equipeElaboracao',
         aba: 'propriedades',
-        nomeAba: 'DIC',
-        campo: 'Equipe de Elaboração',
+        nomeAba: MENSAGENS.DIC,
+        campo: MENSAGENS.EQUIPE_DE_ELABORACAO,
         mensagem:
-          'Informe pelo menos um membro ativo além do Redator.',
+          MENSAGENS.INFORME_PELO_MENOS_UM_MEMBRO_ATIVO_ALEM_DO_REDATOR,
         controlPath: 'equipeElaboracao',
       });
     }
@@ -3746,7 +3750,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           campo: campo.campo,
           aba: campo.aba,
           nomeAba: campo.nomeAba,
-          mensagem: 'Campo obrigatório.'
+          mensagem: MENSAGENS.CAMPO_OBRIGATORIO_2
         })));
 
     return pendencias;

@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -11,13 +12,15 @@ import { BotoesConfig } from '../../components/botao/botao.config';
   styleUrls: ['./success-modal.component.scss'],
 })
 export class SuccessModalComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() public conteudo: string = 'placeholder';
 
   public botaoOK: BotaoPropriedadesModel;
 
   constructor(public activeModal: NgbActiveModal) {
     this.botaoOK = BotoesConfig.gerarBotaoPropriedades('confirmar', {
-      texto: 'OK',
+      texto: MENSAGENS.OK,
     });
   }
 }

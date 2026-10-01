@@ -7,6 +7,7 @@ import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
   NgbAlertModule,
   NgbPaginationModule,
+  NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { SharedModule } from '../../shared/shared.module';
@@ -35,6 +36,7 @@ import { ProspeccoesRoutingModule } from './prospeccoes-routing.module';
     NgxMaskPipe,
     NgbPaginationModule,
     NgbAlertModule,
+    NgbTooltipModule,
     ProspeccoesRoutingModule,
   ],
   exports: [

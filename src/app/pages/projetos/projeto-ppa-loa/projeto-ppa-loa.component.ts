@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, ElementRef, Input, TrackByFunction, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
@@ -80,6 +81,9 @@ declare var bootstrap: any;
 })
 
 export class ProjetoPpaLoaComponent {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
 
   @Input({ required: true }) projetoForm!: FormGroup;
   @Input() podeEditar!: boolean;
@@ -295,11 +299,11 @@ export class ProjetoPpaLoaComponent {
     });
 
     modalRef.componentInstance.config = {
-      titulo: 'Confirmar ação',
+      titulo: MENSAGENS.CONFIRMAR_ACAO,
       headerCustomClass: 'bg-warning-subtle',
-      textoPrincipal: 'Deseja marcar este projeto como não previsto no PPA?',
+      textoPrincipal: MENSAGENS.DESEJA_MARCAR_ESTE_PROJETO_COMO_NAO_PREVISTO_NO_PPA,
       textoSecundario:
-        'As ações do planejamento serão ocultadas e poderão ser restauradas ao desmarcar esta opção.',
+        MENSAGENS.AS_ACOES_DO_PLANEJAMENTO_SERAO_OCULTADAS_E_PODERAO_SER_RESTAURADAS_AO_DESMARCAR_ESTA_OPCAO,
       textoPrincipalCustomClass: 'fw-bold'
     };
 
@@ -417,7 +421,7 @@ export class ProjetoPpaLoaComponent {
           this.chips = [
             {
               key: 'planejamento',
-              label: 'PLANEJAMENTO',
+              label: MENSAGENS.PLANEJAMENTO_2,
               value: periodo.descricao || '-',
               type: 'base',
               removable: false,
@@ -497,7 +501,7 @@ export class ProjetoPpaLoaComponent {
 
       this._toastService.showToast(
         'error',
-        'Obrigatório informar ano e uo para carregamento das açoes.'
+        MENSAGENS.OBRIGATORIO_INFORMAR_ANO_E_UO_PARA_CARREGAMENTO_DAS_ACOES
       );
 
       return;
@@ -518,7 +522,7 @@ export class ProjetoPpaLoaComponent {
 
       {
         key: 'planejamento',
-        label: 'PLANEJAMENTO',
+        label: MENSAGENS.PLANEJAMENTO_2,
         value: this.periodoPlanejamento?.descricao || '-',
         type: 'base',
         removable: false,
@@ -526,7 +530,7 @@ export class ProjetoPpaLoaComponent {
 
       ...(this.currentFilter?.chips?.anos ?? []).map(ano => ({
         key: `anos:${ano.id}`,
-        label: 'ANO',
+        label: MENSAGENS.ANO_2,
         value: ano.nome,
         type: 'filter' as const,
         removable: this.quantidadeAcoes === 0,
@@ -535,7 +539,7 @@ export class ProjetoPpaLoaComponent {
       })),
       ...(this.currentFilter?.chips?.uos ?? []).map(uo => ({
         key: `uos:${uo.id}`,
-        label: 'UO',
+        label: MENSAGENS.UO,
         value: uo.nome,
         type: 'filter' as const,
         // UO é obrigatória para consultar ações. A alteração deve acontecer
@@ -546,7 +550,7 @@ export class ProjetoPpaLoaComponent {
       })),
       ...(this.currentFilter?.chips?.funcoes ?? []).map(funcao => ({
         key: `funcoes:${funcao.id}`,
-        label: 'FUNÇÃO',
+        label: MENSAGENS.FUNCAO_2,
         value: funcao.nome,
         type: 'filter' as const,
         removable: true,
@@ -555,7 +559,7 @@ export class ProjetoPpaLoaComponent {
       })),
       ...(this.currentFilter?.chips?.programas ?? []).map(programa => ({
         key: `programas:${programa.id}`,
-        label: 'PROGRAMA',
+        label: MENSAGENS.PROGRAMA_2,
         value: programa.nome,
         type: 'filter' as const,
         removable: true,
@@ -624,7 +628,7 @@ export class ProjetoPpaLoaComponent {
     if (idsAnos.length === 0) {
       this._toastService.showToast(
         'error',
-        'Informe o ano antes de adicionar uma ação.'
+        MENSAGENS.INFORME_O_ANO_ANTES_DE_ADICIONAR_UMA_ACAO
       );
       return false;
     }
@@ -637,7 +641,7 @@ export class ProjetoPpaLoaComponent {
 
     this._toastService.showToast(
       'error',
-      `Só é permitido adicionar ações do ano ${anoDasAcoesExistentes}. Remova as ações atuais para trocar o ano.`
+      formatarMensagem(MENSAGENS.SO_E_PERMITIDO_ADICIONAR_ACOES_DO_ANO_VALOR_REMOVA_AS_ACOES_ATUAIS_PARA_TROCAR_O_ANO, { p0: anoDasAcoesExistentes })
     );
     return false;
   }
@@ -947,7 +951,7 @@ export class ProjetoPpaLoaComponent {
 
           this._toastService.showToast(
             'error',
-            'Não foi possível consultar os dados das ações selecionadas.'
+            MENSAGENS.NAO_FOI_POSSIVEL_CONSULTAR_OS_DADOS_DAS_ACOES_SELECIONADAS
           );
 
           this.updateSelectAllState();

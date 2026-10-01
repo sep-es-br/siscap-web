@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, input, output } from '@angular/core';
 
 import { tap } from 'rxjs';
@@ -27,6 +28,8 @@ import { converterArrayBufferEmImgSrc } from '../../../core/utils/functions';
   styleUrl: './organizacoes-list.component.scss',
 })
 export class OrganizacoesListComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   public organizacoesList = input<Array<IOrganizacaoTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();
 

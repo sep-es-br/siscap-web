@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { MENSAGENS } from '../../../core/utils/constants';
 
 @Component({
   selector: 'loading-spinner',
@@ -7,5 +8,5 @@ import { Component, input } from '@angular/core';
   styleUrl: './loading-spinner.component.scss',
 })
 export class LoadingSpinnerComponent {
-  public textoProcessando = input<string>('Carregando...');
+  public textoProcessando = input<string>(MENSAGENS.CARREGANDO);
 }

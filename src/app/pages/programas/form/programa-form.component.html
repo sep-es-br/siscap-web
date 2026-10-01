@@ -10,7 +10,7 @@
         (click)="exportarPrograma()"
       >
         <i class="fa-solid fa-file-arrow-down"></i>
-        <span>Baixar Programa</span>
+        <span>{{ MENSAGENS.BAIXAR_PROGRAMA }}</span>
       </button>
     }
   </div>
@@ -23,7 +23,7 @@
             type="button"
             app-progresso-button
             ngbAccordionButton
-            [label]="'Progresso'"
+            [label]="MENSAGENS.PROGRESSO"
             class="btn-progresso"
             icon="bi bi-clock"
           ></button>
@@ -54,13 +54,11 @@
 
                   <ng-template #tooltipContent>
                     <p class="my-0">
-                      Desde: {{ step.dataInicio | date: "dd/MM/yyyy HH:mm" }}
-                    </p>
+                      {{ formatarMensagem(MENSAGENS.DESDE_VALOR, { p0: (step.dataInicio | date: "dd/MM/yyyy HH:mm") }) }}</p>
                     <ng-container *ngIf="step.isFinalizado()">
                       <p class="my-0">
-                        Até: {{ step.dataFim | date: "dd/MM/yyyy HH:mm" }}
-                      </p>
-                      <p class="my-0">Por: {{ step.nomePessoa }}</p>
+                        {{ formatarMensagem(MENSAGENS.ATE_VALOR, { p0: (step.dataFim | date: "dd/MM/yyyy HH:mm") }) }}</p>
+                      <p class="my-0">{{ formatarMensagem(MENSAGENS.POR_VALOR, { p0: (step.nomePessoa) }) }}</p>
                     </ng-container>
                   </ng-template>
                 </ng-template>
@@ -77,7 +75,7 @@
             <div class="col-12 col-md-4">
               <label for="sigla" class="col-12 form-label">
                 <validation-message [control]="getControl('sigla')">
-                  Sigla do Programa
+                  {{ MENSAGENS.SIGLA_DO_PROGRAMA }}
                 </validation-message>
               </label>
               <input
@@ -96,7 +94,7 @@
             <div class="col-12 col-md-8">
               <label for="titulo" class="col-12 form-label">
                 <validation-message [control]="getControl('titulo')">
-                  Titulo do Programa
+                  {{ MENSAGENS.TITULO_DO_PROGRAMA }}
                 </validation-message>
               </label>
               <input
@@ -115,7 +113,7 @@
                 <validation-message
                   [control]="getControl('idProjetoPropostoList')"
                 >
-                  Documento Inicial de Captação
+                  {{ MENSAGENS.DOCUMENTO_INICIAL_DE_CAPTACAO }}
                   <form-helper-tooltip
                     [texto]="projetoTooltip['dicelegivel']"
                   ></form-helper-tooltip>
@@ -125,7 +123,7 @@
               <ng-select
                 id="idProjetoProposto"
                 name="idProjetoProposto"
-                placeholder="-- Selecione um DIC para incluir no programa --"
+                placeholder="{{ MENSAGENS.SELECIONE_UM_DIC_PARA_INCLUIR_NO_PROGRAMA }}"
                 bindValue="nome"
                 [disabled]="!isProgramaAtualEditavel"
                 [(ngModel)]="idProjetoProposto"
@@ -202,7 +200,7 @@
                               <button
                                 class="btn btn-outline-danger rounded-circle"
                                 type="button"
-                                ngbTooltip="Remover Projeto do Programa"
+                                ngbTooltip="{{ MENSAGENS.REMOVER_PROJETO_DO_PROGRAMA }}"
                                 [disabled]="!isProgramaAtualEditavel"
                                 (click)="removerProjetoPropostoDoPrograma(i)"
                               >
@@ -233,7 +231,7 @@
                 for="percentual-custo-administrativo"
                 class="col-12 form-label"
               >
-                % Custos Administrativos
+                {{ MENSAGENS.CUSTOS_ADMINISTRATIVOS }}
               </label>
               <input
                 class="form-control"
@@ -257,7 +255,7 @@
                 for="valor-total-calculado-programa"
                 class="col-12 form-label"
               >
-                Valor Total Estimado
+                {{ MENSAGENS.VALOR_TOTAL_ESTIMADO }}
               </label>
               <input
                 class="form-control input-readonly"
@@ -284,13 +282,13 @@
                 <validation-message
                   [control]="getControl('orgaosEnvolvidosList')"
                 >
-                  Orgãos Envolvidos
+                  {{ MENSAGENS.ORGAOS_ENVOLVIDOS }}
                 </validation-message>
               </label>
               <ng-select
                 id="orgaosEnvolvidos"
                 name="orgaosEnvolvidos"
-                placeholder="-- Selecione os orgãos executores do programa --"
+                placeholder="{{ MENSAGENS.SELECIONE_OS_ORGAOS_EXECUTORES_DO_PROGRAMA }}"
                 formControlName="orgaosEnvolvidosList"
                 [readonly]="!isProgramaAtualEditavel"
                 [multiple]="true"
@@ -316,7 +314,7 @@
             <div class="col-12">
               <label for="membroEquipeCaptacao" class="col-12 form-label">
                 <validation-message [control]="getControl('equipeCaptacao')">
-                  Equipe de Captação
+                  {{ MENSAGENS.EQUIPE_DE_CAPTACAO }}
                 </validation-message>
               </label>
 
@@ -325,7 +323,7 @@
                   class="form-control"
                   id="nomeagente"
                   type="text"
-                  placeholder="Digite o nome"
+                  placeholder="{{ MENSAGENS.DIGITE_O_NOME }}"
                   formControlName="nomeagente"
                   maxLength="150"
                   [ngClass]="{ 'input-readonly': !isProgramaAtualEditavel }"

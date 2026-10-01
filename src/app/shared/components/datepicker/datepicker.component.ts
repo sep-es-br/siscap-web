@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +18,8 @@ import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './datepicker.component.scss',
 })
 export class DatepickerComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() public placeholderText: string = 'placeholderText';
 
   @Output() public dateValueChange: EventEmitter<string> =

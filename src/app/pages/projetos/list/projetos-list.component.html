@@ -13,19 +13,19 @@
     <thead>
       <tr>
         <th [sortable]="'sigla'" (sort)="sortColumn($event)" class="pointer">
-          Sigla
+          {{ MENSAGENS.SIGLA }}
         </th>
         <th [sortable]="'titulo'" (sort)="sortColumn($event)" class="pointer">
-          Título</th>
+          {{ MENSAGENS.TITULO }}</th>
         <th [sortable]="'criadoEm'" (sort)="sortColumn($event)" class="pointer">
-          Criado Em</th>
+          {{ MENSAGENS.CRIADO_EM }}</th>
         <th></th>
         <th [sortable]="'historicoStatus.status'" (sort)="sortColumn($event)" class="pointer">
-          Status</th>
+          {{ MENSAGENS.STATUS }}</th>
         <th [sortable]="'protocoloEdocs'" (sort)="sortColumn($event)" class="pointer">
-          Processo<br>E-Docs</th>
+          {{ MENSAGENS.PROCESSO }}<br>{{ MENSAGENS.E_DOCS }}</th>
         <th [sortable]="'valorEstimado'" (sort)="sortColumn($event)" class="pointer">
-          Valor<br>Estimado</th>
+          {{ MENSAGENS.VALOR_2 }}<br>{{ MENSAGENS.ESTIMADO }}</th>
         <th></th>
       </tr>
     </thead>
@@ -42,7 +42,7 @@
           </a>
           <span class="badge rounded-pill text-bg-warning d-inline-flex align-items-center gap-1" *ngIf="projetosAguardando.has(projeto.id)">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Aguardando E-Docs</span>
+            {{ MENSAGENS.AGUARDANDO_E_DOCS }}</span>
         </td>
         <td class="valor-estimado" >
           {{
@@ -58,7 +58,7 @@
           }}
         </td>
         <td (click)="podeDeletarDic(projeto.id) ? $event.stopPropagation() : undefined">
-          <button type="button" class="btn-excluir" (click)="deletarProjeto(projeto.id)" [hidden]="!podeDeletarDic(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)"  title="Excluir">
+          <button type="button" class="btn-excluir" (click)="deletarProjeto(projeto.id)" [hidden]="!podeDeletarDic(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)"  title="{{ MENSAGENS.EXCLUIR }}">
             <i class="fa-solid fa-trash-can"></i>
           </button>
         </td>

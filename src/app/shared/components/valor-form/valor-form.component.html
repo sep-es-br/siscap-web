@@ -7,7 +7,7 @@
         [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('moeda') }"
       >
         <validation-message [control]="getControl('moeda')">
-          Moeda
+          {{ MENSAGENS.MOEDA }}
           @if (deveComplementarCampo('moeda')) {
             <form-warning-tooltip [texto]="mensagemComplementarCampo('moeda')"></form-warning-tooltip>
           }
@@ -15,7 +15,7 @@
       </label>
       <ng-select
         id="valor-moeda"
-        placeholder="-- Moeda --"
+        placeholder="{{ MENSAGENS.MOEDA_2 }}"
         formControlName="moeda"
         [clearable]="false"
         [readonly]="true"
@@ -35,7 +35,7 @@
         [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('quantia') }"
       >
         <validation-message [control]="getControl('quantia')">
-          Valor Estimado
+          {{ MENSAGENS.VALOR_ESTIMADO_2 }}
           <form-helper-tooltip
             [texto]="contextoValor() === 'PROGRAMA' ? projetoTooltip['valorTotalEstimadoPrograma'] : projetoTooltip['valorEstimado']"
           >
@@ -67,7 +67,7 @@
         [ngClass]="{ 'alerta-complementar-campo': deveComplementarCampo('tipo') }"
       >
         <validation-message [control]="getControl('tipo')">
-          Tipo de Valor
+          {{ MENSAGENS.TIPO_DE_VALOR }}
           @if (deveComplementarCampo('tipo')) {
             <form-warning-tooltip [texto]="mensagemComplementarCampo('tipo')"></form-warning-tooltip>
           }
@@ -75,7 +75,7 @@
       </label>
       <ng-select
         id="valor-tipo"
-        placeholder="-- Tipo --"
+        placeholder="{{ MENSAGENS.TIPO_2 }}"
         formControlName="tipo"
         [clearable]="false"
         [readonly]="true"

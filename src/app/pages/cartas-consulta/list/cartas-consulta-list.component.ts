@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, input, output } from '@angular/core';
 
 import { tap } from 'rxjs';
@@ -30,13 +31,15 @@ import {
   styleUrl: './cartas-consulta-list.component.scss',
 })
 export class CartasConsultaListComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   private readonly _textoConteudoPrevinirAcaoModal: Partial<
     Record<TTableActions, string>
   > = {
     editar:
-      'Não é possível alterar os dados de uma carta consulta pertencente á uma prospecção que já foi prospectada.',
+      MENSAGENS.NAO_E_POSSIVEL_ALTERAR_OS_DADOS_DE_UMA_CARTA_CONSULTA_PERTENCENTE_A_UMA_PROSPECCAO_QUE_JA_FOI_PROSPECTADA,
     deletar:
-      'Não é possível excluir uma carta consulta pertencente á uma prospecção que já foi prospectada.',
+      MENSAGENS.NAO_E_POSSIVEL_EXCLUIR_UMA_CARTA_CONSULTA_PERTENCENTE_A_UMA_PROSPECCAO_QUE_JA_FOI_PROSPECTADA,
   };
 
   public cartasConsultaList = input<Array<ICartaConsultaTableData> | null>([]);

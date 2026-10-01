@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../utils/constants';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -41,7 +42,7 @@ export class OrganizacoesService extends BaseHttpService<
 
   public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
     const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
-      texto: 'Nova Organização',
+      texto: MENSAGENS.NOVA_ORGANIZACAO,
     });
 
     return [botaoCriar];

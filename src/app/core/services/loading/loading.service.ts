@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MENSAGENS } from '../../utils/constants';
 
 import { BehaviorSubject } from 'rxjs';
 
@@ -6,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class LoadingService {
-  private readonly _mensagemPadrao: string = 'Carregando...';
+  private readonly _mensagemPadrao: string = MENSAGENS.CARREGANDO;
 
   private readonly _isProcessando$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
