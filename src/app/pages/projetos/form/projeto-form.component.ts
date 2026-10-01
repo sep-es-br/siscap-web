@@ -298,8 +298,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     'solucoesPropostas',
     'arranjosInstitucionais',
     'pecasPlanejamento',
-    'acoesProjeto',
-    'rateio',
+    'acoesRateioProjeto',
+    // 'rateio',
     'indicadores',
     'ods'
   ];
@@ -333,13 +333,13 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       nomeAba: 'DIC',
       validarEm: ['rascunho', 'envio'],
     },
-    {
-      path: 'valor.quantia',
-      campo: 'Valor Estimado',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
-      validarEm: ['envio'],
-    },
+    // {
+    //   path: 'valor.quantia',
+    //   campo: 'Valor Estimado',
+    //   aba: 'propriedades',
+    //   nomeAba: 'DIC',
+    //   validarEm: ['envio'],
+    // },
     {
       path: 'situacaoProblema',
       campo: 'Situação Problema',
@@ -390,10 +390,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       validarEm: ['envio'],
     },
     {
-      path: 'acoesProjeto',
+      path: 'acoesRateioProjeto',
       campo: 'Ações',
-      aba: 'propriedades',
-      nomeAba: 'DIC',
+      aba: 'acoes',
+      nomeAba: 'Ações',
       validarEm: ['envio'],
     },
   ];
@@ -436,6 +436,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     string | null = null;
 
   private autoSaveComErro = false;
+
+  private enviarProjetoModalRef?: NgbModalRef;
 
   @HostListener('window:resize')
   onResize() {
@@ -540,7 +542,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", response)
+        // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -1686,41 +1688,36 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
   }
 
+  // private compararValorEstimadoValorAcoes(): boolean {
+  //   const valorEstimadoProjeto = this.projetoForm.get(
+  //     'valorEstimado',
+  //   ) as FormControl<number>;
+  //   const valorFormGroup = this.projetoForm.get(
+  //     'valor',
+  //   ) as FormGroup<ValorFormType>;
+  //   const quantiaFormControl = valorFormGroup.get('quantia') as FormControl<
+  //     number | null
+  //   >;
+  //   const acoesProjetoValues = this.projetoForm.get('acoesProjeto')?.value;
+  //   if (!acoesProjetoValues) return false;
+  //   const totalValorAcoesInformadas = acoesProjetoValues
+  //     .filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo)
+  //     .reduce((sum: number, acao: { valorEstimadoAcaoPrincipal: any }) => {
+  //       const valor = Number(acao.valorEstimadoAcaoPrincipal) || 0;
+  //       return sum + valor;
+  //     }, 0);
+  //   const valorSomaAcoes = Number(totalValorAcoesInformadas) || 0;
+  //   const valorEstimadoTotal =
+  //     Number(quantiaFormControl.value) || Number(valorEstimadoProjeto.value);
+  //   if (Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
+
   private compararValorEstimadoValorAcoes(): boolean {
 
-    const valorEstimadoProjeto = this.projetoForm.get(
-      'valorEstimado',
-    ) as FormControl<number>;
-
-    const valorFormGroup = this.projetoForm.get(
-      'valor',
-    ) as FormGroup<ValorFormType>;
-
-    const quantiaFormControl = valorFormGroup.get('quantia') as FormControl<
-      number | null
-    >;
-
-    const acoesProjetoValues = this.projetoForm.get('acoesProjeto')?.value;
-
-    if (!acoesProjetoValues) return false;
-
-    const totalValorAcoesInformadas = acoesProjetoValues
-      .filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo)
-      .reduce((sum: number, acao: { valorEstimadoAcaoPrincipal: any }) => {
-        const valor = Number(acao.valorEstimadoAcaoPrincipal) || 0;
-        return sum + valor;
-      }, 0);
-
-    const valorSomaAcoes = Number(totalValorAcoesInformadas) || 0;
-
-    const valorEstimadoTotal =
-      Number(quantiaFormControl.value) || Number(valorEstimadoProjeto.value);
-
-    if (Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001) {
-      return true;
-    }
-
-    return false;
+    return this.obterAcoesComRateioInvalido().length === 0;
 
   }
 
@@ -1961,7 +1958,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         })
       );
 
-      console.log('PAYLOAD SUBMIT (NOVO):', payload);
+      // console.log('PAYLOAD SUBMIT (NOVO):', payload);
 
       const requisicao = this._idProjetoEdicao
         ? this.atualizarProjeto(payload, isRascunho, formData)
@@ -2198,11 +2195,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public abrirConfirmarEnvioMembroModal(form: FormGroup) {
+    
     this.nomeProponenteResponsavel =
       this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
       '-';
 
-    const modalRef = this._ngbModalService.open(
+    const modalConf = this._ngbModalService.open(
       this.enviarProjetoModalTemplate,
       {
         centered: true,
@@ -2210,11 +2208,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       },
     );
 
-    modalRef.result.then((result) => {
+    modalConf.result.then((result) => {
       if (result === 'confirmado') {
         this.submitProjetoForm(form, false);
       }
     });
+
   }
 
   public abrirConfirmarEnvioParecerModal(form: FormGroup) {
@@ -2344,7 +2343,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
       '-';
 
-    const modalRef = this._ngbModalService.open(
+      this.enviarProjetoModalRef = this._ngbModalService.open(
       this.confirmarIntegracaoProjetoModalTemplate,
       {
         centered: true,
@@ -2353,6 +2352,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         keyboard: false,
       },
     );
+
   }
 
   public confirmarAssinarAutuar() {
@@ -2700,8 +2700,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this._projetosService
       .autuarProjetoEdocs(this._idProjetoEdicao, payload)
       .pipe(
+
         tap(() => {
-          this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
+          this.autuacaoAcionada = true;
+
           this._toastService.showToast(
             'info',
             'Processo de autuação iniciado no E-Docs.',
@@ -2709,13 +2711,49 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         }),
 
         finalize(() => {
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          this.executarAcaoBreadcrumb(
+            BreadcrumbAcoesEnum.Cancelar
+          );
         }),
 
       )
-      .subscribe(() => {
-        this._projetosService.adicionarProjetoAguardando(this._idProjetoEdicao);
-        this.iniciarPollingEtapasIntegracaoModal();
+      .subscribe({
+
+        next: () => {
+
+          this._projetosService.adicionarProjetoAguardando(
+            this._idProjetoEdicao
+          );
+
+          this.iniciarPollingEtapasIntegracaoModal();
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            '[AUTUAÇÃO E-DOCS] Erro ao iniciar autuação:',
+            error
+          );
+
+          this.exibeListaEtapasIntegracao = false;
+          this.autuacaoAcionada = false;
+
+          this.enviarProjetoModalRef?.close();
+          this.enviarProjetoModalRef = undefined;
+
+          this._toastService.showToast(
+            'error',
+            'Não foi possível iniciar a autuação no E-Docs.',
+            [
+              error?.error?.message ??
+              error?.message ??
+              'Ocorreu um erro ao atualizar o DIC.'
+            ]
+          );
+
+        }
+
       });
   }
 
@@ -3330,7 +3368,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       if (campo.path === 'acoesProjeto') {
 
         const acoesFormArray =
-          this.projetoForm.get('acoesProjeto') as FormArray<FormGroup<AcaoFormType>>;
+          this.projetoForm.get('acoesRateioProjeto') as FormArray<FormGroup<AcaoFormType>>;
 
         acoesFormArray.controls.forEach((acaoForm, index) => {
           Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
@@ -3391,24 +3429,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     if (deveValidarAba('propriedades')) {
 
-      const acoes =
-        (this.projetoForm.get('acoesProjeto')?.value ?? []) as IAcao[];
-
-      const possuiAcaoAtiva =
-        acoes.some(
-          (acao: IAcao) =>
-            acao.idStatus === TipoStatusEnum.Ativo,
-        );
-
       if (!this.compararValorEstimadoValorAcoes()) {
         pendencias.push({
-          id: 'acoesProjeto',
-          aba: 'propriedades',
-          nomeAba: 'DIC',
+          id: 'acoesRateioProjeto',
+          aba: 'acoes',
+          nomeAba: 'Ações',
           campo: 'Ações do Projeto',
           mensagem:
             'Valor estimado do projeto incompativel com somatorio de valores informado nas ações.',
-          controlPath: 'acoesProjeto',
+          controlPath: 'acoesRateioProjeto',
         });
       }
 
@@ -3580,6 +3609,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       indicadores: 'nav-indicadores',
       ods: 'nav-ods-indicadores',
       planejamento: 'nav-planejamento',
+      acoes: 'nav-acoes-rateio',
     };
 
     this.abrirAba(abas[aba]);
@@ -4271,7 +4301,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   }
 
-   public irParaAcoes(event: MouseEvent): void {
+  public irParaAcoes(event: MouseEvent): void {
 
     this.solicitarAutoSave();
 
@@ -4283,6 +4313,46 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     campoAcoes?.updateValueAndValidity();
 
     this.abrirAba('nav-acoes-rateio');
+
+  }
+
+  private obterAcoesComRateioInvalido(): IAcao[] {
+
+    const acoes =
+      this.projetoForm
+        .get('acoesRateioProjeto')
+        ?.getRawValue() as IAcao[];
+
+    if (!acoes?.length) {
+      return [];
+    }
+
+    return acoes
+      .filter(
+        acao =>
+          acao.idStatus === TipoStatusEnum.Ativo
+      )
+      .filter(acao => {
+
+        const valorAcao =
+          Number(
+            acao.valorEstimadoAcaoPrincipal
+          ) || 0;
+
+        const totalRateio =
+          (acao.rateio ?? [])
+            .reduce(
+              (total, item) =>
+                total +
+                (Number(item.quantia) || 0),
+              0
+            );
+
+        return Math.abs(
+          valorAcao - totalRateio
+        ) >= 0.001;
+
+      });
 
   }
 
