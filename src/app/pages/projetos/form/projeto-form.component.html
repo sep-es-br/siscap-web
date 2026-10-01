@@ -559,9 +559,9 @@
 
 <ng-template #projetoStatusModal let-modal>
   <div class="modal-body">
-    <p>Status do Projeto: {{ statusProjeto }}</p>
+    <p>Status do projeto: {{ statusProjeto }}</p>
 
-    <label for="status-projeto">Novo Status</label>
+    <label for="status-projeto">Novo status</label>
     <ng-select id="status-projeto" name="status-projeto" [clearable]="false" [(ngModel)]="statusProjetoNovo">
       <ng-option *ngFor="let statusProjetoOpcao of statusProjetoOpcoes" [value]="statusProjetoOpcao">
         {{ statusProjetoOpcao }}
@@ -585,7 +585,7 @@
 
 <ng-template #enviarProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
-    <h4 class="modal-title text-primary fs-4 text-center">Salvar e Enviar</h4>
+    <h4 class="modal-title text-primary fs-4 text-center">Salvar e enviar</h4>
   </div>
   <div class="modal-body">
     <p>Deseja fazer o envio do DIC para o gestor do orgão de origem?</p>
@@ -611,7 +611,7 @@
 
 <ng-template #enviarParecerProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
-    <h4 class="modal-title text-primary fs-4 text-center">Pedir Parecer</h4>
+    <h4 class="modal-title text-primary fs-4 text-center">Pedir parecer</h4>
   </div>
   <div class="modal-body">
     <p>
@@ -638,7 +638,7 @@
   <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
 <div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Assinar e Autuar
+      Assinar e autuar
     </h4>
   </div>
 
@@ -695,7 +695,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Autuação de processo de Solicitação de Captação de Recursos para a sua
+          Autuação de processo de solicitação de captação de recursos para a sua
           instituição;
         </div>
       </div>
@@ -750,8 +750,8 @@
       </div>
     </div>
     <div *ngIf="finalizadoProcessamentoIntegracao"
-      class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
-      <span>PROCESSO AUTUADO E ENCAMINHADO COM SUCESSO!</span>
+      class="alert alert-success text-center fw-semibold mt-4" role="status" aria-live="polite">
+      <span>Processo autuado e encaminhado com sucesso!</span>
     </div>
   </div>
 
@@ -769,7 +769,7 @@
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
-        <span>Assinar e Autuar</span>
+        <span>Assinar e autuar</span>
       </button>
 
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
@@ -797,7 +797,7 @@
   <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
 <div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Assinar e Autuar
+      Assinar e autuar
     </h4>
   </div>
 
@@ -934,8 +934,8 @@
     </div> -->
 
     <div *ngIf="finalizadoProcessamentoIntegracao"
-      class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
-      <span>PROCESSO AUTUADO E ENCAMINHADO COM SUCESSO!</span>
+      class="alert alert-success text-center fw-semibold mt-4" role="status" aria-live="polite">
+      <span>Processo autuado e encaminhado com sucesso!</span>
     </div>
 
   </div>
@@ -953,7 +953,7 @@
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
-        <span>Assinar e Autuar</span>
+        <span>Assinar e autuar</span>
       </button>
 
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
@@ -1019,7 +1019,7 @@
       <div class="mb-3">
         <div class="mb-3">
           <label for="codigoMotivoArquivamento" class="form-label text-primary fs-5">
-            Motivo Arquivamento
+            Motivo do arquivamento
           </label>
           <validation-message class="col-12" [control]="getControl('codigoMotivoArquivamento')">
           </validation-message>
@@ -1106,7 +1106,7 @@
   <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
 <div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      {{ isParecerGeoc ? "Concluir Parecer" : "Enviar Parecer" }}
+      {{ isParecerGeoc ? "Concluir parecer" : "Enviar parecer" }}
     </h4>
   </div>
   <div modalBody>
@@ -1150,8 +1150,8 @@
         </div>
       </div>
       <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
-        <span>PDF, ASSINATURA E CAPTURA FINALIZADOS COM SUCESSO!</span>
+        class="alert alert-success text-center fw-semibold mt-4" role="status" aria-live="polite">
+        <span>PDF, assinatura e captura finalizados com sucesso!</span>
       </div>
     </div>
   </div>
@@ -1169,21 +1169,21 @@
         <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
           (click)="confirmarAssinarCapturarParecer(true)" [disabled]="erroEmAlgumaFaseModalAutuacao">
           <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Tornar Elegível,<br />
-            Assinar e Capturar Parecer</span>
+          <span>Tornar elegível,<br />
+            Assinar e capturar parecer</span>
         </button>
         <button *ngIf="assinarAutuar" class="btn btn-danger icon-text-btn me-2"
           (click)="confirmarAssinarCapturarParecer(false)" [disabled]="erroEmAlgumaFaseModalAutuacao">
           <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Tornar Inelegível,<br />
-            Assinar e Capturar Parecer</span>
+          <span>Tornar inelegível,<br />
+            Assinar e capturar parecer</span>
         </button>
       </ng-container>
       <ng-template #naoGeoc>
         <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
           (click)="confirmarAssinarCapturarParecer()" [disabled]="erroEmAlgumaFaseModalAutuacao">
           <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Assinar e Capturar Parecer</span>
+          <span>Assinar e capturar parecer</span>
         </button>
       </ng-template>
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
@@ -1211,7 +1211,7 @@
   <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
 <div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Entranhar Pareceres
+      Entranhar pareceres
     </h4>
   </div>
   <div modalBody>
@@ -1252,8 +1252,8 @@
         </div>
       </div>
       <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
-        <span>ENTRANHAMENTO PARECERES FINALIZADO COM SUCESSO!</span>
+        class="alert alert-success text-center fw-semibold mt-4" role="status" aria-live="polite">
+        <span>Entranhamento dos pareceres finalizado com sucesso!</span>
       </div>
     </div>
   </div>
@@ -1271,7 +1271,7 @@
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
         (click)="confirmarEntranhamentoParecerProcessoEdocs()" [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
-        <span>Entranhar Pareceres</span>
+        <span>Entranhar pareceres</span>
       </button>
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none">
