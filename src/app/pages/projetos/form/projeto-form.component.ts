@@ -2392,12 +2392,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     this.assinarAutuar = false;
     this.finalizadoProcessamentoIntegracao = false;
     this.statusEtapasParecer[FasesEdocsIntegracaoEnum.geracaoPdfParecer] = FaseStatuEnum.EM_ANDAMENTO;
-    this.statusEtapasParecer[FasesEdocsIntegracaoEnum.assinaturaParecer] = this.isParecerGeoc
-      ? FaseStatuEnum.NAO_INICIADA
-      : FaseStatuEnum.EM_ANDAMENTO;
-    this.statusEtapasParecer[FasesEdocsIntegracaoEnum.capturaParecer] = this.isParecerGeoc
-      ? FaseStatuEnum.NAO_INICIADA
-      : FaseStatuEnum.EM_ANDAMENTO;
+    this.statusEtapasParecer[FasesEdocsIntegracaoEnum.assinaturaParecer] = FaseStatuEnum.NAO_INICIADA;
+    this.statusEtapasParecer[FasesEdocsIntegracaoEnum.capturaParecer] = FaseStatuEnum.NAO_INICIADA;
     this.projetoForm.get('parecerProjetoUsuario')?.patchValue({
       ...this.projetoForm.get('parecerProjetoUsuario')?.getRawValue(),
       elegivel,
@@ -2945,9 +2941,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
                 : FaseStatuEnum.NAO_INICIADA;
           this.statusEtapasParecer[FasesEdocsIntegracaoEnum.assinaturaParecer] = statusCapturaAssinatura;
           this.statusEtapasParecer[FasesEdocsIntegracaoEnum.capturaParecer] = statusCapturaAssinatura;
-          if (!this.isParecerGeoc) {
-            this.statusEtapasParecer[FasesEdocsIntegracaoEnum.geracaoPdfParecer] = statusCapturaAssinatura;
-          }
           if (fase.erro) {
             this.aguardandoAssinatura = FaseStatuEnum.ERROFASE;
             break;
