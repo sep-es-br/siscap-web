@@ -2093,12 +2093,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           payload.idResponsavelProponente = idPessoa;
           return this._projetosService.post(payload, isRascunho);
         }),
-        tap(() => {
+        tap((response: IProjeto) => {
           this._toastService.showToast(
             'success',
             'Projeto cadastrado com sucesso.',
           );
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          this.finalizarSalvamentoProjeto(response, isRascunho);
         }),
       );
     }
@@ -2109,8 +2109,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           'success',
           'Projeto cadastrado com sucesso.',
         );
+        this.finalizarSalvamentoProjeto(response, isRascunho);
       }),
-      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)),
     );
   }
 
@@ -2134,12 +2134,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               formData
             );
           }),
-          tap(() => {
+          tap((response: IProjeto) => {
             this._toastService.showToast(
               'success',
               'Projeto alterado com sucesso.',
             );
-            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+            this.finalizarSalvamentoProjeto(response, isRascunho);
           }),
         );
 
@@ -2153,10 +2153,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'success',
             'Projeto alterado com sucesso.',
           );
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          this.finalizarSalvamentoProjeto(response, isRascunho);
         }),
       );
 
+  }
+
+  private finalizarSalvamentoProjeto(projetoSalvo: IProjeto, isRascunho: boolean): void {
+    if (isRascunho) {
+      this.sincronizarProjetoAposPersistencia(projetoSalvo);
+      return;
+    }
+
+    this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
   }
 
   private alterarStatusProjeto(status: string): void {
