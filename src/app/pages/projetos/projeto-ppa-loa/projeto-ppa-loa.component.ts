@@ -413,13 +413,40 @@ export class ProjetoPpaLoaComponent {
       .subscribe({
         next: (periodo) => {
 
+          const idProjeto = this.projetoForm.get('id')?.value;
+          const periodoPpaLoaSalvo =
+            this.projetoForm.get('periodoPpaLoa')?.value;
+
+          const isNovoDic = !idProjeto;
+          const possuiPeriodoSalvo = !!periodoPpaLoaSalvo;
+
+          if (isNovoDic) {
+            // Novo DIC: usa o período vigente
+            this.projetoForm
+              .get('periodoPpaLoa')
+              ?.patchValue(
+                periodo.descricao,
+                { emitEvent: false }
+              );
+
+            this.configurarPeriodoPlanejamento(periodo);
+
+          } else if (possuiPeriodoSalvo) {
+            // Edição: deve usar o período gravado no DIC
+            this.carregarAcoesProjetoEdicao( periodo.descricao ?? '' );
+
+          } else {
+            // DIC legado sem período salvo
+            // aplicar regra específica de legado
+          }
+
           this.periodoPlanejamento = periodo;
 
           this.chips = [
             {
               key: 'planejamento',
               label: 'PLANEJAMENTO',
-              value: periodo.descricao || '-',
+              value: this.periodoPlanejamento.descricao || '-',
               type: 'base',
               removable: false,
             },
@@ -433,7 +460,7 @@ export class ProjetoPpaLoaComponent {
           this.listaAcoes = [];
           this.listaAcoesFiltradas = [];
 
-          this.carregarAcoesProjetoEdicao();
+          this.carregarAcoesProjetoEdicao( this.periodoPlanejamento.descricao ?? '' );
 
         },
         error: (erro) => {
@@ -985,19 +1012,6 @@ export class ProjetoPpaLoaComponent {
     ].join('|');
   }
 
-  // private montarChaveAcao(acao: PlanejamentoAcao): string {
-  //   return [
-  //     acao.codigoOrgao,
-  //     acao.codigoUnidadeOrcamentaria,
-  //     acao.codigoPrograma,
-  //     acao.codigoAcao,
-  //     acao.codigoFuncao,
-  //     acao.anoAcao
-  //   ]
-  //     .map(valor => String(valor ?? '').trim())
-  //     .join('|');
-  // }
-
   formatarMoeda(valor: number | null | undefined): string {
 
     if (valor == null) {
@@ -1011,7 +1025,7 @@ export class ProjetoPpaLoaComponent {
 
   }
 
-  private carregarAcoesProjetoEdicao(): void {
+  private carregarAcoesProjetoEdicao( periodoPpaLoa: string ): void {
 
     if (this.naoPrevistoPpa) {
       return;
@@ -1045,7 +1059,7 @@ export class ProjetoPpaLoaComponent {
     };
 
     this.carregarAcoesSelecionadas(
-      this.periodoPlanejamento?.descricao ?? '',
+      periodoPpaLoa ?? '', // this.periodoPlanejamento?.descricao ?? '',
       idsFuncoes,
       idsProgramas,
       idsAnos,
@@ -1344,6 +1358,34 @@ export class ProjetoPpaLoaComponent {
         behavior: 'smooth'
       });
     }
+
+  }
+
+  private configurarPeriodoPlanejamento(
+    periodo: IPeriodoPlanejamento
+  ): void {
+  
+    this.periodoPlanejamento = periodo;
+  
+    this.chips = [
+      {
+        key: 'planejamento',
+        label: 'PLANEJAMENTO',
+        value: this.periodoPlanejamento.descricao || '-',
+        type: 'base',
+        removable: false,
+      },
+    ];
+  
+    this.currentFilter = {
+      periodoPlanejamento: this.periodoPlanejamento,
+      idPeriodoPlanejamento: this.periodoPlanejamento.id
+    };
+  
+    this.listaAcoes = [];
+    this.listaAcoesFiltradas = [];
+  
+    this.carregarAcoesProjetoEdicao( this.periodoPlanejamento.descricao ?? '' ); 
 
   }
 
