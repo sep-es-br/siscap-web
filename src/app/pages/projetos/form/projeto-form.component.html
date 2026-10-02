@@ -581,9 +581,9 @@
 
 <ng-template #projetoStatusModal let-modal>
   <div class="modal-body">
-    <p>Status do Projeto: {{ statusProjeto }}</p>
+    <p>Status do projeto: {{ statusProjeto }}</p>
 
-    <label for="status-projeto">Novo Status</label>
+    <label for="status-projeto">Novo status</label>
     <ng-select id="status-projeto" name="status-projeto" [clearable]="false" [(ngModel)]="statusProjetoNovo">
       <ng-option *ngFor="let statusProjetoOpcao of statusProjetoOpcoes" [value]="statusProjetoOpcao">
         {{ statusProjetoOpcao }}
@@ -607,7 +607,7 @@
 
 <ng-template #enviarProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
-    <h4 class="modal-title text-primary fs-4 text-center">Salvar e Enviar</h4>
+    <h4 class="modal-title text-primary fs-4 text-center">Salvar e enviar</h4>
   </div>
   <div class="modal-body">
     <p>Deseja fazer o envio do DIC para o gestor do orgão de origem?</p>
@@ -633,7 +633,7 @@
 
 <ng-template #enviarParecerProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
-    <h4 class="modal-title text-primary fs-4 text-center">Pedir Parecer</h4>
+    <h4 class="modal-title text-primary fs-4 text-center">Pedir parecer</h4>
   </div>
   <div class="modal-body">
     <p>
@@ -657,17 +657,18 @@
 </ng-template>
 
 <ng-template #autuarConfirmacaoProjetoModal let-modal>
-  <div class="modal-header py-3 justify-content-center">
+  <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
+<div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Assinar e Autuar
+      Assinar e autuar
     </h4>
   </div>
 
-  <div class="modal-body">
+  <div modalBody>
     <p>
       Esta ação realizará no E-Docs a assinatura do DIC e a autuação
       do processo de elegibilidade do projeto, utilizando a sua identidade
-      - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }})
+      - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
     </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
@@ -716,7 +717,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Autuação de processo de Solicitação de Captação de Recursos para a sua
+          Autuação de processo de solicitação de captação de recursos para a sua
           instituição;
         </div>
       </div>
@@ -771,12 +772,12 @@
       </div>
     </div>
     <div *ngIf="finalizadoProcessamentoIntegracao"
-      class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
-      <span>PROCESSO AUTUADO E ENCAMINHADO COM SUCESSO!</span>
+      class="alert alert-success text-center fw-semibold mt-4" role="status" aria-live="polite">
+      <span>Processo autuado e encaminhado com sucesso!</span>
     </div>
   </div>
 
-  <div class="modal-footer">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>{{
@@ -790,7 +791,7 @@
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
-        <span>Assinar e Autuar</span>
+        <span>Assinar e autuar</span>
       </button>
 
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
@@ -811,20 +812,22 @@
       </div>
     </div>
   </div>
+</siscap-modal>
 </ng-template>
 
 <ng-template #autuarConfirmacaoReentramentoDicProjetoModal let-modal>
-  <div class="modal-header py-3 justify-content-center">
+  <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
+<div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Assinar e Autuar
+      Assinar e autuar
     </h4>
   </div>
 
-  <div class="modal-body">
+  <div modalBody>
     <p>
       Esta ação realizará no E-Docs a assinatura do DIC e a autuação do processo
       de elegibilidade do projeto, utilizando a sua identidade -
-      {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }})
+      {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
     </p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
@@ -953,13 +956,13 @@
     </div> -->
 
     <div *ngIf="finalizadoProcessamentoIntegracao"
-      class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
-      <span>PROCESSO AUTUADO E ENCAMINHADO COM SUCESSO!</span>
+      class="alert alert-success text-center fw-semibold mt-4" role="status" aria-live="polite">
+      <span>Processo autuado e encaminhado com sucesso!</span>
     </div>
 
   </div>
 
-  <div class="modal-footer">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>{{
@@ -972,7 +975,7 @@
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
-        <span>Assinar e Autuar</span>
+        <span>Assinar e autuar</span>
       </button>
 
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
@@ -993,6 +996,7 @@
       </div>
     </div>
   </div>
+</siscap-modal>
 </ng-template>
 
 <ng-template #confirmarRevisarProjetoModal let-modal>
@@ -1037,7 +1041,7 @@
       <div class="mb-3">
         <div class="mb-3">
           <label for="codigoMotivoArquivamento" class="form-label text-primary fs-5">
-            Motivo Arquivamento
+            Motivo do arquivamento
           </label>
           <validation-message class="col-12" [control]="getControl('codigoMotivoArquivamento')">
           </validation-message>
@@ -1082,13 +1086,8 @@
 </ng-template>
 
 <ng-template #informarComplementacoesProjetoModal let-modal>
-  <div class="modal-header py-2 justify-content-center">
-    <h4 class="modal-title text-primary fw-bold fs-5 text-center">
-      Complementar
-    </h4>
-  </div>
-
-  <div class="modal-body p-3 modal-body-scroll">
+  <siscap-modal titulo="Complementar" [tamanhoCard]="'amplo'" [exibirFecharCabecalho]="false">
+  <div modalBody class="modal-body-scroll">
     <div ngbAccordion [closeOthers]="true">
       <div *ngFor="let campo of camposParaComplementacao" [ngbAccordionItem]="campo.name">
         <h2 ngbAccordionHeader>
@@ -1109,7 +1108,7 @@
     </div>
   </div>
 
-  <div class="modal-footer py-2">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>Cancelar</span>
@@ -1122,15 +1121,17 @@
       </button>
     </div>
   </div>
+  </siscap-modal>
 </ng-template>
 
 <ng-template #efetivarParecerProjetoModal let-modal>
-  <div class="modal-header py-3 justify-content-center">
+  <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
+<div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      {{ isParecerGeoc ? "Concluir Parecer" : "Enviar Parecer" }}
+      {{ isParecerGeoc ? "Concluir parecer" : "Enviar parecer" }}
     </h4>
   </div>
-  <div class="modal-body">
+  <div modalBody>
     <p *ngIf="!isParecerGeoc; else geocAviso">
       Esta ação realizará a captura e assinatura do parecer no E-Docs,
       usando a sua identidade - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
@@ -1145,42 +1146,38 @@
       </p>
     </ng-template>
     <div *ngIf="exibeListaEtapasIntegracao">
-      <div class="d-flex align-items-center gap-2">
+      <div *ngFor="let etapa of etapasEnvioParecer" class="d-flex align-items-center gap-2 mb-2">
         <div>
-          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.NAO_INICIADA">
+          <span *ngIf="statusEtapasParecer[etapa.codigo] === FaseStatusEnum.NAO_INICIADA">
             <i class="fa-regular fa-circle text-secondary"></i>
           </span>
-          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
+          <span *ngIf="statusEtapasParecer[etapa.codigo] === FaseStatusEnum.EM_ANDAMENTO" class="icon-container">
             <i class="fa-solid fa-circle-notch fa-spin"></i>
           </span>
-          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.FINALIZADA" class="icon-container">
+          <span *ngIf="statusEtapasParecer[etapa.codigo] === FaseStatusEnum.FINALIZADA" class="icon-container">
             <i class="fa-regular fa-circle-check text-success"></i>
           </span>
-          <span *ngIf="aguardandoAssinatura === FaseStatusEnum.ERROFASE" class="icon-container">
-            <i [ngClass]="
-                iconeClasse(FasesEdocsIntegracaoEnum.captura_assinatura)
-              ">
-            </i>
+          <span *ngIf="statusEtapasParecer[etapa.codigo] === FaseStatusEnum.ERROFASE" class="icon-container">
+            <i class="fa-regular fa-circle-xmark text-danger"></i>
           </span>
         </div>
         <div [style.font-weight]="
-            aguardandoAssinatura === FaseStatusEnum.FINALIZADA ? 500 : 'normal'
+            statusEtapasParecer[etapa.codigo] === FaseStatusEnum.FINALIZADA ? 500 : 'normal'
           " [style.color]="
-            aguardandoAssinatura === FaseStatusEnum.FINALIZADA
+            statusEtapasParecer[etapa.codigo] === FaseStatusEnum.FINALIZADA
               ? 'black'
               : '#cccccc'
           ">
-          Assinatura e captura do parecer, gerado em PDF a partir dos dados
-          informados neste formulário;
+          {{ etapa.descricao }}
         </div>
       </div>
       <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
-        <span>ASSINATURA E CAPTURA FINALIZADAS COM SUCESSO!</span>
+        class="alert alert-success text-center fw-semibold mt-4" role="status" aria-live="polite">
+        <span>PDF, assinatura e captura finalizados com sucesso!</span>
       </div>
     </div>
   </div>
-  <div class="modal-footer">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>{{
@@ -1194,21 +1191,21 @@
         <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
           (click)="confirmarAssinarCapturarParecer(true)" [disabled]="erroEmAlgumaFaseModalAutuacao">
           <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Tornar Elegível,<br />
-            Assinar e Capturar Parecer</span>
+          <span>Tornar elegível,<br />
+            Assinar e capturar parecer</span>
         </button>
         <button *ngIf="assinarAutuar" class="btn btn-danger icon-text-btn me-2"
           (click)="confirmarAssinarCapturarParecer(false)" [disabled]="erroEmAlgumaFaseModalAutuacao">
           <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Tornar Inelegível,<br />
-            Assinar e Capturar Parecer</span>
+          <span>Tornar inelegível,<br />
+            Assinar e capturar parecer</span>
         </button>
       </ng-container>
       <ng-template #naoGeoc>
         <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
           (click)="confirmarAssinarCapturarParecer()" [disabled]="erroEmAlgumaFaseModalAutuacao">
           <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Assinar e Capturar Parecer</span>
+          <span>Assinar e capturar parecer</span>
         </button>
       </ng-template>
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
@@ -1229,15 +1226,17 @@
       </div>
     </div>
   </div>
+</siscap-modal>
 </ng-template>
 
 <ng-template #entranharPareceresEdocsProjetoModal let-modal>
-  <div class="modal-header py-3 justify-content-center">
+  <siscap-modal [tamanhoCard]="'amplo'" [cabecalhoPersonalizado]="true" [exibirFecharCabecalho]="false">
+<div modalHeader class="py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Entranhar Pareceres
+      Entranhar pareceres
     </h4>
   </div>
-  <div class="modal-body">
+  <div modalBody>
     <p>
       Esta ação realizará o entranhamento dos pareceres orçamentário e
       estratégico ao processo {{ processoEdocsProtocolo }} utilizando a sua
@@ -1275,13 +1274,13 @@
         </div>
       </div>
       <div *ngIf="finalizadoProcessamentoIntegracao"
-        class="alert alert-success text-center fw-semibold text-uppercase mt-4" role="status" aria-live="polite">
-        <span>ENTRANHAMENTO PARECERES FINALIZADO COM SUCESSO!</span>
+        class="alert alert-success text-center fw-semibold mt-4" role="status" aria-live="polite">
+        <span>Entranhamento dos pareceres finalizado com sucesso!</span>
       </div>
     </div>
   </div>
 
-  <div class="modal-footer">
+  <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
         <span>{{
@@ -1294,7 +1293,7 @@
       <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
         (click)="confirmarEntranhamentoParecerProcessoEdocs()" [disabled]="erroEmAlgumaFaseModalAutuacao">
         <i class="fa-solid fa-paper-plane me-2"></i>
-        <span>Entranhar Pareceres</span>
+        <span>Entranhar pareceres</span>
       </button>
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none">
@@ -1315,6 +1314,7 @@
       </div>
     </div>
   </div>
+</siscap-modal>
 </ng-template>
 
 <siscap-projeto-modal-pendencias *ngIf="showModalPendencias" (close)="showModalPendencias=false"

@@ -824,6 +824,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
       centered: true,
     });
+    modalRef.componentInstance.usarModalCentralizado = true;
     
 
     const assinantes = this.programaAtual.programaAssinantesEdocsDto?.map( (assinante) => ({
@@ -833,7 +834,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     modalRef.componentInstance.config = {
 
-      titulo: 'Solicitar Autorização',
+      titulo: 'Solicitar autorização',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal: 'Esta ação solicitará por email autorização para o programa aos gestores',
 
@@ -887,6 +888,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
       centered: true,
     });
+    modalRef.componentInstance.usarModalCentralizado = true;
 
     modalRef.componentInstance.config = {
       titulo: 'Autuar',

@@ -3,16 +3,18 @@ import { BotaoPropriedadesModel } from '../../components/botao/botao.model';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BotoesConfig } from '../../components/botao/botao.config';
 import { BotaoComponent } from "../../components/botao/botao.component";
-import { NgClass } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { ModalComponent } from '../../components/modal/modal.component';
 
 @Component({
   selector: 'app-confirmation-modal',
   standalone: true,
-  imports: [NgClass, BotaoComponent],
+  imports: [NgClass, NgTemplateOutlet, BotaoComponent, ModalComponent],
   templateUrl: './confirmation-modal.component.html',
   styleUrl: './confirmation-modal.component.scss'
 })
 export class ConfirmationModalComponent {
+  @Input() public usarModalCentralizado = false;
 
   @Input() public config: {
 

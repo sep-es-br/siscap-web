@@ -16,6 +16,7 @@ import { TableActionsDropdownComponent } from './table-actions-dropdown/table-ac
 import { ValidationMessageComponent } from './validation-message/validation-message.component';
 import { ProgramaProjetoPropostoVinculadoWarningModalComponent } from './programa-projeto-proposto-vinculado-warning-modal/programa-projeto-proposto-vinculado-warning-modal.component';
 import { BotaoComponent } from '../components/botao/botao.component';
+import { ModalComponent } from '../components/modal/modal.component';
 import { PreventActionModalComponent } from './prevent-action-modal/prevent-action-modal.component';
 import { FormHelperTooltipComponent } from './form-helper-tooltip/form-helper-tooltip.component';
 import { FormWarningTooltipComponent } from './form-warning-tooltip/form-warning-tooltip.component';
@@ -43,11 +44,13 @@ import { PollingModalComponent } from './polling-modal/polling-modal.component';
     CommonModule,
     FormsModule,
     BotaoComponent,
+    ModalComponent,
     NgbDropdownModule,
     NgbAlertModule,
     NgbTooltipModule,
   ],
   exports: [
+    ModalComponent,
     DeleteModalComponent,
     LoadingSpinnerComponent,
     OrganizationResponsibleChangeWarningModalComponent,

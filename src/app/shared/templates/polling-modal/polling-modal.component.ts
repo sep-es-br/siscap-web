@@ -12,6 +12,12 @@ import { IPollingFasesForm } from '../../../core/interfaces/polling.interface';
 })
 export class PollingModalComponent implements OnChanges {
  @Input() fasesPolling: Array<IPollingFasesForm> = [];
+ @Input() tamanhoCard: 'padrao' | 'amplo' = 'padrao';
+ @Input() mensagemSucesso = '';
+
+  get etapasFinalizadas(): boolean {
+    return this.fasesPolling.length > 0 && this.fasesPolling.every(fase => fase.finalizada);
+  }
 
   botaoFechar: BotaoPropriedadesModel;
 

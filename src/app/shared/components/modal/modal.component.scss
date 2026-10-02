@@ -1,0 +1,72 @@
+:host {
+  display: block;
+}
+
+.siscap-modal__header {
+  position: relative;
+  min-height: 68px;
+  padding: 12px 58px;
+  justify-content: center;
+  background-color: #fff;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.siscap-modal__title {
+  margin: 0;
+  color: var(--bs-primary, #0d6efd);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.siscap-modal__close {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-size: 13px;
+  opacity: 1;
+}
+
+.siscap-modal__close:hover,
+.siscap-modal__close:focus,
+.siscap-modal__close:focus-visible {
+  background-color: transparent;
+  box-shadow: none;
+  filter: invert(27%) sepia(89%) saturate(2757%) hue-rotate(337deg) brightness(91%) contrast(91%);
+}
+
+.siscap-modal__body {
+  padding: 16px;
+  color: #212529;
+  line-height: 1.5;
+}
+
+.siscap-modal__heading {
+  width: 100%;
+  text-align: center;
+}
+
+.siscap-modal__footer {
+  min-height: 70px;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid #e1e8ed;
+  background-color: #fff;
+}
+
+@media (max-width: 575.98px) {
+  .siscap-modal__body,
+  .siscap-modal__footer {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}

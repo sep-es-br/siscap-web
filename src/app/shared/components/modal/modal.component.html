@@ -1,23 +1,18 @@
-<div class="modal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header" [ngClass]="headerClasses">
-        <h4 class="modal-title">{{ titulo }}</h4>
-        <button
-          class="btn-close"
-          type="button"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-          (click)="fecharModal.emit()"
-        >
-        </button>
+  <div class="modal-header siscap-modal__header" [ngClass]="headerClasses">
+    @if (cabecalhoPersonalizado) {
+      <ng-content select="[modalHeader]"></ng-content>
+    } @else {
+      <div class="siscap-modal__heading">
+        <h4 class="modal-title siscap-modal__title">{{ titulo }}</h4>
       </div>
-      <div class="modal-body">
-        <ng-content select="[modalBody]"></ng-content>
-      </div>
-      <div class="modal-footer">
-        <ng-content select="[modalFooter]"></ng-content>
-      </div>
-    </div>
+    }
+    @if (exibirFecharCabecalho) {
+      <button class="btn-close siscap-modal__close" type="button" aria-label="Fechar modal" (click)="fechar()"></button>
+    }
   </div>
-</div>
+  <div class="modal-body siscap-modal__body">
+    <ng-content select="[modalBody]"></ng-content>
+  </div>
+  <div class="modal-footer siscap-modal__footer">
+    <ng-content select="[modalFooter]"></ng-content>
+  </div>

@@ -1,6 +1,6 @@
 import { Component, input, OnDestroy, output } from '@angular/core';
 
-import { Subject, take, takeUntil, tap } from 'rxjs';
+import { Subject, Subscription, take, tap } from 'rxjs';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { DeleteModalComponent } from '../../../shared/templates/delete-modal/delete-modal.component';
@@ -39,6 +39,8 @@ export class ProgramasListComponent implements OnDestroy{
   public sortableDirectiveOutput = output<string>();
 
   private destroy$ = new Subject();
+  private pollingSubscription?: Subscription;
+  private pollingModalRef?: NgbModalRef;
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;
@@ -77,6 +79,8 @@ export class ProgramasListComponent implements OnDestroy{
   }
 
   ngOnDestroy(): void {
+    this.pollingSubscription?.unsubscribe();
+    this.pollingModalRef?.dismiss();
     this.destroy$.next(null);
     this.destroy$.complete();
   }
@@ -158,10 +162,10 @@ export class ProgramasListComponent implements OnDestroy{
   }
 
   dispararModalPolling(idPrograma: number) {
-    let pollingModalRef: NgbModalRef;
+    this.pollingSubscription?.unsubscribe();
     this.currentPolling.status = PollingEtapasStatus.EM_ANDAMENTO;
 
-    this._programasService
+    this.pollingSubscription = this._programasService
       .executarPollingFasesProgramas(idPrograma)
       .subscribe({
         next: (listaFases: PollingFasesModel[]) => {
@@ -176,21 +180,23 @@ export class ProgramasListComponent implements OnDestroy{
             };
           });
 
-          if (pollingModalRef) {
-            pollingModalRef.componentInstance.fasesPolling = this.currentPolling.fases;
+          if (this.pollingModalRef) {
+            this.pollingModalRef.componentInstance.fasesPolling = this.currentPolling.fases;
           } else {
-            pollingModalRef = this._ngbModalService.open(
+            this.pollingModalRef = this._ngbModalService.open(
               PollingModalComponent,
               { centered: true }
             );
 
-            pollingModalRef.componentInstance.fasesPolling = this.currentPolling.fases;
-            pollingModalRef.result.then(
-              (resolve) => {},
+            this.pollingModalRef.componentInstance.fasesPolling = this.currentPolling.fases;
+            if (this.currentPolling.fases.some(fase => fase.etapa === PollingEtapas.AUTUAR)) {
+              this.pollingModalRef.componentInstance.tamanhoCard = 'amplo';
+              this.pollingModalRef.componentInstance.mensagemSucesso = 'Programa autuado e entranhado com sucesso!';
+            }
+            this.pollingModalRef.result.then(
+              () => { this.pollingModalRef = undefined; },
               (result) => {
-                if (result === 'fechar') {
-                  pollingModalRef.close();
-                }
+                this.pollingModalRef = undefined;
               }
             );
           }
@@ -198,8 +204,10 @@ export class ProgramasListComponent implements OnDestroy{
         complete: () => {
           const faseAutorizacaoEnviada = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.CAPTURA_ASSINATURA_PENDENTE && fase.finalizada);
           const faseAutuacaoConfirmada = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.AUTUAR && fase.finalizada);
+          const faseEntranhamentoConfirmada = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.ENTRANHAR_ARQUIVO && fase.finalizada);
           const faseAutorizacaoErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.CAPTURA_ASSINATURA_PENDENTE && fase.erro);
           const faseAutuacaoErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.AUTUAR && fase.erro);
+          const faseEntranhamentoErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.ENTRANHAR_ARQUIVO && fase.erro);
 
           if (faseAutorizacaoEnviada) {
             this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
@@ -207,10 +215,6 @@ export class ProgramasListComponent implements OnDestroy{
               if (programaNaLista) {
                 programaNaLista.statusPrograma = StatusPrograma.AGUARDANDO_ASSINATURAS
               };
-            this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
-
-          } else if (faseAutuacaoConfirmada) {
-            this._toastService.showToast('success', 'A Autuação foi realizada com sucesso!');
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
 
           } else if (faseAutorizacaoErro) {
@@ -222,18 +226,19 @@ export class ProgramasListComponent implements OnDestroy{
               : 'Ocorreu um erro ao tentar processar as Autorizações!';
             this._toastService.showToast('error', errorMessage);
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
-          } else if (faseAutuacaoErro) {
-            const errorMessage = (
-              faseAutuacaoErro.msgAlertaExibir &&
-              faseAutuacaoErro.msgAlertaExibir.length > 0
-            )
-              ? faseAutuacaoErro.msgAlertaExibir
-              : 'Ocorreu um erro ao tentar Autuar o programa!';
+          } else if (faseAutuacaoErro || faseEntranhamentoErro) {
+            const faseComErro = faseAutuacaoErro || faseEntranhamentoErro;
+            const errorMessage = faseComErro?.msgAlertaExibir?.length
+              ? faseComErro.msgAlertaExibir
+              : 'Ocorreu um erro ao autuar ou entranhar o Programa no E-Docs!';
             this._toastService.showToast('error', errorMessage);
+            this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
+          } else if (faseAutuacaoConfirmada && faseEntranhamentoConfirmada) {
+            this._toastService.showToast('success', 'Programa autuado e entranhado com sucesso!');
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           }
 
-          if (faseAutuacaoConfirmada) {
+          if (faseAutuacaoConfirmada && faseEntranhamentoConfirmada && !faseAutuacaoErro && !faseEntranhamentoErro) {
             // Busca o Programa pra atualizar o Protocolo EDocs do mesmo
             this._pollingService.executarPollingPersonalizado(
               (() => this._programasService.getById(this.currentPolling.idPrograma)),
@@ -245,30 +250,30 @@ export class ProgramasListComponent implements OnDestroy{
             ).subscribe({
               next: (programa: IPrograma) => {
                 if (programa.protocoloEdocs) {
-                  const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === programa.id);
+                  const programaNaLista = this.programasList()?.find((item: IProgramaTableData) => item.id === programa.id);
                   if (programaNaLista) {
                     programaNaLista.protocoloEdocs = programa.protocoloEdocs;
                     programaNaLista.statusPrograma = StatusPrograma.AUTUADO;
                   }
 
+                  this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
                   this.currentPolling.idPrograma = -1;
                   this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
-                  this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
                 }
               },
               error: (err) => {
                 console.error('Ocorreu um erro ao tentar atualizar o Programa!\n', err);
                 this._toastService.showToast('error', 'Ocorreu um erro ao tentar atualizar o Programa');
 
+                this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
                 this.currentPolling.idPrograma = -1;
                 this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
-                this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
               },
             });
           } else {
+            this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
             this.currentPolling.idPrograma = -1;
             this.currentPolling.status = PollingEtapasStatus.FINALIZADA;
-            this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           }
         },
       });
