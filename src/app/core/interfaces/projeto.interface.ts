@@ -65,6 +65,7 @@ export interface IProjeto {
   acoesPlanejamentoProjeto: Array<IAcaoPlanejamentoProjeto>;
   naoPrevistoNoPpa: boolean;
   acoesRateioProjeto: Array<IAcao>;
+  periodoPpaLoa: string | "";
 }
 
 export interface IProjetoForm

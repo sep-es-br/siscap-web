@@ -72,6 +72,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public acoesPlanejamentoProjeto: Array<IAcaoPlanejamentoProjeto>;
   public naoPrevistoNoPpa: boolean | false;
   public acoesRateioProjeto: Array<IAcao>;
+  public periodoPpaLoa: string | "";
 
   constructor(projetoForm?: IProjetoForm) {
 
@@ -135,6 +136,8 @@ export class ProjetoFormModel implements IProjetoForm {
     this.acoesRateioProjeto = this.construirAcoesRateioProjeto(
       projetoForm?.acoesRateioProjeto
     );
+
+    this.periodoPpaLoa = projetoForm?.periodoPpaLoa ?? '';
 
   }
 

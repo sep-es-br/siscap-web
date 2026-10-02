@@ -1311,6 +1311,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.acoesProjeto,
       ),
 
+      periodoPpaLoa: this._nnfb.control(
+        projetoFormModel?.periodoPpaLoa ?? ''
+      ),
+
     });
 
     this.configurarValidacaoSigla();

@@ -412,6 +412,35 @@ export class ProjetoPpaLoaComponent {
       .subscribe({
         next: (periodo) => {
 
+          const idProjeto = this.projetoForm.get('id')?.value;
+          const periodoPpaLoaSalvo =
+            this.projetoForm.get('periodoPpaLoa')?.value;
+
+          const isNovoDic = !idProjeto;
+          const possuiPeriodoSalvo = !!periodoPpaLoaSalvo;
+
+          if (isNovoDic) {
+            // Novo DIC: usa o período vigente
+            this.projetoForm
+              .get('periodoPpaLoa')
+              ?.patchValue(
+                periodo.descricao,
+                { emitEvent: false }
+              );
+
+            this.configurarPeriodoPlanejamento(periodo);
+
+          } else if (possuiPeriodoSalvo) {
+            // Edição: deve usar o período gravado no DIC
+            this.carregarPeriodoPlanejamentoDoProjeto(
+              periodoPpaLoaSalvo
+            );
+
+          } else {
+            // DIC legado sem período salvo
+            // aplicar regra específica de legado
+          }
+
           this.periodoPlanejamento = periodo;
 
           this.chips = [
