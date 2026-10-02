@@ -70,7 +70,7 @@ export class ProjetosListComponent {
       .pipe(
         takeUntil(this._destroy$)
       )
-      .subscribe(({ idProjeto, protocolo }) => {
+      .subscribe(({ idProjeto }) => {
         const projeto = this.projetosList()?.find(p => p.id === idProjeto);
       });
 
