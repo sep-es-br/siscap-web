@@ -293,6 +293,7 @@ export class ProjetoPpaLoaComponent {
     const modalRef = this._ngbModalService.open(ConfirmationModalComponent, {
       centered: true
     });
+    modalRef.componentInstance.usarModalCentralizado = true;
 
     modalRef.componentInstance.config = {
       titulo: 'Confirmar ação',
