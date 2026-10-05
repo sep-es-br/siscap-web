@@ -11,8 +11,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './modal.component.scss',
 })
 export class ModalComponent {
-  public readonly MENSAGENS = MENSAGENS;
-  @Input() titulo: string = MENSAGENS.TITULO;
+  @Input() titulo: string = 'Título';
   @Input() tamanhoCard: 'padrao' | 'amplo' = 'padrao';
 
   @HostBinding('attr.data-tamanho-card')

@@ -194,7 +194,7 @@ export class ProgramasListComponent implements OnDestroy{
             this.pollingModalRef.componentInstance.fasesPolling = this.currentPolling.fases;
             if (this.currentPolling.fases.some(fase => fase.etapa === PollingEtapas.AUTUAR)) {
               this.pollingModalRef.componentInstance.tamanhoCard = 'amplo';
-              this.pollingModalRef.componentInstance.mensagemSucesso = MENSAGENS.PROGRAMA_AUTUADO_E_ENTRANHADO_COM_SUCESSO;
+              this.pollingModalRef.componentInstance.mensagemSucesso = 'Programa autuado e entranhado com sucesso!';
             }
             this.pollingModalRef.result.then(
               () => { this.pollingModalRef = undefined; },
@@ -233,11 +233,11 @@ export class ProgramasListComponent implements OnDestroy{
             const faseComErro = faseAutuacaoErro || faseEntranhamentoErro;
             const errorMessage = faseComErro?.msgAlertaExibir?.length
               ? faseComErro.msgAlertaExibir
-              : MENSAGENS.OCORREU_UM_ERRO_AO_AUTUAR_OU_ENTRANHAR_O_PROGRAMA_NO_E_DOCS;
+              : 'Ocorreu um erro ao autuar ou entranhar o Programa no E-Docs!';
             this._toastService.showToast('error', errorMessage);
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           } else if (faseAutuacaoConfirmada && faseEntranhamentoConfirmada) {
-            this._toastService.showToast('success', MENSAGENS.PROGRAMA_AUTUADO_E_ENTRANHADO_COM_SUCESSO);
+            this._toastService.showToast('success', 'Programa autuado e entranhado com sucesso!');
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           }
 

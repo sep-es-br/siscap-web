@@ -246,15 +246,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public aguardandoDesentranhamento: FaseStatuEnum = FaseStatuEnum.NAO_INICIADA;
   public get etapasEnvioParecer() {
     const etapas = [
-      { codigo: FasesEdocsIntegracaoEnum.geracaoPdfParecer, descricao: MENSAGENS.GERACAO_DO_PDF },
+      { codigo: FasesEdocsIntegracaoEnum.geracaoPdfParecer, descricao: 'Geração do PDF' },
       { codigo: FasesEdocsIntegracaoEnum.assinaturaParecer, descricao: 'Assinatura' },
       { codigo: FasesEdocsIntegracaoEnum.capturaParecer, descricao: 'Captura' },
     ];
 
     if (this.isParecerGeoc) {
       etapas.push(
-        { codigo: FasesEdocsIntegracaoEnum.entranhararquivo, descricao: MENSAGENS.ENTRANHAMENTO_DO_PARECER },
-        { codigo: FasesEdocsIntegracaoEnum.encerrarprocesso, descricao: MENSAGENS.ENCERRAMENTO_DO_PROCESSO },
+        { codigo: FasesEdocsIntegracaoEnum.entranhararquivo, descricao: 'Entranhamento do parecer' },
+        { codigo: FasesEdocsIntegracaoEnum.encerrarprocesso, descricao: 'Encerramento do processo' },
       );
     }
 
@@ -1338,6 +1338,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         projetoFormModel?.acoesProjeto,
       ),
 
+      periodoPpaLoa: this._nnfb.control(
+        projetoFormModel?.periodoPpaLoa ?? ''
+      ),
+
     });
 
     this.configurarValidacaoSigla();
@@ -1902,6 +1906,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
+    if (this.loadingSubmit) {
+      return;
+    }
+
     this.loadingSubmit = true;
     this.textoSpinner = MENSAGENS.SALVANDO_PROJETO;
 
@@ -1916,6 +1924,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       if (parecerControl.invalid) {
         parecerControl.markAllAsTouched();
+        this.loadingSubmit = false;
+        this.textoSpinner = 'Carregando...';
         return;
       }
 
@@ -1953,7 +1963,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.atualizarProjeto(payload, isRascunho, formData).pipe(
         finalize(() => {
           this.loadingSubmit = false;
-          this.textoSpinner = MENSAGENS.SALVANDO_ALTERACOES;
+          this.textoSpinner = 'Carregando...';
         })
       ).subscribe();
 
@@ -2093,12 +2103,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           payload.idResponsavelProponente = idPessoa;
           return this._projetosService.post(payload, isRascunho);
         }),
-        tap(() => {
+        tap((response: IProjeto) => {
           this._toastService.showToast(
             'success',
             MENSAGENS.PROJETO_CADASTRADO_COM_SUCESSO,
           );
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          this.finalizarSalvamentoProjeto(response, isRascunho);
         }),
       );
     }
@@ -2109,8 +2119,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           'success',
           MENSAGENS.PROJETO_CADASTRADO_COM_SUCESSO,
         );
+        this.finalizarSalvamentoProjeto(response, isRascunho);
       }),
-      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)),
     );
   }
 
@@ -2134,12 +2144,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               formData
             );
           }),
-          tap(() => {
+          tap((response: IProjeto) => {
             this._toastService.showToast(
               'success',
               MENSAGENS.PROJETO_ALTERADO_COM_SUCESSO,
             );
-            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+            this.finalizarSalvamentoProjeto(response, isRascunho);
           }),
         );
 
@@ -2153,10 +2163,19 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             'success',
             MENSAGENS.PROJETO_ALTERADO_COM_SUCESSO,
           );
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
+          this.finalizarSalvamentoProjeto(response, isRascunho);
         }),
       );
 
+  }
+
+  private finalizarSalvamentoProjeto(projetoSalvo: IProjeto, isRascunho: boolean): void {
+    if (isRascunho) {
+      this.sincronizarProjetoAposPersistencia(projetoSalvo);
+      return;
+    }
+
+    this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
   }
 
   private alterarStatusProjeto(status: string): void {
@@ -2224,7 +2243,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public abrirConfirmarEnvioMembroModal(form: FormGroup) {
     
     this.nomeProponenteResponsavel =
-      this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
+      (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
     const modalConf = this._ngbModalService.open(
@@ -2245,7 +2264,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirConfirmarEnvioParecerModal(form: FormGroup) {
     this.nomeProponenteResponsavel =
-      this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
+      (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
     const modalRef = this._ngbModalService.open(
@@ -2351,7 +2370,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private abrirConfirmarIntegracapEdocsModalReentranharDic(form: FormGroup) {
     this.nomeProponenteResponsavel =
-      this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
+      (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
     const modalRef = this._ngbModalService.open(
@@ -2367,7 +2386,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private abrirConfirmarIntegracapEdocsModal(form: FormGroup) {
     this.nomeProponenteResponsavel =
-      this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
+      (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
       this.enviarProjetoModalRef = this._ngbModalService.open(
@@ -2799,7 +2818,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.autuacaoAcionada = true; // usado para desabilitar o botao na modal..
           this._toastService.showToast(
             'info',
-            MENSAGENS.ASSINATURA_E_CAPTURA_DO_PARECER_INICIADAS_NO_E_DOCS,
+            'Assinatura e captura do parecer iniciadas no E-Docs.',
           );
         }),
         catchError((error) => {
@@ -2808,7 +2827,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.exibeListaEtapasIntegracao = false;
           this._toastService.showToast(
             'error',
-            MENSAGENS.ERRO_AO_INICIAR_A_ASSINATURA_E_CAPTURA_DO_PARECER_NO_E_DOCS,
+            'Erro ao iniciar a assinatura e captura do parecer no E-Docs.',
           );
           return EMPTY;
         }),

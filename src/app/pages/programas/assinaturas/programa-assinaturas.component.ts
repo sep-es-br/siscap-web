@@ -401,7 +401,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
     }
 
     modalRef.componentInstance.config = {
-      titulo: MENSAGENS.NAO_AUTORIZO_2,
+      titulo: 'Não autorizo',
       textoPrincipal,
     };
 

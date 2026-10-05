@@ -838,7 +838,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     modalRef.componentInstance.config = {
 
-      titulo: MENSAGENS.SOLICITAR_AUTORIZACAO_2,
+      titulo: 'Solicitar autorização',
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal: MENSAGENS.ESTA_ACAO_SOLICITARA_POR_EMAIL_AUTORIZACAO_PARA_O_PROGRAMA_AOS_GESTORES,
 
