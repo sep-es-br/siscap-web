@@ -22,14 +22,14 @@
     }}</span>
   </div>
   <div class="symbol symbol-30px symbol-md-40px">
-    <img [src]="usuarioAvatar" alt="Perfil do Usuario" />
+    <img [src]="usuarioAvatar" alt="{{ MENSAGENS.PERFIL_DO_USUARIO }}" />
   </div>
 </ng-template>
 
 <ng-template #userDetails>
   <div class="d-flex">
     <div class="symbol symbol-60px symbol-md-70px">
-      <img [src]="usuarioAvatar" alt="Perfil do Usuario" />
+      <img [src]="usuarioAvatar" alt="{{ MENSAGENS.PERFIL_DO_USUARIO }}" />
     </div>
     <div
       class="d-flex flex-column justify-content-center align-items-start mx-4"
@@ -48,12 +48,12 @@
   <div class="separator my-2 mx-0 p-0"></div>
   <button ngbDropdownItem class="btn icon-text-btn" (click)="editarMeuPerfil()">
     <i class="fa-solid fa-user text-primary"></i>
-    <span>Meu Perfil</span>
+    <span>{{ MENSAGENS.MEU_PERFIL }}</span>
   </button>
 
   <div class="separator my-2 mx-0 p-0"></div>
   <button ngbDropdownItem class="btn icon-text-btn" (click)="logOut()">
     <i class="fa-solid fa-power-off text-danger"></i>
-    <span class="text-danger">Sair</span>
+    <span class="text-danger">{{ MENSAGENS.SAIR }}</span>
   </button>
 </ng-template>

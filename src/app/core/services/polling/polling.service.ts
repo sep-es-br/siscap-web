@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../utils/constants';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, filter, map, Observable, of, switchMap, takeWhile, tap, timer } from 'rxjs';
@@ -51,7 +52,7 @@ export class PollingService {
               console.error('Erro ao obter Fases da entidade!\n', err);
               this._toastService.showToast(
                 'error',
-                'Ocorreu um erro na integração com o E-Docs',
+                MENSAGENS.OCORREU_UM_ERRO_NA_INTEGRACAO_COM_O_E_DOCS,
               );
               return of([]);
             })

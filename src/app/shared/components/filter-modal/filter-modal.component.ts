@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -16,9 +17,11 @@ import {
   encapsulation: ViewEncapsulation.None
 })
 export class FilterModalComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() restoreDisabled = false;
   @Input() applyDisabled = false;
-  @Input() ariaLabel = 'Filtros';
+  @Input() ariaLabel = MENSAGENS.FILTROS;
 
   @Output() closeModal = new EventEmitter<void>();
   @Output() restore = new EventEmitter<void>();

@@ -19,11 +19,10 @@
     
     <p class="lista-label">
       <validation-message [control]="getControl('indicadoresProjeto')">
-        INDICADORES SELECIONADOS
+        {{ MENSAGENS.INDICADORES_SELECIONADOS }}
       </validation-message>
     </p>
-    <p class="text-muted" *ngIf="indicadoresSelecionados.length === 0 && getIndicadoresAvulsos().length === 0">Nenhum
-      indicador selecionado.</p>
+    <p class="text-muted" *ngIf="indicadoresSelecionados.length === 0 && getIndicadoresAvulsos().length === 0">{{ MENSAGENS.NENHUM_INDICADOR_SELECIONADO }}</p>
 
     <div id="indicatorsContainer">
 
@@ -39,11 +38,11 @@
               {{item.nomeIndicador }}
               <span *ngIf="item.avulso"
                 style="margin-left:8px; padding:2px 8px; border-radius:12px; background:#f07613; color:#f1f5f9; font-size:11px; font-weight:700;">
-                INDICADOR DE PROJETO
+                {{ MENSAGENS.INDICADOR_DE_PROJETO }}
               </span>
             </div>
 
-            <button type="button" class="remove-indicator-btn" aria-label="Remover indicador"
+            <button type="button" class="remove-indicator-btn" attr.aria-label="{{ MENSAGENS.REMOVER_INDICADOR }}"
               (click)="removeIndicator(item, false)" [disabled]="!isModoEdicao">✖</button>
 
           </div>
@@ -51,25 +50,23 @@
           <div class="indicator-details">
 
             <div *ngIf="item.avulso" class="detail-row" style="margin-bottom: 8px;"><span class="detail-label"
-                style="color: #1a6fc4; font-weight: 800;">FÓRMULA / METODOLOGIA DE CÁLCULO:</span><span
+                style="color: #1a6fc4; font-weight: 800;">{{ MENSAGENS.FORMULA_METODOLOGIA_DE_CALCULO_2 }}</span><span
                 class="detail-value" style="font-weight: 600;">{{item.formulaCalculo }}</span></div>
 
             <div class="detail-row" style="margin-bottom: 8px;"><span class="detail-label"
-                style="color: #1a6fc4; font-weight: 800;">FONTE:</span><span class="detail-value"
+                style="color: #1a6fc4; font-weight: 800;">{{ MENSAGENS.FONTE_2 }}</span><span class="detail-value"
                 style="font-weight: 600;">{{item.medidoPor }}</span></div>
 
             <div class="detail-row" style="margin-bottom: 15px;">
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">UNIDADE DE
-                MEDIDA:</span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">{{ MENSAGENS.UNIDADE_DE_MEDIDA_2 }}</span>
               <span class="detail-value" style="font-weight: 600; margin-right:24px;">{{item.unidadeMedida}}</span>
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">BASE DE
-                REFERÊNCIA:</span>
+              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">{{ MENSAGENS.BASE_DE_REFERENCIA_2 }}</span>
               <span class="detail-value" style="font-weight: 600;"> {{ item?.maiorAnoInidicador }}
                 ({{item?.maiorMetaIndicador }}) </span>
             </div>
 
             <span *ngIf="!item.avulso" class="meta-section-label"
-              style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META:</span>
+              style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">{{ MENSAGENS.META }}</span>
             <div *ngIf="!item.avulso" class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
               <div class="mindicador-selecionado"
                 *ngFor="let meta of getMetasIndicadorBi(i); let j = index; trackBy: trackByMeta">
@@ -82,8 +79,7 @@
               </div>
             </div>
 
-            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">META DO
-              PROJETO:</span>
+            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">{{ MENSAGENS.META_DO_PROJETO_2 }}</span>
             <div [formGroup]="getIndicadorForm(i)">
               <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;"
                 formArrayName="metasIndicadorProjeto">
@@ -97,7 +93,7 @@
                     <validation-message class="meta-validation-message"
                       [control]="getMetaProjetoControl(i, j)"></validation-message>
                     <input type="text" class="meta-value-input" formControlName="valorMeta" maxlength="20"
-                      placeholder="Digite a meta" [disabled]="!isModoEdicao">
+                      placeholder="{{ MENSAGENS.DIGITE_A_META }}" [disabled]="!isModoEdicao">
                   </div>
                 </div>
               </div>
@@ -123,12 +119,12 @@
 
               <span
                 style="margin-left:8px; padding:2px 8px; border-radius:12px; background:#f07613; color:#f1f5f9; font-size:11px; font-weight:700;">
-                INDICADOR DE PROJETO
+                {{ MENSAGENS.INDICADOR_DE_PROJETO }}
               </span>
 
             </div>
 
-            <button type="button" class="remove-indicator-btn" aria-label="Remover indicador de projeto"
+            <button type="button" class="remove-indicator-btn" attr.aria-label="{{ MENSAGENS.REMOVER_INDICADOR_DE_PROJETO }}"
               (click)="removeIndicadorAvulsoProjeto(i)" [disabled]="somenteLeitura">✖</button>
 
           </div>
@@ -137,7 +133,7 @@
 
             <div class="detail-row" style="margin-bottom: 8px;">
               <span class="detail-label" style="color: #1a6fc4; font-weight: 800;">
-                FÓRMULA / METODOLOGIA DE CÁLCULO:
+                {{ MENSAGENS.FORMULA_METODOLOGIA_DE_CALCULO_2 }}
               </span>
               <span class="detail-value" style="font-weight: 600;">
                 {{ item.get('formulaCalculo')?.value }}
@@ -146,7 +142,7 @@
 
             <div class="detail-row" style="margin-bottom: 8px;">
               <span class="detail-label" style="color: #1a6fc4; font-weight: 800;">
-                FONTE:
+                {{ MENSAGENS.FONTE_2 }}
               </span>
               <span class="detail-value" style="font-weight: 600;">
                 {{ item.get('fonteIndicador')?.value || item.get('medidoPor')?.value }}
@@ -155,7 +151,7 @@
 
             <div class="detail-row" style="margin-bottom: 15px;">
               <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">
-                UNIDADE DE MEDIDA:
+                {{ MENSAGENS.UNIDADE_DE_MEDIDA_2 }}
               </span>
 
               <span class="detail-value" style="font-weight: 600; margin-right:24px;">
@@ -163,7 +159,7 @@
               </span>
 
               <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">
-                BASE DE REFERÊNCIA:
+                {{ MENSAGENS.BASE_DE_REFERENCIA_2 }}
               </span>
 
               <span class="detail-value" style="font-weight: 600;">
@@ -172,7 +168,7 @@
             </div>
 
             <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">
-              META DO PROJETO:
+              {{ MENSAGENS.META_DO_PROJETO_2 }}
             </span>
 
             <div [formGroup]="getIndicadorAvulsoProjetoForm(i)">
@@ -194,7 +190,7 @@
                       [control]="getMetaIndicadorAvulsoProjetoControl(i, j)"></validation-message>
 
                     <input type="text" class="meta-value-input" formControlName="valorMeta" maxlength="20"
-                      placeholder="Digite a meta">
+                      placeholder="{{ MENSAGENS.DIGITE_A_META }}">
 
                   </div>
 

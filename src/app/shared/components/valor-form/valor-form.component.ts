@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 import {
@@ -37,11 +38,13 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
   styleUrl: './valor-form.component.scss',
 })
 export class ValorFormComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   public moedasList = input<Array<IMoeda>>();
   public tiposValorOpcoes = input<Array<IOpcoesDropdown>>();
   public camposComplementarProjeto = input<Array<IEstruturaCamposComplementarProjeto>>([]);
   public statusProjeto = input<string>();
-  public contextoValor = input<string>('DIC');
+  public contextoValor = input<string>(MENSAGENS.DIC);
 
   public getSimboloMoeda: (moeda: string | undefined | null) => string =
     getSimboloMoeda;

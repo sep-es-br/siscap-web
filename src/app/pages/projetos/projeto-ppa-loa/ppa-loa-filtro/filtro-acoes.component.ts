@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../../core/utils/constants';
 import {
   Component,
   EventEmitter,
@@ -66,6 +67,9 @@ export interface IFiltroPlanejamento {
 })
 export class FiltroAcoesComponent
   implements OnInit, OnChanges, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
 
   @Output()
   apply = new EventEmitter<IFiltroPlanejamento>();

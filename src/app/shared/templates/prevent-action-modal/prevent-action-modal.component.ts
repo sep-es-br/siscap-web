@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,6 +14,8 @@ import { BotoesConfig } from '../../components/botao/botao.config';
   styleUrls: ['./prevent-action-modal.component.scss'],
 })
 export class PreventActionModalComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() public conteudo: string = 'placeholder';
 
   public botaoVoltar: BotaoPropriedadesModel;

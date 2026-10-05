@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component } from '@angular/core';
 
 @Component({
@@ -5,4 +6,6 @@ import { Component } from '@angular/core';
   standalone: false,
   templateUrl: './query-no-results.component.html',
 })
-export class QueryNoResultsComponent {}
+export class QueryNoResultsComponent {
+  public readonly MENSAGENS = MENSAGENS;
+}

@@ -3,7 +3,7 @@
 <div id="newIndicatorModal" class="indicator-form-modal show">
 
     <div class="modal-header">
-        <div class="card-title" style="text-transform: uppercase;">CRIAR UM INDICADOR DE PROJETO</div>
+        <div class="card-title" style="text-transform: uppercase;">{{ MENSAGENS.CRIAR_UM_INDICADOR_DE_PROJETO }}</div>
         <button class="close-modal" (click)="fechar()">✕</button>
     </div>
 
@@ -11,33 +11,30 @@
 
         <div class="filter-scroll" style="max-height:70vh; overflow-y:auto; padding-right:10px;">
 
-            <div class="form-row"><label><validation-message [control]="getControl('nomeIndicador')">NOME DO INDICADOR
+            <div class="form-row"><label><validation-message [control]="getControl('nomeIndicador')">{{ MENSAGENS.NOME_DO_INDICADOR }}
                     </validation-message></label><input type="text" formControlName="nomeIndicador" id="fName"
-                    placeholder="Ex: Taxa de Alfabetização" maxlength="200"></div>
+                    placeholder="{{ MENSAGENS.EX_TAXA_DE_ALFABETIZACAO }}" maxlength="200"></div>
 
-            <div class="form-row"><label><validation-message [control]="getControl('formulaCalculo')">FÓRMULA /
-                        METODOLOGIA DE CÁLCULO
+            <div class="form-row"><label><validation-message [control]="getControl('formulaCalculo')">{{ MENSAGENS.FORMULA_METODOLOGIA_DE_CALCULO }}
                     </validation-message></label>
                 <textarea formControlName="formulaCalculo" id="fFormula" rows="3"
-                    placeholder="Descreve a fórmula ou metodologia." maxlength="2000">
+                    placeholder="{{ MENSAGENS.DESCREVE_A_FORMULA_OU_METODOLOGIA }}" maxlength="2000">
                 </textarea>
             </div>
 
             <div class="form-row"><label><validation-message
-                        [control]="getControl('medidoPor')">FONTE</validation-message></label><input type="text"
-                    formControlName="medidoPor" id="fOrgao" placeholder="Ex: Secretaria de Educação" maxlength="50">
+                        [control]="getControl('medidoPor')">{{ MENSAGENS.FONTE }}</validation-message></label><input type="text"
+                    formControlName="medidoPor" id="fOrgao" placeholder="{{ MENSAGENS.EX_SECRETARIA_DE_EDUCACAO }}" maxlength="50">
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                <div class="form-row"><label><validation-message [control]="getControl('unidadeMedida')">UNIDADE DE
-                            MEDIDA</validation-message></label><input type="text" formControlName="unidadeMedida"
-                        id="fUnidade" placeholder="Ex: %" maxlength="50"></div>
-                <div class="form-row"><label><validation-message [control]="getControl('basedeReferencia')">BASE DE
-                            REFERÊNCIA</validation-message></label><input type="text" formControlName="basedeReferencia"
-                        id="fValorBase" placeholder="Ex: 25.000 (2022)" maxlength="30"></div>
+                <div class="form-row"><label><validation-message [control]="getControl('unidadeMedida')">{{ MENSAGENS.UNIDADE_DE_MEDIDA }}</validation-message></label><input type="text" formControlName="unidadeMedida"
+                        id="fUnidade" placeholder="{{ MENSAGENS.EX }}" maxlength="50"></div>
+                <div class="form-row"><label><validation-message [control]="getControl('basedeReferencia')">{{ MENSAGENS.BASE_DE_REFERENCIA }}</validation-message></label><input type="text" formControlName="basedeReferencia"
+                        id="fValorBase" placeholder="{{ MENSAGENS.EX_25_000_2022 }}" maxlength="30"></div>
             </div>
 
-            <div class="form-row"><label>META DO PROJETO</label>
+            <div class="form-row"><label>{{ MENSAGENS.META_DO_PROJETO }}</label>
                 <div formArrayName="metasIndicadorProjeto">
                     <div class="meta-years" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="year-meta"
@@ -55,8 +52,8 @@
             </div>
 
             <div class="form-actions" style="margin-top:24px;">
-                <button class="btn-secondary" (click)="fechar()">Cancelar</button>
-                <button class="btn-primary" (click)="salvar()">Adicionar</button>
+                <button class="btn-secondary" (click)="fechar()">{{ MENSAGENS.CANCELAR }}</button>
+                <button class="btn-primary" (click)="salvar()">{{ MENSAGENS.ADICIONAR }}</button>
             </div>
 
         </div>
@@ -66,6 +63,6 @@
     <ng-template *ngIf="!loading">
         <div class="estado-vazio">
             <i class="pi pi-spin pi-spinner"></i>
-            Adicionando indicador projeto...
+            {{ MENSAGENS.ADICIONANDO_INDICADOR_PROJETO }}
         </div>
     </ng-template>

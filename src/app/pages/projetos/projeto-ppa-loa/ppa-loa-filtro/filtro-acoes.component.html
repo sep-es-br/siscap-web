@@ -1,5 +1,5 @@
 <siscap-filter-modal
-    ariaLabel="Filtros de planejamento"
+    ariaLabel="{{ MENSAGENS.FILTROS_DE_PLANEJAMENTO }}"
     [restoreDisabled]="somenteLeitura"
     [applyDisabled]="somenteLeitura"
     (closeModal)="fecharModal()"
@@ -12,7 +12,7 @@
             <div class="filter-field col-12 col-sm-6 col-xl-3">
 
                 <label class="filter-label">
-                    Ano
+                    {{ MENSAGENS.ANO }}
                 </label>
 
                 <ng-select [items]="anos"
@@ -21,7 +21,7 @@
                     [multiple]="false"
                     [closeOnSelect]="true"
                     [searchable]="false" [clearable]="true" [disabled]="somenteLeitura || bloquearAno"
-                    placeholder="Selecione..." class="select-filtro" (ngModelChange)="onAnoChange($event)">
+                    placeholder="{{ MENSAGENS.SELECIONE }}" class="select-filtro" (ngModelChange)="onAnoChange($event)">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
                         <div class="select-option-checkbox">
@@ -36,8 +36,7 @@
                         </span>
 
                         <span class="custom-selected-label" *ngIf="items.length > 1">
-                            {{ items.length }} selecionadas
-                        </span>
+                            {{ formatarMensagem(MENSAGENS.VALOR_SELECIONADAS, { p0: (items.length) }) }}</span>
                     </ng-template>
 
                 </ng-select>
@@ -47,7 +46,7 @@
             <div class="filter-field col-12 col-sm-6 col-xl-3">
 
                 <label class="filter-label">
-                    Unidade Orçamentária
+                    {{ MENSAGENS.UNIDADE_ORCAMENTARIA }}
                 </label>
 
                 <ng-select [items]="uos" bindLabel="nome" bindValue="id" [ngModel]="filtro.idsUos" [multiple]="true"
@@ -75,8 +74,7 @@
                         </span>
 
                         <span class="custom-selected-label" *ngIf="items.length > 1">
-                            {{ items.length }} selecionadas
-                        </span>
+                            {{ formatarMensagem(MENSAGENS.VALOR_SELECIONADAS, { p0: (items.length) }) }}</span>
                     </ng-template>
 
                 </ng-select>
@@ -86,7 +84,7 @@
             <div class="filter-field col-12 col-sm-6 col-xl-3">
 
                 <label class="filter-label">
-                    Função
+                    {{ MENSAGENS.FUNCAO }}
                 </label>
 
                 <ng-select [items]="funcoes" bindLabel="nome" bindValue="id" [ngModel]="filtro.idsFuncoes"
@@ -115,8 +113,7 @@
                         </span>
 
                         <span class="custom-selected-label" *ngIf="items.length > 1">
-                            {{ items.length }} selecionadas
-                        </span>
+                            {{ formatarMensagem(MENSAGENS.VALOR_SELECIONADAS, { p0: (items.length) }) }}</span>
                     </ng-template>
 
                 </ng-select>
@@ -125,7 +122,7 @@
             <!-- PROGRAMA -->
             <div class="filter-field col-12 col-sm-6 col-xl-3">
                 <label class="filter-label">
-                    Programa
+                    {{ MENSAGENS.PROGRAMA }}
                 </label>
 
                 <ng-select [items]="programas" bindLabel="nome" bindValue="id" [ngModel]="filtro.idsProgramas"
@@ -155,8 +152,7 @@
                         </span>
 
                         <span class="custom-selected-label" *ngIf="items.length > 1">
-                            {{ items.length }} selecionados
-                        </span>
+                            {{ formatarMensagem(MENSAGENS.VALOR_SELECIONADOS, { p0: (items.length) }) }}</span>
                     </ng-template>
 
                 </ng-select>

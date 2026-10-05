@@ -2,25 +2,24 @@
 
     <!-- ── NOVO: Dropdown de ODS exclusivo desta página ── -->
     <div class="ods-page-filter-bar" style="display:none;">
-        <span class="ods-page-filter-label">Filtrar / Adicionar por ODS:</span>
+        <span class="ods-page-filter-label">{{ MENSAGENS.FILTRAR_ADICIONAR_POR_ODS }}</span>
         <select class="ods-page-filter-select" id="odsPageSelect"></select>
-        <button class="ods-page-filter-btn" onclick="addOdsFromPageDropdown()">+ Adicionar</button>
+        <button class="ods-page-filter-btn" onclick="addOdsFromPageDropdown()">{{ MENSAGENS.ADICIONAR_2 }}</button>
     </div>
 
     <div class="card" style="margin-bottom:16px;">
         <div class="ods-section-header">
             
             <div>
-                <div class="card-title" style="margin-bottom:2px;">ODS Sugeridas</div>
-                <div style="font-size:12px; color:var(--gray-text);">ODS identificadas a partir dos indicadores
-                    selecionados. Clique para adicionar à seleção.</div>
+                <div class="card-title" style="margin-bottom:2px;">{{ MENSAGENS.ODS_SUGERIDAS }}</div>
+                <div style="font-size:12px; color:var(--gray-text);">{{ MENSAGENS.ODS_IDENTIFICADAS_A_PARTIR_DOS_INDICADORES_SELECIONADOS_CLIQUE_PARA_ADICIONAR_A_SELECAO }}</div>
             </div>
 
             <div class="search-container" [class.expanded]="searchVisible">
                 <span class="p-input-icon-left p-input-icon-right w-100">
                     <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
                     <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
-                    class="w-100 search-input" placeholder="Nome da ODS" [(ngModel)]="filtroTexto"
+                    class="w-100 search-input" placeholder="{{ MENSAGENS.NOME_DA_ODS }}" [(ngModel)]="filtroTexto"
                     (ngModelChange)="filtrarOds()" [disabled]="somenteLeitura"/>
                     <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible" (click)="limparBusca()"></i>
                 </span>
@@ -33,7 +32,7 @@
                 (click)="adicionarOds(ods)"
                 (keydown.enter)="adicionarOds(ods)"
                 (keydown.space)="adicionarOds(ods)"
-                [title]="'Clique para selecionar ' + ods.nomeOds" 
+                [title]="formatarMensagem(MENSAGENS.SELECIONAR_ODS, { nome: ods.nomeOds })"
                 [class.disabled]="!isModoEdicao">
                 <div class="ods-sug-top" style="background:#9ca3af;"></div>
                 <div class="ods-sug-body">
@@ -43,7 +42,7 @@
                     <div class="ods-sug-name">
                         {{ ods.nomeOds }}
                     </div>
-                    <div class="ods-sug-add">+ Adicionar</div>
+                    <div class="ods-sug-add">{{ MENSAGENS.ADICIONAR_2 }}</div>
                 </div>
             </div>
         </div>
@@ -53,9 +52,9 @@
     <div class="card" style="margin-bottom:16px;">
         <div class="ods-section-header">
             <div>
-                <div class="card-title" style="margin-bottom:2px;">ODS Selecionadas</div>
+                <div class="card-title" style="margin-bottom:2px;">{{ MENSAGENS.ODS_SELECIONADAS }}</div>
                 <div style="font-size:12px; color:var(--gray-text);">
-                    ODS confirmadas para este projeto. Clique em × para remover.
+                    {{ MENSAGENS.ODS_CONFIRMADAS_PARA_ESTE_PROJETO_CLIQUE_EM_PARA_REMOVER }}
                 </div>
             </div>
         </div>
@@ -73,14 +72,14 @@
                                 {{ ods.odsId }} - {{ ods.odsNome }}
                             </div>
                         </div>
-                        <button class="ods-sel-remove" type="button" (click)="removerOds(ods)" title="Remover" [disabled]="!isModoEdicao">×</button>
+                        <button class="ods-sel-remove" type="button" (click)="removerOds(ods)" title="{{ MENSAGENS.REMOVER }}" [disabled]="!isModoEdicao">{{ MENSAGENS.TEXTO }}</button>
                     </div>
                     <div class="ods-sel-desc">
                         {{ ods.odsDescricao }}
                     </div>
                     <div class="ods-sel-indicators">
                         <div class="ods-sel-ind-title">
-                            Indicadores Vinculados
+                            {{ MENSAGENS.INDICADORES_VINCULADOS }}
                         </div>
                         <div class="ods-sel-ind-list">
                             <div class="ods-sel-ind-item" *ngFor="let indicador of ods.indicadoresVinculados">
@@ -99,7 +98,7 @@
             for="impactos"
             class="form-label col-12">
             <validation-message [control]="getControl('impactos')">
-            Impactos do Projeto no Âmbito Ambiental, Social e de Governança (ESG)
+            {{ MENSAGENS.IMPACTOS_DO_PROJETO_NO_AMBITO_AMBIENTAL_SOCIAL_E_DE_GOVERNANCA_ESG }}
             </validation-message>
         </label>
         <textarea

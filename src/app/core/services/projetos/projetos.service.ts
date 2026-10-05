@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../utils/constants';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
@@ -77,7 +78,7 @@ export class ProjetosService extends BaseHttpService<
 
   public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
     const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
-      texto: 'Novo DIC',
+      texto: MENSAGENS.NOVO_DIC,
     });
 
     return [botaoCriar];

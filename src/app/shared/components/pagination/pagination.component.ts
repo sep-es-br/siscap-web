@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 
@@ -13,6 +14,9 @@ import { IPaginacaoDados } from '../../../core/interfaces/paginacao-dados.interf
   styleUrl: './pagination.component.scss',
 })
 export class PaginationComponent {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
   public paginacaoDadosInput = input<IPaginacaoDados>({
     paginaAtual: 1,
     itensPorPagina: 3,

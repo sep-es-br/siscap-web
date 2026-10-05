@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule } from '@angular/forms';
@@ -14,6 +15,8 @@ import { IndicadorAvulsoComponent } from '../indicador-avulso/indicador-avulso.c
   styleUrls: ['./selecao-indicadores.component.scss']
 })
 export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
+  public readonly MENSAGENS = MENSAGENS;
+
 
   private _indicadores: IIndicadoresCatalogoExterno[] = [];
 

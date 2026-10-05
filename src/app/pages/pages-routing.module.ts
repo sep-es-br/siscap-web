@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../core/utils/constants';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -8,7 +9,7 @@ import { isProponenteGuard } from '../core/guards/is-proponente/is-proponente.gu
 
 const PAGES_ROUTES: Routes = [
   {
-    title: 'Página Principal',
+    title: MENSAGENS.PAGINA_PRINCIPAL,
     path: 'home',
     component: HomeComponent,
     canActivate: [authGuard, isProponenteGuard],
