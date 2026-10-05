@@ -1,3 +1,4 @@
+import { MENSAGENS } from './core/utils/constants';
 import { ApplicationConfig } from '@angular/core';
 import {
   PreloadAllModules,
@@ -45,7 +46,7 @@ export const appConfig: ApplicationConfig = {
       modules: {
         toolbar: quillEditorToolbarOptions,
       },
-      placeholder: '-- Insira o texto aqui --',
+      placeholder: MENSAGENS.INSIRA_O_TEXTO_AQUI,
     }),
     { provide: TitleStrategy, useClass: SiscapTitleStrategy },
     { provide: NgbDateParserFormatter, useClass: SiscapNgbDateParserFormatter },

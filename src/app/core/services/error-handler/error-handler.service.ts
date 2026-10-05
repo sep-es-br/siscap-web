@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../utils/constants';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -38,9 +39,9 @@ export class ErrorHandlerService {
   }
 
   private showDefaultErrorToast(): void {
-    this._toastService.showToast('error', 'Erro ao processar a requisição.', [
-      'Verifique sua conexão com a internet.',
-      'Caso o erro persista, contate o suporte.',
+    this._toastService.showToast('error', MENSAGENS.ERRO_AO_PROCESSAR_A_REQUISICAO, [
+      MENSAGENS.VERIFIQUE_SUA_CONEXAO_COM_A_INTERNET,
+      MENSAGENS.CASO_O_ERRO_PERSISTA_CONTATE_O_SUPORTE,
     ]);
   }
 
@@ -60,7 +61,7 @@ export class ErrorHandlerService {
       this._toastService.showToast(
         'error',
         error.error?.erros?.[0] ??
-        'Sua permissão de acesso ao E-Docs expirou. Você será redirecionado para o login.'
+        MENSAGENS.SUA_PERMISSAO_DE_ACESSO_AO_E_DOCS_EXPIROU_VOCE_SERA_REDIRECIONADO_PARA_O_LOGIN
       );
 
       setTimeout(() => {

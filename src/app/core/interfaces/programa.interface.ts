@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../utils/constants';
 import { PapelOrgaoPrograma } from '../enums/orgaos.enum';
 import { IEquipe } from './equipe.interface';
 import { IValor } from './valor.interface';
@@ -81,10 +82,10 @@ export interface IProgramaOrgaosEnvolvidos {
 }
 
 export const StatusProgramaLabel: Record<StatusPrograma, string> = {
-  [StatusPrograma.SEM_STATUS]: 'Status',
-  [StatusPrograma.ELABORACAO]: 'Elaboração',
-  [StatusPrograma.AGUARDANDO_ASSINATURAS]: 'Aguardando Assinaturas',
-  [StatusPrograma.ASSINADO]: 'Assinado',
-  [StatusPrograma.AUTUADO]: 'Autuado',
-  [StatusPrograma.RECUSADO]: 'Recusado',
+  [StatusPrograma.SEM_STATUS]: MENSAGENS.STATUS,
+  [StatusPrograma.ELABORACAO]: MENSAGENS.ELABORACAO,
+  [StatusPrograma.AGUARDANDO_ASSINATURAS]: MENSAGENS.AGUARDANDO_ASSINATURAS,
+  [StatusPrograma.ASSINADO]: MENSAGENS.ASSINADO,
+  [StatusPrograma.AUTUADO]: MENSAGENS.AUTUADO,
+  [StatusPrograma.RECUSADO]: MENSAGENS.RECUSADO,
 };

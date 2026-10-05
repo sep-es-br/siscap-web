@@ -1,5 +1,5 @@
 <siscap-filter-modal
-    ariaLabel="Filtros de indicadores"
+    ariaLabel="{{ MENSAGENS.FILTROS_DE_INDICADORES }}"
     [restoreDisabled]="somenteLeitura"
     [applyDisabled]="somenteLeitura"
     (closeModal)="fechar()"
@@ -10,7 +10,7 @@
 
             <!-- GESTÃO (linha inteira) -->
             <div class="filter-field col-12 col-sm-6 col-xl-3">
-                <label class="filter-label">Gestão Administrativa</label>
+                <label class="filter-label">{{ MENSAGENS.GESTAO_ADMINISTRATIVA_2 }}</label>
                 <select class="filter-select" [(ngModel)]="filtro.idGestao">
                     <option *ngIf="gestao" [value]="gestao.idGestao">
                         {{ gestao.nomeGestao }}
@@ -31,7 +31,7 @@
                         [closeOnSelect]="false"
                         [searchable]="false"
                         [clearable]="true"
-                        placeholder="Selecionar..."
+                        placeholder="{{ MENSAGENS.SELECIONAR }}"
                         class="select-filtro"
                         [disabled]="somenteLeitura || isLabelFilhoDisabled(label)"
                         (change)="onValorLabelChange( label, $event )"
@@ -59,7 +59,7 @@
             <!-- DESAFIOS -->
             <div class="filter-field col-12 col-sm-6 col-xl-3">
                 <label class="filter-label">
-                    Desafios
+                    {{ MENSAGENS.DESAFIOS }}
                 </label>
                 <ng-select [items]="listaDesafiosFiltrados" 
                     bindLabel="nome" 
@@ -69,7 +69,7 @@
                     [closeOnSelect]="false" 
                     [searchable]="false"
                     [clearable]="true"
-                    placeholder="Selecionar..." 
+                    placeholder="{{ MENSAGENS.SELECIONAR }}"
                     class="select-filtro" 
                     [disabled]="somenteLeitura || !isLabelsFilhosSelecionados()">
 
@@ -83,8 +83,7 @@
                             {{ items[0].nome }}
                         </span>
                         <span class="custom-selected-label" *ngIf="items.length > 1">
-                            {{ items.length }} selecionados
-                        </span>
+                            {{ formatarMensagem(MENSAGENS.VALOR_SELECIONADOS, { p0: (items.length) }) }}</span>
                     </ng-template>
 
                 </ng-select>

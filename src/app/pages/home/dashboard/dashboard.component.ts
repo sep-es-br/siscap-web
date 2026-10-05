@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, OnInit } from '@angular/core';
 
 import { tap } from 'rxjs';
@@ -16,6 +17,8 @@ import { abbreviateNumber } from 'js-abbreviation-number';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
+  public readonly MENSAGENS = MENSAGENS;
+
   private readonly _simbolos: { symbols: Array<string> } = {
     symbols: ['', ' mil', ' mi', ' bi', ' tri', ' qua', ' qui'],
   };

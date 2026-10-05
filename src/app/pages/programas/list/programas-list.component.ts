@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, input, OnDestroy, output } from '@angular/core';
 
 import { Subject, Subscription, take, tap } from 'rxjs';
@@ -34,6 +35,8 @@ import { PollingService } from '../../../core/services/polling/polling.service';
   styleUrl: './programas-list.component.scss',
 })
 export class ProgramasListComponent implements OnDestroy{
+  public readonly MENSAGENS = MENSAGENS;
+
   public programasList = input<Array<IProgramaTableData> | null>([]);
 
   public sortableDirectiveOutput = output<string>();
@@ -210,7 +213,7 @@ export class ProgramasListComponent implements OnDestroy{
           const faseEntranhamentoErro = this.currentPolling.fases.find((fase: PollingFasesModel) => fase.etapa === PollingEtapas.ENTRANHAR_ARQUIVO && fase.erro);
 
           if (faseAutorizacaoEnviada) {
-            this._toastService.showToast('success', 'As Autorizações foram enviadas com sucesso!');
+            this._toastService.showToast('success', MENSAGENS.AS_AUTORIZACOES_FORAM_ENVIADAS_COM_SUCESSO);
             const programaNaLista = this.programasList()?.find((programa: IProgramaTableData) => programa.id === this.currentPolling.idPrograma);
               if (programaNaLista) {
                 programaNaLista.statusPrograma = StatusPrograma.AGUARDANDO_ASSINATURAS
@@ -223,7 +226,7 @@ export class ProgramasListComponent implements OnDestroy{
               faseAutorizacaoErro.msgAlertaExibir.length > 0
             )
               ? faseAutorizacaoErro.msgAlertaExibir
-              : 'Ocorreu um erro ao tentar processar as Autorizações!';
+              : MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_PROCESSAR_AS_AUTORIZACOES;
             this._toastService.showToast('error', errorMessage);
             this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
           } else if (faseAutuacaoErro || faseEntranhamentoErro) {
@@ -263,7 +266,7 @@ export class ProgramasListComponent implements OnDestroy{
               },
               error: (err) => {
                 console.error('Ocorreu um erro ao tentar atualizar o Programa!\n', err);
-                this._toastService.showToast('error', 'Ocorreu um erro ao tentar atualizar o Programa');
+                this._toastService.showToast('error', MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_ATUALIZAR_O_PROGRAMA);
 
                 this._programasService.removerProgramaAguardandoEdocs(this.currentPolling.idPrograma);
                 this.currentPolling.idPrograma = -1;

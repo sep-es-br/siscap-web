@@ -12,15 +12,15 @@
         <div class="login-button m-auto mt-5 col-8 col-sm-5 col-md-6 d-grid">
           <button class="btn btn-primary" (click)="logIn()">
             <i class="fa-solid fa-user-lock me-3"></i>
-            <span>Entrar</span>
+            <span>{{ MENSAGENS.ENTRAR }}</span>
           </button>
         </div>
         <div
           class="legal-footer mt-5 d-flex flex-column align-items-center text-center"
         >
-          <span class="fs-small"> SISCAP {{ year_copyright() }}</span>
+          <span class="fs-small"> {{ formatarMensagem(MENSAGENS.SISCAP_VALOR, { p0: (year_copyright()) }) }}</span>
           <span class="fs-small"
-            >Secretaria de Economia e Planejamento do Espírito Santo</span
+            >{{ MENSAGENS.SECRETARIA_DE_ECONOMIA_E_PLANEJAMENTO_DO_ESPIRITO_SANTO }}</span
           >
         </div>
       </div>

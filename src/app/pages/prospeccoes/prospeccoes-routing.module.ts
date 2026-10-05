@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../core/utils/constants';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -11,23 +12,23 @@ import { prospeccoes_NoIdVisualizarGuard } from '../../core/guards/prospeccoes/n
 
 const PROSPECCOES_ROUTES: Routes = [
   {
-    title: 'Prospecção',
+    title: MENSAGENS.PROSPECCAO,
     path: '',
     component: ProspeccoesComponent,
   },
   {
-    title: 'Cadastrar Prospecção',
+    title: MENSAGENS.CADASTRAR_PROSPECCAO,
     path: 'criar',
     component: ProspeccaoFormComponent,
   },
   {
-    title: 'Editar Prospecção',
+    title: MENSAGENS.EDITAR_PROSPECCAO,
     path: 'editar',
     component: ProspeccaoFormComponent,
     canActivate: [prospeccoes_NoIdEditarGuard],
   },
   {
-    title: 'Visualizar Prospecção',
+    title: MENSAGENS.VISUALIZAR_PROSPECCAO,
     path: 'visualizar',
     component: ProspeccaoViewComponent,
     canActivate: [prospeccoes_NoIdVisualizarGuard],

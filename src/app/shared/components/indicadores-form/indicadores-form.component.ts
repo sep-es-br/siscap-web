@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl, NonNullableFormBuilder } from '@angular/forms';
@@ -26,6 +27,9 @@ import { IndicadoresFormType, MetaIndicadorExternoFormType } from '../../../core
   templateUrl: './indicadores-form.component.html',
 })
 export class IndicadoresFormComponent {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
 
   @Input() tipoIndicador: string;
   @Input() public isModoEdicao: boolean = false;
@@ -110,12 +114,12 @@ export class IndicadoresFormComponent {
     indicadorFormGroup.markAsDirty();
     indicadorFormGroup.updateValueAndValidity();
 
-    const tipoIndicador = indicadorFormGroup.get('tipoIndicador')?.value || 'Indicador';
+    const tipoIndicador = indicadorFormGroup.get('tipoIndicador')?.value || MENSAGENS.INDICADOR;
     const descricaoIndicador = indicadorFormGroup.get('descricaoIndicador')?.value || '';
 
     this._toastService.showToast(
       'info',
-      'Indicador removido do projeto.',
+      MENSAGENS.INDICADOR_REMOVIDO_DO_PROJETO,
       [
         `${tipoIndicador}`,
         `${descricaoIndicador.substring(0, 50)}${descricaoIndicador.length > 50 ? '...' : ''}`

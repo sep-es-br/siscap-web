@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -55,6 +56,8 @@ import {
   styleUrl: './organizacao-form.component.scss',
 })
 export class OrganizacaoFormComponent implements OnInit, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+
   private readonly _subscription: Subscription = new Subscription();
 
   private readonly _atualizarOrganizacao$: Observable<IOrganizacao>;
@@ -364,8 +367,8 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     }
 
     if (form.invalid) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Por favor, verifique os campos.',
+      this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+        MENSAGENS.POR_FAVOR_VERIFIQUE_OS_CAMPOS,
       ]);
       return;
     }
@@ -396,7 +399,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
         tap((response: IOrganizacao) => {
           this._toastService.showToast(
             'success',
-            'Organização cadastrada com sucesso.'
+            MENSAGENS.ORGANIZACAO_CADASTRADA_COM_SUCESSO
           );
         }),
         finalize(() =>
@@ -414,7 +417,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
         tap((response: IOrganizacao) => {
           this._toastService.showToast(
             'success',
-            'Organização alterada com sucesso.'
+            MENSAGENS.ORGANIZACAO_ALTERADA_COM_SUCESSO
           );
         }),
         finalize(() =>

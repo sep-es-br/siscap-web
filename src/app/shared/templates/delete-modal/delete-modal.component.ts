@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,6 +15,8 @@ import { ToastService } from '../../../core/services/toast/toast.service';
   styleUrls: ['./delete-modal.component.scss'],
 })
 export class DeleteModalComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() public conteudo: string = 'placeholder';
   @Input() public exigirJustificativa: boolean = false;
 
@@ -27,7 +30,7 @@ export class DeleteModalComponent {
     this.botaoVoltar = BotoesConfig.gerarBotaoPropriedades('voltar');
     this.botaoProsseguir = BotoesConfig.gerarBotaoPropriedades('deletar', {
       icone: ['fa-solid', 'fa-triangle-exclamation'],
-      texto: 'Prosseguir',
+      texto: MENSAGENS.PROSSEGUIR,
     });
     this.justificativa = '';
   }
@@ -36,8 +39,8 @@ export class DeleteModalComponent {
     if (this.exigirJustificativa && this.justificativa.length == 0 ) {
       this._toastService.showToast(
         'error',
-        'Erro ao prosseguir com exclusão.',
-        ['Por favor, preencha a justificativa antes de prosseguir.']
+        MENSAGENS.ERRO_AO_PROSSEGUIR_COM_EXCLUSAO,
+        [MENSAGENS.POR_FAVOR_PREENCHA_A_JUSTIFICATIVA_ANTES_DE_PROSSEGUIR]
       );
       return;
     }

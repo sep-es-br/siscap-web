@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -26,6 +27,8 @@ import { Router } from '@angular/router';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   public menuLinks: Array<IMenuLink> = MenuLinksHelper.menuLinks;
   public menuCategoriaAtiva: string = '';
   public subMenuCategoriaAtiva: string = '';

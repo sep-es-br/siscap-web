@@ -16,7 +16,7 @@
               id="clonarProspeccao"
             />
             <label class="form-check-label" for="clonarProspeccao">
-              Clonar Prospecção
+              {{ MENSAGENS.CLONAR_PROSPECCAO }}
             </label>
           </div>
         </div>
@@ -24,14 +24,14 @@
         <div class="col-12">
           <label for="idCartaConsulta" class="form-label col-12">
             <validation-message [control]="getControl('idCartaConsulta')">
-              Carta Consulta
+              {{ MENSAGENS.CARTA_CONSULTA_2 }}
             </validation-message>
           </label>
 
           <ng-select
             [clearable]="false"
             id="idCartaConsulta"
-            placeholder="-- Selecione a carta consulta --"
+            placeholder="{{ MENSAGENS.SELECIONE_A_CARTA_CONSULTA }}"
             formControlName="idCartaConsulta"
           >
             <ng-option
@@ -48,14 +48,14 @@
             <validation-message
               [control]="getControl('idOrganizacaoProspectora')"
             >
-              Organização Prospectora
+              {{ MENSAGENS.ORGANIZACAO_PROSPECTORA }}
             </validation-message>
           </label>
 
           <ng-select
             [clearable]="false"
             id="idOrganizacaoProspectora"
-            placeholder="-- Selecione a organização prospectora --"
+            placeholder="{{ MENSAGENS.SELECIONE_A_ORGANIZACAO_PROSPECTORA }}"
             formControlName="idOrganizacaoProspectora"
           >
             <ng-option
@@ -72,14 +72,14 @@
         <div class="col-12">
           <label for="idPessoaProspectora" class="form-label col-12">
             <validation-message [control]="getControl('idPessoaProspectora')">
-              Prospector
+              {{ MENSAGENS.PROSPECTOR }}
             </validation-message>
           </label>
 
           <ng-select
             [clearable]="false"
             id="idPessoaProspectora"
-            placeholder="-- Selecione o prospector --"
+            placeholder="{{ MENSAGENS.SELECIONE_O_PROSPECTOR }}"
             formControlName="idPessoaProspectora"
           >
             <ng-option *ngFor="let pessoa of pessoasOpcoes" [value]="pessoa.id">
@@ -93,14 +93,14 @@
             <validation-message
               [control]="getControl('idOrganizacaoProspectada')"
             >
-              Organização Prospectada
+              {{ MENSAGENS.ORGANIZACAO_PROSPECTADA }}
             </validation-message>
           </label>
 
           <ng-select
             [clearable]="false"
             id="idOrganizacaoProspectada"
-            placeholder="-- Selecione a organização prospectada --"
+            placeholder="{{ MENSAGENS.SELECIONE_A_ORGANIZACAO_PROSPECTADA }}"
             formControlName="idOrganizacaoProspectada"
           >
             <ng-option
@@ -120,13 +120,13 @@
         >
           <label for="idInteressado" class="col-12 form-label">
             <validation-message [control]="getControl('interessadosList')">
-              Interessado(a) s
+              {{ MENSAGENS.INTERESSADO_A_S }}
             </validation-message>
           </label>
 
           <ng-select
             id="idInteressado"
-            placeholder="-- Selecione um(a) interessado(a) --"
+            placeholder="{{ MENSAGENS.SELECIONE_UM_A_INTERESSADO_A }}"
             [(ngModel)]="idInteressado"
             [ngModelOptions]="{ standalone: true }"
             [disabled]="!isModoEdicao"
@@ -185,7 +185,7 @@
                           >
                             <button
                               type="button"
-                              ngbTooltip="Remover Interessado(a)"
+                              ngbTooltip="{{ MENSAGENS.REMOVER_INTERESSADO_A }}"
                               class="btn btn-outline-danger rounded-circle"
                               [disabled]="!isModoEdicao"
                               (click)="removerInteressadoDaProspeccao(i)"

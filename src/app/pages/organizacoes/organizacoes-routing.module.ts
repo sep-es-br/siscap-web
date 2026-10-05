@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../core/utils/constants';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -8,17 +9,17 @@ import { organizacoes_NoIdEditarGuard } from '../../core/guards/organizacoes/no-
 
 const ORGANIZACOES_ROUTES: Routes = [
   {
-    title: 'Organizações',
+    title: MENSAGENS.ORGANIZACOES,
     path: '',
     component: OrganizacoesComponent,
   },
   {
-    title: 'Cadastrar Organização',
+    title: MENSAGENS.CADASTRAR_ORGANIZACAO,
     path: 'criar',
     component: OrganizacaoFormComponent,
   },
   {
-    title: 'Editar Organização',
+    title: MENSAGENS.EDITAR_ORGANIZACAO,
     path: 'editar',
     component: OrganizacaoFormComponent,
     canActivate: [organizacoes_NoIdEditarGuard],

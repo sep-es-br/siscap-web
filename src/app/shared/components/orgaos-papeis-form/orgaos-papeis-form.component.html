@@ -17,7 +17,7 @@
                       name="papelOrgaoSelect"
                       id="papelOrgaoSelect"
                       class="papel-orgao-select"
-                      placeholder="-- Papel do órgão --"
+                      placeholder="{{ MENSAGENS.PAPEL_DO_ORGAO }}"
                       [disabled]="!isModoEdicao"
                       [clearable]="false"
                       [(ngModel)]="orgao.papel"
@@ -34,7 +34,7 @@
                     <button
                       class="btn btn-outline-danger rounded-circle"
                       type="button"
-                      ngbTooltip="Excluir órgão"
+                      ngbTooltip="{{ MENSAGENS.EXCLUIR_ORGAO }}"
                       [disabled]="!isModoEdicao"
                       (click)="removerOrgao(orgao)"
                     >

@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -33,20 +34,20 @@ export class TextEditorComponent implements OnDestroy {
 
   public mapeamentoSeletorConteudoToolbarModuleTooltip: Record<string, string> =
     {
-      'span.ql-size.ql-picker': 'Tamanho da fonte',
-      'span.ql-header.ql-picker': 'Tamanho do cabeçalho',
-      'button.ql-bold': 'Negrito',
-      'button.ql-italic': 'Itálico',
-      'button.ql-underline': 'Sublinhado',
-      'button.ql-strike': 'Tachado',
-      'button.ql-list[value="ordered"]': 'Lista ordenada',
-      'button.ql-list[value="bullet"]': 'Lista não ordenada',
-      'span.ql-align': 'Alinhamento',
-      'span.ql-color': 'Cor do texto',
-      'span.ql-background': 'Cor de fundo do texto',
-      'button.ql-link': 'Link',
-      'button.ql-image': 'Imagem',
-      'button.ql-video': 'Vídeo',
+      'span.ql-size.ql-picker': MENSAGENS.TAMANHO_DA_FONTE,
+      'span.ql-header.ql-picker': MENSAGENS.TAMANHO_DO_CABECALHO,
+      'button.ql-bold': MENSAGENS.NEGRITO,
+      'button.ql-italic': MENSAGENS.ITALICO,
+      'button.ql-underline': MENSAGENS.SUBLINHADO,
+      'button.ql-strike': MENSAGENS.TACHADO,
+      'button.ql-list[value="ordered"]': MENSAGENS.LISTA_ORDENADA,
+      'button.ql-list[value="bullet"]': MENSAGENS.LISTA_NAO_ORDENADA,
+      'span.ql-align': MENSAGENS.ALINHAMENTO,
+      'span.ql-color': MENSAGENS.COR_DO_TEXTO,
+      'span.ql-background': MENSAGENS.COR_DE_FUNDO_DO_TEXTO,
+      'button.ql-link': MENSAGENS.LINK,
+      'button.ql-image': MENSAGENS.IMAGEM,
+      'button.ql-video': MENSAGENS.VIDEO,
     };
 
   private _subscription: Subscription = new Subscription();

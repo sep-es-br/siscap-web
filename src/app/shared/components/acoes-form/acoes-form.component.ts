@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
@@ -35,6 +36,9 @@ import { limiteAcoesValidator } from '../../../core/validators/acoes.validator';
   templateUrl: './acoes-form.component.html',
 })
 export class AcoesFormComponent {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
   mensagemComplementarCampo(arg0: string): string {
     throw new Error('Method not implemented.');
   }
@@ -140,12 +144,12 @@ export class AcoesFormComponent {
 
     acaoFormGroup.get('idStatus')?.setValue(TipoStatusEnum.Inativo);
 
-    const acaoPrincipal = acaoFormGroup.get('descricaoAcaoPrincipal')?.value || 'Ação';
+    const acaoPrincipal = acaoFormGroup.get('descricaoAcaoPrincipal')?.value || MENSAGENS.ACAO;
     const acaoSecundaria = acaoFormGroup.get('descricaoAcaoSecundaria')?.value || '';
 
     this._toastService.showToast(
       'info',
-      'Ação removida do projeto.',
+      MENSAGENS.ACAO_REMOVIDA_DO_PROJETO,
       [
         `${acaoPrincipal}`,
         `${acaoSecundaria.substring(0, 50)}${acaoSecundaria.length > 50 ? '...' : ''}`

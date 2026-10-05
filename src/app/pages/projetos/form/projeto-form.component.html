@@ -1,4 +1,5 @@
-<div *ngIf="loading || isLoadingPessoas || loadingDownload">
+<div *ngIf="carregandoTela || loadingSubmit" class="dic-loading" role="status" aria-live="polite"
+  [attr.aria-label]="textoSpinner">
   <loading-spinner [textoProcessando]="textoSpinner"></loading-spinner>
 </div>
 
@@ -8,18 +9,18 @@
     <button *ngIf="mostrarBotaoStatusProjeto" class="btn btn-outline-success icon-text-btn me-2"
       (click)="abrirModalStatusProjeto(projetoStatusModal)">
       <i class="fa-solid fa-check"></i>
-      <span>Status</span>
+      <span>{{ MENSAGENS.STATUS }}</span>
     </button>
 
     <button *ngIf="mostrarBotaoPedirRevisaoDic" class="btn btn-warning icon-text-btn me-2"
       (click)="abrirRevisarModal(projetoForm)">
       <i class="fa-solid fa-file-arrow-down"></i>
-      <span>Solicitar revisão a {{ nomeProponenteDIC }} </span>
+      <span>{{ formatarMensagem(MENSAGENS.SOLICITAR_REVISAO_A_VALOR, { p0: (nomeProponenteDIC) }) }}</span>
     </button>
 
     <button *ngIf="mostrarBotaoBaixarDic" class="btn btn-outline-primary icon-text-btn" (click)="baixarDIC()">
       <i class="fa-solid fa-file-arrow-down"></i>
-      <span>Baixar DIC</span>
+      <span>{{ MENSAGENS.BAIXAR_DIC }}</span>
     </button>
 
   </div>
@@ -29,7 +30,7 @@
   <div ngbAccordion *ngIf="statusSteps" class="align-self-start">
     <div ngbAccordionItem [collapsed]="isMobile ? accordionCollapsed : false">
       <h4 ngbAccordionHeader class="d-xl-none">
-        <button type="button" app-progresso-button ngbAccordionButton [label]="'Progresso'" class="btn-progresso"
+        <button type="button" app-progresso-button ngbAccordionButton [label]="MENSAGENS.PROGRESSO" class="btn-progresso"
           icon="bi bi-clock">
         </button>
       </h4>
@@ -74,13 +75,11 @@
                 </span>
                 <ng-template #tooltipContent>
                   <p class="my-0 text-nowrap">
-                    Desde: {{ event.dataInicio | date: "dd/MM/yyyy HH:mm" }}
-                  </p>
+                    {{ formatarMensagem(MENSAGENS.DESDE_VALOR, { p0: (event.dataInicio | date: "dd/MM/yyyy HH:mm") }) }}</p>
                   <ng-container *ngIf="event.dataFim">
                     <p class="my-0 text-nowrap">
-                      Até: {{ event.dataFim | date: "dd/MM/yyyy HH:mm" }}
-                    </p>
-                    <p class="my-0 text-nowrap">Por: {{ event.nomePessoa }}</p>
+                      {{ formatarMensagem(MENSAGENS.ATE_VALOR, { p0: (event.dataFim | date: "dd/MM/yyyy HH:mm") }) }}</p>
+                    <p class="my-0 text-nowrap">{{ formatarMensagem(MENSAGENS.POR_VALOR, { p0: (event.nomePessoa) }) }}</p>
                   </ng-container>
                 </ng-template>
               </ng-template>
@@ -103,7 +102,7 @@
               aria-controls="propriedades" aria-selected="true">
               <form-warning-tooltip *ngIf="deveComplementarCampo('geral')"
                 [texto]="mensagemComplementarCampo('geral')"></form-warning-tooltip>
-              DIC
+              {{ MENSAGENS.DIC }}
             </button>
           </li>
 
@@ -113,7 +112,7 @@
               [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('indicadores'),}">
               <form-warning-tooltip *ngIf="deveComplementarCampo('indicadores')"
                 [texto]="mensagemComplementarCampo('indicadores')"></form-warning-tooltip>
-              Indicadores
+              {{ MENSAGENS.INDICADORES }}
               <span *ngIf="getControl('indicadoresProjeto').invalid && getControl('indicadoresProjeto').touched"
                 class="text-danger"></span>
             </button>
@@ -126,7 +125,7 @@
                   }">
               <form-warning-tooltip *ngIf="deveComplementarCampo('ods')"
                 [texto]="mensagemComplementarCampo('ods')"></form-warning-tooltip>
-              ODS
+              {{ MENSAGENS.ODS }}
             </button>
           </li>
 
@@ -136,7 +135,7 @@
               [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('planejamento'),}">
               <form-warning-tooltip *ngIf="deveComplementarCampo('acoes-rateio')"
                 [texto]="mensagemComplementarCampo('acoes-rateio')"></form-warning-tooltip>
-              Ações
+              {{ MENSAGENS.ACOES }}
               <span *ngIf="getControl('acoesRateioProjeto').invalid && getControl('acoesRateioProjeto').touched"
                 class="text-danger"></span>
             </button>
@@ -148,7 +147,7 @@
               [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('planejamento'),}">
               <form-warning-tooltip *ngIf="deveComplementarCampo('planejamento')"
                 [texto]="mensagemComplementarCampo('planejamento')"></form-warning-tooltip>
-              Planejamento
+              {{ MENSAGENS.PLANEJAMENTO }}
               <span *ngIf="getControl('indicadoresProjeto').invalid && getControl('indicadoresProjeto').touched"
                 class="text-danger"></span>
             </button>
@@ -158,7 +157,7 @@
             *ngIf="!carregandoTela && (aguardandoParecer() || this.pareceresProjeto.length > 0)">
             <button class="nav-link" [ngClass]="{'active': aguardandoParecer()}" id="nav-pareceres" data-bs-toggle="tab"
               data-bs-target="#tab-pareceres" role="tab" aria-controls="pareceres" aria-selected="true">
-              Pareceres
+              {{ MENSAGENS.PARECERES }}
             </button>
           </li>
 
@@ -175,7 +174,7 @@
                     'alerta-complementar-campo': deveComplementarCampo('sigla'),
                   }">
                   <validation-message [control]="getControl('sigla')">
-                    Sigla do DIC
+                    {{ MENSAGENS.SIGLA_DO_DIC }}
                     <form-helper-tooltip [texto]="projetoTooltip['sigla']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="siglaEmUso"
                       [texto]="'A sigla informada já está em uso por outro DIC.'"></form-warning-tooltip>
@@ -188,7 +187,7 @@
                   formControlName="sigla" maxlength="12" />
                 <small *ngIf="siglaEmUso" class="text-warning d-block mt-1" role="status">
                   <i class="fa-solid fa-triangle-exclamation me-1"></i>
-                  A sigla informada já está em uso por outro DIC.
+                  {{ MENSAGENS.A_SIGLA_INFORMADA_JA_ESTA_EM_USO_POR_OUTRO_DIC }}
                 </small>
               </div>
 
@@ -198,7 +197,7 @@
                       deveComplementarCampo('titulo'),
                   }">
                   <validation-message [control]="getControl('titulo')">
-                    Titulo do DIC
+                    {{ MENSAGENS.TITULO_DO_DIC }}
                     <form-helper-tooltip [texto]="projetoTooltip['titulo']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('titulo')"
                       [texto]="mensagemComplementarCampo('titulo')"></form-warning-tooltip>
@@ -213,13 +212,13 @@
                       deveComplementarCampo('idOrganizacao'),
                   }">
                   <validation-message [control]="getControl('idOrganizacao')">
-                    Proponente
+                    {{ MENSAGENS.PROPONENTE }}
                     <form-helper-tooltip [texto]="projetoTooltip['idOrganizacao']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('idOrganizacao')"
                       [texto]="mensagemComplementarCampo('idOrganizacao')"></form-warning-tooltip>
                   </validation-message>
                 </label>
-                <ng-select id="idOrganizacao" placeholder="-- Selecione um orgão da lista abaixo --"
+                <ng-select id="idOrganizacao" placeholder="{{ MENSAGENS.SELECIONE_UM_ORGAO_DA_LISTA_ABAIXO }}"
                   formControlName="idOrganizacao" (change)="onSelecionarOrganizacao($event)">
                   <ng-option *ngFor="let organizacao of organizacoesOpcoes" [value]="organizacao.id">{{ organizacao.nome
                     }}</ng-option>
@@ -233,7 +232,7 @@
                     ),
                   }">
                   <validation-message [control]="getControl('idResponsavelProponente')">
-                    Gestor Proponente
+                    {{ MENSAGENS.GESTOR_PROPONENTE }}
                     <form-helper-tooltip [texto]="projetoTooltip['idResponsavelProponente']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('subResponsavelProponente')" [texto]="
                         mensagemComplementarCampo('subResponsavelProponente')
@@ -241,7 +240,7 @@
                   </validation-message>
                 </label>
                 <ng-container *ngIf="!isLoadingPessoas; else carregandoResponsaveis">
-                  <ng-select id="responsavelProponente" placeholder="-- Selecione o responsável proponente --"
+                  <ng-select id="responsavelProponente" placeholder="{{ MENSAGENS.SELECIONE_O_RESPONSAVEL_PROPONENTE }}"
                     formControlName="subResponsavelProponente" [items]="pessoasOpcoes" bindLabel="nome"
                     bindValue="agentePublicoSub" (change)="onSelecionarPessoa($event)" [virtualScroll]="true">
                     <ng-template ng-option-tmp let-item="item">
@@ -259,7 +258,7 @@
                   </ng-select>
                 </ng-container>
                 <ng-template #carregandoResponsaveis>
-                  <p>Carregando responsáveis...</p>
+                  <p>{{ MENSAGENS.CARREGANDO_RESPONSAVEIS }}</p>
                 </ng-template>
               </div>
 
@@ -267,14 +266,14 @@
                 <label for="membroEquipeElaboracao" class="form-label col-12" [ngClass]="{
                     'alerta-complementar-campo': deveComplementarCampo('equipeElaboracao'), }">
                   <validation-message [control]="getControl('equipeElaboracao')">
-                    Equipe de Elaboração
+                    {{ MENSAGENS.EQUIPE_DE_ELABORACAO }}
                     <form-helper-tooltip [texto]="projetoTooltip['equipeElaboracao']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('equipeElaboracao')"
                       [texto]="mensagemComplementarCampo('equipeElaboracao')"></form-warning-tooltip>
                   </validation-message>
                 </label>
                 <div class="input-group">
-                  <input type="text" class="form-control" placeholder="Digite o nome" id="nomeagente"
+                  <input type="text" class="form-control" placeholder="{{ MENSAGENS.DIGITE_O_NOME }}" id="nomeagente"
                     formControlName="nomeagente" maxLength="150" (keyup.enter)="buscarAgentesPorTermo()"
                     (click)="exibirLista = false" />
                   <button class="btn btn-outline-secondary" type="button" (click)="buscarAgentesPorTermo()"
@@ -315,7 +314,7 @@
                       deveComplementarCampo('situacaoProblema'),
                   }">
                   <validation-message [control]="getControl('situacaoProblema')">
-                    Situação Problema
+                    {{ MENSAGENS.SITUACAO_PROBLEMA }}
                     <form-helper-tooltip [texto]="projetoTooltip['situacaoProblema']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('situacaoProblema')"
                       [texto]="mensagemComplementarCampo('situacaoProblema')"></form-warning-tooltip>
@@ -331,7 +330,7 @@
                       deveComplementarCampo('objetivo'),
                   }">
                   <validation-message [control]="getControl('objetivo')">
-                    Objetivo Geral
+                    {{ MENSAGENS.OBJETIVO_GERAL }}
                     <form-helper-tooltip [texto]="projetoTooltip['objetivo']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('objetivo')"
                       [texto]="mensagemComplementarCampo('objetivo')"></form-warning-tooltip>
@@ -345,7 +344,7 @@
                 <label for="objetivoEspecifico" class="form-label col-12"
                   [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('objetivoEspecifico'),}">
                   <validation-message [control]="getControl('objetivoEspecifico')">
-                    Objetivos Específicos
+                    {{ MENSAGENS.OBJETIVOS_ESPECIFICOS }}
                     <form-helper-tooltip [texto]="projetoTooltip['objetivoEspecifico']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('objetivoEspecifico')"
                       [texto]="mensagemComplementarCampo('objetivoEspecifico')"></form-warning-tooltip>
@@ -361,7 +360,7 @@
                       deveComplementarCampo('solucoesPropostas'),
                   }">
                   <validation-message [control]="getControl('solucoesPropostas')">
-                    Soluções Propostas/Resultados Esperados
+                    {{ MENSAGENS.SOLUCOES_PROPOSTAS_RESULTADOS_ESPERADOS }}
                     <form-helper-tooltip [texto]="projetoTooltip['solucoesPropostas']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('solucoesPropostas')"
                       [texto]="mensagemComplementarCampo('solucoesPropostas')"></form-warning-tooltip>
@@ -383,7 +382,7 @@
                       deveComplementarCampo('acoesProjeto'),
                   }">
                   <validation-message [control]="getControl('acoesProjeto')">
-                    Ações
+                    {{ MENSAGENS.ACOES }}
                     <form-warning-tooltip *ngIf="deveComplementarCampo('acoesProjeto')"
                       [texto]="mensagemComplementarCampo('acoesProjeto')"></form-warning-tooltip>
                   </validation-message>
@@ -397,7 +396,7 @@
                       deveComplementarCampo('rateio'),
                   }">
                   <validation-message [control]="getControl('rateio')">
-                    Regiões Geográficas Atendidas
+                    {{ MENSAGENS.REGIOES_GEOGRAFICAS_ATENDIDAS }}
                     <form-helper-tooltip [texto]="projetoTooltip['rateio']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('rateio')"
                       [texto]="mensagemComplementarCampo('rateio')"></form-warning-tooltip>
@@ -413,7 +412,7 @@
                     ),
                   }">
                   <validation-message [control]="getControl('arranjosInstitucionais')">
-                    Arranjo Institucional
+                    {{ MENSAGENS.ARRANJO_INSTITUCIONAL }}
                     <form-helper-tooltip [texto]="projetoTooltip['arranjosInstitucionais']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('arranjosInstitucionais')" [texto]="
                         mensagemComplementarCampo('arranjosInstitucionais')
@@ -430,7 +429,7 @@
                       deveComplementarCampo('pecasPlanejamento'),
                   }">
                   <validation-message [control]="getControl('pecasPlanejamento')">
-                    Peças do Planejamento
+                    {{ MENSAGENS.PECAS_DO_PLANEJAMENTO }}
                     <form-helper-tooltip [texto]="projetoTooltip['pecasPlanejamento']"></form-helper-tooltip>
                     <form-warning-tooltip *ngIf="deveComplementarCampo('pecasPlanejamento')"
                       [texto]="mensagemComplementarCampo('pecasPlanejamento')"></form-warning-tooltip>
@@ -492,8 +491,7 @@
                 }
               </span>
               <h5 class="fw-bold text-primary m-0">
-                Parecer {{ getLotacao(lotacaoUsuario) }}
-              </h5>
+                {{ formatarMensagem(MENSAGENS.PARECER_VALOR, { p0: (getLotacao(lotacaoUsuario)) }) }}</h5>
             </div>
             <div id="parecerAtual" class="collapse show" aria-labelledby="parecerTituloAtual">
               <div class="card-body mb-4">
@@ -523,29 +521,28 @@
                 }
               </span>
               <h5 class="fw-bold text-primary m-0">
-                Parecer {{ getLotacao(parecer.parecerLotacao) }}
-              </h5>
+                {{ formatarMensagem(MENSAGENS.PARECER_VALOR, { p0: (getLotacao(parecer.parecerLotacao)) }) }}</h5>
             </div>
             <div id="parecer{{ parecer.parecerLotacao }}" class="collapse"
               [attr.aria-labelledby]="'parecerTitulo' + parecer.parecerLotacao">
               <div class="card-body mb-4">
                 <ng-container *ngIf="parecer.id; else parecerPendente">
-                  <p class="mb-0 parecerLabel">Parecer:</p>
+                  <p class="mb-0 parecerLabel">{{ MENSAGENS.PARECER_2 }}</p>
                   <p class="text-justify parecerTexto" [innerHTML]="parecer.textoParecer"></p>
                   <div *ngIf="
                       parecer.statusParecer &&
                       parecer.statusParecer !== StatusParecerEnum.Pendente
                     " class="row mt-2">
                     <div class="col-12">
-                      <strong>Parecer enviado</strong> no dia
+                      <strong>{{ MENSAGENS.PARECER_ENVIADO }}</strong> {{ MENSAGENS.NO_DIA }}
                       <span class="text-primary">{{
                         parecer.dataEnvio | date: "dd/MM/yyyy"
                         }}</span>
-                      às
+                      {{ MENSAGENS.AS }}
                       <span class="text-primary">{{
                         parecer.dataEnvio | date: "HH:mm"
                         }}</span>
-                      por
+                      {{ MENSAGENS.POR }}
                       <span class="fw-semibold">{{
                         mapSubUser[parecer.usuarioFezEnvioParecer]
                         }}</span>
@@ -556,7 +553,7 @@
                         text-success 
                         fw-semibold text-decoration-none" style="font-size:14px;" (click)="baixarPdfAnexo(parecer.id)"
                         [disabled]="!parecerPossuiAnexo(parecer)">
-                        <i class="fas fa-download"></i> Baixar parecer
+                        <i class="fas fa-download"></i> {{ MENSAGENS.BAIXAR_PARECER }}
                       </button>
                     </div>
 
@@ -564,7 +561,7 @@
                 </ng-container>
 
                 <ng-template #parecerPendente>
-                  <p class="mb-0">Pendente...</p>
+                  <p class="mb-0">{{ MENSAGENS.PENDENTE_2 }}</p>
                 </ng-template>
               </div>
             </div>
@@ -595,11 +592,11 @@
       <button class="btn btn-success icon-text-btn" [disabled]="statusProjetoNovo == null"
         (click)="modal.close(statusProjetoNovo)">
         <i class="fa-solid fa-check"></i>
-        <span>Alterar</span>
+        <span>{{ MENSAGENS.ALTERAR }}</span>
       </button>
       <button class="btn btn-outline-primary icon-text-btn me-2" (click)="modal.dismiss()">
         <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
-        <span>Voltar</span>
+        <span>{{ MENSAGENS.VOLTAR }}</span>
       </button>
     </div>
   </div>
@@ -610,21 +607,18 @@
     <h4 class="modal-title text-primary fs-4 text-center">Salvar e enviar</h4>
   </div>
   <div class="modal-body">
-    <p>Deseja fazer o envio do DIC para o gestor do orgão de origem?</p>
+    <p>{{ MENSAGENS.DESEJA_FAZER_O_ENVIO_DO_DIC_PARA_O_GESTOR_DO_ORGAO_DE_ORIGEM }}</p>
     <p>
-      Enviaremos email informando ao(a) gestor(a)
-      {{ nomeProponenteResponsavel }} ({{ lotacaoGestorProjeto }}) um pedido de
-      análise para posterior encaminhamento à SUBCAP/SEP.
-    </p>
+      {{ formatarMensagem(MENSAGENS.ENVIAREMOS_EMAIL_INFORMANDO_AO_A_GESTOR_A_VALOR_VALOR_UM_PEDIDO_DE_ANALISE_PARA_POSTERIOR_ENCAMINHAMENTO_A_SUB, { p0: (nomeProponenteResponsavel), p1: (lotacaoGestorProjeto) }) }}</p>
   </div>
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-success icon-text-btn" (click)="modal.close('confirmado')">
         <i class="fa-solid fa-check"></i>
-        <span>Confirmar</span>
+        <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
       <button class="btn btn-outline-danger icon-text-btn me-2" (click)="modal.dismiss('cancelado')">
-        <span>Cancelar</span>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
         <i class="fa-solid fa-close me-2"></i>
       </button>
     </div>
@@ -637,19 +631,18 @@
   </div>
   <div class="modal-body">
     <p>
-      Deseja enviar às áreas estratégica e orçamentária para elaboração dos
-      pareceres?
+      {{ MENSAGENS.DESEJA_ENVIAR_AS_AREAS_ESTRATEGICA_E_ORCAMENTARIA_PARA_ELABORACAO_DOS_PARECERES }}
     </p>
-    <p>O Siscap enviará um email automático a ambas.</p>
+    <p>{{ MENSAGENS.O_SISCAP_ENVIARA_UM_EMAIL_AUTOMATICO_A_AMBAS }}</p>
   </div>
   <div class="modal-footer py-2">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-success icon-text-btn" (click)="modal.close('confirmado')">
         <i class="fa-solid fa-check"></i>
-        <span>Confirmar</span>
+        <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
       <button class="btn btn-outline-danger icon-text-btn me-2" (click)="modal.dismiss('cancelado')">
-        <span>Cancelar</span>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
         <i class="fa-solid fa-close me-2"></i>
       </button>
     </div>
@@ -693,8 +686,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Assinatura e captura do DIC (Documento Inicial de Captação), gerado em
-          PDF com os dados do formulário;
+          {{ MENSAGENS.ASSINATURA_E_CAPTURA_DO_DIC_DOCUMENTO_INICIAL_DE_CAPTACAO_GERADO_EM_PDF_COM_OS_DADOS_DO_FORMULARIO }}
         </div>
       </div>
       <div class="d-flex align-items-center gap-2">
@@ -743,7 +735,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Entranhamento do DIC capturado ao processo;
+          {{ MENSAGENS.ENTRANHAMENTO_DO_DIC_CAPTURADO_AO_PROCESSO }}
         </div>
       </div>
       <div class="d-flex align-items-center gap-2">
@@ -766,8 +758,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Despacho com pedido de análise do processo à Subsecretaria de Captação
-          de Recursos (SUBCAP) da Secretaria de Economia e Planejamento (SEP).
+          {{ MENSAGENS.DESPACHO_COM_PEDIDO_DE_ANALISE_DO_PROCESSO_A_SUBSECRETARIA_DE_CAPTACAO_DE_RECURSOS_SUBCAP_DA_SECRETARIA_DE_ECO }}
         </div>
       </div>
     </div>
@@ -797,7 +788,7 @@
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none">
         <span class="spinner-border spinner-border-sm me-2"></span>
-        <span>Processando...</span>
+        <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
         style="cursor: default; user-select: none; border-radius: 0">
@@ -855,8 +846,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Assinatura e captura do DIC (Documento Inicial de Captação), gerado em
-          PDF com os dados do formulário;
+          {{ MENSAGENS.ASSINATURA_E_CAPTURA_DO_DIC_DOCUMENTO_INICIAL_DE_CAPTACAO_GERADO_EM_PDF_COM_OS_DADOS_DO_FORMULARIO }}
         </div>
       </div>
       <div class="d-flex align-items-center gap-2">
@@ -884,7 +874,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Entranhamento do DIC atual capturado ao processo;
+          {{ MENSAGENS.ENTRANHAMENTO_DO_DIC_ATUAL_CAPTURADO_AO_PROCESSO }}
         </div>
       </div>
       <div class="d-flex align-items-center gap-2">
@@ -912,7 +902,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Desentranhamento do DIC anterior do processo;
+          {{ MENSAGENS.DESENTRANHAMENTO_DO_DIC_ANTERIOR_DO_PROCESSO }}
         </div>
       </div>
       <div class="d-flex align-items-center gap-2">
@@ -942,8 +932,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Despacho com pedido de análise do processo à Subsecretaria de Captação
-          de Recursos (SUBCAP) da Secretaria de Economia e Planejamento (SEP).
+          {{ MENSAGENS.DESPACHO_COM_PEDIDO_DE_ANALISE_DO_PROCESSO_A_SUBSECRETARIA_DE_CAPTACAO_DE_RECURSOS_SUBCAP_DA_SECRETARIA_DE_ECO }}
         </div>
       </div>
     </div>
@@ -981,7 +970,7 @@
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none">
         <span class="spinner-border spinner-border-sm me-2"></span>
-        <span>Processando...</span>
+        <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
         style="cursor: default; user-select: none; border-radius: 0">
@@ -1002,31 +991,31 @@
 <ng-template #confirmarRevisarProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
     <h4 class="modal-title text-primary fw-bold fs-4 text-center">
-      Deseja enviar o DIC para revisão?
+      {{ MENSAGENS.DESEJA_ENVIAR_O_DIC_PARA_REVISAO }}
     </h4>
   </div>
   <div class="modal-body py-3">
     <form [formGroup]="projetoForm">
       <div class="mb-3">
         <label for="justificativaRevisao" class="form-label text-primary fs-5">
-          Justificativa
+          {{ MENSAGENS.JUSTIFICATIVA }}
         </label>
         <validation-message class="col-12" [control]="getControl('justificativaRevisao')">
         </validation-message>
         <textarea rows="5" class="form-control" id="justificativaRevisao" formControlName="justificativaRevisao"
-          maxLength="200" placeholder="-- Informar a justificativa para revisão --" required></textarea>
+          maxLength="200" placeholder="{{ MENSAGENS.INFORMAR_A_JUSTIFICATIVA_PARA_REVISAO }}" required></textarea>
       </div>
     </form>
   </div>
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>Cancelar</span>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
       <button class="btn btn-success icon-text-btn me-2" (click)="confirmarJustificativaRevisao(modal)">
         <i class="fa-solid fa-check me-2"></i>
-        <span>Confirmar</span>
+        <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
     </div>
   </div>
@@ -1034,7 +1023,7 @@
 
 <ng-template #confirmarArquivarProjetoModal let-modal>
   <div class="modal-header py-3 justify-content-center">
-    <h4 class="modal-title text-primary fw-bold fs-4 text-center">Arquivar</h4>
+    <h4 class="modal-title text-primary fw-bold fs-4 text-center">{{ MENSAGENS.ARQUIVAR }}</h4>
   </div>
   <div class="modal-body py-3">
     <form [formGroup]="projetoForm">
@@ -1045,7 +1034,7 @@
           </label>
           <validation-message class="col-12" [control]="getControl('codigoMotivoArquivamento')">
           </validation-message>
-          <ng-select id="codigoMotivoArquivamento" placeholder="-- Selecione um motivo para arquivamento--"
+          <ng-select id="codigoMotivoArquivamento" placeholder="{{ MENSAGENS.SELECIONE_UM_MOTIVO_PARA_ARQUIVAMENTO }}"
             formControlName="codigoMotivoArquivamento" [items]="tiposMotivoArquivamentoOpcoes" bindLabel="tipo"
             bindValue="codigo">
             <ng-template ng-option-tmp let-item="item">
@@ -1060,13 +1049,13 @@
         </div>
         <div class="mb-3">
           <label for="justificativaArquivamento" class="form-label text-primary fs-5">
-            Justificativa
+            {{ MENSAGENS.JUSTIFICATIVA }}
           </label>
           <validation-message class="col-12" [control]="getControl('justificativaArquivamento')">
           </validation-message>
           <textarea rows="5" class="form-control" id="justificativaArquivamento"
             formControlName="justificativaArquivamento" maxLength="200"
-            placeholder="-- Informar a justificativa para arquivamento --"></textarea>
+            placeholder="{{ MENSAGENS.INFORMAR_A_JUSTIFICATIVA_PARA_ARQUIVAMENTO }}"></textarea>
         </div>
       </div>
     </form>
@@ -1074,12 +1063,12 @@
   <div class="modal-footer">
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>Cancelar</span>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
       <button class="btn btn-success icon-text-btn me-2" (click)="confirmarJustificativaArquivamento(modal)">
         <i class="fa-solid fa-check me-2"></i>
-        <span>Confirmar</span>
+        <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
     </div>
   </div>
@@ -1100,7 +1089,7 @@
         <div ngbAccordionCollapse>
           <div ngbAccordionBody>
             <textarea class="form-control" [(ngModel)]="campo.mensagemComplementacao"
-              placeholder="Informe o motivo para complementação.">
+              placeholder="{{ MENSAGENS.INFORME_O_MOTIVO_PARA_COMPLEMENTACAO }}">
             </textarea>
           </div>
         </div>
@@ -1111,13 +1100,13 @@
   <div modalFooter>
     <div class="d-inline-flex flex-row-reverse">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>Cancelar</span>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
         <i class="fa-solid fa-close"></i>
       </button>
 
       <button class="btn btn-success icon-text-btn me-2" (click)="confirmarComplementacao(modal)">
         <i class="fa-solid fa-check me-2"></i>
-        <span>Confirmar</span>
+        <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
     </div>
   </div>
@@ -1133,17 +1122,10 @@
   </div>
   <div modalBody>
     <p *ngIf="!isParecerGeoc; else geocAviso">
-      Esta ação realizará a captura e assinatura do parecer no E-Docs,
-      usando a sua identidade - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
-      Após isso, o parecer não poderá mais ser editado
-    </p>
+      {{ formatarMensagem(MENSAGENS.ESTA_ACAO_REALIZARA_A_CAPTURA_E_ASSINATURA_DO_PARECER_NO_E_DOCS_USANDO_A_SUA_IDENTIDADE_VALOR_VALOR_APOS_ISSO, { p0: (nomeUsuario), p1: (lotacaoPrioritariaUsuario) }) }}</p>
     <ng-template #geocAviso>
       <p>
-        Esta ação definirá a elegibilidade do DIC, assinando e
-        capturando o parecer no E-Docs usando sua identidade -
-        {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}). Após isso, o
-        processo {{ processoEdocsProtocolo }} será encerrado no E-Docs.
-      </p>
+        {{ formatarMensagem(MENSAGENS.ESTA_ACAO_DEFINIRA_A_ELEGIBILIDADE_DO_DIC_ASSINANDO_E_CAPTURANDO_O_PARECER_NO_E_DOCS_USANDO_SUA_IDENTIDADE_VAL, { p0: (nomeUsuario), p1: (lotacaoPrioritariaUsuario), p2: (processoEdocsProtocolo) }) }}</p>
     </ng-template>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div *ngFor="let etapa of etapasEnvioParecer" class="d-flex align-items-center gap-2 mb-2">
@@ -1211,7 +1193,7 @@
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none">
         <span class="spinner-border spinner-border-sm me-2"></span>
-        <span>Processando...</span>
+        <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
         style="cursor: default; user-select: none; border-radius: 0">
@@ -1238,10 +1220,7 @@
   </div>
   <div modalBody>
     <p>
-      Esta ação realizará o entranhamento dos pareceres orçamentário e
-      estratégico ao processo {{ processoEdocsProtocolo }} utilizando a sua
-      identidade - {{ nomeUsuario }} ({{ lotacaoPrioritariaUsuario }}).
-    </p>
+      {{ formatarMensagem(MENSAGENS.ESTA_ACAO_REALIZARA_O_ENTRANHAMENTO_DOS_PARECERES_ORCAMENTARIO_E_ESTRATEGICO_AO_PROCESSO_VALOR_UTILIZANDO_A_SU, { p0: (processoEdocsProtocolo), p1: (nomeUsuario), p2: (lotacaoPrioritariaUsuario) }) }}</p>
     <div *ngIf="exibeListaEtapasIntegracao">
       <div class="d-flex align-items-center gap-2">
         <div>
@@ -1270,7 +1249,7 @@
               ? 'black'
               : '#cccccc'
           ">
-          Entranhamento dos pareceres capturados no E-Docs;
+          {{ MENSAGENS.ENTRANHAMENTO_DOS_PARECERES_CAPTURADOS_NO_E_DOCS }}
         </div>
       </div>
       <div *ngIf="finalizadoProcessamentoIntegracao"
@@ -1298,7 +1277,7 @@
       <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
         style="border-radius: 0; cursor: default; user-select: none">
         <span class="spinner-border spinner-border-sm me-2"></span>
-        <span>Processando...</span>
+        <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao"
         class="btn btn-danger icon-text-btn me-2 d-inline-flex align-items-center"

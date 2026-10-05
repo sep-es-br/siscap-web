@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -36,6 +37,9 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
   styleUrl: './equipe-form.component.scss',
 })
 export class EquipeFormComponent {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
 
   @Input() public tiposPapelOpcoes: IOpcoesDropdown[] = [];
 
@@ -131,12 +135,12 @@ export class EquipeFormComponent {
       'info',
       this.equipeService.excluirMembroFormMembroStatusFormControl.value ==
         TipoStatusEnum.Inativo
-        ? 'Membro removido da equipe.'
-        : 'Membro excluído da equipe.',
+        ? MENSAGENS.MEMBRO_REMOVIDO_DA_EQUIPE
+        : MENSAGENS.MEMBRO_EXCLUIDO_DA_EQUIPE,
       [
-        `${this.getMembroNome(
+        formatarMensagem(MENSAGENS.VALOR_VALOR_2, { p0: this.getMembroNome(
           membroFormGroup.value.subPessoa
-        )} - ${this.getPapelNome(membroFormGroup.value.idPapel)}`,
+        ), p1: this.getPapelNome(membroFormGroup.value.idPapel) }),
       ]
     );
 

@@ -8,7 +8,7 @@
                 <div class="col-md-4 mb-2 mb-md-0">
                   <label for="tipoIndicador" class="form-label">
                     <validation-message [control]="getControl('tipoIndicador')">
-                      Indicador
+                      {{ MENSAGENS.INDICADOR }}
                       <form-helper-tooltip 
                         [texto]="projetoTooltip['tipoIndicadorDescricao']"> 
                       </form-helper-tooltip>
@@ -24,7 +24,7 @@
                 <div class="col-md-4 mb-2 mb-md-0">
                   <label for="descricaoIndicador" class="form-label">
                     <validation-message [control]="getControl('descricaoIndicador')">
-                      Descrição do indicador
+                      {{ MENSAGENS.DESCRICAO_DO_INDICADOR }}
                         <form-helper-tooltip 
                           [texto]="projetoTooltip['descricaoIndicador']"> 
                         </form-helper-tooltip>
@@ -40,7 +40,7 @@
                 <div class="col-md-4 mb-2 mb-md-0">
                   <label for="descricaoMeta" class="form-label">
                     <validation-message [control]="getControl('descricaoMeta')">
-                      Meta
+                      {{ MENSAGENS.META_2 }}
                         <form-helper-tooltip 
                           [texto]="projetoTooltip['descricaoMeta']"> 
                         </form-helper-tooltip>
@@ -59,7 +59,7 @@
               <button
                 *ngIf="isModoEdicao || !isIndicadorAtivo(i)"
                 type="button"
-                ngbTooltip="Remover Indicador do DIC"
+                ngbTooltip="{{ MENSAGENS.REMOVER_INDICADOR_DO_DIC }}"
                 class="btn btn-outline-danger rounded-circle"
                 (click)="isNovoMembro(i) ? removerIndicador(i) : marcarIndicadorExcluido(i)">
                 <i class="fa-solid fa-minus remove-btn-icon"></i>
@@ -70,7 +70,7 @@
         <div *ngIf="isModoEdicao" class="d-grid mt-3">
           <button type="button" class="btn btn-outline-primary" 
             (click)="adicionarIndicador()">
-            <i class="fas fa-plus me-2"></i>Adicionar Novo Indicador
+            <i class="fas fa-plus me-2"></i>{{ MENSAGENS.ADICIONAR_NOVO_INDICADOR }}
           </button>
         </div>
     </div>
