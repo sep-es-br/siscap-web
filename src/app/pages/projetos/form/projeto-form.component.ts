@@ -565,7 +565,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        // console.log("Buscar projeto por ID: ", response)
+        console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -1245,9 +1245,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       indicadoresProjeto: this.indicadoresService.construirindicadoresFormArray(
         projetoFormModel?.indicadoresProjeto,
       ),
-      acoesProjeto: this.acoesService.construirAcoesFormArray(
-        projetoFormModel?.acoesProjeto,
-      ),
+
+      // acoesProjeto: this.acoesService.construirAcoesFormArray(
+      //   projetoFormModel?.acoesProjeto,
+      // ),
+
       pecasPlanejamento: this._nnfb.control(
         projetoFormModel?.pecasPlanejamento ?? null,
         [Validators.required, noWhitespaceValidator(), Validators.maxLength(2000)],
@@ -1331,7 +1333,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       ),
 
       acoesRateioProjeto: this.acoesService.construirAcoesRateioFormArray(
-        projetoFormModel?.acoesProjeto,
+        projetoFormModel?.acoesRateioProjeto,
       ),
 
       periodoPpaLoa: this._nnfb.control(
@@ -4055,6 +4057,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   ): ProjetoFormModel {
 
     const formRaw = form.getRawValue() as IProjetoForm;
+
     const payload = new ProjetoFormModel(formRaw);
 
     const indicadoresProjeto = this.montarIndicadoresProjetoPayload(form);
@@ -4241,27 +4244,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     projetoSalvo: IProjeto
   ): void {
 
-    const acoesForm =
-      this.projetoForm.get('acoesProjeto') as FormArray;
-
-    acoesForm.controls.forEach(control => {
-
-      const idAcao = control.get('idAcao')?.value;
-
-      const acaoSalva =
-        projetoSalvo.acoesProjeto?.find(
-          acao => acao.idAcao === idAcao
-        );
-
-      if (acaoSalva) {
-        control.patchValue(
-          acaoSalva,
-          {
-            emitEvent: false
-          }
-        );
-      }
-    });
+    // const acoesForm =
+    //   this.projetoForm.get('acoesProjeto') as FormArray;
+    // acoesForm.controls.forEach(control => {
+    //   const idAcao = control.get('idAcao')?.value;
+    //   const acaoSalva =
+    //     projetoSalvo.acoesProjeto?.find(
+    //       acao => acao.idAcao === idAcao
+    //     );
+    //   if (acaoSalva) {
+    //     control.patchValue(
+    //       acaoSalva,
+    //       {
+    //         emitEvent: false
+    //       }
+    //     );
+    //   }
+    // });
 
   }
 

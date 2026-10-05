@@ -30,7 +30,7 @@ export interface IProjeto {
   papelResponsavelProponente: string;
   subResponsavelProponente: string;
   indicadoresProjeto: Array<IIndicadores>;
-  acoesProjeto: Array<IAcao>;
+  // acoesProjeto: Array<IAcao>;
   nomeagente: string;
   pecasPlanejamento: string;
   enviarProjetoGestor: boolean;
