@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../utils/constants';
 import { LotacaoUsuarioEnum } from "../enums/lotacao-usuario.enum";
 import { StatusParecerEnum } from "../enums/status-parecer.enum";
 import { StatusProjetoEnum } from "../enums/status-projeto.enum";
@@ -66,7 +67,7 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
             if(subeoSubepp){
                 return {
                     ...base,
-                    label: 'Parecer Orçamentário<br/>Parecer Estratégico',
+                    label: MENSAGENS.PARECER_ORCAMENTARIO_BR_PARECER_ESTRATEGICO,
                     labelOffset: '-1rem',
                     dataFim: (subeoDtEnvio && subeppDtEnvio) ? (subeoDtEnvio > subeppDtEnvio ? subeoDtEnvio : subeppDtEnvio) : undefined,
                     nomePessoa: (subeoDtEnvio && subeppDtEnvio) ? (subeoDtEnvio > subeppDtEnvio ? parecerSubeo.usuarioFezEnvioParecer : parecerSubepp.usuarioFezEnvioParecer) : undefined
@@ -74,7 +75,7 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
             } else {
                 return {
                     ...base,
-                    label: 'Parecer Captação',
+                    label: MENSAGENS.PARECER_CAPTACAO,
                     dataInicio: (subeoDtEnvio && subeppDtEnvio) ? (subeoDtEnvio > subeppDtEnvio ? subeoDtEnvio : subeppDtEnvio) : undefined,
                 } as IStep<StatusProjetoEnum>;
             }
@@ -87,12 +88,12 @@ export function gerarStepStatusProjeto(status: StatusProjetoEnum, statusHistoric
         case StatusProjetoEnum.Elegivel:
             return {
                ...base,
-               label: statusHistorico?.inicioEm ? StatusProjetoEnum.Elegivel : 'Conclusão'
+               label: statusHistorico?.inicioEm ? StatusProjetoEnum.Elegivel : MENSAGENS.CONCLUSAO
             } as IStep<StatusProjetoEnum>;
         case StatusProjetoEnum.Inelegivel:
             return {
               ...base,
-              label: statusHistorico?.inicioEm ? StatusProjetoEnum.Inelegivel : 'Conclusão'
+              label: statusHistorico?.inicioEm ? StatusProjetoEnum.Inelegivel : MENSAGENS.CONCLUSAO
             } as IStep<StatusProjetoEnum>;
     }
 }

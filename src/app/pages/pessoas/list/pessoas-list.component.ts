@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, input, output } from '@angular/core';
 
 import { tap } from 'rxjs';
@@ -27,6 +28,8 @@ import { converterArrayBufferEmImgSrc } from '../../../core/utils/functions';
   styleUrl: './pessoas-list.component.scss',
 })
 export class PessoasListComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   public pessoasList = input<Array<IPessoaTableData> | null>([]);
   public sortableDirectiveOutput = output<string>();
 

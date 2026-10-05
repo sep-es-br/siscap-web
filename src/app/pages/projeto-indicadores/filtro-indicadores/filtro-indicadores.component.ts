@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Desafio, IGestoesCatalogoExterno, Label } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +18,9 @@ import { FilterModalComponent } from '../../../shared/components/filter-modal/fi
   templateUrl: './filtro-indicadores.component.html',
 })
 export class FiltroIndicadoresComponent implements OnChanges {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
 
   @Output() apply = new EventEmitter<any>();
   @Output() close = new EventEmitter<void>();
@@ -233,7 +237,7 @@ export class FiltroIndicadoresComponent implements OnChanges {
       return valorSelecionado?.valor ?? '1 selecionado';
     }
 
-    return `${selecionados.length} selecionados`;
+    return formatarMensagem(MENSAGENS.PARAMETRO_SELECIONADOS, { p0: selecionados.length });
 
   }
 

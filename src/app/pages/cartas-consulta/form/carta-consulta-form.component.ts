@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -58,6 +59,8 @@ import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
   styleUrl: './carta-consulta-form.component.scss',
 })
 export class CartaConsultaFormComponent implements OnInit, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+
   private readonly _subscription: Subscription = new Subscription();
 
   private readonly _atualizarCartaConsulta$: Observable<ICartaConsulta>;
@@ -237,8 +240,8 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
     }
 
     if (form.invalid) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Por favor, verifique os campos.',
+      this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+        MENSAGENS.POR_FAVOR_VERIFIQUE_OS_CAMPOS,
       ]);
       return;
     }
@@ -270,7 +273,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       tap((response: ICartaConsulta) => {
         this._toastService.showToast(
           'success',
-          'Organização cadastrada com sucesso.'
+          MENSAGENS.ORGANIZACAO_CADASTRADA_COM_SUCESSO
         );
       }),
       finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
@@ -286,7 +289,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
         tap((response: ICartaConsulta) => {
           this._toastService.showToast(
             'success',
-            'Organização alterada com sucesso.'
+            MENSAGENS.ORGANIZACAO_ALTERADA_COM_SUCESSO
           );
         }),
         finalize(() =>

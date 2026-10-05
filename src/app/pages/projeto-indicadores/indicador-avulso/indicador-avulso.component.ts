@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import {
@@ -21,6 +22,8 @@ import { TemplatesModule } from '../../../shared/templates/templates.module';
   styleUrl: './indicador-avulso.component.scss'
 })
 export class IndicadorAvulsoComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() formProjeto!: FormGroup;
   @Output() close = new EventEmitter<void>();

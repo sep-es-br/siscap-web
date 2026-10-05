@@ -13,12 +13,12 @@
   <div class="card selection-card">
 
     <div class="card-header-main">
-      <h2 class="planejamento-card-title">Selecione a ação</h2>
+      <h2 class="planejamento-card-title">{{ MENSAGENS.SELECIONE_A_ACAO }}</h2>
       <div *ngIf="listaAcoes.length > 0" class="search-container" [class.expanded]="searchVisible">
         <span class="p-input-icon-left p-input-icon-right w-100">
           <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
           <input #searchInput [style.display]="searchVisible ? 'block' : 'none'" pInputText type="text"
-            class="w-100 search-input" placeholder="Nome da ação" [(ngModel)]="filtroTexto"
+            class="w-100 search-input" placeholder="{{ MENSAGENS.NOME_DA_ACAO }}" [(ngModel)]="filtroTexto"
             (ngModelChange)="filtrarAcoes()" [disabled]="!podeEditar" />
           <i class="pi pi-times clear-icon cursor-pointer" *ngIf="filtroTexto && searchVisible"
             (click)="limparBusca()"></i>
@@ -34,7 +34,7 @@
             <label class="acao-label">
               <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
                 [disabled]="!podeEditar"></p-checkbox>
-              <span class="text-blue-primary">SELECIONAR TODOS</span>
+              <span class="text-blue-primary">{{ MENSAGENS.SELECIONAR_TODOS }}</span>
             </label>
           </div>
 
@@ -65,12 +65,12 @@
 
         <!-- Carregamento local -->
         <div *ngIf="carregandoAcoes" class="planejamento-acoes-loading" role="status" aria-live="polite"
-          aria-label="Carregando ações do planejamento">
+          attr.aria-label="{{ MENSAGENS.CARREGANDO_ACOES_DO_PLANEJAMENTO }}">
 
           <div class="spinner-border text-primary" aria-hidden="true"></div>
 
           <span class="planejamento-acoes-loading-texto">
-            Carregando ações do planejamento...
+            {{ MENSAGENS.CARREGANDO_ACOES_DO_PLANEJAMENTO_2 }}
           </span>
 
         </div>
@@ -79,7 +79,7 @@
 
           <h2 class="planejamento-card-title">
             <validation-message [control]="getControl('acoesPlanejamentoProjeto')">
-              Ações do planejamento
+              {{ MENSAGENS.ACOES_DO_PLANEJAMENTO }}
             </validation-message>
           </h2>
 
@@ -98,12 +98,11 @@
           </div>
 
           <div class="planejamento-empty-title">
-            Nenhuma ação selecionada
+            {{ MENSAGENS.NENHUMA_ACAO_SELECIONADA }}
           </div>
 
           <div class="planejamento-empty-description">
-            Utilize os filtros acima para adicionar as ações do planejamento
-            ao projeto.
+            {{ MENSAGENS.UTILIZE_OS_FILTROS_ACIMA_PARA_ADICIONAR_AS_ACOES_DO_PLANEJAMENTO_AO_PROJETO }}
           </div>
         </div>
 
@@ -126,9 +125,9 @@
 
               </div>
 
-              <button *ngIf="!somenteLeitura" type="button" class="acao-remover-btn" title="Remover ação"
-                aria-label="Remover ação do planejamento" (click)="onRemoverAcao(acao)" [disabled]="!podeEditar">
-                &times;
+              <button *ngIf="!somenteLeitura" type="button" class="acao-remover-btn" title="{{ MENSAGENS.REMOVER_ACAO }}"
+                attr.aria-label="{{ MENSAGENS.REMOVER_ACAO_DO_PLANEJAMENTO }}" (click)="onRemoverAcao(acao)" [disabled]="!podeEditar">
+                {{ MENSAGENS.TEXTO }}
               </button>
 
             </header>
@@ -138,7 +137,7 @@
 
               <div class="acao-planejamento-campo" *ngIf="acao.nomeUnidadeOrcamentaria">
                 <span class="acao-planejamento-label">
-                  Unidade orçamentária
+                  {{ MENSAGENS.UNIDADE_ORCAMENTARIA_2 }}
                 </span>
 
                 <span class="acao-planejamento-valor">
@@ -148,7 +147,7 @@
 
               <div class="acao-planejamento-campo" *ngIf="acao.nomeOrgao">
                 <span class="acao-planejamento-label">
-                  Órgão
+                  {{ MENSAGENS.ORGAO }}
                 </span>
 
                 <span class="acao-planejamento-valor">
@@ -158,7 +157,7 @@
 
               <div class="acao-planejamento-campo" *ngIf="acao.nomeFuncao">
                 <span class="acao-planejamento-label">
-                  Função
+                  {{ MENSAGENS.FUNCAO }}
                 </span>
 
                 <span class="acao-planejamento-valor">
@@ -168,7 +167,7 @@
 
               <div class="acao-planejamento-campo" *ngIf="acao.nomePrograma">
                 <span class="acao-planejamento-label">
-                  Programa
+                  {{ MENSAGENS.PROGRAMA }}
                 </span>
 
                 <span class="acao-planejamento-valor">
@@ -178,8 +177,7 @@
 
               <div class="acao-planejamento-campo" *ngIf="acao.valorPpa">
                 <span class="acao-planejamento-label">
-                  Valor PPA {{ this.periodoPlanejamento?.descricao || '-' }}
-                </span>
+                  {{ formatarMensagem(MENSAGENS.VALOR_PPA_VALOR, { p0: (this.periodoPlanejamento?.descricao || '-') }) }}</span>
 
                 <span class="acao-planejamento-valor">
                   {{ formatarMoeda(acao.valorPpa) }}
@@ -189,8 +187,7 @@
               <div class="acao-planejamento-campo" *ngIf="acao.valorLoa != null">
 
                 <span class="valor-loa-label">
-                  Valor LOA {{acao.anoAcao}}
-                </span>
+                  {{ formatarMensagem(MENSAGENS.VALOR_LOA_VALOR, { p0: (acao.anoAcao) }) }}</span>
 
                 <span class="valor-loa-total">
                   {{ formatarMoeda(acao.valorLoa) }}
@@ -202,7 +199,7 @@
             <div class="acao-planejamento-detalhamento" *ngIf="acao.valorLoa != null && acao.valorLoa == 0 ">
 
               <div class="acao-planejamento-detalhamento-sem-loa-titulo">
-                Ação não possui orçamento definido na LOA
+                {{ MENSAGENS.ACAO_NAO_POSSUI_ORCAMENTO_DEFINIDO_NA_LOA }}
               </div>
 
             </div>
@@ -211,16 +208,16 @@
               *ngIf="acao.detalhamentosLoa?.length && acao.valorLoa != null && acao.valorLoa > 0 ">
 
               <div class="acao-planejamento-detalhamento-titulo">
-                Detalhamento Orçamentário LOA
+                {{ MENSAGENS.DETALHAMENTO_ORCAMENTARIO_LOA }}
               </div>
 
               <!-- Cabeçalho exibido no desktop -->
               <div class="detalhamento-loa-cabecalho">
-                <div>GND</div>
-                <div>Modalidade</div>
-                <div>ID-USO</div>
-                <div>Fonte</div>
-                <div class="detalhamento-loa-coluna-valor">Valor</div>
+                <div>{{ MENSAGENS.GND }}</div>
+                <div>{{ MENSAGENS.MODALIDADE }}</div>
+                <div>{{ MENSAGENS.ID_USO }}</div>
+                <div>{{ MENSAGENS.FONTE_3 }}</div>
+                <div class="detalhamento-loa-coluna-valor">{{ MENSAGENS.VALOR_2 }}</div>
               </div>
 
               <!-- Registros -->
@@ -258,7 +255,7 @@
 
             <div class="acao-planejamento-total" *ngIf="acao.detalhamentosLoa?.length">
               <span class="acao-planejamento-total-label">
-                Total da ação
+                {{ MENSAGENS.TOTAL_DA_ACAO }}
               </span>
               <span class="acao-planejamento-total-valor">
                 {{ formatarMoeda(acao.valorTotalDetalhamento) }}
@@ -278,16 +275,16 @@
   <ng-template #loadingTpl>
     <div class="planejamento-empty-state planejamento-loading-state" role="status" aria-live="polite">
       <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
-      <span>Carregando ações...</span>
+      <span>{{ MENSAGENS.CARREGANDO_ACOES }}</span>
     </div>
   </ng-template>
 
   <ng-template #vazioTpl>
     <div class="planejamento-empty-state">
       <div class="planejamento-empty-icon">☷</div>
-      <div class="planejamento-empty-title">Nenhuma ação encontrada para o filtro informado.</div>
+      <div class="planejamento-empty-title">{{ MENSAGENS.NENHUMA_ACAO_ENCONTRADA_PARA_O_FILTRO_INFORMADO }}</div>
       <div class="planejamento-empty-description">
-        Utilize os filtros acima para carregar a lista de ações (Ano e UO são obrigatórios).
+        {{ MENSAGENS.UTILIZE_OS_FILTROS_ACIMA_PARA_CARREGAR_A_LISTA_DE_ACOES_ANO_E_UO_SAO_OBRIGATORIOS }}
       </div>
     </div>
   </ng-template>
@@ -301,8 +298,7 @@
         (change)="onNaoPrevistoPpaChange($event)" />
       <span>
         <validation-message [control]="getControl('naoPrevistoNoPpa')">
-          Não previsto no PPA {{ periodoPlanejamento?.descricao }}
-        </validation-message>
+          {{ formatarMensagem(MENSAGENS.NAO_PREVISTO_NO_PPA_VALOR, { p0: (periodoPlanejamento?.descricao) }) }}</validation-message>
       </span>
     </label>
 

@@ -7,7 +7,7 @@
     <div class="col-12 col-md-4">
       <div class="card shadow border-light mb-3">
         <div class="card-header bg-white mb-3">
-          <h5 class="card-title">Marca da Organização</h5>
+          <h5 class="card-title">{{ MENSAGENS.MARCA_DA_ORGANIZACAO }}</h5>
         </div>
         <div class="card-body">
           <app-cropper
@@ -21,14 +21,14 @@
     <div class="col-12 col-md-8">
       <div class="card shadow border-light mb-3">
         <div class="card-header bg-white">
-          <h5 class="card-title">Informações da Organização</h5>
+          <h5 class="card-title">{{ MENSAGENS.INFORMACOES_DA_ORGANIZACAO }}</h5>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-12 col-md-12 mb-2 mt-2 form-group">
               <label for="abreviatura" class="form-label col-12">
                 <validation-message [control]="getControl('abreviatura')">
-                  Sigla / Nome Fantasia
+                  {{ MENSAGENS.SIGLA_NOME_FANTASIA }}
                 </validation-message>
               </label>
               <input
@@ -44,7 +44,7 @@
             <div class="col-12 col-md-12 mb-2 mt-2 form-group">
               <label for="nome" class="form-label col-12">
                 <validation-message [control]="getControl('nome')">
-                  Nome / Razão Social
+                  {{ MENSAGENS.NOME_RAZAO_SOCIAL }}
                 </validation-message>
               </label>
               <input
@@ -57,7 +57,7 @@
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="cnpj" class="form-label col-12">
                 <validation-message [control]="getControl('cnpj')">
-                  CNPJ
+                  {{ MENSAGENS.CNPJ }}
                 </validation-message>
               </label>
               <input
@@ -71,12 +71,12 @@
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="idTipoOrganizacao" class="form-label col-12">
                 <validation-message [control]="getControl('idTipoOrganizacao')">
-                  Tipo
+                  {{ MENSAGENS.TIPO }}
                 </validation-message>
               </label>
               <ng-select
                 id="idTipoOrganizacao"
-                placeholder="-- Tipo de Organizacao --"
+                placeholder="{{ MENSAGENS.TIPO_DE_ORGANIZACAO }}"
                 formControlName="idTipoOrganizacao"
               >
                 <ng-option
@@ -89,12 +89,12 @@
             <div class="col-12 col-md-12 mb-2 mt-2 form-group">
               <label for="idOrganizacaoPai" class="form-label col-12">
                 <validation-message [control]="getControl('idOrganizacaoPai')">
-                  Matriz / Sede
+                  {{ MENSAGENS.MATRIZ_SEDE }}
                 </validation-message>
               </label>
               <ng-select
                 id="idOrganizacaoPai"
-                placeholder="-- Matriz/Sede --"
+                placeholder="{{ MENSAGENS.MATRIZ_SEDE_2 }}"
                 formControlName="idOrganizacaoPai"
               >
                 <ng-option
@@ -107,12 +107,12 @@
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="idPais" class="form-label col-12">
                 <validation-message [control]="getControl('idPais')">
-                  País de Origem
+                  {{ MENSAGENS.PAIS_DE_ORIGEM }}
                 </validation-message>
               </label>
               <ng-select
                 id="idPais"
-                placeholder="-- País --"
+                placeholder="{{ MENSAGENS.PAIS }}"
                 formControlName="idPais"
               >
                 <ng-option
@@ -125,12 +125,12 @@
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="idEstado" class="form-label col-12">
                 <validation-message [control]="getControl('idEstado')">
-                  Estado
+                  {{ MENSAGENS.ESTADO }}
                 </validation-message>
               </label>
               <ng-select
                 id="idEstado"
-                placeholder="-- Estado --"
+                placeholder="{{ MENSAGENS.ESTADO_2 }}"
                 formControlName="idEstado"
               >
                 <ng-option
@@ -143,12 +143,12 @@
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="idCidade" class="form-label col-12">
                 <validation-message [control]="getControl('idCidade')">
-                  Cidade
+                  {{ MENSAGENS.CIDADE }}
                 </validation-message>
               </label>
               <ng-select
                 id="idCidade"
-                placeholder="-- Cidade --"
+                placeholder="{{ MENSAGENS.CIDADE_2 }}"
                 formControlName="idCidade"
                 [virtualScroll]="true"
               >
@@ -162,7 +162,7 @@
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="telefone" class="form-label col-12">
                 <validation-message [control]="getControl('telefone')">
-                  Telefone
+                  {{ MENSAGENS.TELEFONE }}
                 </validation-message>
               </label>
               <input
@@ -175,7 +175,7 @@
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="email" class="form-label col-12">
                 <validation-message [control]="getControl('email')">
-                  Email
+                  {{ MENSAGENS.EMAIL }}
                 </validation-message>
               </label>
               <input
@@ -189,7 +189,7 @@
             <div class="col-12 col-md-6 mb-2 mt-2 form-group">
               <label for="site" class="form-label col-12">
                 <validation-message [control]="getControl('site')">
-                  Site
+                  {{ MENSAGENS.SITE }}
                 </validation-message>
               </label>
               <input
@@ -204,12 +204,12 @@
                 <validation-message
                   [control]="getControl('idPessoaResponsavel')"
                 >
-                  Responsável
+                  {{ MENSAGENS.RESPONSAVEL }}
                 </validation-message>
               </label>
               <ng-select
                 id="idPessoaResponsavel"
-                placeholder="-- Responsável --"
+                placeholder="{{ MENSAGENS.RESPONSAVEL_2 }}"
                 formControlName="idPessoaResponsavel"
               >
                 <ng-option

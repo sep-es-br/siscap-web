@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
@@ -40,6 +41,7 @@ import { ILocalidadeOpcoesDropdown } from '../../../core/interfaces/opcoes-dropd
   styleUrl: './rateio-form.component.scss',
 })
 export class RateioFormComponent implements OnInit, AfterViewInit {
+  public readonly MENSAGENS = MENSAGENS;
 
   @ViewChild(NgbAccordionDirective)
   public rateioNgbAccordion!: NgbAccordionDirective;

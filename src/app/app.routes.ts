@@ -1,3 +1,4 @@
+import { MENSAGENS } from './core/utils/constants';
 import { Routes } from '@angular/router';
 
 import { LoginComponent } from './pages/login/login.component';
@@ -10,7 +11,7 @@ import { ProjetoFormComponent } from './pages/projetos/form/projeto-form.compone
 
 export const APP_ROUTES: Routes = [
   {
-    title: 'Login',
+    title: MENSAGENS.LOGIN,
     path: 'login',
     component: LoginComponent,
   },

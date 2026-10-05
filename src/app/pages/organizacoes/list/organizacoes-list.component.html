@@ -17,19 +17,19 @@
           (sort)="sortColumn($event)"
           class="pointer"
         >
-          Sigla
+          {{ MENSAGENS.SIGLA }}
         </th>
         <th [sortable]="'nome'" (sort)="sortColumn($event)" class="pointer">
-          Nome
+          {{ MENSAGENS.NOME }}
         </th>
-        <th>Tipo</th>
+        <th>{{ MENSAGENS.TIPO }}</th>
         <th [sortable]="'telefone'" (sort)="sortColumn($event)" class="pointer">
-          Telefone
+          {{ MENSAGENS.TELEFONE }}
         </th>
         <th [sortable]="'site'" (sort)="sortColumn($event)" class="pointer">
-          Site
+          {{ MENSAGENS.SITE }}
         </th>
-        <th>Ações</th>
+        <th>{{ MENSAGENS.ACOES }}</th>
       </tr>
     </thead>
     <tbody class="fw-semibold">
@@ -44,7 +44,7 @@
                 ? converterArrayBufferEmImgSrc(organizacao.imagemPerfil)
                 : 'assets/images/blank.png'
             "
-            alt="Imagem da organizacao"
+            alt="{{ MENSAGENS.IMAGEM_DA_ORGANIZACAO }}"
             class="rounded-circle profile-img"
           />
         </td>

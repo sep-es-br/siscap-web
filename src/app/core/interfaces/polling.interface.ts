@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../utils/constants';
 export enum PollingEtapas {
   CAPTURA_ASSINATURA = 'CAPTURAASSINA',
   AUTUAR = 'AUTUAR',

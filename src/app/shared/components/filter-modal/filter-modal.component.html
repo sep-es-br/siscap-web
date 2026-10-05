@@ -8,7 +8,7 @@
   <button
     type="button"
     class="siscap-filter-modal__close"
-    aria-label="Fechar"
+    attr.aria-label="{{ MENSAGENS.FECHAR }}"
     (click)="closeModal.emit()">
     ✕
   </button>
@@ -23,7 +23,7 @@
       class="siscap-filter-modal__restore"
       [disabled]="restoreDisabled"
       (click)="restore.emit()">
-      RESTAURAR FILTROS
+      {{ MENSAGENS.RESTAURAR_FILTROS }}
     </button>
 
     <button
@@ -31,7 +31,7 @@
       class="siscap-filter-modal__apply"
       [disabled]="applyDisabled"
       (click)="applyFilter.emit()">
-      FILTRAR
+      {{ MENSAGENS.FILTRAR }}
     </button>
   </footer>
 </section>

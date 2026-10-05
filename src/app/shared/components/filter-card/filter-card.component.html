@@ -27,7 +27,7 @@
           *ngIf="chip.removable && !disabled"
           type="button"
           class="filter-chip__remove"
-          [attr.aria-label]="'Remover filtro ' + chip.label"
+          [attr.aria-label]="formatarMensagem(MENSAGENS.REMOVER_FILTRO_NOME, { nome: chip.label })"
           (keydown)="$event.stopPropagation()"
           (click)="onChipRemove($event, chip)">
           <i class="pi pi-times" aria-hidden="true"></i>
@@ -39,7 +39,7 @@
       *ngIf="canScrollLeft"
       type="button"
       class="filter-card__nav filter-card__nav--left"
-      aria-label="Rolar filtros selecionados para a esquerda"
+      attr.aria-label="{{ MENSAGENS.ROLAR_FILTROS_SELECIONADOS_PARA_A_ESQUERDA }}"
       (click)="scrollChips('left')">
       <i class="pi pi-chevron-left" aria-hidden="true"></i>
     </button>
@@ -48,7 +48,7 @@
       *ngIf="canScrollRight"
       type="button"
       class="filter-card__nav filter-card__nav--right"
-      aria-label="Rolar filtros selecionados para a direita"
+      attr.aria-label="{{ MENSAGENS.ROLAR_FILTROS_SELECIONADOS_PARA_A_DIREITA }}"
       (click)="scrollChips('right')">
       <i class="pi pi-chevron-right" aria-hidden="true"></i>
     </button>
@@ -59,8 +59,8 @@
     icon="pi pi-filter"
     [rounded]="true"
     [outlined]="true"
-    ariaLabel="Abrir filtros"
-    title="Filtros"
+    ariaLabel="{{ MENSAGENS.ABRIR_FILTROS }}"
+    title="{{ MENSAGENS.FILTROS }}"
     [disabled]="disabled || loading"
     (click)="onOpenFilter()">
   </p-button>

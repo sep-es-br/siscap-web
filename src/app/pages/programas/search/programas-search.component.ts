@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { IProgramaFiltroPesquisa, StatusPrograma, StatusProgramaLabel } from '../../../core/interfaces/programa.interface';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -10,6 +11,8 @@ import { TEMPO_INPUT_USUARIO } from '../../../core/utils/constants';
   styleUrl: './programas-search.component.scss'
 })
 export class ProgramasSearchComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   @Output() pesquisarProgramas = new EventEmitter<IProgramaFiltroPesquisa>();
 
   programasPesquisaForm!: FormGroup;

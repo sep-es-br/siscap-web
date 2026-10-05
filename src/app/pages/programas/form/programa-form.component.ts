@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, OnDestroy, OnInit, AfterViewInit, HostListener } from '@angular/core';
 import {
   AbstractControl,
@@ -88,6 +89,9 @@ import { EquipeFormType } from '../../../core/types/form/equipe-form.type';
   styleUrl: './programa-form.component.scss',
 })
 export class ProgramaFormComponent implements OnInit, OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
 
   private readonly _destroy$ = new Subject<any>();
 
@@ -676,8 +680,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     }
 
     if (form.invalid) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'Por favor, verifique os campos.',
+      this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+        MENSAGENS.POR_FAVOR_VERIFIQUE_OS_CAMPOS,
       ]);
       return;
     }
@@ -704,7 +708,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       tap((response: IPrograma) => {
         this._toastService.showToast(
           'success',
-          'Programa cadastrado com sucesso.'
+          MENSAGENS.PROGRAMA_CADASTRADO_COM_SUCESSO
         );
       }),
       finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
@@ -716,7 +720,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       tap((response: IPrograma) => {
         this._toastService.showToast(
           'success',
-          'Programa alterado com sucesso.'
+          MENSAGENS.PROGRAMA_ALTERADO_COM_SUCESSO
         );
       }),
       finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
@@ -731,7 +735,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     if (termo.length < 3) {
       this._toastService.showToast(
         'info',
-        'Informe pelo menos um nome com no mínimo 3 caracteres.'
+        MENSAGENS.INFORME_PELO_MENOS_UM_NOME_COM_NO_MINIMO_3_CARACTERES
       );
       this.pessoasOpcoesGoves = [];
       this.isLoadingPessoasFiltroTermo = false;
@@ -747,8 +751,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         // );
 
         if (this.pessoasOpcoesGoves.length === 0) {
-          this._toastService.showToast('info', 'Nenhum agente encontrado.', [
-            'Verifique se já faz parte da equipe.',
+          this._toastService.showToast('info', MENSAGENS.NENHUM_AGENTE_ENCONTRADO, [
+            MENSAGENS.VERIFIQUE_SE_JA_FAZ_PARTE_DA_EQUIPE,
           ]);
         }
 
@@ -778,7 +782,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this._usuarioService.usuarioPerfil.subNovo === event.agentePublicoSub;
 
     if (jaExiste) {
-      this._toastService.showToast('info', 'Pessoa já incluso na equipe');
+      this._toastService.showToast('info', MENSAGENS.PESSOA_JA_INCLUSO_NA_EQUIPE);
     } else {
       this.equipeService.idMembroNgSelectValue$.next(event);
     }
@@ -836,10 +840,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
       titulo: 'Solicitar autorização',
       headerCustomClass: 'bg-success-subtle',
-      textoPrincipal: 'Esta ação solicitará por email autorização para o programa aos gestores',
+      textoPrincipal: MENSAGENS.ESTA_ACAO_SOLICITARA_POR_EMAIL_AUTORIZACAO_PARA_O_PROGRAMA_AOS_GESTORES,
 
       itensDetalhe: {
-        titulo: 'Assinantes',
+        titulo: MENSAGENS.ASSINANTES,
         linhas: assinantes || []
       }
 
@@ -860,7 +864,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
                 this._programasService.adicionarProgramaAguardandoEdocs(this._idProgramaEdicao);
                 this._toastService.showToast(
                   'warning',
-                  'As Autorizações foram solicitadas!'
+                  MENSAGENS.AS_AUTORIZACOES_FORAM_SOLICITADAS
                 );
 
                 this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
@@ -875,7 +879,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
                 this._toastService.showToast(
                   'error',
-                  'Ocorreu um erro ao tentar solicitar as Autorizações do Programa'
+                  MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_SOLICITAR_AS_AUTORIZACOES_DO_PROGRAMA
                 );
               },
             });
@@ -891,11 +895,14 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.usarModalCentralizado = true;
 
     modalRef.componentInstance.config = {
-      titulo: 'Autuar',
+      titulo: MENSAGENS.AUTUAR,
       headerCustomClass: 'bg-success-subtle',
       textoPrincipal:
-        'Esta ação realizará a autuação de um processo no E-Docs para o programa de captação ' +
-        `${this.programaAtual.titulo}, utilizando a sua identidade ${this.nomeUsuario}(${this.lotacaoPrioritariaUsuario})`,
+        formatarMensagem(MENSAGENS.AUTUAR_PROGRAMA_CONFIRMACAO, {
+          programa: this.programaAtual.titulo,
+          usuario: this.nomeUsuario,
+          lotacao: this.lotacaoPrioritariaUsuario,
+        }),
       textoPrincipalCustomClass: 'fw-bold',
     };
 
@@ -914,7 +921,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
                 this._toastService.showToast(
                   'warning',
-                  'A Autuação do Programa foi solicitada!'
+                  MENSAGENS.A_AUTUACAO_DO_PROGRAMA_FOI_SOLICITADA
                 );
 
                 this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar);
@@ -929,7 +936,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
                 this._toastService.showToast(
                   'error',
-                  'Ocorreu um erro ao tentar Autuar o Programa!'
+                  MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_AUTUAR_O_PROGRAMA
                 );
               },
             });

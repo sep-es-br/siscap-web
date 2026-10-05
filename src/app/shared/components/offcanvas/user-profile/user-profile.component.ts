@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
@@ -22,6 +23,8 @@ import { converterArrayBufferEmImgSrc } from '../../../../core/utils/functions';
   styleUrl: './user-profile.component.scss',
 })
 export class OffcanvasUserProfileComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   public usuarioPerfil: UsuarioPerfilModel = new UsuarioPerfilModel();
   public usuarioAvatar: string = '';
 

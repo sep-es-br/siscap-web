@@ -11,9 +11,7 @@
           <div class="col-12 d-flex flex-column justify-content-end align-items-end gap-4 text-end">
 
             <span class="fs-small-3 total-quantia fw-semibold">
-              Soma valor estimado das ações:
-              {{
-              totalAcoesAtivas
+              {{ formatarMensagem(MENSAGENS.SOMA_VALOR_ESTIMADO_DAS_ACOES_VALOR, { p0: (totalAcoesAtivas
               | mask
               : "separator.2"
               : {
@@ -21,15 +19,11 @@
               leadZero: true,
               thousandSeparator: ".",
               decimalMarker: ","
-              }
-              }}
-            </span>
+              }) }) }}</span>
 
             <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-2"
               *ngIf="acoesService.acoesWarnings['limiteAcoes']">
-              Diferença:
-              {{
-              totalFaltandoEmValorAcoes
+              {{ formatarMensagem(MENSAGENS.DIFERENCA_VALOR, { p0: (totalFaltandoEmValorAcoes
               | mask
               : "separator.2"
               : {
@@ -37,9 +31,7 @@
               leadZero: true,
               thousandSeparator: ".",
               decimalMarker: ","
-              }
-              }}
-            </span>
+              }) }) }}</span>
 
           </div>
         </div>
@@ -48,12 +40,12 @@
 
       <ng-container *ngFor="let acoesFormGroup of acoesService.acoesFormArray.controls; index as i">
         <form [formGroup]="acoesFormGroup">
-          <h6 *ngIf="isAcaoAtiva(i)" class="mb-0">Ação #{{i + 1}}</h6>
+          <h6 *ngIf="isAcaoAtiva(i)" class="mb-0">{{ formatarMensagem(MENSAGENS.ACAO_VALOR, { p0: (i + 1) }) }}</h6>
           <div *ngIf="isAcaoAtiva(i)" class="row g-2">
             <div class="col-12 col-md-8">
               <label [for]="'acaoNome_' + i" class="form-label">
                 <!-- <validation-message [control]="acoesFormGroup.get('descricaoAcaoPrincipal')!"> -->
-                  Ação Principal
+                  {{ MENSAGENS.ACAO_PRINCIPAL }}
                   <form-helper-tooltip [texto]="projetoTooltip['descricaoAcaoPrincipal']">
                   </form-helper-tooltip>
                 <!-- </validation-message> -->
@@ -64,7 +56,7 @@
             <div class="col-12 col-md-4">
               <label [for]="'acaoValor_' + i" class="form-label">
                 <!-- <validation-message [control]="acoesFormGroup.get('valorEstimadoAcaoPrincipal')!"> -->
-                  Valor Estimado
+                  {{ MENSAGENS.VALOR_ESTIMADO_2 }}
                   <form-helper-tooltip [texto]="projetoTooltip['valorEstimadoAcaoPrincipal']">
                   </form-helper-tooltip>
                 <!-- </validation-message> -->
@@ -77,7 +69,7 @@
             <div class="col-12">
               <label [for]="'acaoDescricao_' + i" class="form-label">
                 <!-- <validation-message [control]="acoesFormGroup.get('descricaoAcaoSecundaria')!"> -->
-                  Descrição de ações secundárias e produtos
+                  {{ MENSAGENS.DESCRICAO_DE_ACOES_SECUNDARIAS_E_PRODUTOS }}
                   <form-helper-tooltip [texto]="projetoTooltip['descricaoAcoesSecudariasProdutos']">
                   </form-helper-tooltip>
                 <!-- </validation-message> -->
@@ -86,7 +78,7 @@
                 rows="3" maxlength="2000"></textarea>
             </div>
             <div *ngIf="isModoEdicao" class="d-flex justify-content-between align-items-center mb-2">
-              <button *ngIf="isModoEdicao || !isAcaoAtiva(i)" type="button" ngbTooltip="Remover Ação do DIC"
+              <button *ngIf="isModoEdicao || !isAcaoAtiva(i)" type="button" ngbTooltip="{{ MENSAGENS.REMOVER_ACAO_DO_DIC }}"
                 class="btn btn-outline-danger rounded-circle"
                 (click)="isNovaAcao(i) ? removerAcao(i) : marcarAcaoExcluida(i)">
                 <i class="fa-solid fa-minus remove-btn-icon"></i>
@@ -98,7 +90,7 @@
 
       <div *ngIf="isModoEdicao" class="d-grid mt-3">
         <button type="button" class="btn btn-outline-primary" (click)="adicionarAcao()">
-          <i class="fas fa-plus me-2"></i>Adicionar Nova Ação
+          <i class="fas fa-plus me-2"></i>{{ MENSAGENS.ADICIONAR_NOVA_ACAO }}
         </button>
       </div>
 

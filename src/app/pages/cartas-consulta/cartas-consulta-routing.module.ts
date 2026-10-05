@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../core/utils/constants';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -10,23 +11,23 @@ import { cartasConsulta_NoIdVisualizarGuard } from '../../core/guards/cartas-con
 
 const CARTAS_CONSULTA_ROUTES: Routes = [
   {
-    title: 'Pesquisa de Fontes de Financiamento-1',
+    title: MENSAGENS.PESQUISA_DE_FONTES_DE_FINANCIAMENTO_1,
     path: '',
     component: CartasConsultaComponent,
   },
   {
-    title: 'Cadastrar Carta Consulta',
+    title: MENSAGENS.CADASTRAR_CARTA_CONSULTA,
     path: 'criar',
     component: CartaConsultaFormComponent,
   },
   {
-    title: 'Editar Carta Consulta',
+    title: MENSAGENS.EDITAR_CARTA_CONSULTA,
     path: 'editar',
     component: CartaConsultaFormComponent,
     canActivate: [cartasConsulta_NoIdEditarGuard],
   },
   {
-    title: 'Visualizar Carta Consulta',
+    title: MENSAGENS.VISUALIZAR_CARTA_CONSULTA,
     path: 'visualizar',
     component: CartaConsultaViewComponent,
     canActivate: [cartasConsulta_NoIdVisualizarGuard],

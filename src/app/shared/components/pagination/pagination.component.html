@@ -3,10 +3,7 @@
   class="d-flex flex-column flex-md-row align-items-center align-items-md-baseline justify-content-around"
 >
   <span class="report-total">
-    Mostrando {{ paginacaoDadosInput().primeiroItemPagina }} até
-    {{ paginacaoDadosInput().ultimoItemPagina }} registros de
-    {{ paginacaoDadosInput().totalRegistros }}
-  </span>
+    {{ formatarMensagem(MENSAGENS.MOSTRANDO_VALOR_ATE_VALOR_REGISTROS_DE_VALOR, { p0: (paginacaoDadosInput().primeiroItemPagina), p1: (paginacaoDadosInput().ultimoItemPagina), p2: (paginacaoDadosInput().totalRegistros) }) }}</span>
 
   <ngb-pagination
     [page]="paginacaoDadosInput().paginaAtual"
@@ -17,19 +14,19 @@
     (pageChange)="ngbPaginationPageChangeEvent($event)"
   >
     <ng-template ngbPaginationFirst>
-      <span class="ngb-pagination-text"> Primeiro </span>
+      <span class="ngb-pagination-text"> {{ MENSAGENS.PRIMEIRO }} </span>
     </ng-template>
 
     <ng-template ngbPaginationNext>
-      <span class="ngb-pagination-text"> Próximo </span>
+      <span class="ngb-pagination-text"> {{ MENSAGENS.PROXIMO }} </span>
     </ng-template>
 
     <ng-template ngbPaginationPrevious>
-      <span class="ngb-pagination-text"> Anterior </span>
+      <span class="ngb-pagination-text"> {{ MENSAGENS.ANTERIOR }} </span>
     </ng-template>
 
     <ng-template ngbPaginationLast>
-      <span class="ngb-pagination-text"> Último </span>
+      <span class="ngb-pagination-text"> {{ MENSAGENS.ULTIMO }} </span>
     </ng-template>
   </ngb-pagination>
 </div>

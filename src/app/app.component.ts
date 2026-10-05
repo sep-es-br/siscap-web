@@ -1,3 +1,4 @@
+import { MENSAGENS } from './core/utils/constants';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
@@ -23,7 +24,7 @@ export class AppComponent {
     private readonly ngbInputDatepickerConfig: NgbInputDatepickerConfig
   ) {
     // Configurações globais do componente NgSelect
-    ngSelectConfig.notFoundText = 'Nenhum item encontrado.';
+    ngSelectConfig.notFoundText = MENSAGENS.NENHUM_ITEM_ENCONTRADO;
 
     // Configurações globais do componente NgbInputDatepicker (Ng Bootstrap)
     ngbInputDatepickerConfig.firstDayOfWeek = 7; // Domingo

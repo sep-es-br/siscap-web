@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../core/utils/constants';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -10,23 +11,23 @@ import { authExternalUrlGuard } from '../../core/guards/auth/auth.externalUrl.gu
 
 const PROJETOS_ROUTES: Routes = [
   {
-    title: 'Projetos',
+    title: MENSAGENS.PROJETOS,
     path: '',
     component: ProjetosComponent,
   },
   {
-    title: 'Cadastrar Projeto',
+    title: MENSAGENS.CADASTRAR_PROJETO,
     path: 'criar',
     component: ProjetoFormComponent,
   },
   {
-    title: 'Editar DIC (via link)',
+    title: MENSAGENS.EDITAR_DIC_VIA_LINK,
     path: 'editar/:id', 
     component: ProjetoFormComponent,
     canActivate: [authExternalUrlGuard]
   },
   {
-    title: 'Editar DIC',
+    title: MENSAGENS.EDITAR_DIC,
     path: 'editar',
     component: ProjetoFormComponent,
     canActivate: [projetos_NoIdEditarGuard],

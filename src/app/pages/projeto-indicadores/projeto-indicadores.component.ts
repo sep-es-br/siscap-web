@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../core/utils/constants';
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -43,6 +44,8 @@ declare var bootstrap: any;
   styleUrls: ['./projeto-indicadores.component.scss'],
 })
 export class ProjetoIndicadoresComponent implements OnInit {
+  public readonly MENSAGENS = MENSAGENS;
+
 
   @Input() formProjeto!: FormGroup;
   @Input() isModoEdicao: boolean = false;
@@ -308,7 +311,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
     this.chips = [
       {
         key: 'gestao',
-        label: 'GESTÃO ADMINISTRATIVA',
+        label: MENSAGENS.GESTAO_ADMINISTRATIVA,
         value: this.gestao?.nomeGestao || '-',
         type: 'base',
         removable: false,
@@ -454,8 +457,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
     const temIndicadoresAvulsos = indicadoresAvulsosArray?.length > 0;
 
     if (!temIndicadores && !temIndicadoresAvulsos) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'É obrigatório informar ao menos um indicador.',
+      this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+        MENSAGENS.E_OBRIGATORIO_INFORMAR_AO_MENOS_UM_INDICADOR,
       ]);
       return false;
     }
@@ -469,8 +472,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
       );
 
     if (algumIndicadorSemMeta) {
-      this._toastService.showToast('warning', 'O formulário contém erros.', [
-        'É obrigatório preencher todas as metas dos indicadores.',
+      this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
+        MENSAGENS.E_OBRIGATORIO_PREENCHER_TODAS_AS_METAS_DOS_INDICADORES,
       ]);
       return false;
     }
@@ -550,7 +553,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
       {
         key: 'gestao',
-        label: 'GESTÃO ADMINISTRATIVA',
+        label: MENSAGENS.GESTAO_ADMINISTRATIVA,
         value: this.gestao?.nomeGestao || '-',
         type: 'base',
         removable: false,
@@ -570,7 +573,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
       ...(this.currentFilter?.chips?.desafio ?? []).map((desafio: any) => ({
         key: `desafio:${desafio.idDesafio}`,
-        label: 'DESAFIO',
+        label: MENSAGENS.DESAFIO,
         value: desafio.nomeDesafio,
         type: 'filter',
         removable: true,

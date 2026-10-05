@@ -9,7 +9,7 @@
         <div class="col-12">
           <label for="objeto" class="form-label col-12">
             <validation-message [control]="getControl('objeto')">
-              Programa
+              {{ MENSAGENS.PROGRAMA }}
             </validation-message>
           </label>
           <ng-select
@@ -18,7 +18,7 @@
             groupBy="tipo"
             [clearable]="false"
             id="objeto"
-            placeholder="-- Selecione um objeto da lista abaixo --"
+            placeholder="{{ MENSAGENS.SELECIONE_UM_OBJETO_DA_LISTA_ABAIXO }}"
             formControlName="objeto">
             <ng-template ng-optgroup-tmp let-item="item">
               {{ item.tipo }}
@@ -30,7 +30,7 @@
 
           <label for="destinatario" class="form-label col-12">
             <validation-message [control]="getControl('destinatarios')">
-              Destinatários
+              {{ MENSAGENS.DESTINATARIOS }}
             </validation-message>
           </label>
 
@@ -42,7 +42,7 @@
             bindValue="idOrganizacao"
             [clearable]="false"
             id="destinatario"
-            placeholder="-- Selecione destinatários da lista abaixo --"
+            placeholder="{{ MENSAGENS.SELECIONE_DESTINATARIOS_DA_LISTA_ABAIXO }}"
             formControlName="destinatarios" >
             <ng-template ng-optgroup-tmp let-item="destinatario">
               {{ item.nome }}
@@ -53,12 +53,12 @@
 
         <div class="col-12">
           <label for="operacao" class="form-label col-12">
-              Operação
+              {{ MENSAGENS.OPERACAO }}
           </label>
           <ng-select
             [clearable]="true"
             id="operacao"
-            placeholder="-- Selecione uma operação da lista abaixo --"
+            placeholder="{{ MENSAGENS.SELECIONE_UMA_OPERACAO_DA_LISTA_ABAIXO }}"
             formControlName="operacao"
           >
             <ng-option
@@ -73,7 +73,7 @@
         <div class="col-12">
           <label for="corpo" class="form-label col-12">
             <validation-message [control]="getControl('corpo')">
-              Carta de Solicitação
+              {{ MENSAGENS.CARTA_DE_SOLICITACAO }}
             </validation-message>
           </label>
           <siscap-text-editor

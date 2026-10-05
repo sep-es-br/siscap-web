@@ -9,13 +9,13 @@
     <div class="row px-3">
       <div class="col-12 d-inline-flex border-bottom pb-2">
         <div class="me-3">
-          <span class="fs-small-4 fw-semibold">Carta Consulta: </span>
+          <span class="fs-small-4 fw-semibold">{{ MENSAGENS.CARTA_CONSULTA }} </span>
           <span class="fs-small-4 text-primary">{{
             prospeccaoDetalhes.cartaConsultaDetalhes.codigoCartaConsulta
           }}</span>
         </div>
         <div class="ms-3">
-          <span class="fs-small-4 fw-semibold">Prospecção: </span>
+          <span class="fs-small-4 fw-semibold">{{ MENSAGENS.PROSPECCAO_2 }} </span>
           <span class="fs-small-4 text-primary">{{
             prospeccaoDetalhes.codigoProspeccao
           }}</span>
@@ -23,7 +23,7 @@
       </div>
 
       <div class="col-12 py-2">
-        <span class="fs-small-4 fw-semibold">De:</span>
+        <span class="fs-small-4 fw-semibold">{{ MENSAGENS.DE }}</span>
         <br />
         <ng-container
           *ngTemplateOutlet="
@@ -34,7 +34,7 @@
       </div>
 
       <div class="col-12 py-2">
-        <span class="fs-small-4 fw-semibold">Para:</span>
+        <span class="fs-small-4 fw-semibold">{{ MENSAGENS.PARA }}</span>
         <br />
         <ng-container
           *ngTemplateOutlet="
@@ -45,7 +45,7 @@
       </div>
 
       <div class="col-12 py-2">
-        <span class="fs-small-4 fw-semibold">Interessado(a)(s):</span>
+        <span class="fs-small-4 fw-semibold">{{ MENSAGENS.INTERESSADO_A_S_2 }}</span>
         <br />
         <ng-container *ngFor="let nome of prospeccaoDetalhes.nomesInteressados">
           <span class="fs-small-4">
@@ -56,13 +56,13 @@
       </div>
 
       <div class="col-12 py-2">
-        <span class="fs-small-4 fw-semibold">Operação:</span>
+        <span class="fs-small-4 fw-semibold">{{ MENSAGENS.OPERACAO_2 }}</span>
         <br />
         <span class="fs-small-4">{{ prospeccaoDetalhes.tipoOperacao }}</span>
       </div>
 
       <div class="col-12 col-md-9 py-2">
-        <span class="fs-small-4 fw-semibold">Objeto:</span>
+        <span class="fs-small-4 fw-semibold">{{ MENSAGENS.OBJETO }}</span>
         <br />
         <span class="fs-small-4">{{
           prospeccaoDetalhes.cartaConsultaDetalhes.objeto.nome
@@ -83,7 +83,7 @@
         </ng-container>
       </div>
       <div class="col-12 col-md-3 py-2">
-        <span class="fs-small-4 fw-semibold">Valor Estimado:</span>
+        <span class="fs-small-4 fw-semibold">{{ MENSAGENS.VALOR_ESTIMADO }}</span>
         <br />
         <span class="fs-small-4">{{
           prospeccaoDetalhes.cartaConsultaDetalhes.valor.quantia

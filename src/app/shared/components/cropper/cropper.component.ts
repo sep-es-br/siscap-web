@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import {Component, ElementRef, EventEmitter, inject, Input, OnDestroy, Output, ViewChild} from '@angular/core';
 
 import {ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage} from 'ngx-image-cropper';
@@ -14,6 +15,8 @@ import {NgbAlertModule, NgbModal} from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['./cropper.component.scss'],
 })
 export class CropperComponent implements OnDestroy {
+  public readonly MENSAGENS = MENSAGENS;
+
 
     private modalService = inject(NgbModal);
     @ViewChild('cropperModal') imageCropper!: ElementRef;

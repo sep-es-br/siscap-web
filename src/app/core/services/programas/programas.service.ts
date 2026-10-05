@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../utils/constants';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
@@ -55,7 +56,7 @@ export
 
   public gerarBotoesAcaoListagem(): Array<BotaoPropriedadesModel> {
     const botaoCriar = BotoesConfig.gerarBotaoPropriedades('criar', {
-      texto: 'Novo Programa',
+      texto: MENSAGENS.NOVO_PROGRAMA,
     });
 
     return [botaoCriar];
@@ -108,7 +109,7 @@ export
 
           this._toastService.showToast(
             'success',
-            'Programa exportado com sucesso!',
+            MENSAGENS.PROGRAMA_EXPORTADO_COM_SUCESSO,
           );
           
           $requestStatus.next(RequestStatus.SUCCESS);
@@ -120,7 +121,7 @@ export
         $requestStatus.next(RequestStatus.ERROR);
         this._toastService.showToast(
           'error',
-          'Ocorreu um erro ao tentar exportar o Programa',
+          MENSAGENS.OCORREU_UM_ERRO_AO_TENTAR_EXPORTAR_O_PROGRAMA,
         );
 
         this._toastService.toastNotifier$.subscribe((isOpen) => {

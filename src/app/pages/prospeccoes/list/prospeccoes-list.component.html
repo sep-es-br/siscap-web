@@ -1,28 +1,28 @@
 <div class="mx-3">
   <div id="header" class="row mb-2 flex-nowrap">
     <div class="col-1 mx-2 mx-md-1 mx-lg-2 text-truncate">
-      <span class="fs-small-4">Prospecção</span>
+      <span class="fs-small-4">{{ MENSAGENS.PROSPECCAO }}</span>
     </div>
     <div class="col-3 ms-4 ms-md-5 ms-lg-4 text-truncate">
-      <span class="fs-small-4">Organização</span>
+      <span class="fs-small-4">{{ MENSAGENS.ORGANIZACAO }}</span>
     </div>
     <div class="col-2 text-truncate">
-      <span class="fs-small-4">Operação</span>
+      <span class="fs-small-4">{{ MENSAGENS.OPERACAO }}</span>
     </div>
     <div class="col-1 text-truncate">
-      <span class="fs-small-4">Objeto</span>
+      <span class="fs-small-4">{{ MENSAGENS.OBJETO_2 }}</span>
     </div>
     <div class="col-1 text-truncate invisible">
-      <span class="fs-small-4">Tipo</span>
+      <span class="fs-small-4">{{ MENSAGENS.TIPO }}</span>
     </div>
     <div class="col-2 text-truncate">
-      <span class="fs-small-4">Status</span>
+      <span class="fs-small-4">{{ MENSAGENS.STATUS }}</span>
     </div>
     <div class="col-1 text-truncate">
-      <span class="fs-small-4">Data</span>
+      <span class="fs-small-4">{{ MENSAGENS.DATA }}</span>
     </div>
     <div class="col-1 acoes-col">
-      <span class="fs-small-4">Ações</span>
+      <span class="fs-small-4">{{ MENSAGENS.ACOES }}</span>
     </div>
   </div>
   <ng-container *ngFor="let prospeccao of prospeccoesList()">
@@ -76,7 +76,7 @@
             (click)="visualizarProspeccao(prospeccao.id)"
           >
             <i class="fa-regular fa-clipboard me-2"></i>
-            <span>Visualizar</span>
+            <span>{{ MENSAGENS.VISUALIZAR }}</span>
           </button>
         </table-actions-dropdown>
       </div>

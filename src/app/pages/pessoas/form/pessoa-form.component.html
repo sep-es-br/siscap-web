@@ -8,14 +8,14 @@
       <div class="col-12 col-md-8">
         <div id="info-pessoal-card" class="card shadow border-light h-100">
           <div class="card-header bg-white">
-            <h5 class="card-title">Informações Pessoais</h5>
+            <h5 class="card-title">{{ MENSAGENS.INFORMACOES_PESSOAIS }}</h5>
           </div>
           <div class="card-body">
             <div class="row h-100">
               <div class="col-12 col-md-12 mb-2 mb-md-0">
                 <label for="nome" class="form-label col-12">
                   <validation-message [control]="getControl('nome')">
-                    Nome Completo
+                    {{ MENSAGENS.NOME_COMPLETO }}
                   </validation-message>
                 </label>
                 <input
@@ -28,7 +28,7 @@
               <div class="col-12 col-md-12 mb-2 mb-md-0">
                 <label for="nomeSocial" class="form-label col-12">
                   <validation-message [control]="getControl('nomeSocial')">
-                    Nome Social
+                    {{ MENSAGENS.NOME_SOCIAL }}
                   </validation-message>
                 </label>
                 <input
@@ -56,12 +56,12 @@
               <div class="col-12 col-md-6 mb-2 mb-md-0">
                 <label for="nacionalidade" class="form-label col-12">
                   <validation-message [control]="getControl('nacionalidade')">
-                    Nacionalidade
+                    {{ MENSAGENS.NACIONALIDADE }}
                   </validation-message>
                 </label>
                 <ng-select
                   id="nacionalidade"
-                  placeholder="-- Nacionalidade --"
+                  placeholder="{{ MENSAGENS.NACIONALIDADE_2 }}"
                   formControlName="nacionalidade"
                 >
                   <ng-option
@@ -91,7 +91,7 @@
               <div class="col-12 col-md-6 mb-2 mb-md-0">
                 <label for="email" class="form-label col-12">
                   <validation-message [control]="getControl('email')">
-                    Email
+                    {{ MENSAGENS.EMAIL }}
                   </validation-message>
                 </label>
                 <input
@@ -106,7 +106,7 @@
               <div class="col-12 col-md-6 mb-2 mb-md-0">
                 <label for="telefonePessoal" class="form-label col-12">
                   <validation-message [control]="getControl('telefonePessoal')">
-                    Telefone Pessoal
+                    {{ MENSAGENS.TELEFONE_PESSOAL }}
                   </validation-message>
                 </label>
 
@@ -122,7 +122,7 @@
                   <validation-message
                     [control]="getControl('telefoneComercial')"
                   >
-                    Telefone Comercial
+                    {{ MENSAGENS.TELEFONE_COMERCIAL }}
                   </validation-message>
                 </label>
                 <input
@@ -143,7 +143,7 @@
           class="card shadow border-light mt-4 mt-md-0"
         >
           <div class="card-header bg-white">
-            <h5 class="card-title">Foto de Perfil</h5>
+            <h5 class="card-title">{{ MENSAGENS.FOTO_DE_PERFIL }}</h5>
           </div>
           <div class="card-body">
             <app-cropper
@@ -156,7 +156,7 @@
 
         <div id="info-profissional-card" class="card shadow border-light">
           <div class="card-header bg-white">
-            <h5 class="card-title">Informações Profissionais</h5>
+            <h5 class="card-title">{{ MENSAGENS.INFORMACOES_PROFISSIONAIS }}</h5>
           </div>
           <div class="card-body">
             <div class="professional-info">
@@ -167,12 +167,12 @@
                       <validation-message
                         [control]="getControl('idOrganizacoes')"
                       >
-                        Organizações
+                        {{ MENSAGENS.ORGANIZACOES }}
                       </validation-message>
                     </label>
                     <ng-select
                       id="idOrganizacoes"
-                      placeholder="-- Organizações --"
+                      placeholder="{{ MENSAGENS.ORGANIZACOES_2 }}"
                       formControlName="idOrganizacoes"
                       [multiple]="true"
                       [hideSelected]="true"
@@ -191,14 +191,14 @@
                       <validation-message
                         [control]="getControl('idAreasAtuacao')"
                       >
-                        Áreas de Atuação
+                        {{ MENSAGENS.AREAS_DE_ATUACAO }}
                       </validation-message>
                     </label>
                     <ng-select
                       [multiple]="true"
                       [hideSelected]="true"
                       id="idAreasAtuacao"
-                      placeholder="-- Áreas de Atuação --"
+                      placeholder="{{ MENSAGENS.AREAS_DE_ATUACAO_2 }}"
                       formControlName="idAreasAtuacao"
                     >
                       <ng-option
@@ -384,12 +384,12 @@
 <ng-template #importarPessoaCPFModal let-modal>
   <div class="modal-header">
     <h4 id="import-person-modal" class="modal-title text-dark">
-      Importar pessoa do Acesso Cidadão
+      {{ MENSAGENS.IMPORTAR_PESSOA_DO_ACESSO_CIDADAO }}
     </h4>
     <button
       type="button"
       class="btn-close"
-      aria-label="Fechar"
+      attr.aria-label="{{ MENSAGENS.FECHAR }}"
       (click)="modal.dismiss()"
     ></button>
   </div>
@@ -397,7 +397,7 @@
     <form [formGroup]="importarPessoaCPFForm">
       <label for="importar-pessoa-cpf" class="form-label col-12">
         <validation-message [control]="importarPessoaCPFForm.get('cpf')!">
-          Digite o CPF
+          {{ MENSAGENS.DIGITE_O_CPF }}
         </validation-message>
       </label>
       <input
@@ -416,11 +416,11 @@
       (click)="modal.dismiss()"
     >
       <i class="fa fa-times"></i>
-      <span>Cancelar</span>
+      <span>{{ MENSAGENS.CANCELAR }}</span>
     </button>
     <button class="btn btn-primary icon-text-btn" (click)="modal.close()">
       <i class="fa fa-check"></i>
-      <span>Importar</span>
+      <span>{{ MENSAGENS.IMPORTAR }}</span>
     </button>
   </div>
 </ng-template>

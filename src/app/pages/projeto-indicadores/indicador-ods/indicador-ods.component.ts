@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IIndicadoresCatalogoExterno, IOdsIndicadorExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
@@ -21,6 +22,9 @@ declare var bootstrap: any;
   styleUrl: './indicador-ods.component.scss'
 })
 export class IndicadorOdsComponent implements OnInit {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
   @Input() formProjeto!: FormGroup;
   @Input() isModoEdicao?: boolean = false;
   @Input() isSubcap?: boolean = false;

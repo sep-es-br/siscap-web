@@ -1,3 +1,4 @@
+import { MENSAGENS } from '../../../core/utils/constants';
 import { CommonModule } from '@angular/common';
 import { Component, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +11,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './table-search.component.scss',
 })
 export class TableSearchComponent {
+  public readonly MENSAGENS = MENSAGENS;
+
   public filtroPesquisaOutput = output<string>();
 
   public filtroPesquisa: string = '';

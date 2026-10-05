@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../core/utils/constants';
 import { Component } from '@angular/core';
 
 import { UsuarioService } from '../../core/services/usuario/usuario.service';
@@ -9,6 +10,9 @@ import { UsuarioService } from '../../core/services/usuario/usuario.service';
   styleUrl: './main.component.scss',
 })
 export class MainComponent {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
   public isProponente: boolean = false;
 
   currentYear: number = 2024;

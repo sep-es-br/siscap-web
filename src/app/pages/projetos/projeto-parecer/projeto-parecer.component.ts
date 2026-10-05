@@ -1,3 +1,4 @@
+import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -29,6 +30,9 @@ import { ToastService } from '../../../core/services/toast/toast.service';
   styleUrl: './projeto-parecer.component.scss'
 })
 export class ProjetoParecerComponent implements OnInit, AfterViewInit {
+  public readonly MENSAGENS = MENSAGENS;
+  public readonly formatarMensagem = formatarMensagem;
+
 
   @ViewChild('editor') editorElement!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('pdfInput') pdfInput!: ElementRef<HTMLInputElement>;
@@ -283,7 +287,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
     if (!pdfValido) {
       this._toastService.showToast(
         'error',
-        'O arquivo selecionado não é um PDF válido.',
+        MENSAGENS.O_ARQUIVO_SELECIONADO_NAO_E_UM_PDF_VALIDO,
       );
       input.value = '';
       return;
@@ -350,7 +354,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
   private montarTextoMetadadosPdf(anexo: IParecerAnexo): string {
     return [
-      'Parecer anexado em PDF.',
+      MENSAGENS.PARECER_ANEXADO_EM_PDF,
       '',
       `Arquivo: ${anexo.nomeArquivo}`,
       `Tamanho: ${anexo.tamanhoFormatado}`,
@@ -361,18 +365,18 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   private formatarTamanhoArquivo(tamanhoBytes: number): string {
 
     if (tamanhoBytes < 1024) {
-      return `${tamanhoBytes} bytes`;
+      return formatarMensagem(MENSAGENS.PARAMETRO_BYTES, { p0: tamanhoBytes });
     }
 
     const tamanhoKb = tamanhoBytes / 1024;
 
     if (tamanhoKb < 1024) {
-      return `${tamanhoKb.toFixed(2)} KB`;
+      return formatarMensagem(MENSAGENS.PARAMETRO_KB, { p0: tamanhoKb.toFixed(2) });
     }
 
     const tamanhoMb = tamanhoKb / 1024;
 
-    return `${tamanhoMb.toFixed(2)} MB`;
+    return formatarMensagem(MENSAGENS.PARAMETRO_MB, { p0: tamanhoMb.toFixed(2) });
 
   }
 
