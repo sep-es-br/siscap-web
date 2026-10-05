@@ -1902,6 +1902,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
+    if (this.loadingSubmit) {
+      return;
+    }
+
     this.loadingSubmit = true;
     this.textoSpinner = 'Salvando projeto...';
 
@@ -1916,6 +1920,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
       if (parecerControl.invalid) {
         parecerControl.markAllAsTouched();
+        this.loadingSubmit = false;
+        this.textoSpinner = 'Carregando...';
         return;
       }
 
@@ -1953,7 +1959,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       this.atualizarProjeto(payload, isRascunho, formData).pipe(
         finalize(() => {
           this.loadingSubmit = false;
-          this.textoSpinner = 'Salvando alterações...';
+          this.textoSpinner = 'Carregando...';
         })
       ).subscribe();
 
@@ -2233,7 +2239,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public abrirConfirmarEnvioMembroModal(form: FormGroup) {
     
     this.nomeProponenteResponsavel =
-      this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
+      (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
     const modalConf = this._ngbModalService.open(
@@ -2254,7 +2260,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   public abrirConfirmarEnvioParecerModal(form: FormGroup) {
     this.nomeProponenteResponsavel =
-      this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
+      (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
     const modalRef = this._ngbModalService.open(
@@ -2360,7 +2366,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private abrirConfirmarIntegracapEdocsModalReentranharDic(form: FormGroup) {
     this.nomeProponenteResponsavel =
-      this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
+      (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
     const modalRef = this._ngbModalService.open(
@@ -2376,7 +2382,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private abrirConfirmarIntegracapEdocsModal(form: FormGroup) {
     this.nomeProponenteResponsavel =
-      this.projetoForm.get('nomeResponsavelProponente')?.value.toUpperCase() ||
+      (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
       this.enviarProjetoModalRef = this._ngbModalService.open(
