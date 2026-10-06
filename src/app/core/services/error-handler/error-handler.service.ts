@@ -69,12 +69,24 @@ export class ErrorHandlerService {
       }, 2000);
 
       return;
+
     }
 
     switch (error.status) {
       case 401:
+
+        console.log('Router URL:', this._router.url);
+        console.log('pathname:', window.location.pathname);
+        console.log('search:', window.location.search);
+        console.log('hash:', window.location.hash);
+        console.log('href:', window.location.href);
+
+        localStorage.setItem('redirectUrl', this._router.url);
+
         this._router.navigateByUrl('login');
+
         break;
+
       case 403:
         this._router.navigateByUrl('main');
         break;

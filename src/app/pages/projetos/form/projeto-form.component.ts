@@ -569,7 +569,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", response)
+        // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -995,11 +995,33 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     const idPelaUrl = this.route.snapshot.paramMap.get('id');
     if (idPelaUrl) {
+
+      const rotaAtual =
+        this._router.url;
+
       this._projetosService.idProjeto$.next(+idPelaUrl);
-      this._navegacaoService.navegacaoSimples(
-        BreadcrumbContextoEnum.Projetos,
-        BreadcrumbAcoesEnum.Editar,
-      );
+
+      const isRotaExterna =
+        !rotaAtual.startsWith('/main/');
+
+      if (isRotaExterna) {
+
+        this._navegacaoService.navegacaoSimples(
+          BreadcrumbContextoEnum.Projetos,
+          BreadcrumbAcoesEnum.Editar,
+          idPelaUrl
+        );
+
+        return;
+
+      }
+
+      // this._navegacaoService.navegacaoSimples(
+      //   BreadcrumbContextoEnum.Projetos,
+      //   BreadcrumbAcoesEnum.Editar,
+      //   idPelaUrl
+      // );
+
     }
 
     this.isProponente = this._usuarioService.usuarioPerfil.isProponente;
@@ -2243,7 +2265,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public abrirConfirmarEnvioMembroModal(form: FormGroup) {
-    
+
     this.nomeProponenteResponsavel =
       (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
@@ -2391,7 +2413,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
-      this.enviarProjetoModalRef = this._ngbModalService.open(
+    this.enviarProjetoModalRef = this._ngbModalService.open(
       this.confirmarIntegracaoProjetoModalTemplate,
       {
         centered: true,
