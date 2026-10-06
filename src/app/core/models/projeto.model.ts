@@ -37,7 +37,7 @@ export class ProjetoFormModel implements IProjetoForm {
   public papelResponsavelProponente: string;
   public subResponsavelProponente: string;
   public indicadoresProjeto: Array<IIndicadores>;
-  public acoesProjeto: Array<IAcao>;
+  // public acoesProjeto: Array<IAcao>;
   public nomeagente: string;
   public pecasPlanejamento: string;
   public enviarProjetoGestor: boolean;
@@ -91,6 +91,7 @@ export class ProjetoFormModel implements IProjetoForm {
     this.equipeElaboracao = this.construirEquipeElaboracao(
       projetoForm?.equipeElaboracao
     );
+
     this.rascunho = false;
     this.nomeResponsavelProponente = projetoForm?.nomeResponsavelProponente ?? '';
     this.papelResponsavelProponente = projetoForm?.papelResponsavelProponente ?? '';
@@ -98,9 +99,10 @@ export class ProjetoFormModel implements IProjetoForm {
     this.indicadoresProjeto = this.construirIndicadoresProjeto(
       projetoForm?.indicadoresProjeto
     );
-    this.acoesProjeto = this.construirAcoesProjeto(
-      projetoForm?.acoesProjeto
-    );
+
+    // this.acoesProjeto = this.construirAcoesProjeto(
+    //   projetoForm?.acoesProjeto
+    // );
 
     this.nomeagente = projetoForm?.nomeagente ?? '';
     this.pecasPlanejamento = projetoForm?.pecasPlanejamento ?? '';
