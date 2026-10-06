@@ -5,6 +5,9 @@
  * As chaves são estáveis: traduções futuras devem manter os mesmos identificadores.
  */
 const MENSAGENS_PT_BR = {
+  REENVIAR_AVISOS_PARECER: 'Reenviar aviso por e-mail',
+  AVISOS_PARECER_REENVIADOS: 'Avisos enviados com sucesso.',
+  ERRO_REENVIO_AVISOS_PARECER: 'Não foi possível reenviar o aviso. Verifique o serviço de e-mail.',
   A_AUTUACAO_DO_PROGRAMA_FOI_SOLICITADA: "A Autuação do Programa foi solicitada!",
   A_AUTUACAO_FOI_REALIZADA_COM_SUCESSO: "A Autuação foi realizada com sucesso!",
   A_LISTA_DE_ASSINANTES_NAO_EXISTE_OU_ESTA_VAZIA_E_NECESSARIO_SOLICITAR_AS_AUTORIZACOES_PRIMEIRO: "A lista de assinantes não existe ou está vazia! É necessário solicitar as Autorizações primeiro.",
@@ -254,7 +257,7 @@ const MENSAGENS_PT_BR = {
   ESPANHOL: "Espanhol",
   ESSA_ACAO_NAO_PODERA_SER_DESFEITA_TEM_CERTEZA_QUE_DESEJA_CONTINUAR: "Essa ação não poderá ser desfeita. Tem certeza que deseja continuar?",
   ESTA_ACAO_DEFINIRA_A_ELEGIBILIDADE_DO_DIC_ASSINANDO_E_CAPTURANDO_O_PARECER_NO_E_DOCS_USANDO_SUA_IDENTIDADE_VAL: " Esta ação definirá a elegibilidade do DIC, assinando e capturando o parecer no E-Docs usando sua identidade - {p0} ({p1}). Após isso, o processo {p2} será encerrado no E-Docs. ",
-  ESTA_ACAO_REALIZARA_A_CAPTURA_E_ASSINATURA_DO_PARECER_NO_E_DOCS_USANDO_A_SUA_IDENTIDADE_VALOR_VALOR_APOS_ISSO: " Esta ação realizará a captura e assinatura do parecer no E-Docs, usando a sua identidade - {p0} ({p1}). Após isso, o parecer não poderá mais ser editado ",
+  ESTA_ACAO_REALIZARA_A_CAPTURA_E_ASSINATURA_DO_PARECER_NO_E_DOCS_USANDO_A_SUA_IDENTIDADE_VALOR_VALOR_APOS_ISSO: " Esta ação realizará a captura e assinatura do parecer no E-Docs, usando a sua identidade - {p0} ({p1}). Após isso, o parecer não poderá mais ser editado. ",
   ESTA_ACAO_REALIZARA_NO_E_DOCS_A_ASSINATURA_DO_DIC_E_A_AUTUACAO_DO_PROCESSO_DE_ELEGIBILIDADE_DO_PROJETO_UTILIZA: " Esta ação realizará no E-Docs a assinatura do DIC e a autuação do processo de elegibilidade do projeto, utilizando a sua identidade - {p0} ({p1}) ",
   ESTA_ACAO_REALIZARA_O_ENTRANHAMENTO_DOS_PARECERES_ORCAMENTARIO_E_ESTRATEGICO_AO_PROCESSO_VALOR_UTILIZANDO_A_SU: " Esta ação realizará o entranhamento dos pareceres orçamentário e estratégico ao processo {p0} utilizando a sua identidade - {p1} ({p2}). ",
   ESTA_ACAO_SOLICITARA_POR_EMAIL_AUTORIZACAO_PARA_O_PROGRAMA_AOS_GESTORES: "Esta ação solicitará por email autorização para o programa aos gestores",
@@ -654,6 +657,7 @@ const MENSAGENS_PT_BR = {
   SALVADORENHO: "Salvadorenho",
   SALVANDO_ALTERACOES: "Salvando alterações...",
   SALVANDO_PROJETO: "Salvando projeto...",
+  SALVANDO_PARECER: "Salvando parecer...",
   SALVAR: "Salvar",
   SALVAR_E_ENVIAR: "Salvar e Enviar",
   SALVAR_PARECER: "Salvar Parecer",

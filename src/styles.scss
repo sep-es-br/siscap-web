@@ -44,6 +44,34 @@ quill-editor {
 
 /* Estilo de botões */
 
+.siscap-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+
+  > .d-inline-flex {
+    gap: 0.5rem;
+  }
+
+  > button,
+  > siscap-botao {
+    margin: 0;
+  }
+
+  button.icon-text-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    > i,
+    > span {
+      margin: 0;
+    }
+  }
+}
+
 button.icon-text-btn {
   & svg,
   span {

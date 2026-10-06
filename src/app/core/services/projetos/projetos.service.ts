@@ -410,6 +410,10 @@ export class ProjetosService extends BaseHttpService<
       `${this._url}/dic/edocs/fases/${idProjeto}`);
   }
 
+  public reenviarAvisosParecer(idProjeto: number): Observable<string[]> {
+    return this._http.put<string[]>(`${this._url}/dic/edocs/parecer/avisos/${idProjeto}`, {});
+  }
+
   public reEnviarEmailPedidoParecerProjeto(id: number):
     Observable<void> {
     return this._http.post<void>(
