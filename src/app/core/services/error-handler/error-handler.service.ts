@@ -73,19 +73,31 @@ export class ErrorHandlerService {
     }
 
     switch (error.status) {
-      case 401:
 
-        console.log('Router URL:', this._router.url);
-        console.log('pathname:', window.location.pathname);
-        console.log('search:', window.location.search);
-        console.log('hash:', window.location.hash);
-        console.log('href:', window.location.href);
+      case 401: {
+        const urlAtual = this._router.url;
+        const redirectUrlSalva = localStorage.getItem('redirectUrl');
 
-        localStorage.setItem('redirectUrl', this._router.url);
+        // console.log('401 - URL atual:', urlAtual);
+        // console.log('401 - redirectUrl já salva:', redirectUrlSalva);
 
-        this._router.navigateByUrl('login');
+        const isRotaAutenticacao =
+          urlAtual.startsWith('/login') ||
+          urlAtual.startsWith('/token');
+
+        if (!redirectUrlSalva && !isRotaAutenticacao) {
+          // console.log('Salvando redirectUrl:', urlAtual);
+          localStorage.setItem('redirectUrl', urlAtual);
+        } else {
+          // console.log('NÃO sobrescrevendo redirectUrl.');
+        }
+
+        if (!isRotaAutenticacao) {
+          this._router.navigateByUrl('/login');
+        }
 
         break;
+      }
 
       case 403:
         this._router.navigateByUrl('main');

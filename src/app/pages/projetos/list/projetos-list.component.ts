@@ -103,7 +103,8 @@ export class ProjetosListComponent {
 
     this._navegacaoService.navegacaoSimples(
       BreadcrumbContextoEnum.Projetos,
-      BreadcrumbAcoesEnum.Editar
+      BreadcrumbAcoesEnum.Editar,
+      id.toString()
     );
   }
 

@@ -82,6 +82,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
 import { gerarStepProgramaStatus, IStep } from '../../../core/utils/steps';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { EquipeFormType } from '../../../core/types/form/equipe-form.type';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'siscap-programa-form',
   standalone: false,
@@ -168,7 +169,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _navegacaoService: NavegacaoService,
     private readonly _pessoasService: PessoasService,
     private readonly _usuarioService: UsuarioService,
-    private readonly _projetosService: ProjetosService
+    private readonly _projetosService: ProjetosService,
+    private readonly _route: ActivatedRoute,
   ) {
 
     this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
@@ -178,6 +180,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    const idPelaUrl = this._route.snapshot.paramMap.get('id');
+
+    if (idPelaUrl) {
+      this._programasService.idPrograma$.next(+idPelaUrl);
+    }
+
     this._pessoasService.buscarTodosAgentesPublicosGoves()
       .subscribe({
         next: () => {
@@ -366,7 +375,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     this._projetosService.getById(event.id).subscribe(
       projeto => {
-        
+
         const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
 
         orgaosEnvolvidosList.patchValue([
@@ -829,9 +838,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       centered: true,
     });
     modalRef.componentInstance.usarModalCentralizado = true;
-    
 
-    const assinantes = this.programaAtual.programaAssinantesEdocsDto?.map( (assinante) => ({
+
+    const assinantes = this.programaAtual.programaAssinantesEdocsDto?.map((assinante) => ({
       titulo: assinante.nomeAssinante,
       descricao: assinante.papelAssinante
     }));

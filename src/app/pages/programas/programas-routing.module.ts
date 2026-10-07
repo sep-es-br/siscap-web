@@ -24,6 +24,12 @@ const PROGRAMAS_ROUTES: Routes = [
   },
   {
     title: MENSAGENS.EDITAR_PROGRAMA,
+    path: 'editar/:id',
+    component: ProgramaFormComponent,
+    canActivate: [programas_NoIdEditarGuard, isProponenteGuard],
+  },
+  {
+    title: MENSAGENS.EDITAR_PROGRAMA,
     path: 'editar',
     component: ProgramaFormComponent,
     canActivate: [programas_NoIdEditarGuard, isProponenteGuard],

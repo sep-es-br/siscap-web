@@ -108,12 +108,15 @@ export class ProgramasListComponent implements OnDestroy{
   }
 
   public editarPrograma(id: number): void {
+
     this._programasService.idPrograma$.next(id);
 
     this._navegacaoService.navegacaoSimples(
       BreadcrumbContextoEnum.Programas,
-      BreadcrumbAcoesEnum.Editar
+      BreadcrumbAcoesEnum.Editar,
+      id.toString()
     );
+
   }
 
   public deletarPrograma(id: number): void {

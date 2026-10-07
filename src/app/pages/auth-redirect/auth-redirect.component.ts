@@ -20,7 +20,7 @@ export class AuthRedirectComponent implements OnInit {
     private readonly _usuarioService: UsuarioService,
     private readonly _navegacaoService: NavegacaoService,
     private readonly _router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const tokenRecebido = window.atob(this._route.snapshot.queryParams['token']);
@@ -35,12 +35,30 @@ export class AuthRedirectComponent implements OnInit {
 
         const redirectUrl = localStorage.getItem('redirectUrl');
 
+        console.log('AUTH - redirectUrl:', redirectUrl);
+
         if (redirectUrl) {
-          this._router.navigateByUrl(redirectUrl);
+
+          localStorage.removeItem('redirectUrl');
+
+          console.log('AUTH - navegando para:', redirectUrl);
+
+          this._router.navigateByUrl(redirectUrl)
+            .then((navegou) => {
+              console.log('AUTH - navegação concluída:', navegou);
+              console.log('AUTH - URL depois:', this._router.url);
+            })
+            .catch((error) => {
+              console.error('AUTH - erro ao navegar:', error);
+            });
+
+          return;
+
         } else {
           const destino = this._usuarioService.usuarioPerfil.isProponente ? '/projetos' : '/home';
           this._router.navigate([destino]);
         }
+
       },
     });
   }
