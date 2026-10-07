@@ -295,6 +295,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public assinarAutuar: boolean = true;
   public emProcessamentIntegracao: boolean = false;
   public finalizadoProcessamentoIntegracao: boolean = false;
+  public avisosParecer: string[] = [];
+  public reenviandoAvisosParecer = false;
 
   public exibeListaEtapasIntegracao: boolean = false;
 
@@ -1913,7 +1915,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
 
     this.loadingSubmit = true;
-    this.textoSpinner = MENSAGENS.SALVANDO_PROJETO;
+    this.textoSpinner = this.statusProjeto === StatusProjetoEnum.Parecer_SEP
+      || this.statusProjeto === StatusProjetoEnum.Elegivel
+      ? MENSAGENS.SALVANDO_PARECER
+      : MENSAGENS.SALVANDO_PROJETO;
 
     if (
       this.statusProjeto === StatusProjetoEnum.Parecer_SEP ||
@@ -2064,6 +2069,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
 
     this.lotacaoGestorProjeto = '';
+    this.nomeProponenteResponsavel = '';
 
     this.idOrganizacaoChange(organizacao);
 
@@ -2080,6 +2086,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       });
 
       this.lotacaoGestorProjeto = pessoa.papelPrioritario;
+      this.nomeProponenteResponsavel = pessoa.nome.toUpperCase();
 
     } else {
       this.projetoForm.patchValue({
@@ -2090,6 +2097,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       });
 
       this.lotacaoGestorProjeto = '';
+      this.nomeProponenteResponsavel = '';
     }
 
   }
@@ -2952,6 +2960,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.assinarAutuar = false;
           this.finalizadoProcessamentoIntegracao = true;
           this.autuacaoAcionada = false;
+          this.arquivoParecerSelecionado = null;
+          this.carregarProjetoEditar(this._idProjetoEdicao);
+          this._subscription.add(this._atualizarProjeto$.subscribe());
 
         }),
 
@@ -2986,6 +2997,11 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private atualizarStatusUI(lista: ProjetoIntegracaoEdocsFasesModel[]) {
+    this.avisosParecer = [...new Set(lista.flatMap((fase) => fase.avisos))];
+    const possuiEtapaPdf = lista.some(
+      (fase) => fase.etapa === FasesEdocsIntegracaoEnum.geracaoPdfParecer,
+    );
+
     lista.forEach((fase) => {
       switch (fase.etapa) {
         case FasesEdocsIntegracaoEnum.geracaoPdfParecer:
@@ -3007,8 +3023,40 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               : fase.iniciada
                 ? FaseStatuEnum.EM_ANDAMENTO
                 : FaseStatuEnum.NAO_INICIADA;
-          this.statusEtapasParecer[FasesEdocsIntegracaoEnum.assinaturaParecer] = statusCapturaAssinatura;
-          this.statusEtapasParecer[FasesEdocsIntegracaoEnum.capturaParecer] = statusCapturaAssinatura;
+          if (typeof fase.pdfConcluido === 'boolean') {
+            if (typeof fase.encerramentoIniciado === 'boolean') {
+              this.statusEtapasParecer[FasesEdocsIntegracaoEnum.encerrarprocesso] = fase.erroEncerramento
+                ? FaseStatuEnum.ERROFASE
+                : fase.encerramentoConcluido
+                  ? FaseStatuEnum.FINALIZADA
+                  : fase.encerramentoIniciado
+                    ? FaseStatuEnum.EM_ANDAMENTO
+                    : FaseStatuEnum.NAO_INICIADA;
+            }
+            const passos = [
+              { codigo: FasesEdocsIntegracaoEnum.geracaoPdfParecer, concluido: fase.pdfConcluido },
+              { codigo: FasesEdocsIntegracaoEnum.assinaturaParecer, concluido: fase.assinaturaConcluida === true },
+              { codigo: FasesEdocsIntegracaoEnum.capturaParecer, concluido: fase.capturaConcluida === true },
+            ];
+            const passoAtual = passos.findIndex((passo) => !passo.concluido);
+            passos.forEach((passo, indice) => {
+              this.statusEtapasParecer[passo.codigo] = passo.concluido
+                ? FaseStatuEnum.FINALIZADA
+                : indice === passoAtual && fase.erro
+                  ? FaseStatuEnum.ERROFASE
+                  : indice === passoAtual && fase.iniciada
+                    ? FaseStatuEnum.EM_ANDAMENTO
+                    : FaseStatuEnum.NAO_INICIADA;
+            });
+          } else {
+            this.statusEtapasParecer[FasesEdocsIntegracaoEnum.assinaturaParecer] = statusCapturaAssinatura;
+            this.statusEtapasParecer[FasesEdocsIntegracaoEnum.capturaParecer] = statusCapturaAssinatura;
+          }
+          // APIs que retornam somente CAPTURAASSINA não informam o PDF separado.
+          // A captura concluída comprova que o documento já foi gerado ou obtido.
+          if (typeof fase.pdfConcluido !== 'boolean' && !possuiEtapaPdf && fase.finalizada && !fase.erro) {
+            this.statusEtapasParecer[FasesEdocsIntegracaoEnum.geracaoPdfParecer] = FaseStatuEnum.FINALIZADA;
+          }
           if (fase.erro) {
             this.aguardandoAssinatura = FaseStatuEnum.ERROFASE;
             break;
@@ -3264,7 +3312,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  public reenviarAvisosParecer(): void {
+    if (this.reenviandoAvisosParecer) return;
+    this.reenviandoAvisosParecer = true;
+    this._projetosService.reenviarAvisosParecer(this._idProjetoEdicao)
+      .pipe(finalize(() => this.reenviandoAvisosParecer = false))
+      .subscribe({
+        next: (avisos) => {
+          this.avisosParecer = avisos;
+          if (avisos.length === 0) {
+            this._toastService.showToast('success', MENSAGENS.AVISOS_PARECER_REENVIADOS);
+          }
+        },
+        error: () => this._toastService.showToast('warning', MENSAGENS.ERRO_REENVIO_AVISOS_PARECER),
+      });
+  }
+
   public abrirEfetivarParecerModal() {
+    this.avisosParecer = [];
     const parecerControl = this.projetoForm.get(
       'parecerProjetoUsuario',
     ) as FormGroup;

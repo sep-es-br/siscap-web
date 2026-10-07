@@ -1,6 +1,7 @@
 import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -29,7 +30,7 @@ import { ToastService } from '../../../core/services/toast/toast.service';
   templateUrl: './projeto-parecer.component.html',
   styleUrl: './projeto-parecer.component.scss'
 })
-export class ProjetoParecerComponent implements OnInit, AfterViewInit {
+export class ProjetoParecerComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   public readonly MENSAGENS = MENSAGENS;
   public readonly formatarMensagem = formatarMensagem;
 
@@ -38,6 +39,10 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   @ViewChild('pdfInput') pdfInput!: ElementRef<HTMLInputElement>;
 
   editor!: Jodit | undefined;
+  private editorInitTimer?: ReturnType<typeof setTimeout>;
+  private textoParecerSubscription?: Subscription;
+  private atualizandoEditor = false;
+  private ultimoHtmlProcessado?: string;
 
   textoLength = 0;
 
@@ -53,6 +58,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   constructor(
     private fb: FormBuilder,
     private readonly _toastService: ToastService,
+    private readonly zone: NgZone,
     private _projetoParecerService: ParecerService
   ) { }
 
@@ -129,10 +135,13 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
+    this.zone.runOutsideAngular(() => {
+    this.editorInitTimer = setTimeout(() => {
+      if (!this.editorElement?.nativeElement) return;
 
       this.editor = Jodit.make(this.editorElement?.nativeElement, {
         height: 300,
+        showPlaceholder: false,
         enter: 'p',
         disablePlugins: 'file image',
         toolbarSticky: false,
@@ -169,22 +178,69 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
           const limpo = this.normalizeHtml(html);
           this.editor?.selection.insertHTML(limpo);
+          this.zone.run(() => this.updateFormControl(true));
         }
       })
 
-      this.editor.events.on(['change'], () => this.updateFormControl());
       const textoParecer = this.parecerFormGroup.get('textoParecer');
 
-      this.editor.value = textoParecer?.getRawValue();
+      this.editor.value = textoParecer?.getRawValue() ?? '';
+      this.editor.editor.setAttribute('data-parecer-placeholder', MENSAGENS.DIGITE_AQUI_O_TEXTO_DO_PARECER);
+      this.editor.editor.setAttribute('aria-placeholder', MENSAGENS.DIGITE_AQUI_O_TEXTO_DO_PARECER);
+      this.atualizarPlaceholderEditor();
+      this.editor.events.on(this.editor.editor, 'input', () => {
+        if (!this.atualizandoEditor) this.zone.run(() => this.updateFormControl(true));
+      });
+      this.editor.events.on(this.editor.editor, 'blur', () => {
+        this.zone.run(() => {
+          this.updateFormControl();
+          this.parecerFormGroup.get('textoParecer')?.markAsTouched();
+        });
+      });
+      this.zone.run(() => this.updateFormControl());
+      this.editor.events.on(['change'], () => {
+        if (!this.atualizandoEditor && this.editor?.value !== this.ultimoHtmlProcessado) {
+          this.zone.run(() => this.updateFormControl());
+        }
+      });
 
-      textoParecer?.valueChanges.subscribe(value => {
-        if (this.editor)
-          this.editor.value = value
-      })
+      this.zone.run(() => this.vincularEditorAoFormulario());
 
 
-    })
+    });
+    });
 
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.editor && (changes['projetoForm'] || changes['statusProjeto'])) {
+      this.vincularEditorAoFormulario();
+    }
+  }
+
+  private vincularEditorAoFormulario(): void {
+    this.textoParecerSubscription?.unsubscribe();
+    const controle = this.parecerFormGroup.get('textoParecer');
+    const atualizar = (value: string | null) => {
+      if (!this.editor) return;
+      this.atualizandoEditor = true;
+      try {
+        const html = value ?? '';
+        this.zone.runOutsideAngular(() => {
+          if (this.editor!.value !== html) this.editor!.value = html;
+          const bloqueado = this.isEnviado() || !!this.parecerFormGroup.get('nomeArquivo')?.value;
+          this.editor!.setReadOnly(bloqueado);
+          this.editor!.setDisabled(bloqueado);
+        });
+        this.ultimoHtmlProcessado = this.editor.value;
+        this.textoLength = this.getPlainText(this.editor.value).length;
+        this.atualizarPlaceholderEditor();
+      } finally {
+        this.atualizandoEditor = false;
+      }
+    };
+    atualizar(controle?.getRawValue());
+    this.textoParecerSubscription = controle?.valueChanges.subscribe(atualizar);
   }
 
   normalizeHtml(html: string): string {
@@ -221,14 +277,19 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
   MAX_CHARS = 10000;
 
-  updateFormControl() {
+  updateFormControl(alteradoPeloUsuario = false) {
 
     if (!this.editor) return;
+    this.atualizarPlaceholderEditor();
+    const controle = this.parecerFormGroup.get('textoParecer');
+    if (alteradoPeloUsuario) controle?.markAsDirty();
 
     const html = this.editor.value;
+    if (html === this.ultimoHtmlProcessado && !alteradoPeloUsuario) return;
+    this.ultimoHtmlProcessado = html;
 
     // ignora conteúdo vazio/fantasma
-    if (!html || html === '<p><br></p>') {
+    if (!this.getPlainText(html).replace(/[\s\u200B\uFEFF]/g, '')) {
       this.textoLength = 0;
       this.parecerFormGroup.get('textoParecer')?.patchValue('', { emitEvent: false });
       return;
@@ -243,7 +304,13 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
       const truncated = plainText.substring(0, this.MAX_CHARS);
 
       // atualizar editor com HTML mínimo
-      this.editor.value = truncated;
+      this.atualizandoEditor = true;
+      try {
+        this.editor.value = truncated;
+        this.ultimoHtmlProcessado = this.editor.value;
+      } finally {
+        this.atualizandoEditor = false;
+      }
       this.textoLength = this.MAX_CHARS;
       const scroll = this.editor.editor.scrollTop;
       this.parecerFormGroup.get('textoParecer')?.patchValue(this.normalizeHtml(truncated), { emitEvent: false });
@@ -261,7 +328,20 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
 
   }
 
+  private atualizarPlaceholderEditor(): void {
+    if (!this.editor) return;
+    const texto = this.editor.editor.textContent?.replace(/[\s\u200B\uFEFF]/g, '') ?? '';
+    this.editor.editor.setAttribute('data-parecer-vazio', String(texto.length === 0 && !this.isEnviado()));
+  }
+
   // função auxiliar para extrair texto puro
+  ngOnDestroy(): void {
+    clearTimeout(this.editorInitTimer);
+    this.textoParecerSubscription?.unsubscribe();
+    this.editor?.destruct();
+    this.editor = undefined;
+  }
+
   getPlainText(html: string): string {
     const div = document.createElement('div');
     div.innerHTML = html;
@@ -320,23 +400,7 @@ export class ProjetoParecerComponent implements OnInit, AfterViewInit {
   }
 
   public possuiAnexo(): boolean {
-
-    const nomeArquivo = this.parecerFormGroup.get('nomeArquivo')?.value;
-
-    if (nomeArquivo){
-      if(this.editor){
-        this.editor.setReadOnly(true);
-        this.editor.setDisabled(true);
-      }
-      return true
-    }else{
-      if(this.editor){
-        this.editor.setReadOnly(false);
-        this.editor.setDisabled(false);
-      }
-      return false
-    }
-
+    return !!this.parecerFormGroup.get('nomeArquivo')?.value;
   }
 
   public async validarPdf(arquivo: File): Promise<boolean> {

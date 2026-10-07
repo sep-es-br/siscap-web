@@ -1,3 +1,10 @@
+:host ::ng-deep .jodit-wysiwyg[data-parecer-vazio='true']::before {
+  content: attr(data-parecer-placeholder);
+  position: absolute;
+  color: #6c757d;
+  pointer-events: none;
+}
+
 .parecer-anexo-card {
   display: flex;
   align-items: center;
