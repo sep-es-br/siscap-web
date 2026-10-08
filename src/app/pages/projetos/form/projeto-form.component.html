@@ -1,4 +1,4 @@
-<div *ngIf="carregandoTela || loadingSubmit" class="dic-loading" role="status" aria-live="polite"
+<div *ngIf="exibirLoadingDic" class="dic-loading" role="status" aria-live="polite"
   [attr.aria-label]="textoSpinner">
   <loading-spinner [textoProcessando]="textoSpinner"></loading-spinner>
 </div>
@@ -588,16 +588,17 @@
     </ng-select>
   </div>
   <div class="modal-footer">
-    <div class="d-inline-flex flex-row-reverse">
+    <div class="siscap-modal-actions">
+      <button class="btn btn-outline-primary icon-text-btn" (click)="modal.dismiss()">
+        <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
+        <span>{{ MENSAGENS.VOLTAR }}</span>
+      </button>
       <button class="btn btn-success icon-text-btn" [disabled]="statusProjetoNovo == null"
         (click)="modal.close(statusProjetoNovo)">
         <i class="fa-solid fa-check"></i>
         <span>{{ MENSAGENS.ALTERAR }}</span>
       </button>
-      <button class="btn btn-outline-primary icon-text-btn me-2" (click)="modal.dismiss()">
-        <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
-        <span>{{ MENSAGENS.VOLTAR }}</span>
-      </button>
+
     </div>
   </div>
 </ng-template>
@@ -612,15 +613,16 @@
       {{ formatarMensagem(MENSAGENS.ENVIAREMOS_EMAIL_INFORMANDO_AO_A_GESTOR_A_VALOR_VALOR_UM_PEDIDO_DE_ANALISE_PARA_POSTERIOR_ENCAMINHAMENTO_A_SUB, { p0: (nomeProponenteResponsavel), p1: (lotacaoGestorProjeto) }) }}</p>
   </div>
   <div class="modal-footer">
-    <div class="d-inline-flex flex-row-reverse">
+    <div class="siscap-modal-actions">
+      <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
+        <i class="fa-solid fa-close"></i>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
+      </button>
       <button class="btn btn-success icon-text-btn" (click)="modal.close('confirmado')">
         <i class="fa-solid fa-check"></i>
         <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
-      <button class="btn btn-outline-danger icon-text-btn me-2" (click)="modal.dismiss('cancelado')">
-        <span>{{ MENSAGENS.CANCELAR }}</span>
-        <i class="fa-solid fa-close me-2"></i>
-      </button>
+
     </div>
   </div>
 </ng-template>
@@ -636,15 +638,16 @@
     <p>{{ MENSAGENS.O_SISCAP_ENVIARA_UM_EMAIL_AUTOMATICO_A_AMBAS }}</p>
   </div>
   <div class="modal-footer py-2">
-    <div class="d-inline-flex flex-row-reverse">
+    <div class="siscap-modal-actions">
+      <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
+        <i class="fa-solid fa-close"></i>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
+      </button>
       <button class="btn btn-success icon-text-btn" (click)="modal.close('confirmado')">
         <i class="fa-solid fa-check"></i>
         <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
-      <button class="btn btn-outline-danger icon-text-btn me-2" (click)="modal.dismiss('cancelado')">
-        <span>{{ MENSAGENS.CANCELAR }}</span>
-        <i class="fa-solid fa-close me-2"></i>
-      </button>
+
     </div>
   </div>
 </ng-template>
@@ -769,30 +772,30 @@
   </div>
 
   <div modalFooter>
-    <div class="d-inline-flex flex-row-reverse">
+    <div class="siscap-modal-actions">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
+        <i class="fa-solid fa-close"></i>
         <span>{{
           autuacaoAcionada || finalizadoProcessamentoIntegracao
           ? "Fechar"
           : "Cancelar"
           }}</span>
-        <i class="fa-solid fa-close"></i>
       </button>
 
-      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
-        <i class="fa-solid fa-paper-plane me-2"></i>
+        <i class="fa-solid fa-paper-plane"></i>
         <span>Assinar e autuar</span>
       </button>
 
-      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1"
         style="border-radius: 0; cursor: default; user-select: none">
-        <span class="spinner-border spinner-border-sm me-2"></span>
+        <span class="spinner-border spinner-border-sm"></span>
         <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
         style="cursor: default; user-select: none; border-radius: 0">
-        <span class="me-2">
+        <span class="">
           <i class="bi bi-x-circle-fill"></i>
         </span>
         <span [textContent]="
@@ -952,29 +955,29 @@
   </div>
 
   <div modalFooter>
-    <div class="d-inline-flex flex-row-reverse">
+    <div class="siscap-modal-actions">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
+        <i class="fa-solid fa-close"></i>
         <span>{{
           autuacaoAcionada || finalizadoProcessamentoIntegracao
           ? "Fechar"
           : "Cancelar"
           }}</span>
-        <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2" (click)="confirmarAssinarAutuar()"
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn" (click)="confirmarAssinarAutuar()"
         [disabled]="erroEmAlgumaFaseModalAutuacao">
-        <i class="fa-solid fa-paper-plane me-2"></i>
+        <i class="fa-solid fa-paper-plane"></i>
         <span>Assinar e autuar</span>
       </button>
 
-      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1"
         style="border-radius: 0; cursor: default; user-select: none">
-        <span class="spinner-border spinner-border-sm me-2"></span>
+        <span class="spinner-border spinner-border-sm"></span>
         <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
         style="cursor: default; user-select: none; border-radius: 0">
-        <span class="me-2">
+        <span class="">
           <i class="bi bi-x-circle-fill"></i>
         </span>
         <span [textContent]="
@@ -1008,13 +1011,13 @@
     </form>
   </div>
   <div class="modal-footer">
-    <div class="d-inline-flex flex-row-reverse">
+    <div class="siscap-modal-actions">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ MENSAGENS.CANCELAR }}</span>
         <i class="fa-solid fa-close"></i>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
       </button>
-      <button class="btn btn-success icon-text-btn me-2" (click)="confirmarJustificativaRevisao(modal)">
-        <i class="fa-solid fa-check me-2"></i>
+      <button class="btn btn-success icon-text-btn" (click)="confirmarJustificativaRevisao(modal)">
+        <i class="fa-solid fa-check"></i>
         <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
     </div>
@@ -1061,13 +1064,13 @@
     </form>
   </div>
   <div class="modal-footer">
-    <div class="d-inline-flex flex-row-reverse">
+    <div class="siscap-modal-actions">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ MENSAGENS.CANCELAR }}</span>
         <i class="fa-solid fa-close"></i>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
       </button>
-      <button class="btn btn-success icon-text-btn me-2" (click)="confirmarJustificativaArquivamento(modal)">
-        <i class="fa-solid fa-check me-2"></i>
+      <button class="btn btn-success icon-text-btn" (click)="confirmarJustificativaArquivamento(modal)">
+        <i class="fa-solid fa-check"></i>
         <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
     </div>
@@ -1098,14 +1101,14 @@
   </div>
 
   <div modalFooter>
-    <div class="d-inline-flex flex-row-reverse">
+    <div class="siscap-modal-actions">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
-        <span>{{ MENSAGENS.CANCELAR }}</span>
         <i class="fa-solid fa-close"></i>
+        <span>{{ MENSAGENS.CANCELAR }}</span>
       </button>
 
-      <button class="btn btn-success icon-text-btn me-2" (click)="confirmarComplementacao(modal)">
-        <i class="fa-solid fa-check me-2"></i>
+      <button class="btn btn-success icon-text-btn" (click)="confirmarComplementacao(modal)">
+        <i class="fa-solid fa-check"></i>
         <span>{{ MENSAGENS.CONFIRMAR }}</span>
       </button>
     </div>
@@ -1157,47 +1160,52 @@
         class="alert alert-success text-center fw-semibold mt-4" role="status" aria-live="polite">
         <span>PDF, assinatura e captura finalizados com sucesso!</span>
       </div>
+      <!-- Avisos de e-mail ocultos na modal.
+      <div *ngFor="let aviso of avisosParecer" class="alert alert-warning mt-3" role="status">
+        {{ aviso }}
+      </div>
+      -->
     </div>
   </div>
   <div modalFooter>
-    <div class="d-inline-flex flex-row-reverse">
-      <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
+    <div class="siscap-modal-actions">
+      <button *ngIf="!isParecerGeoc || finalizadoProcessamentoIntegracao || erroEmAlgumaFaseModalAutuacao" class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
+        <i class="fa-solid fa-close"></i>
         <span>{{
-          autuacaoAcionada || finalizadoProcessamentoIntegracao
+          isParecerGeoc || autuacaoAcionada || finalizadoProcessamentoIntegracao
           ? "Fechar"
           : "Cancelar"
           }}</span>
-        <i class="fa-solid fa-close"></i>
       </button>
       <ng-container *ngIf="isParecerGeoc; else naoGeoc">
-        <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
-          (click)="confirmarAssinarCapturarParecer(true)" [disabled]="erroEmAlgumaFaseModalAutuacao">
-          <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Tornar elegível,<br />
+        <button *ngIf="assinarAutuar" class="btn btn-danger icon-text-btn"
+          (click)="confirmarAssinarCapturarParecer(false)" [disabled]="erroEmAlgumaFaseModalAutuacao">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Tornar inelegível,<br />
             Assinar e capturar parecer</span>
         </button>
-        <button *ngIf="assinarAutuar" class="btn btn-danger icon-text-btn me-2"
-          (click)="confirmarAssinarCapturarParecer(false)" [disabled]="erroEmAlgumaFaseModalAutuacao">
-          <i class="fa-solid fa-paper-plane me-2"></i>
-          <span>Tornar inelegível,<br />
+        <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn"
+          (click)="confirmarAssinarCapturarParecer(true)" [disabled]="erroEmAlgumaFaseModalAutuacao">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Tornar elegível,<br />
             Assinar e capturar parecer</span>
         </button>
       </ng-container>
       <ng-template #naoGeoc>
-        <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
+        <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn"
           (click)="confirmarAssinarCapturarParecer()" [disabled]="erroEmAlgumaFaseModalAutuacao">
-          <i class="fa-solid fa-paper-plane me-2"></i>
+          <i class="fa-solid fa-paper-plane"></i>
           <span>Assinar e capturar parecer</span>
         </button>
       </ng-template>
-      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1"
         style="border-radius: 0; cursor: default; user-select: none">
-        <span class="spinner-border spinner-border-sm me-2"></span>
+        <span class="spinner-border spinner-border-sm"></span>
         <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
         style="cursor: default; user-select: none; border-radius: 0">
-        <span class="me-2">
+        <span class="">
           <i class="bi bi-x-circle-fill"></i>
         </span>
         <span [textContent]="
@@ -1260,29 +1268,29 @@
   </div>
 
   <div modalFooter>
-    <div class="d-inline-flex flex-row-reverse">
+    <div class="siscap-modal-actions">
       <button class="btn btn-outline-danger icon-text-btn" (click)="modal.dismiss('cancelado')">
+        <i class="fa-solid fa-close"></i>
         <span>{{
           autuacaoAcionada || finalizadoProcessamentoIntegracao
           ? "Fechar"
           : "Cancelar"
           }}</span>
-        <i class="fa-solid fa-close"></i>
       </button>
-      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn me-2"
+      <button *ngIf="assinarAutuar" class="btn btn-success icon-text-btn"
         (click)="confirmarEntranhamentoParecerProcessoEdocs()" [disabled]="erroEmAlgumaFaseModalAutuacao">
-        <i class="fa-solid fa-paper-plane me-2"></i>
+        <i class="fa-solid fa-paper-plane"></i>
         <span>Entranhar pareceres</span>
       </button>
-      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
+      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1"
         style="border-radius: 0; cursor: default; user-select: none">
-        <span class="spinner-border spinner-border-sm me-2"></span>
+        <span class="spinner-border spinner-border-sm"></span>
         <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao"
-        class="btn btn-danger icon-text-btn me-2 d-inline-flex align-items-center"
+        class="btn btn-danger icon-text-btn d-inline-flex align-items-center"
         style="cursor: default; user-select: none; border-radius: 0">
-        <span class="me-2">
+        <span class="">
           <i class="bi bi-x-circle-fill"></i>
         </span>
         <span [textContent]="
