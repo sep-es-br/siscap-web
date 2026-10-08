@@ -1,4 +1,4 @@
-<div *ngIf="carregandoTela || loadingSubmit" class="dic-loading" role="status" aria-live="polite"
+<div *ngIf="exibirLoadingDic" class="dic-loading" role="status" aria-live="polite"
   [attr.aria-label]="textoSpinner">
   <loading-spinner [textoProcessando]="textoSpinner"></loading-spinner>
 </div>

@@ -467,6 +467,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private autoSaveComErro = false;
 
   private enviarProjetoModalRef?: NgbModalRef;
+  private modalParecerAberto = false;
+  private atualizarProjetoAoFecharParecer = false;
 
   @HostListener('window:resize')
   onResize() {
@@ -2953,14 +2955,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this._idProjetoEdicao
           );
 
-          this._projetosService.notificarAtualizacaoLista();
-
           this.assinarAutuar = false;
           this.finalizadoProcessamentoIntegracao = true;
           this.autuacaoAcionada = false;
           this.arquivoParecerSelecionado = null;
-          this.carregarProjetoEditar(this._idProjetoEdicao);
-          this._subscription.add(this._atualizarProjeto$.subscribe());
+          if (this.modalParecerAberto) {
+            this.atualizarProjetoAoFecharParecer = true;
+          } else {
+            this.atualizarProjetoAposIntegracao();
+          }
 
         }),
 
@@ -3326,6 +3329,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       });
   }
 
+  private atualizarProjetoAposIntegracao(): void {
+    if (this._subscription.closed) return;
+    this._projetosService.notificarAtualizacaoLista();
+    this.carregarProjetoEditar(this._idProjetoEdicao);
+    this._subscription.add(this._atualizarProjeto$.subscribe());
+  }
+
+  private aoFecharModalParecer(): void {
+    this.modalParecerAberto = false;
+    if (this.atualizarProjetoAoFecharParecer) {
+      this.atualizarProjetoAoFecharParecer = false;
+      this.atualizarProjetoAposIntegracao();
+    }
+  }
+
   public abrirEfetivarParecerModal() {
     this.avisosParecer = [];
     const parecerControl = this.projetoForm.get(
@@ -3351,12 +3369,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         size: 'lg',
       },
     );
+    this.modalParecerAberto = true;
+    this._subscription.add(modalRef.hidden.pipe(take(1)).subscribe(() => {
+      this.aoFecharModalParecer();
+    }));
 
-    modalRef.result.then((result) => {
-      if (result === 'confirmado') {
-        this.confirmarAssinarCapturarParecer();
-      }
-    });
+    modalRef.result.then(
+      (result) => {
+        if (result === 'confirmado') {
+          this.confirmarAssinarCapturarParecer();
+        }
+      },
+      () => {},
+    );
+  }
+
+  public get exibirLoadingDic(): boolean {
+    return !this.modalParecerAberto && (this.carregandoTela || this.loadingSubmit);
   }
 
   public abrirEntranhamentoPareceresModal() {
