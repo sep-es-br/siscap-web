@@ -2243,7 +2243,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public abrirConfirmarEnvioMembroModal(form: FormGroup) {
-    
+
     this.nomeProponenteResponsavel =
       (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
@@ -2391,7 +2391,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
-      this.enviarProjetoModalRef = this._ngbModalService.open(
+    this.enviarProjetoModalRef = this._ngbModalService.open(
       this.confirmarIntegracaoProjetoModalTemplate,
       {
         centered: true,

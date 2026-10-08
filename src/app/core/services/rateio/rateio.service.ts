@@ -590,16 +590,31 @@ export class RateioService {
     quantiaFormControlValue: number | null,
     rateioFormArrayValue: Array<RateioLocalidadeFormTypeValue>
   ): void {
-    const rateioFormArrayErrors = this.rateioFormArray.errors;
+
     const limiteRateioError = limiteRateioValidator(
       quantiaFormControlValue,
       rateioFormArrayValue
     );
-    const resultErrors =
-      limiteRateioError != null
-        ? { ...rateioFormArrayErrors, ...limiteRateioError }
-        : rateioFormArrayErrors;
-    this.rateioFormArray.setErrors(resultErrors);
+
+    const errorsAtuais = {
+      ...(this.rateioFormArray.errors ?? {})
+    };
+
+    delete errorsAtuais['limiteRateio'];
+
+    const novosErrors = limiteRateioError
+      ? {
+        ...errorsAtuais,
+        ...limiteRateioError
+      }
+      : errorsAtuais;
+
+    this.rateioFormArray.setErrors(
+      Object.keys(novosErrors).length > 0
+        ? novosErrors
+        : null
+    );
+    
   }
 
   public limparCheckboxesFilhos(): void {
