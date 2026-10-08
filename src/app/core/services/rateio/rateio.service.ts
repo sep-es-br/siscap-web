@@ -786,10 +786,10 @@ export class RateioService {
           localidade.tipo === 'Municipio'
       );
 
-    console.log(
-      '>>> municípios do Estado:',
-      municipios.length
-    );
+    // console.log(
+    //   '>>> municípios do Estado:',
+    //   municipios.length
+    // );
 
     /*
      * Remove o que estiver atualmente no rateio.

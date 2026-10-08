@@ -180,7 +180,7 @@ export class RateioAcaoLocalidadeFormComponent
   constructor(
     public readonly rateioService: RateioService,
     private readonly elementRef: ElementRef<HTMLElement>,
-  ) {}
+  ) { }
 
 
   // ============================================================
@@ -510,11 +510,9 @@ export class RateioAcaoLocalidadeFormComponent
     this.removerLocalidade(idLocalidade);
   }
 
-
   // ============================================================
   // DISTRIBUIÇÃO
   // ============================================================
-
   public distribuirIgualmente(): void {
 
     if (!this.podeDistribuirIgualmente) {
@@ -591,6 +589,9 @@ export class RateioAcaoLocalidadeFormComponent
       });
 
     this.atualizarResumoRateio();
+
+    this.monitorarAlteracoesRateio();
+
   }
 
 
@@ -697,10 +698,9 @@ export class RateioAcaoLocalidadeFormComponent
     valor: number
   ): string {
 
-    return `${
-      this.formatadorPercentual
-        .format(valor || 0)
-    }%`;
+    return `${this.formatadorPercentual
+      .format(valor || 0)
+      }%`;
   }
 
 
@@ -968,6 +968,31 @@ export class RateioAcaoLocalidadeFormComponent
 
           this.atualizarResumoRateio();
         })
+    );
+
+    /*
+      * temporário: logar alterações no FormArray que resultem em valores nulos de percentual ou quantia.
+    */
+    this.formSubscription.add(
+      this.rateioFormArray.valueChanges.subscribe(() => {
+
+        const rateios = this.rateioFormArray.getRawValue();
+
+        const localidadesNulas = rateios.filter(rateio =>
+          rateio.percentual == null ||
+          rateio.quantia == null
+        );
+
+        if (localidadesNulas.length > 0) {
+          console.warn('RATEIOS COM VALORES NULOS:', {
+            total: rateios.length,
+            quantidadeNulos: localidadesNulas.length,
+            localidadesNulas
+          });
+
+          console.trace('Origem da alteração no FormArray');
+        }
+      })
     );
 
     /*
@@ -1422,8 +1447,8 @@ export class RateioAcaoLocalidadeFormComponent
           );
       }
     );
-  }
 
+  }
 
   // ============================================================
   // HELPERS
@@ -1478,10 +1503,10 @@ export class RateioAcaoLocalidadeFormComponent
     const ordemTipo:
       Record<TipoLocalidadeView, number> = {
 
-        Estado: 0,
-        Microrregiao: 1,
-        Municipio: 2,
-      };
+      Estado: 0,
+      Microrregiao: 1,
+      Municipio: 2,
+    };
 
     const diferencaTipo =
       ordemTipo[a.tipo] -
@@ -1525,6 +1550,40 @@ export class RateioAcaoLocalidadeFormComponent
         ) * 100
       ) / 100
     );
+  }
+
+  private monitorarAlteracoesRateio(): void {
+
+    const control = this.rateioFormArray.at(0);
+
+    if (!control) return;
+
+    const percentual = control.controls.percentual;
+    const quantia = control.controls.quantia;
+
+    [percentual, quantia].forEach((campo, index) => {
+
+      const nome = index === 0 ? 'percentual' : 'quantia';
+
+      const setValueOriginal = campo.setValue.bind(campo);
+      const patchValueOriginal = campo.patchValue.bind(campo);
+      const resetOriginal = campo.reset.bind(campo);
+
+      campo.setValue = ((valor: any, opcoes?: any) => {
+        console.trace(`[${nome}] setValue:`, valor);
+        return setValueOriginal(valor, opcoes);
+      }) as typeof campo.setValue;
+
+      campo.patchValue = ((valor: any, opcoes?: any) => {
+        console.trace(`[${nome}] patchValue:`, valor);
+        return patchValueOriginal(valor, opcoes);
+      }) as typeof campo.patchValue;
+
+      campo.reset = ((valor?: any, opcoes?: any) => {
+        console.trace(`[${nome}] reset:`, valor);
+        return resetOriginal(valor, opcoes);
+      }) as typeof campo.reset;
+    });
   }
 
 }

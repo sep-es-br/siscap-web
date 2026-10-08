@@ -569,7 +569,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", response)
+        // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -1836,6 +1836,16 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validarFormulario(form: FormGroup, isEnvioDic: boolean): boolean {
 
+    const rateio = (
+      (this.projetoForm.get('acoesRateioProjeto') as FormArray)
+        .at(0) as FormGroup
+    ).get('rateio') as FormArray;
+    
+    console.log(
+      'RATEIO NA ENTRADA DA VALIDAÇÃO:',
+      structuredClone(rateio.getRawValue())
+    );
+
     if (this.obterPendenciasProjeto()?.length > 0) {
       this.abrirModalPendencias(this.obterPendenciasProjeto())
       return false;
@@ -1908,6 +1918,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
 
+    // TEMPORARIO 
+    const acoes = this.projetoForm.get('acoesRateioProjeto') as FormArray;
+
+    console.log(
+      'AÇÕES ANTES DE SALVAR:',
+      structuredClone(acoes.getRawValue())
+    );
+
+
     if (this.loadingSubmit) {
       return;
     }
@@ -1956,7 +1975,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
 
       if (this.arquivoParecerSelecionado) {
-        console.log('Arquivo de parecer selecionado:', this.arquivoParecerSelecionado);
+        // console.log('Arquivo de parecer selecionado:', this.arquivoParecerSelecionado);
         formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
       }
 
@@ -3490,6 +3509,12 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }
 
       if (control.invalid) {
+
+        console.log(campo.path, {
+          value: JSON.stringify(control.value),
+          status: control.status
+        });
+
         pendencias.push({
           id: campo.path,
           aba: campo.aba,
@@ -3501,6 +3526,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           ),
           controlPath: campo.path,
         });
+
       }
 
     });
