@@ -1836,15 +1836,39 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validarFormulario(form: FormGroup, isEnvioDic: boolean): boolean {
 
-    const rateio = (
-      (this.projetoForm.get('acoesRateioProjeto') as FormArray)
-        .at(0) as FormGroup
-    ).get('rateio') as FormArray;
-    
-    console.log(
-      'RATEIO NA ENTRADA DA VALIDAÇÃO:',
-      structuredClone(rateio.getRawValue())
-    );
+    // const rateio = (
+    //   (this.projetoForm.get('acoesRateioProjeto') as FormArray)
+    //     .at(0) as FormGroup
+    // ).get('rateio') as FormArray;
+
+    // console.log(
+    //   'RATEIO NA ENTRADA DA VALIDAÇÃO:',
+    //   structuredClone(rateio.getRawValue())
+    // );
+
+    const acoes = this.projetoForm.get('acoesRateioProjeto') as FormArray;
+
+    // console.log('ERROS DO ARRAY:', acoes.errors);
+    // acoes.controls.forEach((acao, indiceAcao) => {
+    //   const rateios = acao.get('rateio') as FormArray;
+    //   console.log(
+    //     `Ação ${indiceAcao} - ERROS DO RATEIO:`,
+    //     JSON.stringify(rateios.errors, null, 2)
+    //   );
+    //   rateios.controls.forEach((rateio, indiceRateio) => {
+    //     if (rateio.invalid) {
+    //       console.warn('RATEIO INVÁLIDO:', {
+    //         acao: indiceAcao,
+    //         indiceRateio,
+    //         idLocalidade: rateio.get('idLocalidade')?.value,
+    //         percentual: rateio.get('percentual')?.value,
+    //         quantia: rateio.get('quantia')?.value,
+    //         errosPercentual: rateio.get('percentual')?.errors,
+    //         errosQuantia: rateio.get('quantia')?.errors
+    //       });
+    //     }
+    //   });
+    // });
 
     if (this.obterPendenciasProjeto()?.length > 0) {
       this.abrirModalPendencias(this.obterPendenciasProjeto())
@@ -1917,15 +1941,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private submitProjetoForm(form: FormGroup, isRascunho: boolean): void {
-
-    // TEMPORARIO 
-    const acoes = this.projetoForm.get('acoesRateioProjeto') as FormArray;
-
-    console.log(
-      'AÇÕES ANTES DE SALVAR:',
-      structuredClone(acoes.getRawValue())
-    );
-
 
     if (this.loadingSubmit) {
       return;
@@ -3488,32 +3503,24 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      if (campo.path === 'acoesProjeto') {
-
-        const acoesFormArray =
-          this.projetoForm.get('acoesRateioProjeto') as FormArray<FormGroup<AcaoFormType>>;
-
-        acoesFormArray.controls.forEach((acaoForm, index) => {
-          Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
-            // console.log(nome, {
-            //   value: JSON.stringify(controle.value),
-            //   status: controle.status,
-            //   valid: controle.valid,
-            //   invalid: controle.invalid,
-            //   errors: controle.errors,
-            //   disabled: controle.disabled,
-            // });
-          });
-        });
-
-      }
+      // if (campo.path === 'acoesProjeto') {
+      //   const acoesFormArray =
+      //     this.projetoForm.get('acoesRateioProjeto') as FormArray<FormGroup<AcaoFormType>>;
+      //   acoesFormArray.controls.forEach((acaoForm, index) => {
+      //     Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
+      //       // console.log(nome, {
+      //       //   value: JSON.stringify(controle.value),
+      //       //   status: controle.status,
+      //       //   valid: controle.valid,
+      //       //   invalid: controle.invalid,
+      //       //   errors: controle.errors,
+      //       //   disabled: controle.disabled,
+      //       // });
+      //     });
+      //   });
+      // }
 
       if (control.invalid) {
-
-        console.log(campo.path, {
-          value: JSON.stringify(control.value),
-          status: control.status
-        });
 
         pendencias.push({
           id: campo.path,
