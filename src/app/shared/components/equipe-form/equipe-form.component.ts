@@ -74,10 +74,10 @@ export class EquipeFormComponent {
   public getMembroNome(subPessoa: string | null | undefined): string {
     const nomePadrao = this.pessoasOpcoesGoves.find(p => p.agentePublicoSub === subPessoa)?.nome;
     if (!nomePadrao) {
-      console.log('nomePadrao-0', nomePadrao);
+      // console.log('nomePadrao-0', nomePadrao);
       return this.equipeProjeto.find(p => p.subPessoa === subPessoa)?.nome ?? '';
     }
-    console.log('nomePadrao-1', nomePadrao);
+    // console.log('nomePadrao-1', nomePadrao);
     return nomePadrao ?? '';
   }
 
