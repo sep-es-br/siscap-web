@@ -13,7 +13,10 @@
   <div class="card selection-card">
 
     <div class="card-header-main">
-      <h2 class="planejamento-card-title">{{ MENSAGENS.SELECIONE_A_ACAO }}</h2>
+      <h2 class="planejamento-card-title">
+        {{ MENSAGENS.SELECIONE_A_ACAO }}
+        <form-helper-tooltip [texto]="projetoPPAListTooltip['selecionePPA']"></form-helper-tooltip>
+      </h2>
       <div *ngIf="listaAcoes.length > 0" class="search-container" [class.expanded]="searchVisible">
         <span class="p-input-icon-left p-input-icon-right w-100">
           <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
