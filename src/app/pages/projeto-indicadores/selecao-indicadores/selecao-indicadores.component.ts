@@ -1,4 +1,4 @@
-import { MENSAGENS } from '../../../core/utils/constants';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO, MENSAGENS } from '../../../core/utils/constants';
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule } from '@angular/forms';
@@ -6,11 +6,12 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { IGestoesCatalogoExterno, IIndicadoresCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 import { IndicadorAvulsoComponent } from '../indicador-avulso/indicador-avulso.component';
+import { SharedModule } from '../../../shared/shared.module';
 
 @Component({
   selector: 'app-selecao-indicadores',
   standalone: true,
-  imports: [CommonModule, FormsModule, CheckboxModule, InputTextModule, IndicadorAvulsoComponent],
+  imports: [CommonModule, FormsModule, CheckboxModule, InputTextModule, IndicadorAvulsoComponent, SharedModule],
   templateUrl: './selecao-indicadores.component.html',
   styleUrls: ['./selecao-indicadores.component.scss']
 })
@@ -49,6 +50,7 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   private chavesSelecionadas = new Set<string>();
   private emissaoSelecaoFrame?: number;
   private emissaoSelecaoTimer?: ReturnType<typeof setTimeout>;
+  public indicadorTooltip: Record<string, string> = COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   ngOnInit() {
     this.indicadoresFiltrados = this.indicadores;

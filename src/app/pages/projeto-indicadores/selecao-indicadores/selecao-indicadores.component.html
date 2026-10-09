@@ -1,7 +1,10 @@
 <div class="card selection-card">
 
   <div class="card-header-main">
-    <p class="lista-label">{{ MENSAGENS.SELECIONE_O_INDICADOR_ESTRATEGICO }}</p>
+    <p class="lista-label">
+      {{ MENSAGENS.SELECIONE_O_INDICADOR_ESTRATEGICO }}
+      <form-helper-tooltip [texto]="indicadorTooltip['indicador']"></form-helper-tooltip>
+    </p>
     <div class="search-container" [class.expanded]="searchVisible">
       <span class="p-input-icon-left p-input-icon-right w-100">
         <i class="pi pi-search search-icon cursor-pointer" (click)="toggleSearch()"></i>
@@ -14,7 +17,7 @@
   </div>
 
   <div class="card-body indicador-lista">
-    
+
     <div class="indicador-item select-all">
       <label class="indicador-label">
         <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
