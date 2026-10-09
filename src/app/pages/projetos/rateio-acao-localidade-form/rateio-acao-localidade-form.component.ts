@@ -750,154 +750,56 @@ export class RateioAcaoLocalidadeFormComponent
   }
 
   // ============================================================
-
   // DISTRIBUIÇÃO
-
   // ============================================================
-
   public distribuirIgualmente(): void {
 
     if (!this.podeDistribuirIgualmente) {
-
       return;
-
     }
 
-    const controles =
+    const controles = this.rateioFormArray.controls;
+    const quantidade = controles.length;
 
-      this.rateioFormArray.controls;
+    if (quantidade === 0) {
+      return;
+    }
 
-    const quantidade =
+    const totalCentavos = Math.round(this.valorEstimadoAcao * 100);
 
-      controles.length;
-
-    const totalCentavos =
-
-      Math.round(
-
-        this.valorEstimadoAcao * 100
-
-      );
-
-    const valorBaseCentavos =
-
-      Math.floor(
-
-        totalCentavos / quantidade
-
-      );
-
-    const percentualBase =
-
-      Math.floor(
-
-        10000 / quantidade
-
-      ) / 100;
-
-    controles.forEach(
-
-      (control, index) => {
-
-        const ultimo =
-
-          index === quantidade - 1;
-
-        const valorCentavos =
-
-          ultimo
-
-            ? (
-
-              totalCentavos -
-
-              valorBaseCentavos *
-
-              (quantidade - 1)
-
-            )
-
-            : valorBaseCentavos;
-
-        const percentual =
-
-          ultimo
-
-            ? this.arredondar2(
-
-              100 -
-
-              percentualBase *
-
-              (quantidade - 1)
-
-            )
-
-            : percentualBase;
-
-        control.patchValue(
-
-          {
-
-            quantia:
-
-              valorCentavos / 100,
-
-            percentual,
-
-          },
-
-          {
-
-            emitEvent: false,
-
-          }
-
-        );
-
-      }
-
+    const valorBaseCentavos = Math.floor(
+      totalCentavos / quantidade
     );
 
-    /*
+    const restoCentavos = totalCentavos % quantidade;
 
-     * Os 78 controles, por exemplo, são alterados
+    controles.forEach((control, index) => {
 
-     * sem gerar 78 valueChanges.
+      const ultimo = index === quantidade - 1;
 
-     *
+      const valorCentavos = ultimo
+        ? valorBaseCentavos + restoCentavos
+        : valorBaseCentavos;
 
-     * Ao final emitimos uma única atualização.
+      const quantia = valorCentavos / 100;
 
-     */
+      // Percentual calculado a partir do valor real
+      const percentual = this.arredondar2(
+        (valorCentavos / totalCentavos) * 100
+      );
 
-    this.rateioFormArray
+      control.patchValue(
+        {
+          quantia,
+          percentual
+        },
+        {
+          emitEvent: false
+        }
+      );
 
-      .updateValueAndValidity({
-
-        emitEvent: true,
-
-      });
-
-    this.atualizarResumoRateio();
-
-    const rateios = this.rateioFormArray.getRawValue();
-    this.diagnosticoDistribuicao = {
-      formArray: this.rateioFormArray,
-      controles: new Map(this.rateioFormArray.controls.map(control => [
-        control.controls.idLocalidade.value, control
-      ])),
-      valores: new Map(rateios.map(rateio => [
-        rateio.idLocalidade,
-        { percentual: rateio.percentual, quantia: rateio.quantia }
-      ]))
-    };
-    console.info('[RATEIO][01] Após distribuir', {
-      idAcao: this.formAcao.controls.idAcao?.value,
-      quantidade: rateios.length,
-      incompletos: rateios.filter(r => r.percentual == null || r.quantia == null).length,
-      primeiraLocalidade: rateios[0]
     });
+    
   }
 
   public zerarValores(): void {
