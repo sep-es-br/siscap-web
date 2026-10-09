@@ -293,16 +293,10 @@ export class RateioService {
       .subscribe((quantiaValue) => {
 
         if (quantiaValue != null) {
+
           const preenchidos = this.rateioFormArray.getRawValue().filter(
             r => r.percentual != null && r.quantia != null
           ).length;
-          if (preenchidos > 0) {
-            console.info('[RATEIO][S0] Recálculo agendado da quantia', {
-              instancia: this.instanciaId,
-              tipo: this.tipoDistribuicaoReferencia,
-              preenchidos
-            });
-          }
 
           if (this.tipoDistribuicaoReferencia === TipoDistribuicaoRateio.Linear) {
 
@@ -991,12 +985,7 @@ export class RateioService {
     }
 
     if (this.estadoBooleanCheckboxReferencia) {
-      console.warn('[RATEIO][S2] Reconstrução de municípios', {
-        instancia: this.instanciaId,
-        quantidadeAnterior: this.rateioFormArray.length
-      });
       this.preencherRateioComTodosMunicipios();
-
     }
 
     const localidades =
@@ -1135,13 +1124,9 @@ export class RateioService {
 
       );
 
-      quantiaDistribuidaCentavos +=
+      quantiaDistribuidaCentavos += quantiaLocalidadeCentavos;
 
-        quantiaLocalidadeCentavos;
-
-      percentualDistribuidoCentavos +=
-
-        percentualLocalidadeCentavos;
+      percentualDistribuidoCentavos += percentualLocalidadeCentavos;
 
     });
 
