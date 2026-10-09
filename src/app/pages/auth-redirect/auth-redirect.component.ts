@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { UsuarioService } from '../../core/services/usuario/usuario.service';
-import { NavegacaoService } from '../../core/services/navegacao/navegacao.service';
 
 import { UsuarioPerfilModel } from '../../core/models/usuario.model';
 
@@ -15,51 +14,53 @@ import { IUsuario } from '../../core/interfaces/usuario.interface';
   styleUrl: './auth-redirect.component.scss',
 })
 export class AuthRedirectComponent implements OnInit {
+
   constructor(
     private readonly _route: ActivatedRoute,
     private readonly _usuarioService: UsuarioService,
-    private readonly _navegacaoService: NavegacaoService,
     private readonly _router: Router,
   ) { }
 
   ngOnInit(): void {
-    const tokenRecebido = window.atob(this._route.snapshot.queryParams['token']);
+
+    const tokenParam =
+      this._route.snapshot.queryParamMap.get('token');
+
+    if (!tokenParam) {
+      return;
+    }
+
+    const tokenRecebido = window.atob(tokenParam);
+
     sessionStorage.setItem('token', tokenRecebido);
 
     this._usuarioService.buscarUsuario().subscribe({
+
       next: (response: IUsuario) => {
 
         sessionStorage.setItem('token', response.token);
 
-        this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
+        this._usuarioService.usuarioPerfil =
+          new UsuarioPerfilModel(response);
 
-        const redirectUrl = localStorage.getItem('redirectUrl');
+        const returnUrl =
+          this._route.snapshot.queryParamMap.get('returnUrl');
 
-        console.log('AUTH - redirectUrl:', redirectUrl);
-
-        if (redirectUrl) {
-
-          localStorage.removeItem('redirectUrl');
-
-          console.log('AUTH - navegando para:', redirectUrl);
-
-          this._router.navigateByUrl(redirectUrl)
-            .then((navegou) => {
-              console.log('AUTH - navegação concluída:', navegou);
-              console.log('AUTH - URL depois:', this._router.url);
-            })
-            .catch((error) => {
-              console.error('AUTH - erro ao navegar:', error);
-            });
-
+        if (returnUrl) {
+          this._router.navigateByUrl(returnUrl);
           return;
-
-        } else {
-          const destino = this._usuarioService.usuarioPerfil.isProponente ? '/projetos' : '/home';
-          this._router.navigate([destino]);
         }
 
+        const destino =
+          this._usuarioService.usuarioPerfil.isProponente
+            ? '/projetos'
+            : '/home';
+
+        this._router.navigate([destino]);
       },
+
     });
+
   }
+  
 }

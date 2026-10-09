@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ToastService } from '../toast/toast.service';
 
 import { IHttpBackEndErrorResponse } from '../../interfaces/http-backend-error-response.interface';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 /**
  * @service
@@ -15,7 +16,10 @@ import { IHttpBackEndErrorResponse } from '../../interfaces/http-backend-error-r
   providedIn: 'root',
 })
 export class ErrorHandlerService {
-  constructor(private _toastService: ToastService, private _router: Router) { }
+
+  constructor(private _toastService: ToastService, 
+    private _router: Router, 
+    private _authService: AuthenticationService,) { }
 
   /**
    * @public
@@ -75,28 +79,30 @@ export class ErrorHandlerService {
     switch (error.status) {
 
       case 401: {
-        const urlAtual = this._router.url;
-        const redirectUrlSalva = localStorage.getItem('redirectUrl');
 
-        // console.log('401 - URL atual:', urlAtual);
-        // console.log('401 - redirectUrl já salva:', redirectUrlSalva);
+        const urlAtual = this._router.url;
 
         const isRotaAutenticacao =
           urlAtual.startsWith('/login') ||
           urlAtual.startsWith('/token');
 
-        if (!redirectUrlSalva && !isRotaAutenticacao) {
-          // console.log('Salvando redirectUrl:', urlAtual);
-          localStorage.setItem('redirectUrl', urlAtual);
-        } else {
-          // console.log('NÃO sobrescrevendo redirectUrl.');
+        if (isRotaAutenticacao) {
+          break;
         }
 
-        if (!isRotaAutenticacao) {
-          this._router.navigateByUrl('/login');
+        if (urlAtual.startsWith('/main/programas/')) {
+          this._authService.acessoCidadaoSignIn('programa');
+          break;
         }
 
+        if (urlAtual.startsWith('/main/projetos/')) {
+          this._authService.acessoCidadaoSignIn('projeto');
+          break;
+        }
+
+        this._authService.acessoCidadaoSignIn();
         break;
+
       }
 
       case 403:
