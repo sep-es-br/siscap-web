@@ -22,30 +22,6 @@
   width: 100%;
 }
 
-.planejamento-filtros {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.planejamento-filtros siscap-filter-card {
-  min-width: 0;
-  margin-bottom: 0;
-}
-
-.planejamento-filtros .nao-previsto-ppa {
-  align-self: flex-start;
-  margin: 0;
-  max-width: 100%;
-  padding: 0 12px;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: var(--planejamento-gray-text);
-}
-
 .planejamento-card {
   margin-top: 20px;
   padding: 20px;

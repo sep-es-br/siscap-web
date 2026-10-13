@@ -406,9 +406,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     },
     {
       path: 'pecasPlanejamento',
-      campo: MENSAGENS.PLANO_SETORIAL,
-      aba: 'planejamento',
-      nomeAba: 'Planejamento',
+      campo: MENSAGENS.PECAS_DE_PLANEJAMENTO,
+      aba: 'propriedades',
+      nomeAba: MENSAGENS.DIC,
       validarEm: ['envio'],
     },
     {
@@ -965,7 +965,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       arranjosInstitucionais: MENSAGENS.ARRANJOS_INSTITUCIONAIS,
       equipeElaboracao: MENSAGENS.EQUIPE_DE_ELABORACAO,
       acoesProjeto: MENSAGENS.ACOES_DO_PROJETO,
-      pecasPlanejamento: MENSAGENS.PLANO_SETORIAL,
+      pecasPlanejamento: MENSAGENS.PECAS_DE_PLANEJAMENTO,
       subResponsavelProponente: MENSAGENS.RESPONSAVEL_PROPONENTE,
       indicadores: MENSAGENS.INDICADORES,
       ods: MENSAGENS.ODS,
