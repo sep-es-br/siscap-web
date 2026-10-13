@@ -297,11 +297,11 @@ export class RateioService {
             r => r.percentual != null && r.quantia != null
           ).length;
           if (preenchidos > 0) {
-            console.info('[RATEIO][S0] Recálculo agendado da quantia', {
-              instancia: this.instanciaId,
-              tipo: this.tipoDistribuicaoReferencia,
-              preenchidos
-            });
+            // console.info('[RATEIO][S0] Recálculo agendado da quantia', {
+            //   instancia: this.instanciaId,
+            //   tipo: this.tipoDistribuicaoReferencia,
+            //   preenchidos
+            // });
           }
 
           if (this.tipoDistribuicaoReferencia === TipoDistribuicaoRateio.Linear) {
