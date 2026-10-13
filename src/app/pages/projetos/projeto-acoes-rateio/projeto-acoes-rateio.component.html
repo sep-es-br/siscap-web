@@ -38,7 +38,7 @@
                             let i = index
                         ">
 
-                        <div class="acao-tab-group" [class.active]="acaoAtivaIndex === i">
+                        <div class="acao-tab-group" [class.active]="acaoAtivaIndex === i" [class.inactive]="acaoAtivaIndex !== i">
 
 
                             <!-- SELECIONAR AÇÃO -->
@@ -140,7 +140,7 @@
                     <!-- AÇÃO PRINCIPAL / VALOR ESTIMADO                   -->
                     <!-- ================================================= -->
                     <div class="row">
-                        <div class="col-12 col-md-10 mb-3">
+                        <div class="col-12 col-md-9 mb-3">
                             <label [for]="'descricaoAcaoPrincipal-' + i" class="form-label" >
                                 Título
                                 <span class="text-danger">*</span>
@@ -149,7 +149,7 @@
                                 formControlName="descricaoAcaoPrincipal" />
                         </div>
 
-                         <div class="col-12 col-md-2 mb-3">
+                         <div class="col-12 col-md-3 mb-3">
                             <label [for]=" 'valorEstimadoAcaoPrincipal-' + i" class="form-label d-block text-end" >
                                 Valor Estimado
                                 <span class="text-danger">*</span>
