@@ -1,4 +1,4 @@
-import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO, MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, ElementRef, Input, TrackByFunction, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
@@ -135,6 +135,7 @@ export class ProjetoPpaLoaComponent {
 
   private acoesPlanejamentoBackup: PlanejamentoAcao[] = [];
   private acoesPlanejamentoProjetoBackup: IAcaoPlanejamentoProjeto[] = [];
+  public projetoPPAListTooltip: Record<string, string> = COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   constructor(private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
@@ -1368,9 +1369,9 @@ export class ProjetoPpaLoaComponent {
   private configurarPeriodoPlanejamento(
     periodo: IPeriodoPlanejamento
   ): void {
-  
+
     this.periodoPlanejamento = periodo;
-  
+
     this.chips = [
       {
         key: 'planejamento',
@@ -1380,16 +1381,16 @@ export class ProjetoPpaLoaComponent {
         removable: false,
       },
     ];
-  
+
     this.currentFilter = {
       periodoPlanejamento: this.periodoPlanejamento,
       idPeriodoPlanejamento: this.periodoPlanejamento.id
     };
-  
+
     this.listaAcoes = [];
     this.listaAcoesFiltradas = [];
-  
-    this.carregarAcoesProjetoEdicao( this.periodoPlanejamento.descricao ?? '' ); 
+
+    this.carregarAcoesProjetoEdicao( this.periodoPlanejamento.descricao ?? '' );
 
   }
 

@@ -9,9 +9,12 @@
 
     <div class="card" style="margin-bottom:16px;">
         <div class="ods-section-header">
-            
+
             <div>
-                <div class="card-title" style="margin-bottom:2px;">{{ MENSAGENS.ODS_SUGERIDAS }}</div>
+                <div class="card-title" style="margin-bottom:2px;">
+                  {{ MENSAGENS.ODS_SUGERIDAS }}
+                  <form-helper-tooltip [texto]="indicadorTooltip['ods']"></form-helper-tooltip>
+                </div>
                 <div style="font-size:12px; color:var(--gray-text);">{{ MENSAGENS.ODS_IDENTIFICADAS_A_PARTIR_DOS_INDICADORES_SELECIONADOS_CLIQUE_PARA_ADICIONAR_A_SELECAO }}</div>
             </div>
 
@@ -26,9 +29,9 @@
             </div>
 
         </div>
-        
+
         <div class="ods-suggested-row" id="odsSuggestedRow">
-            <div class="ods-suggested-card" *ngFor="let ods of ods" 
+            <div class="ods-suggested-card" *ngFor="let ods of ods"
                 (click)="adicionarOds(ods)"
                 (keydown.enter)="adicionarOds(ods)"
                 (keydown.space)="adicionarOds(ods)"
@@ -91,7 +94,7 @@
             </div>
         </div>
     </div>
-    
+
     <div [formGroup]="formProjeto" class="row">
         <div data-control-path="impactos" class="col-12">
             <label
@@ -99,6 +102,7 @@
             class="form-label col-12">
             <validation-message [control]="getControl('impactos')">
             {{ MENSAGENS.IMPACTOS_DO_PROJETO_NO_AMBITO_AMBIENTAL_SOCIAL_E_DE_GOVERNANCA_ESG }}
+            <form-helper-tooltip [texto]="indicadorTooltip['impactos']"></form-helper-tooltip>
             </validation-message>
         </label>
         <textarea

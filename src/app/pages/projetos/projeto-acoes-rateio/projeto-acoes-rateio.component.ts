@@ -56,6 +56,7 @@ export class ProjetoAcoesRateioComponent {
   @Input() camposComplementarProjeto: IEstruturaCamposComplementarProjeto[] = [];
 
   acaoAtivaIndex = 0;
+  public projetoAcoesListTooltip: Record<string, string> = COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   constructor(
     private readonly acoesService: AcoesService,
@@ -135,7 +136,7 @@ export class ProjetoAcoesRateioComponent {
     if (acaoAtivaEstavaDepois) {
       this.acaoAtivaIndex--;
     }
-    
+
   }
 
   public get valorTotalAcoes(): number {
