@@ -357,6 +357,7 @@
 
             <strong>
                 Distribuição por localidade
+                <form-helper-tooltip [texto]="projetoAcoesListTooltip['localidadeAcoes']"></form-helper-tooltip>
             </strong>
 
             <div class="d-flex flex-wrap gap-2">
@@ -461,7 +462,7 @@
 
                             <div class="input-group input-group-sm">
                                 <input type="number" class="form-control text-end" min="0" max="100" step="0.01"
-                                    [formControl]="item.control.controls.percentual" 
+                                    [formControl]="item.control.controls.percentual"
                                     [readonly]="!isModoEdicao" (input)="percentualAlterado(item.control)">
                                 <span class="input-group-text">
                                     %
@@ -475,7 +476,7 @@
                             <div class="d-md-none text-muted small mb-1">
                                 Valor
                             </div>
-                            <input type="text" class="form-control form-control-sm text-end" 
+                            <input type="text" class="form-control form-control-sm text-end"
                                 [value]="formatarMoeda(item.control.controls.quantia.value ?? 0)
                                 " [readonly]="!isModoEdicao" (focus)=" focarQuantia( $event, item.control.controls.quantia.value )
                                 " (blur)="atualizarQuantia($event,item.control.controls.quantia)">

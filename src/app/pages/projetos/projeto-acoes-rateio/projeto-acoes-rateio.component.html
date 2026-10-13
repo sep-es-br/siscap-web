@@ -143,20 +143,22 @@
                         <div class="col-12 col-md-10 mb-3">
                             <label [for]="'descricaoAcaoPrincipal-' + i" class="form-label" >
                                 Título
+                                <form-helper-tooltip [texto]="projetoAcoesListTooltip['descricaoAcaoPrincipal']"></form-helper-tooltip>
                                 <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" [id]="'descricaoAcaoPrincipal-' + i" 
+                            <input type="text" class="form-control" [id]="'descricaoAcaoPrincipal-' + i"
                                 formControlName="descricaoAcaoPrincipal" />
                         </div>
 
                          <div class="col-12 col-md-2 mb-3">
                             <label [for]=" 'valorEstimadoAcaoPrincipal-' + i" class="form-label d-block text-end" >
                                 Valor Estimado
+                                <form-helper-tooltip [texto]="projetoAcoesListTooltip['valorEstimadoAcaoPrincipal']"></form-helper-tooltip>
                                 <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control text-end" [id]="'valorEstimadoAcaoPrincipal-' + i" 
-                                formControlName="valorEstimadoAcaoPrincipal" 
-                                mask="separator.2" prefix="R$ " 
+                            <input type="text" class="form-control text-end" [id]="'valorEstimadoAcaoPrincipal-' + i"
+                                formControlName="valorEstimadoAcaoPrincipal"
+                                mask="separator.2" prefix="R$ "
                                 thousandSeparator="." decimalMarker=","
                                 [leadZero]="true" />
                         </div>
@@ -170,6 +172,7 @@
                         <div class="col-12 mb-3">
                             <label [for]="'descricaoAcaoSecundaria-' + i" class="form-label">
                                 Descrição de ações secundárias e produtos
+                                <form-helper-tooltip [texto]="projetoAcoesListTooltip['descricaoAcoesSecudariasProdutos']"></form-helper-tooltip>
                                 <span class="text-danger">*</span>
                             </label>
                             <textarea class="form-control" rows="3" [id]="'descricaoAcaoSecundaria-' + i" formControlName="descricaoAcaoSecundaria"></textarea>

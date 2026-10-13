@@ -41,6 +41,8 @@ import { RateioService } from '../../../core/services/rateio/rateio.service';
 import { AcaoFormType } from '../../../core/types/form/acao-form.type';
 
 import { ILocalidadeOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
+import { SharedModule } from '../../../shared/shared.module';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
 
 type TipoLocalidadeView =
 
@@ -83,9 +85,8 @@ interface RateioItemView {
     FormsModule,
 
     ReactiveFormsModule,
-
-  ],
-
+    SharedModule
+],
   templateUrl: './rateio-acao-localidade-form.component.html',
 
   styleUrl: './rateio-acao-localidade-form.component.scss',
@@ -254,6 +255,8 @@ export class RateioAcaoLocalidadeFormComponent
   private formSubscription =
 
     new Subscription();
+
+  public projetoAcoesListTooltip: Record<string, string> = COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   constructor(
 
@@ -2239,26 +2242,73 @@ export class RateioAcaoLocalidadeFormComponent
 
   }
 
-  private arredondar2(
+  public focarQuantia(event: FocusEvent, valor: number | null): void {
+    const input = event.target as HTMLInputElement;
 
-    valor: number
+    input.value = Number(valor ?? 0).toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
+  public atualizarQuantia(
+    event: FocusEvent,
+    control: FormControl<number | null>
+  ): void {
+
+    const input = event.target as HTMLInputElement;
+
+    const valorNumerico = Number(
+      input.value
+        .replace(/\./g, '')
+        .replace(',', '.')
+        .replace(/[^\d.-]/g, '')
+    );
+
+    control.setValue(
+      Number.isFinite(valorNumerico)
+        ? valorNumerico
+        : 0
+    );
+
+    control.markAsDirty();
+    control.markAsTouched();
+
+    input.value = this.formatarMoeda(control.value ?? 0);
+  }
 
   ): number {
 
+    const valorEstimadoCentavos =
+      Math.round(this.valorEstimadoAcao * 100);
+
+    const valorDistribuidoCentavos =
+      Math.round(this.totalValorDistribuido * 100);
+
+    return valorEstimadoCentavos === valorDistribuidoCentavos;
+  }
+
+  public get percentualRateioValido(): boolean {
+
+    const percentual =
+      Math.round(this.totalPercentualDistribuido * 100);
+
+    return percentual === 10000;
+  }
+
+  public get rateioValido(): boolean {
     return (
 
-      Math.round(
+  public get diferencaValorRateio(): number {
+    return this.arredondar2(
+      this.totalValorDistribuido -
+      this.valorEstimadoAcao
+    );
+  }
 
-        (
-
-          valor +
-
-          Number.EPSILON
-
-        ) * 100
-
-      ) / 100
-
+  public get diferencaPercentualRateio(): number {
+    return this.arredondar2(
+      this.totalPercentualDistribuido - 100
     );
 
   }
