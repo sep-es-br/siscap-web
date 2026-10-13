@@ -406,9 +406,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     },
     {
       path: 'pecasPlanejamento',
-      campo: MENSAGENS.PECAS_DE_PLANEJAMENTO,
-      aba: 'propriedades',
-      nomeAba: MENSAGENS.DIC,
+      campo: MENSAGENS.PLANO_SETORIAL,
+      aba: 'planejamento',
+      nomeAba: 'Planejamento',
       validarEm: ['envio'],
     },
     {
@@ -467,6 +467,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   private autoSaveComErro = false;
 
   private enviarProjetoModalRef?: NgbModalRef;
+  private modalParecerAberto = false;
+  private atualizarProjetoAoFecharParecer = false;
 
   @HostListener('window:resize')
   onResize() {
@@ -571,7 +573,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     this._atualizarProjeto$ = this._projetosService.getById(idProjeto).pipe(
       tap((response: IProjeto) => {
-        console.log("Buscar projeto por ID: ", response)
+        // console.log("Buscar projeto por ID: ", response)
       }),
       map<IProjeto, ProjetoModel>(
         (response: IProjeto) => new ProjetoModel(response),
@@ -963,7 +965,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       arranjosInstitucionais: MENSAGENS.ARRANJOS_INSTITUCIONAIS,
       equipeElaboracao: MENSAGENS.EQUIPE_DE_ELABORACAO,
       acoesProjeto: MENSAGENS.ACOES_DO_PROJETO,
-      pecasPlanejamento: MENSAGENS.PECAS_DE_PLANEJAMENTO,
+      pecasPlanejamento: MENSAGENS.PLANO_SETORIAL,
       subResponsavelProponente: MENSAGENS.RESPONSAVEL_PROPONENTE,
       indicadores: MENSAGENS.INDICADORES,
       ods: MENSAGENS.ODS,
@@ -1838,6 +1840,40 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private validarFormulario(form: FormGroup, isEnvioDic: boolean): boolean {
 
+    // const rateio = (
+    //   (this.projetoForm.get('acoesRateioProjeto') as FormArray)
+    //     .at(0) as FormGroup
+    // ).get('rateio') as FormArray;
+
+    // console.log(
+    //   'RATEIO NA ENTRADA DA VALIDAÇÃO:',
+    //   structuredClone(rateio.getRawValue())
+    // );
+
+    const acoes = this.projetoForm.get('acoesRateioProjeto') as FormArray;
+
+    // console.log('ERROS DO ARRAY:', acoes.errors);
+    // acoes.controls.forEach((acao, indiceAcao) => {
+    //   const rateios = acao.get('rateio') as FormArray;
+    //   console.log(
+    //     `Ação ${indiceAcao} - ERROS DO RATEIO:`,
+    //     JSON.stringify(rateios.errors, null, 2)
+    //   );
+    //   rateios.controls.forEach((rateio, indiceRateio) => {
+    //     if (rateio.invalid) {
+    //       console.warn('RATEIO INVÁLIDO:', {
+    //         acao: indiceAcao,
+    //         indiceRateio,
+    //         idLocalidade: rateio.get('idLocalidade')?.value,
+    //         percentual: rateio.get('percentual')?.value,
+    //         quantia: rateio.get('quantia')?.value,
+    //         errosPercentual: rateio.get('percentual')?.errors,
+    //         errosQuantia: rateio.get('quantia')?.errors
+    //       });
+    //     }
+    //   });
+    // });
+
     if (this.obterPendenciasProjeto()?.length > 0) {
       this.abrirModalPendencias(this.obterPendenciasProjeto())
       return false;
@@ -1961,7 +1997,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       );
 
       if (this.arquivoParecerSelecionado) {
-        console.log('Arquivo de parecer selecionado:', this.arquivoParecerSelecionado);
+        // console.log('Arquivo de parecer selecionado:', this.arquivoParecerSelecionado);
         formData.append('arquivoParecerAnexo', this.arquivoParecerSelecionado);
       }
 
@@ -2251,7 +2287,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   public abrirConfirmarEnvioMembroModal(form: FormGroup) {
-    
+
     this.nomeProponenteResponsavel =
       (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
@@ -2399,7 +2435,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       (this.nomeProponenteResponsavel ?? '').toUpperCase() ||
       '-';
 
-      this.enviarProjetoModalRef = this._ngbModalService.open(
+    this.enviarProjetoModalRef = this._ngbModalService.open(
       this.confirmarIntegracaoProjetoModalTemplate,
       {
         centered: true,
@@ -2955,14 +2991,15 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
             this._idProjetoEdicao
           );
 
-          this._projetosService.notificarAtualizacaoLista();
-
           this.assinarAutuar = false;
           this.finalizadoProcessamentoIntegracao = true;
           this.autuacaoAcionada = false;
           this.arquivoParecerSelecionado = null;
-          this.carregarProjetoEditar(this._idProjetoEdicao);
-          this._subscription.add(this._atualizarProjeto$.subscribe());
+          if (this.modalParecerAberto) {
+            this.atualizarProjetoAoFecharParecer = true;
+          } else {
+            this.atualizarProjetoAposIntegracao();
+          }
 
         }),
 
@@ -3328,6 +3365,21 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       });
   }
 
+  private atualizarProjetoAposIntegracao(): void {
+    if (this._subscription.closed) return;
+    this._projetosService.notificarAtualizacaoLista();
+    this.carregarProjetoEditar(this._idProjetoEdicao);
+    this._subscription.add(this._atualizarProjeto$.subscribe());
+  }
+
+  private aoFecharModalParecer(): void {
+    this.modalParecerAberto = false;
+    if (this.atualizarProjetoAoFecharParecer) {
+      this.atualizarProjetoAoFecharParecer = false;
+      this.atualizarProjetoAposIntegracao();
+    }
+  }
+
   public abrirEfetivarParecerModal() {
     this.avisosParecer = [];
     const parecerControl = this.projetoForm.get(
@@ -3353,12 +3405,23 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         size: 'lg',
       },
     );
+    this.modalParecerAberto = true;
+    this._subscription.add(modalRef.hidden.pipe(take(1)).subscribe(() => {
+      this.aoFecharModalParecer();
+    }));
 
-    modalRef.result.then((result) => {
-      if (result === 'confirmado') {
-        this.confirmarAssinarCapturarParecer();
-      }
-    });
+    modalRef.result.then(
+      (result) => {
+        if (result === 'confirmado') {
+          this.confirmarAssinarCapturarParecer();
+        }
+      },
+      () => {},
+    );
+  }
+
+  public get exibirLoadingDic(): boolean {
+    return !this.modalParecerAberto && (this.carregandoTela || this.loadingSubmit);
   }
 
   public abrirEntranhamentoPareceresModal() {
@@ -3534,27 +3597,25 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         return;
       }
 
-      if (campo.path === 'acoesProjeto') {
-
-        const acoesFormArray =
-          this.projetoForm.get('acoesRateioProjeto') as FormArray<FormGroup<AcaoFormType>>;
-
-        acoesFormArray.controls.forEach((acaoForm, index) => {
-          Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
-            // console.log(nome, {
-            //   value: JSON.stringify(controle.value),
-            //   status: controle.status,
-            //   valid: controle.valid,
-            //   invalid: controle.invalid,
-            //   errors: controle.errors,
-            //   disabled: controle.disabled,
-            // });
-          });
-        });
-
-      }
+      // if (campo.path === 'acoesProjeto') {
+      //   const acoesFormArray =
+      //     this.projetoForm.get('acoesRateioProjeto') as FormArray<FormGroup<AcaoFormType>>;
+      //   acoesFormArray.controls.forEach((acaoForm, index) => {
+      //     Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
+      //       // console.log(nome, {
+      //       //   value: JSON.stringify(controle.value),
+      //       //   status: controle.status,
+      //       //   valid: controle.valid,
+      //       //   invalid: controle.invalid,
+      //       //   errors: controle.errors,
+      //       //   disabled: controle.disabled,
+      //       // });
+      //     });
+      //   });
+      // }
 
       if (control.invalid) {
+
         pendencias.push({
           id: campo.path,
           aba: campo.aba,
@@ -3566,6 +3627,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           ),
           controlPath: campo.path,
         });
+
       }
 
     });

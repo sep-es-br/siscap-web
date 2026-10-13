@@ -5,6 +5,20 @@
     (chipRemove)="removeChip($event)">
   </siscap-filter-card>
 
+  <div class="d-flex justify-content-end mb-3">
+
+    <label class="nao-previsto-ppa" [class.nao-previsto-ppa-ativo]="naoPrevistoPpa"
+      [class.nao-previsto-ppa-desabilitado]="!podeEditar">
+      <input type="checkbox" [checked]="naoPrevistoPpa" [disabled]="!podeEditar"
+        (change)="onNaoPrevistoPpaChange($event)" />
+      <span>
+        <validation-message [control]="getControl('naoPrevistoNoPpa')">
+          {{ formatarMensagem(MENSAGENS.NAO_PREVISTO_NO_PPA_VALOR, { p0: (periodoPlanejamento?.descricao) }) }}</validation-message>
+      </span>
+    </label>
+
+  </div>
+
   <siscap-filtro-ppa-loa *ngIf="showModal" [filtroAtual]="currentFilter" [bloquearAno]="quantidadeAcoes > 0"
     (apply)="onApply($event)" (close)="showModal = false" (restaurar)="onRestaurar()"
     [somenteLeitura]="somenteLeitura"></siscap-filtro-ppa-loa>
@@ -269,6 +283,10 @@
       </ng-container>
 
     </div>
+    <div class="p-3 border-top">
+      <ng-content select="[planoSetorial]"></ng-content>
+    </div>
+
 
   </div>
 
@@ -289,20 +307,7 @@
     </div>
   </ng-template>
 
-  <!-- Rodapé -->
-  <footer class="planejamento-footer">
 
-    <label class="nao-previsto-ppa" [class.nao-previsto-ppa-ativo]="naoPrevistoPpa"
-      [class.nao-previsto-ppa-desabilitado]="!podeEditar">
-      <input type="checkbox" [checked]="naoPrevistoPpa" [disabled]="!podeEditar"
-        (change)="onNaoPrevistoPpaChange($event)" />
-      <span>
-        <validation-message [control]="getControl('naoPrevistoNoPpa')">
-          {{ formatarMensagem(MENSAGENS.NAO_PREVISTO_NO_PPA_VALOR, { p0: (periodoPlanejamento?.descricao) }) }}</validation-message>
-      </span>
-    </label>
-
-  </footer>
 
   <div class="navigation-buttons">
     <button class="nav-btn" id="voltarBtn" style="background:var(--blue); color:white; border-color:var(--blue);"
