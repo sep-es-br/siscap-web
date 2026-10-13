@@ -26,9 +26,7 @@ export function limiteRateioValidator(
   // Somatório das quantias convertido individualmente para centavos.
   const totalQuantiaCentavos = rateioFormArrayValue.reduce(
     (total, rateio) =>
-      total + Math.round(Number(rateio.quantia ?? 0) * 100),
-    0
-  );
+      total + Math.round(Number(rateio.quantia ?? 0) * 100), 0 );
 
   const valorEstimadoCentavos =
     Math.round(quantiaFormControlValue * 100);
@@ -46,5 +44,5 @@ export function limiteRateioValidator(
   }
 
   return null;
-  
+
 }

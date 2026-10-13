@@ -1725,33 +1725,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  // private compararValorEstimadoValorAcoes(): boolean {
-  //   const valorEstimadoProjeto = this.projetoForm.get(
-  //     'valorEstimado',
-  //   ) as FormControl<number>;
-  //   const valorFormGroup = this.projetoForm.get(
-  //     'valor',
-  //   ) as FormGroup<ValorFormType>;
-  //   const quantiaFormControl = valorFormGroup.get('quantia') as FormControl<
-  //     number | null
-  //   >;
-  //   const acoesProjetoValues = this.projetoForm.get('acoesProjeto')?.value;
-  //   if (!acoesProjetoValues) return false;
-  //   const totalValorAcoesInformadas = acoesProjetoValues
-  //     .filter((acao: IAcao) => acao.idStatus === TipoStatusEnum.Ativo)
-  //     .reduce((sum: number, acao: { valorEstimadoAcaoPrincipal: any }) => {
-  //       const valor = Number(acao.valorEstimadoAcaoPrincipal) || 0;
-  //       return sum + valor;
-  //     }, 0);
-  //   const valorSomaAcoes = Number(totalValorAcoesInformadas) || 0;
-  //   const valorEstimadoTotal =
-  //     Number(quantiaFormControl.value) || Number(valorEstimadoProjeto.value);
-  //   if (Math.abs(valorSomaAcoes - valorEstimadoTotal) < 0.001) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
   private compararValorEstimadoValorAcoes(): boolean {
 
     return this.obterAcoesComRateioInvalido().length === 0;
@@ -1839,40 +1812,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   private validarFormulario(form: FormGroup, isEnvioDic: boolean): boolean {
-
-    // const rateio = (
-    //   (this.projetoForm.get('acoesRateioProjeto') as FormArray)
-    //     .at(0) as FormGroup
-    // ).get('rateio') as FormArray;
-
-    // console.log(
-    //   'RATEIO NA ENTRADA DA VALIDAÇÃO:',
-    //   structuredClone(rateio.getRawValue())
-    // );
-
-    const acoes = this.projetoForm.get('acoesRateioProjeto') as FormArray;
-
-    // console.log('ERROS DO ARRAY:', acoes.errors);
-    // acoes.controls.forEach((acao, indiceAcao) => {
-    //   const rateios = acao.get('rateio') as FormArray;
-    //   console.log(
-    //     `Ação ${indiceAcao} - ERROS DO RATEIO:`,
-    //     JSON.stringify(rateios.errors, null, 2)
-    //   );
-    //   rateios.controls.forEach((rateio, indiceRateio) => {
-    //     if (rateio.invalid) {
-    //       console.warn('RATEIO INVÁLIDO:', {
-    //         acao: indiceAcao,
-    //         indiceRateio,
-    //         idLocalidade: rateio.get('idLocalidade')?.value,
-    //         percentual: rateio.get('percentual')?.value,
-    //         quantia: rateio.get('quantia')?.value,
-    //         errosPercentual: rateio.get('percentual')?.errors,
-    //         errosQuantia: rateio.get('quantia')?.errors
-    //       });
-    //     }
-    //   });
-    // });
 
     if (this.obterPendenciasProjeto()?.length > 0) {
       this.abrirModalPendencias(this.obterPendenciasProjeto())
@@ -3416,7 +3355,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
           this.confirmarAssinarCapturarParecer();
         }
       },
-      () => {},
+      () => { },
     );
   }
 
@@ -3596,23 +3535,6 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
         );
         return;
       }
-
-      // if (campo.path === 'acoesProjeto') {
-      //   const acoesFormArray =
-      //     this.projetoForm.get('acoesRateioProjeto') as FormArray<FormGroup<AcaoFormType>>;
-      //   acoesFormArray.controls.forEach((acaoForm, index) => {
-      //     Object.entries(acaoForm.controls).forEach(([nome, controle]) => {
-      //       // console.log(nome, {
-      //       //   value: JSON.stringify(controle.value),
-      //       //   status: controle.status,
-      //       //   valid: controle.valid,
-      //       //   invalid: controle.invalid,
-      //       //   errors: controle.errors,
-      //       //   disabled: controle.disabled,
-      //       // });
-      //     });
-      //   });
-      // }
 
       if (control.invalid) {
 
@@ -4546,41 +4468,37 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private obterAcoesComRateioInvalido(): IAcao[] {
 
-    const acoes =
-      this.projetoForm
-        .get('acoesRateioProjeto')
-        ?.getRawValue() as IAcao[];
+    const acoes = this.projetoForm
+      .get('acoesRateioProjeto')
+      ?.getRawValue() as IAcao[];
 
     if (!acoes?.length) {
       return [];
     }
 
-    return acoes
-      .filter(
-        acao =>
-          acao.idStatus === TipoStatusEnum.Ativo
-      )
-      .filter(acao => {
+    const acoesAtivas = acoes.filter(
+      acao => acao.idStatus === TipoStatusEnum.Ativo
+    );
 
-        const valorAcao =
-          Number(
-            acao.valorEstimadoAcaoPrincipal
-          ) || 0;
+    const acoesInvalidas = acoesAtivas.filter(acao => {
 
-        const totalRateio =
-          (acao.rateio ?? [])
-            .reduce(
-              (total, item) =>
-                total +
-                (Number(item.quantia) || 0),
-              0
-            );
+      const valorAcao =
+        Number(acao.valorEstimadoAcaoPrincipal) || 0;
 
-        return Math.abs(
-          valorAcao - totalRateio
-        ) >= 0.001;
+      const totalRateio = (acao.rateio ?? [])
+        .reduce(
+          (total, item) =>
+            total + (Number(item.quantia) || 0),
+          0
+        );
 
-      });
+      const diferenca = Math.abs(valorAcao - totalRateio);
+
+      return diferenca >= 0.001;
+
+    });
+
+    return acoesInvalidas;
 
   }
 
