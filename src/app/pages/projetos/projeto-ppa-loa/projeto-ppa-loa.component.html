@@ -1,11 +1,10 @@
 <section class="planejamento-section">
 
-  <siscap-filter-card [chips]="chips" [groupByField]="true" [disabled]="!podeEditar || naoPrevistoPpa"
-    [loading]="carregandoDadosIniciais || carregandoAcoes" (openFilter)="abrirFiltroPlanejamento()"
-    (chipRemove)="removeChip($event)">
-  </siscap-filter-card>
-
-  <div class="d-flex justify-content-end mb-3">
+  <div class="planejamento-filtros">
+    <siscap-filter-card [chips]="chips" [groupByField]="true" [disabled]="!podeEditar || naoPrevistoPpa"
+      [loading]="carregandoDadosIniciais || carregandoAcoes" (openFilter)="abrirFiltroPlanejamento()"
+      (chipRemove)="removeChip($event)">
+    </siscap-filter-card>
 
     <label class="nao-previsto-ppa" [class.nao-previsto-ppa-ativo]="naoPrevistoPpa"
       [class.nao-previsto-ppa-desabilitado]="!podeEditar">
@@ -283,7 +282,7 @@
       </ng-container>
 
     </div>
-    <div class="p-3 border-top">
+    <div class="pt-2 border-top">
       <ng-content select="[planoSetorial]"></ng-content>
     </div>
 
