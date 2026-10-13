@@ -2249,75 +2249,80 @@ export class RateioAcaoLocalidadeFormComponent
 
   }
 
-  public focarQuantia(event: FocusEvent, valor: number | null): void {
-    const input = event.target as HTMLInputElement;
+// Bloco duplicado e incompleto da integração: métodos válidos mantidos acima.
+//   public focarQuantia(event: FocusEvent, valor: number | null): void {
+//     const input = event.target as HTMLInputElement;
+//
+//     input.value = Number(valor ?? 0).toLocaleString('pt-BR', {
+//       minimumFractionDigits: 2,
+//       maximumFractionDigits: 2,
+//     });
+//   }
+//
+//   public atualizarQuantia(
+//     event: FocusEvent,
+//     control: FormControl<number | null>
+//   ): void {
+//
+//     const input = event.target as HTMLInputElement;
+//
+//     const valorNumerico = Number(
+//       input.value
+//         .replace(/\./g, '')
+//         .replace(',', '.')
+//         .replace(/[^\d.-]/g, '')
+//     );
+//
+//     control.setValue(
+//       Number.isFinite(valorNumerico)
+//         ? valorNumerico
+//         : 0
+//     );
+//
+//     control.markAsDirty();
+//     control.markAsTouched();
+//
+//     input.value = this.formatarMoeda(control.value ?? 0);
+//   }
+//
+//   ): number {
+//
+//     const valorEstimadoCentavos =
+//       Math.round(this.valorEstimadoAcao * 100);
+//
+//     const valorDistribuidoCentavos =
+//       Math.round(this.totalValorDistribuido * 100);
+//
+//     return valorEstimadoCentavos === valorDistribuidoCentavos;
+//   }
+//
+//   public get percentualRateioValido(): boolean {
+//
+//     const percentual =
+//       Math.round(this.totalPercentualDistribuido * 100);
+//
+//     return percentual === 10000;
+//   }
+//
+//   public get rateioValido(): boolean {
+//     return (
+//
+//   public get diferencaValorRateio(): number {
+//     return this.arredondar2(
+//       this.totalValorDistribuido -
+//       this.valorEstimadoAcao
+//     );
+//   }
+//
+//   public get diferencaPercentualRateio(): number {
+//     return this.arredondar2(
+//       this.totalPercentualDistribuido - 100
+//     );
+//
+//   }
 
-    input.value = Number(valor ?? 0).toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  }
-
-  public atualizarQuantia(
-    event: FocusEvent,
-    control: FormControl<number | null>
-  ): void {
-
-    const input = event.target as HTMLInputElement;
-
-    const valorNumerico = Number(
-      input.value
-        .replace(/\./g, '')
-        .replace(',', '.')
-        .replace(/[^\d.-]/g, '')
-    );
-
-    control.setValue(
-      Number.isFinite(valorNumerico)
-        ? valorNumerico
-        : 0
-    );
-
-    control.markAsDirty();
-    control.markAsTouched();
-
-    input.value = this.formatarMoeda(control.value ?? 0);
-  }
-
-  ): number {
-
-    const valorEstimadoCentavos =
-      Math.round(this.valorEstimadoAcao * 100);
-
-    const valorDistribuidoCentavos =
-      Math.round(this.totalValorDistribuido * 100);
-
-    return valorEstimadoCentavos === valorDistribuidoCentavos;
-  }
-
-  public get percentualRateioValido(): boolean {
-
-    const percentual =
-      Math.round(this.totalPercentualDistribuido * 100);
-
-    return percentual === 10000;
-  }
-
-  public get rateioValido(): boolean {
-    return (
-
-  public get diferencaValorRateio(): number {
-    return this.arredondar2(
-      this.totalValorDistribuido -
-      this.valorEstimadoAcao
-    );
-  }
-
-  public get diferencaPercentualRateio(): number {
-    return this.arredondar2(
-      this.totalPercentualDistribuido - 100
-    );
-
+  private arredondar2(valor: number): number {
+    return Math.round((valor + Number.EPSILON) * 100) / 100;
   }
 
 }
