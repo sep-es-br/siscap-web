@@ -203,7 +203,6 @@ export class AcoesService {
         ? { ...acoesFormArrayErrors, ...limiteAcoesError }
         : acoesFormArrayErrors;
     this.acoesWarnings['limiteAcoes'] = !!limiteAcoesError;
-    // this.acoesFormArray.setErrors(resultErrors);
   }
 
   public construirAcoesRateioFormArray(

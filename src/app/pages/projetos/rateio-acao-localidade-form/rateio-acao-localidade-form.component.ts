@@ -691,7 +691,6 @@ export class RateioAcaoLocalidadeFormComponent
       checked
 
     );
-    console.info('[RATEIO][00] Selecionar todos', { checked, quantidade: this.rateioFormArray.length });
 
   }
 
@@ -765,33 +764,41 @@ export class RateioAcaoLocalidadeFormComponent
       return;
     }
 
-    const totalCentavos = Math.round(this.valorEstimadoAcao * 100);
-
-    const valorBaseCentavos = Math.floor(
-      totalCentavos / quantidade
+    // Valor monetário em centavos
+    let saldoCentavos = Math.round(
+      this.valorEstimadoAcao * 100
     );
 
-    const restoCentavos = totalCentavos % quantidade;
+    // Percentual em centésimos (100% = 10000)
+    let saldoPercentualCentavos = 10000;
 
     controles.forEach((control, index) => {
 
-      const ultimo = index === quantidade - 1;
+      const localidadesRestantes = quantidade - index;
 
-      const valorCentavos = ultimo
-        ? valorBaseCentavos + restoCentavos
-        : valorBaseCentavos;
+      // Rateio progressivo do valor monetário
+      const valorCentavos =
+        localidadesRestantes === 1
+          ? saldoCentavos
+          : Math.round(
+            saldoCentavos / localidadesRestantes
+          );
 
-      const quantia = valorCentavos / 100;
+      // Rateio progressivo do percentual
+      const percentualCentavos =
+        localidadesRestantes === 1
+          ? saldoPercentualCentavos
+          : Math.round(
+            saldoPercentualCentavos / localidadesRestantes
+          );
 
-      // Percentual calculado a partir do valor real
-      const percentual = this.arredondar2(
-        (valorCentavos / totalCentavos) * 100
-      );
+      saldoCentavos -= valorCentavos;
+      saldoPercentualCentavos -= percentualCentavos;
 
       control.patchValue(
         {
-          quantia,
-          percentual
+          quantia: valorCentavos / 100,
+          percentual: percentualCentavos / 100
         },
         {
           emitEvent: false
@@ -799,7 +806,7 @@ export class RateioAcaoLocalidadeFormComponent
       );
 
     });
-    
+
   }
 
   public zerarValores(): void {
@@ -2262,24 +2269,5 @@ export class RateioAcaoLocalidadeFormComponent
     );
 
   }
-
-  // private verificarRateioAposDistribuicao(origem: string): void {
-
-  //   const anterior = this.diagnosticoDistribuicao;
-  //   if (!anterior) return;
-
-  //   const atuais = this.rateioFormArray.getRawValue();
-  //   const perdidos = atuais.filter(item => {
-  //     const valorAnterior = anterior.valores.get(item.idLocalidade);
-  //     return valorAnterior &&
-  //       valorAnterior.percentual != null && valorAnterior.quantia != null &&
-  //       (item.percentual == null || item.quantia == null);
-  //   });
-  //   const substituidos = this.rateioFormArray.controls.filter(control =>
-  //     anterior.controles.has(control.controls.idLocalidade.value) &&
-  //     anterior.controles.get(control.controls.idLocalidade.value) !== control
-  //   ).length;
-
-  // }
 
 }
