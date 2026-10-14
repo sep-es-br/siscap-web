@@ -1091,6 +1091,8 @@ const ERRO_MENSAGEM_PROGRAMA_ORGAO_SEM_PAPEL: string = MENSAGENS.TODOS_OS_ORGAOS
  * Utilizado em src/app/core/templates/validation-message/validation-message.component.ts
  */
 export const COLECAO_ERRO_MENSAGEM: Record<string, string> = {
+  siglaProgramaEmUso: 'Já existe um programa cadastrado com essa sigla.',
+  siglaProgramaConsultaFalhou: 'Não foi possível validar a sigla. Tente novamente.',
   required: ERRO_MENSAGEM_REQUIRED,
   email: ERRO_MENSAGEM_EMAIL,
   maxlength: ERRO_MENSAGEM_MAXLENGTH,

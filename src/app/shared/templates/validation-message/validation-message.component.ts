@@ -10,6 +10,7 @@ import { COLECAO_ERRO_MENSAGEM } from '../../../core/utils/constants';
 })
 export class ValidationMessageComponent {
   @Input('control') public abstractControl!: AbstractControl<any, any>;
+  @Input() public errosOcultos: string[] = [];
 
   public isRequired: boolean = false;
 
@@ -26,6 +27,7 @@ export class ValidationMessageComponent {
       return '';
     }
     return Object.keys(errors)
+      .filter(errorKey => !this.errosOcultos.includes(errorKey))
       .map((errorKey) => this._errorMessageMap[errorKey])
       .join(' | ');
   }

@@ -11,6 +11,7 @@ import {
 } from '@angular/forms';
 
 import {
+  catchError,
   concat,
   finalize,
   forkJoin,
@@ -24,6 +25,7 @@ import {
   switchMap,
   takeUntil,
   tap,
+  timer,
 } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -99,6 +101,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _agentesCache$!: Observable<IOpcoesDropdownResponsavelProponente[]>;
 
   public loading: boolean = true;
+  public salvandoPrograma = false;
 
   public programaForm: FormGroup = new FormGroup({});
 
@@ -526,7 +529,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       sigla: this._nnfb.control(programaModel?.sigla ?? null, [
         Validators.required,
         Validators.maxLength(12),
-      ]),
+      ], programaModel ? [] : [this.siglaProgramaDisponivelValidator()]),
       titulo: this._nnfb.control(programaModel?.titulo ?? null, [
         Validators.required,
         Validators.maxLength(150),
@@ -675,6 +678,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   private submitProgramaForm(form: FormGroup): void {
+    if (this.salvandoPrograma) return;
+
     for (const key in form.controls) {
       form.controls[key].markAllAsTouched();
     }
@@ -683,6 +688,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       this._toastService.showToast('warning', MENSAGENS.O_FORMULARIO_CONTEM_ERROS, [
         MENSAGENS.POR_FAVOR_VERIFIQUE_OS_CAMPOS,
       ]);
+      return;
+    }
+
+    if (form.get('sigla')?.pending) {
+      this._toastService.showToast('info', 'Aguarde a validação da sigla do programa.');
       return;
     }
 
@@ -700,7 +710,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       ? this.atualizarPrograma(payload)
       : this.cadastrarPrograma(payload);
 
-    requisicao.subscribe();
+    this.salvandoPrograma = true;
+    requisicao.pipe(
+      finalize(() => this.salvandoPrograma = false),
+    ).subscribe();
   }
 
   private cadastrarPrograma(payload: ProgramaFormModel): Observable<IPrograma> {
@@ -968,6 +981,19 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   /* Async Validator */
+  private siglaProgramaDisponivelValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      const sigla = String(control.value ?? '').trim();
+      if (!sigla) return of(null);
+
+      return timer(300).pipe(
+        switchMap(() => this._programasService.verificarSigla(sigla)),
+        map(emUso => emUso ? { siglaProgramaEmUso: true } : null),
+        catchError(() => of({ siglaProgramaConsultaFalhou: true })),
+      );
+    };
+  }
+
   todosOrgaosPossuemTipoValidator(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
       return of(control.value as Array<number>)
