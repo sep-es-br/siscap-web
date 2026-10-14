@@ -73,8 +73,8 @@
             </div>
         </div> -->
 
-            <!-- COMPLEMENTO DO STATUS -->
-            <!-- <div *ngIf="rateioFormArray.length > 0 && !rateioValido" class="d-flex justify-content-end flex-wrap gap-1 mb-2">
+        <!-- COMPLEMENTO DO STATUS -->
+        <!-- <div *ngIf="rateioFormArray.length > 0 && !rateioValido" class="d-flex justify-content-end flex-wrap gap-1 mb-2">
             <small class="text-danger">
                 <ng-container *ngIf="!percentualRateioValido && diferencaPercentualRateio < 0 ">
                     Faltam
@@ -377,108 +377,112 @@
 
             <!-- <div class="border rounded"> -->
 
-                <!-- CABEÇALHO - SOMENTE DESKTOP -->
-                <div class="d-none d-md-block bg-light border-bottom">
-                    <div class="row align-items-center g-2 px-3 py-2 fw-semibold small text-center">
 
-                        <div class="col-md-4 text-start">
+            <!-- CABEÇALHO - SOMENTE DESKTOP -->
+            <div class="d-none d-md-block bg-light border-bottom">
+
+                <div class="row align-items-center g-3 px-3 py-2 fw-semibold small">
+
+                    <div class="col-md-4 text-start">
+                        Localidade
+                    </div>
+
+                    <div class="col-md-2 text-center">
+                        Tipo
+                    </div>
+
+                    <div class="col-md-2 text-center">
+                        Rateio
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        Valor
+                    </div>
+
+                    <div *ngIf="isModoEdicao" class="col-md-1 text-center">
+                        Ações
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ITENS -->
+            <div *ngFor="let item of itensRateio; trackBy: trackByRateio; let ultimo = last" class="px-3 py-3"
+                [class.border-bottom]="!ultimo">
+
+                <div class="row align-items-center g-3">
+
+                    <!-- LOCALIDADE -->
+                    <div class="col-12 col-md-4">
+
+                        <div class="d-md-none text-muted small mb-1">
                             Localidade
                         </div>
 
-                        <div class="col-md-2 text-center">
+                        <strong>
+                            {{ item.localidade.nome }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- TIPO -->
+                    <div class="col-12 col-sm-6 col-md-2 text-md-center">
+
+                        <div class="d-md-none text-muted small mb-1">
                             Tipo
                         </div>
 
-                        <div class="col-md-2">
-                            Rateio
+                        <span class="badge badge-tipo-localidade bg-light text-dark border">
+                            {{ tipoLocalidadeLabel(item.localidade.tipo) }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- PERCENTUAL -->
+                    <div class="col-12 col-sm-6 col-md-2">
+
+                        <div class="d-md-none text-muted small mb-1">
+                            % do rateio
                         </div>
 
-                        <div class="col-md-3 text-end">
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control text-end" min="0" max="100" step="0.01"
+                                [formControl]="item.control.controls.percentual" [readonly]="!isModoEdicao"
+                                (input)="percentualAlterado(item.control)">
+                            <span class="input-group-text">
+                                %
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <!-- VALOR -->
+                    <div class="col-12 col-sm-10 col-md-3">
+                        <div class="d-md-none text-muted small mb-1">
                             Valor
                         </div>
-
-                        <div *ngIf="isModoEdicao" class="col-md-1 text-center">
-                            Ações
-                        </div>
-
-                    </div>
-                </div>
-
-
-                <!-- ITENS -->
-                <div *ngFor="let item of itensRateio; trackBy: trackByRateio; let ultimo = last" class="px-3 py-3" [class.border-bottom]="!ultimo">
-
-                    <div class="row align-items-center g-3">
-
-                        <!-- LOCALIDADE -->
-                        <div class="col-12 col-md-4">
-
-                            <div class="d-md-none text-muted small mb-1">
-                                Localidade
-                            </div>
-
-                            <strong>
-                                {{ item.localidade.nome }}
-                            </strong>
-
-                        </div>
-
-                        <!-- TIPO -->
-                        <div class="col-12 col-sm-6 col-md-2">
-
-                            <div class="d-md-none text-muted small mb-1">
-                                Tipo
-                            </div>
-
-                            <span class="badge badge-tipo-localidade bg-light text-dark border">
-                                {{ tipoLocalidadeLabel( item.localidade.tipo)}}
-                            </span>
-
-                        </div>
-
-                        <!-- PERCENTUAL -->
-                        <div class="col-12 col-sm-6 col-md-2">
-
-                            <div class="d-md-none text-muted small mb-1">
-                                % do rateio
-                            </div>
-
-                            <div class="input-group input-group-sm">
-                                <input type="number" class="form-control text-end" min="0" max="100" step="0.01"
-                                    [formControl]="item.control.controls.percentual" 
-                                    [readonly]="!isModoEdicao" (input)="percentualAlterado(item.control)">
-                                <span class="input-group-text">
-                                    %
-                                </span>
-                            </div>
-
-                        </div>
-
-                        <!-- VALOR -->
-                        <div class="col-12 col-sm-10 col-md-3">
-                            <div class="d-md-none text-muted small mb-1">
-                                Valor
-                            </div>
-                            <input type="text" class="form-control form-control-sm text-end" 
-                                [value]="formatarMoeda(item.control.controls.quantia.value ?? 0)
+                        <input type="text" class="form-control form-control-sm text-end" [value]="formatarMoeda(item.control.controls.quantia.value ?? 0)
                                 " [readonly]="!isModoEdicao" (focus)=" focarQuantia( $event, item.control.controls.quantia.value )
                                 " (blur)="atualizarQuantia($event,item.control.controls.quantia)">
-                        </div>
+                    </div>
 
-                        <!-- AÇÕES -->
-                        <div *ngIf="isModoEdicao" class="col-12 col-sm-2 col-md-1 text-end text-md-center">
-                            <button type="button" class="btn btn-link btn-sm text-danger p-1" title="Remover localidade"
-                                (click)="removerLocalidadeSelecionada(item.localidade.id)">
-                                <i class="fas fa-trash-alt"></i>
-                                <span class="d-md-none ms-1">
-                                    Remover
-                                </span>
-                            </button>
-                        </div>
-
+                    <!-- AÇÕES -->
+                    <div *ngIf="isModoEdicao" class="col-12 col-sm-2 col-md-1 text-end text-md-center">
+                        <button type="button" class="btn btn-link btn-sm text-danger p-1" title="Remover localidade"
+                            (click)="removerLocalidadeSelecionada(item.localidade.id)">
+                            <i class="fas fa-trash-alt"></i>
+                            <span class="d-md-none ms-1">
+                                Remover
+                            </span>
+                        </button>
                     </div>
 
                 </div>
+
+            </div>
 
             <!-- </div> -->
 

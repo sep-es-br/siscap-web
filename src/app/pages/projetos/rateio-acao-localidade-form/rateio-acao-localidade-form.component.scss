@@ -187,13 +187,36 @@
   background-color: rgba(0, 0, 0, 0.02);
 }
 
+// .badge-tipo-localidade {
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   width: 112px;
+//   min-height: 24px;
+//   text-align: center;
+// }
+
+.tipo-localidade-largura {
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 112px;
+  max-width: 100%;
+  box-sizing: border-box;
+
+}
+
 .badge-tipo-localidade {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   width: 112px;
+  max-width: 100%;
   min-height: 24px;
 
+  box-sizing: border-box;
   text-align: center;
 }
