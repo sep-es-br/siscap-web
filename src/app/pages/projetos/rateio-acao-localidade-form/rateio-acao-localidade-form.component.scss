@@ -186,3 +186,14 @@
 .rateio-item:hover {
   background-color: rgba(0, 0, 0, 0.02);
 }
+
+.badge-tipo-localidade {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 112px;
+  min-height: 24px;
+
+  text-align: center;
+}
