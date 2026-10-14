@@ -54,7 +54,8 @@
     color: var(--navy-dark);
     text-transform: uppercase;
     letter-spacing: .5px;
-    margin-bottom: 16px;
+    // margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .indicator-form-modal .modal-header .card-title {
@@ -73,7 +74,8 @@
 }
 
 .form-row {
-    margin-bottom: 16px;
+    // margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .form-row label {
@@ -160,7 +162,7 @@
     padding: 20px 0;
     color: #98a2b3;
     font-size: 13px;
-  
+
     i {
       font-size: 18px;
       margin-bottom: 6px;

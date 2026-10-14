@@ -27,14 +27,16 @@
   color: var(--navy-dark);
   text-transform: uppercase;
   letter-spacing: .5px;
-  margin-bottom: 16px;
+  // margin-bottom: 16px;
+
 }
 
 .ods-section-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
+  // margin-bottom: 16px;
+  margin-bottom: 10px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--gray-border);
 }
@@ -245,7 +247,8 @@
   font-size: 12px;
   color: var(--gray-text);
   line-height: 1.5;
-  margin-bottom: 16px;
+  // margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .ods-sel-indicators {
@@ -283,7 +286,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  // margin-bottom: 16px;
+  margin-bottom: 10px;
   padding: 12px 16px;
   background: var(--white);
   border: 1px solid var(--gray-border);
