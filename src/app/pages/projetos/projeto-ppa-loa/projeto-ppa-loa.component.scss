@@ -22,8 +22,28 @@
   width: 100%;
 }
 
+.planejamento-filtros {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  // margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+.planejamento-filtros siscap-filter-card {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.planejamento-filtros .nao-previsto-ppa {
+  align-self: flex-start;
+  margin: 0;
+  max-width: 100%;
+}
+
 .planejamento-card {
-  margin-top: 20px;
+  // margin-top: 20px;
   padding: 20px;
 
   background: var(--planejamento-white);
@@ -44,7 +64,8 @@
 .planejamento-card-title {
   margin: 0;
 
-  color: var(--planejamento-blue-dark);
+  // color: var(--planejamento-blue-dark);
+  color: #0a1a30;
 
   font-size: 14px;
   font-weight: 800;
@@ -612,7 +633,8 @@
   border-radius: 12px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
+  margin-bottom: 10px;
   border: 1px solid #eef2f7;
 }
 
@@ -697,11 +719,15 @@
 }
 
 .card-selecionados {
-  padding: 24px;
+  padding: 20px;
   border: 1px dashed #d0d9e6;
   border-radius: 12px;
   background: #f9fbff;
   text-align: left;
+}
+
+.card-selecionados.card-selecionados--vazio {
+  text-align: center;
 }
 
 .spinner-carregando-acoes {
