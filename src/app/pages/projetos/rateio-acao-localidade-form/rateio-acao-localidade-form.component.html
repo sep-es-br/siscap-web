@@ -342,44 +342,36 @@
         </div>
 
         <!-- Distribuição -->
-        <div class="d-flex flex-wrap
-               justify-content-between
-               align-items-center gap-2 mb-2">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
 
             <strong>
                 Distribuição por localidade
             </strong>
 
             <div class="d-flex flex-wrap gap-2">
-
                 <button type="button" class="btn btn-outline-primary btn-sm" [disabled]="!podeDistribuirIgualmente"
                     (click)="distribuirIgualmente()">
                     <i class="fas fa-balance-scale me-1"></i>
                     Distribuir igualmente
                 </button>
-
-                <button type="button" class="btn btn-outline-secondary btn-sm" [disabled]="
-              !isModoEdicao ||
-              rateioFormArray.length === 0
-            " (click)="zerarValores()">
+                <button type="button" class="btn btn-outline-secondary btn-sm"
+                    [disabled]="!isModoEdicao || rateioFormArray.length === 0" (click)="zerarValores()">
                     <i class="fas fa-undo me-1"></i>
                     Zerar valores
                 </button>
             </div>
+
         </div>
 
         <div *ngIf="rateioFormArray.length === 0" class="border rounded p-3 text-center text-muted">
-            Selecione uma ou mais localidades para montar
-            a lista de distribuição.
+            Selecione uma ou mais localidades para montar a lista de distribuição.
         </div>
 
         <div *ngIf="rateioFormArray.length > 0" class="border rounded">
 
-
-            <!-- CABEÇALHO - SOMENTE DESKTOP -->
             <div class="d-none d-md-block bg-light border-bottom">
 
-                <div class="row align-items-center g-3 px-3 py-2 fw-semibold small">
+                <div class="row align-items-center px-3 py-2 fw-semibold small">
 
                     <div class="col-md-4 text-start">
                         Localidade
@@ -405,47 +397,33 @@
 
             </div>
 
-            <!-- ITENS -->
             <div *ngFor="let item of itensRateio; trackBy: trackByRateio; let ultimo = last" class="px-3 py-3"
                 [class.border-bottom]="!ultimo">
 
                 <div class="row align-items-center g-3">
 
-                    <!-- LOCALIDADE -->
                     <div class="col-12 col-md-4">
-
                         <div class="d-md-none text-muted small mb-1">
                             Localidade
                         </div>
-
                         <strong>
                             {{ item.localidade.nome }}
                         </strong>
-
                     </div>
 
-
-                    <!-- TIPO -->
                     <div class="col-12 col-sm-6 col-md-2 text-md-center">
-
                         <div class="d-md-none text-muted small mb-1">
                             Tipo
                         </div>
-
                         <span class="badge badge-tipo-localidade bg-light text-dark border">
                             {{ tipoLocalidadeLabel(item.localidade.tipo) }}
                         </span>
-
                     </div>
 
-
-                    <!-- PERCENTUAL -->
                     <div class="col-12 col-sm-6 col-md-2">
-
                         <div class="d-md-none text-muted small mb-1">
                             % do rateio
                         </div>
-
                         <div class="input-group input-group-sm">
                             <input type="number" class="form-control text-end" min="0" max="100" step="0.01"
                                 [formControl]="item.control.controls.percentual" [readonly]="!isModoEdicao"
@@ -454,20 +432,20 @@
                                 %
                             </span>
                         </div>
-
                     </div>
 
-                    <!-- VALOR -->
                     <div class="col-12 col-sm-10 col-md-3">
                         <div class="d-md-none text-muted small mb-1">
                             Valor
                         </div>
-                        <input type="text" class="form-control form-control-sm text-end" [value]="formatarMoeda(item.control.controls.quantia.value ?? 0)
-                                " [readonly]="!isModoEdicao" (focus)=" focarQuantia( $event, item.control.controls.quantia.value )
-                                " (blur)="atualizarQuantia($event,item.control)">
+                        <input type="text" class="form-control form-control-sm text-end" 
+                        [value]="formatarMoeda(item.control.controls.quantia.value ?? 0)" 
+                        [readonly]="!isModoEdicao"
+                        [class.bg-body-secondary]="!isModoEdicao"
+                        (focus)=" focarQuantia( $event, item.control.controls.quantia.value )" 
+                        (blur)="atualizarQuantia($event,item.control)">
                     </div>
 
-                    <!-- AÇÕES -->
                     <div *ngIf="isModoEdicao" class="col-12 col-sm-2 col-md-1 text-end text-md-center">
                         <button type="button" class="btn btn-link btn-sm text-danger p-1" title="Remover localidade"
                             (click)="removerLocalidadeSelecionada(item.localidade.id)">
@@ -487,9 +465,7 @@
         <!-- RESUMO DA DISTRIBUIÇÃO -->
         <div class="rateio-summary mt-3 pt-3 px-3 border-top">
             <div class="row g-3 align-items-center">
-                <!-- ESPAÇO: LOCALIDADE + TIPO -->
                 <div class="d-none d-md-block col-md-6"></div>
-                <!-- PERCENTUAL DISTRIBUÍDO -->
                 <div class="col-6 col-md-2 text-md-center">
                     <div class="small text-muted">
                         Percentual distribuído
@@ -498,7 +474,6 @@
                         {{ formatarPercentual(totalPercentualDistribuido) }}
                     </strong>
                 </div>
-                <!-- VALOR DISTRIBUÍDO -->
                 <div class="col-6 col-md-3 text-md-end text-md-center">
                     <div class="small text-muted">
                         Valor distribuído
@@ -507,11 +482,9 @@
                         {{ formatarMoeda(totalValorDistribuido) }}
                     </strong>
                 </div>
-                <!-- ESPAÇO: AÇÕES -->
                 <div class="d-none d-md-block col-md-1"></div>
             </div>
         </div>
-
 
     </div>
 

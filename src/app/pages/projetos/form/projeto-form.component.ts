@@ -40,6 +40,7 @@ import {
   throwError,
   concatMap,
   defer,
+  last,
 } from 'rxjs';
 import {
   NgbActiveModal,
@@ -713,7 +714,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               );
             });
           }
-
+          
           this.projetoForm.setControl(
             'pareceresProjeto',
             this._nnfb.array(projetoModel.pareceresProjeto || []),
@@ -1365,6 +1366,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       forkJoin(mapSubObs).pipe(tap((retorno) => (this.mapSubUser = retorno))),
       this.carregarPessoasPorOrganizacao(),
     ).pipe(
+      last(),
       tap(() => {
         this.projetoFormValueChanges();
 
