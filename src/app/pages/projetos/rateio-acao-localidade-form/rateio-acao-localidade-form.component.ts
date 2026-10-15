@@ -1,35 +1,21 @@
 import {
-
   Component,
-
   ElementRef,
-
   HostListener,
-
   Input,
-
   OnChanges,
-
   OnDestroy,
-
   SimpleChanges,
-
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 
 import {
-
   FormArray,
-
   FormControl,
-
   FormGroup,
-
   FormsModule,
-
   ReactiveFormsModule,
-
 } from '@angular/forms';
 
 import { startWith, Subscription } from 'rxjs';
@@ -43,53 +29,34 @@ import { AcaoFormType } from '../../../core/types/form/acao-form.type';
 import { ILocalidadeOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
 
 type TipoLocalidadeView =
-
   | 'Estado'
-
   | 'Microrregiao'
-
   | 'Municipio';
 
 interface LocalidadeView {
-
   id: number;
-
   nome: string;
-
   tipo: TipoLocalidadeView;
-
   idLocalidadePai: number | null;
-
 }
 
 interface RateioItemView {
-
   localidade: LocalidadeView;
-
   control: FormGroup<RateioLocalidadeFormType>;
-
 }
 
 @Component({
 
   selector: 'app-rateio-acao-localidade-form',
-
   standalone: true,
-
   imports: [
-
     CommonModule,
-
     FormsModule,
-
     ReactiveFormsModule,
-
   ],
 
   templateUrl: './rateio-acao-localidade-form.component.html',
-
   styleUrl: './rateio-acao-localidade-form.component.scss',
-
   providers: [RateioService],
 
 })
@@ -99,14 +66,8 @@ export class RateioAcaoLocalidadeFormComponent
   implements OnChanges, OnDestroy {
 
   @Input() isModoEdicao = false;
-
-  @Input({ required: true })
-
-  formAcao!: FormGroup<AcaoFormType>;
-
-  @Input()
-
-  localidadesOpcoes: Array<ILocalidadeOpcoesDropdown> = [];
+  @Input({ required: true }) formAcao!: FormGroup<AcaoFormType>;
+  @Input() localidadesOpcoes: Array<ILocalidadeOpcoesDropdown> = [];
 
   // Diagnóstico temporário: mantém a referência e os valores no instante da distribuição.
   private diagnosticoDistribuicao?: {
@@ -116,113 +77,61 @@ export class RateioAcaoLocalidadeFormComponent
   };
 
   // ============================================================
-
   // ESTADO DA TELA
-
   // ============================================================
-
   public dropdownAberto = false;
-
   private _termoBusca = '';
 
   public get termoBusca(): string {
-
     return this._termoBusca;
-
   }
 
   public set termoBusca(valor: string) {
-
     this._termoBusca = valor ?? '';
-
     this.atualizarFiltroLocalidades();
-
   }
 
   // ============================================================
-
   // CACHE DE LOCALIDADES
-
   // ============================================================
-
   public todoEstado: LocalidadeView = {
-
     id: 1,
-
     nome: 'Todo Estado',
-
     tipo: 'Estado',
-
     idLocalidadePai: null,
-
   };
 
   public microrregioes: Array<LocalidadeView> = [];
-
   public municipios: Array<LocalidadeView> = [];
-
   public microrregioesVisiveis: Array<LocalidadeView> = [];
-
-  public localidadesSelecionadasOrdenadas:
-
-    Array<LocalidadeView> = [];
+  public localidadesSelecionadasOrdenadas: Array<LocalidadeView> = [];
 
   public itensRateio: Array<RateioItemView> = [];
-
   public exibirTodoEstadoNaBusca = true;
+  private todasLocalidadesView: Array<LocalidadeView> = [];
 
-  private todasLocalidadesView:
+  private idsTodasLocalidades: Array<number> = [];
+  private localidadesPorId = new Map<number, LocalidadeView>();
+  private municipiosPorMicrorregiaoMap = new Map<number, Array<LocalidadeView>>();
 
-    Array<LocalidadeView> = [];
-
-  private idsTodasLocalidades:
-
-    Array<number> = [];
-
-  private localidadesPorId =
-
-    new Map<number, LocalidadeView>();
-
-  private municipiosPorMicrorregiaoMap =
-
-    new Map<number, Array<LocalidadeView>>();
-
-  private municipiosVisiveisPorMicrorregiaoMap =
-
-    new Map<number, Array<LocalidadeView>>();
+  private municipiosVisiveisPorMicrorregiaoMap = new Map<number, Array<LocalidadeView>>();
 
   // ============================================================
-
   // SELEÇÃO
-
   // ============================================================
-
-  private readonly microrregioesExpandidas =
-
-    new Set<number>();
-
-  private readonly localidadesSelecionadasIds =
-
-    new Set<number>();
-
+  private readonly microrregioesExpandidas = new Set<number>();
+  private readonly localidadesSelecionadasIds = new Set<number>();
   private assinaturaRateios = '';
 
   // ============================================================
-
   // RESUMO DO RATEIO
-
   // ============================================================
-
   public totalPercentualDistribuido = 0;
-
   public totalValorDistribuido = 0;
 
   // ============================================================
-
   // FORMATADORES
-
   // ============================================================
-
   private readonly formatadorMoeda =
 
     new Intl.NumberFormat('pt-BR', {
@@ -246,9 +155,7 @@ export class RateioAcaoLocalidadeFormComponent
     });
 
   // ============================================================
-
   // SUBSCRIPTIONS
-
   // ============================================================
 
   private formSubscription =
@@ -293,45 +200,27 @@ export class RateioAcaoLocalidadeFormComponent
   }
 
   // ============================================================
-
   // FORM
-
   // ============================================================
-
   public get rateioFormArray():
-
     FormArray<FormGroup<RateioLocalidadeFormType>> {
-
     return this.formAcao.controls.rateio;
-
   }
 
   public get valorEstimadoAcao(): number {
-
     return Number(
-
       this.formAcao
-
         ?.controls
-
         ?.valorEstimadoAcaoPrincipal
-
         ?.value ?? 0
-
     );
-
   }
 
   // ============================================================
-
   // INFORMAÇÕES DA SELEÇÃO
-
   // ============================================================
-
   public get quantidadeSelecionada(): number {
-
     return this.localidadesSelecionadasIds.size;
-
   }
 
   public get textoTrigger(): string {
@@ -751,49 +640,65 @@ export class RateioAcaoLocalidadeFormComponent
   // ============================================================
   // DISTRIBUIÇÃO
   // ============================================================
+
   public distribuirIgualmente(): void {
 
     if (!this.podeDistribuirIgualmente) {
       return;
     }
 
-    const controles = this.rateioFormArray.controls;
+    // const controles = this.rateioFormArray.controls;
+
+    const controles = [...this.rateioFormArray.controls]
+      .sort((a, b) =>
+        (a.value.nome ?? '').localeCompare(
+          b.value.nome ?? '',
+          'pt-BR'
+        )
+      );
+
     const quantidade = controles.length;
 
     if (quantidade === 0) {
       return;
     }
 
-    // Valor monetário em centavos
-    let saldoCentavos = Math.round(
+    // Total monetário em centavos
+    const totalCentavos = Math.round(
       this.valorEstimadoAcao * 100
     );
 
-    // Percentual em centésimos (100% = 10000)
-    let saldoPercentualCentavos = 10000;
+    // Total percentual em centésimos (100,00%)
+    const totalPercentualCentavos = 10000;
+
+    // Parcela fixa truncada para duas casas decimais
+    const parcelaCentavos = Math.floor(
+      totalCentavos / quantidade
+    );
+
+    const parcelaPercentualCentavos = Math.floor(
+      totalPercentualCentavos / quantidade
+    );
+
+    // Diferença atribuída à última localidade
+    const diferencaCentavos =
+      totalCentavos - (parcelaCentavos * (quantidade - 1));
+
+    const diferencaPercentualCentavos =
+      totalPercentualCentavos -
+      (parcelaPercentualCentavos * (quantidade - 1));
 
     controles.forEach((control, index) => {
 
-      const localidadesRestantes = quantidade - index;
+      const ultimaLocalidade = index === quantidade - 1;
 
-      // Rateio progressivo do valor monetário
-      const valorCentavos =
-        localidadesRestantes === 1
-          ? saldoCentavos
-          : Math.round(
-            saldoCentavos / localidadesRestantes
-          );
+      const valorCentavos = ultimaLocalidade
+        ? diferencaCentavos
+        : parcelaCentavos;
 
-      // Rateio progressivo do percentual
-      const percentualCentavos =
-        localidadesRestantes === 1
-          ? saldoPercentualCentavos
-          : Math.round(
-            saldoPercentualCentavos / localidadesRestantes
-          );
-
-      saldoCentavos -= valorCentavos;
-      saldoPercentualCentavos -= percentualCentavos;
+      const percentualCentavos = ultimaLocalidade
+        ? diferencaPercentualCentavos
+        : parcelaPercentualCentavos;
 
       control.patchValue(
         {
@@ -807,7 +712,16 @@ export class RateioAcaoLocalidadeFormComponent
 
     });
 
+    // Atualiza validações e observadores
+    this.rateioFormArray.updateValueAndValidity({
+      emitEvent: true
+    });
+
+    // Atualiza os totais do resumo
+    this.atualizarResumoRateio();
+
   }
+
 
   public zerarValores(): void {
 
@@ -1110,52 +1024,32 @@ export class RateioAcaoLocalidadeFormComponent
   }
 
   public atualizarQuantia(
-
     event: FocusEvent,
-
-    control: FormControl<number | null>
-
+    control: FormGroup<RateioLocalidadeFormType>
   ): void {
 
-    const input =
+    const input = event.target as HTMLInputElement;
 
-      event.target as HTMLInputElement;
-
-    const valorNumerico =
-
-      Number(
-
-        input.value
-
-          .replace(/\./g, '')
-
-          .replace(',', '.')
-
-          .replace(/[^\d.-]/g, '')
-
-      );
-
-    control.setValue(
-
-      Number.isFinite(valorNumerico)
-
-        ? valorNumerico
-
-        : 0
-
+    const valorNumerico = Number(
+      input.value
+        .replace(/\./g, '')
+        .replace(',', '.')
+        .replace(/[^\d.-]/g, '')
     );
 
-    control.markAsDirty();
+    control.controls.quantia.setValue(
+      Number.isFinite(valorNumerico) ? valorNumerico : 0
+    );
 
-    control.markAsTouched();
+    control.controls.quantia.markAsDirty();
+    control.controls.quantia.markAsTouched();
 
-    input.value =
+    // Recalcula automaticamente o percentual
+    this.quantiaAlterada(control);
 
-      this.formatarMoeda(
-
-        control.value ?? 0
-
-      );
+    input.value = this.formatarMoeda(
+      control.controls.quantia.value ?? 0
+    );
 
   }
 
@@ -1429,82 +1323,24 @@ export class RateioAcaoLocalidadeFormComponent
     this.microrregioes =
 
       this.localidadesOpcoes
-
         .filter(
-
           localidade =>
-
             localidade.tipo ===
-
             'Microrregiao'
-
         )
-
         .map(
-
-          localidade =>
-
-            this.mapearLocalidade(
-
-              localidade
-
-            )
-
+          localidade => this.mapearLocalidade(localidade)
         )
-
         .sort(
-
-          (a, b) =>
-
-            this.ordenarLocalidadesPorNome(
-
-              a,
-
-              b
-
-            )
-
+          (a, b) => this.ordenarLocalidadesPorNome(a, b)
         );
 
     this.municipios =
 
       this.localidadesOpcoes
-
-        .filter(
-
-          localidade =>
-
-            localidade.tipo ===
-
-            'Municipio'
-
-        )
-
-        .map(
-
-          localidade =>
-
-            this.mapearLocalidade(
-
-              localidade
-
-            )
-
-        )
-
-        .sort(
-
-          (a, b) =>
-
-            this.ordenarLocalidadesPorNome(
-
-              a,
-
-              b
-
-            )
-
-        );
+        .filter(localidade => localidade.tipo === 'Municipio')
+        .map(localidade => this.mapearLocalidade(localidade))
+        .sort((a, b) => this.ordenarLocalidadesPorNome(a, b));
 
     this.todasLocalidadesView = [
 

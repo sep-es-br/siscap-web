@@ -375,8 +375,6 @@
 
         <div *ngIf="rateioFormArray.length > 0" class="border rounded">
 
-            <!-- <div class="border rounded"> -->
-
 
             <!-- CABEÇALHO - SOMENTE DESKTOP -->
             <div class="d-none d-md-block bg-light border-bottom">
@@ -466,7 +464,7 @@
                         </div>
                         <input type="text" class="form-control form-control-sm text-end" [value]="formatarMoeda(item.control.controls.quantia.value ?? 0)
                                 " [readonly]="!isModoEdicao" (focus)=" focarQuantia( $event, item.control.controls.quantia.value )
-                                " (blur)="atualizarQuantia($event,item.control.controls.quantia)">
+                                " (blur)="atualizarQuantia($event,item.control)">
                     </div>
 
                     <!-- AÇÕES -->
@@ -486,23 +484,13 @@
 
         </div>
 
-        <!-- Resumo -->
-        <div class="rateio-summary mt-3 pt-3 border-top">
+        <!-- RESUMO DA DISTRIBUIÇÃO -->
+        <div class="rateio-summary mt-3 pt-3 px-3 border-top">
             <div class="row g-3 align-items-center">
-                <div class="col-12 col-md-4">
-                    <div class="small text-muted">
-                        Total distribuído
-                    </div>
-                    <strong>
-                        {{ quantidadeSelecionada }}
-                        {{
-                        quantidadeSelecionada === 1
-                        ? 'localidade'
-                        : 'localidades'
-                        }}
-                    </strong>
-                </div>
-                <div class="col-6 col-md-4">
+                <!-- ESPAÇO: LOCALIDADE + TIPO -->
+                <div class="d-none d-md-block col-md-6"></div>
+                <!-- PERCENTUAL DISTRIBUÍDO -->
+                <div class="col-6 col-md-2 text-md-center">
                     <div class="small text-muted">
                         Percentual distribuído
                     </div>
@@ -510,7 +498,8 @@
                         {{ formatarPercentual(totalPercentualDistribuido) }}
                     </strong>
                 </div>
-                <div class="col-6 col-md-4">
+                <!-- VALOR DISTRIBUÍDO -->
+                <div class="col-6 col-md-3 text-md-end text-md-center">
                     <div class="small text-muted">
                         Valor distribuído
                     </div>
@@ -518,9 +507,12 @@
                         {{ formatarMoeda(totalValorDistribuido) }}
                     </strong>
                 </div>
+                <!-- ESPAÇO: AÇÕES -->
+                <div class="d-none d-md-block col-md-1"></div>
             </div>
         </div>
 
-    </div>
 
     </div>
+
+</div>
