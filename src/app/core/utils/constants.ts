@@ -556,6 +556,7 @@ const MENSAGENS_PT_BR = {
   PARTES_INTERESSADAS: "Partes Interessadas",
   PECAS_DE_PLANEJAMENTO: "Peças de Planejamento",
   PECAS_DO_PLANEJAMENTO: "Peças do Planejamento",
+  PLANO_SETORIAL: "Plano Setorial",
   PEDIR_PARECER: "Pedir Parecer",
   PENDENCIAS: "Pendências",
   PENDENCIAS_DO_PROJETO: "Pendências do projeto",
