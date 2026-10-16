@@ -438,11 +438,11 @@
                         <div class="d-md-none text-muted small mb-1">
                             Valor
                         </div>
-                        <input type="text" class="form-control form-control-sm text-end" 
-                        [value]="formatarMoeda(item.control.controls.quantia.value ?? 0)" 
+                        <input type="text" class="form-control form-control-sm text-end"
+                        [value]="formatarMoeda(item.control.controls.quantia.value ?? 0)"
                         [readonly]="!isModoEdicao"
                         [class.bg-body-secondary]="!isModoEdicao"
-                        (focus)=" focarQuantia( $event, item.control.controls.quantia.value )" 
+                        (focus)=" focarQuantia( $event, item.control.controls.quantia.value )"
                         (blur)="atualizarQuantia($event,item.control)">
                     </div>
 
