@@ -1,3 +1,9 @@
+@if (salvandoPrograma) {
+  <div class="programa-loading" role="status" aria-live="polite" aria-label="Salvando programa">
+    <loading-spinner textoProcessando="Salvando programa..."></loading-spinner>
+  </div>
+}
+
 @if (loading) {
   <div class="h-100">
     <loading-spinner></loading-spinner>
@@ -74,8 +80,10 @@
           <div class="row gy-2">
             <div class="col-12 col-md-4">
               <label for="sigla" class="col-12 form-label">
-                <validation-message [control]="getControl('sigla')">
+                <validation-message [control]="getControl('sigla')" [errosOcultos]="['siglaProgramaEmUso']">
                   {{ MENSAGENS.SIGLA_DO_PROGRAMA }}
+                  <form-warning-tooltip *ngIf="getControl('sigla').hasError('siglaProgramaEmUso')"
+                    [texto]="'A sigla informada já está em uso por outro programa.'"></form-warning-tooltip>
                 </validation-message>
               </label>
               <input
@@ -90,6 +98,15 @@
                 [inputTransformFn]="toUppercaseInputTransformFn"
                 [outputTransformFn]="toUppercaseOutputTransformFn"
               />
+              <small class="text-warning d-block mt-1" role="status"
+                *ngIf="getControl('sigla').hasError('siglaProgramaEmUso')">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                A sigla informada já está em uso por outro programa.
+              </small>
+              <small class="error-message" role="status"
+                *ngIf="getControl('sigla').dirty && !getControl('sigla').touched && getControl('sigla').hasError('siglaProgramaConsultaFalhou')">
+                Não foi possível validar a sigla. Tente novamente.
+              </small>
             </div>
             <div class="col-12 col-md-8">
               <label for="titulo" class="col-12 form-label">

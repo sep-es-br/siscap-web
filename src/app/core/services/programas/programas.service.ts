@@ -45,6 +45,12 @@ export
     return this._idPrograma$;
   }
 
+  public verificarSigla(sigla: string): Observable<boolean> {
+    return this._http.get<boolean>(`${this._url}/verificar-sigla`, {
+      params: { sigla: sigla.trim() },
+    });
+  }
+
   constructor(
     private readonly _http: HttpClient,
     private readonly _pollingService: PollingService,
