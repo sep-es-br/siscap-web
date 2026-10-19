@@ -15,6 +15,9 @@ import { IHttpBackEndErrorResponse } from '../../interfaces/http-backend-error-r
   providedIn: 'root',
 })
 export class ErrorHandlerService {
+
+  private redirecionandoParaLogin = false;
+
   constructor(private _toastService: ToastService, private _router: Router) { }
 
   /**
@@ -53,11 +56,70 @@ export class ErrorHandlerService {
     );
   }
 
+  // private handleRouting(error: HttpErrorResponse): void {
+  //   const isErroTokenEdocs = error.status === 401 && error.error?.titulo === 'EDOCS_TOKEN_EXPIRADO';
+  //   if (isErroTokenEdocs) {
+  //     this._toastService.showToast(
+  //       'error',
+  //       error.error?.erros?.[0] ??
+  //       MENSAGENS.SUA_PERMISSAO_DE_ACESSO_AO_E_DOCS_EXPIROU_VOCE_SERA_REDIRECIONADO_PARA_O_LOGIN
+  //     );
+  //     setTimeout(() => {
+  //       this._router.navigateByUrl('login');
+  //     }, 2000);
+  //     return;
+  //   }
+  //   switch (error.status) {
+  //     case 401:
+  //       this._router.navigateByUrl('login');
+  //       break;
+  //     case 403:
+  //       this._router.navigateByUrl('main');
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
+
+
   private handleRouting(error: HttpErrorResponse): void {
 
-    const isErroTokenEdocs = error.status === 401 && error.error?.titulo === 'EDOCS_TOKEN_EXPIRADO';
+    if (error.status === 403) {
+      this._router.navigateByUrl('/main');
+      return;
+    }
+
+    if (error.status !== 401) {
+      return;
+    }
+
+    // Evita múltiplos redirecionamentos simultâneos.
+    if (this.redirecionandoParaLogin) {
+      return;
+    }
+
+    const rotaAtual = this._router.url;
+
+    // Não captura a rota de login ou de retorno da autenticação.
+    if (
+      rotaAtual === '/login' ||
+      rotaAtual.startsWith('/login?') ||
+      rotaAtual === '/token' ||
+      rotaAtual.startsWith('/token?')
+    ) {
+      return;
+    }
+
+    this.redirecionandoParaLogin = true;
+
+    // Preserva temporariamente a rota original.
+    sessionStorage.setItem('redirectUrl', rotaAtual);
+
+    const isErroTokenEdocs =
+      error.error?.titulo === 'EDOCS_TOKEN_EXPIRADO';
 
     if (isErroTokenEdocs) {
+
       this._toastService.showToast(
         'error',
         error.error?.erros?.[0] ??
@@ -65,22 +127,14 @@ export class ErrorHandlerService {
       );
 
       setTimeout(() => {
-        this._router.navigateByUrl('login');
+        this._router.navigateByUrl('/login');
       }, 2000);
 
       return;
     }
 
-    switch (error.status) {
-      case 401:
-        this._router.navigateByUrl('login');
-        break;
-      case 403:
-        this._router.navigateByUrl('main');
-        break;
-      default:
-        break;
-    }
-
+    this._router.navigateByUrl('/login');
   }
+
+
 }
