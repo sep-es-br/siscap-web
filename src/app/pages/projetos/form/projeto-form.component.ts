@@ -207,8 +207,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   public projetoForm: FormGroup = new FormGroup({});
   public siglaEmUso = false;
   private siglaOriginal = '';
-  public projetoTooltip: Record<string, string> =
-    COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
+  public projetoTooltip: Record<string, string> = COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   public organizacoesOpcoes: IOpcoesDropdown[] = [];
   public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
@@ -714,7 +713,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
               );
             });
           }
-          
+
           this.projetoForm.setControl(
             'pareceresProjeto',
             this._nnfb.array(projetoModel.pareceresProjeto || []),
