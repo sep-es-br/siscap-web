@@ -1,5 +1,7 @@
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO, MENSAGENS } from '../../../core/utils/constants';
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ElementRef, ViewChild, inject } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -11,11 +13,12 @@ import { SharedModule } from '../../../shared/shared.module';
 @Component({
   selector: 'app-selecao-indicadores',
   standalone: true,
-  imports: [CommonModule, FormsModule, CheckboxModule, InputTextModule, IndicadorAvulsoComponent, SharedModule],
+  imports: [CommonModule, FormsModule, CheckboxModule, InputTextModule, SharedModule],
   templateUrl: './selecao-indicadores.component.html',
   styleUrls: ['./selecao-indicadores.component.scss']
 })
 export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
+  private readonly modalService = inject(NgbModal);
   public readonly MENSAGENS = MENSAGENS;
 
 
@@ -46,7 +49,6 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   filtroTexto: string = '';
   searchVisible: boolean = false;
   selectAll: boolean = false;
-  showModalIndicadorAvulso: boolean = false;
   private chavesSelecionadas = new Set<string>();
   private emissaoSelecaoFrame?: number;
   private emissaoSelecaoTimer?: ReturnType<typeof setTimeout>;
@@ -136,11 +138,22 @@ export class SelecaoIndicadoresComponent implements OnInit, OnChanges {
   }
 
   showNewIndicatorForm(): void {
-    this.showModalIndicadorAvulso = true;
+    if (!this.podeEditar) return;
+    const modalRef = this.modalService.open(IndicadorAvulsoComponent, {
+      centered: true,
+      ariaLabelledBy: 'indicador-projeto-modal-title'
+    });
+    const modal = modalRef.componentInstance as IndicadorAvulsoComponent;
+    modal.gestao = this.gestao;
+    modal.formProjeto = this.form;
+    modal.indicadorCriado.pipe(takeUntil(modalRef.hidden)).subscribe(event => this.onIndicadorAvulsoCriado(event));
+    modalRef.result.then(
+      () => this.onCloseModalIndicadorAvulso(),
+      () => this.onCloseModalIndicadorAvulso()
+    );
   }
 
   onCloseModalIndicadorAvulso(): void {
-    this.showModalIndicadorAvulso = false;
     this.filtrarIndicadores();
     this.selecionadosChange.emit(this.selecionados);
   }

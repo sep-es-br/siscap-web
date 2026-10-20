@@ -1,0 +1,34 @@
+:root {
+  --siscap-modal-radius: 0.75rem;
+  --siscap-modal-title-color: #212529;
+}
+
+// Dimensão compacta para ações de modais, inclusive siscap-botao.
+.modal .btn,
+siscap-modal .btn,
+.p-dialog .p-button {
+  --siscap-button-font-size: var(--siscap-font-size-13);
+  --siscap-button-padding-y: var(--siscap-space-6);
+  --siscap-button-padding-x: var(--siscap-space-16);
+}
+
+.modal {
+  --bs-modal-header-border-width: 0;
+  --bs-modal-footer-border-width: 0;
+  --bs-modal-border-radius: var(--siscap-modal-radius);
+  --bs-modal-inner-border-radius: calc(var(--siscap-modal-radius) - var(--bs-modal-border-width, 1px));
+}
+
+.p-dialog {
+  border-radius: var(--siscap-modal-radius);
+
+  .p-dialog-header {
+    border-bottom: 0;
+    border-radius: var(--siscap-modal-radius) var(--siscap-modal-radius) 0 0;
+  }
+
+  .p-dialog-footer, .p-dialog-content:last-child {
+    border-top: 0;
+    border-radius: 0 0 var(--siscap-modal-radius) var(--siscap-modal-radius);
+  }
+}

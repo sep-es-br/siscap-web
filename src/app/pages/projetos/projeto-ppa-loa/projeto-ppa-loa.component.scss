@@ -1,14 +1,14 @@
 :host {
   display: block;
-  --planejamento-blue: #1a6fc4;
-  --planejamento-blue-light: #e8f1fb;
-  --planejamento-blue-mid: #d0e4f7;
-  --planejamento-blue-dark: #0f4e8e;
-  --planejamento-gray-bg: #f2f5f8;
-  --planejamento-gray-light: #f8fafc;
-  --planejamento-gray-border: #c8d3de;
-  --planejamento-gray-text: #5a6a7a;
-  --planejamento-white: #ffffff;
+  --planejamento-blue: var(--siscap-color-form-primary);
+  --planejamento-blue-light: var(--siscap-color-form-primary-soft);
+  --planejamento-blue-mid: var(--siscap-color-form-primary-mid);
+  --planejamento-blue-dark: var(--siscap-color-form-primary-dark);
+  --planejamento-gray-bg: var(--siscap-color-form-background);
+  --planejamento-gray-light: var(--siscap-color-form-surface-soft);
+  --planejamento-gray-border: var(--siscap-color-form-border);
+  --planejamento-gray-text: var(--siscap-color-form-text-muted);
+  --planejamento-white: var(--siscap-color-white);
   --planejamento-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -143,23 +143,9 @@
   overflow-y: auto;
 }
 
-.planejamento-cards-container::-webkit-scrollbar {
-  width: 7px;
-}
 
-.planejamento-cards-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 10px;
-}
 
-.planejamento-cards-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 10px;
-}
 
-.planejamento-cards-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
 
 .acao-planejamento-card {
   display: flex;
@@ -748,30 +734,4 @@
   display: block;
   margin-bottom: 6px;
   font-size: 18px;
-}
-
-.navigation-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 24px;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 24px
-}
-
-.nav-btn {
-  background: var(--white);
-  color: var(--navy-dark);
-  border: 1px solid var(--gray-border);
-  padding: 12px 20px;
-  border-radius: 50px;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all .2s;
-}
-
-.nav-btn:hover {
-  background: var(--gray-bg);
-  border-color: var(--navy-dark)
 }

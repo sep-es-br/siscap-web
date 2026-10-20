@@ -1,18 +1,18 @@
+import { TooltipModule } from 'primeng/tooltip';
 import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { IPapeisOrgaoProgramaDropdownOpcoes } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { listaOpcoesPapelOrgaoPrograma, OpcaoPapelOrgaoPrograma, PapelOrgaoPrograma } from '../../../core/enums/orgaos.enum';
 import { FormsModule } from '@angular/forms';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'siscap-orgaos-papeis-form',
   standalone: true,
   imports: [
+    TooltipModule,
     NgSelectModule,
     FormsModule,
-    NgbTooltipModule,
   ],
   templateUrl: './orgaos-papeis-form.component.html',
   styleUrl: './orgaos-papeis-form.component.scss'

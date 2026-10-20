@@ -9,7 +9,6 @@ import {
   NgbAccordionModule,
   NgbDropdownModule,
   NgbPaginationModule,
-  NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { SharedModule } from '../shared/shared.module';
@@ -43,7 +42,6 @@ import { TimelineModule } from 'primeng/timeline';
     NgbAccordionModule,
     NgbDropdownModule,
     NgbPaginationModule,
-    NgbTooltipModule,
     PagesRoutingModule
   ],
   providers: [provideNgxMask()],

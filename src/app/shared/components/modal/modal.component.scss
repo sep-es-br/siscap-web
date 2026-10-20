@@ -8,15 +8,16 @@
   padding: 12px 58px;
   justify-content: center;
   background-color: #fff;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 0;
+  border-radius: var(--bs-modal-inner-border-radius, var(--siscap-modal-radius)) var(--bs-modal-inner-border-radius, var(--siscap-modal-radius)) 0 0;
 }
 
 .siscap-modal__title {
   margin: 0;
-  color: var(--bs-primary, #0d6efd);
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1.35;
+  color: var(--siscap-modal-title-color);
+  font-size: var(--siscap-font-size-24);
+  font-weight: var(--siscap-font-weight-semibold);
+  line-height: var(--siscap-line-height-heading);
   text-align: center;
 }
 
@@ -56,10 +57,11 @@
 }
 
 .siscap-modal__footer {
+  border-radius: 0 0 var(--bs-modal-inner-border-radius, var(--siscap-modal-radius)) var(--bs-modal-inner-border-radius, var(--siscap-modal-radius));
   min-height: 70px;
   gap: 8px;
   padding: 16px;
-  border-top: 1px solid #e1e8ed;
+  border-top: 0;
   background-color: #fff;
 }
 

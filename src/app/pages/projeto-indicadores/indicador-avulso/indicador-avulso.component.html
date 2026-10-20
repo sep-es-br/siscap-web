@@ -1,68 +1,54 @@
-<div class="modal-overlay show" (click)="fechar()"></div>
+<siscap-modal [titulo]="MENSAGENS.CRIAR_UM_INDICADOR_DE_PROJETO" tituloId="indicador-projeto-modal-title" (fecharModal)="fechar()">
+    <form modalBody [formGroup]="formIndicador">
 
-<div id="newIndicatorModal" class="indicator-form-modal show">
+        <div class="filter-scroll">
 
-    <div class="modal-header">
-        <div class="card-title" style="text-transform: uppercase;">{{ MENSAGENS.CRIAR_UM_INDICADOR_DE_PROJETO }}</div>
-        <button class="close-modal" (click)="fechar()">✕</button>
-    </div>
+            <div class="form-row"><label><validation-message [exibirErros]="false" [control]="getControl('nomeIndicador')">{{ MENSAGENS.NOME_DO_INDICADOR }}
+                    </validation-message></label><input class="form-control" type="text" formControlName="nomeIndicador" id="fName"
+                    placeholder="{{ MENSAGENS.EX_TAXA_DE_ALFABETIZACAO }}" maxlength="200"><validation-message class="field-error" alinhamento="esquerda" [exibirObrigatorio]="false" [control]="getControl('nomeIndicador')"></validation-message></div>
 
-    <form [formGroup]="formIndicador">
-
-        <div class="filter-scroll" style="max-height:70vh; overflow-y:auto; padding-right:10px;">
-
-            <div class="form-row"><label><validation-message [control]="getControl('nomeIndicador')">{{ MENSAGENS.NOME_DO_INDICADOR }}
-                    </validation-message></label><input type="text" formControlName="nomeIndicador" id="fName"
-                    placeholder="{{ MENSAGENS.EX_TAXA_DE_ALFABETIZACAO }}" maxlength="200"></div>
-
-            <div class="form-row"><label><validation-message [control]="getControl('formulaCalculo')">{{ MENSAGENS.FORMULA_METODOLOGIA_DE_CALCULO }}
+            <div class="form-row"><label><validation-message [exibirErros]="false" [control]="getControl('formulaCalculo')">{{ MENSAGENS.FORMULA_METODOLOGIA_DE_CALCULO }}
                     </validation-message></label>
-                <textarea formControlName="formulaCalculo" id="fFormula" rows="3"
+                <textarea class="form-control" formControlName="formulaCalculo" id="fFormula" rows="3"
                     placeholder="{{ MENSAGENS.DESCREVE_A_FORMULA_OU_METODOLOGIA }}" maxlength="2000">
-                </textarea>
+                </textarea><validation-message class="field-error" alinhamento="esquerda" [exibirObrigatorio]="false" [control]="getControl('formulaCalculo')"></validation-message>
             </div>
 
-            <div class="form-row"><label><validation-message
-                        [control]="getControl('medidoPor')">{{ MENSAGENS.FONTE }}</validation-message></label><input type="text"
-                    formControlName="medidoPor" id="fOrgao" placeholder="{{ MENSAGENS.EX_SECRETARIA_DE_EDUCACAO }}" maxlength="50">
+            <div class="form-row"><label><validation-message [exibirErros]="false"
+                        [control]="getControl('medidoPor')">{{ MENSAGENS.FONTE }}</validation-message></label><input class="form-control" type="text"
+                    formControlName="medidoPor" id="fOrgao" placeholder="{{ MENSAGENS.EX_SECRETARIA_DE_EDUCACAO }}" maxlength="50"><validation-message class="field-error" alinhamento="esquerda" [exibirObrigatorio]="false" [control]="getControl('medidoPor')"></validation-message>
             </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                <div class="form-row"><label><validation-message [control]="getControl('unidadeMedida')">{{ MENSAGENS.UNIDADE_DE_MEDIDA }}</validation-message></label><input type="text" formControlName="unidadeMedida"
-                        id="fUnidade" placeholder="{{ MENSAGENS.EX }}" maxlength="50"></div>
-                <div class="form-row"><label><validation-message [control]="getControl('basedeReferencia')">{{ MENSAGENS.BASE_DE_REFERENCIA }}</validation-message></label><input type="text" formControlName="basedeReferencia"
-                        id="fValorBase" placeholder="{{ MENSAGENS.EX_25_000_2022 }}" maxlength="30"></div>
+            <div class="indicator-reference-grid">
+                <div class="form-row"><label><validation-message [exibirErros]="false" [control]="getControl('unidadeMedida')">{{ MENSAGENS.UNIDADE_DE_MEDIDA }}</validation-message></label><input class="form-control" type="text" formControlName="unidadeMedida"
+                        id="fUnidade" placeholder="{{ MENSAGENS.EX }}" maxlength="50"><validation-message class="field-error" alinhamento="esquerda" [exibirObrigatorio]="false" [control]="getControl('unidadeMedida')"></validation-message></div>
+                <div class="form-row"><label><validation-message [exibirErros]="false" [control]="getControl('basedeReferencia')">{{ MENSAGENS.BASE_DE_REFERENCIA }}</validation-message></label><input class="form-control" type="text" formControlName="basedeReferencia"
+                        id="fValorBase" placeholder="{{ MENSAGENS.EX_25_000_2022 }}" maxlength="30"><validation-message class="field-error" alinhamento="esquerda" [exibirObrigatorio]="false" [control]="getControl('basedeReferencia')"></validation-message></div>
             </div>
 
             <div class="form-row"><label>{{ MENSAGENS.META_DO_PROJETO }}</label>
                 <div formArrayName="metasIndicadorProjeto">
-                    <div class="meta-years" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="meta-years">
                         <div class="year-meta"
-                            *ngFor="let _ of [].constructor((((gestao?.ateAnoMeta ?? 0) - (gestao?.deAnoMeta ?? 0)) + 1)); let i = index"
+                            *ngFor="let meta of getMetasProjeto().controls; let i = index"
                             [formGroupName]="i">
-                            <div class="year-label" style="font-size:11px; margin-bottom:4px;">
-                                <validation-message [control]="getMetaProjetoControl(i)"> {{ (gestao?.deAnoMeta ?? 0) + i }}
+                            <div class="year-label">
+                                <validation-message [exibirErros]="false" [control]="getMetaProjetoControl(i)"> {{ meta.get('anoMeta')?.value }}
                                 </validation-message>
                             </div>
-                            <input type="text" pInputText inputmode="text" formControlName="valorMeta" maxlength="20"
-                                style="width:100%; border-radius:6px;" />
+                            <input class="form-control year-value-input" type="text" pInputText inputmode="text" formControlName="valorMeta" maxlength="20"
+                                /><validation-message class="field-error" alinhamento="esquerda" [exibirObrigatorio]="false" [control]="getMetaProjetoControl(i)"></validation-message>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="form-actions" style="margin-top:24px;">
-                <button class="btn-secondary" (click)="fechar()">{{ MENSAGENS.CANCELAR }}</button>
-                <button class="btn-primary" (click)="salvar()">{{ MENSAGENS.ADICIONAR }}</button>
             </div>
 
         </div>
 
     </form>
 
-    <ng-template *ngIf="!loading">
-        <div class="estado-vazio">
-            <i class="pi pi-spin pi-spinner"></i>
-            {{ MENSAGENS.ADICIONANDO_INDICADOR_PROJETO }}
-        </div>
-    </ng-template>
+    <div modalFooter class="form-actions">
+        <siscap-botao [propriedades]="botaoCancelar" (acao)="fechar()"></siscap-botao>
+        <siscap-botao [propriedades]="botaoAdicionar" (acao)="salvar()"></siscap-botao>
+    </div>
+</siscap-modal>

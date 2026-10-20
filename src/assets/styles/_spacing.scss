@@ -1,0 +1,51 @@
+// Variáveis Sass carregadas por styles.scss. Utilitários opt-in, sem !important.
+:root {
+  @each $space, $value in $siscap-spaces {
+    --siscap-space-#{$space}: #{$value};
+  }
+}
+
+// x/y controlam os dois lados; s/e respeitam a direção de leitura.
+$siscap-spacing-sides: (
+  "": (""),
+  "x": ("-left", "-right"),
+  "y": ("-top", "-bottom"),
+  "t": ("-top"),
+  "b": ("-bottom"),
+  "s": ("-inline-start"),
+  "e": ("-inline-end"),
+);
+
+@each $prefix, $property in ("p": "padding", "m": "margin") {
+  @each $side, $suffixes in $siscap-spacing-sides {
+    @each $space, $value in $siscap-spaces {
+      .siscap-#{$prefix}#{$side}-#{$space} {
+        @each $suffix in $suffixes {
+          #{$property}#{$suffix}: var(--siscap-space-#{$space});
+        }
+      }
+    }
+
+    @if $property == "margin" {
+      .siscap-m#{$side}-auto {
+        @each $suffix in $suffixes {
+          margin#{$suffix}: auto;
+        }
+      }
+    }
+  }
+}
+
+@each $space, $value in $siscap-spaces {
+  .siscap-gap-#{$space} {
+    gap: var(--siscap-space-#{$space});
+  }
+
+  .siscap-row-gap-#{$space} {
+    row-gap: var(--siscap-space-#{$space});
+  }
+
+  .siscap-column-gap-#{$space} {
+    column-gap: var(--siscap-space-#{$space});
+  }
+}

@@ -1,0 +1,103 @@
+// Padrão visual compartilhado por Bootstrap, siscap-botao e PrimeNG.
+:root {
+  --siscap-button-radius: 0.75rem;
+  --siscap-button-padding-y: var(--siscap-space-10);
+  --siscap-button-padding-x: var(--siscap-space-24);
+  --siscap-button-font-size: var(--siscap-font-size-16);
+}
+
+.btn,
+.p-button:not(.p-button-icon-only):not(.p-button-link):not(.p-button-text) {
+  border-radius: var(--siscap-button-radius);
+  padding: var(--siscap-button-padding-y) var(--siscap-button-padding-x);
+  font-family: var(--siscap-font-family-base);
+  font-size: var(--siscap-button-font-size);
+  font-weight: var(--siscap-font-weight-semibold);
+  line-height: var(--siscap-line-height-body);
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+// Tabelas e barras de ações mantêm uma opção compacta.
+.btn.rounded-circle {
+  width: var(--siscap-space-32);
+  height: var(--siscap-space-32);
+  padding: 0;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--siscap-font-size-13);
+}
+
+.btn.btn-sm,
+.p-button.p-button-sm {
+  --siscap-button-padding-y: var(--siscap-space-6);
+  --siscap-button-padding-x: var(--siscap-space-12);
+  --siscap-button-font-size: var(--siscap-font-size-13);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--siscap-color-form-primary);
+  --bs-btn-border-color: var(--siscap-color-form-primary);
+  --bs-btn-hover-bg: var(--siscap-color-form-primary-dark);
+  --bs-btn-hover-border-color: var(--siscap-color-form-primary-dark);
+  --bs-btn-active-bg: var(--siscap-color-form-primary-dark);
+  --bs-btn-active-border-color: var(--siscap-color-form-primary-dark);
+  --bs-btn-disabled-bg: var(--siscap-color-form-primary);
+  --bs-btn-disabled-border-color: var(--siscap-color-form-primary);
+}
+
+.btn-secondary,
+.btn-outline-secondary {
+  --bs-btn-color: var(--siscap-color-form-text-muted);
+  --bs-btn-bg: var(--siscap-color-white);
+  --bs-btn-border-color: var(--siscap-color-border);
+  --bs-btn-hover-color: var(--siscap-color-form-text);
+  --bs-btn-hover-bg: var(--siscap-color-form-background);
+  --bs-btn-hover-border-color: var(--siscap-color-form-text-muted);
+  --bs-btn-active-color: var(--siscap-color-form-text);
+  --bs-btn-active-bg: var(--siscap-color-form-background);
+  --bs-btn-active-border-color: var(--siscap-color-form-text-muted);
+  --bs-btn-disabled-color: var(--siscap-color-form-text-muted);
+  --bs-btn-disabled-bg: var(--siscap-color-white);
+  --bs-btn-disabled-border-color: var(--siscap-color-border);
+}
+
+button.icon-text-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--siscap-space-8);
+
+  > i, > span, > svg {
+    margin: 0;
+    font-size: inherit;
+  }
+}
+
+.p-button .p-button-label {
+  font-weight: inherit;
+}
+
+.p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-danger):not(.p-button-help):not(.p-button-contrast):not(.p-button-outlined):not(.p-button-text):not(.p-button-link):not(.p-button-icon-only) {
+  background: var(--siscap-color-form-primary);
+  border-color: var(--siscap-color-form-primary);
+  color: var(--siscap-color-white);
+
+  &:enabled:hover, &:enabled:active {
+    background: var(--siscap-color-form-primary-dark);
+    border-color: var(--siscap-color-form-primary-dark);
+  }
+}
+
+.p-button.p-button-secondary:not(.p-button-text):not(.p-button-link):not(.p-button-icon-only) {
+  background: var(--siscap-color-white);
+  border-color: var(--siscap-color-border);
+  color: var(--siscap-color-form-text-muted);
+
+  &:enabled:hover, &:enabled:active {
+    background: var(--siscap-color-form-background);
+    border-color: var(--siscap-color-form-text-muted);
+    color: var(--siscap-color-form-text);
+  }
+}

@@ -5,10 +5,14 @@
 .acoes-cabecalho {
   display: flex;
   align-items: flex-end;
-  gap: 1.5rem;
+  gap: var(--siscap-space-24);
 
   // Uma única linha contínua
-  border-bottom: 1px solid #0d6efd;
+  border-bottom: 0;
+  background-image: linear-gradient(var(--siscap-color-form-primary), var(--siscap-color-form-primary));
+  background-position: bottom;
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
 }
 
 /* ============================================================
@@ -16,28 +20,56 @@
    ============================================================ */
 
 .acoes-tabs-area {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--siscap-space-4);
   flex: 1;
   min-width: 0;
 
   .nav-tabs {
     display: flex;
     align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 4px;
+    flex-wrap: nowrap;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: var(--siscap-space-4);
 
     margin: 0;
-    padding: 0;
+    padding: var(--siscap-space-4) 0 0;
 
     // A linha agora pertence ao cabeçalho
     border: 0;
   }
 
   .nav-item {
+    flex-shrink: 0;
     display: flex;
     margin: 0;
     padding: 0;
   }
 }
+
+.acoes-tabs-area .nav-tabs::-webkit-scrollbar { display: none; }
+
+.acoes-scroll-arrow {
+  flex: 0 0 var(--siscap-space-24);
+  width: var(--siscap-space-24);
+  height: var(--siscap-space-32);
+  padding: 0;
+  border: 0;
+  border-radius: var(--siscap-space-8);
+  background: var(--siscap-color-white);
+  color: var(--siscap-color-form-primary);
+  font-size: var(--siscap-font-size-12);
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: var(--siscap-color-form-primary-soft); }
+  &:disabled { opacity: 0.3; cursor: default; }
+}
+
+.acoes-tabs-area .siscap-dragging .acao-tab-select { cursor: grabbing; }
 
 /* ============================================================
    3. ESTILO BASE DOS BOTÕES DAS ABAS
@@ -48,16 +80,16 @@
   align-items: center;
   justify-content: center;
 
-  height: 42px;
-  padding: 0 1rem;
+  height: 36px;
+  padding: 0 var(--siscap-space-16);
 
-  font-size: 0.875rem;
+  font-size: var(--siscap-font-size-13);
   line-height: 1;
 
-  color: var(--blue);
-  background-color: #fff;
+  color: var(--siscap-color-form-primary);
+  background-color: var(--siscap-color-white);
 
-  border: 1px solid #d7dce1;
+  border: 1px solid var(--siscap-color-border);
 
   cursor: pointer;
 }
@@ -67,25 +99,26 @@
    ============================================================ */
 
 .acao-add-tab {
+  flex-shrink: 0;
   width: 48px;
   min-width: 48px;
   padding: 0;
 
-  color: #fff;
-  background-color: var(--blue);
+  color: var(--siscap-color-white);
+  background-color: var(--siscap-color-form-primary);
 
-  border: 1px solid var(--blue);
-  border-radius: 6px 6px 0 0;
+  border: 1px solid var(--siscap-color-form-primary);
+  border-radius: var(--siscap-space-6) var(--siscap-space-6) 0 0;
 
   i {
-    color: #fff;
-    font-size: 1rem;
+    color: var(--siscap-color-white);
+    font-size: var(--siscap-font-size-16);
   }
 
   &:hover:not(:disabled) {
-    color: #fff;
-    background-color: #075eb8;
-    border-color: #075eb8;
+    color: var(--siscap-color-white);
+    background-color: var(--siscap-color-form-primary-dark);
+    border-color: var(--siscap-color-form-primary-dark);
   }
 
   &:disabled {
@@ -100,127 +133,57 @@
 
 
 .acao-tab-group {
-  display: inline-flex;
-  align-items: stretch;
-
-  height: 42px;
   margin-bottom: 0;
-
-  background-color: #f7f9fc;
-
-  border: 1px solid #d5dce5;
-  border-bottom: 0;
-  border-radius: 6px 6px 0 0;
-
-  transition:
-    background-color 0.2s,
-    border-color 0.2s;
-
-  &.inactive {
-    &:hover {
-      background-color: #edf4ff;
-      border-color: #9ec5fe;
-    }
-  }
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--siscap-color-border);
+  border-bottom-color: var(--siscap-color-form-primary);
+  border-radius: var(--siscap-space-6) var(--siscap-space-6) 0 0;
+  background: var(--siscap-color-form-surface-soft);
 
   &.active {
-    position: relative;
-    z-index: 2;
-
-    // Borda fina, igual à linha horizontal
-    border: 1px solid #0d6efd;
-    border-bottom: 0;
-
-    background-color: #fff;
-
-    // Sobrepõe a linha inferior em apenas 1px
-    margin-bottom: -1px;
-
-    &::after {
-      content: "";
-      position: absolute;
-
-      left: 0;
-      right: 0;
-      bottom: -1px;
-
-      height: 1px;
-      background-color: #fff;
-    }
-
-    .acao-tab-select {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
+    border-color: var(--siscap-color-form-primary);
+    border-bottom-color: var(--siscap-color-form-primary-soft);
+    background: var(--siscap-color-form-primary-soft);
   }
-
+  &.active .acao-tab-delete,
+  &:hover .acao-tab-delete { color: var(--siscap-color-danger); }
 }
-
-/* ============================================================
-   6. BOTÃO DE SELEÇÃO DA AÇÃO
-   ============================================================ */
 
 .acao-tab-select {
-  padding: 0 6px 0 16px;
-
-  color: #526477;
-  background-color: transparent;
-
+  padding: 0 var(--siscap-space-12);
   border: 0;
-  border-radius: 6px 6px 0 0;
+  border-radius: 0;
+  color: var(--siscap-color-form-text);
+  background: transparent;
+  font-weight: var(--siscap-font-weight-medium);
 
-  font-weight: 500;
-  cursor: pointer;
-
-  &:hover:not(.active) {
-    background-color: #edf4ff;
-  }
-
-  &.active {
-    color: #0d6efd;
-    background-color: transparent;
-    font-weight: 700;
-  }
+  &:hover, &.active { color: var(--siscap-color-form-primary); }
 }
-
-/* ============================================================
-   7. BOTÃO EXCLUIR AÇÃO
-   ============================================================ */
 
 .acao-tab-delete {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  width: 28px;
-  min-width: 28px;
-  height: 100%;
+  width: var(--siscap-space-32);
+  height: var(--siscap-space-32);
   padding: 0;
-
-  color: #dc3545;
-  background-color: transparent;
-
-  border: 0; // remove tudo
-  border-radius: 0 4px 0 0;
-
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: var(--siscap-color-placeholder);
+  font-size: var(--siscap-font-size-12);
   cursor: pointer;
 
-  i {
-    font-size: 0.8rem;
-  }
-
-  &:hover {
-    color: #b02a37;
-    background-color: #fff0f0;
-  }
-
+  &:hover, &:focus-visible { color: var(--siscap-color-danger); }
+}
+.acao-tab:focus-visible {
+  outline: 2px solid var(--siscap-color-form-primary);
+  outline-offset: 2px;
 }
 
-/* ============================================================
-   8. RESUMO DO VALOR ESTIMADO DAS AÇÕES
-   ============================================================ */
-
 .acoes-resumo {
+  align-self: flex-start;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -228,7 +191,7 @@
 
   flex: 0 0 230px;
   width: 230px;
-  min-height: 42px;
+  min-height: 36px;
 
   padding: 0 0 4px;
 
@@ -240,7 +203,7 @@
    ============================================================ */
 
 .acao-conteudo {
-  padding-top: 24px;
+  padding-top: var(--siscap-space-16);
 }
 
 /* ============================================================
@@ -261,8 +224,8 @@
 
   padding: 0.75rem 1rem;
 
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
+  background-color: var(--siscap-color-form-surface-soft);
+  border-bottom: 0;
 
   cursor: pointer;
 }
@@ -270,10 +233,10 @@
 .rateio-header-titulo {
   flex: 1;
 
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--siscap-font-size-13);
+  font-weight: var(--siscap-font-weight-medium);
 
-  color: var(--navy-dark);
+  color: var(--siscap-color-form-text);
 }
 
 .rateio-conteudo {
@@ -285,35 +248,32 @@
 /* ============================================================
    11. NAVEGAÇÃO ENTRE AS ABAS PRINCIPAIS
    ============================================================ */
-
-.navigation-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-
-  margin-top: 24px;
-  padding-top: 24px;
-
-  border-top: 1px solid #f1f5f9;
+.acoes-panel > .card-body {
+  padding: var(--siscap-space-16);
 }
 
-.nav-btn {
-  padding: 12px 20px;
+.acoes-resumo-label {
+  color: var(--siscap-color-form-text-muted);
+  font-size: var(--siscap-font-size-14);
+  font-weight: var(--siscap-font-weight-semibold);
+}
 
-  color: var(--navy-dark);
-  background-color: var(--white);
+.acoes-resumo-valor {
+  color: var(--siscap-color-form-text);
+  font-size: var(--siscap-font-size-16);
+  font-weight: var(--siscap-font-weight-semibold);
+}
 
-  border: 1px solid var(--gray-border);
-  border-radius: 50px;
-
-  font-size: 13px;
-  font-weight: 600;
-
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: var(--gray-bg);
-    border-color: var(--navy-dark);
-  }
+@media (max-width: 575.98px) {
+  .acoes-cabecalho { flex-wrap: wrap; gap: var(--siscap-space-8); }
+  .acoes-tabs-area { flex-basis: 100%; }
+  .acoes-resumo { flex: 1 1 100%; width: auto; }
+}
+.acoes-panel .siscap-field-label > form-helper-tooltip {
+  --siscap-help-icon-size: var(--siscap-font-size-12);
+  margin-inline: var(--siscap-space-4);
+}
+.acoes-panel {
+  border: 0;
+  box-shadow: none;
 }

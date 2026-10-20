@@ -7,15 +7,15 @@
         <button class="ods-page-filter-btn" onclick="addOdsFromPageDropdown()">{{ MENSAGENS.ADICIONAR_2 }}</button>
     </div>
 
-    <div class="card" style="margin-bottom:16px;">
+    <div class="card siscap-indicator-panel ods-panel">
         <div class="ods-section-header">
 
             <div>
-                <div class="card-title" style="margin-bottom:2px;">
+                <div class="siscap-indicator-heading">
                   {{ MENSAGENS.ODS_SUGERIDAS }}
                   <form-helper-tooltip [texto]="indicadorTooltip['ods']"></form-helper-tooltip>
                 </div>
-                <div style="font-size:12px; color:var(--gray-text);">{{ MENSAGENS.ODS_IDENTIFICADAS_A_PARTIR_DOS_INDICADORES_SELECIONADOS_CLIQUE_PARA_ADICIONAR_A_SELECAO }}</div>
+                <div class="ods-section-description">{{ MENSAGENS.ODS_IDENTIFICADAS_A_PARTIR_DOS_INDICADORES_SELECIONADOS_CLIQUE_PARA_ADICIONAR_A_SELECAO }}</div>
             </div>
 
             <div class="search-container" [class.expanded]="searchVisible">
@@ -30,79 +30,41 @@
 
         </div>
 
-        <div class="ods-suggested-row" id="odsSuggestedRow">
-            <div class="ods-suggested-card" *ngFor="let ods of ods"
-                (click)="adicionarOds(ods)"
-                (keydown.enter)="adicionarOds(ods)"
-                (keydown.space)="adicionarOds(ods)"
-                [title]="formatarMensagem(MENSAGENS.SELECIONAR_ODS, { nome: ods.nomeOds })"
-                [class.disabled]="!isModoEdicao">
-                <div class="ods-sug-top" style="background:#9ca3af;"></div>
-                <div class="ods-sug-body">
-                    <div class="ods-sug-badge" style="background:#9ca3af;">
-                        {{ ods.ordemOds || ods.odsId }}
-                    </div>
-                    <div class="ods-sug-name">
-                        {{ ods.nomeOds }}
-                    </div>
-                    <div class="ods-sug-desc">
-                        {{ ods.descricaoOds }}
-                    </div>
-                    <div class="ods-sug-add">{{ MENSAGENS.ADICIONAR_2 }}</div>
-                </div>
-            </div>
+        <div class="ods-suggested-row" id="odsSuggestedRow" siscapDragScroll>
+            <siscap-ods-card *ngFor="let objetivo of ods" variante="sugerido"
+              [numero]="objetivo.ordemOds || objetivo.odsId" [nome]="objetivo.nomeOds"
+              [descricao]="objetivo.descricaoOds" [desabilitado]="!isModoEdicao"
+              (adicionar)="adicionarOds(objetivo)">
+            </siscap-ods-card>
         </div>
 
     </div>
 
-    <div class="card" style="margin-bottom:16px;">
+    <div class="card siscap-indicator-panel ods-panel">
         <div class="ods-section-header">
             <div>
-                <div class="card-title" style="margin-bottom:2px;">{{ MENSAGENS.ODS_SELECIONADAS }}</div>
-                <div style="font-size:12px; color:var(--gray-text);">
+                <div class="siscap-indicator-heading">{{ MENSAGENS.ODS_SELECIONADAS }}</div>
+                <div class="ods-section-description">
                     {{ MENSAGENS.ODS_CONFIRMADAS_PARA_ESTE_PROJETO_CLIQUE_EM_PARA_REMOVER }}
                 </div>
             </div>
         </div>
 
-        <div class="ods-selected-grid" id="odsSelectedGrid">
-            <div class="ods-sel-card" *ngFor="let ods of odsEscolhidas">
-                <div class="ods-sel-top" [style.background]="ods.odsCor"></div>
-                <div class="ods-sel-body">
-                    <div class="ods-sel-header">
-                        <div class="ods-sel-name-container">
-                            <div class="ods-sel-badge" [style.background]="ods.odsCor">
-                                {{ ods.odsOrdem }}
-                            </div>
-                            <div class="ods-sel-name">
-                                {{ ods.odsId }} - {{ ods.odsNome }}
-                            </div>
-                        </div>
-                        <button class="ods-sel-remove" type="button" (click)="removerOds(ods)" title="{{ MENSAGENS.REMOVER }}" [disabled]="!isModoEdicao">{{ MENSAGENS.TEXTO }}</button>
-                    </div>
-                    <div class="ods-sel-desc">
-                        {{ ods.odsDescricao }}
-                    </div>
-                    <div class="ods-sel-indicators">
-                        <div class="ods-sel-ind-title">
-                            {{ MENSAGENS.INDICADORES_VINCULADOS }}
-                        </div>
-                        <div class="ods-sel-ind-list">
-                            <div class="ods-sel-ind-item" *ngFor="let indicador of ods.indicadoresVinculados">
-                                {{ indicador.nomeIndicador }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <p class="siscap-empty-state" *ngIf="odsEscolhidas.length === 0">{{ MENSAGENS.NENHUMA_ODS_SELECIONADA }}</p>
+        <div class="ods-selected-grid" id="odsSelectedGrid" *ngIf="odsEscolhidas.length > 0">
+            <siscap-ods-card *ngFor="let objetivo of odsEscolhidas" variante="selecionado"
+              [numero]="objetivo.odsOrdem || objetivo.odsId" [nome]="objetivo.odsNome"
+              [descricao]="objetivo.odsDescricao" [cor]="objetivo.odsCor"
+              [indicadores]="objetivo.indicadoresVinculados || []" [desabilitado]="!isModoEdicao"
+              (remover)="removerOds(objetivo)">
+            </siscap-ods-card>
         </div>
     </div>
-
     <div [formGroup]="formProjeto" class="row">
         <div data-control-path="impactos" class="col-12">
             <label
             for="impactos"
-            class="form-label col-12">
+            class="siscap-field-label col-12">
             <validation-message [control]="getControl('impactos')">
             {{ MENSAGENS.IMPACTOS_DO_PROJETO_NO_AMBITO_AMBIENTAL_SOCIAL_E_DE_GOVERNANCA_ESG }}
             <form-helper-tooltip [texto]="indicadorTooltip['impactos']"></form-helper-tooltip>
@@ -117,9 +79,9 @@
         </div>
     </div>
 
-    <div class="navigation-buttons" style="margin-top:20px;">
-        <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);" (click)="voltarParaIndicadores()"><i class="pi pi-arrow-left"></i></button>
-        <button class="nav-btn" style="background:var(--blue); color:white; border-color:var(--blue);" (click)="irParaAcoes()"><i class="pi pi-arrow-right"></i></button>
+    <div class="siscap-form-navigation">
+        <button type="button" class="siscap-form-nav-button siscap-form-nav-button-primary" (click)="voltarParaIndicadores()"><i class="pi pi-arrow-left"></i></button>
+        <button type="button" class="siscap-form-nav-button siscap-form-nav-button-primary" (click)="irParaAcoes()"><i class="pi pi-arrow-right"></i></button>
     </div>
 
 </div>

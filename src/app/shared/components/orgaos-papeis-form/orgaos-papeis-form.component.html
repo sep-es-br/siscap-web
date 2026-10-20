@@ -34,7 +34,7 @@
                     <button
                       class="btn btn-outline-danger rounded-circle"
                       type="button"
-                      ngbTooltip="{{ MENSAGENS.EXCLUIR_ORGAO }}"
+                      pTooltip="{{ MENSAGENS.EXCLUIR_ORGAO }}" tooltipPosition="top" tooltipEvent="both" [autoHide]="false"
                       [disabled]="!isModoEdicao"
                       (click)="removerOrgao(orgao)"
                     >

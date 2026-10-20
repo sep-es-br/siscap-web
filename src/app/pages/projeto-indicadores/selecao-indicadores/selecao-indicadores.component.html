@@ -1,7 +1,7 @@
-<div class="card selection-card">
+<div class="card selection-card siscap-indicator-panel">
 
   <div class="card-header-main">
-    <p class="lista-label">
+    <p class="siscap-indicator-heading">
       {{ MENSAGENS.SELECIONE_O_INDICADOR_ESTRATEGICO }}
       <form-helper-tooltip [texto]="indicadorTooltip['indicador']"></form-helper-tooltip>
     </p>
@@ -22,7 +22,7 @@
       <label class="indicador-label">
         <p-checkbox [binary]="true" [(ngModel)]="selectAll" (onChange)="toggleSelectAll($event)"
           [disabled]="!podeEditar"></p-checkbox>
-        <span class="text-blue-primary">{{ MENSAGENS.SELECIONAR_TODOS }}</span>
+        <span class="select-all-label">{{ MENSAGENS.SELECIONAR_TODOS }}</span>
       </label>
     </div>
 
@@ -44,18 +44,14 @@
   </div>
 
   <div class="card-footer-selection">
-    <div class="create-special-link"
-      style="cursor:pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s;"
+    <button type="button" class="create-special-link" [disabled]="!podeEditar"
       title="{{ MENSAGENS.SE_NAO_ENCONTRAR_O_INDICADOR_ESTRATEGICO_DESEJADO_CRIE_UM_NOVO }}"
       (click)="podeEditar && showNewIndicatorForm(); $event.stopPropagation()"
-      onmouseover="this.style.background='#eef6ff'" onmouseout="this.style.background='transparent'">
-      <span style="color:var(--blue); font-weight:700; font-size:12px;">{{ MENSAGENS.CRIAR_UM_INDICADOR_DE_PROJETO_2 }}</span>
-    </div>
+     >
+      <span class="create-special-link-label">{{ MENSAGENS.CRIAR_UM_INDICADOR_DE_PROJETO_2 }}</span>
+    </button>
   </div>
 
-  <siscap-indicador-avulso *ngIf="showModalIndicadorAvulso" [gestao]="gestao" [formProjeto]="form"
-    (indicadorCriado)="onIndicadorAvulsoCriado($event)"
-    (close)="onCloseModalIndicadorAvulso()"></siscap-indicador-avulso>
 
 </div>
 

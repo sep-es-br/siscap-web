@@ -9,4 +9,5 @@ import { Component, input, ViewEncapsulation } from '@angular/core';
 })
 export class FormWarningTooltipComponent {
   public texto = input.required<string>();
+  public tamanho = input<'compacto' | 'padrao'>('compacto');
 }

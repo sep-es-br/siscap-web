@@ -1,32 +1,18 @@
-:host {
-  --blue: #1a6fc4;
-}
-
-.card {
-  background: white;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 10px;
-  // margin-bottom: 20px;
-  border: 1px solid #eef2f7;
-}
-
 .selection-card {
-  border: 1px solid #dce4ed;
-  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.04);
+  border: 1px solid var(--siscap-color-border);
+  box-shadow: none;
 }
 
 .card-header-main {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
+  align-items: flex-start;
+  padding: var(--siscap-space-8) var(--siscap-space-16);
 }
 
 .search-container {
   width: 32px;
-  height: 38px;
+  height: var(--siscap-space-24);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   position: relative;
@@ -36,73 +22,65 @@
   &.expanded {
     width: 40%;
     min-width: 250px;
+    height: 38px;
   }
 
   .search-input {
     border-radius: 20px !important;
     padding-left: 35px !important;
     padding-right: 35px !important;
-    font-size: 13px !important;
-    border-color: #c8d3de !important;
-    background: white !important;
+    font-size: var(--siscap-text-body-size) !important;
+    border-color: var(--siscap-color-border) !important;
+    background: var(--siscap-color-white) !important;
     height: 38px;
     width: 100%;
     box-shadow: none !important;
-    border: 1px solid #c8d3de;
+    border: 1px solid var(--siscap-color-border);
 
     &:focus {
-      border-color: #3b82f6 !important;
+      border-color: var(--siscap-color-input-focus) !important;
       outline: none;
     }
 
     &::placeholder {
-      color: #94a3b8;
-      font-weight: 400;
-      font-size: 12px;
+      color: var(--siscap-color-placeholder);
+      font-weight: var(--siscap-font-weight-regular);
+      font-size: var(--siscap-text-body-size);
     }
   }
 
   .search-icon {
     position: absolute;
     left: 8px !important;
-    font-size: 14px;
-    color: #3b82f6;
+    font-size: var(--siscap-font-size-14);
+    color: var(--siscap-color-input-focus);
     z-index: 10;
   }
 
   .clear-icon {
     position: absolute;
     right: 12px !important;
-    font-size: 11px;
-    color: #94a3b8;
+    font-size: var(--siscap-font-size-11);
+    color: var(--siscap-color-placeholder);
     z-index: 10;
   }
 }
 
 .card-body {
-  padding: 8px 0;
+  padding: 0;
   max-height: 280px;
   overflow-y: auto;
 }
 
-.lista-label {
-  font-size: 15px;
-  font-weight: 700;
-  margin: 0;
-  color: #0a1a30;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
 .indicador-item {
-  padding: 10px 22px;
-  border-top: 1px solid #eef2f7;
+  padding: var(--siscap-space-10) var(--siscap-space-16);
+  border-top: 1px solid var(--siscap-color-panel-border);
   transition: all 0.2s ease;
-  background: white;
+  background: var(--siscap-color-white);
 }
 
 .indicador-item:hover {
-  background: #f5f9ff;
+  background: var(--siscap-color-selection-item-hover);
 }
 
 .select-all {
@@ -114,49 +92,56 @@
   align-items: center;
   gap: 7px;
   cursor: pointer;
-  font-size: 11px;
-  font-weight: 500;
-  color: #4b5563;
-  text-transform: uppercase;
+  font-size: var(--siscap-font-size-12);
+  font-weight: var(--siscap-text-label-weight);
+  color: var(--siscap-color-text);
+  text-transform: none;
 }
 
-.text-blue-primary {
-  color: #2563eb;
-  font-weight: 700;
+.select-all-label {
+  color: var(--siscap-color-text);
+  font-weight: var(--siscap-font-weight-medium);
 }
 
 .card-footer-selection {
   display: flex;
   justify-content: flex-end;
-  padding: 12px 20px;
-}
-
-.criar-novo-link {
-  color: #2563eb;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 11px;
-  transition: opacity 0.2s;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  padding: var(--siscap-space-12) var(--siscap-space-16);
 }
 
 .estado-vazio {
   text-align: center;
-  padding: 20px 0;
-  color: #98a2b3;
-  font-size: 13px;
+  padding: var(--siscap-space-20) 0;
+  color: var(--siscap-color-empty-state);
+  font-size: var(--siscap-text-body-size);
 
   i {
-    font-size: 18px;
-    margin-bottom: 6px;
+    font-size: var(--siscap-font-size-18);
+    margin-bottom: var(--siscap-space-6);
     display: block;
   }
 }
 
 .indicador-avulso-label {
-  font-weight: 700;
-  color: #3b82f6 !important;
+  font-weight: var(--siscap-font-weight-bold);
+  color: var(--siscap-color-input-focus) !important;
+}
+
+.create-special-link {
+  border: 0;
+  cursor: pointer;
+  padding: var(--siscap-space-4) var(--siscap-space-8);
+  border-radius: 4px;
+  transition: background 0.2s;
+  background: transparent;
+
+  &:hover { background: var(--siscap-color-create-link-hover); }
+
+  &:disabled { cursor: default; opacity: 0.65; }
+}
+
+.create-special-link-label {
+  color: var(--siscap-color-form-primary);
+  font-weight: var(--siscap-font-weight-medium);
+  font-size: var(--siscap-font-size-13);
 }

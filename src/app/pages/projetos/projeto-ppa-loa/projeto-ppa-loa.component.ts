@@ -1,6 +1,6 @@
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO, MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, ElementRef, Input, TrackByFunction, ViewChild } from '@angular/core';
-import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule, NgbPopoverModule, } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -65,7 +65,6 @@ declare var bootstrap: any;
   imports: [
     CommonModule,
     NgSelectModule,
-    NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
     TemplatesModule,

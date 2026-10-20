@@ -1,9 +1,10 @@
+import { TooltipModule } from 'primeng/tooltip';
 import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl, NonNullableFormBuilder } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { IndicadoresService } from '../../../core/services/indicadores/indicadores.service';
 import { TemplatesModule } from '../../templates/templates.module';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
@@ -15,11 +16,11 @@ import { IndicadoresFormType, MetaIndicadorExternoFormType } from '../../../core
   selector: 'siscap-indicadores-form',
   standalone: true,
   imports: [
+    TooltipModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     NgSelectModule,
-    NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
     TemplatesModule,

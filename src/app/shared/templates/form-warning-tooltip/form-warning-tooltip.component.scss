@@ -9,30 +9,6 @@ button {
   }
 }
 
-.form-warning-tooltip {
-  .tooltip-inner {
-    max-width: 600px;
-    width: fit-content;
-    text-align: left;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1199.98px) {
-  .form-warning-tooltip {
-    .tooltip-inner {
-      max-width: 400px;
-    }
-  }
-}
-
-@media (max-width: 767.98px) {
-  .form-warning-tooltip {
-    .tooltip-inner {
-      max-width: 200px;
-    }
-  }
-}
-
 .pulsating-icon {
   color: #38352f;
   animation: pulse 2s infinite;

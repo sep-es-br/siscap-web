@@ -1,9 +1,10 @@
 <button
+  type="button"
   class="btn icon-text-btn text-nowrap w-100"
   [ngClass]="propriedades().classesCSS"
   [disabled]="propriedades().desabilitado"
   (click)="acao.emit(propriedades().acao)"
 >
-  <i [ngClass]="propriedades().icone"></i>
+  <i *ngIf="propriedades().icone.length" [ngClass]="propriedades().icone" aria-hidden="true"></i>
   <span>{{ propriedades().texto }}</span>
 </button>

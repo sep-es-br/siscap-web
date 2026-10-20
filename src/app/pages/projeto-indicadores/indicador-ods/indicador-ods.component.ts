@@ -7,6 +7,8 @@ import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { OdsService } from '../../../core/services/ods/ods.service';
 import { IOdsGestao } from '../../../core/interfaces/ods-gestao.interface';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
+import { OdsCardComponent } from '../../../shared/components/ods-card/ods-card.component';
+import { DragScrollDirective } from '../../../shared/directives/drag-scroll.directive';
 
 declare var bootstrap: any;
 
@@ -17,7 +19,7 @@ declare var bootstrap: any;
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TemplatesModule],
+    TemplatesModule, OdsCardComponent, DragScrollDirective],
   templateUrl: './indicador-ods.component.html',
   styleUrl: './indicador-ods.component.scss'
 })

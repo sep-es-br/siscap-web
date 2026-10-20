@@ -1,0 +1,32 @@
+<button *ngIf="variante === 'sugerido'; else selecionado" type="button" class="ods-suggested-card"
+  [disabled]="desabilitado" [attr.aria-label]="MENSAGENS.ADICIONAR_2 + ' ' + nome" (click)="executar('adicionar')">
+  <span class="ods-sug-body">
+    <span class="ods-sug-header">
+      <span class="ods-sug-badge" [style.background]="cor || 'var(--siscap-color-placeholder)'">{{ numero }}</span>
+      <span class="ods-sug-name">{{ numero }} - {{ nome }}</span>
+    </span>
+    <span class="ods-sug-desc">{{ descricao }}</span>
+  </span>
+</button>
+
+<ng-template #selecionado>
+  <article class="ods-sel-card">
+    <div class="ods-sel-body">
+      <div class="ods-sel-header">
+        <div class="ods-sel-name-container">
+          <div class="ods-sel-badge" [style.background]="cor || 'var(--siscap-color-placeholder)'">{{ numero }}</div>
+          <div class="ods-sel-name">{{ numero }} - {{ nome }}</div>
+        </div>
+        <button class="ods-sel-remove" type="button" [disabled]="desabilitado"
+          [attr.aria-label]="MENSAGENS.REMOVER + ' ' + nome" (click)="executar('remover')">{{ MENSAGENS.TEXTO }}</button>
+      </div>
+      <div class="ods-sel-desc">{{ descricao }}</div>
+      <div class="ods-sel-indicators" *ngIf="indicadores.length > 0">
+        <div class="ods-sel-ind-title">{{ MENSAGENS.INDICADORES_VINCULADOS }}</div>
+        <div class="ods-sel-ind-list">
+          <div class="ods-sel-ind-item" *ngFor="let indicador of indicadores">{{ indicador.nomeIndicador }}</div>
+        </div>
+      </div>
+    </div>
+  </article>
+</ng-template>

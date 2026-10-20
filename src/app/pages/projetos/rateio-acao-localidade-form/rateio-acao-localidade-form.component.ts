@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
+import { TemplatesModule } from '../../../shared/templates/templates.module';
 
 import {
   FormArray,
@@ -53,6 +54,7 @@ interface RateioItemView {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    TemplatesModule,
   ],
 
   templateUrl: './rateio-acao-localidade-form.component.html',

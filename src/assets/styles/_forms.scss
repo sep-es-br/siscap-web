@@ -1,0 +1,62 @@
+// Padrões opt-in para a migração gradual dos formulários, começando pelo DIC.
+.siscap-field-label {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: var(--siscap-space-8);
+  font-size: var(--siscap-text-label-size);
+  font-weight: var(--siscap-text-label-weight);
+  line-height: var(--siscap-text-label-line-height);
+}
+
+.siscap-select-option {
+  display: flex;
+  flex-direction: column;
+  line-height: var(--siscap-line-height-compact);
+}
+
+.siscap-select-option-detail {
+  // Proporção do texto da opção, preservando o tamanho anterior.
+  font-size: 0.65em;
+  color: var(--siscap-color-option-detail);
+}
+
+.siscap-form-navigation {
+  display: flex;
+  justify-content: center;
+  gap: var(--siscap-space-16);
+  padding-top: var(--siscap-space-24);
+}
+
+.siscap-form-nav-button {
+  background: var(--siscap-color-white);
+  color: var(--siscap-color-form-text);
+  border: 1px solid var(--siscap-color-form-border);
+  padding: var(--siscap-button-padding-y) var(--siscap-button-padding-x);
+  border-radius: var(--siscap-button-radius);
+  font-size: var(--siscap-font-size-13);
+  font-weight: var(--siscap-font-weight-semibold);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--siscap-color-form-background);
+    border-color: var(--siscap-color-form-text);
+  }
+}
+
+// Substitui o estilo inline anterior, inclusive sua prioridade no hover.
+.siscap-form-nav-button-primary,
+.siscap-form-nav-button-primary:hover {
+  background: var(--siscap-color-form-primary);
+  color: var(--siscap-color-white);
+  border-color: var(--siscap-color-form-primary);
+}
+.siscap-empty-state {
+  width: 100%;
+  margin: 0;
+  padding: var(--siscap-space-16);
+  text-align: center;
+  color: var(--siscap-color-form-text-muted);
+  font-size: var(--siscap-font-size-13);
+  line-height: var(--siscap-line-height-body);
+}

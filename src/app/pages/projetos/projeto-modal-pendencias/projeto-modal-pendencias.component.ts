@@ -2,7 +2,7 @@ import { MENSAGENS } from '../../../core/utils/constants';
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
 import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
-import { NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -22,7 +22,6 @@ interface IGrupoPendencias {
     FormsModule,
     ReactiveFormsModule,
     NgSelectModule,
-    NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
     TemplatesModule,

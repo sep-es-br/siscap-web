@@ -11,6 +11,9 @@ import { COLECAO_ERRO_MENSAGEM } from '../../../core/utils/constants';
 export class ValidationMessageComponent {
   @Input('control') public abstractControl!: AbstractControl<any, any>;
   @Input() public errosOcultos: string[] = [];
+  @Input() public exibirObrigatorio: boolean = true;
+  @Input() public exibirErros: boolean = true;
+  @Input() public alinhamento: 'esquerda' | 'direita' = 'direita';
 
   public isRequired: boolean = false;
 

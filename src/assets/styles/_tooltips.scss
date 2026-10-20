@@ -1,0 +1,12 @@
+// Variante de tamanho. Cores, setas e sombra continuam no tema PrimeNG.
+.p-tooltip.siscap-tooltip-compact {
+  max-width: min(28rem, calc(100vw - 2rem));
+  font-size: var(--siscap-font-size-12);
+  line-height: var(--siscap-line-height-heading);
+
+  .p-tooltip-text {
+    padding: var(--siscap-space-6) var(--siscap-space-8);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

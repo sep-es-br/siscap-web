@@ -78,7 +78,7 @@
                 rows="3" maxlength="2000"></textarea>
             </div>
             <div *ngIf="isModoEdicao" class="d-flex justify-content-between align-items-center mb-2">
-              <button *ngIf="isModoEdicao || !isAcaoAtiva(i)" type="button" ngbTooltip="{{ MENSAGENS.REMOVER_ACAO_DO_DIC }}"
+              <button *ngIf="isModoEdicao || !isAcaoAtiva(i)" type="button" pTooltip="{{ MENSAGENS.REMOVER_ACAO_DO_DIC }}" tooltipPosition="top" tooltipEvent="both" [autoHide]="false"
                 class="btn btn-outline-danger rounded-circle"
                 (click)="isNovaAcao(i) ? removerAcao(i) : marcarAcaoExcluida(i)">
                 <i class="fa-solid fa-minus remove-btn-icon"></i>

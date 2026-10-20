@@ -1,3 +1,4 @@
+import { TooltipModule } from 'primeng/tooltip';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -7,7 +8,6 @@ import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import {
   NgbAlertModule,
   NgbPaginationModule,
-  NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { SharedModule } from '../../shared/shared.module';
@@ -27,6 +27,7 @@ import { ProspeccoesRoutingModule } from './prospeccoes-routing.module';
     ProspeccaoViewComponent,
   ],
   imports: [
+    TooltipModule,
     CommonModule,
     SharedModule,
     FormsModule,
@@ -36,7 +37,6 @@ import { ProspeccoesRoutingModule } from './prospeccoes-routing.module';
     NgxMaskPipe,
     NgbPaginationModule,
     NgbAlertModule,
-    NgbTooltipModule,
     ProspeccoesRoutingModule,
   ],
   exports: [

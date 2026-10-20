@@ -1,0 +1,245 @@
+:host { display: block; min-width: 0; }
+:host.ods-card-sugerido { display: flex; flex: 0 0 var(--siscap-ods-card-width, 240px); }
+.ods-suggested-card { display: flex; flex-direction: column; align-items: stretch; padding: 0; text-align: left; font-family: inherit; }
+.ods-sel-card { height: 100%; }
+.ods-sug-body, .ods-sug-name, .ods-sug-desc { display: block; }
+.ods-suggested-card:disabled, .ods-sel-remove:disabled { cursor: not-allowed; }
+.ods-suggested-card:disabled:hover { transform: none; box-shadow: none; filter: grayscale(.7); opacity: .75; }
+.ods-suggested-card:focus-visible, .ods-sel-remove:focus-visible { outline: 2px solid var(--siscap-color-form-primary); outline-offset: 2px; }
+.ods-suggested-card {
+  min-height: var(--siscap-ods-card-min-height, 180px);
+  flex: 1;
+  flex-shrink: 0;
+  width: 100%;
+  border: 1px solid var(--siscap-color-form-border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all .2s;
+  background: var(--siscap-color-form-surface-soft);
+  filter: grayscale(.7);
+  opacity: .75;
+}
+
+.ods-suggested-card:hover {
+  filter: grayscale(.3);
+  opacity: .95;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .1);
+  transform: translateY(-1px);
+}
+
+:host-context(.siscap-dragging) .ods-suggested-card {
+  cursor: grabbing;
+}
+
+.ods-suggested-card--active {
+  border-color: var(--siscap-color-form-primary);
+  box-shadow: 0 4px 16px rgba(26, 111, 196, .15);
+}
+
+.ods-suggested-card--linked {
+  border-color: #f59e0b;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, .15);
+}
+
+.ods-sug-body {
+  padding: var(--siscap-space-10);
+}
+
+.ods-sug-header {
+  display: flex;
+  align-items: center;
+  gap: var(--siscap-space-8);
+  margin-bottom: var(--siscap-space-8);
+}
+
+.ods-sug-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--siscap-font-size-14);
+  font-weight: var(--siscap-font-weight-bold);
+  color: white;
+  flex-shrink: 0;
+}
+
+.ods-sug-name {
+  font-size: var(--siscap-font-size-12);
+  font-weight: var(--siscap-font-weight-semibold);
+  color: var(--siscap-color-form-text);
+  line-height: 1.35;
+  margin-bottom: 0;
+}
+
+.ods-sug-desc {
+  font-size: var(--siscap-font-size-12);
+  font-weight: var(--siscap-font-weight-regular);
+  color: var(--siscap-color-form-text-muted);
+  line-height: var(--siscap-line-height-heading);
+  margin-bottom: 0;
+  text-align: left;
+  overflow-wrap: break-word;
+}
+
+.ods-sug-ind {
+  font-size: var(--siscap-font-size-11);
+  color: var(--siscap-color-form-text-muted);
+  line-height: 1.3;
+  margin-bottom: var(--siscap-space-8);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.ods-sug-check,
+.ods-sug-suggested {
+  font-size: var(--siscap-font-size-11);
+  font-weight: var(--siscap-font-weight-semibold);
+  padding: 3px var(--siscap-space-8);
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.ods-sug-check {
+  color: var(--siscap-color-form-primary-dark);
+  background: var(--siscap-color-form-primary-soft);
+}
+
+.ods-sug-suggested {
+  color: #78350f;
+  background: #fef3c7;
+}
+
+.ods-sug-add {
+  font-size: var(--siscap-font-size-11);
+  font-weight: var(--siscap-font-weight-semibold);
+  color: var(--siscap-color-form-text-muted);
+  padding: 3px 0;
+  display: inline-block;
+}
+
+
+
+.ods-sel-card {
+  min-height: var(--siscap-ods-card-min-height, 180px);
+  border: 1px solid var(--siscap-color-form-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--siscap-color-form-surface-soft);
+  transition: box-shadow .2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.ods-sel-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+}
+
+
+.ods-sel-body {
+  padding: var(--siscap-space-10);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ods-sel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--siscap-space-8);
+  margin-bottom: var(--siscap-space-8);
+}
+
+.ods-sel-name-container {
+  display: flex;
+  align-items: center;
+  gap: var(--siscap-space-8);
+}
+
+.ods-sel-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--siscap-font-size-14);
+  font-weight: var(--siscap-font-weight-bold);
+  color: white;
+  flex-shrink: 0;
+}
+
+.ods-sel-name {
+  font-size: var(--siscap-font-size-12);
+  font-weight: var(--siscap-font-weight-semibold);
+  color: var(--siscap-color-form-text);
+  line-height: var(--siscap-line-height-heading);
+}
+
+.ods-sel-remove {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  color: var(--siscap-color-form-danger);
+  font-size: var(--siscap-font-size-14);
+  font-weight: var(--siscap-font-weight-semibold);
+  border: none;
+  transition: background .15s;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.ods-sel-remove:hover {
+  background: transparent;
+}
+
+.ods-sel-desc {
+  font-size: var(--siscap-font-size-12);
+  color: var(--siscap-color-form-text-muted);
+  line-height: var(--siscap-line-height-heading);
+  // margin-bottom: 16px;
+  margin-bottom: var(--siscap-space-10);
+}
+
+.ods-sel-indicators {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.ods-sel-ind-title {
+  font-size: var(--siscap-font-size-11);
+  font-weight: var(--siscap-font-weight-semibold);
+  color: var(--siscap-color-form-primary-dark);
+  text-transform: none;
+  margin-bottom: var(--siscap-space-8);
+  letter-spacing: .5px;
+}
+
+.ods-sel-ind-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--siscap-space-6);
+}
+
+.ods-sel-ind-item {
+  font-size: var(--siscap-font-size-12);
+  color: var(--siscap-color-form-text);
+  background: #f8fafc;
+  padding: var(--siscap-space-6) var(--siscap-space-10);
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  line-height: 1.3;
+}
