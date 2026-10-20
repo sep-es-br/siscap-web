@@ -18,7 +18,7 @@
       <span>{{ formatarMensagem(MENSAGENS.SOLICITAR_REVISAO_A_VALOR, { p0: (nomeProponenteDIC) }) }}</span>
     </button>
 
-    <button *ngIf="mostrarBotaoBaixarDic" class="btn btn-outline-primary icon-text-btn" (click)="baixarDIC()">
+    <button *ngIf="mostrarBotaoBaixarDic" class="btn btn-sm btn-outline-primary icon-text-btn" (click)="baixarDIC()">
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>{{ MENSAGENS.BAIXAR_DIC }}</span>
     </button>
@@ -165,12 +165,12 @@
       </div>
       <div class="card-body tab-content">
 
-        <div class="tab-pane fade" [ngClass]="{ 'show active': !aguardandoParecer() }" id="tab-propriedades"
+        <div class="tab-pane fade dic-tab" [ngClass]="{ 'show active': !aguardandoParecer() }" id="tab-propriedades"
           role="tabpanel" aria-labelledby="nav-propriedades">
           <form [formGroup]="projetoForm">
             <div class="row gy-2">
               <div data-control-path="sigla" class="col-12 col-md-3 mb-2 mb-md-0">
-                <label for="sigla" class="form-label col-12" [ngClass]="{
+                <label for="sigla" class="siscap-field-label" [ngClass]="{
                     'alerta-complementar-campo': deveComplementarCampo('sigla'),
                   }">
                   <validation-message [control]="getControl('sigla')">
@@ -183,7 +183,7 @@
                   </validation-message>
                 </label>
                 <input mask="" [inputTransformFn]="toUppercaseInputTransformFn"
-                  [outputTransformFn]="toUppercaseOutputTransformFn" type="text" class="form-control" id="sigla"
+                  [outputTransformFn]="toUppercaseOutputTransformFn" type="text" class="form-control siscap-text-body" id="sigla"
                   formControlName="sigla" maxlength="12" />
                 <small *ngIf="siglaEmUso" class="text-warning d-block mt-1" role="status">
                   <i class="fa-solid fa-triangle-exclamation me-1"></i>
@@ -192,7 +192,7 @@
               </div>
 
               <div data-control-path="titulo" class="col-12 col-md-9">
-                <label for="titulo" class="form-label col-12" [ngClass]="{
+                <label for="titulo" class="siscap-field-label" [ngClass]="{
                     'alerta-complementar-campo':
                       deveComplementarCampo('titulo'),
                   }">
@@ -203,11 +203,11 @@
                       [texto]="mensagemComplementarCampo('titulo')"></form-warning-tooltip>
                   </validation-message>
                 </label>
-                <input type="text" class="form-control" id="titulo" formControlName="titulo" maxLength="150" />
+                <input type="text" class="form-control siscap-text-body" id="titulo" formControlName="titulo" maxLength="150" />
               </div>
 
               <div data-control-path="idOrganizacao" class="col-12 col-md-6" id="orgao">
-                <label for="idOrganizacao" class="form-label col-12" [ngClass]="{
+                <label for="idOrganizacao" class="siscap-field-label" [ngClass]="{
                     'alerta-complementar-campo':
                       deveComplementarCampo('idOrganizacao'),
                   }">
@@ -226,7 +226,7 @@
               </div>
 
               <div data-control-path="responsavelProponente" class="col-12 col-md-6" id="responsavel-proponente">
-                <label for="responsavelProponente" class="form-label col-12" [ngClass]="{
+                <label for="responsavelProponente" class="siscap-field-label" [ngClass]="{
                     'alerta-complementar-campo': deveComplementarCampo(
                       'subResponsavelProponente'
                     ),
@@ -244,13 +244,9 @@
                     formControlName="subResponsavelProponente" [items]="pessoasOpcoes" bindLabel="nome"
                     bindValue="agentePublicoSub" (change)="onSelecionarPessoa($event)" [virtualScroll]="true">
                     <ng-template ng-option-tmp let-item="item">
-                      <div style="
-                          display: flex;
-                          flex-direction: column;
-                          line-height: 1.2;
-                        ">
+                      <div class="siscap-select-option">
                         <span>{{ item.nome }}</span>
-                        <span style="font-size: 0.65em; color: gray">{{
+                        <span class="siscap-select-option-detail">{{
                           item.papelPrioritario
                           }}</span>
                       </div>
@@ -263,7 +259,7 @@
               </div>
 
               <div data-control-path="membroEquipeElaboracao" class="col-12">
-                <label for="membroEquipeElaboracao" class="form-label col-12" [ngClass]="{
+                <label for="membroEquipeElaboracao" class="siscap-field-label" [ngClass]="{
                     'alerta-complementar-campo': deveComplementarCampo('equipeElaboracao'), }">
                   <validation-message [control]="getControl('equipeElaboracao')">
                     {{ MENSAGENS.EQUIPE_DE_ELABORACAO }}
@@ -273,7 +269,7 @@
                   </validation-message>
                 </label>
                 <div class="input-group">
-                  <input type="text" class="form-control" placeholder="{{ MENSAGENS.DIGITE_O_NOME }}" id="nomeagente"
+                  <input type="text" class="form-control siscap-text-body" placeholder="{{ MENSAGENS.DIGITE_O_NOME }}" id="nomeagente"
                     formControlName="nomeagente" maxLength="150" (keyup.enter)="buscarAgentesPorTermo()"
                     (click)="exibirLista = false" />
                   <button class="btn btn-outline-secondary" type="button" (click)="buscarAgentesPorTermo()"
@@ -286,10 +282,9 @@
                     </span>
                   </button>
                 </div>
-                <div class="card resultados-container" *ngIf="exibirLista && pessoasOpcoesGoves.length > 0"
-                  style="max-height: 300px; margin-top: 6px; margin-bottom: 6px">
+                <div class="card resultados-container dic-team-results" *ngIf="exibirLista && pessoasOpcoesGoves.length > 0">
                   <div class="card-body p-0">
-                    <ul class="list-group list-group-flush lista-rolavel" style="max-height: 300px; overflow-y: auto">
+                    <ul class="list-group list-group-flush lista-rolavel dic-team-results-list">
                       <li class="list-group-item list-group-item-action cursor-pointer"
                         *ngFor="let agente of pessoasOpcoesGoves" (click)="idMembroNgSelectChangeEvent(agente)">
                         <div class="d-flex flex-column">
@@ -309,7 +304,7 @@
               </div>
 
               <div data-control-path="situacaoProblema" class="col-12">
-                <label for="situacaoProblema" class="form-label col-12" [ngClass]="{
+                <label for="situacaoProblema" class="siscap-field-label" [ngClass]="{
                     'alerta-complementar-campo':
                       deveComplementarCampo('situacaoProblema'),
                   }">
@@ -320,12 +315,12 @@
                       [texto]="mensagemComplementarCampo('situacaoProblema')"></form-warning-tooltip>
                   </validation-message>
                 </label>
-                <textarea rows="5" class="form-control" id="situacaoProblema" formControlName="situacaoProblema"
+                <textarea rows="5" class="form-control siscap-text-body" id="situacaoProblema" formControlName="situacaoProblema"
                   maxLength="2000"></textarea>
               </div>
 
               <div data-control-path="objetivo" class="col-12">
-                <label for="objetivo" class="form-label col-12" [ngClass]="{
+                <label for="objetivo" class="siscap-field-label" [ngClass]="{
                     'alerta-complementar-campo':
                       deveComplementarCampo('objetivo'),
                   }">
@@ -336,12 +331,12 @@
                       [texto]="mensagemComplementarCampo('objetivo')"></form-warning-tooltip>
                   </validation-message>
                 </label>
-                <textarea rows="5" class="form-control" id="objetivo" formControlName="objetivo"
+                <textarea rows="5" class="form-control siscap-text-body" id="objetivo" formControlName="objetivo"
                   maxLength="2000"></textarea>
               </div>
 
               <div data-control-path="objetivoEspecifico" class="col-12">
-                <label for="objetivoEspecifico" class="form-label col-12"
+                <label for="objetivoEspecifico" class="siscap-field-label"
                   [ngClass]="{'alerta-complementar-campo': deveComplementarCampo('objetivoEspecifico'),}">
                   <validation-message [control]="getControl('objetivoEspecifico')">
                     {{ MENSAGENS.OBJETIVOS_ESPECIFICOS }}
@@ -350,12 +345,12 @@
                       [texto]="mensagemComplementarCampo('objetivoEspecifico')"></form-warning-tooltip>
                   </validation-message>
                 </label>
-                <textarea rows="5" class="form-control" id="objetivoEspecifico" formControlName="objetivoEspecifico"
+                <textarea rows="5" class="form-control siscap-text-body" id="objetivoEspecifico" formControlName="objetivoEspecifico"
                   maxLength="2000"></textarea>
               </div>
 
               <div data-control-path="solucoesPropostas" class="col-12">
-                <label for="solucoesPropostas" class="form-label col-12" [ngClass]="{
+                <label for="solucoesPropostas" class="siscap-field-label" [ngClass]="{
                     'alerta-complementar-campo':
                       deveComplementarCampo('solucoesPropostas'),
                   }">
@@ -366,47 +361,12 @@
                       [texto]="mensagemComplementarCampo('solucoesPropostas')"></form-warning-tooltip>
                   </validation-message>
                 </label>
-                <textarea rows="5" class="form-control" id="solucoesPropostas" formControlName="solucoesPropostas"
+                <textarea rows="5" class="form-control siscap-text-body" id="solucoesPropostas" formControlName="solucoesPropostas"
                   maxLength="2000"></textarea>
               </div>
 
-              <!-- <div data-control-path="valor" class="col-12">
-                <siscap-valor-form [moedasList]="moedasList" [tiposValorOpcoes]="tiposValorOpcoes"
-                  [camposComplementarProjeto]="camposComplementarProjeto"
-                  [statusProjeto]="statusProjeto"></siscap-valor-form>
-              </div> -->
-
-              <!-- <div data-control-path="acoesProjeto" class="col-12">
-                <label for="acoes" class="form-label col-12" [ngClass]="{
-                    'alerta-complementar-campo':
-                      deveComplementarCampo('acoesProjeto'),
-                  }">
-                  <validation-message [control]="getControl('acoesProjeto')">
-                    {{ MENSAGENS.ACOES }}
-                    <form-warning-tooltip *ngIf="deveComplementarCampo('acoesProjeto')"
-                      [texto]="mensagemComplementarCampo('acoesProjeto')"></form-warning-tooltip>
-                  </validation-message>
-                </label>
-                <siscap-acoes-form [isModoEdicao]="isModoEdicao"></siscap-acoes-form>
-              </div> -->
-
-              <!-- <div data-control-path="rateio" class="col-12 mt-2">
-                <label for="rateio" class="form-label col-12" [ngClass]="{
-                    'alerta-complementar-campo':
-                      deveComplementarCampo('rateio'),
-                  }">
-                  <validation-message [control]="getControl('rateio')">
-                    {{ MENSAGENS.REGIOES_GEOGRAFICAS_ATENDIDAS }}
-                    <form-helper-tooltip [texto]="projetoTooltip['rateio']"></form-helper-tooltip>
-                    <form-warning-tooltip *ngIf="deveComplementarCampo('rateio')"
-                      [texto]="mensagemComplementarCampo('rateio')"></form-warning-tooltip>
-                  </validation-message>
-                </label>
-                <siscap-rateio-form [isModoEdicao]="isModoEdicao"></siscap-rateio-form>
-              </div> -->
-
               <div data-control-path="arranjosInstitucionais" class="col-12">
-                <label for="arranjosInstitucionais" class="form-label col-12" [ngClass]="{
+                <label for="arranjosInstitucionais" class="siscap-field-label" [ngClass]="{
                     'alerta-complementar-campo': deveComplementarCampo(
                       'arranjosInstitucionais'
                     ),
@@ -419,18 +379,16 @@
                       "></form-warning-tooltip>
                   </validation-message>
                 </label>
-                <textarea rows="5" class="form-control" id="arranjosInstitucionais"
+                <textarea rows="5" class="form-control siscap-text-body" id="arranjosInstitucionais"
                   formControlName="arranjosInstitucionais" maxLength="2000"></textarea>
               </div>
-
 
             </div>
 
           </form>
 
-          <div class="navigation-buttons">
-            <button class="nav-btn" id="avancarIndicadores"
-              style="background:var(--blue); color:white; border-color:var(--blue);"
+          <div class="siscap-form-navigation">
+            <button class="siscap-form-nav-button siscap-form-nav-button-primary" id="avancarIndicadores"
               (click)="irParaIndicadores($event)">
               <i class="pi pi-arrow-right"></i>
             </button>
@@ -438,7 +396,7 @@
 
         </div>
 
-        <div class="tab-pane fade" id="tab-indicadores" role="tabpanel" aria-labelledby="nav-indicadores">
+<div class="tab-pane fade" id="tab-indicadores" role="tabpanel" aria-labelledby="nav-indicadores">
           <siscap-projeto-indicadores [formProjeto]="projetoForm" [isModoEdicao]="isModoEdicao"
             [isSubcap]="isSubcapGeoc()" [statusProjeto]="statusProjeto"
             (indicadoresCatalogoCarregados)="onIndicadoresCatalogoCarregados($event)">
@@ -548,8 +506,8 @@
                     </div>
 
                     <div class="col-12 mt-3">
-                      <button type="button" class="btn btn-link p-0 
-                        text-success 
+                      <button type="button" class="btn btn-link p-0
+                        text-success
                         fw-semibold text-decoration-none" style="font-size:14px;" (click)="baixarPdfAnexo(parecer.id)"
                         [disabled]="!parecerPossuiAnexo(parecer)">
                         <i class="fas fa-download"></i> {{ MENSAGENS.BAIXAR_PARECER }}

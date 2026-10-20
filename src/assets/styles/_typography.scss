@@ -1,0 +1,70 @@
+// As variáveis Sass são carregadas por styles.scss antes deste arquivo.
+// As classes herdam a família global definida em _fonts.scss.
+:root {
+  @each $size, $value in $siscap-font-sizes {
+    --siscap-font-size-#{$size}: #{$value};
+  }
+
+  @each $weight, $value in $siscap-font-weights {
+    --siscap-font-weight-#{$weight}: #{$value};
+  }
+
+  @each $height, $value in $siscap-line-heights {
+    --siscap-line-height-#{$height}: #{$value};
+  }
+
+  @each $role, $settings in $siscap-text-styles {
+    --siscap-text-#{$role}-size: var(--siscap-font-size-#{nth($settings, 1)});
+    --siscap-text-#{$role}-weight: var(--siscap-font-weight-#{nth($settings, 2)});
+    --siscap-text-#{$role}-line-height: var(--siscap-line-height-#{nth($settings, 3)});
+  }
+}
+
+// Classes por função: usar nos novos trechos e na migração gradual do DIC.
+@each $role, $settings in $siscap-text-styles {
+  .siscap-text-#{$role} {
+    font-size: var(--siscap-text-#{$role}-size);
+    font-weight: var(--siscap-text-#{$role}-weight);
+    line-height: var(--siscap-text-#{$role}-line-height);
+  }
+}
+
+// Utilitários para ajustes pontuais, sem !important.
+@each $size, $value in $siscap-font-sizes {
+  .siscap-fs-#{$size} {
+    font-size: var(--siscap-font-size-#{$size});
+  }
+}
+
+@each $weight, $value in $siscap-font-weights {
+  .siscap-fw-#{$weight} {
+    font-weight: var(--siscap-font-weight-#{$weight});
+  }
+}
+
+@each $height, $value in $siscap-line-heights {
+  .siscap-lh-#{$height} {
+    line-height: var(--siscap-line-height-#{$height});
+  }
+}
+
+// Compatibilidade: manter valores e prioridade das classes já usadas nas telas.
+@for $index from 1 through 5 {
+  .fs-small-#{$index} {
+    font-size: map-get($siscap-font-sizes, $index + 10);
+  }
+}
+
+@for $index from 1 through 4 {
+  .fs-large-#{$index} {
+    font-size: map-get($siscap-font-sizes, 16 + $index * 2);
+  }
+}
+
+.fs-tiny {
+  font-size: 0.8rem;
+}
+
+.fs-r-2 {
+  font-size: $large-4-font-size !important;
+}

@@ -1,0 +1,51 @@
+:root {
+  --siscap-scrollbar-size: var(--siscap-space-8);
+  --siscap-scrollbar-track: var(--siscap-color-form-surface-soft);
+  --siscap-scrollbar-thumb: var(--siscap-color-form-border);
+  --siscap-scrollbar-thumb-hover: var(--siscap-color-placeholder);
+  --siscap-scrollbar-radius: var(--siscap-space-8);
+}
+
+.siscap-drag-scroll {
+  cursor: grab;
+  touch-action: pan-x pan-y;
+}
+
+.siscap-drag-scroll.siscap-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+// Chrome, Edge e Safari: rolagens horizontais e verticais.
+*::-webkit-scrollbar {
+  width: var(--siscap-scrollbar-size);
+  height: var(--siscap-scrollbar-size);
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: var(--siscap-scrollbar-track);
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-thumb {
+  border-radius: var(--siscap-scrollbar-radius);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--siscap-scrollbar-thumb);
+  min-height: var(--siscap-space-24);
+  min-width: var(--siscap-space-24);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--siscap-scrollbar-thumb-hover);
+}
+
+// Navegadores que usam a API CSS padrão em vez dos pseudoelementos WebKit.
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--siscap-scrollbar-thumb) var(--siscap-scrollbar-track);
+  }
+}

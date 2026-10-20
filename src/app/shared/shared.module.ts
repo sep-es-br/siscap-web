@@ -1,3 +1,5 @@
+import { TableComponent } from './components/table/table.component';
+import { TableCellDirective } from './components/table/table-cell.directive';
 import { NgModule } from '@angular/core';
 
 import { ComponentsModule } from './components/components.module';
@@ -6,7 +8,7 @@ import { DirectivesModule } from './directives/directives.module';
 import { TemplatesModule } from './templates/templates.module';
 
 @NgModule({
-  imports: [ComponentsModule, PipesModule, DirectivesModule, TemplatesModule],
-  exports: [ComponentsModule, PipesModule, DirectivesModule, TemplatesModule],
+  imports: [TableComponent, TableCellDirective, ComponentsModule, PipesModule, DirectivesModule, TemplatesModule],
+  exports: [TableComponent, TableCellDirective, ComponentsModule, PipesModule, DirectivesModule, TemplatesModule],
 })
 export class SharedModule {}

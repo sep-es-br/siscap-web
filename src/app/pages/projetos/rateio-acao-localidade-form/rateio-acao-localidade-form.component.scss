@@ -9,7 +9,7 @@
 .locality-trigger {
   height: auto;
   min-height: 38px;
-  background-color: var(--bs-body-bg, #fff);
+  background-color: var(--siscap-color-white);
   cursor: pointer;
 }
 
@@ -30,8 +30,8 @@
   right: 0;
   max-height: 520px;
   overflow: hidden;
-  background: var(--bs-body-bg, #fff);
-  border: 1px solid var(--bs-border-color, #dee2e6);
+  background: var(--siscap-color-white);
+  border: 1px solid var(--siscap-color-border);
   border-radius: 0.375rem;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .tree-row:hover {
-  background: var(--bs-tertiary-bg, #f8f9fa);
+  background: var(--siscap-color-form-surface-soft);
 }
 
 .tree-expander {
@@ -79,15 +79,15 @@
 }
 
 .utility-row {
-  font-weight: 500;
+  font-weight: var(--siscap-font-weight-medium);
 }
 
 .utility-text {
-  font-size: 0.875rem;
+  font-size: var(--siscap-font-size-13);
 }
 
 .tree-meta {
-  color: var(--bs-secondary-color, #6c757d);
+  color: var(--siscap-color-form-text-muted);
   white-space: nowrap;
 }
 
@@ -102,8 +102,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.15rem;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: var(--siscap-font-size-13);
+  font-weight: var(--siscap-font-weight-medium);
 }
 
 .btn-close-sm {
@@ -126,7 +126,20 @@
 }
 
 .rateio-summary strong {
-  font-size: 1rem;
+  font-size: var(--siscap-font-size-14);
+  font-weight: var(--siscap-font-weight-semibold);
+}
+
+.rateio-summary {
+  margin-top: var(--siscap-space-16);
+  padding-top: var(--siscap-space-16);
+  border-top: 1px solid var(--siscap-color-border);
+}
+
+.rateio-summary-item {
+  text-align: right;
+
+  .small { font-size: var(--siscap-font-size-12); }
 }
 
 @media (max-width: 768px) {
@@ -180,7 +193,7 @@
 
   z-index: 2000;
 
-  background: #fff;
+  background: var(--siscap-color-white);
 }
 
 .rateio-item:hover {
@@ -219,4 +232,19 @@
 
   box-sizing: border-box;
   text-align: center;
+}
+.rateio-acao-card {
+  color: var(--siscap-color-form-text);
+  font-size: var(--siscap-font-size-13);
+  border-color: var(--siscap-color-border);
+  border-radius: var(--bs-border-radius);
+
+  > .card-body { padding: var(--siscap-space-16); }
+  .form-control, .input-group-text { font-size: var(--siscap-font-size-13); }
+  strong { font-weight: var(--siscap-font-weight-semibold); }
+}
+
+.locality-help {
+  --siscap-help-icon-size: var(--siscap-font-size-12);
+  margin-inline-start: var(--siscap-space-4);
 }

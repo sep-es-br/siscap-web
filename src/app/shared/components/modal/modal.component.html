@@ -3,7 +3,7 @@
       <ng-content select="[modalHeader]"></ng-content>
     } @else {
       <div class="siscap-modal__heading">
-        <h4 class="modal-title siscap-modal__title">{{ titulo }}</h4>
+        <h4 class="modal-title siscap-modal__title" [attr.id]="tituloId">{{ titulo }}</h4>
       </div>
     }
     @if (exibirFecharCabecalho) {

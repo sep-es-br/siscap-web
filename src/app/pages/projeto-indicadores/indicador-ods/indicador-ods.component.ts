@@ -1,4 +1,4 @@
-import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO, MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IIndicadoresCatalogoExterno, IOdsIndicadorExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
@@ -7,6 +7,8 @@ import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { OdsService } from '../../../core/services/ods/ods.service';
 import { IOdsGestao } from '../../../core/interfaces/ods-gestao.interface';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
+import { OdsCardComponent } from '../../../shared/components/ods-card/ods-card.component';
+import { DragScrollDirective } from '../../../shared/directives/drag-scroll.directive';
 
 declare var bootstrap: any;
 
@@ -17,7 +19,7 @@ declare var bootstrap: any;
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TemplatesModule],
+    TemplatesModule, OdsCardComponent, DragScrollDirective],
   templateUrl: './indicador-ods.component.html',
   styleUrl: './indicador-ods.component.scss'
 })
@@ -36,7 +38,8 @@ export class IndicadorOdsComponent implements OnInit {
   searchInput: any;
   filtroTexto: string | undefined = '';
   searchVisible: boolean = false;
-
+  public indicadorTooltip: Record<string, string> =
+    COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
   constructor(
     private fb: FormBuilder,
     private odsService: OdsService) { }
@@ -229,27 +232,27 @@ export class IndicadorOdsComponent implements OnInit {
         if (odsPorId.has(odsId)) {
 
           const existente = odsPorId.get(odsId);
-        
+
           if (!existente) {
             return;
           }
-        
+
           if (!Array.isArray(existente.indicadoresVinculados)) {
             existente.indicadoresVinculados = [];
           }
-        
+
           const jaVinculado = existente.indicadoresVinculados.some(
             (i: any) =>
               (i.idIndicadorExterno ?? i.idIndicadorCatalogoExterno ?? i.idIndicador) ===
               (indicador.idIndicador ?? indicador.idIndicadorProjeto ?? indicador.idIndicador)
           );
-        
+
           if (!jaVinculado) {
             existente.indicadoresVinculados.push(indicador);
           }
-        
+
           return;
-          
+
         }
 
         const odsCatalogo = this.odsTodas.find(o => Number(o.odsId) === odsId);

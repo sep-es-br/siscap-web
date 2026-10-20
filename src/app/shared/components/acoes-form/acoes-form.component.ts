@@ -1,9 +1,10 @@
+import { TooltipModule } from 'primeng/tooltip';
 import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { NgbTooltipModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { AcoesService } from '../../../core/services/acoes/acoes.service';
 import { NgxMaskTransformFunctionHelper } from '../../../core/helpers/ngx-mask-transform-function.helper';
 import { NgxMaskDirective } from 'ngx-mask';
@@ -22,11 +23,11 @@ import { limiteAcoesValidator } from '../../../core/validators/acoes.validator';
   selector: 'siscap-acoes-form',
   standalone: true,
   imports: [
+    TooltipModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     NgSelectModule,
-    NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
     NgxMaskDirective,

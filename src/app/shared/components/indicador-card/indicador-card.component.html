@@ -1,0 +1,65 @@
+<div class="indicator-card">
+  <div class="indicator-header">
+    <div class="indicator-name">
+      {{ indicador.nome }}
+      <span *ngIf="indicador.deProjeto" class="indicator-type-badge">
+        {{ MENSAGENS.INDICADOR_DE_PROJETO }}
+      </span>
+    </div>
+    <button type="button" class="remove-indicator-btn" [attr.aria-label]="rotuloRemover"
+      [disabled]="!podeRemover" (click)="removerIndicador()">✖</button>
+  </div>
+
+  <div class="indicator-details">
+    <div *ngIf="indicador.deProjeto" class="detail-row">
+      <span class="detail-label">{{ MENSAGENS.FORMULA_METODOLOGIA_DE_CALCULO_2 }}</span>
+      <span class="detail-value">{{ indicador.formula }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">{{ MENSAGENS.FONTE_2 }}</span>
+      <span class="detail-value">{{ indicador.fonte }}</span>
+    </div>
+    <div class="detail-row detail-row-reference">
+      <div class="detail-reference-field">
+        <span class="detail-label">{{ MENSAGENS.UNIDADE_DE_MEDIDA_2 }}</span>
+        <span class="detail-value">{{ indicador.unidadeMedida }}</span>
+      </div>
+      <div class="detail-reference-field">
+        <span class="detail-label">{{ MENSAGENS.BASE_DE_REFERENCIA_2 }}</span>
+        <span class="detail-value">{{ indicador.baseReferencia }}</span>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!indicador.deProjeto">
+      <span class="meta-section-label">{{ MENSAGENS.META }}</span>
+      <div class="meta-grid">
+        <div *ngFor="let meta of metasReferencia; trackBy: trackByMeta" class="mindicador-selecionado">
+          <div class="meta-item">
+            <span class="meta-year">{{ meta.anoMeta }}</span>
+            <span class="meta-value">{{ meta.valorMeta }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <span class="meta-section-label">{{ MENSAGENS.META_DO_PROJETO_2 }}</span>
+    <div class="meta-grid">
+      <div *ngFor="let meta of metasProjeto.controls; let j = index; trackBy: trackByMeta"
+        class="mindicador-selecionado">
+        <div class="meta-item meta-item-project">
+          <label class="meta-year" [attr.for]="idMeta(j)">
+            <validation-message [control]="controleMeta(j)" [exibirErros]="false">
+              {{ meta.get('anoMeta')?.value }}
+            </validation-message>
+          </label>
+          <input type="text" class="meta-value-input" [formControl]="controleMeta(j)" maxlength="20"
+            [id]="idMeta(j)" [attr.aria-describedby]="idMeta(j) + '-erro'"
+            [attr.aria-invalid]="controleMeta(j).invalid && controleMeta(j).touched"
+            placeholder="{{ MENSAGENS.DIGITE_A_META }}">
+          <validation-message class="meta-validation-message" [exibirObrigatorio]="false"
+            [id]="idMeta(j) + '-erro'" [control]="controleMeta(j)"></validation-message>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

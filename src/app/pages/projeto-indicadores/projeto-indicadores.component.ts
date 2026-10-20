@@ -14,6 +14,7 @@ import { ToastService } from '../../core/services/toast/toast.service';
 import { TemplatesModule } from '../../shared/templates/templates.module';
 import { FilterCardComponent } from '../../shared/components/filter-card/filter-card.component';
 import { FilterChip } from '../../shared/components/filter-card/filter-chip.interface';
+import { IndicadorCardComponent, IndicadorCardDados } from '../../shared/components/indicador-card/indicador-card.component';
 
 export interface IndicadorProjetoForm {
   idIndicador: number;
@@ -37,6 +38,7 @@ declare var bootstrap: any;
     FiltroIndicadoresComponent,
     FilterCardComponent,
     SelecaoIndicadoresComponent,
+    IndicadorCardComponent,
     ReactiveFormsModule,
     TemplatesModule
   ],
@@ -185,8 +187,26 @@ export class ProjetoIndicadoresComponent implements OnInit {
     return indicador.idIndicador ?? indicador.nomeIndicador;
   }
 
-  trackByMeta(index: number, meta: any): number | string {
-    return meta?.get?.('anoMeta')?.value ?? meta?.anoMeta ?? index;
+  dadosCardCatalogo(indicador: IIndicadoresCatalogoExterno): IndicadorCardDados {
+    return {
+      nome: indicador.nomeIndicador,
+      fonte: indicador.medidoPor,
+      unidadeMedida: indicador.unidadeMedida,
+      baseReferencia: `${indicador.maiorAnoInidicador ?? ''} (${indicador.maiorMetaIndicador ?? ''})`,
+      formula: indicador.formulaCalculo,
+      deProjeto: indicador.avulso ?? false,
+    };
+  }
+
+  dadosCardProjeto(indicador: AbstractControl): IndicadorCardDados {
+    return {
+      nome: indicador.get('nomeIndicador')?.value ?? '',
+      fonte: indicador.get('fonteIndicador')?.value || indicador.get('medidoPor')?.value,
+      unidadeMedida: indicador.get('unidadeMedida')?.value,
+      baseReferencia: indicador.get('baseDeReferencia')?.value || indicador.get('basedeReferencia')?.value,
+      formula: indicador.get('formulaCalculo')?.value,
+      deProjeto: true,
+    };
   }
 
   removerIndicador(indicador: any): void {
@@ -400,12 +420,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
     return this.getIndicadorForm(index).get('metasIndicadorProjeto') as FormArray;
   }
 
-  getMetaProjetoControl(indicadorIndex: number, metaIndex: number): FormControl {
-    return this.getMetas(indicadorIndex)
-      .at(metaIndex)
-      .get('valorMeta') as FormControl;
-  }
-
   getIndicadoresAvulsos(): FormArray {
     return this.formProjeto.get('indicadoresAvulsosProjeto') as FormArray;
   }
@@ -416,12 +430,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   getMetasIndicadorAvulsoProjeto(index: number): FormArray {
     return this.getIndicadorAvulsoProjetoForm(index).get('metasIndicadorProjeto') as FormArray;
-  }
-
-  getMetaIndicadorAvulsoProjetoControl(indicadorIndex: number, metaIndex: number): FormControl {
-    return this.getMetasIndicadorAvulsoProjeto(indicadorIndex)
-      .at(metaIndex)
-      .get('valorMeta') as FormControl;
   }
 
   voltarParaDic() {

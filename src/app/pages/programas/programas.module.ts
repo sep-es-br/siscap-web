@@ -9,7 +9,6 @@ import {
     NgbAccordionItem,
     NgbAlertModule,
     NgbPaginationModule,
-    NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { SharedModule } from '../../shared/shared.module';
@@ -45,7 +44,6 @@ import { ProgressoButtonComponent } from '../../shared/components/progresso-butt
         NgxMaskPipe,
         NgbPaginationModule,
         NgbAlertModule,
-        NgbTooltipModule,
         ProgramasRoutingModule,
         OrgaosPapeisFormComponent,
         NomeStatusProgramaPipe,

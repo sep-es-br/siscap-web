@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { IOpcaoPlanejamento, IPeriodoPlanejamento } from '../../../pages/projetos/projeto-ppa-loa/ppa-loa-filtro/filtro-acoes.component';
 import { map, Observable, of, tap } from 'rxjs';
-import { PlanejamentoAcao } from '../../../pages/projetos/projeto-ppa-loa/projeto-ppa-loa.component';
+import { PlanejamentoAcao } from '../../interfaces/planejamento-acao.interface';
 
 @Injectable({
   providedIn: 'root'

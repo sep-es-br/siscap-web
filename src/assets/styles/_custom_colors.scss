@@ -1,25 +1,52 @@
-/*
-	- Configuração de cores do SISCAP - 
-
-	Cria variáveis CSS na raiz da aplicação com prefixo "--siscap-"
-	Facilita acesso por parte dos componentes sem conflitar com variáveis CSS do Bootstrap
-*/
-
-$light-colors: (
-  "primary-1": #0096e1,
-  "primary-2": #85beff,
+// Papéis compartilhados. Bootstrap acompanha o tema atual;
+// a paleta do DIC mantém os valores próprios existentes.
+$siscap-semantic-colors: (
+  primary: var(--bs-primary),
+  secondary: var(--bs-secondary),
+  text: var(--bs-body-color),
+  text-muted: var(--bs-secondary-color),
+  text-on-primary: var(--siscap-color-white),
+  background: var(--bs-light),
+  surface: var(--bs-body-bg),
+  border: var(--bs-border-color),
+  success: var(--bs-success),
+  success-soft: var(--bs-success-bg-subtle),
+  success-text: var(--bs-success-text-emphasis),
+  warning: var(--bs-warning),
+  warning-soft: var(--bs-warning-bg-subtle),
+  warning-text: var(--bs-warning-text-emphasis),
+  danger: var(--bs-danger),
+  danger-soft: var(--bs-danger-bg-subtle),
+  danger-text: var(--bs-danger-text-emphasis),
+  info: var(--bs-info),
+  info-soft: var(--bs-info-bg-subtle),
+  info-text: var(--bs-info-text-emphasis),
 );
 
-$dark-colors: (
-  "background": #1e2227,
-);
+$siscap-colors: map-merge($siscap-palette, $siscap-semantic-colors);
 
 :root {
-  @each $property, $value in $light-colors {
-    --siscap-light-#{$property}: #{$value};
+  @each $role, $value in $siscap-colors {
+    --siscap-color-#{$role}: #{$value};
   }
 
-  @each $property, $value in $dark-colors {
-    --siscap-dark-#{$property}: #{$value};
+  // Compatibilidade com os componentes ainda não migrados.
+  --siscap-light-primary-1: var(--siscap-color-accent);
+  --siscap-light-primary-2: var(--siscap-color-accent-soft);
+  --siscap-dark-background: var(--siscap-color-header);
+}
+
+// Utilitários opt-in, sem !important.
+@each $role, $value in $siscap-colors {
+  .siscap-color-#{$role} {
+    color: var(--siscap-color-#{$role});
+  }
+
+  .siscap-bg-#{$role} {
+    background-color: var(--siscap-color-#{$role});
+  }
+
+  .siscap-border-#{$role} {
+    border-color: var(--siscap-color-#{$role});
   }
 }

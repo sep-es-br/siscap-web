@@ -5,6 +5,7 @@ import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'button[app-progresso-button]',
   standalone: true,
+  host: { class: 'btn btn-secondary' },
   imports: [
     CommonModule,
     NgbAccordionModule

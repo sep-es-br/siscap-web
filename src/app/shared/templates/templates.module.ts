@@ -1,10 +1,10 @@
+import { TooltipModule } from 'primeng/tooltip';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import {
   NgbAlertModule,
   NgbDropdownModule,
-  NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
@@ -41,13 +41,13 @@ import { PollingModalComponent } from './polling-modal/polling-modal.component';
     PollingModalComponent,
   ],
   imports: [
+    TooltipModule,
     CommonModule,
     FormsModule,
     BotaoComponent,
     ModalComponent,
     NgbDropdownModule,
     NgbAlertModule,
-    NgbTooltipModule,
   ],
   exports: [
     ModalComponent,

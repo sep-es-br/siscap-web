@@ -1,0 +1,80 @@
+  <!-- Ações para selecionar -->
+  <div class="card selection-card">
+    <div class="card-header-main">
+      <h2 class="siscap-text-subtitle planejamento-card-title">
+        {{ MENSAGENS.SELECIONE_A_ACAO }}
+        <form-helper-tooltip [texto]="textoAjuda"></form-helper-tooltip>
+      </h2>
+      <div *ngIf="possuiAcoes" class="search-container" [class.expanded]="searchVisible">
+        <span class="p-input-icon-left p-input-icon-right w-100">
+          <i
+            class="pi pi-search search-icon cursor-pointer"
+            (click)="toggleSearch()"
+          ></i>
+          <input
+            #searchInput
+            [style.display]="searchVisible ? 'block' : 'none'"
+            pInputText
+            type="text"
+            class="w-100 search-input"
+            placeholder="{{ MENSAGENS.NOME_DA_ACAO }}"
+            [ngModel]="filtroTexto"
+            (ngModelChange)="buscaAlterada.emit($event)"
+            [disabled]="!podeEditar"
+          />
+          <i
+            class="pi pi-times clear-icon cursor-pointer"
+            *ngIf="filtroTexto && searchVisible"
+            (click)="limparBusca()"
+          ></i>
+        </span>
+      </div>
+    </div>
+
+    <div class="siscap-empty-state" *ngIf="!carregando && acoes.length === 0">
+      {{ MENSAGENS.NENHUMA_ACAO_SELECIONADA }}
+    </div>
+
+    <div class="card-body" *ngIf="carregando || acoes.length > 0">
+      <ng-container *ngIf="!carregando; else loadingTpl">
+        <ng-container *ngIf="acoes.length > 0">
+          <div class="acao-item select-all">
+            <label class="acao-label">
+              <p-checkbox
+                [binary]="true"
+                [ngModel]="todosSelecionados"
+                (onChange)="selecionarTodos.emit($event.checked)"
+                [disabled]="!podeEditar"
+              ></p-checkbox>
+              <span class="select-all-label">{{
+                MENSAGENS.SELECIONAR_TODOS
+              }}</span>
+            </label>
+          </div>
+
+          <div class="acoes-lista">
+            <div class="acao-item" *ngFor="let acao of acoes; trackBy: trackByAcao">
+              <label class="acao-label">
+                <p-checkbox
+                  [binary]="true"
+                  [ngModel]="acao.selecionada"
+                  (ngModelChange)="alternarAcao.emit(acao)"
+                  [ngModelOptions]="{ standalone: true }"
+                  [disabled]="!podeEditar"
+                >
+                </p-checkbox>
+                <span>{{ acao.nome }}</span>
+              </label>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+<ng-template #loadingTpl>
+  <div class="siscap-empty-state" role="status" aria-live="polite">
+    <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+    {{ MENSAGENS.CARREGANDO_ACOES }}
+  </div>
+</ng-template>

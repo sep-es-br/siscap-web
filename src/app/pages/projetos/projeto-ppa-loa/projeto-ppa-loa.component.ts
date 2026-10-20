@@ -1,6 +1,9 @@
-import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
-import { Component, ElementRef, Input, TrackByFunction, ViewChild } from '@angular/core';
-import { NgbModal, NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { SelecaoAcoesPlanejamentoComponent, AcaoPlanejamentoOpcao } from '../../../shared/components/selecao-acoes-planejamento/selecao-acoes-planejamento.component';
+import { PlanejamentoAcao } from '../../../core/interfaces/planejamento-acao.interface';
+import { AcaoPlanejamentoCardComponent } from '../../../shared/components/acao-planejamento-card/acao-planejamento-card.component';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO, MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
+import { Component, Input, TrackByFunction } from '@angular/core';
+import { NgbModal, NgbModalModule, NgbPopoverModule, } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -9,47 +12,13 @@ import { finalize, Subscription } from 'rxjs';
 import { ToastService } from '../../../core/services/toast/toast.service';
 import { PpaloaIntegracaoBiService } from '../../../core/services/ppaloa-integracao-bi/ppaloa-integracao-bi.service';
 import { IAcaoPlanejamentoProjeto } from '../../../core/interfaces/acao-planejamento-projeto.interface';
-import { CheckboxModule } from 'primeng/checkbox';
+
 import { AbstractControl, FormControl, FormGroup, FormsModule } from '@angular/forms';
-import { InputTextModule } from 'primeng/inputtext';
+
 import { FilterCardComponent } from '../../../shared/components/filter-card/filter-card.component';
 import { FilterChip } from '../../../shared/components/filter-card/filter-chip.interface';
-import { TooltipModule } from 'primeng/tooltip';
+
 import { ConfirmationModalComponent } from '../../../shared/templates/confirmation-modal/confirmation-modal.component';
-
-export interface PlanejamentoAcao {
-  id: number;
-  codigoOrgao: string | null;
-  siglaOrgao: string | null;
-  nomeOrgao: string | null;
-  codigoUnidadeOrcamentaria: string | null;
-  siglaUnidadeOrcamentaria: string | null;
-  nomeUnidadeOrcamentaria: string | null;
-  codigoPrograma: string | null;
-  nomePrograma: string | null;
-  codigoAcao: string | null;
-  nomeAcao: string | null;
-  codigoFuncao: string | null;
-  nomeFuncao: string | null;
-  valorPpa: number | null;
-  valorLoa: number;
-  anoAcao: string;
-  detalhamentosLoa: DetalhamentoOrcamentarioLoa[];
-  valorTotalDetalhamento?: number;
-}
-
-export interface DetalhamentoOrcamentarioLoa {
-  codigoGnd: string | null;
-  codigoModalidade: string | null;
-  idUso: string | null;
-  fonte: string | null;
-  valor: number | null;
-  nomeGrupoDespesa: string | null;
-  nomeModalidade: string | null;
-  nomeIdUso: string | null;
-  nomeFonte: string | null;
-
-}
 
 export interface PlanejamentoFiltroAplicado {
   id: number | string;
@@ -65,16 +34,14 @@ declare var bootstrap: any;
   imports: [
     CommonModule,
     NgSelectModule,
-    NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
     TemplatesModule,
     FilterCardComponent,
     FiltroAcoesComponent,
-    CheckboxModule,
     FormsModule,
-    InputTextModule,
-    TooltipModule
+    SelecaoAcoesPlanejamentoComponent,
+    AcaoPlanejamentoCardComponent
   ],
   templateUrl: './projeto-ppa-loa.component.html',
   styleUrl: './projeto-ppa-loa.component.scss'
@@ -107,12 +74,7 @@ export class ProjetoPpaLoaComponent {
   trackByFiltro: TrackByFunction<any> = (_, filtro) => filtro.id;
   trackByAcao: TrackByFunction<PlanejamentoAcao> = (_, acao) => acao.id;
 
-  trackByDetalhamentoLoa(
-    index: number,
-    detalhe: DetalhamentoOrcamentarioLoa
-  ): string {
-    return `${detalhe.codigoGnd}-${detalhe.codigoModalidade}-${detalhe.idUso}-${detalhe.fonte}-${index}`;
-  }
+
 
   showModal: boolean = false;
   carregandoDadosIniciais: boolean = false;
@@ -124,10 +86,9 @@ export class ProjetoPpaLoaComponent {
   selectAll: boolean = false;
   private readonly idsAcoesSelecaoPendente = new Set<number>();
 
-  searchVisible: boolean = false;
 
-  @ViewChild('searchInput')
-  searchInput!: ElementRef<HTMLInputElement>;
+
+
 
   filtroTexto: string = '';
 
@@ -135,6 +96,7 @@ export class ProjetoPpaLoaComponent {
 
   private acoesPlanejamentoBackup: PlanejamentoAcao[] = [];
   private acoesPlanejamentoProjetoBackup: IAcaoPlanejamentoProjeto[] = [];
+  public projetoPPAListTooltip: Record<string, string> = COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
 
   constructor(private readonly _ngbModalService: NgbModal,
     private readonly _toastService: ToastService,
@@ -1218,33 +1180,12 @@ export class ProjetoPpaLoaComponent {
     this.updateSelectAllState();
   }
 
-  toggleSearch(): void {
-
-    if (!this.podeEditar) {
-      return;
-    }
-
-    this.searchVisible = !this.searchVisible;
-    if (this.searchVisible) {
-      setTimeout(() => {
-        this.searchInput?.nativeElement.focus();
-      });
-    }
-
+  get acoesDisponiveisView(): AcaoPlanejamentoOpcao[] {
+    return this.listaAcoesFiltradas.map(acao => ({
+      ...acao,
+      selecionada: this.isSelecionado(acao),
+    }));
   }
-
-  limparBusca(): void {
-
-    if (!this.podeEditar) {
-      return;
-    }
-
-    this.filtroTexto = '';
-    this.filtrarAcoes();
-    this.searchInput?.nativeElement.focus();
-
-  }
-
   filtrarAcoes(): void {
 
     const termo = this.filtroTexto
@@ -1368,9 +1309,9 @@ export class ProjetoPpaLoaComponent {
   private configurarPeriodoPlanejamento(
     periodo: IPeriodoPlanejamento
   ): void {
-  
+
     this.periodoPlanejamento = periodo;
-  
+
     this.chips = [
       {
         key: 'planejamento',
@@ -1380,16 +1321,16 @@ export class ProjetoPpaLoaComponent {
         removable: false,
       },
     ];
-  
+
     this.currentFilter = {
       periodoPlanejamento: this.periodoPlanejamento,
       idPeriodoPlanejamento: this.periodoPlanejamento.id
     };
-  
+
     this.listaAcoes = [];
     this.listaAcoesFiltradas = [];
-  
-    this.carregarAcoesProjetoEdicao( this.periodoPlanejamento.descricao ?? '' ); 
+
+    this.carregarAcoesProjetoEdicao( this.periodoPlanejamento.descricao ?? '' );
 
   }
 

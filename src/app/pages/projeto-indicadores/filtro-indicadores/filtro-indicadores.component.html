@@ -46,7 +46,7 @@
                         <ng-template ng-option-tmp let-item="item" let-item$="item$">
                             <div class="select-option-checkbox">
                                 <input type="checkbox" [checked]="item$.selected" tabindex="-1"
-                                    style="margin-right: 8px; pointer-events: none;" />
+                                    class="siscap-filter-option-checkbox" />
                                 <span>{{ item.valor }}</span>
                             </div>
                         </ng-template>
@@ -61,20 +61,20 @@
                 <label class="filter-label">
                     {{ MENSAGENS.DESAFIOS }}
                 </label>
-                <ng-select [items]="listaDesafiosFiltrados" 
-                    bindLabel="nome" 
-                    bindValue="id" 
+                <ng-select [items]="listaDesafiosFiltrados"
+                    bindLabel="nome"
+                    bindValue="id"
                     [(ngModel)]="filtro.desafio.id"
-                    [multiple]="true" 
-                    [closeOnSelect]="false" 
+                    [multiple]="true"
+                    [closeOnSelect]="false"
                     [searchable]="false"
                     [clearable]="true"
                     placeholder="{{ MENSAGENS.SELECIONAR }}"
-                    class="select-filtro" 
+                    class="select-filtro"
                     [disabled]="somenteLeitura || !isLabelsFilhosSelecionados()">
 
                     <ng-template ng-option-tmp let-item="item" let-item$="item$">
-                        <input type="checkbox" [checked]="item$.selected" tabindex="-1" style="margin-right: 8px; pointer-events: none;" />
+                        <input type="checkbox" [checked]="item$.selected" tabindex="-1" class="siscap-filter-option-checkbox" />
                         <span>{{ item.nome }}</span>
                     </ng-template>
 

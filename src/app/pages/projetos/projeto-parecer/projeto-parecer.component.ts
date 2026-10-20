@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { NgbModalModule, NgbPopoverModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { IParecer, IParecerAnexo } from '../../../core/interfaces/parecer.interface';
 import { ParecerService } from '../../../core/services/parecer/parecer.service';
@@ -22,7 +22,6 @@ import { ToastService } from '../../../core/services/toast/toast.service';
     FormsModule,
     ReactiveFormsModule,
     NgSelectModule,
-    NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
     TemplatesModule

@@ -1,32 +1,25 @@
-<div [formGroup]="formProjeto" class="card">
-
+<div [formGroup]="formProjeto" class="card siscap-indicator-panel acoes-panel">
     <div class="card-body">
 
-        <!-- ===================================================== -->
-        <!-- ABAS DAS AÇÕES + SOMATÓRIO                            -->
-        <!-- ===================================================== -->
 
         <div class="acoes-cabecalho">
-
-            <!-- ÁREA DAS ABAS -->
             <div class="acoes-tabs-area">
 
-                <ul class="nav nav-tabs">
-
-                    <!-- ================================================= -->
-                    <!-- ADICIONAR AÇÃO                                    -->
-                    <!-- ================================================= -->
-
-                    <li class="nav-item">
-
-                        <button type="button" class="acao-tab acao-add-tab" title="Criar nova ação"
+                <button type="button" class="acao-tab acao-add-tab" title="Criar nova ação" aria-label="Criar nova ação"
                             (click)="adicionarAcao()" [disabled]="!isModoEdicao">
 
                             <i class="fa-solid fa-plus"></i>
 
                         </button>
+<button type="button" class="acoes-scroll-arrow" *ngIf="exibirSetas && podeRolarEsquerda" aria-label="Ações anteriores" [disabled]="!podeRolarEsquerda" (click)="rolarAcoes(-1)"><i class="pi pi-chevron-left" aria-hidden="true"></i></button>
+<ul class="nav nav-tabs" #acoesScroller siscapDragScroll (scroll)="atualizarNavegacao()">
 
-                    </li>
+
+                    <!-- ================================================= -->
+                    <!-- ADICIONAR AÇÃO                                    -->
+                    <!-- ================================================= -->
+
+
 
 
                     <!-- ================================================= -->
@@ -42,78 +35,35 @@
 
 
                             <!-- SELECIONAR AÇÃO -->
-                            <button type="button" class="acao-tab acao-tab-select" [class.active]="acaoAtivaIndex === i"
+                            <button type="button" class="acao-tab acao-tab-select" [class.active]="acaoAtivaIndex === i" [attr.aria-pressed]="acaoAtivaIndex === i"
                                 (click)="selecionarAcao(i)">
 
                                 Ação #{{ i + 1 }}
 
                             </button>
-
-
-                            <!-- EXCLUIR AÇÃO ATIVA -->
-                            <button *ngIf="
-                                    isModoEdicao &&
-                                    acaoAtivaIndex === i
-                                " type="button" class="acao-tab-delete" title="Excluir Ação #{{ i + 1 }}"
-                                (click)="removerAcao(i)">
-
-                                <i class="fa-solid fa-trash"></i>
-
+                            <button *ngIf="isModoEdicao" type="button" class="acao-tab-delete"
+                              [attr.aria-label]="'Excluir ação #' + (i + 1)" title="Excluir ação"
+                              (click)="removerAcao(i)">
+                              <i class="fa-solid fa-trash" aria-hidden="true"></i>
                             </button>
 
                         </div>
 
                     </li>
 
+
                 </ul>
+<button type="button" class="acoes-scroll-arrow" *ngIf="exibirSetas && podeRolarDireita" aria-label="Próximas ações" [disabled]="!podeRolarDireita" (click)="rolarAcoes(1)"><i class="pi pi-chevron-right" aria-hidden="true"></i></button>
 
             </div>
-
-
-            <!-- ================================================= -->
-            <!-- SOMATÓRIO                                         -->
-            <!-- ================================================= -->
-
-            <div class="acoes-resumo">
-
-                <div class="text-muted small">
-                    Soma valor estimado das ações
-                </div>
-
-                <div class="fw-bold">
-
-                    {{
-                    valorTotalAcoes
-                    | mask
-                    : "separator.2"
-                    : {
-                    prefix: rateioService.simboloMoeda + " ",
-                    leadZero: true,
-                    thousandSeparator: ".",
-                    decimalMarker: ","
-                    }
-                    }}
-
-                </div>
-
+        <div class="acoes-resumo">
+            <div class="acoes-resumo-label">Soma valor estimado das ações</div>
+            <div class="acoes-resumo-valor">
+                {{ valorTotalAcoes | mask : 'separator.2' : { prefix: rateioService.simboloMoeda + ' ', leadZero: true, thousandSeparator: '.', decimalMarker: ',' } }}
             </div>
-
         </div>
-
-
-        <!-- ===================================================== -->
-        <!-- NENHUMA AÇÃO                                         -->
-        <!-- ===================================================== -->
-
-        <div *ngIf="acoesProjeto.length === 0" class="
-                alert
-                alert-light
-                border
-                text-muted
-                text-center
-                mt-4
-                py-4
-            ">
+        </div>
+        <div *ngIf="acoesProjeto.length === 0" class="siscap-empty-state">
 
             Nenhuma ação cadastrada.
 
@@ -141,24 +91,28 @@
                     <!-- ================================================= -->
                     <div class="row">
                         <div class="col-12 col-md-9 mb-3">
-                            <label [for]="'descricaoAcaoPrincipal-' + i" class="form-label" >
+                            <label [for]="'descricaoAcaoPrincipal-' + i" class="siscap-field-label" >
                                 Título
+                                <form-helper-tooltip [texto]="projetoAcoesListTooltip['descricaoAcaoPrincipal']"></form-helper-tooltip>
                                 <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" [id]="'descricaoAcaoPrincipal-' + i" 
+                            <input type="text" class="form-control" [id]="'descricaoAcaoPrincipal-' + i"
                                 formControlName="descricaoAcaoPrincipal" />
                         </div>
 
                          <div class="col-12 col-md-3 mb-3">
-                            <label [for]=" 'valorEstimadoAcaoPrincipal-' + i" class="form-label d-block text-end" >
-                                Valor Estimado
+                            <label [for]=" 'valorEstimadoAcaoPrincipal-' + i" class="siscap-field-label d-block" >
+                                Valor estimado
+                                <form-helper-tooltip [texto]="projetoAcoesListTooltip['valorEstimadoAcaoPrincipal']"></form-helper-tooltip>
                                 <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control text-end" [id]="'valorEstimadoAcaoPrincipal-' + i" 
-                                formControlName="valorEstimadoAcaoPrincipal" 
-                                mask="separator.2" prefix="R$ " 
+                            <input type="text" class="form-control text-end" [id]="'valorEstimadoAcaoPrincipal-' + i"
+                                formControlName="valorEstimadoAcaoPrincipal"
+                                siscapCurrencyCaret mask="separator.2" prefix="R$ "
                                 thousandSeparator="." decimalMarker=","
-                                [leadZero]="true" />
+                                [inputTransformFn]="rtlCurrencyInputTransformFn"
+                                [outputTransformFn]="rtlCurrencyOutputTransformFn"
+                                inputmode="decimal" />
                         </div>
 
                     </div>
@@ -168,8 +122,9 @@
                     <!-- ================================================= -->
                     <div class="row">
                         <div class="col-12 mb-3">
-                            <label [for]="'descricaoAcaoSecundaria-' + i" class="form-label">
+                            <label [for]="'descricaoAcaoSecundaria-' + i" class="siscap-field-label">
                                 Descrição de ações secundárias e produtos
+                                <form-helper-tooltip [texto]="projetoAcoesListTooltip['descricaoAcoesSecudariasProdutos']"></form-helper-tooltip>
                                 <span class="text-danger">*</span>
                             </label>
                             <textarea class="form-control" rows="3" [id]="'descricaoAcaoSecundaria-' + i" formControlName="descricaoAcaoSecundaria"></textarea>
@@ -209,23 +164,15 @@
 <!-- ============================================================= -->
 <!-- NAVEGAÇÃO ENTRE AS ABAS PRINCIPAIS                            -->
 <!-- ============================================================= -->
-<div class="navigation-buttons" style="margin-top: 20px">
+<div class="siscap-form-navigation">
 
-    <button class="nav-btn" style="
-            background: var(--blue);
-            color: white;
-            border-color: var(--blue);
-        " (click)="voltarParaOds()">
+    <button type="button" class="siscap-form-nav-button siscap-form-nav-button-primary" (click)="voltarParaOds()">
 
         <i class="pi pi-arrow-left"></i>
 
     </button>
 
-    <button class="nav-btn" style="
-            background: var(--blue);
-            color: white;
-            border-color: var(--blue);
-        " (click)="irParaPlanejamento()">
+    <button type="button" class="siscap-form-nav-button siscap-form-nav-button-primary" (click)="irParaPlanejamento()">
 
         <i class="pi pi-arrow-right"></i>
 
