@@ -50,7 +50,7 @@
 .detail-row-reference { margin-bottom: 15px; column-gap: var(--siscap-space-24); row-gap: var(--siscap-space-8); }
 
 .detail-label {
-  font-size: var(--siscap-font-size-12);
+  font-size: var(--siscap-font-size-14);
   font-weight: var(--siscap-font-weight-medium);
   color: var(--siscap-color-form-text);
   text-transform: none;
@@ -85,8 +85,8 @@
 
 .meta-item {
   position: relative;
-  background: var(--siscap-color-indicator-meta-background);
-  border: 1px solid var(--siscap-color-indicator-meta-border);
+  background: var(--siscap-color-form-surface-soft);
+  border: 1px solid var(--siscap-color-form-surface-soft);
   border-radius: 8px;
   padding: var(--siscap-space-6) var(--siscap-space-10);
   display: flex;

@@ -5,7 +5,7 @@
 
 .card-selecionados {
   margin: 0;
-  padding: var(--siscap-space-16);
+  padding: var(--siscap-space-20);
   border: none;
   border-radius: var(--bs-border-radius);
   background: var(--siscap-color-surface);
@@ -13,11 +13,9 @@
 }
 
 .indicador-selecionado {
-  padding: var(--siscap-space-6) 0;
+  padding: 0;
   font-size: var(--siscap-font-size-13);
-  border-bottom: 1px solid var(--siscap-color-panel-border);
 
-  &:last-child { border-bottom: none; }
 }
 
 #indicatorsContainer {
@@ -25,4 +23,18 @@
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr));
   gap: var(--siscap-space-16);
   width: 100%;
+  max-height: 500px;
+  overflow-y: auto;
+  align-content: start;
+  padding-right: var(--siscap-space-10);
+}
+
+@media (max-width: 768px) {
+  #indicatorsContainer {
+    max-height: none;
+    padding-right: 0;
+  }
+}
+.card-selecionados > .siscap-indicator-heading {
+  margin-bottom: var(--siscap-space-10);
 }

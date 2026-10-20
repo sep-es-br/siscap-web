@@ -347,10 +347,10 @@
                     <i class="fas fa-balance-scale me-1"></i>
                     Distribuir igualmente
                 </button>
-                <button type="button" class="btn btn-outline-danger btn-sm"
-                    [disabled]="!isModoEdicao || rateioFormArray.length === 0" (click)="zerarValores()">
+                <button type="button" class="btn btn-outline-secondary btn-sm"
+                    [disabled]="!podeZerarValores" (click)="zerarValores()">
                     <i class="fas fa-undo me-1"></i>
-                    Zerar valores
+                    Zerar os valores
                 </button>
             </div>
 
@@ -390,7 +390,7 @@
 
             </div>
 
-            <div *ngFor="let item of itensRateio; trackBy: trackByRateio; let ultimo = last" class="px-3 py-3"
+            <div *ngFor="let item of itensRateio; trackBy: trackByRateio; let ultimo = last" class="px-2 py-2"
                 [class.border-bottom]="!ultimo">
 
                 <div class="row align-items-center g-3">
@@ -457,8 +457,8 @@
 
         <!-- RESUMO DA DISTRIBUIÇÃO -->
         <div class="rateio-summary" *ngIf="rateioFormArray.length > 0">
-            <div class="rateio-summary-items">
-                <div class="rateio-summary-item">
+            <div class="row align-items-start g-3 px-3">
+                <div class="rateio-summary-item col-6 col-md-2 offset-md-6">
                     <div class="small text-muted">
                         Percentual distribuído
                     </div>
@@ -466,7 +466,7 @@
                         {{ formatarPercentual(totalPercentualDistribuido) }}
                     </strong>
                 </div>
-                <div class="rateio-summary-item">
+                <div class="rateio-summary-item col-6 col-md-3">
                     <div class="small text-muted">
                         Valor distribuído
                     </div>

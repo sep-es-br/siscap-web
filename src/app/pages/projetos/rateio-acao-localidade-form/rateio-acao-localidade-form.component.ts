@@ -478,9 +478,16 @@ export class RateioAcaoLocalidadeFormComponent
   }
 
 
+  public get podeZerarValores(): boolean {
+    return this.isModoEdicao && !!this.formAcao?.controls.rateio.controls.some(control =>
+      (control.controls.percentual.value ?? 0) !== 0 ||
+      (control.controls.quantia.value ?? 0) !== 0
+    );
+  }
+
   public zerarValores(): void {
 
-    if (!this.isModoEdicao) {
+    if (!this.podeZerarValores) {
 
       return;
 

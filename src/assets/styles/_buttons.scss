@@ -3,7 +3,7 @@
   --siscap-button-radius: 0.75rem;
   --siscap-button-padding-y: var(--siscap-space-10);
   --siscap-button-padding-x: var(--siscap-space-24);
-  --siscap-button-font-size: var(--siscap-font-size-16);
+  --siscap-button-font-size: var(--siscap-font-size-15);
 }
 
 .btn,
@@ -33,7 +33,7 @@
 .p-button.p-button-sm {
   --siscap-button-padding-y: var(--siscap-space-6);
   --siscap-button-padding-x: var(--siscap-space-12);
-  --siscap-button-font-size: var(--siscap-font-size-13);
+  --siscap-button-font-size: var(--siscap-font-size-15);
 }
 
 .btn-primary {
@@ -100,4 +100,13 @@ button.icon-text-btn {
     border-color: var(--siscap-color-form-text-muted);
     color: var(--siscap-color-form-text);
   }
+}
+
+// Cores das ações nas tabelas, inclusive durante o hover da linha.
+.siscap-table-icon-delete {
+  color: var(--siscap-color-danger);
+}
+
+.siscap-table-icon-sign {
+  color: var(--siscap-color-form-primary);
 }

@@ -1,0 +1,36 @@
+:host { display: block; min-width: 0; }
+
+table { width: 100%; }
+.siscap-table-responsive { width: 100%; overflow-x: auto; }
+.siscap-table-fixed { table-layout: fixed; }
+th, td { vertical-align: middle; }
+th {
+  font-size: var(--siscap-text-table-header-size);
+  font-weight: var(--siscap-text-table-header-weight);
+  white-space: nowrap;
+  padding: var(--siscap-space-12) var(--siscap-space-8);
+  overflow-wrap: normal;
+  word-break: normal;
+}
+td { font-size: var(--siscap-text-table-cell-size); }
+.siscap-table-sort {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  white-space: inherit;
+  cursor: pointer;
+}
+.siscap-table-sort:focus-visible {
+  outline: 2px solid var(--siscap-color-form-primary);
+  outline-offset: 2px;
+}
+.siscap-table-clickable { cursor: pointer; }
+.siscap-table-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.siscap-table-numeric { font-variant-numeric: tabular-nums; }

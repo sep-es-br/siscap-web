@@ -136,13 +136,6 @@
   border-top: 1px solid var(--siscap-color-border);
 }
 
-.rateio-summary-items {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--siscap-space-16) var(--siscap-space-32);
-}
-
 .rateio-summary-item {
   text-align: right;
 

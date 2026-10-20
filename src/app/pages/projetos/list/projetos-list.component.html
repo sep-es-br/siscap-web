@@ -1,51 +1,20 @@
-<div class="table-responsive-md">
-  <table class="table table-striped">
-    <colgroup>
-      <col class="sigla-col" />
-      <col class="titulo-col" />
-      <col class="data-criacao-col" />
-      <col class="rascunho-col" />
-      <col class="status-col" />
-      <col class="processoEdocs-col" />
-      <col class="valorEstimado-col" />
-      <col class="acoes-col" />
-    </colgroup>
-    <thead>
-      <tr>
-        <th [sortable]="'sigla'" (sort)="sortColumn($event)" class="pointer">
-          {{ MENSAGENS.SIGLA }}
-        </th>
-        <th [sortable]="'titulo'" (sort)="sortColumn($event)" class="pointer">
-          {{ MENSAGENS.TITULO }}</th>
-        <th [sortable]="'criadoEm'" (sort)="sortColumn($event)" class="pointer">
-          {{ MENSAGENS.CRIADO_EM }}</th>
-        <th></th>
-        <th [sortable]="'historicoStatus.status'" (sort)="sortColumn($event)" class="pointer">
-          {{ MENSAGENS.STATUS }}</th>
-        <th [sortable]="'protocoloEdocs'" (sort)="sortColumn($event)" class="pointer">
-          {{ MENSAGENS.PROCESSO }}<br>{{ MENSAGENS.E_DOCS }}</th>
-        <th [sortable]="'valorEstimado'" (sort)="sortColumn($event)" class="pointer">
-          {{ MENSAGENS.VALOR_2 }}<br>{{ MENSAGENS.ESTIMADO }}</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody class="fw-semibold">
-      <tr *ngFor="let projeto of projetosList()" (click)="editarProjeto(projeto.id)">
-        <td>{{ projeto.sigla }}</td>
-        <td>{{ projeto.titulo }}</td>
-        <td>{{ projeto.dataCriacaoDic | date:'dd/MM/yyyy' }}</td>
-        <td></td>
-        <td>{{ projeto.status }}</td>
-        <td class="processo-edocs" >
-          <a *ngIf="projeto.protocoloEdocs" [href]="urlEdocsBase + projeto.protocoloEdocs" target="_blank"  rel="noopener noreferrer">
+<siscap-table minWidth="72rem" [rows]="projetosList()" [columns]="colunas" [rowClickable]="true" [fixedLayout]="true" [rowKey]="identificarLinha" [caption]="MENSAGENS.DIC" (rowClick)="editarProjeto($event.id)" (sortChange)="sortColumn($event)">
+
+  <ng-template siscapTableCell="criadoEm" let-projeto>
+    {{ projeto.dataCriacaoDic | date:'dd/MM/yyyy' }}
+  </ng-template>
+
+  <ng-template siscapTableCell="edocs" let-projeto>
+    <a *ngIf="projeto.protocoloEdocs" [href]="urlEdocsBase + projeto.protocoloEdocs" target="_blank"  rel="noopener noreferrer">
             {{ projeto.protocoloEdocs }}
           </a>
           <span class="badge rounded-pill text-bg-warning d-inline-flex align-items-center gap-1" *ngIf="projetosAguardando.has(projeto.id)">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             {{ MENSAGENS.AGUARDANDO_E_DOCS }}</span>
-        </td>
-        <td class="valor-estimado" >
-          {{
+  </ng-template>
+
+  <ng-template siscapTableCell="valor" let-projeto>
+    {{
           projeto.valorEstimado
           | mask
           : "separator.2"
@@ -56,16 +25,14 @@
           decimalMarker: ","
           }
           }}
-        </td>
-        <td (click)="podeDeletarDic(projeto.id) ? $event.stopPropagation() : undefined">
-          <button type="button" class="btn-excluir" (click)="deletarProjeto(projeto.id)" [hidden]="!podeDeletarDic(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)"  title="{{ MENSAGENS.EXCLUIR }}">
-            <i class="fa-solid fa-trash-can"></i>
+  </ng-template>
+
+  <ng-template siscapTableCell="acoes" let-projeto>
+    <button type="button" class="btn-excluir" (click)="deletarProjeto(projeto.id)" [hidden]="!podeDeletarDic(projeto.id)" [disabled]="!podeDeletarDic(projeto.id)"  title="{{ MENSAGENS.EXCLUIR }}">
+            <i class="fa-solid fa-trash-can siscap-table-icon-delete"></i>
           </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <ng-content select="siscap-pagination"></ng-content>
-
-</div>
+  </ng-template>
+  <div tablePagination>
+    <ng-content select="siscap-pagination"></ng-content>
+  </div>
+</siscap-table>
