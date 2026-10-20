@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ToastService } from '../toast/toast.service';
 
 import { IHttpBackEndErrorResponse } from '../../interfaces/http-backend-error-response.interface';
+import { ProjetosService } from '../projetos/projetos.service';
 
 /**
  * @service
@@ -18,7 +19,7 @@ export class ErrorHandlerService {
 
   private redirecionandoParaLogin = false;
 
-  constructor(private _toastService: ToastService, private _router: Router) { }
+  constructor(private _toastService: ToastService, private _router: Router, private _projetosService: ProjetosService) { }
 
   /**
    * @public
@@ -98,7 +99,8 @@ export class ErrorHandlerService {
       return;
     }
 
-    const rotaAtual = this._router.url;
+    // const rotaAtual = this._router.url;
+    const rotaAtual = this.obterRotaRetorno();
 
     // Não captura a rota de login ou de retorno da autenticação.
     if (
@@ -134,6 +136,26 @@ export class ErrorHandlerService {
     }
 
     this._router.navigateByUrl('/login');
+
+  }
+
+  private obterRotaRetorno(): string {
+
+    const rotaAtual = this._router.url;
+
+    const [pathname, queryString] = rotaAtual.split('?', 2);
+
+    if (pathname === '/main/projetos/editar') {
+      const idProjeto = this._projetosService.idProjeto$.getValue();
+
+      if (idProjeto > 0) {
+        return `/main/projetos/editar/${idProjeto}${queryString ? `?${queryString}` : ''
+          }`;
+      }
+    }
+
+    return rotaAtual;
+
   }
 
 

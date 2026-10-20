@@ -22,6 +22,7 @@ import { DashboardComponent } from './home/dashboard/dashboard.component';
 
 import { PagesRoutingModule } from './pages-routing.module';
 import { TimelineModule } from 'primeng/timeline';
+import { OAuthCallbackComponent } from './oauth-callback/oauth-callback.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { TimelineModule } from 'primeng/timeline';
     MainComponent,
     HomeComponent,
     DashboardComponent,
+    OAuthCallbackComponent,
   ],
   imports: [
     CommonModule,

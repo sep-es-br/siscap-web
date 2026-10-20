@@ -11,10 +11,27 @@ export class AuthenticationService {
   private _url = `${environment.apiUrl}/oauth2/authorization/acessocidadao`;
   private _signOutUrl = 'https://acessocidadao.es.gov.br/is/connect/endsession';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
-  public acessoCidadaoSignIn() {
-    window.location.href = this._url;
+  // public acessoCidadaoSignIn(): void {
+  //   const redirectUrl = sessionStorage.getItem('redirectUrl');
+  //   const url = new URL(this._url);
+  //   if (redirectUrl) {
+  //     url.searchParams.set('returnUrl', redirectUrl);
+  //   }
+  //   window.location.href = url.toString();
+  // }
+
+  public acessoCidadaoSignIn(): void {
+    const redirectUrl = sessionStorage.getItem('redirectUrl');
+
+    const url = new URL(this._url);
+
+    if (redirectUrl?.startsWith('/') && !redirectUrl.startsWith('//')) {
+      url.searchParams.set('returnUrl', redirectUrl);
+    }
+
+    window.location.href = url.toString();
   }
 
   public acessoCidadaoSignOut() {

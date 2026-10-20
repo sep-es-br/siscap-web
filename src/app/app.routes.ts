@@ -8,6 +8,8 @@ import { MainComponent } from './pages/main/main.component';
 import { authGuard } from './core/guards/auth/auth.guard';
 import { authExternalUrlGuard } from './core/guards/auth/auth.externalUrl.guard';
 import { ProjetoFormComponent } from './pages/projetos/form/projeto-form.component';
+import { OAuthCallbackComponent } from './pages/oauth-callback/oauth-callback.component';
+import { oauthCallbackMatchGuard } from './core/guards/auth/oauthCallbackMatchGuard.guard';
 
 export const APP_ROUTES: Routes = [
   {
@@ -19,6 +21,16 @@ export const APP_ROUTES: Routes = [
     title: 'Autorizando...',
     path: 'token',
     component: AuthRedirectComponent,
+  },
+  {
+    path: 'main/projetos/editar',
+    component: OAuthCallbackComponent,
+    canMatch: [oauthCallbackMatchGuard]
+  },
+  {
+    path: 'main/programas/editar',
+    component: OAuthCallbackComponent,
+    canMatch: [oauthCallbackMatchGuard]
   },
   {
     path: 'main',
