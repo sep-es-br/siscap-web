@@ -7,6 +7,14 @@ import { ToastService } from '../toast/toast.service';
 
 import { IHttpBackEndErrorResponse } from '../../interfaces/http-backend-error-response.interface';
 import { ProjetosService } from '../projetos/projetos.service';
+import { ProgramasService } from '../programas/programas.service';
+
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart
+} from '@angular/router';
 
 /**
  * @service
@@ -19,7 +27,45 @@ export class ErrorHandlerService {
 
   private redirecionandoParaLogin = false;
 
-  constructor(private _toastService: ToastService, private _router: Router, private _projetosService: ProjetosService) { }
+  // constructor(private _toastService: ToastService, private _router: Router,
+  //   private _projetosService: ProjetosService,
+  //   private _programasService: ProgramasService) { }
+
+  constructor(
+    private _toastService: ToastService,
+    private _router: Router,
+    private _projetosService: ProjetosService,
+    private _programasService: ProgramasService
+  ) {
+
+    this._router.events.subscribe(event => {
+
+      if (event instanceof NavigationStart) {
+        console.log('[ROUTER] NavigationStart:', event.url);
+      }
+
+      if (event instanceof NavigationCancel) {
+        console.warn('[ROUTER] NavigationCancel:', {
+          url: event.url,
+          reason: event.reason,
+          code: event.code
+        });
+      }
+
+      if (event instanceof NavigationError) {
+        console.error('[ROUTER] NavigationError:', {
+          url: event.url,
+          error: event.error
+        });
+      }
+
+      if (event instanceof NavigationEnd) {
+        console.log('[ROUTER] NavigationEnd:', event.urlAfterRedirects);
+      }
+
+    });
+    
+  }
 
   /**
    * @public
@@ -82,8 +128,14 @@ export class ErrorHandlerService {
   //   }
   // }
 
-
   private handleRouting(error: HttpErrorResponse): void {
+
+    console.log('[ERROR HANDLER]', {
+      status: error.status,
+      urlRequisicao: error.url,
+      rotaAtual: this._router.url,
+      redirectUrl: sessionStorage.getItem('redirectUrl')
+    });
 
     if (error.status === 403) {
       this._router.navigateByUrl('/main');
@@ -102,6 +154,9 @@ export class ErrorHandlerService {
     // const rotaAtual = this._router.url;
     const rotaAtual = this.obterRotaRetorno();
 
+    console.log('[401] Rota capturada:', rotaAtual);
+    console.log('[401] Redirecionamento em andamento:', this.redirecionandoParaLogin);
+
     // Não captura a rota de login ou de retorno da autenticação.
     if (
       rotaAtual === '/login' ||
@@ -116,6 +171,11 @@ export class ErrorHandlerService {
 
     // Preserva temporariamente a rota original.
     sessionStorage.setItem('redirectUrl', rotaAtual);
+
+    console.log(
+      '[401] Rota armazenada:',
+      sessionStorage.getItem('redirectUrl')
+    );
 
     const isErroTokenEdocs =
       error.error?.titulo === 'EDOCS_TOKEN_EXPIRADO';
@@ -135,7 +195,12 @@ export class ErrorHandlerService {
       return;
     }
 
-    this._router.navigateByUrl('/login');
+    // this._router.navigateByUrl('/login');
+
+    this._router.navigateByUrl('/login').then(sucesso => {
+      console.log('[401] Navegação para login:', sucesso);
+      console.log('[401] Rota após navegação:', this._router.url);
+    });
 
   }
 
@@ -150,6 +215,15 @@ export class ErrorHandlerService {
 
       if (idProjeto > 0) {
         return `/main/projetos/editar/${idProjeto}${queryString ? `?${queryString}` : ''
+          }`;
+      }
+    }
+
+    if (pathname === '/main/programas/editar') {
+      const idPrograma = this._programasService.idPrograma$.getValue();
+
+      if (idPrograma > 0) {
+        return `/main/programas/editar/${idPrograma}${queryString ? `?${queryString}` : ''
           }`;
       }
     }

@@ -48,6 +48,13 @@ export class AuthRedirectComponent implements OnInit {
         const returnUrl =
           this._route.snapshot.queryParamMap.get('returnUrl');
 
+        console.log('[AUTH REDIRECT] ReturnUrl recebida:', returnUrl);
+
+        console.log(
+          '[AUTH REDIRECT] Redirect armazenado:',
+          sessionStorage.getItem('redirectUrl')
+        );
+
         // Remove a informação temporária da autenticação.
         sessionStorage.removeItem('redirectUrl');
 
@@ -65,6 +72,8 @@ export class AuthRedirectComponent implements OnInit {
           this._router.navigateByUrl(returnUrl);
           return;
         }
+
+        console.log('[AUTH REDIRECT] Rota válida:', rotaValida);
 
         // Comportamento padrão já existente.
         const destino =

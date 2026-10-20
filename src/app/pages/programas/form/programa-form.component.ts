@@ -84,6 +84,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
 import { gerarStepProgramaStatus, IStep } from '../../../core/utils/steps';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { EquipeFormType } from '../../../core/types/form/equipe-form.type';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'siscap-programa-form',
   standalone: false,
@@ -171,7 +172,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     private readonly _navegacaoService: NavegacaoService,
     private readonly _pessoasService: PessoasService,
     private readonly _usuarioService: UsuarioService,
-    private readonly _projetosService: ProjetosService
+    private readonly _projetosService: ProjetosService,
+    private readonly _activatedRoute: ActivatedRoute,
   ) {
 
     this._breadcrumbService.executarAcaoBotao$.pipe(takeUntil(this._destroy$)).subscribe((acao) =>
@@ -231,9 +233,33 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.nomeUsuario = this._usuarioService.usuarioPerfil.nome;
         this.lotacaoPrioritariaUsuario = this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
 
-        this._programasService.idPrograma$.pipe(
-          takeUntil(this._destroy$),
-          switchMap(idPrograma => idPrograma > 0 ? this._programasService.getById(idPrograma) : of(undefined))
+        this._activatedRoute.paramMap.pipe(
+          map( params => {
+            
+            const idParam = params.get('id');
+
+            if (idParam !== null) {
+              const idRota = Number(idParam);
+
+              return Number.isSafeInteger(idRota) && idRota > 0
+                ? idRota
+                : 0;
+            }
+
+            return this._programasService.idPrograma$.value;
+
+          }),
+
+          switchMap(idPrograma => {
+            if (idPrograma <= 0) {
+              return of(undefined);
+            }
+            return this._programasService.getById(idPrograma);
+
+          }),
+
+          takeUntil(this._destroy$)
+
         ).subscribe(
           programa => {
 
@@ -369,7 +395,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     this._projetosService.getById(event.id).subscribe(
       projeto => {
-        
+
         const orgaosEnvolvidosList = this.programaForm.controls['orgaosEnvolvidosList'];
 
         orgaosEnvolvidosList.patchValue([
@@ -714,29 +740,40 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     requisicao.pipe(
       finalize(() => this.salvandoPrograma = false),
     ).subscribe();
+
   }
 
   private cadastrarPrograma(payload: ProgramaFormModel): Observable<IPrograma> {
     return this._programasService.post(payload).pipe(
       tap((response: IPrograma) => {
+
         this._toastService.showToast(
           'success',
           MENSAGENS.PROGRAMA_CADASTRADO_COM_SUCESSO
         );
+
+        this.executarAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Cancelar
+        );
+
       }),
-      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
     );
   }
 
   private atualizarPrograma(payload: ProgramaFormModel): Observable<IPrograma> {
     return this._programasService.put(this._idProgramaEdicao, payload).pipe(
       tap((response: IPrograma) => {
+
         this._toastService.showToast(
           'success',
           MENSAGENS.PROGRAMA_ALTERADO_COM_SUCESSO
         );
-      }),
-      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
+
+        this.executarAcaoBreadcrumb(
+          BreadcrumbAcoesEnum.Cancelar
+        );
+
+      })
     );
   }
 
@@ -821,6 +858,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         deveExibirBotaoAutuar,
       })
     );
+
   }
 
   public exportarPrograma() {
@@ -842,9 +880,9 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       centered: true,
     });
     modalRef.componentInstance.usarModalCentralizado = true;
-    
 
-    const assinantes = this.programaAtual.programaAssinantesEdocsDto?.map( (assinante) => ({
+
+    const assinantes = this.programaAtual.programaAssinantesEdocsDto?.map((assinante) => ({
       titulo: assinante.nomeAssinante,
       descricao: assinante.papelAssinante
     }));

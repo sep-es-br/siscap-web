@@ -40,4 +40,11 @@ export class AuthenticationService {
     localStorage.removeItem('redirectUrl');
     window.location.href = this._signOutUrl;
   }
+
+  public acessoCidadaoSignInSemRedirect(): void {
+    sessionStorage.removeItem('redirectUrl');
+    localStorage.removeItem('redirectUrl');
+    window.location.href = this._url;
+  }
+
 }
