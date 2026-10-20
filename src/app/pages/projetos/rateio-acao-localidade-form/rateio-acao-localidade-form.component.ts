@@ -27,6 +27,8 @@ import { RateioService } from '../../../core/services/rateio/rateio.service';
 import { AcaoFormType } from '../../../core/types/form/acao-form.type';
 
 import { ILocalidadeOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
+import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
+import { TemplatesModule } from '../../../shared/templates/templates.module';
 
 type TipoLocalidadeView =
   | 'Estado'
@@ -53,7 +55,8 @@ interface RateioItemView {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-  ],
+    TemplatesModule
+],
 
   templateUrl: './rateio-acao-localidade-form.component.html',
   styleUrl: './rateio-acao-localidade-form.component.scss',
@@ -71,7 +74,7 @@ export class RateioAcaoLocalidadeFormComponent
 
   public dropdownAberto = false;
   private _termoBusca = '';
-
+  public localidadeTooltip:  Record<string, string> = COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
   public get termoBusca(): string {
     return this._termoBusca;
   }

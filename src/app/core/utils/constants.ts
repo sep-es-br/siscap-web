@@ -327,7 +327,7 @@ const MENSAGENS_PT_BR = {
   IMAGEM_DA_ORGANIZACAO: "Imagem da organizacao",
   IMAGEM_DA_PESSOA: "Imagem da pessoa",
   IMPACTOS: "Impactos",
-  IMPACTOS_DO_PROJETO_NO_AMBITO_AMBIENTAL_SOCIAL_E_DE_GOVERNANCA_ESG: "Impactos do Projeto no Âmbito Ambiental, Social e de Governança (ESG)",
+  IMPACTOS_DO_PROJETO_NO_AMBITO_AMBIENTAL_SOCIAL_E_DE_GOVERNANCA_ESG: "Impactos ambiental, social e de governança (ESG)",
   IMPORTAR: "Importar",
   IMPORTAR_PESSOA_DO_ACESSO_CIDADAO: "Importar pessoa do Acesso Cidadão",
   IMPOSSIVEL_ASSINAR_O_PROGRAMA_POIS_UM_DOS_ASSINANTES_JA_O_RECUSOU: "Impossível assinar o Programa pois um dos assinantes já o Recusou",
