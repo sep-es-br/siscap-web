@@ -369,7 +369,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
 
         this.importarPessoaPorCPF(cpf);
       },
-      (reject) => {}
+      (reject) => { }
     );
   }
 
@@ -461,12 +461,16 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
   private cadastrarPessoa(payload: PessoaFormModel): Observable<IPessoa> {
     return this._pessoasService.post(payload, this.arquivoImagemPessoa).pipe(
       tap((response: IPessoa) => {
+
         this._toastService.showToast(
           'success',
           MENSAGENS.PESSOA_CADASTRADA_COM_SUCESSO
         );
+
+        finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
+
       }),
-      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
+
     );
   }
 
@@ -475,14 +479,18 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
       .put(this._idPessoaEdicao, payload, this.arquivoImagemPessoa)
       .pipe(
         tap((response: IPessoa) => {
+
           this._toastService.showToast(
             'success',
             MENSAGENS.PESSOA_ALTERADA_COM_SUCESSO
           );
+
+          finalize(() =>
+            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+          )
+
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
-        )
+
       );
   }
 

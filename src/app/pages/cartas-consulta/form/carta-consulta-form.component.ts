@@ -51,6 +51,7 @@ import {
   BreadcrumbContextoEnum,
 } from '../../../core/enums/breadcrumb.enum';
 import { TipoOrganizacaoEnum } from '../../../core/enums/tipo-organizacao.enum';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'siscap-carta-consulta-form',
@@ -91,8 +92,17 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _navegacaoService: NavegacaoService,
-    private readonly _toastService: ToastService
+    private readonly _toastService: ToastService,
+    private readonly _route: ActivatedRoute,
   ) {
+
+    const idParam = this._route.snapshot.paramMap.get('id');
+
+    const idCartaConsulta = Number(idParam);
+
+    if (idParam !== null && Number.isInteger(idCartaConsulta) && idCartaConsulta > 0) {
+      this._cartasConsultaService.idCartaConsulta$.next(idCartaConsulta);
+    }
 
     const [editar$, criar$] = partition(
       this._cartasConsultaService.idCartaConsulta$,
@@ -135,7 +145,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       // tap((response: ICartaConsulta) => {
       //   console.log('Response bruto da API:', response);
       // }),
-    
+
       map<ICartaConsulta, CartaConsultaModel>(
         (response: ICartaConsulta) => new CartaConsultaModel(response)
       ),
@@ -147,7 +157,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
         this.iniciarForm(cartaConsultaModel);
 
         this.cartaConsultaForm.patchValue({
-          destinatarios: cartaConsultaModel.destinatarios.map( d => d.idOrganizacao )
+          destinatarios: cartaConsultaModel.destinatarios.map(d => d.idOrganizacao)
         });
 
         this._idCartaConsultaEdicao = cartaConsultaModel.id;
@@ -252,7 +262,7 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
         idOrganizacao
       })
     );
-    
+
     const payload: ICartaConsultaForm = {
       ...this.cartaConsultaForm.value,
       destinatarios: destinatariosPayload
@@ -271,13 +281,17 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
   ): Observable<ICartaConsulta> {
     return this._cartasConsultaService.post(payload).pipe(
       tap((response: ICartaConsulta) => {
+
         this._toastService.showToast(
           'success',
-          MENSAGENS.ORGANIZACAO_CADASTRADA_COM_SUCESSO
+          MENSAGENS.CARTA_CONSULTA_CADASTRADA_COM_SUCESSO
         );
+
+        finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar));
+
       }),
-      finalize(() => this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar))
     );
+
   }
 
   private atualizarCartaConsulta(
@@ -287,14 +301,18 @@ export class CartaConsultaFormComponent implements OnInit, OnDestroy {
       .put(this._idCartaConsultaEdicao, payload)
       .pipe(
         tap((response: ICartaConsulta) => {
+          
           this._toastService.showToast(
             'success',
-            MENSAGENS.ORGANIZACAO_ALTERADA_COM_SUCESSO
+            MENSAGENS.CARTA_CONSULTA_ATUALIZADA_COM_SUCESSO
           );
+
+          finalize(() =>
+            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+          )
+
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
-        )
+
       );
   }
 

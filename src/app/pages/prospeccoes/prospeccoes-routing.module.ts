@@ -21,6 +21,11 @@ const PROSPECCOES_ROUTES: Routes = [
     path: 'criar',
     component: ProspeccaoFormComponent,
   },
+   {
+    title: MENSAGENS.EDITAR_PROSPECCAO,
+    path: 'editar/:id',
+    component: ProspeccaoFormComponent,
+  },
   {
     title: MENSAGENS.EDITAR_PROSPECCAO,
     path: 'editar',

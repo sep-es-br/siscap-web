@@ -25,6 +25,12 @@ const PESSOAS_ROUTES: Routes = [
   },
   {
     title: MENSAGENS.EDITAR_PESSOA,
+    path: 'editar/:id',
+    component: PessoaFormComponent,
+    canActivate: [isProponenteGuard],
+  },
+  {
+    title: MENSAGENS.EDITAR_PESSOA,
     path: 'editar',
     component: PessoaFormComponent,
     canActivate: [pessoas_NoIdEditarGuard, isProponenteGuard],

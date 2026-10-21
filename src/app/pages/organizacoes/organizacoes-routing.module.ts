@@ -18,6 +18,11 @@ const ORGANIZACOES_ROUTES: Routes = [
     path: 'criar',
     component: OrganizacaoFormComponent,
   },
+   {
+    title: MENSAGENS.EDITAR_ORGANIZACAO,
+    path: 'editar/:id',
+    component: OrganizacaoFormComponent,
+  },
   {
     title: MENSAGENS.EDITAR_ORGANIZACAO,
     path: 'editar',

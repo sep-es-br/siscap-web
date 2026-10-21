@@ -48,6 +48,7 @@ import {
   alterarEstadoControlesFormulario,
   converterArrayBufferEmImgSrc,
 } from '../../../core/utils/functions';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'siscap-organizacao-form',
@@ -93,8 +94,18 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _toastService: ToastService,
-    private readonly _navegacaoService: NavegacaoService
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _route: ActivatedRoute,
   ) {
+
+    const idParam = this._route.snapshot.paramMap.get('id');
+
+    const idOrganizacao = Number(idParam);
+
+    if (idParam !== null && Number.isInteger(idOrganizacao) && idOrganizacao > 0) {
+      this._organizacoesService.idOrganizacao$.next(idOrganizacao);
+    }
+
     const [editar$, criar$] = partition(
       this._organizacoesService.idOrganizacao$,
       (idOrganizacao: number) => idOrganizacao > 0
@@ -397,14 +408,18 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       .post(payload, this.arquivoImagemOrganizacao)
       .pipe(
         tap((response: IOrganizacao) => {
+
           this._toastService.showToast(
             'success',
             MENSAGENS.ORGANIZACAO_CADASTRADA_COM_SUCESSO
           );
+
+          finalize(() =>
+            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+          )
+
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
-        )
+
       );
   }
 
@@ -415,14 +430,18 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       .put(this._idOrganizacaoEdicao, payload, this.arquivoImagemOrganizacao)
       .pipe(
         tap((response: IOrganizacao) => {
+
           this._toastService.showToast(
             'success',
             MENSAGENS.ORGANIZACAO_ALTERADA_COM_SUCESSO
           );
+
+          finalize(() =>
+            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+          )
+
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
-        )
+
       );
   }
 

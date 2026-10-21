@@ -829,6 +829,8 @@ const MENSAGENS_PT_BR = {
   ERRO_AO_INICIAR_A_ASSINATURA_E_CAPTURA_DO_PARECER_NO_E_DOCS: "Erro ao iniciar a assinatura e captura do parecer no E-Docs.",
   SELECIONE_ODS_REALCIONADOS_A_PROPOSTA: 'Selecione os ODS relacionados à proposta central do projeto, use a busca para facilitar a localização.',
   SELECIONE_AS_REGIOES_GEOGRAFICAS_REALCIONADAS_A_PROPOSTA: 'Marcar os Municípios e/ou as Microrregiões atendidas pelo projeto e estimar o percentual dos investimentos do projeto dedicado àquela região.',
+  CARTA_CONSULTA_ATUALIZADA_COM_SUCESSO: "Carta Consulta atualizada com sucesso!",
+  CARTA_CONSULTA_CADASTRADA_COM_SUCESSO: "Carta Consulta cadastrada com sucesso!",
 } as const;
 
 export const MENSAGENS: Readonly<Record<keyof typeof MENSAGENS_PT_BR, string>> = Object.freeze(MENSAGENS_PT_BR);

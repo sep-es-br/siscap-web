@@ -15,6 +15,8 @@ import {
   NavigationError,
   NavigationStart
 } from '@angular/router';
+import { CartasConsultaService } from '../cartas-consulta/cartas-consulta.service';
+import { OrganizacoesService } from '../organizacoes/organizacoes.service';
 
 /**
  * @service
@@ -35,7 +37,9 @@ export class ErrorHandlerService {
     private _toastService: ToastService,
     private _router: Router,
     private _projetosService: ProjetosService,
-    private _programasService: ProgramasService
+    private _programasService: ProgramasService,
+    private readonly _cartasConsultaService: CartasConsultaService,
+    private readonly _organizacoesService: OrganizacoesService,
   ) {
 
     this._router.events.subscribe(event => {
@@ -224,6 +228,24 @@ export class ErrorHandlerService {
 
       if (idPrograma > 0) {
         return `/main/programas/editar/${idPrograma}${queryString ? `?${queryString}` : ''
+          }`;
+      }
+    }
+
+    if (pathname === '/main/cartasconsulta/editar') {
+      const idPesquisa = this._cartasConsultaService.idCartaConsulta$.getValue();
+
+      if (idPesquisa > 0) {
+        return `/main/cartasconsulta/editar/${idPesquisa}${queryString ? `?${queryString}` : ''
+          }`;
+      }
+    }
+
+    if (pathname === '/main/organizacoes/editar') {
+      const idOrganizacao = this._organizacoesService.idOrganizacao$.getValue();
+
+      if (idOrganizacao > 0) {
+        return `/main/organizacoes/editar/${idOrganizacao}${queryString ? `?${queryString}` : ''
           }`;
       }
     }
