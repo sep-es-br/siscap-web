@@ -308,6 +308,10 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   }
 
   private executarAcaoBreadcrumb(acao: string): void {
+
+    console.log('[ORGANIZACAO] Ação breadcrumb:', acao);
+    console.trace('[ORGANIZACAO] Origem da ação');
+
     switch (acao) {
       case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
@@ -373,6 +377,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   }
 
   private submitOrganizationForm(form: FormGroup) {
+    
     for (const key in form.controls) {
       form.controls[key].markAsTouched();
     }
@@ -385,12 +390,12 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     }
 
     // Habilitar controles para envio do formulário
-    form.controls['nome'].enable();
-    form.controls['abreviatura'].enable();
-    form.controls['cnpj'].enable();
-    form.controls['idPais'].enable();
-    form.controls['idTipoOrganizacao'].enable();
-    form.controls['idPessoaResponsavel'].enable();
+    form.controls['nome'].enable({ emitEvent: false });
+    form.controls['abreviatura'].enable({ emitEvent: false });
+    form.controls['cnpj'].enable({ emitEvent: false });
+    form.controls['idPais'].enable({ emitEvent: false });
+    form.controls['idTipoOrganizacao'].enable({ emitEvent: false });
+    form.controls['idPessoaResponsavel'].enable({ emitEvent: false });
 
     const payload = new OrganizacaoFormModel(form.value as IOrganizacaoForm);
 
@@ -399,6 +404,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       : this.cadastrarOrganizacao(payload);
 
     requisicao.subscribe();
+
   }
 
   private cadastrarOrganizacao(

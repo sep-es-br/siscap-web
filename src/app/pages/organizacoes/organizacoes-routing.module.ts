@@ -22,6 +22,7 @@ const ORGANIZACOES_ROUTES: Routes = [
     title: MENSAGENS.EDITAR_ORGANIZACAO,
     path: 'editar/:id',
     component: OrganizacaoFormComponent,
+    canActivate: [organizacoes_NoIdEditarGuard],
   },
   {
     title: MENSAGENS.EDITAR_ORGANIZACAO,

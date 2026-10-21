@@ -39,7 +39,17 @@ export class AuthRedirectComponent implements OnInit {
 
       next: (response: IUsuario) => {
 
+        console.log(
+          '[AUTH] Token SISCAP recebido:',
+          !!response.token
+        );
+
         sessionStorage.setItem('token', response.token);
+
+        console.log(
+          '[AUTH] Token armazenado:',
+          sessionStorage.getItem('token') === response.token
+        );
 
         this._usuarioService.usuarioPerfil =
           new UsuarioPerfilModel(response);
