@@ -123,6 +123,7 @@ import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
 import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
 import { noWhitespaceValidator } from '../../../core/validators/nowhitespacevalidator.validator';
 import { AcaoFormType } from '../../../core/types/form/acao-form.type';
+import { IndicadorOdsComponent } from '../../projeto-indicadores/indicador-ods/indicador-ods.component';
 
 declare var bootstrap: any;
 
@@ -444,6 +445,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   @ViewChild('enviarParecerProjetoModal') enviarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('efetivarParecerProjetoModal') efetivarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('entranharPareceresEdocsProjetoModal') entranharPareceresEdocsProjetoModalTemplate: TemplateRef<any> | undefined;
+
+  @ViewChild(IndicadorOdsComponent)
+  indicadorOdsComponent?: IndicadorOdsComponent;
+
+  onIndicadorAdicionado(
+    indicador: IIndicadoresCatalogoExterno
+  ): void {
+
+    this.indicadorOdsComponent
+      ?.adicionarOdsDoIndicador(indicador);
+
+  }
 
   // otimizacao carga agentes goves..
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
