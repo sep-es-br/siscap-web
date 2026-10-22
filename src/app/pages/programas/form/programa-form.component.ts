@@ -1,5 +1,5 @@
 import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
-import { Component, OnDestroy, OnInit, AfterViewInit, HostListener, TemplateRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, HostListener } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -578,22 +578,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     this.objetivoEditado = true;
   }
 
-  public abrirObjetivosDics(conteudo: TemplateRef<unknown>): void {
-    this._ngbModalService.open(conteudo, {
-      centered: true,
-      size: 'lg',
-      scrollable: true,
-      ariaLabelledBy: 'objetivos-dics-titulo',
-    });
-  }
-
   public tentarCarregarInformacoesDics(): void {
     this.recarregarInformacoesDics$.next();
   }
 
   private observarInformacoesDics(programaModel?: ProgramaFormModel): void {
     this.informacoesDicsSubscription?.unsubscribe();
-    this.objetivoEditado = !!programaModel;
+    this.objetivoEditado = false;
     this.objetivoPrecisaRevisao = false;
     this.regioesAtendidas = programaModel?.regioesAtendidas ?? [];
 
@@ -619,10 +610,11 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
             return of(null);
           }),
           finalize(() => this.carregandoInformacoesDics = false),
+          map(informacoes => ({ informacoes, inicial })),
         );
       }),
       takeUntil(this._destroy$),
-    ).subscribe(informacoes => {
+    ).subscribe(({ informacoes, inicial }) => {
       if (!informacoes) {
         return;
       }
@@ -632,7 +624,8 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       if (this.isProgramaAtualEditavel || !possuiRegioesSalvas) {
         this.regioesAtendidas = informacoes.regioesAtendidas;
       }
-      if (!this.objetivoEditado && this.isProgramaAtualEditavel) {
+      const devePreservarObjetivoSalvo = inicial && !!programaModel;
+      if (!this.objetivoEditado && this.isProgramaAtualEditavel && !devePreservarObjetivoSalvo) {
         const objetivos = informacoes.dics.map(dic => dic.objetivo?.trim()).filter(Boolean);
         this.getControl('objetivo').setValue([...new Set(objetivos)].join('\n\n'));
       }

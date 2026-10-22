@@ -263,7 +263,26 @@ div[ngbAccordionItem] {
 }
 
 
-.objetivos-dics-lista {
-  max-height: 55dvh;
-  overflow-y: auto;
+.dics-vinculados-resumo {
+  padding: 14px;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+}
+
+.dics-vinculados-resumo__conteudo {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f6f8fa;
+  font-size: 0.875rem;
+}
+
+.dics-vinculados-resumo__item + .dics-vinculados-resumo__item {
+  margin-top: 14px;
+}
+
+.regioes-atendidas-lista {
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 0;
+  margin-left: 0;
 }
