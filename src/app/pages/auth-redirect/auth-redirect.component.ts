@@ -38,18 +38,8 @@ export class AuthRedirectComponent implements OnInit {
     this._usuarioService.buscarUsuario().subscribe({
 
       next: (response: IUsuario) => {
-
-        console.log(
-          '[AUTH] Token SISCAP recebido:',
-          !!response.token
-        );
-
+        
         sessionStorage.setItem('token', response.token);
-
-        console.log(
-          '[AUTH] Token armazenado:',
-          sessionStorage.getItem('token') === response.token
-        );
 
         this._usuarioService.usuarioPerfil =
           new UsuarioPerfilModel(response);
@@ -57,13 +47,6 @@ export class AuthRedirectComponent implements OnInit {
         // Rota devolvida pelo fluxo de autenticação.
         const returnUrl =
           this._route.snapshot.queryParamMap.get('returnUrl');
-
-        console.log('[AUTH REDIRECT] ReturnUrl recebida:', returnUrl);
-
-        console.log(
-          '[AUTH REDIRECT] Redirect armazenado:',
-          sessionStorage.getItem('redirectUrl')
-        );
 
         // Remove a informação temporária da autenticação.
         sessionStorage.removeItem('redirectUrl');
@@ -82,8 +65,6 @@ export class AuthRedirectComponent implements OnInit {
           this._router.navigateByUrl(returnUrl);
           return;
         }
-
-        console.log('[AUTH REDIRECT] Rota válida:', rotaValida);
 
         // Comportamento padrão já existente.
         const destino =

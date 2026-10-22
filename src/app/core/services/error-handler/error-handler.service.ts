@@ -44,32 +44,27 @@ export class ErrorHandlerService {
     private readonly _pessoasService: PessoasService
   ) {
 
-    this._router.events.subscribe(event => {
-
-      if (event instanceof NavigationStart) {
-        console.log('[ROUTER] NavigationStart:', event.url);
-      }
-
-      if (event instanceof NavigationCancel) {
-        console.warn('[ROUTER] NavigationCancel:', {
-          url: event.url,
-          reason: event.reason,
-          code: event.code
-        });
-      }
-
-      if (event instanceof NavigationError) {
-        console.error('[ROUTER] NavigationError:', {
-          url: event.url,
-          error: event.error
-        });
-      }
-
-      if (event instanceof NavigationEnd) {
-        console.log('[ROUTER] NavigationEnd:', event.urlAfterRedirects);
-      }
-
-    });
+    // this._router.events.subscribe(event => {
+    //   if (event instanceof NavigationStart) {
+    //     console.log('[ROUTER] NavigationStart:', event.url);
+    //   }
+    //   if (event instanceof NavigationCancel) {
+    //     console.warn('[ROUTER] NavigationCancel:', {
+    //       url: event.url,
+    //       reason: event.reason,
+    //       code: event.code
+    //     });
+    //   }
+    //   if (event instanceof NavigationError) {
+    //     console.error('[ROUTER] NavigationError:', {
+    //       url: event.url,
+    //       error: event.error
+    //     });
+    //   }
+    //   if (event instanceof NavigationEnd) {
+    //     console.log('[ROUTER] NavigationEnd:', event.urlAfterRedirects);
+    //   }
+    // });
     
   }
 
@@ -153,9 +148,6 @@ export class ErrorHandlerService {
     // const rotaAtual = this._router.url;
     const rotaAtual = this.obterRotaRetorno();
 
-    console.log('[401] Rota capturada:', rotaAtual);
-    console.log('[401] Redirecionamento em andamento:', this.redirecionandoParaLogin);
-
     // Não captura a rota de login ou de retorno da autenticação.
     if (
       rotaAtual === '/login' ||
@@ -170,11 +162,6 @@ export class ErrorHandlerService {
 
     // Preserva temporariamente a rota original.
     sessionStorage.setItem('redirectUrl', rotaAtual);
-
-    console.log(
-      '[401] Rota armazenada:',
-      sessionStorage.getItem('redirectUrl')
-    );
 
     const isErroTokenEdocs =
       error.error?.titulo === 'EDOCS_TOKEN_EXPIRADO';
@@ -194,10 +181,7 @@ export class ErrorHandlerService {
       return;
     }
    
-    this._router.navigateByUrl('/login').then(sucesso => {
-      console.log('[401] Navegação para login:', sucesso);
-      console.log('[401] Rota após navegação:', this._router.url);
-    });
+    this._router.navigateByUrl('/login');
 
   }
 
