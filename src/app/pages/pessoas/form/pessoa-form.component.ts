@@ -73,6 +73,7 @@ import {
   converterArrayBufferEmImgSrc,
 } from '../../../core/utils/functions';
 import { CPFValidator } from '../../../core/validators/cpf.validator';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'siscap-pessoa-form',
@@ -125,8 +126,18 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _toastService: ToastService,
     private readonly _navegacaoService: NavegacaoService,
-    private readonly _ngbModalService: NgbModal
+    private readonly _ngbModalService: NgbModal,
+    private readonly _route: ActivatedRoute,
   ) {
+
+    const idParam = this._route.snapshot.paramMap.get('id');
+
+    const idPessoa = Number(idParam);
+
+    if (idParam !== null && Number.isInteger(idPessoa) && idPessoa > 0) {
+      this._pessoasService.idPessoa$.next(idPessoa);
+    }
+
     const [editar$, criar$] = partition(
       this._pessoasService.idPessoa$,
       (idPessoa: number) => idPessoa > 0
@@ -140,6 +151,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
         this.iniciarForm(pessoaModel);
 
         this._idPessoaEdicao = pessoaModel.id;
+
         this._idOrganizacaoResponsavel = pessoaModel.idOrganizacaoResponsavel;
 
         this.srcImagemPessoa = converterArrayBufferEmImgSrc(

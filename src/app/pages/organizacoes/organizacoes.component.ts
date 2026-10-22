@@ -99,6 +99,7 @@ export class OrganizacoesComponent implements OnInit, OnDestroy {
   private fetchPage(pageConfigParam?: {
     [K in keyof IHttpGetRequestBody]?: IHttpGetRequestBody[K];
   }): void {
+    
     const tempPageConfig = { ...this._pageConfig, ...pageConfigParam };
 
     const searchFilter = { search: this.termoPesquisaSimples };

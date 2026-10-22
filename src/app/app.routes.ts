@@ -33,6 +33,26 @@ export const APP_ROUTES: Routes = [
     canMatch: [oauthCallbackMatchGuard]
   },
   {
+    path: 'main/organizacoes/editar',
+    component: OAuthCallbackComponent,
+    canMatch: [oauthCallbackMatchGuard]
+  },
+  {
+    path: 'main/cartas-consulta/editar',
+    component: OAuthCallbackComponent,
+    canMatch: [oauthCallbackMatchGuard]
+  },
+  {
+    path: 'main/pessoas/editar',
+    component: OAuthCallbackComponent,
+    canMatch: [oauthCallbackMatchGuard]
+  },
+  {
+    path: 'main/prospeccoes/editar',
+    component: OAuthCallbackComponent,
+    canMatch: [oauthCallbackMatchGuard]
+  },
+  {
     path: 'main',
     component: MainComponent,
     loadChildren: () =>
