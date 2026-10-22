@@ -20,28 +20,103 @@ export class AuthRedirectComponent implements OnInit {
     private readonly _usuarioService: UsuarioService,
     private readonly _navegacaoService: NavegacaoService,
     private readonly _router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    const tokenRecebido = window.atob(this._route.snapshot.queryParams['token']);
+
+    const tokenParam = this._route.snapshot.queryParamMap.get('token');
+
+    if (!tokenParam) {
+      this._router.navigateByUrl('/login');
+      return;
+    }
+
+    const tokenRecebido = window.atob(tokenParam);
+
     sessionStorage.setItem('token', tokenRecebido);
 
     this._usuarioService.buscarUsuario().subscribe({
+
       next: (response: IUsuario) => {
+
+        console.log(
+          '[AUTH] Token SISCAP recebido:',
+          !!response.token
+        );
 
         sessionStorage.setItem('token', response.token);
 
-        this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
+        console.log(
+          '[AUTH] Token armazenado:',
+          sessionStorage.getItem('token') === response.token
+        );
 
-        const redirectUrl = localStorage.getItem('redirectUrl');
+        this._usuarioService.usuarioPerfil =
+          new UsuarioPerfilModel(response);
 
-        if (redirectUrl) {
-          this._router.navigateByUrl(redirectUrl);
-        } else {
-          const destino = this._usuarioService.usuarioPerfil.isProponente ? '/projetos' : '/home';
-          this._router.navigate([destino]);
+        // Rota devolvida pelo fluxo de autenticação.
+        const returnUrl =
+          this._route.snapshot.queryParamMap.get('returnUrl');
+
+        console.log('[AUTH REDIRECT] ReturnUrl recebida:', returnUrl);
+
+        console.log(
+          '[AUTH REDIRECT] Redirect armazenado:',
+          sessionStorage.getItem('redirectUrl')
+        );
+
+        // Remove a informação temporária da autenticação.
+        sessionStorage.removeItem('redirectUrl');
+
+        // Remove também o mecanismo antigo.
+        localStorage.removeItem('redirectUrl');
+
+        const rotaValida =
+          returnUrl !== null &&
+          /^\/(?:main(?:\/|$)|projetos(?:\/|$)|home(?:\/|$))/.test(returnUrl) &&
+          !returnUrl.includes('\\') &&
+          !returnUrl.includes('#') &&
+          !returnUrl.includes('//');
+
+        if (rotaValida) {
+          this._router.navigateByUrl(returnUrl);
+          return;
         }
+
+        console.log('[AUTH REDIRECT] Rota válida:', rotaValida);
+
+        // Comportamento padrão já existente.
+        const destino =
+          this._usuarioService.usuarioPerfil.isProponente
+            ? '/projetos'
+            : '/home';
+
+        this._router.navigateByUrl(destino);
       },
+
+      error: () => {
+        this._router.navigateByUrl('/login');
+      }
     });
   }
+
+  // ngOnInit(): void {
+  //   const tokenRecebido = window.atob(this._route.snapshot.queryParams['token']);
+  //   sessionStorage.setItem('token', tokenRecebido);
+  //   this._usuarioService.buscarUsuario().subscribe({
+  //     next: (response: IUsuario) => {
+  //       sessionStorage.setItem('token', response.token);
+  //       this._usuarioService.usuarioPerfil = new UsuarioPerfilModel(response);
+  //       // const redirectUrl = localStorage.getItem('redirectUrl');
+  //       const redirectUrl = localStorage.getItem('redirectUrl');
+  //       if (redirectUrl) {
+  //         this._router.navigateByUrl(redirectUrl);
+  //       } else {
+  //         const destino = this._usuarioService.usuarioPerfil.isProponente ? '/projetos' : '/home';
+  //         this._router.navigate([destino]);
+  //       }
+  //     },
+  //   });
+  // }
+
 }

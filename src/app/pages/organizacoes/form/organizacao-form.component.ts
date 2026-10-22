@@ -48,6 +48,7 @@ import {
   alterarEstadoControlesFormulario,
   converterArrayBufferEmImgSrc,
 } from '../../../core/utils/functions';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'siscap-organizacao-form',
@@ -93,8 +94,18 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     private readonly _opcoesDropdownService: OpcoesDropdownService,
     private readonly _breadcrumbService: BreadcrumbService,
     private readonly _toastService: ToastService,
-    private readonly _navegacaoService: NavegacaoService
+    private readonly _navegacaoService: NavegacaoService,
+    private readonly _route: ActivatedRoute,
   ) {
+
+    const idParam = this._route.snapshot.paramMap.get('id');
+
+    const idOrganizacao = Number(idParam);
+
+    if (idParam !== null && Number.isInteger(idOrganizacao) && idOrganizacao > 0) {
+      this._organizacoesService.idOrganizacao$.next(idOrganizacao);
+    }
+
     const [editar$, criar$] = partition(
       this._organizacoesService.idOrganizacao$,
       (idOrganizacao: number) => idOrganizacao > 0
@@ -297,6 +308,10 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   }
 
   private executarAcaoBreadcrumb(acao: string): void {
+
+    console.log('[ORGANIZACAO] Ação breadcrumb:', acao);
+    console.trace('[ORGANIZACAO] Origem da ação');
+
     switch (acao) {
       case BreadcrumbAcoesEnum.Editar:
         this.trocarModo(true);
@@ -362,6 +377,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
   }
 
   private submitOrganizationForm(form: FormGroup) {
+    
     for (const key in form.controls) {
       form.controls[key].markAsTouched();
     }
@@ -374,12 +390,12 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
     }
 
     // Habilitar controles para envio do formulário
-    form.controls['nome'].enable();
-    form.controls['abreviatura'].enable();
-    form.controls['cnpj'].enable();
-    form.controls['idPais'].enable();
-    form.controls['idTipoOrganizacao'].enable();
-    form.controls['idPessoaResponsavel'].enable();
+    form.controls['nome'].enable({ emitEvent: false });
+    form.controls['abreviatura'].enable({ emitEvent: false });
+    form.controls['cnpj'].enable({ emitEvent: false });
+    form.controls['idPais'].enable({ emitEvent: false });
+    form.controls['idTipoOrganizacao'].enable({ emitEvent: false });
+    form.controls['idPessoaResponsavel'].enable({ emitEvent: false });
 
     const payload = new OrganizacaoFormModel(form.value as IOrganizacaoForm);
 
@@ -388,6 +404,7 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       : this.cadastrarOrganizacao(payload);
 
     requisicao.subscribe();
+
   }
 
   private cadastrarOrganizacao(
@@ -397,14 +414,18 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       .post(payload, this.arquivoImagemOrganizacao)
       .pipe(
         tap((response: IOrganizacao) => {
+
           this._toastService.showToast(
             'success',
             MENSAGENS.ORGANIZACAO_CADASTRADA_COM_SUCESSO
           );
+
+          finalize(() =>
+            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+          )
+
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
-        )
+
       );
   }
 
@@ -415,14 +436,18 @@ export class OrganizacaoFormComponent implements OnInit, OnDestroy {
       .put(this._idOrganizacaoEdicao, payload, this.arquivoImagemOrganizacao)
       .pipe(
         tap((response: IOrganizacao) => {
+
           this._toastService.showToast(
             'success',
             MENSAGENS.ORGANIZACAO_ALTERADA_COM_SUCESSO
           );
+
+          finalize(() =>
+            this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
+          )
+
         }),
-        finalize(() =>
-          this.executarAcaoBreadcrumb(BreadcrumbAcoesEnum.Cancelar)
-        )
+
       );
   }
 

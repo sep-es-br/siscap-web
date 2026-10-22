@@ -21,6 +21,11 @@ const CARTAS_CONSULTA_ROUTES: Routes = [
     component: CartaConsultaFormComponent,
   },
   {
+    title: MENSAGENS.EDITAR_PROGRAMA,
+    path: 'editar/:id',
+    component: CartaConsultaFormComponent,
+  },
+  {
     title: MENSAGENS.EDITAR_CARTA_CONSULTA,
     path: 'editar',
     component: CartaConsultaFormComponent,
@@ -38,4 +43,4 @@ const CARTAS_CONSULTA_ROUTES: Routes = [
   imports: [RouterModule.forChild(CARTAS_CONSULTA_ROUTES)],
   exports: [RouterModule],
 })
-export class CartasConsultaRoutingModule {}
+export class CartasConsultaRoutingModule { }
