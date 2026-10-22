@@ -12,16 +12,7 @@ export class AuthenticationService {
   private _signOutUrl = 'https://acessocidadao.es.gov.br/is/connect/endsession';
 
   constructor(private router: Router) { }
-
-  // public acessoCidadaoSignIn(): void {
-  //   const redirectUrl = sessionStorage.getItem('redirectUrl');
-  //   const url = new URL(this._url);
-  //   if (redirectUrl) {
-  //     url.searchParams.set('returnUrl', redirectUrl);
-  //   }
-  //   window.location.href = url.toString();
-  // }
-
+ 
   public acessoCidadaoSignIn(): void {
     const redirectUrl = sessionStorage.getItem('redirectUrl');
 

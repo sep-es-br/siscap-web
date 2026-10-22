@@ -17,6 +17,7 @@ import {
 } from '@angular/router';
 import { CartasConsultaService } from '../cartas-consulta/cartas-consulta.service';
 import { OrganizacoesService } from '../organizacoes/organizacoes.service';
+import { PessoasService } from '../pessoas/pessoas.service';
 
 /**
  * @service
@@ -40,6 +41,7 @@ export class ErrorHandlerService {
     private _programasService: ProgramasService,
     private readonly _cartasConsultaService: CartasConsultaService,
     private readonly _organizacoesService: OrganizacoesService,
+    private readonly _pessoasService: PessoasService
   ) {
 
     this._router.events.subscribe(event => {
@@ -133,14 +135,7 @@ export class ErrorHandlerService {
   // }
 
   private handleRouting(error: HttpErrorResponse): void {
-
-    console.log('[ERROR HANDLER]', {
-      status: error.status,
-      urlRequisicao: error.url,
-      rotaAtual: this._router.url,
-      redirectUrl: sessionStorage.getItem('redirectUrl')
-    });
-
+   
     if (error.status === 403) {
       this._router.navigateByUrl('/main');
       return;
@@ -198,9 +193,7 @@ export class ErrorHandlerService {
 
       return;
     }
-
-    // this._router.navigateByUrl('/login');
-
+   
     this._router.navigateByUrl('/login').then(sucesso => {
       console.log('[401] Navegação para login:', sucesso);
       console.log('[401] Rota após navegação:', this._router.url);
@@ -246,6 +239,15 @@ export class ErrorHandlerService {
 
       if (idOrganizacao > 0) {
         return `/main/organizacoes/editar/${idOrganizacao}${queryString ? `?${queryString}` : ''
+          }`;
+      }
+    }
+
+    if (pathname === '/main/pessoas/editar') {
+      const idPessoa = this._pessoasService.idPessoa$.getValue();
+
+      if (idPessoa > 0) {
+        return `/main/pessoas/editar/${idPessoa}${queryString ? `?${queryString}` : ''
           }`;
       }
     }
