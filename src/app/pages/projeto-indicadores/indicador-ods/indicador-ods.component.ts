@@ -40,9 +40,11 @@ export class IndicadorOdsComponent implements OnInit {
   ngOnInit(): void {
 
     this.formProjeto.get('indicadoresProjeto')?.valueChanges
-      .subscribe(valor => {
+      .subscribe(() => {
         this.sincronizarOdsComIndicadores();
       });
+
+    this.sincronizarOdsComIndicadores();
 
     this.montarOdsDisponiveis();
 
@@ -50,23 +52,11 @@ export class IndicadorOdsComponent implements OnInit {
 
   ngOnChanges(): void {
 
-    if (!this.formProjeto) return;
+    if (!this.formProjeto) {
+      return;
+    }
 
-    const odsProjeto = this.formProjeto.getRawValue().odsProjeto ?? [];
-
-    this.odsEscolhidas = odsProjeto.map((ods: any) => {
-      const odsAnterior = this.odsEscolhidas?.find(o => o.odsId === ods.odsId);
-
-      return {
-        idOdsProjeto: ods.idOdsProjeto ?? null,
-        odsId: ods.odsId,
-        odsOrdem: ods.odsOrdem,
-        odsNome: ods.odsNome,
-        odsDescricao: ods.odsDescricao,
-        odsCor: ods.odsCor,
-        indicadoresVinculados: odsAnterior?.indicadoresVinculados ?? ods.indicadoresVinculados ?? []
-      };
-    });
+    this.sincronizarOdsComIndicadores();
 
   }
 
@@ -109,6 +99,10 @@ export class IndicadorOdsComponent implements OnInit {
       })
     );
 
+    odsProjeto.markAsDirty();
+
+    this.formProjeto.markAsDirty();
+
     this.odsEscolhidas = [
       ...this.odsEscolhidas,
       {
@@ -140,7 +134,12 @@ export class IndicadorOdsComponent implements OnInit {
     );
 
     if (index >= 0) {
+
       odsProjetoArray.removeAt(index);
+
+      odsProjetoArray.markAsDirty();
+      this.formProjeto.markAsDirty();
+
     }
 
     this.atualizarOdsSugeridas();
@@ -173,98 +172,63 @@ export class IndicadorOdsComponent implements OnInit {
   private sincronizarOdsComIndicadores(): void {
 
     const odsProjetoArray = this.formProjeto.get('odsProjeto') as FormArray;
-    const odsProjetoAtual = odsProjetoArray?.getRawValue() ?? [];
-    const indicadores = this.formProjeto.get('indicadoresProjeto')?.getRawValue() ?? [];
 
-    const odsPorId = new Map<number, IOdsIndicadorExterno>();
+    if (!odsProjetoArray) {
+      return;
+    }
 
-    odsProjetoAtual
-      .filter((ods: any) => ods.idOdsProjeto != null)
-      .forEach((ods: any) => {
+    const odsProjetoAtual = odsProjetoArray.getRawValue();
 
-        const odsId = Number(ods.odsId);
+    const indicadores =
+      this.formProjeto.get('indicadoresProjeto')?.getRawValue() ?? [];
 
-        odsPorId.set(odsId, {
-          idOdsProjeto: ods.idOdsProjeto,
-          idOdsIndicadorExterno: ods.idOdsIndicadorExterno ?? null,
-          idOdsExterno: ods.idOdsExterno ?? ods.odsId,
-          odsId,
-          odsOrdem: ods.odsOrdem,
-          odsNome: ods.odsNome,
-          odsDescricao: ods.odsDescricao,
-          odsCor: ods.odsCor,
-          indicadoresVinculados: Array.isArray(ods.indicadoresVinculados)
-            ? ods.indicadoresVinculados
-            : []
-        });
+    this.odsEscolhidas = odsProjetoAtual.map((ods: any) => {
 
-      });
+      const odsId = Number(ods.odsId);
 
-    indicadores.forEach((indicador: IIndicadoresCatalogoExterno) => {
+      const odsCatalogo = this.odsTodas.find(
+        item => Number(item.odsId) === odsId
+      );
 
-      const odsDoIndicador = indicador.ods ?? [];
-
-      odsDoIndicador.forEach((odsIndicador: IOdsIndicadorExterno) => {
-
-        const odsId = this.obterOdsId(odsIndicador);
-
-        if (odsId == null) {
-          return;
-        }
-
-        // if (odsPorId.has(odsId)) {
-        //   const existente = odsPorId.get(odsId);
-        //   if (!existente) {
-        //     console.warn('ODS existente não encontrado');
-        //     return;
-        //   }
-        //   existente.indicadoresVinculados.push(indicador);
-        //   return;
-        // }
-
-        if (odsPorId.has(odsId)) {
-
-          const existente = odsPorId.get(odsId);
-        
-          if (!existente) {
-            return;
-          }
-        
-          if (!Array.isArray(existente.indicadoresVinculados)) {
-            existente.indicadoresVinculados = [];
-          }
-        
-          const jaVinculado = existente.indicadoresVinculados.some(
-            (i: any) =>
-              (i.idIndicadorExterno ?? i.idIndicadorCatalogoExterno ?? i.idIndicador) ===
-              (indicador.idIndicador ?? indicador.idIndicadorProjeto ?? indicador.idIndicador)
-          );
-        
-          if (!jaVinculado) {
-            existente.indicadoresVinculados.push(indicador);
-          }
-        
-          return;
-          
-        }
-
-        const odsCatalogo = this.odsTodas.find(o => Number(o.odsId) === odsId);
-
-        if (!odsCatalogo) {
-          return;
-        }
-
-        odsPorId.set(
-          odsId,
-          this.montarOdsEscolhida(odsCatalogo, [indicador])
+      const indicadoresVinculados: IIndicadoresCatalogoExterno[] = (
+        indicadores as IIndicadoresCatalogoExterno[]
+      )
+        .filter((indicador: IIndicadoresCatalogoExterno) =>
+          (indicador.ods ?? []).some(
+            odsIndicador =>
+              this.obterOdsId(odsIndicador) === odsId
+          )
+        )
+        .filter((indicador: IIndicadoresCatalogoExterno) =>
+          !!indicador.nomeIndicador?.trim()
+        )
+        .filter((
+          indicador: IIndicadoresCatalogoExterno,
+          index: number,
+          array: IIndicadoresCatalogoExterno[]
+        ) =>
+          array.findIndex(
+            (item: IIndicadoresCatalogoExterno) =>
+              item.idIndicador === indicador.idIndicador
+          ) === index
         );
 
-      });
+      return {
+        idOdsProjeto: ods.idOdsProjeto ?? null,
+        idOdsIndicadorExterno: ods.idOdsIndicadorExterno ?? null,
+        idOdsExterno: ods.idOdsExterno ?? odsId,
+
+        odsId,
+
+        odsOrdem: ods.odsOrdem ?? odsCatalogo?.ordemOds,
+        odsNome: ods.odsNome ?? odsCatalogo?.nomeOds,
+        odsDescricao: ods.odsDescricao ?? odsCatalogo?.descricaoOds,
+        odsCor: ods.odsCor ?? odsCatalogo?.corOds,
+
+        indicadoresVinculados
+      };
+
     });
-
-    this.odsEscolhidas = Array.from(odsPorId.values());
-
-    this.atualizarFormOdsProjeto();
 
     this.atualizarOdsSugeridas();
 
@@ -402,6 +366,40 @@ export class IndicadorOdsComponent implements OnInit {
         behavior: 'smooth'
       });
     }
+
+  }
+
+  public adicionarOdsDoIndicador(
+    indicador: IIndicadoresCatalogoExterno
+  ): void {
+
+    if (!this.isModoEdicao) {
+      return;
+    }
+
+    const odsDoIndicador = indicador.ods ?? [];
+
+    odsDoIndicador.forEach(odsIndicador => {
+
+      const odsId = this.obterOdsId(odsIndicador);
+
+      if (odsId == null) {
+        return;
+      }
+
+      const odsCatalogo = this.odsTodas.find(
+        ods => Number(ods.odsId) === odsId
+      );
+
+      if (!odsCatalogo) {
+        return;
+      }
+
+      this.adicionarOds(odsCatalogo);
+
+    });
+
+    this.sincronizarOdsComIndicadores();
 
   }
 

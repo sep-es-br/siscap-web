@@ -51,6 +51,8 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   @Output() indicadoresCatalogoCarregados = new EventEmitter<IIndicadoresCatalogoExterno[]>();
 
+  @Output() indicadorAdicionado = new EventEmitter<IIndicadoresCatalogoExterno>();
+
   showModal: boolean = false;
 
   indicadoresBI: IIndicadoresCatalogoExterno[] = [];
@@ -162,6 +164,20 @@ export class ProjetoIndicadoresComponent implements OnInit {
 
   onSelecaoChange(novos: IIndicadoresCatalogoExterno[]): void {
 
+    if (!this.isModoEdicao) {
+      return;
+    }
+
+    const idsAnteriores = new Set(
+      this.indicadoresSelecionados.map(
+        indicador => Number(indicador.idIndicador)
+      )
+    );
+
+    const novosIndicadores = novos.filter(
+      indicador => !idsAnteriores.has(Number(indicador.idIndicador))
+    );
+
     this.indicadoresSelecionados = novos.map(item => ({
       ...item,
       metasIndicadorProjeto:
@@ -171,6 +187,19 @@ export class ProjetoIndicadoresComponent implements OnInit {
     }));
 
     this.atualizarFormulario();
+
+    // Notifica somente os indicadores adicionados nesta seleção.
+    novosIndicadores.forEach(indicador => {
+
+      const indicadorSelecionado = this.indicadoresSelecionados.find(
+        item => Number(item.idIndicador) === Number(indicador.idIndicador)
+      );
+
+      if (indicadorSelecionado) {
+        this.indicadorAdicionado.emit(indicadorSelecionado);
+      }
+
+    });
 
   }
 
@@ -435,10 +464,6 @@ export class ProjetoIndicadoresComponent implements OnInit {
   }
 
   irParaODS() {
-
-    // if (!this.validarObrigatoriedadeIndicadores()) {
-    //   return;
-    // }
 
     const abaOds = document.getElementById('nav-ods-indicadores');
     abaOds?.click();

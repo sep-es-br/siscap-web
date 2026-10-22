@@ -113,6 +113,7 @@ import { AbaProjeto } from '../../../core/types/form/aba-projeto.type';
 import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao.dic.interface';
 import { noWhitespaceValidator } from '../../../core/validators/nowhitespacevalidator.validator';
 import { AcaoFormType } from '../../../core/types/form/acao-form.type';
+import { IndicadorOdsComponent } from '../../projeto-indicadores/indicador-ods/indicador-ods.component';
 
 declare var bootstrap: any;
 
@@ -132,6 +133,7 @@ interface CampoValidacao {
   styleUrl: './projeto-form.component.scss',
 })
 export class ProjetoFormComponent implements OnInit, OnDestroy {
+
   private readonly _subscription: Subscription = new Subscription();
 
   private _atualizarProjeto$: Observable<IProjeto> = EMPTY;
@@ -369,6 +371,18 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   @ViewChild('enviarParecerProjetoModal') enviarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('efetivarParecerProjetoModal') efetivarParecerProjetoModalTemplate: TemplateRef<any> | undefined;
   @ViewChild('entranharPareceresEdocsProjetoModal') entranharPareceresEdocsProjetoModalTemplate: TemplateRef<any> | undefined;
+
+  @ViewChild(IndicadorOdsComponent)
+  indicadorOdsComponent?: IndicadorOdsComponent;
+
+  onIndicadorAdicionado(
+    indicador: IIndicadoresCatalogoExterno
+  ): void {
+
+    this.indicadorOdsComponent
+      ?.adicionarOdsDoIndicador(indicador);
+
+  }
 
   // otimizacao carga agentes goves..
   pessoas$: Observable<IOpcoesDropdownResponsavelProponente[]> = of([]);
@@ -2032,9 +2046,9 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   }
 
   onSelecionarPessoa(pessoa: any) {
-    
+
     // console.log('Pessoa selecionada:', pessoa);
-    
+
     if (pessoa) {
       this.projetoForm.patchValue({
         idResponsavelProponente: pessoa.id,
