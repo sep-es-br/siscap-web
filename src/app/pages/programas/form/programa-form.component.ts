@@ -1,5 +1,5 @@
 import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
-import { Component, OnDestroy, OnInit, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, HostListener, TemplateRef } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -16,10 +16,12 @@ import {
   finalize,
   forkJoin,
   map,
+  merge,
   Observable,
   of,
   partition,
   shareReplay,
+  startWith,
   Subject,
   Subscription,
   switchMap,
@@ -84,6 +86,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
 import { gerarStepProgramaStatus, IStep } from '../../../core/utils/steps';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { EquipeFormType } from '../../../core/types/form/equipe-form.type';
+import { IProgramaDic, IProgramaInformacoesDics } from '../../../core/interfaces/programa-informacoes-dics.interface';
 @Component({
   selector: 'siscap-programa-form',
   standalone: false,
@@ -104,6 +107,14 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   public salvandoPrograma = false;
 
   public programaForm: FormGroup = new FormGroup({});
+  public objetivosDics: IProgramaDic[] = [];
+  public regioesAtendidas: IOpcoesDropdown[] = [];
+  public carregandoInformacoesDics = false;
+  public erroInformacoesDics = false;
+  public objetivoPrecisaRevisao = false;
+  private objetivoEditado = false;
+  private informacoesDicsSubscription?: Subscription;
+  private readonly recarregarInformacoesDics$ = new Subject<void>();
 
   public organizacoesOpcoes: IPapeisOrgaoProgramaDropdownOpcoes[] = [];
   public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
@@ -311,6 +322,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.informacoesDicsSubscription?.unsubscribe();
     this._destroy$.next(undefined);
     this._destroy$.complete();
     this._programasService.idPrograma$.next(0);
@@ -534,6 +546,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         Validators.required,
         Validators.maxLength(150),
       ]),
+      objetivo: this._nnfb.control(programaModel?.objetivo ?? ''),
       orgaosEnvolvidosList: this._nnfb.control(
         programaModel?.orgaosEnvolvidosList ? programaModel.orgaosEnvolvidosList.map((org) => org.id) : [],
         [Validators.required, Validators.minLength(1)], [this.todosOrgaosPossuemTipoValidator()]
@@ -557,7 +570,73 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     });
 
     this.programaFormValueChanges();
+    this.observarInformacoesDics(programaModel);
     this.programaForm.updateValueAndValidity();
+  }
+
+  public marcarObjetivoEditado(): void {
+    this.objetivoEditado = true;
+  }
+
+  public abrirObjetivosDics(conteudo: TemplateRef<unknown>): void {
+    this._ngbModalService.open(conteudo, {
+      centered: true,
+      size: 'lg',
+      scrollable: true,
+      ariaLabelledBy: 'objetivos-dics-titulo',
+    });
+  }
+
+  public tentarCarregarInformacoesDics(): void {
+    this.recarregarInformacoesDics$.next();
+  }
+
+  private observarInformacoesDics(programaModel?: ProgramaFormModel): void {
+    this.informacoesDicsSubscription?.unsubscribe();
+    this.objetivoEditado = !!programaModel;
+    this.objetivoPrecisaRevisao = false;
+    this.regioesAtendidas = programaModel?.regioesAtendidas ?? [];
+
+    this.informacoesDicsSubscription = merge(
+      this.idProjetoPropostoList.valueChanges,
+      this.recarregarInformacoesDics$.pipe(map(() => this.idProjetoPropostoList.value)),
+    ).pipe(
+      startWith(this.idProjetoPropostoList.value),
+      map((ids, indice) => ({ ids: [...ids], inicial: indice === 0 })),
+      switchMap(({ ids, inicial }) => {
+        this.objetivosDics = [];
+        this.carregandoInformacoesDics = ids.length > 0;
+        this.erroInformacoesDics = false;
+        if (!inicial && this.objetivoEditado) {
+          this.objetivoPrecisaRevisao = true;
+        }
+        const informacoes$ = ids.length
+          ? this._programasService.buscarInformacoesDics(ids)
+          : of<IProgramaInformacoesDics>({ dics: [], regioesAtendidas: [] });
+        return informacoes$.pipe(
+          catchError(() => {
+            this.erroInformacoesDics = true;
+            return of(null);
+          }),
+          finalize(() => this.carregandoInformacoesDics = false),
+        );
+      }),
+      takeUntil(this._destroy$),
+    ).subscribe(informacoes => {
+      if (!informacoes) {
+        return;
+      }
+      this.objetivosDics = informacoes.dics;
+      // Preserva as regiões da emissão; Programas antigos sem regiões salvas usam os DICs.
+      const possuiRegioesSalvas = (programaModel?.regioesAtendidas.length ?? 0) > 0;
+      if (this.isProgramaAtualEditavel || !possuiRegioesSalvas) {
+        this.regioesAtendidas = informacoes.regioesAtendidas;
+      }
+      if (!this.objetivoEditado && this.isProgramaAtualEditavel) {
+        const objetivos = informacoes.dics.map(dic => dic.objetivo?.trim()).filter(Boolean);
+        this.getControl('objetivo').setValue([...new Set(objetivos)].join('\n\n'));
+      }
+    });
   }
 
   private programaFormValueChanges(): void {
@@ -693,6 +772,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     if (form.get('sigla')?.pending) {
       this._toastService.showToast('info', 'Aguarde a validação da sigla do programa.');
+      return;
+    }
+
+    if (this.carregandoInformacoesDics || this.erroInformacoesDics) {
+      this._toastService.showToast('info', this.carregandoInformacoesDics
+        ? 'Aguarde o carregamento das informações dos DICs.'
+        : 'Tente carregar novamente as informações dos DICs antes de salvar.');
       return;
     }
 

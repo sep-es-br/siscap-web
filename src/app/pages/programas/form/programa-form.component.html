@@ -236,6 +236,65 @@
             </div>
 
             <div class="col-12">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <label for="objetivo" class="form-label mb-0">Objetivo</label>
+                @if (objetivosDics.length > 0) {
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm icon-text-btn"
+                    aria-haspopup="dialog"
+                    (click)="abrirObjetivosDics(objetivosDicsModal)"
+                  >
+                    <i class="fa-regular fa-file-lines" aria-hidden="true"></i>
+                    <span>Objetivos dos DICs ({{ objetivosDics.length }})</span>
+                  </button>
+                }
+              </div>
+              <textarea
+                id="objetivo"
+                class="form-control"
+                rows="5"
+                formControlName="objetivo"
+                aria-describedby="objetivo-ajuda"
+                [readonly]="!isProgramaAtualEditavel"
+                [ngClass]="{ 'input-readonly': !isProgramaAtualEditavel }"
+                (input)="marcarObjetivoEditado()"
+              ></textarea>
+              <small id="objetivo-ajuda" class="text-muted d-block mt-1">
+                Preenchido a partir dos objetivos dos DICs vinculados. A edição deste texto não altera os DICs.
+              </small>
+              @if (objetivoPrecisaRevisao && isProgramaAtualEditavel) {
+                <p class="text-warning mt-2 mb-0" role="status">
+                  Os DICs vinculados foram alterados. Revise o objetivo; seu texto foi preservado.
+                </p>
+              }
+            </div>
+
+            <div class="col-12 mt-3" aria-labelledby="regioes-atendidas-label" [attr.aria-busy]="carregandoInformacoesDics">
+              <span id="regioes-atendidas-label" class="form-label d-block">Regiões Atendidas</span>
+              @if (carregandoInformacoesDics) {
+                <p class="text-muted mb-1" role="status">Carregando informações dos DICs...</p>
+              } @else if (erroInformacoesDics) {
+                <p class="text-danger mb-1" role="alert">
+                  Não foi possível atualizar as informações dos DICs. Os dados exibidos podem estar desatualizados.
+                </p>
+                <button type="button" class="btn btn-outline-secondary btn-sm mb-2" (click)="tentarCarregarInformacoesDics()">
+                  Tentar novamente
+                </button>
+              } @else if (regioesAtendidas.length > 0) {
+                <ul class="list-unstyled d-flex flex-wrap gap-2 mb-1">
+                  @for (regiao of regioesAtendidas; track regiao.id) {
+                    <li class="badge rounded-pill bg-light text-dark border px-3 py-2">{{ regiao.nome }}</li>
+                  }
+                </ul>
+              } @else {
+                <p class="text-muted mb-1">
+                  {{ idProjetoPropostoList.value.length ? 'Nenhuma região informada nos DICs vinculados.' : 'Vincule um DIC para visualizar as regiões atendidas.' }}
+                </p>
+              }
+            </div>
+
+            <div class="col-12">
               <siscap-valor-form
                 [moedasList]="moedasList"
                 [tiposValorOpcoes]="tiposValorOpcoes"
@@ -410,3 +469,44 @@
     </div>
   </div>
 }
+
+<ng-template #objetivosDicsModal let-modal>
+  <siscap-modal titulo="Objetivos dos DICs vinculados" [tamanhoCard]="'amplo'"
+    [cabecalhoPersonalizado]="true" (fecharModal)="modal.dismiss()">
+    <div modalHeader class="siscap-modal__heading">
+      <h4 id="objetivos-dics-titulo" class="modal-title text-primary fw-bold">Objetivos dos DICs vinculados</h4>
+    </div>
+    <div modalBody class="objetivos-dics-lista">
+      <div class="list-group list-group-flush">
+        @for (dic of objetivosDics; track dic.id) {
+          <section class="list-group-item px-0 py-3" [attr.aria-labelledby]="'dic-titulo-' + dic.id">
+            <div class="mb-3">
+              <label [for]="'dic-titulo-' + dic.id" class="form-label">DIC</label>
+              <input
+                [id]="'dic-titulo-' + dic.id"
+                type="text"
+                class="form-control bg-light"
+                [value]="dic.nome"
+                [title]="dic.nome"
+                readonly
+              />
+            </div>
+            <div>
+              <label [for]="'dic-objetivo-' + dic.id" class="form-label">Objetivo</label>
+              <textarea
+                [id]="'dic-objetivo-' + dic.id"
+                class="form-control bg-light"
+                rows="4"
+                [value]="dic.objetivo || 'Objetivo não informado no DIC.'"
+                readonly
+              ></textarea>
+            </div>
+          </section>
+        }
+      </div>
+    </div>
+    <div modalFooter class="siscap-modal-actions">
+      <button type="button" class="btn btn-outline-secondary" (click)="modal.close()">Fechar</button>
+    </div>
+  </siscap-modal>
+</ng-template>
