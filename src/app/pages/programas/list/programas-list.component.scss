@@ -38,7 +38,15 @@ button.accordion-button {
 }
 
 .acoes-botoes {
-  gap: 1rem;
+  vertical-align: middle;
+  white-space: nowrap;
+
+  .acoes-container {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 1rem;
+  }
   .botao-assinaturas {
     &.disabled {
       border: none;

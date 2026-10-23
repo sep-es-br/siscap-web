@@ -8,6 +8,10 @@
   <div class="h-100">
     <loading-spinner></loading-spinner>
   </div>
+} @else if (erroCarregamento) {
+  <div class="alert alert-danger" role="alert">
+    Não foi possível carregar o Programa. Acesse novamente para tentar carregar os dados.
+  </div>
 } @else {
   <div class="d-flex justify-content-end align-items-center mb-3">
     @if (mostrarBotaoBaixarPrograma) {
@@ -232,6 +236,67 @@
                     }
                   </div>
                 </div>
+              }
+            </div>
+
+            <div class="col-12">
+              @if (objetivosDics.length > 0) {
+                <section class="dics-vinculados-resumo mb-3" aria-label="DICs vinculados e seus objetivos">
+                  <span class="form-label d-block mb-2">DICs Vinculados</span>
+                  <div class="dics-vinculados-resumo__conteudo">
+                    @for (dic of objetivosDics; track dic.id) {
+                      <article class="dics-vinculados-resumo__item">
+                        <p class="mb-1 fw-semibold">DIC: {{ dic.nome }}</p>
+                        <p class="mb-0">{{ dic.objetivo || 'Objetivo não informado.' }}</p>
+                      </article>
+                    }
+                  </div>
+                </section>
+              }
+              <div class="mb-2">
+                <label for="objetivo" class="form-label mb-0">Objetivo</label>
+              </div>
+              <textarea
+                id="objetivo"
+                class="form-control"
+                rows="5"
+                formControlName="objetivo"
+                aria-describedby="objetivo-ajuda"
+                [readonly]="!podeEditarObjetivo"
+                [ngClass]="{ 'input-readonly': !podeEditarObjetivo }"
+                (input)="marcarObjetivoEditado()"
+              ></textarea>
+              <small id="objetivo-ajuda" class="text-muted d-block mt-1">
+                Preenchido a partir dos objetivos dos DICs vinculados. A edição deste texto não altera os DICs.
+              </small>
+              @if (objetivoPrecisaRevisao && podeEditarObjetivo) {
+                <p class="text-warning mt-2 mb-0" role="status">
+                  Os DICs vinculados foram alterados. Revise o objetivo; seu texto foi preservado.
+                </p>
+              }
+            </div>
+
+            <div class="col-12 mt-3" aria-labelledby="regioes-atendidas-label" [attr.aria-busy]="carregandoInformacoesDics">
+              <span id="regioes-atendidas-label" class="form-label d-block">Regiões Atendidas</span>
+              @if (carregandoInformacoesDics) {
+                <p class="text-muted mb-1" role="status">Carregando informações dos DICs...</p>
+              } @else if (erroInformacoesDics) {
+                <p class="text-danger mb-1" role="alert">
+                  Não foi possível atualizar as informações dos DICs. Os dados exibidos podem estar desatualizados.
+                </p>
+                <button type="button" class="btn btn-outline-secondary btn-sm mb-2" (click)="tentarCarregarInformacoesDics()">
+                  Tentar novamente
+                </button>
+              } @else if (regioesAtendidas.length > 0) {
+                <ul class="regioes-atendidas-lista list-unstyled d-flex flex-wrap gap-2 mb-1">
+                  @for (regiao of regioesAtendidas; track regiao.id) {
+                    <li class="badge rounded-pill bg-light text-dark border px-3 py-2">{{ regiao.nome }}</li>
+                  }
+                </ul>
+              } @else {
+                <p class="text-muted mb-1">
+                  {{ idProjetoPropostoList.value.length ? 'Nenhuma região informada nos DICs vinculados.' : 'Vincule um DIC para visualizar as regiões atendidas.' }}
+                </p>
               }
             </div>
 

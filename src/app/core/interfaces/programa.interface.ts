@@ -2,6 +2,7 @@ import { MENSAGENS } from '../utils/constants';
 import { PapelOrgaoPrograma } from '../enums/orgaos.enum';
 import { IEquipe } from './equipe.interface';
 import { IValor } from './valor.interface';
+import { IOpcoesDropdown } from './opcoes-dropdown.interface';
 
 export interface IPrograma {
   readonly id: number;
@@ -14,6 +15,8 @@ export interface IPrograma {
   sigla: string;
   statusPrograma: StatusPrograma;
   titulo: string;
+  objetivo: string;
+  regioesAtendidas: IOpcoesDropdown[];
   valor: IValor;
   valorCalculadoTotal: number;
   nomeagente: string;

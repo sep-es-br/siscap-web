@@ -54,7 +54,8 @@
                     }
             }}
           </td>
-          <td class="d-flex flex-row acoes-botoes" (click)="$event.stopPropagation()">
+          <td class="acoes-botoes" (click)="$event.stopPropagation()">
+            <div class="acoes-container">
             <button
               class="btn border-none botao-assinaturas"
               [ngClass]="{ 'disabled': !programa.statusPrograma || [-1, 1].includes(programa.statusPrograma) }"
@@ -72,6 +73,7 @@
             >
               <i class="fa-solid fa-trash-can"></i>
             </button>
+            </div>
           </td>
         </tr>
       }

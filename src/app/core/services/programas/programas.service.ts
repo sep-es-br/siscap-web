@@ -12,6 +12,7 @@ import { BotaoPropriedadesModel } from '../../../shared/components/botao/botao.m
 import { BotoesConfig } from '../../../shared/components/botao/botao.config';
 
 import { IPrograma, IProgramaTableData } from '../../interfaces/programa.interface';
+import { IProgramaInformacoesDics } from '../../interfaces/programa-informacoes-dics.interface';
 import { Post } from '../../interfaces/http-post.interface';
 import { Put } from '../../interfaces/http-put.interface';
 
@@ -96,6 +97,12 @@ export
 
   public post(body: ProgramaFormModel): Observable<IPrograma> {
     return this._http.post<IPrograma>(this._url, body);
+  }
+
+  public buscarInformacoesDics(idsProjetos: number[]): Observable<IProgramaInformacoesDics> {
+    return this._http.get<IProgramaInformacoesDics>(`${this._url}/informacoes-dics`, {
+      params: { idsProjetos: idsProjetos.join(',') },
+    });
   }
 
   public put(id: number, body: ProgramaFormModel): Observable<IPrograma> {

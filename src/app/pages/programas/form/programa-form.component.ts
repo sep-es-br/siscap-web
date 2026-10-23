@@ -16,13 +16,16 @@ import {
   finalize,
   forkJoin,
   map,
+  merge,
   Observable,
   of,
   partition,
   shareReplay,
+  startWith,
   Subject,
   Subscription,
   switchMap,
+  take,
   takeUntil,
   tap,
   timer,
@@ -84,6 +87,7 @@ import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/co
 import { gerarStepProgramaStatus, IStep } from '../../../core/utils/steps';
 import { ProjetosService } from '../../../core/services/projetos/projetos.service';
 import { EquipeFormType } from '../../../core/types/form/equipe-form.type';
+import { IProgramaDic, IProgramaInformacoesDics } from '../../../core/interfaces/programa-informacoes-dics.interface';
 import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'siscap-programa-form',
@@ -102,9 +106,18 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _agentesCache$!: Observable<IOpcoesDropdownResponsavelProponente[]>;
 
   public loading: boolean = true;
+  public erroCarregamento = false;
   public salvandoPrograma = false;
 
   public programaForm: FormGroup = new FormGroup({});
+  public objetivosDics: IProgramaDic[] = [];
+  public regioesAtendidas: IOpcoesDropdown[] = [];
+  public carregandoInformacoesDics = false;
+  public erroInformacoesDics = false;
+  public objetivoPrecisaRevisao = false;
+  private objetivoEditado = false;
+  private informacoesDicsSubscription?: Subscription;
+  private readonly recarregarInformacoesDics$ = new Subject<void>();
 
   public organizacoesOpcoes: IPapeisOrgaoProgramaDropdownOpcoes[] = [];
   public pessoasOpcoes: IOpcoesDropdownResponsavelProponente[] = [];
@@ -149,6 +162,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
   get isProgramaAtualEditavel(): boolean {
     return this.statusProgramaAtual === StatusPrograma.ELABORACAO;
+  }
+
+  get podeEditarObjetivo(): boolean {
+    return this.isProgramaAtualEditavel && this._usuarioService.usuarioPerfil.isSubcap;
   }
 
   accordionCollapsed = true;
@@ -196,18 +213,27 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       });
 
     forkJoin({
+      dadosPrograma: this._programasService.idPrograma$.pipe(
+        take(1),
+        switchMap(idPrograma => idPrograma > 0 ? this._programasService.getById(idPrograma) : of(undefined)),
+        switchMap(programa => this._opcoesDropdownService
+          .getOpcoesDicsElegiveisPrograma(programa?.idProjetoPropostoList.join(';'))
+          .pipe(map(projetosPropostosOpcoes => ({ programa, projetosPropostosOpcoes })))),
+      ),
       organizacoesOpcoes: this._opcoesDropdownService.getOpcoesOrganizacoes(),
       pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
       tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
-      projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
       programasOpcoes: this._opcoesDropdownService.getOpcoesProgramas(),
       tiposValorOpcoes: this._opcoesDropdownService.getOpcoesTiposValor()
-    }).subscribe(
-      ({
+    }).pipe(
+      takeUntil(this._destroy$),
+      finalize(() => this.loading = false),
+    ).subscribe({
+      next: ({
+        dadosPrograma: { programa, projetosPropostosOpcoes },
         organizacoesOpcoes,
         pessoasOpcoes,
         tiposPapelOpcoes,
-        projetosPropostosOpcoes,
         programasOpcoes,
         tiposValorOpcoes
       }) => {
@@ -233,110 +259,70 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.nomeUsuario = this._usuarioService.usuarioPerfil.nome;
         this.lotacaoPrioritariaUsuario = this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
 
-        this._activatedRoute.paramMap.pipe(
-          map( params => {
-            
-            const idParam = params.get('id');
+        const programaModel = programa && new ProgramaModel(programa);
 
-            if (idParam !== null) {
-              const idRota = Number(idParam);
+        this.iniciarForm(programaModel);
 
-              return Number.isSafeInteger(idRota) && idRota > 0
-                ? idRota
-                : 0;
-            }
+        if (programa) {
 
-            return this._programasService.idPrograma$.value;
+          this.programaAtual = programa;
 
-          }),
+          let statushistorico = programaModel!.historicoStatus.sort((a, b) => String(a.inicioEm).localeCompare(String(b.inicioEm)))
 
-          switchMap(idPrograma => {
-            if (idPrograma <= 0) {
-              return of(undefined);
-            }
-            return this._programasService.getById(idPrograma);
+          this.statusSteps = statushistorico.map(
+            h => gerarStepProgramaStatus(h.status, h, statushistorico)
+          )
 
-          }),
+          if (![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel!.statusPrograma)) {
+            const caminhoPerfeito = [
+              StatusPrograma.ELABORACAO,
+              StatusPrograma.AGUARDANDO_ASSINATURAS,
+              StatusPrograma.ASSINADO,
+              StatusPrograma.AUTUADO
+            ]
 
-          takeUntil(this._destroy$)
-
-        ).subscribe(
-          programa => {
-
-            const programaModel = programa && new ProgramaModel(programa);
-
-            this.iniciarForm(programaModel);
-
-            if (programa) {
-
-              this.programaAtual = programa;
-
-              let statushistorico = programaModel!.historicoStatus.sort((a, b) => String(a.inicioEm).localeCompare(String(b.inicioEm)))
-
-              this.statusSteps = statushistorico.map(
-                h => gerarStepProgramaStatus(h.status, h, statushistorico)
-              )
-
-              if (![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel!.statusPrograma)) {
-                const caminhoPerfeito = [
-                  StatusPrograma.ELABORACAO,
-                  StatusPrograma.AGUARDANDO_ASSINATURAS,
-                  StatusPrograma.ASSINADO,
-                  StatusPrograma.AUTUADO
-                ]
-
-                caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel!.statusPrograma) + 1).forEach(
-                  status => {
-                    this.statusSteps?.push(gerarStepProgramaStatus(status, undefined, statushistorico))
-                  }
-                )
-
+            caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel!.statusPrograma) + 1).forEach(
+              status => {
+                this.statusSteps?.push(gerarStepProgramaStatus(status, undefined, statushistorico))
               }
+            )
 
-              this._opcoesDropdownService
-                .getOpcoesDicsElegiveisPrograma(programa.idProjetoPropostoList.join(';'))
-                .pipe(
-                  takeUntil(this._destroy$),
-                  tap((response: IProjetoPropostoOpcoesDropdown[]) => {
-                    this.projetosPropostosOpcoes = response;
-                  })
-                ).subscribe();
-
-              this._idProgramaEdicao = programaModel!.id;
-              this.atualizarBotoes(this.programaAtual);
-              this.mostrarBotaoBaixarPrograma = true;
-              this.equipeCaptacao = programaModel!.equipeCaptacao;
-            } else {
-
-              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                this._programasService.gerarBotoesAcaoFormulario({
-                  deveExibirBotaoSalvar: true,
-                  deveExibirBotaoSolicitarAutorizacao: false,
-                  deveExibirBotaoAutuar: false,
-                })
-              );
-
-            }
-
-            // fixa tipo como valor estimado..
-            this.programaForm.patchValue({
-              valor: {
-                tipo: TipoValorEnum.Estimado,
-              },
-            });
-
-            this.loading = false;
           }
 
-        )
+          this._idProgramaEdicao = programaModel!.id;
+          this.atualizarBotoes(this.programaAtual);
+          this.mostrarBotaoBaixarPrograma = true;
+          this.equipeCaptacao = programaModel!.equipeCaptacao;
+        } else {
 
+          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+            this._programasService.gerarBotoesAcaoFormulario({
+              deveExibirBotaoSalvar: true,
+              deveExibirBotaoSolicitarAutorizacao: false,
+              deveExibirBotaoAutuar: false,
+            })
+          );
 
-      }
-    )
+        }
+
+        // fixa tipo como valor estimado..
+        this.programaForm.patchValue({
+          valor: {
+            tipo: TipoValorEnum.Estimado,
+          },
+        });
+
+      },
+      error: () => {
+        this.erroCarregamento = true;
+        this._toastService.showToast('danger', 'Não foi possível carregar o Programa. Tente novamente.');
+      },
+    });
 
   }
 
   ngOnDestroy(): void {
+    this.informacoesDicsSubscription?.unsubscribe();
     this._destroy$.next(undefined);
     this._destroy$.complete();
     this._programasService.idPrograma$.next(0);
@@ -560,6 +546,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         Validators.required,
         Validators.maxLength(150),
       ]),
+      objetivo: this._nnfb.control(programaModel?.objetivo ?? ''),
       orgaosEnvolvidosList: this._nnfb.control(
         programaModel?.orgaosEnvolvidosList ? programaModel.orgaosEnvolvidosList.map((org) => org.id) : [],
         [Validators.required, Validators.minLength(1)], [this.todosOrgaosPossuemTipoValidator()]
@@ -583,7 +570,66 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     });
 
     this.programaFormValueChanges();
+    this.observarInformacoesDics(programaModel);
     this.programaForm.updateValueAndValidity();
+  }
+
+  public marcarObjetivoEditado(): void {
+    this.objetivoEditado = true;
+  }
+
+  public tentarCarregarInformacoesDics(): void {
+    this.recarregarInformacoesDics$.next();
+  }
+
+  private observarInformacoesDics(programaModel?: ProgramaFormModel): void {
+    this.informacoesDicsSubscription?.unsubscribe();
+    this.objetivoEditado = false;
+    this.objetivoPrecisaRevisao = false;
+    this.regioesAtendidas = programaModel?.regioesAtendidas ?? [];
+
+    this.informacoesDicsSubscription = merge(
+      this.idProjetoPropostoList.valueChanges,
+      this.recarregarInformacoesDics$.pipe(map(() => this.idProjetoPropostoList.value)),
+    ).pipe(
+      startWith(this.idProjetoPropostoList.value),
+      map((ids, indice) => ({ ids: [...ids], inicial: indice === 0 })),
+      switchMap(({ ids, inicial }) => {
+        this.objetivosDics = [];
+        this.carregandoInformacoesDics = ids.length > 0;
+        this.erroInformacoesDics = false;
+        if (!inicial && this.objetivoEditado) {
+          this.objetivoPrecisaRevisao = true;
+        }
+        const informacoes$ = ids.length
+          ? this._programasService.buscarInformacoesDics(ids)
+          : of<IProgramaInformacoesDics>({ dics: [], regioesAtendidas: [] });
+        return informacoes$.pipe(
+          catchError(() => {
+            this.erroInformacoesDics = true;
+            return of(null);
+          }),
+          finalize(() => this.carregandoInformacoesDics = false),
+          map(informacoes => ({ informacoes, inicial })),
+        );
+      }),
+      takeUntil(this._destroy$),
+    ).subscribe(({ informacoes, inicial }) => {
+      if (!informacoes) {
+        return;
+      }
+      this.objetivosDics = informacoes.dics;
+      // Preserva as regiões da emissão; Programas antigos sem regiões salvas usam os DICs.
+      const possuiRegioesSalvas = (programaModel?.regioesAtendidas.length ?? 0) > 0;
+      if (this.isProgramaAtualEditavel || !possuiRegioesSalvas) {
+        this.regioesAtendidas = informacoes.regioesAtendidas;
+      }
+      const devePreservarObjetivoSalvo = inicial && !!programaModel;
+      if (!this.objetivoEditado && this.isProgramaAtualEditavel && !devePreservarObjetivoSalvo) {
+        const objetivos = informacoes.dics.map(dic => dic.objetivo?.trim()).filter(Boolean);
+        this.getControl('objetivo').setValue([...new Set(objetivos)].join('\n\n'));
+      }
+    });
   }
 
   private programaFormValueChanges(): void {
@@ -719,6 +765,13 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
 
     if (form.get('sigla')?.pending) {
       this._toastService.showToast('info', 'Aguarde a validação da sigla do programa.');
+      return;
+    }
+
+    if (this.carregandoInformacoesDics || this.erroInformacoesDics) {
+      this._toastService.showToast('info', this.carregandoInformacoesDics
+        ? 'Aguarde o carregamento das informações dos DICs.'
+        : 'Tente carregar novamente as informações dos DICs antes de salvar.');
       return;
     }
 

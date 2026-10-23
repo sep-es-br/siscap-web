@@ -1,4 +1,5 @@
 import { IEquipe } from '../interfaces/equipe.interface';
+import { IOpcoesDropdown } from '../interfaces/opcoes-dropdown.interface';
 import { IPrograma, IProgramaForm, IProgramaOrgaosEnvolvidos, IProgramaStatus, StatusPrograma } from '../interfaces/programa.interface';
 
 import { EquipeModel } from './equipe.model';
@@ -12,6 +13,8 @@ export class ProgramaFormModel implements IProgramaForm {
   public sigla: string;
   public statusPrograma: StatusPrograma;
   public titulo: string;
+  public objetivo: string;
+  public regioesAtendidas: IOpcoesDropdown[];
   public valor: ValorModel;
 
   public valorCalculadoTotal: number;
@@ -30,6 +33,8 @@ export class ProgramaFormModel implements IProgramaForm {
     this.statusPrograma = programaForm?.statusPrograma ?? StatusPrograma.SEM_STATUS;
 
     this.titulo = programaForm?.titulo ?? '';
+    this.objetivo = programaForm?.objetivo ?? '';
+    this.regioesAtendidas = programaForm?.regioesAtendidas ?? [];
     this.valor = new ValorModel(programaForm?.valor);
     this.valorCalculadoTotal = programaForm?.valorCalculadoTotal ?? 0;
 
