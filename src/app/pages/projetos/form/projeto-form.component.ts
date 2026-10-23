@@ -124,6 +124,7 @@ import { IPendenciaProjeto } from '../../../core/interfaces/pendencias.validacao
 import { noWhitespaceValidator } from '../../../core/validators/nowhitespacevalidator.validator';
 import { AcaoFormType } from '../../../core/types/form/acao-form.type';
 import { IndicadorOdsComponent } from '../../projeto-indicadores/indicador-ods/indicador-ods.component';
+import { OdsService } from '../../../core/services/ods/ods.service';
 
 declare var bootstrap: any;
 
@@ -449,13 +450,109 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
   @ViewChild(IndicadorOdsComponent)
   indicadorOdsComponent?: IndicadorOdsComponent;
 
+
   onIndicadorAdicionado(
     indicador: IIndicadoresCatalogoExterno
   ): void {
 
-    this.indicadorOdsComponent
-      ?.adicionarOdsDoIndicador(indicador);
+    if (!this.isModoEdicao) {
+      return;
+    }
 
+    const idsOds = new Set<number>();
+
+    (indicador.ods ?? []).forEach(ods => {
+
+      const id = Number(
+        ods.odsId ??
+        ods.idOdsExterno ??
+        ods.idOdsIndicadorExterno ??
+        ods.odsId
+      );
+
+      if (Number.isFinite(id) && id > 0) {
+        idsOds.add(id);
+      }
+    });
+
+    if (!idsOds.size) {
+      return;
+    }
+
+    this.odsService.buscarOds()
+      .pipe(take(1))
+      .subscribe({
+        next: catalogoOds => {
+
+          const odsProjeto =
+            this.projetoForm.get('odsProjeto') as FormArray;
+
+          const indicadoresAtuais =
+            (this.projetoForm.get('indicadoresProjeto') as FormArray)
+              .getRawValue();
+
+          const idIndicador = Number(indicador.idIndicador);
+
+          // Evita adicionar ODS se o indicador foi removido
+          // enquanto o catálogo estava sendo carregado.
+          const continuaSelecionado = indicadoresAtuais.some(
+            (item: any) =>
+              Number(
+                item.idIndicadorExterno ??
+                item.idIndicadorCatalogoExterno
+              ) === idIndicador
+          );
+
+          if (!continuaSelecionado) {
+            return;
+          }
+
+          idsOds.forEach(odsId => {
+
+            const existe = odsProjeto.controls.some(
+              control =>
+                Number(control.get('odsId')?.value) === odsId
+            );
+
+            if (existe) {
+              return;
+            }
+
+            const ods = catalogoOds.find(
+              item => Number(item.odsId) === odsId
+            );
+
+            if (!ods) {
+              console.warn(
+                '[ODS] ODS não encontrada no catálogo:',
+                odsId
+              );
+              return;
+            }
+
+            odsProjeto.push(
+              this._nnfb.group({
+                idOdsProjeto: [null as number | null],
+                odsId: [ods.odsId],
+                odsOrdem: [ods.ordemOds],
+                odsNome: [ods.nomeOds],
+                odsDescricao: [ods.descricaoOds],
+                odsCor: [ods.corOds]
+              })
+            );
+
+            odsProjeto.markAsDirty();
+            this.projetoForm.markAsDirty();
+
+          });
+        },
+        error: erro => {
+          console.error(
+            '[ODS] Erro ao buscar catálogo de ODS:',
+            erro
+          );
+        }
+      });
   }
 
   // otimizacao carga agentes goves..
@@ -508,6 +605,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
     public parecerService: ParecerService,
     public catalogoIndicadoresService: CatalogoIndicadorService,
     private _router: Router,
+    private readonly odsService: OdsService,
   ) {
 
     this._getOrganizacoesOpcoes$ = this._opcoesDropdownService
@@ -3516,7 +3614,10 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     });
 
-    indicadoresControl?.patchValue(indicadoresEnriquecidos);
+    indicadoresControl?.patchValue(
+      indicadoresEnriquecidos,
+      { emitEvent: false }
+    );
 
   }
 

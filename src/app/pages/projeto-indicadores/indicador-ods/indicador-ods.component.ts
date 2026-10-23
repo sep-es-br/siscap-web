@@ -7,6 +7,8 @@ import { TemplatesModule } from '../../../shared/templates/templates.module';
 import { OdsService } from '../../../core/services/ods/ods.service';
 import { IOdsGestao } from '../../../core/interfaces/ods-gestao.interface';
 import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
+import { DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 declare var bootstrap: any;
 
@@ -36,15 +38,31 @@ export class IndicadorOdsComponent implements OnInit {
   searchInput: any;
   filtroTexto: string | undefined = '';
   searchVisible: boolean = false;
+
   public indicadorTooltip: Record<string, string> =
     COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO;
+
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor(
     private fb: FormBuilder,
     private odsService: OdsService) { }
 
+
   ngOnInit(): void {
 
-    this.formProjeto.get('indicadoresProjeto')?.valueChanges
+    // Atualiza os indicadores vinculados exibidos nos cards.
+    this.formProjeto.get('indicadoresProjeto')
+      ?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.sincronizarOdsComIndicadores();
+      });
+
+    // Atualiza os cards quando a coleção de ODS mudar.
+    this.formProjeto.get('odsProjeto')
+      ?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.sincronizarOdsComIndicadores();
       });
@@ -52,7 +70,7 @@ export class IndicadorOdsComponent implements OnInit {
     this.sincronizarOdsComIndicadores();
 
     this.montarOdsDisponiveis();
-
+    
   }
 
   ngOnChanges(): void {
@@ -174,6 +192,7 @@ export class IndicadorOdsComponent implements OnInit {
 
   }
 
+
   private sincronizarOdsComIndicadores(): void {
 
     const odsProjetoArray =
@@ -186,55 +205,9 @@ export class IndicadorOdsComponent implements OnInit {
     const indicadores: IIndicadoresCatalogoExterno[] =
       this.formProjeto.get('indicadoresProjeto')?.getRawValue() ?? [];
 
-    // Descobre as ODS associadas aos indicadores selecionados.
-    const idsOdsIndicadores = new Set<number>();
+    // Apenas consulta as ODS existentes no formulário.
+    // Não inclui ODS automaticamente durante o carregamento.
 
-    indicadores.forEach(indicador => {
-      (indicador.ods ?? []).forEach(odsIndicador => {
-        const odsId = this.obterOdsId(odsIndicador);
-
-        if (odsId != null) {
-          idsOdsIndicadores.add(odsId);
-        }
-      });
-    });
-
-    // Acrescenta as ODS identificadas que ainda não estão no formulário.
-    idsOdsIndicadores.forEach(odsId => {
-
-      const jaExiste = odsProjetoArray.controls.some(control =>
-        Number(control.get('odsId')?.value) === odsId
-      );
-
-      if (jaExiste) {
-        return;
-      }
-
-      const odsCatalogo = this.odsTodas.find(
-        ods => Number(ods.odsId) === odsId
-      );
-
-      if (!odsCatalogo) {
-        return;
-      }
-
-      odsProjetoArray.push(
-        this.fb.group({
-          idOdsProjeto: [null],
-          odsId: [odsId],
-          odsOrdem: [odsCatalogo.ordemOds],
-          odsNome: [odsCatalogo.nomeOds],
-          odsDescricao: [odsCatalogo.descricaoOds],
-          odsCor: [odsCatalogo.corOds]
-        }),
-        { emitEvent: false }
-      );
-
-      odsProjetoArray.markAsDirty();
-      this.formProjeto.markAsDirty();
-    });
-
-    // Reconstrói a apresentação das ODS selecionadas.
     const odsProjetoAtual = odsProjetoArray.getRawValue();
 
     this.odsEscolhidas = odsProjetoAtual.map((ods: any) => {

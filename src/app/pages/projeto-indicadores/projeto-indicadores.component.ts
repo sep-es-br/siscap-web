@@ -327,7 +327,7 @@ export class ProjetoIndicadoresComponent implements OnInit {
       formArray.enable({ emitEvent: false });
     }
 
-    formArray.updateValueAndValidity({ emitEvent: true });
+    formArray.updateValueAndValidity({ emitEvent: false });
 
   }
 
