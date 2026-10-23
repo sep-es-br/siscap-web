@@ -8,6 +8,10 @@
   <div class="h-100">
     <loading-spinner></loading-spinner>
   </div>
+} @else if (erroCarregamento) {
+  <div class="alert alert-danger" role="alert">
+    Não foi possível carregar o Programa. Acesse novamente para tentar carregar os dados.
+  </div>
 } @else {
   <div class="d-flex justify-content-end align-items-center mb-3">
     @if (mostrarBotaoBaixarPrograma) {
@@ -258,14 +262,14 @@
                 rows="5"
                 formControlName="objetivo"
                 aria-describedby="objetivo-ajuda"
-                [readonly]="!isProgramaAtualEditavel"
-                [ngClass]="{ 'input-readonly': !isProgramaAtualEditavel }"
+                [readonly]="!podeEditarObjetivo"
+                [ngClass]="{ 'input-readonly': !podeEditarObjetivo }"
                 (input)="marcarObjetivoEditado()"
               ></textarea>
               <small id="objetivo-ajuda" class="text-muted d-block mt-1">
                 Preenchido a partir dos objetivos dos DICs vinculados. A edição deste texto não altera os DICs.
               </small>
-              @if (objetivoPrecisaRevisao && isProgramaAtualEditavel) {
+              @if (objetivoPrecisaRevisao && podeEditarObjetivo) {
                 <p class="text-warning mt-2 mb-0" role="status">
                   Os DICs vinculados foram alterados. Revise o objetivo; seu texto foi preservado.
                 </p>

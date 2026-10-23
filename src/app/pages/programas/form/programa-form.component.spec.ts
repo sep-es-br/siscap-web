@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, NonNullableFormBuilder } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { of, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { ProgramaFormComponent } from './programa-form.component';
 import { ProgramaFormModel } from '../../../core/models/programa.model';
-import { StatusPrograma } from '../../../core/interfaces/programa.interface';
+import { IPrograma, StatusPrograma } from '../../../core/interfaces/programa.interface';
 import { IProgramaInformacoesDics } from '../../../core/interfaces/programa-informacoes-dics.interface';
 import { ProgramasService } from '../../../core/services/programas/programas.service';
 import { BreadcrumbService } from '../../../core/services/breadcrumb/breadcrumb.service';
@@ -26,7 +26,7 @@ describe('ProgramaFormComponent - informações dos DICs', () => {
   });
 
   beforeEach(() => {
-    programas = jasmine.createSpyObj('ProgramasService', ['buscarInformacoesDics'], { idPrograma$: new Subject<number>() });
+    programas = jasmine.createSpyObj('ProgramasService', ['buscarInformacoesDics'], { idPrograma$: new BehaviorSubject<number>(10) });
     programas.buscarInformacoesDics.and.returnValue(of(informacoes('Objetivo do DIC')));
     TestBed.configureTestingModule({
       providers: [
@@ -50,6 +50,57 @@ describe('ProgramaFormComponent - informações dos DICs', () => {
   });
 
   afterEach(() => component['informacoesDicsSubscription']?.unsubscribe());
+
+  describe('carregamento inicial', () => {
+    let respostaPrograma: Subject<IPrograma>;
+    let organizacoes: Subject<never[]>;
+    let opcoes: OpcoesDropdownService;
+
+    beforeEach(() => {
+      respostaPrograma = new Subject<IPrograma>();
+      organizacoes = new Subject<never[]>();
+      Object.assign(programas, {
+        getById: jasmine.createSpy('getById').and.returnValue(respostaPrograma),
+      });
+      Object.assign(TestBed.inject(PessoasService), {
+        buscarTodosAgentesPublicosGoves: () => of(undefined),
+        buscarAgentesPorTermo: () => of([]),
+      });
+      opcoes = TestBed.inject(OpcoesDropdownService);
+      Object.assign(opcoes, {
+        getOpcoesOrganizacoes: () => organizacoes,
+        getOpcoesPessoas: () => of([]),
+        getOpcoesTiposPapel: () => of([]),
+        getOpcoesProgramas: () => of([]),
+        getOpcoesTiposValor: () => of([]),
+        getOpcoesDicsElegiveisPrograma: jasmine.createSpy('getOpcoesDicsElegiveisPrograma').and.returnValue(of([])),
+      });
+      Object.assign(TestBed.inject(ToastService), { showToast: jasmine.createSpy('showToast') });
+    });
+
+    it('busca o Programa sem aguardar as listas e consulta os DICs vinculados uma única vez', () => {
+      component.ngOnInit();
+
+      expect(programas.getById).toHaveBeenCalledOnceWith(10);
+      expect(opcoes.getOpcoesDicsElegiveisPrograma).not.toHaveBeenCalled();
+
+      respostaPrograma.next({ idProjetoPropostoList: [1, 2] } as IPrograma);
+      respostaPrograma.complete();
+
+      expect(opcoes.getOpcoesDicsElegiveisPrograma).toHaveBeenCalledOnceWith('1;2');
+      expect(component.loading).toBeTrue();
+      component.ngOnDestroy();
+    });
+
+    it('encerra o carregamento e informa falha quando uma lista não pode ser carregada', () => {
+      component.ngOnInit();
+      organizacoes.error(new Error('Falha de rede'));
+
+      expect(component.loading).toBeFalse();
+      expect(component.erroCarregamento).toBeTrue();
+      expect(TestBed.inject(ToastService).showToast).toHaveBeenCalled();
+    });
+  });
 
   it('preenche o objetivo e as regiões com os dados dos DICs', () => {
     component['observarInformacoesDics']();

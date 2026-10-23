@@ -25,6 +25,7 @@ import {
   Subject,
   Subscription,
   switchMap,
+  take,
   takeUntil,
   tap,
   timer,
@@ -104,6 +105,7 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
   private _agentesCache$!: Observable<IOpcoesDropdownResponsavelProponente[]>;
 
   public loading: boolean = true;
+  public erroCarregamento = false;
   public salvandoPrograma = false;
 
   public programaForm: FormGroup = new FormGroup({});
@@ -161,6 +163,10 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
     return this.statusProgramaAtual === StatusPrograma.ELABORACAO;
   }
 
+  get podeEditarObjetivo(): boolean {
+    return this.isProgramaAtualEditavel && this._usuarioService.usuarioPerfil.isSubcap;
+  }
+
   accordionCollapsed = true;
   isMobile = window.innerWidth < 1200;
 
@@ -205,18 +211,27 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
       });
 
     forkJoin({
+      dadosPrograma: this._programasService.idPrograma$.pipe(
+        take(1),
+        switchMap(idPrograma => idPrograma > 0 ? this._programasService.getById(idPrograma) : of(undefined)),
+        switchMap(programa => this._opcoesDropdownService
+          .getOpcoesDicsElegiveisPrograma(programa?.idProjetoPropostoList.join(';'))
+          .pipe(map(projetosPropostosOpcoes => ({ programa, projetosPropostosOpcoes })))),
+      ),
       organizacoesOpcoes: this._opcoesDropdownService.getOpcoesOrganizacoes(),
       pessoasOpcoes: this._opcoesDropdownService.getOpcoesPessoas(),
       tiposPapelOpcoes: this._opcoesDropdownService.getOpcoesTiposPapel(),
-      projetosPropostosOpcoes: this._opcoesDropdownService.getOpcoesDicsElegiveisPrograma(),
       programasOpcoes: this._opcoesDropdownService.getOpcoesProgramas(),
       tiposValorOpcoes: this._opcoesDropdownService.getOpcoesTiposValor()
-    }).subscribe(
-      ({
+    }).pipe(
+      takeUntil(this._destroy$),
+      finalize(() => this.loading = false),
+    ).subscribe({
+      next: ({
+        dadosPrograma: { programa, projetosPropostosOpcoes },
         organizacoesOpcoes,
         pessoasOpcoes,
         tiposPapelOpcoes,
-        projetosPropostosOpcoes,
         programasOpcoes,
         tiposValorOpcoes
       }) => {
@@ -242,82 +257,65 @@ export class ProgramaFormComponent implements OnInit, OnDestroy {
         this.nomeUsuario = this._usuarioService.usuarioPerfil.nome;
         this.lotacaoPrioritariaUsuario = this._usuarioService.usuarioPerfil.nomeLotacaoUsuario;
 
-        this._programasService.idPrograma$.pipe(
-          takeUntil(this._destroy$),
-          switchMap(idPrograma => idPrograma > 0 ? this._programasService.getById(idPrograma) : of(undefined))
-        ).subscribe(
-          programa => {
+        const programaModel = programa && new ProgramaModel(programa);
 
-            const programaModel = programa && new ProgramaModel(programa);
+        this.iniciarForm(programaModel);
 
-            this.iniciarForm(programaModel);
+        if (programa) {
 
-            if (programa) {
+          this.programaAtual = programa;
 
-              this.programaAtual = programa;
+          let statushistorico = programaModel!.historicoStatus.sort((a, b) => String(a.inicioEm).localeCompare(String(b.inicioEm)))
 
-              let statushistorico = programaModel!.historicoStatus.sort((a, b) => String(a.inicioEm).localeCompare(String(b.inicioEm)))
+          this.statusSteps = statushistorico.map(
+            h => gerarStepProgramaStatus(h.status, h, statushistorico)
+          )
 
-              this.statusSteps = statushistorico.map(
-                h => gerarStepProgramaStatus(h.status, h, statushistorico)
-              )
+          if (![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel!.statusPrograma)) {
+            const caminhoPerfeito = [
+              StatusPrograma.ELABORACAO,
+              StatusPrograma.AGUARDANDO_ASSINATURAS,
+              StatusPrograma.ASSINADO,
+              StatusPrograma.AUTUADO
+            ]
 
-              if (![StatusPrograma.RECUSADO, StatusPrograma.AUTUADO].includes(programaModel!.statusPrograma)) {
-                const caminhoPerfeito = [
-                  StatusPrograma.ELABORACAO,
-                  StatusPrograma.AGUARDANDO_ASSINATURAS,
-                  StatusPrograma.ASSINADO,
-                  StatusPrograma.AUTUADO
-                ]
-
-                caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel!.statusPrograma) + 1).forEach(
-                  status => {
-                    this.statusSteps?.push(gerarStepProgramaStatus(status, undefined, statushistorico))
-                  }
-                )
-
+            caminhoPerfeito.slice(caminhoPerfeito.findIndex(cp => cp == programaModel!.statusPrograma) + 1).forEach(
+              status => {
+                this.statusSteps?.push(gerarStepProgramaStatus(status, undefined, statushistorico))
               }
+            )
 
-              this._opcoesDropdownService
-                .getOpcoesDicsElegiveisPrograma(programa.idProjetoPropostoList.join(';'))
-                .pipe(
-                  takeUntil(this._destroy$),
-                  tap((response: IProjetoPropostoOpcoesDropdown[]) => {
-                    this.projetosPropostosOpcoes = response;
-                  })
-                ).subscribe();
-
-              this._idProgramaEdicao = programaModel!.id;
-              this.atualizarBotoes(this.programaAtual);
-              this.mostrarBotaoBaixarPrograma = true;
-              this.equipeCaptacao = programaModel!.equipeCaptacao;
-            } else {
-
-              this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
-                this._programasService.gerarBotoesAcaoFormulario({
-                  deveExibirBotaoSalvar: true,
-                  deveExibirBotaoSolicitarAutorizacao: false,
-                  deveExibirBotaoAutuar: false,
-                })
-              );
-
-            }
-
-            // fixa tipo como valor estimado..
-            this.programaForm.patchValue({
-              valor: {
-                tipo: TipoValorEnum.Estimado,
-              },
-            });
-
-            this.loading = false;
           }
 
-        )
+          this._idProgramaEdicao = programaModel!.id;
+          this.atualizarBotoes(this.programaAtual);
+          this.mostrarBotaoBaixarPrograma = true;
+          this.equipeCaptacao = programaModel!.equipeCaptacao;
+        } else {
 
+          this._breadcrumbService.listaBotaoAcaoPropriedades$.next(
+            this._programasService.gerarBotoesAcaoFormulario({
+              deveExibirBotaoSalvar: true,
+              deveExibirBotaoSolicitarAutorizacao: false,
+              deveExibirBotaoAutuar: false,
+            })
+          );
 
-      }
-    )
+        }
+
+        // fixa tipo como valor estimado..
+        this.programaForm.patchValue({
+          valor: {
+            tipo: TipoValorEnum.Estimado,
+          },
+        });
+
+      },
+      error: () => {
+        this.erroCarregamento = true;
+        this._toastService.showToast('danger', 'Não foi possível carregar o Programa. Tente novamente.');
+      },
+    });
 
   }
 
