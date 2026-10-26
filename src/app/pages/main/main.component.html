@@ -17,12 +17,65 @@
         <router-outlet></router-outlet>
       </div>
     </div>
-    <div class="footer d-flex justify-content-center text-center">
-      <span class="text-secondary align-content-center">
-        {{ formatarMensagem(MENSAGENS.SISCAP_VALOR_SECRETARIA_DE_ECONOMIA_E_PLANEJAMENTO_DO_ESPIRITO_SANTO, { p0: (currentYear) }) }}</span
-      >
-    </div>
+    <footer class="footer" aria-label="Rodapé institucional">
+      <div class="footer-institution">
+        <div class="footer-emblem">
+          <img
+            src="assets/images/brasao_rodape.png"
+            alt="Brasão do Estado do Espírito Santo"
+            width="52"
+            height="48"
+          />
+        </div>
+        <div class="footer-copy">
+          <p>SISCAP {{ currentYear }} — Sistema de Captação de Recursos</p>
+          <p class="footer-secretariat">
+            Secretaria de Economia e Planejamento - Governo do Estado do Espírito Santo
+          </p>
+        </div>
+      </div>
+      <button type="button" class="footer-about" (click)="abrirSobre(sobreModal)" aria-haspopup="dialog">
+        <span>Sobre</span>
+        <img
+          class="footer-logo"
+          src="assets/images/Icon-siscap.svg"
+          alt="SISCAP"
+          width="30"
+          height="30"
+        />
+      </button>
+    </footer>
   </section>
 </div>
 
 <siscap-toast></siscap-toast>
+
+<ng-template #sobreModal let-modal>
+  <div class="about-modal">
+    <button type="button" class="btn-close about-modal-close" aria-label="Fechar modal" (click)="modal.dismiss()"></button>
+    <div class="about-modal-content">
+      <img id="sobre-modal-titulo" class="about-modal-logo" src="assets/images/siscap.svg" alt="Sobre o SISCAP" width="220" />
+      <p class="about-modal-description">Sistema de Captação de Recursos</p>
+      <dl class="about-modal-versions" aria-live="polite">
+        <div>
+          <dt>Rest API:</dt>
+          <dd>{{ (versaoApi$ | async) ?? 'Carregando...' }}</dd>
+        </div>
+        <div>
+          <dt>Web App:</dt>
+          <dd>{{ (versaoWebApp$ | async) ?? 'Carregando...' }}</dd>
+        </div>
+      </dl>
+      <hr />
+      <p>Produzido e mantido por:</p>
+      <img
+        class="about-modal-emblem"
+        src="assets/images/brasao-titulo-vertical.png"
+        alt="Governo do Estado do Espírito Santo - Secretaria de Economia e Planejamento"
+        width="250"
+      />
+      <hr />
+      <p class="about-modal-year">SISCAP {{ currentYear }}</p>
+    </div>
+  </div>
+</ng-template>
