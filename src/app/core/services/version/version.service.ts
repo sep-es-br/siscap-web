@@ -13,19 +13,21 @@ export class VersionService {
   }
 
   consultarWebApp(): Observable<string> {
-    return this.consultar(`assets/version.json?t=${Date.now()}`);
+    return of(environment.version);
   }
 
   consultarApi(): Observable<string> {
-    return this.consultar(`${environment.apiUrl.replace(/\/$/, '')}/version`);
+    return this.consultar(`${environment.apiUrl.replace(/\/$/, '')}/versions`);
   }
 
   private consultar(url: string): Observable<string> {
-    return this.http.get<{ version?: unknown }>(url).pipe(
+    return this.http.get<{ version?: unknown; success?: boolean; data?: { version?: unknown } }>(url).pipe(
       timeout(5000),
-      map(response => typeof response?.version === 'string' && response.version.trim()
-        ? response.version.trim()
-        : 'Não disponível'),
+      map(response => {
+        if (response?.success === false) return 'Não disponível';
+        const version = response?.data?.version ?? response?.version;
+        return typeof version === 'string' && version.trim() ? version.trim() : 'Não disponível';
+      }),
       catchError(() => of('Não disponível')),
     );
   }
