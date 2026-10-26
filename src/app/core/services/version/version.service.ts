@@ -13,7 +13,8 @@ export class VersionService {
   }
 
   consultarWebApp(): Observable<string> {
-    return of(environment.version);
+    const version = environment.version.trim();
+    return of(version && !version.includes('@release#@') ? version : 'Desenvolvimento');
   }
 
   consultarApi(): Observable<string> {

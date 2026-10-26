@@ -7,9 +7,7 @@ RUN npm install
 COPY . .
 
 RUN npm install -g @angular/cli
-ARG APP_VERSION
-ARG BUILD_NUMBER
-RUN APP_VERSION="$APP_VERSION" BUILD_NUMBER="$BUILD_NUMBER" npm run build -- --configuration production
+RUN npm run build -- --configuration production
 
 FROM nginx:1.23-alpine
 COPY nginx.conf /etc/nginx/nginx.conf
