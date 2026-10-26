@@ -13,22 +13,33 @@ siscap-modal .btn,
 }
 
 .modal {
-  --bs-modal-header-border-width: 0;
-  --bs-modal-footer-border-width: 0;
+  --bs-modal-header-border-width: 1px;
+  --bs-modal-footer-border-width: 1px;
   --bs-modal-border-radius: var(--siscap-modal-radius);
   --bs-modal-inner-border-radius: calc(var(--siscap-modal-radius) - var(--bs-modal-border-width, 1px));
+}
+
+.modal .modal-content .modal-header {
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+.modal .modal-content .modal-footer {
+  border-top: 1px solid var(--bs-border-color, #dee2e6);
 }
 
 .p-dialog {
   border-radius: var(--siscap-modal-radius);
 
   .p-dialog-header {
-    border-bottom: 0;
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
     border-radius: var(--siscap-modal-radius) var(--siscap-modal-radius) 0 0;
   }
 
   .p-dialog-footer, .p-dialog-content:last-child {
-    border-top: 0;
     border-radius: 0 0 var(--siscap-modal-radius) var(--siscap-modal-radius);
+  }
+
+  .p-dialog-footer {
+    border-top: 1px solid var(--bs-border-color, #dee2e6);
   }
 }

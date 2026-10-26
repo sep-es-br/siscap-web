@@ -342,3 +342,8 @@ div[ngbAccordionItem] {
     overflow-y: auto;
   }
 }
+.btn.dic-action-compact {
+  --siscap-button-font-size: var(--siscap-font-size-13, 13px);
+  --siscap-button-padding-y: 6px;
+  --siscap-button-padding-x: 12px;
+}

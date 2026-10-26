@@ -1,12 +1,11 @@
-<div class="modal-header bg-success-subtle">
-  <h4 class="modal-title">{{ MENSAGENS.SUCESSO }}</h4>
-</div>
-<div class="modal-body text-center">
+<siscap-modal [titulo]="MENSAGENS.SUCESSO" [exibirFecharCabecalho]="false">
+<div modalBody class="text-center">
   <p>{{ conteudo }}</p>
 </div>
-<div class="modal-footer d-flex justify-content-center">
+<div modalFooter class="siscap-modal-actions">
   <siscap-botao
     [propriedades]="botaoOK"
     (acao)="activeModal.dismiss()"
   ></siscap-botao>
 </div>
+</siscap-modal>

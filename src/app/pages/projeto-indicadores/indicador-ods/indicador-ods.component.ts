@@ -1,5 +1,6 @@
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO, MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, DestroyRef, inject, Input, OnInit, SimpleChanges } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IIndicadoresCatalogoExterno, IOdsIndicadorExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 import { CommonModule } from '@angular/common';

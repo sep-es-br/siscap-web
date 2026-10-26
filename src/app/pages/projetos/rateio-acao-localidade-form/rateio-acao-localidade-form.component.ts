@@ -29,7 +29,6 @@ import { AcaoFormType } from '../../../core/types/form/acao-form.type';
 
 import { ILocalidadeOpcoesDropdown } from '../../../core/interfaces/opcoes-dropdown.interface';
 import { COLECAO_TEXTO_TOOLTIP_FORMULARIO_PROJETO } from '../../../core/utils/constants';
-import { TemplatesModule } from '../../../shared/templates/templates.module';
 
 type TipoLocalidadeView =
   | 'Estado'

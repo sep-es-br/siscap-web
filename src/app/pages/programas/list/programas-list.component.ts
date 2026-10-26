@@ -41,12 +41,12 @@ export class ProgramasListComponent implements OnDestroy{
   readonly identificarLinha = (row: IProgramaTableData): number => row.id;
   readonly colunas: TableColumn<IProgramaTableData>[] = [
     { key: 'sigla', label: MENSAGENS.SIGLA, width: '11%', truncate: true, tooltip: true },
-    { key: 'titulo', label: MENSAGENS.PROGRAMA, width: '34%', truncate: true, tooltip: true },
+    { key: 'titulo', label: MENSAGENS.PROGRAMA, width: '32%', truncate: true, tooltip: true },
     { key: 'status', label: MENSAGENS.STATUS, width: '15%', tooltip: row => row.statusPrograma ? StatusProgramaLabel[row.statusPrograma] : '--' },
     { key: 'edocs', label: MENSAGENS.PROCESSO_E_DOCS, width: '13%', nowrap: true, tooltip: row => row.protocoloEdocs ?? '' },
     { key: 'moeda', label: MENSAGENS.MOEDA, width: '5%', align: 'center' },
     { key: 'valor', label: MENSAGENS.VALOR_TOTAL_ESTIMADO, width: '16%', nowrap: true, tooltip: row => this.getSimboloMoeda(row.moeda) + ' ' + row.tetoPrograma.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
-    { key: 'acoes', label: '', width: '6%', align: 'center', stopRowClick: true },
+    { key: 'acoes', label: MENSAGENS.ACOES, width: '8%', align: 'center', stopRowClick: true },
   ];
 
   public programasList = input<Array<IProgramaTableData> | null>([]);

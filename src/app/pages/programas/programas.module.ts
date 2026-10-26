@@ -23,6 +23,8 @@ import { OrgaosPapeisFormComponent } from '../../shared/components/orgaos-papeis
 import { NomeStatusProgramaPipe } from '../../shared/pipes/programa-status/programa-status.pipe';
 import { ProgramasSearchComponent } from './search/programas-search.component';
 import { TooltipModule } from 'primeng/tooltip';
+import { DropdownModule } from 'primeng/dropdown';
+import { CloseDropdownOnScrollDirective } from '../../shared/directives/close-dropdown-on-scroll.directive';
 import { TimelineModule } from 'primeng/timeline';
 import { ProgressoButtonComponent } from '../../shared/components/progresso-button/progresso-button.component';
 
@@ -49,6 +51,8 @@ import { ProgressoButtonComponent } from '../../shared/components/progresso-butt
         NomeStatusProgramaPipe,
         TimelineModule,
         TooltipModule,
+        DropdownModule,
+        CloseDropdownOnScrollDirective,
         NgbAccordionBody,
         NgbAccordionButton,
         NgbAccordionCollapse,

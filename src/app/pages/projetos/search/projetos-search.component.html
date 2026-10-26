@@ -14,35 +14,43 @@
     </div>
 
     <div class="col-12 col-md-3 col-lg-3 px-md-2 mb-2 mb-md-0">
-      <select
-        name="status"
-        id="status"
+      <div #statusField>
+      <p-dropdown
+        siscapCloseOnScroll
+        inputId="status"
+        styleClass="siscap-search-dropdown"
+        panelStyleClass="siscap-search-dropdown-panel"
         formControlName="status"
-        class="select-filtro-pesquisa"
-      >
-        <option
-          [value]="statusProjeto"
-          *ngFor="let statusProjeto of statusProjetoOpcoes"
-        >
-          {{ statusProjeto }}
-        </option>
-      </select>
+        [options]="statusProjetoOpcoes"
+        [panelStyle]="{ width: statusField.clientWidth + 'px' }"
+        [style]="{ width: '100%' }"
+        ariaLabel="Status"
+        appendTo="body"
+      ></p-dropdown>
+      </div>
     </div>
 
-    <div class="col-12 col-md-3 col-lg-6 px-md-2 mb-2 mb-md-0">
-      <select
-        name="idOrganizacao"
-        id="idOrganizacao"
+    <div class="col-12 col-md-3 col-lg-6 pe-md-2 mb-2 mb-md-0">
+      <div #organizationField>
+      <p-dropdown
+        siscapCloseOnScroll
+        inputId="idOrganizacao"
+        styleClass="siscap-search-dropdown"
+        panelStyleClass="siscap-search-dropdown-panel"
         formControlName="idOrganizacao"
-        class="select-filtro-pesquisa"
-      >
-        <option
-          [value]="organizacao.id"
-          *ngFor="let organizacao of organizacoesOpcoes"
-        >
-          {{ organizacao.nome }}
-        </option>
-      </select>
+        [options]="organizacoesOpcoes"
+        [panelStyle]="{ width: organizationField.clientWidth + 'px' }"
+        optionLabel="nome"
+        optionValue="id"
+        [filter]="true"
+        filterBy="nome"
+        filterPlaceholder="Pesquisar organização"
+        [resetFilterOnHide]="true"
+        [style]="{ width: '100%' }"
+        ariaLabel="Organização"
+        appendTo="body"
+      ></p-dropdown>
+      </div>
     </div>
   </div>
 </form>

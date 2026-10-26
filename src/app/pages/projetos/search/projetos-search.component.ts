@@ -56,18 +56,22 @@ export class ProjetosSearchComponent implements OnInit {
       .getOpcoesOrganizacoes()
       .pipe(
         tap((response) => {
+          const organizacoes = response.map(organizacao => ({
+            ...organizacao,
+            nome: this.nomeOrganizacaoSemSiglaDuplicada(organizacao.nome),
+          }));
           if (
             !this.isSubcap &&
             this.isProponente &&
             this.usuario_IdOrganizacoes.length > 0
           ) {
-            const organizacoesOpcoesFiltradas = response.filter((organizacao) =>
+            const organizacoesOpcoesFiltradas = organizacoes.filter((organizacao) =>
               this.usuario_IdOrganizacoes.includes(organizacao.id)
             );
             this.organizacoesOpcoes = organizacoesOpcoesFiltradas;
           } else {
             this.organizacoesOpcoes = [{ id: 0, nome: MENSAGENS.TODAS }];
-            this.organizacoesOpcoes = this.organizacoesOpcoes.concat(response);
+            this.organizacoesOpcoes = this.organizacoesOpcoes.concat(organizacoes);
           }
         })
       );
@@ -111,6 +115,17 @@ export class ProjetosSearchComponent implements OnInit {
       .subscribe(() => {
         this.pesquisarProjetos.emit(this.projetosPesquisaForm.getRawValue());
       });
+  }
+
+  private nomeOrganizacaoSemSiglaDuplicada(nome: string): string {
+    const texto = nome.trim();
+    const partes = texto.match(/^([A-ZÀ-Ý0-9][A-ZÀ-Ý0-9./&-]*)\s+-\s+(.+)$/);
+    const descricao = partes ? partes[2].trim() : texto;
+    const sufixo = descricao.match(/\s+[-–—]\s*([A-ZÀ-Ý0-9][A-ZÀ-Ý0-9./&-]{0,24})\s*$/);
+    const nomeSemSiglaFinal = sufixo
+      ? descricao.slice(0, sufixo.index).trim()
+      : descricao;
+    return partes ? `${partes[1]} - ${nomeSemSiglaFinal}` : nomeSemSiglaFinal;
   }
 
   public podeSelecionarOrganizacao(): boolean {

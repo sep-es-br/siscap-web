@@ -12,13 +12,13 @@
       <span>{{ MENSAGENS.STATUS }}</span>
     </button>
 
-    <button *ngIf="mostrarBotaoPedirRevisaoDic" class="btn btn-warning icon-text-btn me-2"
+    <button *ngIf="mostrarBotaoPedirRevisaoDic" class="btn btn-warning icon-text-btn dic-action-compact me-2"
       (click)="abrirRevisarModal(projetoForm)">
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>{{ formatarMensagem(MENSAGENS.SOLICITAR_REVISAO_A_VALOR, { p0: (nomeProponenteDIC) }) }}</span>
     </button>
 
-    <button *ngIf="mostrarBotaoBaixarDic" class="btn btn-sm btn-outline-primary icon-text-btn" (click)="baixarDIC()">
+    <button *ngIf="mostrarBotaoBaixarDic" class="btn btn-sm btn-outline-primary icon-text-btn dic-action-compact" (click)="baixarDIC()">
       <i class="fa-solid fa-file-arrow-down"></i>
       <span>{{ MENSAGENS.BAIXAR_DIC }}</span>
     </button>
@@ -746,13 +746,13 @@
         <span>Assinar e autuar</span>
       </button>
 
-      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1"
-        style="border-radius: 0; cursor: default; user-select: none">
-        <span class="spinner-border spinner-border-sm"></span>
-        <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
-      </div>
+      <button *ngIf="autuacaoAcionada" type="button" class="btn btn-success icon-text-btn d-inline-flex align-items-center gap-2"
+        disabled aria-busy="true">
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span role="status">{{ MENSAGENS.PROCESSANDO_2 }}</span>
+      </button>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
-        style="cursor: default; user-select: none; border-radius: 0">
+        style="cursor: default; user-select: none">
         <span class="">
           <i class="bi bi-x-circle-fill"></i>
         </span>
@@ -900,7 +900,7 @@
 
     <!-- <div *ngIf="finalizadoProcessamentoIntegracao"
       class="text-white bg-success d-inline-flex align-items-center px-3 py-1 me-2"
-      style="border-radius: 0; cursor: default; user-select: none">
+      style="cursor: default; user-select: none">
       <i class="fa-solid fa-check text-white me-2"></i>
       <span>Processo concluído com sucesso!</span>
     </div> -->
@@ -928,13 +928,13 @@
         <span>Assinar e autuar</span>
       </button>
 
-      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1"
-        style="border-radius: 0; cursor: default; user-select: none">
-        <span class="spinner-border spinner-border-sm"></span>
+      <div *ngIf="autuacaoAcionada" class="btn btn-success icon-text-btn d-inline-flex align-items-center gap-2"
+        role="status" aria-live="polite" aria-busy="true" style="cursor: default; user-select: none">
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
         <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
-        style="cursor: default; user-select: none; border-radius: 0">
+        role="status" aria-live="polite" style="cursor: default; user-select: none">
         <span class="">
           <i class="bi bi-x-circle-fill"></i>
         </span>
@@ -1156,13 +1156,13 @@
           <span>Assinar e capturar parecer</span>
         </button>
       </ng-template>
-      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1"
-        style="border-radius: 0; cursor: default; user-select: none">
+      <div *ngIf="autuacaoAcionada" class="btn btn-success icon-text-btn d-inline-flex align-items-center gap-2"
+        style="cursor: default; user-select: none">
         <span class="spinner-border spinner-border-sm"></span>
         <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao" [ngClass]="classeCssMensagemAlerta()"
-        style="cursor: default; user-select: none; border-radius: 0">
+        style="cursor: default; user-select: none">
         <span class="">
           <i class="bi bi-x-circle-fill"></i>
         </span>
@@ -1240,14 +1240,14 @@
         <i class="fa-solid fa-paper-plane"></i>
         <span>Entranhar pareceres</span>
       </button>
-      <div *ngIf="autuacaoAcionada" class="text-white bg-success d-inline-flex align-items-center px-3 py-1"
-        style="border-radius: 0; cursor: default; user-select: none">
+      <div *ngIf="autuacaoAcionada" class="btn btn-success icon-text-btn d-inline-flex align-items-center gap-2"
+        style="cursor: default; user-select: none">
         <span class="spinner-border spinner-border-sm"></span>
         <span>{{ MENSAGENS.PROCESSANDO_2 }}</span>
       </div>
       <div *ngIf="erroEmAlgumaFaseModalAutuacao"
         class="btn btn-danger icon-text-btn d-inline-flex align-items-center"
-        style="cursor: default; user-select: none; border-radius: 0">
+        style="cursor: default; user-select: none">
         <span class="">
           <i class="bi bi-x-circle-fill"></i>
         </span>

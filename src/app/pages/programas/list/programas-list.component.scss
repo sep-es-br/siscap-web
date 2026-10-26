@@ -38,6 +38,9 @@ button.accordion-button {
 }
 
 .acoes-botoes {
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   vertical-align: middle;
   white-space: nowrap;
 
@@ -56,6 +59,21 @@ button.accordion-button {
 
   button {
     all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+
+    &:disabled {
+      visibility: hidden;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--siscap-color-form-primary);
+      outline-offset: 2px;
+    }
 
     &:disabled, &:disabled * {
       visibility: hidden;

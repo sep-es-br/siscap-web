@@ -39,13 +39,13 @@ export class ProjetosListComponent {
   readonly identificarLinha = (row: IProjetoTableData): number => row.id;
   readonly colunas: TableColumn<IProjetoTableData>[] = [
     { key: 'sigla', label: MENSAGENS.SIGLA, width: '10%', sortKey: 'sigla', truncate: true, tooltip: true },
-    { key: 'titulo', label: MENSAGENS.TITULO, width: '31%', sortKey: 'titulo', truncate: true, tooltip: true },
+    { key: 'titulo', label: MENSAGENS.TITULO, width: '29%', sortKey: 'titulo', truncate: true, tooltip: true },
     { key: 'criadoEm', label: MENSAGENS.CRIADO_EM, width: '10%', sortKey: 'criadoEm' },
     { key: 'rascunho', label: '', width: '2%' },
     { key: 'status', label: MENSAGENS.STATUS, width: '14%', sortKey: 'historicoStatus.status', tooltip: true },
     { key: 'edocs', label: MENSAGENS.PROCESSO_E_DOCS, width: '13%', sortKey: 'protocoloEdocs', nowrap: true, tooltip: row => row.protocoloEdocs ?? '' },
     { key: 'valor', label: MENSAGENS.VALOR_2 + ' ' + MENSAGENS.ESTIMADO, width: '16%', sortKey: 'valorEstimado', nowrap: true, tooltip: row => row.valorEstimado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) },
-    { key: 'acoes', label: '', width: '4%', stopRowClick: row => this.podeDeletarDic(row.id) },
+    { key: 'acoes', label: MENSAGENS.ACOES, width: '6%', align: 'center', stopRowClick: row => this.podeDeletarDic(row.id) },
   ];
 
 

@@ -17,6 +17,13 @@
   transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
+// Ações do cabeçalho acompanham os botões compactos do DIC.
+#action-buttons .btn {
+  --siscap-button-font-size: var(--siscap-font-size-13, 13px);
+  --siscap-button-padding-y: 6px;
+  --siscap-button-padding-x: 12px;
+}
+
 // Tabelas e barras de ações mantêm uma opção compacta.
 .btn.rounded-circle {
   width: var(--siscap-space-32);

@@ -1,7 +1,3 @@
-select.select-filtro-pesquisa {
-  border: none;
-  background: none;
-  color: gray;
-  font-size: 13px; //VER CLASSE DE FONTE
-  width: 100%;
+.form-control {
+  font-size: var(--siscap-font-size-13, 13px);
 }

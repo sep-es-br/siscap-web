@@ -23,6 +23,8 @@ import { AcoesFormComponent } from '../../shared/components/acoes-form/acoes-for
 import { ProjetoParecerComponent } from './projeto-parecer/projeto-parecer.component';
 import { TimelineModule } from 'primeng/timeline';
 import { TooltipModule } from 'primeng/tooltip';
+import { DropdownModule } from 'primeng/dropdown';
+import { CloseDropdownOnScrollDirective } from '../../shared/directives/close-dropdown-on-scroll.directive';
 import { ProgressoButtonComponent } from '../../shared/components/progresso-button/progresso-button.component';
 import { ProjetoIndicadoresComponent } from "../projeto-indicadores/projeto-indicadores.component";
 import { IndicadorOdsComponent } from '../projeto-indicadores/indicador-ods/indicador-ods.component';
@@ -57,6 +59,8 @@ import { ProjetoAcoesRateioComponent } from './projeto-acoes-rateio/projeto-acoe
     ProjetoParecerComponent,
     TimelineModule,
     TooltipModule,
+    DropdownModule,
+    CloseDropdownOnScrollDirective,
     ProjetoIndicadoresComponent,
     ProgressoButtonComponent,
     IndicadorOdsComponent,

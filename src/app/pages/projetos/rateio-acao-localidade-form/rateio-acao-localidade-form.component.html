@@ -339,7 +339,10 @@
         <!-- Distribuição -->
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
 
-            <span class="siscap-indicator-heading">Distribuição por localidade</span>
+            <div class="d-flex align-items-center gap-2">
+                <span class="siscap-indicator-heading">Distribuição por localidade</span>
+                <form-helper-tooltip [texto]="localidadeTooltip['localidadeAcoes']"></form-helper-tooltip>
+            </div>
 
             <div class="d-flex flex-wrap gap-2">
                 <button type="button" class="btn btn-outline-primary btn-sm" [disabled]="!podeDistribuirIgualmente"
