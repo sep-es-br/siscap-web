@@ -185,7 +185,7 @@
                           >
                             <button
                               type="button"
-                              ngbTooltip="{{ MENSAGENS.REMOVER_INTERESSADO_A }}"
+                              pTooltip="{{ MENSAGENS.REMOVER_INTERESSADO_A }}" tooltipPosition="top" tooltipEvent="both" [autoHide]="false"
                               class="btn btn-outline-danger rounded-circle"
                               [disabled]="!isModoEdicao"
                               (click)="removerInteressadoDaProspeccao(i)"

@@ -1,0 +1,44 @@
+<div class="siscap-table-responsive">
+  <table class="table table-striped" [class.siscap-table-fixed]="fixedLayout" [style.min-width]="minWidth">
+    <caption *ngIf="caption" class="visually-hidden">{{ caption }}</caption>
+    <colgroup>
+      <col *ngFor="let column of columns; trackBy: trackColumn" [style.width]="column.width ?? null">
+    </colgroup>
+    <thead>
+      <tr>
+        <th *ngFor="let column of columns; trackBy: trackColumn" scope="col"
+          [style.text-align]="column.align ?? 'left'"
+          [pTooltip]="column.label" tooltipPosition="top" tooltipStyleClass="siscap-tooltip-compact"
+          [attr.aria-sort]="column.sortKey ? (activeSort?.column === column.sortKey ? (activeSort?.direction === 'asc' ? 'ascending' : 'descending') : 'none') : null"
+          [class.asc]="!!column.sortKey && activeSort?.column === column.sortKey && activeSort?.direction === 'asc'"
+          [class.desc]="!!column.sortKey && activeSort?.column === column.sortKey && activeSort?.direction === 'desc'">
+          <button *ngIf="column.sortKey; else plainHeader" type="button" class="siscap-table-sort"
+            (click)="sort(column)">{{ column.label }}</button>
+          <ng-template #plainHeader>{{ column.label }}</ng-template>
+        </th>
+      </tr>
+    </thead>
+    <tbody class="fw-semibold">
+      <tr *ngFor="let row of rows; let index = index; trackBy: trackRow"
+        [class.siscap-table-clickable]="rowClickable" (click)="selectRow(row)">
+        <td *ngFor="let column of columns; trackBy: trackColumn"
+          [style.text-align]="column.align ?? 'left'" [class.text-nowrap]="column.nowrap"
+          [class.siscap-table-numeric]="column.align === 'right'"
+          (click)="cellClick($event, row, column)">
+          <div [class.siscap-table-ellipsis]="column.truncate"
+            [pTooltip]="tooltipText(row, column)"
+            tooltipPosition="top" tooltipStyleClass="siscap-tooltip-compact">
+          <ng-container *ngIf="cellTemplate(column.key) as template; else plainCell"
+            [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row, index: index }">
+          </ng-container>
+          <ng-template #plainCell>{{ cellValue(row, column) }}</ng-template>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="!rows?.length && emptyMessage">
+        <td [attr.colspan]="columns.length" class="text-center">{{ emptyMessage }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <ng-content select="[tablePagination]"></ng-content>
+</div>

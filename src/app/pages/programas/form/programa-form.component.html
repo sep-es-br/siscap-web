@@ -180,16 +180,11 @@
                           >
                             <div
                               class="col-12 col-lg-5 pb-2 pb-lg-0 text-truncate"
-                              #projetoPropostoNomeTarget
+                              [pTooltip]="getProjetoPropostoOpcao(idProjetoProposto).nome"
+                              tooltipPosition="bottom" tooltipEvent="both" [autoHide]="false"
                             >
                               <span
                                 class="nome-projeto-proposto"
-                                placement="bottom"
-                                [positionTarget]="projetoPropostoNomeTarget"
-                                [ngbTooltip]="
-                                  getProjetoPropostoOpcao(idProjetoProposto)
-                                    .nome
-                                "
                               >
                                 {{
                                   getProjetoPropostoOpcao(idProjetoProposto)
@@ -221,7 +216,7 @@
                               <button
                                 class="btn btn-outline-danger rounded-circle"
                                 type="button"
-                                ngbTooltip="{{ MENSAGENS.REMOVER_PROJETO_DO_PROGRAMA }}"
+                                pTooltip="{{ MENSAGENS.REMOVER_PROJETO_DO_PROGRAMA }}" tooltipPosition="top" tooltipEvent="both" [autoHide]="false"
                                 [disabled]="!isProgramaAtualEditavel"
                                 (click)="removerProjetoPropostoDoPrograma(i)"
                               >

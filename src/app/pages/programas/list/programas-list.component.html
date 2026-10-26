@@ -1,33 +1,11 @@
-<div class="table-responsive-md">
-  <table class="table table-striped">
-    <colgroup>
-      <col class="sigla-col" />
-      <col class="programa-col" />
-      <col class="status-col" />
-      <col class="processoEdocs-col" />
-      <col class="moeda-col" />
-      <col class="valor-col" />
-      <col class="acoes-col" />
-    </colgroup>
-    <thead>
-      <tr>
-        <th>{{ MENSAGENS.SIGLA }}</th>
-        <th>{{ MENSAGENS.PROGRAMA }}</th>
-        <th>{{ MENSAGENS.STATUS }}</th>
-        <th>{{ MENSAGENS.PROCESSO_E_DOCS }}</th>
-        <th>{{ MENSAGENS.MOEDA }}</th>
-        <th>{{ MENSAGENS.VALOR_TOTAL_ESTIMADO }}</th>
-        <th class="text-center"></th>
-      </tr>
-    </thead>
-    <tbody class="fw-semibold">
-      @for (programa of programasList(); track programa) {
-        <tr (click)="tableActionOutputEvent({ acao: 'editar', id: programa.id })">
-          <td>{{ programa.sigla }}</td>
-          <td>{{ programa.titulo }}</td>
-          <td>{{ programa.statusPrograma | nomeStatusPrograma }}</td>
-          <td>
-            @if (currentPolling.idPrograma === programa.id) {
+<siscap-table [fixedLayout]="true" minWidth="72rem" [rows]="programasList()" [columns]="colunas" [rowClickable]="true" [rowKey]="identificarLinha" [caption]="MENSAGENS.PROGRAMAS" (rowClick)="tableActionOutputEvent({ acao: 'editar', id: $event.id })">
+
+  <ng-template siscapTableCell="status" let-programa>
+    {{ programa.statusPrograma | nomeStatusPrograma }}
+  </ng-template>
+
+  <ng-template siscapTableCell="edocs" let-programa>
+    @if (currentPolling.idPrograma === programa.id) {
               <div>
                 <span class="badge rounded-pill text-bg-warning p-2">
                   <i class="fa-solid fa-circle-notch fa-spin"></i>
@@ -39,10 +17,10 @@
                 {{ programa.protocoloEdocs }}
               </a>
             }
-          </td>
-          <td>{{ programa.moeda }}</td>
-          <td>
-            {{
+  </ng-template>
+
+  <ng-template siscapTableCell="valor" let-programa>
+    {{
               programa.tetoPrograma
                 | mask
                   : "separator.2"
@@ -53,17 +31,17 @@
                       decimalMarker: ","
                     }
             }}
-          </td>
-          <td class="acoes-botoes" (click)="$event.stopPropagation()">
-            <div class="acoes-container">
-            <button
+  </ng-template>
+
+  <ng-template siscapTableCell="acoes" let-programa>
+    <div class="d-flex flex-row acoes-botoes"><button
               class="btn border-none botao-assinaturas"
               [ngClass]="{ 'disabled': !programa.statusPrograma || [-1, 1].includes(programa.statusPrograma) }"
               [disabled]="!programa.statusPrograma || [-1, 1].includes(programa.statusPrograma)"
               (click)="acessarAssinaturasPrograma(programa.id)"
               title="{{ MENSAGENS.ASSINATURAS }}"
             >
-              <i class="fa-solid fa-pen-fancy"></i>
+              <i class="fa-solid fa-pen-fancy siscap-table-icon-sign"></i>
             </button>
             <button
               class="btn border-none"
@@ -71,14 +49,10 @@
               [disabled]="podeExcluir(programa)"
               title="{{ MENSAGENS.EXCLUIR }}"
             >
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-            </div>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
-
-  <ng-content select="siscap-pagination"></ng-content>
-</div>
+              <i class="fa-solid fa-trash-can siscap-table-icon-delete"></i>
+            </button></div>
+  </ng-template>
+  <div tablePagination>
+    <ng-content select="siscap-pagination"></ng-content>
+  </div>
+</siscap-table>

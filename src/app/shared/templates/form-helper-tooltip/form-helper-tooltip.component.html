@@ -1,3 +1,5 @@
-<button [ngbTooltip]="texto()" tooltipClass="form-helper-tooltip">
+<button [pTooltip]="texto()"
+  [tooltipStyleClass]="tamanho() === 'compacto' ? 'form-helper-tooltip siscap-tooltip-compact' : 'form-helper-tooltip'"
+  tooltipPosition="top" tooltipEvent="both" [autoHide]="false">
   <i class="fa-regular fa-circle-question"></i>
 </button>

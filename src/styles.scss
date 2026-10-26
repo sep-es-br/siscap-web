@@ -203,51 +203,15 @@ i.fa-user {
   border: 1px solid black;
 }
 
-/* Classes de fontes */
-
-.fs-small-1 {
-  font-size: $small-1-font-size;
-}
-
-.fs-small-2 {
-  font-size: $small-2-font-size;
-}
-
-.fs-small-3 {
-  font-size: $small-3-font-size;
-}
-
-.fs-small-4 {
-  font-size: $small-4-font-size;
-}
-
-.fs-small-5 {
-  font-size: $small-5-font-size;
-}
-
-.fs-large-1 {
-  font-size: $large-1-font-size;
-}
-
-.fs-large-2 {
-  font-size: $large-2-font-size;
-}
-
-.fs-large-3 {
-  font-size: $large-3-font-size;
-}
-
-.fs-large-4 {
-  font-size: $large-4-font-size;
-}
-
-.fs-tiny {
-  font-size: 0.8rem;
-}
-
-.fs-r-2 {
-  font-size: 1.5rem !important;
-}
+/* Tipografia compartilhada e compatibilidade com as classes existentes. */
+@import "./assets/styles/typography";
+@import "./assets/styles/spacing";
+@import "./assets/styles/forms";
+@import "./assets/styles/indicators";
+@import "./assets/styles/tooltips";
+@import "./assets/styles/buttons";
+@import "./assets/styles/modals";
+@import "./assets/styles/scrollbars";
 
 .separator {
   display: block;

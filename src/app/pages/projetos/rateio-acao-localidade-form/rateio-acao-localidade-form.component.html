@@ -98,17 +98,14 @@
         </div> -->
 
         <!-- TEXTO DE ORIENTAÇÃO -->
-        <p class="text-muted small mb-3">
-            Distribua o valor estimado da ação entre as regiões geográficas.
-            Selecione uma ou mais localidades e preencha os valores.
-        </p>
 
         <!-- Seletor de localidades -->
         <div class="locality-selector mb-3">
 
-            <label class="form-label mb-1">
+            <label class="siscap-field-label mb-1">
                 Localidades
-                <form-helper-tooltip [texto]="localidadeTooltip['localidadeAcoes']"></form-helper-tooltip>
+                <form-helper-tooltip class="locality-help"
+                    [texto]="'Distribua o valor estimado da ação entre as regiões geográficas. Selecione uma ou mais localidades e preencha os valores.'"></form-helper-tooltip>
             </label>
 
             <button type="button" class="form-control locality-trigger" [class.locality-trigger-open]="dropdownAberto"
@@ -315,11 +312,8 @@
         </div>
 
         <!-- Preview da seleção -->
-        <div class="selected-preview mb-3">
+        <div class="selected-preview mb-3" *ngIf="quantidadeSelecionada > 0">
 
-            <span *ngIf="quantidadeSelecionada === 0" class="text-muted small">
-                Nenhuma localidade selecionada.
-            </span>
 
             <span *ngFor="
             let localidade of localidadesSelecionadasOrdenadas;
@@ -345,9 +339,7 @@
         <!-- Distribuição -->
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
 
-            <strong>
-                Distribuição por localidade
-            </strong>
+            <span class="siscap-indicator-heading">Distribuição por localidade</span>
 
             <div class="d-flex flex-wrap gap-2">
                 <button type="button" class="btn btn-outline-primary btn-sm" [disabled]="!podeDistribuirIgualmente"
@@ -356,15 +348,15 @@
                     Distribuir igualmente
                 </button>
                 <button type="button" class="btn btn-outline-secondary btn-sm"
-                    [disabled]="!isModoEdicao || rateioFormArray.length === 0" (click)="zerarValores()">
+                    [disabled]="!podeZerarValores" (click)="zerarValores()">
                     <i class="fas fa-undo me-1"></i>
-                    Zerar valores
+                    Zerar os valores
                 </button>
             </div>
 
         </div>
 
-        <div *ngIf="rateioFormArray.length === 0" class="border rounded p-3 text-center text-muted">
+        <div *ngIf="rateioFormArray.length === 0" class="siscap-empty-state">
             Selecione uma ou mais localidades para montar a lista de distribuição.
         </div>
 
@@ -398,7 +390,7 @@
 
             </div>
 
-            <div *ngFor="let item of itensRateio; trackBy: trackByRateio; let ultimo = last" class="px-3 py-3"
+            <div *ngFor="let item of itensRateio; trackBy: trackByRateio; let ultimo = last" class="px-2 py-2"
                 [class.border-bottom]="!ultimo">
 
                 <div class="row align-items-center g-3">
@@ -464,10 +456,9 @@
         </div>
 
         <!-- RESUMO DA DISTRIBUIÇÃO -->
-        <div class="rateio-summary mt-3 pt-3 px-3 border-top">
-            <div class="row g-3 align-items-center">
-                <div class="d-none d-md-block col-md-6"></div>
-                <div class="col-6 col-md-2 text-md-center">
+        <div class="rateio-summary" *ngIf="rateioFormArray.length > 0">
+            <div class="row align-items-start g-3 px-3">
+                <div class="rateio-summary-item col-6 col-md-2 offset-md-6">
                     <div class="small text-muted">
                         Percentual distribuído
                     </div>
@@ -475,7 +466,7 @@
                         {{ formatarPercentual(totalPercentualDistribuido) }}
                     </strong>
                 </div>
-                <div class="col-6 col-md-3 text-md-end text-md-center">
+                <div class="rateio-summary-item col-6 col-md-3">
                     <div class="small text-muted">
                         Valor distribuído
                     </div>
@@ -483,7 +474,6 @@
                         {{ formatarMoeda(totalValorDistribuido) }}
                     </strong>
                 </div>
-                <div class="d-none d-md-block col-md-1"></div>
             </div>
         </div>
 

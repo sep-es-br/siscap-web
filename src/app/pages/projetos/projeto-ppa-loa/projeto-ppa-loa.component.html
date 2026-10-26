@@ -44,89 +44,26 @@
     [somenteLeitura]="somenteLeitura"
   ></siscap-filtro-ppa-loa>
 
-  <!-- Ações para selecionar -->
-  <div class="card selection-card">
-    <div class="card-header-main">
-      <h2 class="planejamento-card-title">
-        {{ MENSAGENS.SELECIONE_A_ACAO }}
-        <form-helper-tooltip [texto]="projetoPPAListTooltip['selecionePPA']"></form-helper-tooltip>
-      </h2>
-      <div *ngIf="listaAcoes.length > 0" class="search-container" [class.expanded]="searchVisible">
-        <span class="p-input-icon-left p-input-icon-right w-100">
-          <i
-            class="pi pi-search search-icon cursor-pointer"
-            (click)="toggleSearch()"
-          ></i>
-          <input
-            #searchInput
-            [style.display]="searchVisible ? 'block' : 'none'"
-            pInputText
-            type="text"
-            class="w-100 search-input"
-            placeholder="{{ MENSAGENS.NOME_DA_ACAO }}"
-            [(ngModel)]="filtroTexto"
-            (ngModelChange)="filtrarAcoes()"
-            [disabled]="!podeEditar"
-          />
-          <i
-            class="pi pi-times clear-icon cursor-pointer"
-            *ngIf="filtroTexto && searchVisible"
-            (click)="limparBusca()"
-          ></i>
-        </span>
-      </div>
-    </div>
-
-    <div class="card-body">
-      <ng-container *ngIf="!carregandoAcoes; else loadingTpl">
-        <ng-container *ngIf="listaAcoesFiltradas.length > 0; else vazioTpl">
-          <div class="acao-item select-all">
-            <label class="acao-label">
-              <p-checkbox
-                [binary]="true"
-                [(ngModel)]="selectAll"
-                (onChange)="toggleSelectAll($event)"
-                [disabled]="!podeEditar"
-              ></p-checkbox>
-              <span class="text-blue-primary">{{
-                MENSAGENS.SELECIONAR_TODOS
-              }}</span>
-            </label>
-          </div>
-
-          <div class="acoes-lista">
-            <div class="acao-item" *ngFor="let acao of listaAcoesFiltradas">
-              <label class="acao-label">
-                <p-checkbox
-                  [binary]="true"
-                  [ngModel]="isSelecionado(acao)"
-                  (ngModelChange)="toggleAcao(acao)"
-                  [ngModelOptions]="{ standalone: true }"
-                  [disabled]="!podeEditar"
-                >
-                </p-checkbox>
-                <span>{{ acao.nome }}</span>
-              </label>
-            </div>
-          </div>
-        </ng-container>
-      </ng-container>
-    </div>
-  </div>
-
+  <siscap-selecao-acoes-planejamento
+    [acoes]="acoesDisponiveisView"
+    [possuiAcoes]="listaAcoes.length > 0"
+    [carregando]="carregandoAcoes"
+    [podeEditar]="podeEditar"
+    [todosSelecionados]="selectAll"
+    [filtroTexto]="filtroTexto"
+    [textoAjuda]="projetoPPAListTooltip['selecionePPA']"
+    (buscaAlterada)="filtroTexto = $event; filtrarAcoes()"
+    (selecionarTodos)="toggleSelectAll({ checked: $event })"
+    (alternarAcao)="toggleAcao($event)"
+  ></siscap-selecao-acoes-planejamento>
   <!-- Ações selecionadas -->
   <div class="planejamento-card">
     <header class="planejamento-card-header">
-      <h2 class="planejamento-card-title">
+      <h2 class="siscap-text-subtitle planejamento-card-title">
         <validation-message [control]="getControl('acoesPlanejamentoProjeto')">
           {{ MENSAGENS.ACOES_DO_PLANEJAMENTO }}
         </validation-message>
       </h2>
-
-      <span class="planejamento-count-badge">
-        {{ quantidadeAcoes | number: "2.0-0" }}
-        {{ quantidadeAcoes === 1 ? "adicionada" : "adicionadas" }}
-      </span>
     </header>
     <div class="card-selecionados" [class.card-selecionados--vazio]="!carregandoAcoes && quantidadeAcoes === 0">
       <ng-container *ngIf="!carregandoAcoes">
@@ -147,265 +84,35 @@
 
         <!-- Estado vazio -->
         <ng-container *ngIf="quantidadeAcoes === 0">
-          <div class="planejamento-empty-icon">📋</div>
 
           <div class="planejamento-empty-title">
             {{ MENSAGENS.NENHUMA_ACAO_SELECIONADA }}
-          </div>
-
-          <div class="planejamento-empty-description">
-            {{
-              MENSAGENS.UTILIZE_OS_FILTROS_ACIMA_PARA_ADICIONAR_AS_ACOES_DO_PLANEJAMENTO_AO_PROJETO
-            }}
           </div>
         </ng-container>
 
         <!-- Lista de ações -->
         <div class="planejamento-cards-container" *ngIf="quantidadeAcoes > 0">
-          <article
-            class="acao-planejamento-card"
+          <siscap-acao-planejamento-card
             *ngFor="let acao of acoesPlanejamento; trackBy: trackByAcao"
-          >
-            <!-- Cabeçalho da ação -->
-            <header class="acao-planejamento-header">
-              <div class="acao-planejamento-cabecalho-conteudo">
-                <h3 class="acao-planejamento-titulo">
-                  <ng-container *ngIf="acao.codigoAcao">
-                    {{ acao.codigoAcao }} -
-                  </ng-container>
-                  {{ acao.nomeAcao }}
-                </h3>
-              </div>
-
-              <button
-                *ngIf="!somenteLeitura"
-                type="button"
-                class="acao-remover-btn"
-                title="{{ MENSAGENS.REMOVER_ACAO }}"
-                attr.aria-label="{{ MENSAGENS.REMOVER_ACAO_DO_PLANEJAMENTO }}"
-                (click)="onRemoverAcao(acao)"
-                [disabled]="!podeEditar"
-              >
-                {{ MENSAGENS.TEXTO }}
-              </button>
-            </header>
-
-            <!-- Informações da ação -->
-            <div class="acao-planejamento-dados">
-              <div
-                class="acao-planejamento-campo"
-                *ngIf="acao.nomeUnidadeOrcamentaria"
-              >
-                <span class="acao-planejamento-label">
-                  {{ MENSAGENS.UNIDADE_ORCAMENTARIA_2 }}
-                </span>
-
-                <span class="acao-planejamento-valor">
-                  {{ acao.siglaUnidadeOrcamentaria }}
-                </span>
-              </div>
-
-              <div class="acao-planejamento-campo" *ngIf="acao.nomeOrgao">
-                <span class="acao-planejamento-label">
-                  {{ MENSAGENS.ORGAO }}
-                </span>
-
-                <span class="acao-planejamento-valor">
-                  {{ acao.siglaOrgao }}
-                </span>
-              </div>
-
-              <div class="acao-planejamento-campo" *ngIf="acao.nomeFuncao">
-                <span class="acao-planejamento-label">
-                  {{ MENSAGENS.FUNCAO }}
-                </span>
-
-                <span class="acao-planejamento-valor">
-                  {{ acao.nomeFuncao }}
-                </span>
-              </div>
-
-              <div class="acao-planejamento-campo" *ngIf="acao.nomePrograma">
-                <span class="acao-planejamento-label">
-                  {{ MENSAGENS.PROGRAMA }}
-                </span>
-
-                <span class="acao-planejamento-valor">
-                  {{ acao.nomePrograma }}
-                </span>
-              </div>
-
-              <div class="acao-planejamento-campo" *ngIf="acao.valorPpa">
-                <span class="acao-planejamento-label">
-                  {{
-                    formatarMensagem(MENSAGENS.VALOR_PPA_VALOR, {
-                      p0: this.periodoPlanejamento?.descricao || "-",
-                    })
-                  }}</span
-                >
-
-                <span class="acao-planejamento-valor">
-                  {{ formatarMoeda(acao.valorPpa) }}
-                </span>
-              </div>
-
-              <div
-                class="acao-planejamento-campo"
-                *ngIf="acao.valorLoa != null"
-              >
-                <span class="valor-loa-label">
-                  {{
-                    formatarMensagem(MENSAGENS.VALOR_LOA_VALOR, {
-                      p0: acao.anoAcao,
-                    })
-                  }}</span
-                >
-
-                <span class="valor-loa-total">
-                  {{ formatarMoeda(acao.valorLoa) }}
-                </span>
-              </div>
-            </div>
-
-            <div
-              class="acao-planejamento-detalhamento"
-              *ngIf="acao.valorLoa != null && acao.valorLoa == 0"
-            >
-              <div class="acao-planejamento-detalhamento-sem-loa-titulo">
-                {{ MENSAGENS.ACAO_NAO_POSSUI_ORCAMENTO_DEFINIDO_NA_LOA }}
-              </div>
-            </div>
-
-            <div
-              class="acao-planejamento-detalhamento"
-              *ngIf="
-                acao.detalhamentosLoa?.length &&
-                acao.valorLoa != null &&
-                acao.valorLoa > 0
-              "
-            >
-              <div class="acao-planejamento-detalhamento-titulo">
-                {{ MENSAGENS.DETALHAMENTO_ORCAMENTARIO_LOA }}
-              </div>
-
-              <!-- Cabeçalho exibido no desktop -->
-              <div class="detalhamento-loa-cabecalho">
-                <div>{{ MENSAGENS.GND }}</div>
-                <div>{{ MENSAGENS.MODALIDADE }}</div>
-                <div>{{ MENSAGENS.ID_USO }}</div>
-                <div>{{ MENSAGENS.FONTE_3 }}</div>
-                <div class="detalhamento-loa-coluna-valor">
-                  {{ MENSAGENS.VALOR_2 }}
-                </div>
-              </div>
-
-              <!-- Registros -->
-              <div
-                class="detalhamento-loa-linha"
-                *ngFor="
-                  let detalhe of acao.detalhamentosLoa;
-                  trackBy: trackByDetalhamentoLoa
-                "
-              >
-                <div
-                  class="detalhamento-loa-celula"
-                  data-label="GND"
-                  [pTooltip]="detalhe.nomeGrupoDespesa ?? ''"
-                  tooltipPosition="top"
-                  tooltipStyleClass="tooltip-pequeno"
-                >
-                  {{ detalhe.codigoGnd }}
-                </div>
-
-                <div
-                  class="detalhamento-loa-celula"
-                  data-label="Modalidade"
-                  [pTooltip]="detalhe.nomeModalidade ?? ''"
-                  tooltipPosition="top"
-                  tooltipStyleClass="tooltip-pequeno"
-                >
-                  {{ detalhe.codigoModalidade }}
-                </div>
-
-                <div
-                  class="detalhamento-loa-celula"
-                  data-label="ID-USO"
-                  [pTooltip]="detalhe.nomeIdUso ?? ''"
-                  tooltipPosition="top"
-                  tooltipStyleClass="tooltip-pequeno"
-                >
-                  {{ detalhe.idUso }}
-                </div>
-
-                <div
-                  class="detalhamento-loa-celula"
-                  data-label="Fonte"
-                  [pTooltip]="detalhe.nomeFonte ?? ''"
-                  tooltipPosition="top"
-                  tooltipStyleClass="tooltip-pequeno"
-                >
-                  {{ detalhe.fonte }}
-                </div>
-
-                <div
-                  class="detalhamento-loa-celula detalhamento-loa-coluna-valor detalhamento-loa-valor"
-                  data-label="Valor"
-                >
-                  {{ formatarMoeda(detalhe.valor) }}
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="acao-planejamento-total"
-              *ngIf="acao.detalhamentosLoa?.length"
-            >
-              <span class="acao-planejamento-total-label">
-                {{ MENSAGENS.TOTAL_DA_ACAO }}
-              </span>
-              <span class="acao-planejamento-total-valor">
-                {{ formatarMoeda(acao.valorTotalDetalhamento) }}
-              </span>
-            </div>
-          </article>
+            [acao]="acao"
+            [periodoDescricao]="periodoPlanejamento?.descricao ?? null"
+            [exibirRemocao]="!somenteLeitura"
+            [podeEditar]="podeEditar"
+            (remover)="onRemoverAcao(acao)"
+          ></siscap-acao-planejamento-card>
         </div>
       </ng-container>
     </div>
-    <div class="pt-2">
-      <ng-content select="[planoSetorial]"></ng-content>
-    </div>
   </div>
 
-  <ng-template #loadingTpl>
-    <div
-      class="planejamento-empty-state planejamento-loading-state"
-      role="status"
-      aria-live="polite"
-    >
-      <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
-      <span>{{ MENSAGENS.CARREGANDO_ACOES }}</span>
-    </div>
-  </ng-template>
+  <div class="siscap-mt-16">
+    <ng-content select="[planoSetorial]"></ng-content>
+  </div>
 
-  <ng-template #vazioTpl>
-    <div class="planejamento-empty-state">
-      <div class="planejamento-empty-icon">☷</div>
-      <div class="planejamento-empty-title">
-        {{ MENSAGENS.NENHUMA_ACAO_ENCONTRADA_PARA_O_FILTRO_INFORMADO }}
-      </div>
-      <div class="planejamento-empty-description">
-        {{
-          MENSAGENS.UTILIZE_OS_FILTROS_ACIMA_PARA_CARREGAR_A_LISTA_DE_ACOES_ANO_E_UO_SAO_OBRIGATORIOS
-        }}
-      </div>
-    </div>
-  </ng-template>
-
-  <div class="navigation-buttons">
+  <div class="siscap-form-navigation">
     <button
-      class="nav-btn"
+      type="button" class="siscap-form-nav-button siscap-form-nav-button-primary"
       id="voltarBtn"
-      style="background: var(--blue); color: white; border-color: var(--blue)"
       (click)="voltarParaAcoes()"
     >
       <i class="pi pi-arrow-left"></i>

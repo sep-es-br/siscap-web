@@ -5,13 +5,13 @@
 ></quill-editor>
 
 <ng-container
-  *ngFor="let item of mapeamentoSeletorConteudoToolbarModuleTooltip | keyvalue"
+  *ngFor="let item of toolbarTooltips"
 >
   <button
     type="button"
     class="d-none"
-    #toolbarModuleTooltip="ngbTooltip"
-    [ngbTooltip]="item.value"
-    [positionTarget]="item.key"
+    [siscapToolbarTooltip]="item.text"
+    [tooltipTarget]="item.target"
+    tooltipPosition="top"
   ></button>
 </ng-container>

@@ -1,0 +1,193 @@
+<article
+            class="acao-planejamento-card"
+          >
+            <!-- Cabeçalho da ação -->
+            <header class="acao-planejamento-header">
+              <div class="acao-planejamento-cabecalho-conteudo">
+                <h3 class="acao-planejamento-titulo">
+                  <ng-container *ngIf="acao.codigoAcao">
+                    {{ acao.codigoAcao }} -
+                  </ng-container>
+                  {{ acao.nomeAcao }}
+                </h3>
+              </div>
+
+              <button
+                *ngIf="exibirRemocao"
+                type="button"
+                class="acao-remover-btn"
+                title="{{ MENSAGENS.REMOVER_ACAO }}"
+                attr.aria-label="{{ MENSAGENS.REMOVER_ACAO_DO_PLANEJAMENTO }}"
+                (click)="removerAcao()"
+                [disabled]="!podeEditar"
+              >
+                <i class="pi pi-times" aria-hidden="true"></i>
+              </button>
+            </header>
+
+            <!-- Informações da ação -->
+            <div class="acao-planejamento-dados">
+              <div
+                class="acao-planejamento-campo"
+                *ngIf="acao.nomeUnidadeOrcamentaria"
+              >
+                <span class="acao-planejamento-label">
+                  {{ MENSAGENS.UNIDADE_ORCAMENTARIA_2 }}
+                </span>
+
+                <span class="acao-planejamento-valor">
+                  {{ acao.siglaUnidadeOrcamentaria }}
+                </span>
+              </div>
+
+              <div class="acao-planejamento-campo" *ngIf="acao.nomeOrgao">
+                <span class="acao-planejamento-label">
+                  {{ MENSAGENS.ORGAO }}
+                </span>
+
+                <span class="acao-planejamento-valor">
+                  {{ acao.siglaOrgao }}
+                </span>
+              </div>
+
+              <div class="acao-planejamento-campo" *ngIf="acao.nomeFuncao">
+                <span class="acao-planejamento-label">
+                  {{ MENSAGENS.FUNCAO }}
+                </span>
+
+                <span class="acao-planejamento-valor">
+                  {{ acao.nomeFuncao }}
+                </span>
+              </div>
+
+              <div class="acao-planejamento-campo" *ngIf="acao.nomePrograma">
+                <span class="acao-planejamento-label">
+                  {{ MENSAGENS.PROGRAMA }}
+                </span>
+
+                <span class="acao-planejamento-valor">
+                  {{ acao.nomePrograma }}
+                </span>
+              </div>
+
+              <div class="acao-planejamento-campo" *ngIf="acao.valorPpa != null">
+                <span class="acao-planejamento-label">
+                  {{
+                    formatarMensagem(MENSAGENS.VALOR_PPA_VALOR, {
+                      p0: periodoDescricao || "-",
+                    })
+                  }}</span
+                >
+
+                <span class="acao-planejamento-valor">
+                  {{ formatarMoeda(acao.valorPpa) }}
+                </span>
+              </div>
+
+              <div
+                class="acao-planejamento-campo"
+                *ngIf="acao.valorLoa != null"
+              >
+                <span class="valor-loa-label">
+                  {{
+                    formatarMensagem(MENSAGENS.VALOR_LOA_VALOR, {
+                      p0: acao.anoAcao,
+                    })
+                  }}</span
+                >
+
+                <span class="valor-loa-total">
+                  {{ formatarMoeda(acao.valorLoa) }}
+                </span>
+              </div>
+            </div>
+
+            <div
+              class="acao-planejamento-detalhamento"
+              *ngIf="acao.valorLoa != null && acao.valorLoa == 0"
+            >
+              <div class="acao-planejamento-detalhamento-sem-loa-titulo">
+                {{ MENSAGENS.ACAO_NAO_POSSUI_ORCAMENTO_DEFINIDO_NA_LOA }}
+              </div>
+            </div>
+
+            <div
+              class="acao-planejamento-detalhamento"
+              *ngIf="
+                acao.detalhamentosLoa?.length &&
+                acao.valorLoa != null &&
+                acao.valorLoa > 0
+              "
+            >
+              <div class="acao-planejamento-detalhamento-titulo">
+                {{ MENSAGENS.DETALHAMENTO_ORCAMENTARIO_LOA }}
+              </div>
+
+              <!-- Cabeçalho exibido no desktop -->
+              <div class="detalhamento-loa-cabecalho">
+                <div>{{ MENSAGENS.GND }}</div>
+                <div>{{ MENSAGENS.MODALIDADE }}</div>
+                <div>{{ MENSAGENS.ID_USO }}</div>
+                <div>{{ MENSAGENS.FONTE_3 }}</div>
+                <div class="detalhamento-loa-coluna-valor">
+                  {{ MENSAGENS.VALOR_2 }}
+                </div>
+              </div>
+
+              <!-- Registros -->
+              <div
+                class="detalhamento-loa-linha"
+                *ngFor="
+                  let detalhe of acao.detalhamentosLoa;
+                  trackBy: trackByDetalhamentoLoa
+                "
+              >
+                <div
+                  class="detalhamento-loa-celula"
+                  [attr.data-label]="MENSAGENS.GND"
+                  [pTooltip]="detalhe.nomeGrupoDespesa ?? ''"
+                  tooltipPosition="top"
+                  tooltipStyleClass="siscap-tooltip-compact"
+                >
+                  {{ detalhe.codigoGnd }}
+                </div>
+
+                <div
+                  class="detalhamento-loa-celula"
+                  [attr.data-label]="MENSAGENS.MODALIDADE"
+                  [pTooltip]="detalhe.nomeModalidade ?? ''"
+                  tooltipPosition="top"
+                  tooltipStyleClass="siscap-tooltip-compact"
+                >
+                  {{ detalhe.codigoModalidade }}
+                </div>
+
+                <div
+                  class="detalhamento-loa-celula"
+                  [attr.data-label]="MENSAGENS.ID_USO"
+                  [pTooltip]="detalhe.nomeIdUso ?? ''"
+                  tooltipPosition="top"
+                  tooltipStyleClass="siscap-tooltip-compact"
+                >
+                  {{ detalhe.idUso }}
+                </div>
+
+                <div
+                  class="detalhamento-loa-celula"
+                  [attr.data-label]="MENSAGENS.FONTE_3"
+                  [pTooltip]="detalhe.nomeFonte ?? ''"
+                  tooltipPosition="top"
+                  tooltipStyleClass="siscap-tooltip-compact"
+                >
+                  {{ detalhe.fonte }}
+                </div>
+
+                <div
+                  class="detalhamento-loa-celula detalhamento-loa-coluna-valor detalhamento-loa-valor"
+                  [attr.data-label]="MENSAGENS.VALOR_2"
+                >
+                  {{ formatarMoeda(detalhe.valor) }}
+                </div>
+              </div>
+            </div>
+          </article>

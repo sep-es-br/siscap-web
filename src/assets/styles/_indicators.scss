@@ -1,0 +1,26 @@
+// Estrutura compartilhada pelos painéis de seleção e indicadores selecionados.
+.siscap-indicator-panel {
+  background: var(--siscap-color-surface);
+  border-radius: var(--bs-border-radius);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--siscap-space-16);
+  border: 1px solid var(--siscap-color-border);
+}
+
+.siscap-indicator-heading {
+  --siscap-help-icon-size: var(--siscap-font-size-12);
+  font-size: var(--siscap-font-size-16);
+  font-weight: var(--siscap-text-subtitle-weight);
+  margin: 0;
+  color: var(--siscap-color-text);
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: var(--siscap-text-section-title-line-height);
+}
+
+// O checkbox é apenas a apresentação da seleção controlada pelo ng-select.
+.siscap-filter-option-checkbox {
+  margin-right: var(--siscap-space-8);
+  pointer-events: none;
+}

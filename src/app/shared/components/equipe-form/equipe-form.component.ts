@@ -1,3 +1,4 @@
+import { TooltipModule } from 'primeng/tooltip';
 import { MENSAGENS, formatarMensagem } from '../../../core/utils/constants';
 import { Component, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -7,7 +8,6 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import {
   NgbModalModule,
   NgbPopoverModule,
-  NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { EquipeService } from '../../../core/services/equipe/equipe.service';
@@ -25,11 +25,11 @@ import { StatusProjetoEnum } from '../../../core/enums/status-projeto.enum';
   selector: 'siscap-equipe-form',
   standalone: true,
   imports: [
+    TooltipModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     NgSelectModule,
-    NgbTooltipModule,
     NgbModalModule,
     NgbPopoverModule,
   ],

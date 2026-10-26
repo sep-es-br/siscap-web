@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
+import { TemplatesModule } from '../../../shared/templates/templates.module';
 
 import {
   FormArray,
@@ -55,8 +56,8 @@ interface RateioItemView {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TemplatesModule
-],
+    TemplatesModule,
+  ],
 
   templateUrl: './rateio-acao-localidade-form.component.html',
   styleUrl: './rateio-acao-localidade-form.component.scss',
@@ -479,9 +480,16 @@ export class RateioAcaoLocalidadeFormComponent
   }
 
 
+  public get podeZerarValores(): boolean {
+    return this.isModoEdicao && !!this.formAcao?.controls.rateio.controls.some(control =>
+      (control.controls.percentual.value ?? 0) !== 0 ||
+      (control.controls.quantia.value ?? 0) !== 0
+    );
+  }
+
   public zerarValores(): void {
 
-    if (!this.isModoEdicao) {
+    if (!this.podeZerarValores) {
 
       return;
 

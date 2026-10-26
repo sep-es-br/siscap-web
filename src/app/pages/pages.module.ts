@@ -9,7 +9,6 @@ import {
   NgbAccordionModule,
   NgbDropdownModule,
   NgbPaginationModule,
-  NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { SharedModule } from '../shared/shared.module';
@@ -45,7 +44,6 @@ import { OAuthCallbackComponent } from './oauth-callback/oauth-callback.componen
     NgbAccordionModule,
     NgbDropdownModule,
     NgbPaginationModule,
-    NgbTooltipModule,
     PagesRoutingModule
   ],
   providers: [provideNgxMask()],

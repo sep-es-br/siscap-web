@@ -1,3 +1,5 @@
-<button [ngbTooltip]="texto()" tooltipClass="form-warning-tooltip">
+<button [pTooltip]="texto()"
+  [tooltipStyleClass]="tamanho() === 'compacto' ? 'form-warning-tooltip siscap-tooltip-compact' : 'form-warning-tooltip'"
+  tooltipPosition="top" tooltipEvent="both" [autoHide]="false">
   <i class="fa-solid fa-triangle-exclamation pulsating-icon" style="color: #ff9800;"></i>
 </button>

@@ -1,3 +1,17 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.pagination-layout {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--siscap-space-12) var(--siscap-space-16);
+  width: 100%;
+}
+
 span.report-total,
 span.ngb-pagination-text {
   font-size: clamp(13px, 2vw, 1rem);
@@ -7,9 +21,21 @@ span.report-total {
   line-height: 2.5rem;
 }
 
-@media (max-width: 606px) {
-  span.report-total,
-  ngb-pagination {
-    align-self: flex-start;
+ngb-pagination {
+  display: block;
+  margin-left: auto;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 767px) {
+  .pagination-layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--siscap-space-8);
+  }
+
+  span.report-total {
+    text-align: left;
   }
 }

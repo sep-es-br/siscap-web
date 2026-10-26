@@ -1,5 +1,6 @@
 import { MENSAGENS } from '../../../core/utils/constants';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import {
   AbstractControl,
@@ -12,17 +13,26 @@ import {
 import { CommonModule } from '@angular/common';
 import { IGestoesCatalogoExterno } from '../../../core/interfaces/indicadores-catalogo-externo.interface';
 import { TemplatesModule } from '../../../shared/templates/templates.module';
+import { BotaoComponent } from '../../../shared/components/botao/botao.component';
+import { BotoesConfig } from '../../../shared/components/botao/botao.config';
 
 @Component({
   selector: 'siscap-indicador-avulso',
   standalone: true,
   imports: [CommonModule,
-    ReactiveFormsModule, TemplatesModule],
+    ReactiveFormsModule, TemplatesModule, BotaoComponent],
   templateUrl: './indicador-avulso.component.html',
   styleUrl: './indicador-avulso.component.scss'
 })
 export class IndicadorAvulsoComponent {
+  private readonly activeModal = inject(NgbActiveModal, { optional: true });
   public readonly MENSAGENS = MENSAGENS;
+  public readonly botaoCancelar = BotoesConfig.gerarBotaoPropriedades('cancelar', {
+    classesCSS: ['btn-secondary'], icone: []
+  });
+  public readonly botaoAdicionar = BotoesConfig.gerarBotaoPropriedades('criar', {
+    classesCSS: ['btn-primary'], icone: [], texto: MENSAGENS.ADICIONAR
+  });
 
   @Input() gestao: IGestoesCatalogoExterno | null = null;
   @Input() formProjeto!: FormGroup;
@@ -110,7 +120,7 @@ export class IndicadorAvulsoComponent {
 
     this.loading = false;
 
-    this.close.emit();
+    this.fechar();
 
   }
 
@@ -120,6 +130,7 @@ export class IndicadorAvulsoComponent {
 
   fechar() {
     this.close.emit();
+    this.activeModal?.dismiss('fechar');
   }
 
   get indicadoresAvulsos(): FormArray {

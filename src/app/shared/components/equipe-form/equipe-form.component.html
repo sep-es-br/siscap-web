@@ -41,8 +41,9 @@
                 <div class="col-12 col-md-3 ps-0 ps-md-2 pt-2 pt-md-0 d-inline-flex justify-content-center justify-content-md-between align-items-center" >
                   <button
                     type="button"
-                    ngbTooltip="{{ MENSAGENS.EXCLUIR_MEMBRO_DA_EQUIPE }}"
+                    pTooltip="{{ MENSAGENS.EXCLUIR_MEMBRO_DA_EQUIPE }}" tooltipPosition="top" tooltipEvent="both" [autoHide]="false"
                     class="btn btn-outline-danger rounded-circle"
+                    [attr.aria-label]="MENSAGENS.EXCLUIR_MEMBRO_DA_EQUIPE"
                     [disabled]="!isModoEdicao"
                     (click)="removerMembroDaEquipe(i)" >
                     <i class="fa-solid fa-close delete-btn-icon"></i>

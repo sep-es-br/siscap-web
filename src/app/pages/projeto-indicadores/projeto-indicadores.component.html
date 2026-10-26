@@ -13,208 +13,41 @@
 </app-selecao-indicadores>
 
 <!-- CARD: INDICADORES SELECIONADOS -->
-<div class="card">
-  
+<div class="card siscap-indicator-panel">
+
   <div class="card-selecionados">
-    
-    <p class="lista-label">
+
+    <p class="siscap-indicator-heading">
       <validation-message [control]="getControl('indicadoresProjeto')">
         {{ MENSAGENS.INDICADORES_SELECIONADOS }}
       </validation-message>
     </p>
-    <p class="text-muted" *ngIf="indicadoresSelecionados.length === 0 && getIndicadoresAvulsos().length === 0">{{ MENSAGENS.NENHUM_INDICADOR_SELECIONADO }}</p>
+    <p class="siscap-empty-state" *ngIf="indicadoresSelecionados.length === 0 && getIndicadoresAvulsos().length === 0">{{ MENSAGENS.NENHUM_INDICADOR_SELECIONADO }}</p>
 
     <div id="indicatorsContainer">
-
       <div class="indicador-selecionado"
         *ngFor="let item of indicadoresSelecionados; let i = index; trackBy: trackByIndicador">
-
-        <div class="indicator-card" style="border: 2px solid #1a6fc4; padding: 20px;">
-
-          <div class="indicator-header"
-            style="border-bottom: 2px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px;">
-
-            <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">
-              {{item.nomeIndicador }}
-              <span *ngIf="item.avulso"
-                style="margin-left:8px; padding:2px 8px; border-radius:12px; background:#f07613; color:#f1f5f9; font-size:11px; font-weight:700;">
-                {{ MENSAGENS.INDICADOR_DE_PROJETO }}
-              </span>
-            </div>
-
-            <button type="button" class="remove-indicator-btn" attr.aria-label="{{ MENSAGENS.REMOVER_INDICADOR }}"
-              (click)="removeIndicator(item, false)" [disabled]="!isModoEdicao">✖</button>
-
-          </div>
-
-          <div class="indicator-details">
-
-            <div *ngIf="item.avulso" class="detail-row" style="margin-bottom: 8px;"><span class="detail-label"
-                style="color: #1a6fc4; font-weight: 800;">{{ MENSAGENS.FORMULA_METODOLOGIA_DE_CALCULO_2 }}</span><span
-                class="detail-value" style="font-weight: 600;">{{item.formulaCalculo }}</span></div>
-
-            <div class="detail-row" style="margin-bottom: 8px;"><span class="detail-label"
-                style="color: #1a6fc4; font-weight: 800;">{{ MENSAGENS.FONTE_2 }}</span><span class="detail-value"
-                style="font-weight: 600;">{{item.medidoPor }}</span></div>
-
-            <div class="detail-row" style="margin-bottom: 15px;">
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">{{ MENSAGENS.UNIDADE_DE_MEDIDA_2 }}</span>
-              <span class="detail-value" style="font-weight: 600; margin-right:24px;">{{item.unidadeMedida}}</span>
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">{{ MENSAGENS.BASE_DE_REFERENCIA_2 }}</span>
-              <span class="detail-value" style="font-weight: 600;"> {{ item?.maiorAnoInidicador }}
-                ({{item?.maiorMetaIndicador }}) </span>
-            </div>
-
-            <span *ngIf="!item.avulso" class="meta-section-label"
-              style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">{{ MENSAGENS.META }}</span>
-            <div *ngIf="!item.avulso" class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-              <div class="mindicador-selecionado"
-                *ngFor="let meta of getMetasIndicadorBi(i); let j = index; trackBy: trackByMeta">
-                <div class="meta-item"
-                  style="background: #f0f7ff; border: 1px solid #dbeafe; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                  <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">{{ meta.anoMeta
-                    }}</span>
-                  <span style="font-weight: 700; color: var(--navy-dark); font-size: 14px;">{{ meta.valorMeta }}</span>
-                </div>
-              </div>
-            </div>
-
-            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">{{ MENSAGENS.META_DO_PROJETO_2 }}</span>
-            <div [formGroup]="getIndicadorForm(i)">
-              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;"
-                formArrayName="metasIndicadorProjeto">
-                <div class="mindicador-selecionado"
-                  *ngFor="let meta of getMetas(i).controls; let j = index; trackBy: trackByMeta" [formGroupName]="j">
-                  <div class="meta-item"
-                    style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                    <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">
-                      {{ meta.get('anoMeta')?.value }}
-                    </span>
-                    <validation-message class="meta-validation-message"
-                      [control]="getMetaProjetoControl(i, j)"></validation-message>
-                    <input type="text" class="meta-value-input" formControlName="valorMeta" maxlength="20"
-                      placeholder="{{ MENSAGENS.DIGITE_A_META }}">
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
+        <siscap-indicador-card [indicador]="dadosCardCatalogo(item)"
+          [metasReferencia]="getMetasIndicadorBi(i)" [metasProjeto]="getMetas(i)"
+          [idPrefixo]="'meta-catalogo-' + i" [podeRemover]="isModoEdicao"
+          (remover)="removeIndicator(item, false)">
+        </siscap-indicador-card>
       </div>
-
-      <!-- ----------- -->
-
-      <div class="indicador-selecionado" *ngFor="let item of getIndicadoresAvulsos().controls; let i = index">
-
-        <div class="indicator-card" style="border: 2px solid #1a6fc4; padding: 20px;">
-
-          <div class="indicator-header"
-            style="border-bottom: 2px solid #f1f5f9; margin-bottom: 12px; padding-bottom: 10px;">
-
-            <div class="indicator-name" style="font-size: 16px; color: #1a6fc4; letter-spacing: 0.2px;">
-              {{ item.get('nomeIndicador')?.value }}
-
-              <span
-                style="margin-left:8px; padding:2px 8px; border-radius:12px; background:#f07613; color:#f1f5f9; font-size:11px; font-weight:700;">
-                {{ MENSAGENS.INDICADOR_DE_PROJETO }}
-              </span>
-
-            </div>
-
-            <button type="button" class="remove-indicator-btn" attr.aria-label="{{ MENSAGENS.REMOVER_INDICADOR_DE_PROJETO }}"
-              (click)="removeIndicadorAvulsoProjeto(i)" [disabled]="somenteLeitura">✖</button>
-
-          </div>
-
-          <div class="indicator-details">
-
-            <div class="detail-row" style="margin-bottom: 8px;">
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800;">
-                {{ MENSAGENS.FORMULA_METODOLOGIA_DE_CALCULO_2 }}
-              </span>
-              <span class="detail-value" style="font-weight: 600;">
-                {{ item.get('formulaCalculo')?.value }}
-              </span>
-            </div>
-
-            <div class="detail-row" style="margin-bottom: 8px;">
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800;">
-                {{ MENSAGENS.FONTE_2 }}
-              </span>
-              <span class="detail-value" style="font-weight: 600;">
-                {{ item.get('fonteIndicador')?.value || item.get('medidoPor')?.value }}
-              </span>
-            </div>
-
-            <div class="detail-row" style="margin-bottom: 15px;">
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">
-                {{ MENSAGENS.UNIDADE_DE_MEDIDA_2 }}
-              </span>
-
-              <span class="detail-value" style="font-weight: 600; margin-right:24px;">
-                {{ item.get('unidadeMedida')?.value }}
-              </span>
-
-              <span class="detail-label" style="color: #1a6fc4; font-weight: 800; margin-right:8px;">
-                {{ MENSAGENS.BASE_DE_REFERENCIA_2 }}
-              </span>
-
-              <span class="detail-value" style="font-weight: 600;">
-                {{ item.get('baseDeReferencia')?.value || item.get('basedeReferencia')?.value }}
-              </span>
-            </div>
-
-            <span class="meta-section-label" style="color: #1a6fc4; font-weight: 800; margin-bottom: 10px;">
-              {{ MENSAGENS.META_DO_PROJETO_2 }}
-            </span>
-
-            <div [formGroup]="getIndicadorAvulsoProjetoForm(i)">
-
-              <div class="meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;"
-                formArrayName="metasIndicadorProjeto">
-
-                <div class="mindicador-selecionado"
-                  *ngFor="let meta of getMetasIndicadorAvulsoProjeto(i).controls; let j = index" [formGroupName]="j">
-
-                  <div class="meta-item"
-                    style="background: white; border: 1px solid #dbeafe; background: #f0f7ff; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-
-                    <span class="meta-year" style="color: #1a6fc4; font-weight: 700; font-size: 13px;">
-                      {{ meta.get('anoMeta')?.value }}
-                    </span>
-
-                    <validation-message class="meta-validation-message"
-                      [control]="getMetaIndicadorAvulsoProjetoControl(i, j)"></validation-message>
-
-                    <input type="text" class="meta-value-input" formControlName="valorMeta" maxlength="20"
-                      placeholder="{{ MENSAGENS.DIGITE_A_META }}">
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
+      <div class="indicador-selecionado"
+        *ngFor="let item of getIndicadoresAvulsos().controls; let i = index">
+        <siscap-indicador-card [indicador]="dadosCardProjeto(item)"
+          [metasProjeto]="getMetasIndicadorAvulsoProjeto(i)" [idPrefixo]="'meta-avulso-' + i"
+          [podeRemover]="!somenteLeitura" [rotuloRemover]="MENSAGENS.REMOVER_INDICADOR_DE_PROJETO"
+          (remover)="removeIndicadorAvulsoProjeto(i)">
+        </siscap-indicador-card>
       </div>
-
     </div>
-
   </div>
-
 </div>
 
-<div class="navigation-buttons">
-  <button class="nav-btn" id="voltarBtn" style="background:var(--blue); color:white; border-color:var(--blue);"
+<div class="siscap-form-navigation">
+  <button class="siscap-form-nav-button siscap-form-nav-button-primary" id="voltarBtn"
     (click)="voltarParaDic()"><i class="pi pi-arrow-left"></i></button>
-  <button class="nav-btn" id="avancarBtn" style="background:var(--blue); color:white; border-color:var(--blue);"
+  <button class="siscap-form-nav-button siscap-form-nav-button-primary" id="avancarBtn"
     (click)="irParaODS()"><i class="pi pi-arrow-right"></i></button>
 </div>
