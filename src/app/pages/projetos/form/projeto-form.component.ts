@@ -1424,7 +1424,7 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       }),
 
       acoesPlanejamentoProjeto: this._nnfb.control(
-        projetoFormModel?.acoesPlanejamentoProjeto ?? false,
+        projetoFormModel?.acoesPlanejamentoProjeto ?? [],
         [Validators.required],
       ),
 
@@ -3886,6 +3886,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
   private salvarRascunho(): void {
 
+    this.projetoForm.patchValue({ enviarProjetoGestor: false }, { emitEvent: false });
+
     const pendencias = this.obterPendenciasRascunho();
 
     if (pendencias.length) {
@@ -4101,6 +4103,8 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
 
     return defer(() => {
 
+      payload.enviarProjetoGestor = false;
+
       if (!this._idProjetoEdicao || this._idProjetoEdicao == 0) {
 
         return this._projetosService
@@ -4246,6 +4250,14 @@ export class ProjetoFormComponent implements OnInit, OnDestroy {
       indicadoresProjeto,
       indicadoresAvulsosProjeto,
       odsProjeto,
+      // A aba Ações cria uma linha vazia para edição, que ainda não é uma ação a persistir.
+      acoesRateioProjeto: payload.acoesRateioProjeto.filter(acao =>
+        acao.idAcao > 0 ||
+        !!acao.descricaoAcaoPrincipal?.trim() ||
+        !!acao.descricaoAcaoSecundaria?.trim() ||
+        Number(acao.valorEstimadoAcaoPrincipal) !== 0 ||
+        (acao.rateio?.length ?? 0) > 0
+      ),
     });
 
     if (opcoes.ajustarOrganizacaoProponente && this.isProponente) {
