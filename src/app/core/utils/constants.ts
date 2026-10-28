@@ -832,6 +832,7 @@ const MENSAGENS_PT_BR = {
   SELECIONE_AS_REGIOES_GEOGRAFICAS_REALCIONADAS_A_PROPOSTA: 'Marcar os Municípios e/ou as Microrregiões atendidas pelo projeto e estimar o percentual dos investimentos do projeto dedicado àquela região.',
   CARTA_CONSULTA_ATUALIZADA_COM_SUCESSO: "Carta Consulta atualizada com sucesso!",
   CARTA_CONSULTA_CADASTRADA_COM_SUCESSO: "Carta Consulta cadastrada com sucesso!",
+  DESPACHO_ENCAMINHAMENTO_AUTORIZACAO_ASSINATURA_PROGRAMA: "Despacho de encaminhamento e autorização para prospecção."
 } as const;
 
 export const MENSAGENS: Readonly<Record<keyof typeof MENSAGENS_PT_BR, string>> = Object.freeze(MENSAGENS_PT_BR);
