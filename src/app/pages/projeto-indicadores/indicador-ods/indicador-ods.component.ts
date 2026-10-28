@@ -127,22 +127,7 @@ export class IndicadorOdsComponent implements OnInit {
 
     this.formProjeto.markAsDirty();
 
-    this.odsEscolhidas = [
-      ...this.odsEscolhidas,
-      {
-        idOdsProjeto: null,
-        idOdsIndicadorExterno: 0,
-        idOdsExterno: ods.odsId,
-        odsId: ods.odsId,
-        odsOrdem: ods.ordemOds,
-        odsNome: ods.nomeOds,
-        odsDescricao: ods.descricaoOds,
-        odsCor: ods.corOds,
-        indicadoresVinculados: []
-      }
-    ];
-
-    this.atualizarOdsSugeridas();
+    // O valueChanges do formulário já sincroniza os cards selecionados.
 
   }
 
