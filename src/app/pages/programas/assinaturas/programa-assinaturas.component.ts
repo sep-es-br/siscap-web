@@ -103,7 +103,11 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
         projetosSubscription$,
       ]).subscribe({
         next: (results) => {
+
+          // console.log( "Resultado ", results )
+
           const programaResponse: IPrograma = results[0];
+
           this.listaNomesOrgaosExecutores = results[1]
             .filter((el) =>
               programaResponse.orgaosEnvolvidosList
@@ -111,6 +115,7 @@ export class ProgramaAssinaturasComponent implements OnDestroy {
                 .includes(el.id)
             )
             .map((el) => el.nome);
+
           this.listaDicsPropostos = results[2]
             .filter((el) =>
               programaResponse.idProjetoPropostoList.includes(el.id)

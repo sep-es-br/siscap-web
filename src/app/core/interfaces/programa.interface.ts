@@ -60,6 +60,7 @@ export interface IProgramaAssinatura {
   dataAssinatura?: string;
   papelAssinante: string;
   textoAssinanteRecusa: string;
+  textoDespachoAssinanteLotacao?: string | null;
 }
 
 export interface IProgramaAssinaturasForm extends IPrograma {
