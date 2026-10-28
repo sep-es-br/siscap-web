@@ -1,344 +1,478 @@
+
 @if (appStatus === 'Loading') {
-<div class="h-100">
-  <loading-spinner></loading-spinner>
-</div>
+  <div class="h-100">
+    <loading-spinner></loading-spinner>
+  </div>
 } @else {
 
-<div class="d-flex flex-column flex-sm-row justify-content-end mb-3">
-  <button class="btn btn-outline-danger icon-text-btn col-12 col-sm-3 mb-2 mb-sm-0 me-sm-2" (click)="voltarParaLista()">
-    <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
-    <span>{{ MENSAGENS.VOLTAR }}</span>
-  </button>
+  <!-- BOTÕES SUPERIORES -->
+  <div class="d-flex flex-column flex-sm-row justify-content-end mb-3">
 
-  <button class="btn btn-outline-primary icon-text-btn col-12 col-sm-3" (click)="exportarPrograma()">
-    <i class="fa-solid fa-file-arrow-down"></i>
-    <span>{{ MENSAGENS.BAIXAR_PROGRAMA }}</span>
-  </button>
-</div>
+    <button
+      class="btn btn-outline-danger icon-text-btn col-12 col-sm-3 mb-2 mb-sm-0 me-sm-2"
+      (click)="voltarParaLista()"
+    >
+      <i class="fa-solid fa-arrow-turn-up fa-rotate-270"></i>
+      <span>{{ MENSAGENS.VOLTAR }}</span>
+    </button>
 
-<div class="card">
-  <div class="card-body">
+    <button
+      class="btn btn-outline-primary icon-text-btn col-12 col-sm-3"
+      (click)="exportarPrograma()"
+    >
+      <i class="fa-solid fa-file-arrow-down"></i>
+      <span>{{ MENSAGENS.BAIXAR_PROGRAMA }}</span>
+    </button>
 
-    <!-- DADOS DO PROGRAMA -->
-    <form class="row g-3" [formGroup]="formPrograma">
+  </div>
 
-      <div class="col-12 col-sm-4">
-        <label class="form-label no-pointer-effects" for="inputSigla">
-          {{ MENSAGENS.SIGLA }}
-        </label>
-        <input class="form-control no-pointer-effects" type="text" formControlName="siglaPrograma" id="inputSigla"
-          readonly />
-      </div>
+  <!-- CARD PRINCIPAL -->
+  <div class="card">
+    <div class="card-body">
 
-      <div class="col-12 col-sm-8">
-        <label class="form-label no-pointer-effects" for="inputTitulo">
-          {{ MENSAGENS.TITULO }}
-        </label>
-        <input class="form-control no-pointer-effects" type="text" formControlName="tituloPrograma" id="inputTitulo"
-          readonly />
-      </div>
+      <!-- DADOS DO PROGRAMA -->
+      <form class="row g-3" [formGroup]="formPrograma">
 
-      <div class="col-12">
-        <label class="form-label no-pointer-effects" for="inputOrgao">
-          {{
-          programaAtual.nomesOrgaosExecutores.length > 1
-          ? 'Órgãos Executores'
-          : 'Órgão Executor'
-          }}
-        </label>
+        <div class="col-12 col-sm-4">
+          <label
+            class="form-label no-pointer-effects"
+            for="inputSigla"
+          >
+            {{ MENSAGENS.SIGLA }}
+          </label>
 
-        <ng-select id="inputOrgao" [multiple]="true" formControlName="orgaosPrograma">
-          @for (organizacao of programaAtual.nomesOrgaosExecutores; track organizacao) {
-          <ng-option [value]="organizacao">
-            {{ organizacao }}
-          </ng-option>
-          }
-        </ng-select>
-      </div>
+          <input
+            class="form-control no-pointer-effects"
+            type="text"
+            formControlName="siglaPrograma"
+            id="inputSigla"
+            readonly
+          />
+        </div>
 
-      <div class="col-12">
-        <label class="form-label no-pointer-effects" for="inputDics">
-          {{ MENSAGENS.DICS_PROPOSTOS }}
-        </label>
+        <div class="col-12 col-sm-8">
+          <label
+            class="form-label no-pointer-effects"
+            for="inputTitulo"
+          >
+            {{ MENSAGENS.TITULO }}
+          </label>
 
-        <ng-select id="inputDics" [multiple]="true" formControlName="dicsPrograma">
-          @for (dic of programaAtual.listaDICSPropostos; track dic) {
-          <ng-option [value]="dic">
-            {{ dic }}
-          </ng-option>
-          }
-        </ng-select>
-      </div>
+          <input
+            class="form-control no-pointer-effects"
+            type="text"
+            formControlName="tituloPrograma"
+            id="inputTitulo"
+            readonly
+          />
+        </div>
 
-      <div class="col-12 col-sm-4">
-        <label class="form-label no-pointer-effects" for="inputValor">
-          {{ MENSAGENS.VALOR_TOTAL_ESTIMADO }}
-        </label>
-        <input class="form-control no-pointer-effects" type="text" formControlName="valorTotalEstimadoProgama"
-          id="inputValor" readonly />
-      </div>
+        <!-- ÓRGÃOS EXECUTORES -->
+        <div class="col-12">
 
-    </form>
-
-    <!-- SEÇÃO DE ASSINATURAS -->
-    <div class="assinaturas mt-4">
-
-      <!-- MINHA AUTORIZAÇÃO -->
-      @if (programaAtual.assinaturaUsuarioAtual) {
-
-      <div class="assinatura-wrap col-12">
-
-        <p class="assinatura-title">
-          {{ MENSAGENS.MINHA_AUTORIZACAO }}
-        </p>
-
-        <!-- DESPACHO DE ORIENTAÇÃO DO ASSINANTE -->
-        @if (programaAtual.assinaturaUsuarioAtual.textoDespachoAssinanteLotacao?.trim()) {
-
-        <section class="orientacao-assinatura mb-4" aria-labelledby="titulo-orientacao-assinatura">
-
-          <!-- CABEÇALHO DO DESPACHO -->
-          <div class="orientacao-assinatura-header">
-
-            <div class="orientacao-assinatura-icone">
-              <i class="fa-solid fa-file-signature" aria-hidden="true"></i>
-            </div>
-
-            <div class="orientacao-assinatura-cabecalho">
-              <h3 id="titulo-orientacao-assinatura" class="orientacao-assinatura-titulo">
-                Despacho de Orientação para Assinatura
-              </h3>
-
-              <p class="orientacao-assinatura-subtitulo">
-                Orientações específicas para sua autorização
-                neste programa.
-              </p>
-            </div>
-
-          </div>
-
-          <!-- CONTEÚDO RECEBIDO DA API -->
-          <div class="orientacao-assinatura-conteudo">
-            <div class="orientacao-assinatura-texto">
-              {{
-              programaAtual.assinaturaUsuarioAtual.textoDespachoAssinanteLotacao
-              }}
-            </div>
-          </div>
-
-          <!-- RODAPÉ DO DESPACHO -->
-          <div class="orientacao-assinatura-rodape">
-
-            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-
-            <span>
-              Leia atentamente o despacho acima antes de
-              prosseguir com sua autorização.
-            </span>
-
-          </div>
-
-        </section>
-
-        }
-
-        <!-- TERMO DE AUTORIZAÇÃO -->
-        <div class="assinatura-box col-12 p-4 d-flex flex-column justify-content-center align-items-center">
-
-          <p class="assinatura-termo mb-5">
+          <label
+            class="form-label no-pointer-effects"
+            for="inputOrgao"
+          >
             {{
-            formatarMensagem(
-            MENSAGENS.AUTORIZO_A_ASSINATURA_ELETRONICA_DO_PROGRAMA_VALOR_DESTINADO_A_PROSPECCAO_DE_RECURSOS_CONFORME_DOCUMENTO_APRES,
-            { p0: programaAtual.titulo }
-            )
+              programaAtual.nomesOrgaosExecutores.length > 1
+                ? 'Órgãos Executores'
+                : 'Órgão Executor'
             }}
-          </p>
+          </label>
 
-          <span class="nome-assinante">
-            {{ programaAtual.assinaturaUsuarioAtual.nomeAssinante }}
-          </span>
-
-          <span class="cargo-assinante mb-5">
-            {{ programaAtual.assinaturaUsuarioAtual.papelAssinante }}
-          </span>
-
-          <!-- ASSINATURA EM ANDAMENTO -->
-          @if (statusAssinatura === 'EM_ANDAMENTO') {
-
-          <span class="badge rounded-pill text-bg-warning">
-            <i class="fa-solid fa-circle-notch fa-spin"></i>
-            {{ MENSAGENS.ASSINANDO }}
-          </span>
-
-          } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1) {
-
-          <!-- AÇÕES DE ASSINATURA -->
-          <div class="d-flex flex-column flex-md-row align-items-center justify-content-center w-100 acoes-assinatura">
-
-            <button class="botao-recusar btn btn-danger icon-text-btn text-nowrap p-2 mb-2 mb-md-0 me-md-1"
-              (click)="dispararModalRecusarAutorizacao()">
-              <i class="fa-solid fa-xmark"></i>
-              <span>{{ MENSAGENS.NAO_AUTORIZO }}</span>
-            </button>
-
-            <button class="botao-assinar btn btn-success icon-text-btn text-nowrap p-2 ms-md-1"
-              [disabled]="botaoDeAssinarDeveEstarDesabilitado" (click)="dispararModalConfirmarAssinatura()">
-              <i class="fa-solid fa-pen-fancy"></i>
-              <span>{{ MENSAGENS.ASSINAR }}</span>
-            </button>
-
-          </div>
-
-          } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 2) {
-
-          <!-- ASSINADO -->
-          <span>
-            <i class="status-assinatura check-icon fa-solid fa-check"></i>
-            {{ MENSAGENS.ASSINADO }}
-          </span>
-
-          @if (programaAtual.assinaturaUsuarioAtual.dataAssinatura) {
-          <span class="data-assinatura">
-            {{
-            programaAtual.assinaturaUsuarioAtual.dataAssinatura
-            | date : MENSAGENS.DD_MM_YYYY_HH_MM_SS
-            }}
-          </span>
-          }
-
-          } @else if (programaAtual.assinaturaUsuarioAtual.statusAssinatura === 4) {
-
-          <!-- RECUSADO -->
-          <span>
-            <i class="status-assinatura refused-icon fa-solid fa-xmark"></i>
-            {{ MENSAGENS.RECUSADO }}
-          </span>
-
-          }
+          <ng-select
+            id="inputOrgao"
+            [multiple]="true"
+            formControlName="orgaosPrograma"
+          >
+            @for (
+              organizacao of programaAtual.nomesOrgaosExecutores;
+              track organizacao
+            ) {
+              <ng-option [value]="organizacao">
+                {{ organizacao }}
+              </ng-option>
+            }
+          </ng-select>
 
         </div>
-        <!-- FIM TERMO DE AUTORIZAÇÃO -->
 
-      </div>
-      <!-- FIM ASSINATURA-WRAP DO USUÁRIO -->
+        <!-- DICS PROPOSTOS -->
+        <div class="col-12">
 
-      }
-      <!-- FIM MINHA AUTORIZAÇÃO -->
+          <label
+            class="form-label no-pointer-effects"
+            for="inputDics"
+          >
+            {{ MENSAGENS.DICS_PROPOSTOS }}
+          </label>
 
-      <!-- DEMAIS AUTORIZAÇÕES -->
-      <p class="assinatura-title mt-3">
-        {{
-        programaAtual.assinaturaUsuarioAtual
-        ? 'Demais Autorizações'
-        : 'Autorizações'
-        }}
-      </p>
+          <ng-select
+            id="inputDics"
+            [multiple]="true"
+            formControlName="dicsPrograma"
+          >
+            @for (
+              dic of programaAtual.listaDICSPropostos;
+              track dic
+            ) {
+              <ng-option [value]="dic">
+                {{ dic }}
+              </ng-option>
+            }
+          </ng-select>
 
-      <div class="d-flex flex-wrap">
+        </div>
 
-        @if (appStatus === 'Success' && programaAtual.demaisAssinaturas.length > 0) {
+        <!-- VALOR TOTAL -->
+        <div class="col-12 col-sm-4">
 
-        @for (assinatura of programaAtual.demaisAssinaturas; track assinatura) {
+          <label
+            class="form-label no-pointer-effects"
+            for="inputValor"
+          >
+            {{ MENSAGENS.VALOR_TOTAL_ESTIMADO }}
+          </label>
 
-        <div class="assinatura-wrap col-12 col-md-6 d-flex">
+          <input
+            class="form-control no-pointer-effects"
+            type="text"
+            formControlName="valorTotalEstimadoProgama"
+            id="inputValor"
+            readonly
+          />
 
-          <div class="assinatura-box w-100 d-flex align-items-center p-4">
+        </div>
 
-            <div class="col-6 d-flex flex-column align-items-center">
+      </form>
 
-              <span class="nome-assinante">
-                {{ assinatura.nomeAssinante }}
-              </span>
+      <!-- ÁREA DE ASSINATURAS -->
+      <div class="assinaturas mt-4">
 
-              <span class="cargo-assinante text-center">
-                {{ assinatura.papelAssinante }}
-              </span>
+        <!-- MINHA AUTORIZAÇÃO -->
+        @if (programaAtual.assinaturaUsuarioAtual) {
 
-            </div>
+          <div class="assinatura-wrap col-12">
 
-            <div class="col-6 d-flex flex-column align-items-center">
+            <p class="assinatura-title">
+              {{ MENSAGENS.MINHA_AUTORIZACAO }}
+            </p>
 
-              @if (assinatura.statusAssinatura === 2) {
+            <!-- BOX DE AUTORIZAÇÃO -->
+            <div
+              class="assinatura-box col-12 p-4 d-flex flex-column justify-content-center align-items-center"
+            >
 
-              <span>
-                <i class="status-assinatura check-icon fa-solid fa-check"></i>
-                {{ MENSAGENS.ASSINADO }}
-              </span>
+              <!-- TERMO DE AUTORIZAÇÃO -->
+              <p class="assinatura-termo mb-4">
+                {{
+                  formatarMensagem(
+                    MENSAGENS.AUTORIZO_A_ASSINATURA_ELETRONICA_DO_PROGRAMA_VALOR_DESTINADO_A_PROSPECCAO_DE_RECURSOS_CONFORME_DOCUMENTO_APRES,
+                    { p0: programaAtual.titulo }
+                  )
+                }}
+              </p>
 
-              } @else if (assinatura.statusAssinatura === 4) {
+              <!-- DESPACHO DE ORIENTAÇÃO DO ASSINANTE -->
+              @if (
+                programaAtual.assinaturaUsuarioAtual.textoDespachoAssinanteLotacao?.trim()
+              ) {
 
-              <span>
-                <i class="status-assinatura refused-icon fa-solid fa-xmark"></i>
-                {{ MENSAGENS.RECUSADO }}
-              </span>
+                <div class="despacho-assinante w-100 mb-4">
 
-              } @else {
+                  <!-- TÍTULO DO DESPACHO -->
+                  <div class="despacho-assinante-titulo">
 
-              <span>
-                <i class="status-assinatura pending-icon fa-regular fa-clock"></i>
-                {{ MENSAGENS.PENDENTE }}
-              </span>
+                    <i
+                      class="fa-solid fa-file-signature"
+                      aria-hidden="true"
+                    ></i>
+
+                    <span>
+                      Despacho de Orientação
+                    </span>
+
+                  </div>
+
+                  <!-- TEXTO RECEBIDO DA API -->
+                  <p
+                    class="assinatura-termo despacho-assinante-texto mb-0"
+                  >
+                    {{
+                      programaAtual.assinaturaUsuarioAtual.textoDespachoAssinanteLotacao
+                    }}
+                  </p>
+
+                </div>
 
               }
 
-              @if (assinatura.dataAssinatura) {
-
-              <span class="data-assinatura">
+              <!-- IDENTIFICAÇÃO DO ASSINANTE -->
+              <span class="nome-assinante">
                 {{
-                assinatura.dataAssinatura
-                | date : MENSAGENS.DD_MM_YYYY_HH_MM_SS
+                  programaAtual.assinaturaUsuarioAtual.nomeAssinante
                 }}
               </span>
 
+              <span class="cargo-assinante mb-5">
+                {{
+                  programaAtual.assinaturaUsuarioAtual.papelAssinante
+                }}
+              </span>
+
+              <!-- STATUS E AÇÕES DE ASSINATURA -->
+              @if (statusAssinatura === 'EM_ANDAMENTO') {
+
+                <!-- ASSINATURA EM ANDAMENTO -->
+                <span class="badge rounded-pill text-bg-warning">
+
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+
+                  {{ MENSAGENS.ASSINANDO }}
+
+                </span>
+
+              } @else if (
+                programaAtual.assinaturaUsuarioAtual.statusAssinatura === 1
+              ) {
+
+                <!-- BOTÕES DE AUTORIZAÇÃO -->
+                <div
+                  class="d-flex flex-column flex-md-row align-items-center justify-content-center w-100 acoes-assinatura"
+                >
+
+                  <button
+                    class="botao-recusar btn btn-danger icon-text-btn text-nowrap p-2 mb-2 mb-md-0 me-md-1"
+                    (click)="dispararModalRecusarAutorizacao()"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+
+                    <span>
+                      {{ MENSAGENS.NAO_AUTORIZO }}
+                    </span>
+                  </button>
+
+                  <button
+                    class="botao-assinar btn btn-success icon-text-btn text-nowrap p-2 ms-md-1"
+                    [disabled]="botaoDeAssinarDeveEstarDesabilitado"
+                    (click)="dispararModalConfirmarAssinatura()"
+                  >
+                    <i class="fa-solid fa-pen-fancy"></i>
+
+                    <span>
+                      {{ MENSAGENS.ASSINAR }}
+                    </span>
+                  </button>
+
+                </div>
+
+              } @else if (
+                programaAtual.assinaturaUsuarioAtual.statusAssinatura === 2
+              ) {
+
+                <!-- ASSINATURA CONCLUÍDA -->
+                <span>
+
+                  <i
+                    class="status-assinatura check-icon fa-solid fa-check"
+                  ></i>
+
+                  {{ MENSAGENS.ASSINADO }}
+
+                </span>
+
+                @if (
+                  programaAtual.assinaturaUsuarioAtual.dataAssinatura
+                ) {
+
+                  <span class="data-assinatura">
+                    {{
+                      programaAtual.assinaturaUsuarioAtual.dataAssinatura
+                        | date : MENSAGENS.DD_MM_YYYY_HH_MM_SS
+                    }}
+                  </span>
+
+                }
+
+              } @else if (
+                programaAtual.assinaturaUsuarioAtual.statusAssinatura === 4
+              ) {
+
+                <!-- ASSINATURA RECUSADA -->
+                <span>
+
+                  <i
+                    class="status-assinatura refused-icon fa-solid fa-xmark"
+                  ></i>
+
+                  {{ MENSAGENS.RECUSADO }}
+
+                </span>
+
               }
 
             </div>
+            <!-- FIM ASSINATURA-BOX -->
 
           </div>
-
-        </div>
+          <!-- FIM ASSINATURA-WRAP DO USUÁRIO -->
 
         }
+        <!-- FIM MINHA AUTORIZAÇÃO -->
 
-        } @else {
+        <!-- DEMAIS AUTORIZAÇÕES -->
+        <p class="assinatura-title mt-3">
+          {{
+            programaAtual.assinaturaUsuarioAtual
+              ? 'Demais Autorizações'
+              : 'Autorizações'
+          }}
+        </p>
 
-        <div class="assinatura-wrap col-12">
+        <div class="d-flex flex-wrap">
 
-          <div class="assinatura-box w-100 d-flex justify-content-center align-items-center p-4">
+          @if (
+            appStatus === 'Success' &&
+            programaAtual.demaisAssinaturas.length > 0
+          ) {
 
-            @if (appStatus === 'Error') {
+            @for (
+              assinatura of programaAtual.demaisAssinaturas;
+              track assinatura
+            ) {
 
-            <span class="erro-assinatura">
-              {{ MENSAGENS.OCORREU_ALGUM_ERRO_AO_CARREGAR_AS_ASSINATURAS }}
-            </span>
+              <div
+                class="assinatura-wrap col-12 col-md-6 d-flex"
+              >
 
-            } @else if (appStatus === 'Success' && programaAtual.demaisAssinaturas.length === 0) {
+                <div
+                  class="assinatura-box w-100 d-flex align-items-center p-4"
+                >
 
-            <span class="erro-assinatura">
-              {{
-              MENSAGENS.NAO_EXISTEM_ASSINATURAS_PENDENTES_PARA_ESTE_PROGRAMA_E_NECESSARIO_SOLICITAR_AUTORIZACAO_PRIMEIRO
-              }}
-            </span>
+                  <!-- DADOS DO OUTRO ASSINANTE -->
+                  <div
+                    class="col-6 d-flex flex-column align-items-center"
+                  >
+
+                    <span class="nome-assinante">
+                      {{ assinatura.nomeAssinante }}
+                    </span>
+
+                    <span class="cargo-assinante text-center">
+                      {{ assinatura.papelAssinante }}
+                    </span>
+
+                  </div>
+
+                  <!-- STATUS DO OUTRO ASSINANTE -->
+                  <div
+                    class="col-6 d-flex flex-column align-items-center"
+                  >
+
+                    @if (assinatura.statusAssinatura === 2) {
+
+                      <span>
+
+                        <i
+                          class="status-assinatura check-icon fa-solid fa-check"
+                        ></i>
+
+                        {{ MENSAGENS.ASSINADO }}
+
+                      </span>
+
+                    } @else if (
+                      assinatura.statusAssinatura === 4
+                    ) {
+
+                      <span>
+
+                        <i
+                          class="status-assinatura refused-icon fa-solid fa-xmark"
+                        ></i>
+
+                        {{ MENSAGENS.RECUSADO }}
+
+                      </span>
+
+                    } @else {
+
+                      <span>
+
+                        <i
+                          class="status-assinatura pending-icon fa-regular fa-clock"
+                        ></i>
+
+                        {{ MENSAGENS.PENDENTE }}
+
+                      </span>
+
+                    }
+
+                    <!-- DATA DA ASSINATURA -->
+                    @if (assinatura.dataAssinatura) {
+
+                      <span class="data-assinatura">
+                        {{
+                          assinatura.dataAssinatura
+                            | date : MENSAGENS.DD_MM_YYYY_HH_MM_SS
+                        }}
+                      </span>
+
+                    }
+
+                  </div>
+
+                </div>
+                <!-- FIM ASSINATURA-BOX -->
+
+              </div>
+              <!-- FIM ASSINATURA-WRAP -->
 
             }
 
-          </div>
+          } @else {
 
-        </div>
+            <!-- NENHUMA ASSINATURA OU ERRO -->
+            <div class="assinatura-wrap col-12">
 
-        }
+              <div
+                class="assinatura-box w-100 d-flex justify-content-center align-items-center p-4"
+              >
 
-      </div>
-      <!-- FIM DEMAIS AUTORIZAÇÕES -->
+                @if (appStatus === 'Error') {
 
-    </div>
-    <!-- FIM ASSINATURAS -->
+                  <span class="erro-assinatura">
+                    {{
+                      MENSAGENS.OCORREU_ALGUM_ERRO_AO_CARREGAR_AS_ASSINATURAS
+                    }}
+                  </span>
 
-  </div>
-  <!-- FIM CARD-BODY -->
+                } @else if (
+                  appStatus === 'Success' &&
+                  programaAtual.demaisAssinaturas.length === 0
+                ) {
 
-</div>
-<!-- FIM CARD -->
+                  <span class="erro-assinatura">
+                    {{
+                      MENSAGENS.NAO_EXISTEM_ASSINATURAS_PENDENTES_PARA_ESTE_PROGRAMA_E_NECESSARIO_SOLICITAR_AUTORIZACAO_PRIMEIRO
+                    }}
+                  </span>
 
-}
-<!-- FIM ELSE PRINCIPAL -->
+                }
+
+              </div>
+              <!-- FIM ASSINATURA-BOX -->
+
+            </div>
+            <!-- FIM ASSINATURA-WRAP -->
+
+          }
+
+        </div> <!-- FIM DEMAIS AUTORIZAÇÕES -->
+      </div> <!-- FIM ÁREA DE ASSINATURAS -->
+    </div> <!-- FIM CARD-BODY -->
+  </div> <!-- FIM CARD PRINCIPAL -->
+  
+} <!-- FIM ELSE PRINCIPAL -->

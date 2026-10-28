@@ -69,7 +69,54 @@
   }
 }
 
-.orientacao-assinatura-texto {
-  white-space: pre-line;
-  overflow-wrap: anywhere;
+// .orientacao-assinatura-texto {
+//   white-space: pre-line;
+//   overflow-wrap: anywhere;
+// }
+
+
+/* Despacho dentro do termo de autorização */
+
+.despacho-assinante {
+
+  width: 100%;
+  padding: 18px 20px;
+  background-color: #f8fafc;
+  // border-left: 3px solid #da1064;
+  border-radius: 6px;
+
+  &-titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+
+    font-size: 14px;
+    font-weight: 700;
+    color: #173b60;
+
+    i {
+      color: #2366a8;
+      font-size: 16px;
+    }
+  }
+
+  &-texto {
+    width: 100%;
+    text-align: left;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Responsividade */
+@media (max-width: 767.98px) {
+  .despacho-assinante {
+    padding: 14px;
+
+    &-titulo {
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+  }
 }
